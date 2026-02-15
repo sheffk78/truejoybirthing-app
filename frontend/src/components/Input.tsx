@@ -8,14 +8,14 @@ import {
   ViewStyle,
   TextInputProps,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { COLORS, SIZES } from '../constants/theme';
 
 interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
-  leftIcon?: keyof typeof Ionicons.glyphMap;
-  rightIcon?: keyof typeof Ionicons.glyphMap;
+  leftIcon?: string;
+  rightIcon?: string;
   onRightIconPress?: () => void;
   containerStyle?: ViewStyle;
 }
@@ -47,12 +47,13 @@ export default function Input({
         ]}
       >
         {leftIcon && (
-          <Ionicons
-            name={leftIcon}
-            size={20}
-            color={COLORS.textSecondary}
-            style={styles.leftIcon}
-          />
+          <View style={styles.leftIcon}>
+            <Icon
+              name={leftIcon}
+              size={20}
+              color={COLORS.textSecondary}
+            />
+          </View>
         )}
         <TextInput
           style={[styles.input, leftIcon && { paddingLeft: 0 }]}
@@ -67,7 +68,7 @@ export default function Input({
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             style={styles.rightIcon}
           >
-            <Ionicons
+            <Icon
               name={showPassword ? 'eye-off-outline' : 'eye-outline'}
               size={20}
               color={COLORS.textSecondary}
@@ -80,7 +81,7 @@ export default function Input({
             style={styles.rightIcon}
             disabled={!onRightIconPress}
           >
-            <Ionicons name={rightIcon} size={20} color={COLORS.textSecondary} />
+            <Icon name={rightIcon} size={20} color={COLORS.textSecondary} />
           </TouchableOpacity>
         )}
       </View>
