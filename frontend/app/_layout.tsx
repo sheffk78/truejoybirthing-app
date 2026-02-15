@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useFonts } from 'expo-font';
+import * as Font from 'expo-font';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { COLORS } from '../src/constants/theme';
@@ -11,12 +11,30 @@ export default function RootLayout() {
   const { user, isAuthenticated, isLoading, checkAuth, _hasHydrated } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   
-  // Load fonts - explicitly load Ionicons for web compatibility
-  const [fontsLoaded] = useFonts({
-    'Ionicons': require('../assets/fonts/Ionicons.ttf'),
-    'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  // Load fonts asynchronously - don't block the app
+  useEffect(() => {
+    async function loadFonts() {
+      try {
+        await Font.loadAsync({
+          'Ionicons': require('../assets/fonts/Ionicons.ttf'),
+        });
+        setFontsLoaded(true);
+      } catch (error) {
+        console.log('Font loading error, continuing anyway:', error);
+        // Continue without fonts on web if they fail to load
+        setFontsLoaded(true);
+      }
+    }
+    
+    // For web, set fonts as loaded immediately (fallback to system fonts)
+    if (Platform.OS === 'web') {
+      setFontsLoaded(true);
+    } else {
+      loadFonts();
+    }
+  }, []);
   
   // Check auth on mount, but only after hydration
   useEffect(() => {
