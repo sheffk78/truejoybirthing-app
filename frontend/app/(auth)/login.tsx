@@ -69,7 +69,7 @@ export default function LoginScreen() {
             style={styles.backButton}
             onPress={() => router.back()}
           >
-            <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
           
           <View style={styles.headerSection}>
