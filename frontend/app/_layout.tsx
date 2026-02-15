@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { View, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ import LoadingScreen from '../src/components/LoadingScreen';
 import { COLORS } from '../src/constants/theme';
 
 export default function RootLayout() {
-  const { user, isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { user, isAuthenticated, isLoading, checkAuth, _hasHydrated } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
   
@@ -18,18 +18,20 @@ export default function RootLayout() {
     ...Ionicons.font,
   });
   
+  // Check auth on mount, but only after hydration
   useEffect(() => {
-    checkAuth();
-  }, []);
+    if (_hasHydrated) {
+      checkAuth();
+    }
+  }, [_hasHydrated]);
   
+  // Handle navigation based on auth state
   useEffect(() => {
-    if (isLoading) return;
+    // Wait for hydration and loading to complete
+    if (!_hasHydrated || isLoading) return;
     
     const inAuthGroup = segments[0] === '(auth)';
-    const inMomGroup = segments[0] === '(mom)';
-    const inDoulaGroup = segments[0] === '(doula)';
-    const inMidwifeGroup = segments[0] === '(midwife)';
-    const inAdminGroup = segments[0] === '(admin)';
+    const currentScreen = segments[1];
     
     if (!isAuthenticated && !inAuthGroup) {
       // Not authenticated, redirect to welcome
@@ -38,15 +40,15 @@ export default function RootLayout() {
       // Check if onboarding is needed
       if (!user.onboarding_completed) {
         // Redirect to onboarding based on role
-        if (user.role === 'MOM' && segments[1] !== 'onboarding') {
+        if (user.role === 'MOM' && currentScreen !== 'mom-onboarding') {
           router.replace('/(auth)/mom-onboarding');
-        } else if (user.role === 'DOULA' && segments[1] !== 'doula-onboarding') {
+        } else if (user.role === 'DOULA' && currentScreen !== 'doula-onboarding') {
           router.replace('/(auth)/doula-onboarding');
-        } else if (user.role === 'MIDWIFE' && segments[1] !== 'midwife-onboarding') {
+        } else if (user.role === 'MIDWIFE' && currentScreen !== 'midwife-onboarding') {
           router.replace('/(auth)/midwife-onboarding');
         }
       } else if (inAuthGroup) {
-        // Already authenticated, redirect to appropriate dashboard
+        // Already authenticated and onboarded, redirect to appropriate dashboard
         if (user.role === 'MOM') {
           router.replace('/(mom)/home');
         } else if (user.role === 'DOULA') {
@@ -58,9 +60,10 @@ export default function RootLayout() {
         }
       }
     }
-  }, [isAuthenticated, isLoading, user, segments]);
+  }, [isAuthenticated, isLoading, user, segments, _hasHydrated]);
   
-  if (isLoading || !fontsLoaded) {
+  // Show loading screen while hydrating or loading
+  if (!_hasHydrated || isLoading || !fontsLoaded) {
     return (
       <SafeAreaProvider>
         <LoadingScreen message="Loading True Joy Birthing..." />
