@@ -83,9 +83,9 @@ class APITester:
         
         # Test user registration for each role
         test_users_data = [
-            {"role": "MOM", "email": "test.mom@example.com", "name": "Sarah Johnson"},
-            {"role": "DOULA", "email": "test.doula@example.com", "name": "Lisa Smith"},
-            {"role": "MIDWIFE", "email": "test.midwife@example.com", "name": "Dr. Jane Wilson"}
+            {"role": "MOM", "email": f"test.mom.{timestamp}@example.com", "name": "Sarah Johnson"},
+            {"role": "DOULA", "email": f"test.doula.{timestamp}@example.com", "name": "Lisa Smith"},
+            {"role": "MIDWIFE", "email": f"test.midwife.{timestamp}@example.com", "name": "Dr. Jane Wilson"}
         ]
         
         for user_data in test_users_data:
