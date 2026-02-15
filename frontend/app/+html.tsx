@@ -12,6 +12,11 @@ export default function Root({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
+        {/* Load Ionicons font for web */}
+        <link
+          href="https://unpkg.com/ionicons@7.1.0/dist/css/ionicons.min.css"
+          rel="stylesheet"
+        />
         {/*
           Disable body scrolling on web to make ScrollView components work correctly.
           If you want to enable scrolling, remove `ScrollViewStyleReset` and
