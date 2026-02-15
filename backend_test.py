@@ -51,21 +51,25 @@ class APITester:
 
         try:
             if method == "GET":
-                response = self.session.get(url, headers=request_headers)
+                response = self.session.get(url, headers=request_headers, timeout=30)
             elif method == "POST":
-                response = self.session.post(url, json=data, headers=request_headers)
+                response = self.session.post(url, json=data, headers=request_headers, timeout=30)
             elif method == "PUT":
-                response = self.session.put(url, json=data, headers=request_headers)
+                response = self.session.put(url, json=data, headers=request_headers, timeout=30)
             elif method == "DELETE":
-                response = self.session.delete(url, headers=request_headers)
+                response = self.session.delete(url, headers=request_headers, timeout=30)
             else:
                 raise ValueError(f"Unsupported method: {method}")
             
             return response
+        except requests.exceptions.Timeout as e:
+            print(f"Timeout error for {url}: {e}")
+            return None
         except requests.exceptions.ConnectionError as e:
+            print(f"Connection error for {url}: {e}")
             return None
         except Exception as e:
-            print(f"Request error: {e}")
+            print(f"Request error for {url}: {e}")
             return None
 
     def test_auth_endpoints(self):
