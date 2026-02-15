@@ -39,7 +39,7 @@ export default function WelcomeScreen() {
         <View style={styles.headerSection}>
           <View style={styles.logoContainer}>
             <View style={styles.logoCircle}>
-              <Ionicons name="heart" size={40} color={COLORS.primary} />
+              <Icon name="heart" size={40} color={COLORS.primary} />
             </View>
           </View>
           <Text style={styles.title}>True Joy Birthing</Text>
@@ -52,7 +52,7 @@ export default function WelcomeScreen() {
         <View style={styles.featuresSection}>
           <View style={styles.featureItem}>
             <View style={styles.featureIcon}>
-              <Ionicons name="document-text-outline" size={24} color={COLORS.primary} />
+              <Icon name="document-text-outline" size={24} color={COLORS.primary} />
             </View>
             <View style={styles.featureText}>
               <Text style={styles.featureTitle}>Joyful Birth Plan</Text>
@@ -64,7 +64,7 @@ export default function WelcomeScreen() {
           
           <View style={styles.featureItem}>
             <View style={styles.featureIcon}>
-              <Ionicons name="people-outline" size={24} color={COLORS.primary} />
+              <Icon name="people-outline" size={24} color={COLORS.primary} />
             </View>
             <View style={styles.featureText}>
               <Text style={styles.featureTitle}>Connect Your Team</Text>
@@ -76,7 +76,7 @@ export default function WelcomeScreen() {
           
           <View style={styles.featureItem}>
             <View style={styles.featureIcon}>
-              <Ionicons name="calendar-outline" size={24} color={COLORS.primary} />
+              <Icon name="calendar-outline" size={24} color={COLORS.primary} />
             </View>
             <View style={styles.featureText}>
               <Text style={styles.featureTitle}>Track Your Journey</Text>
@@ -115,7 +115,7 @@ export default function WelcomeScreen() {
             onPress={handleGoogleLogin}
             variant="outline"
             fullWidth
-            icon={<Ionicons name="logo-google" size={20} color={COLORS.primary} />}
+            icon={<Icon name="logo-google" size={20} color={COLORS.primary} />}
           />
         </View>
         
