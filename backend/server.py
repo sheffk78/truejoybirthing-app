@@ -1215,6 +1215,7 @@ async def create_invoice(invoice_data: InvoiceCreate, user: User = Depends(check
     }
     
     await db.invoices.insert_one(invoice)
+    invoice.pop('_id', None)  # Remove ObjectId added by insert_one
     return invoice
 
 @api_router.put("/doula/invoices/{invoice_id}")
