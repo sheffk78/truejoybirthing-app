@@ -1,20 +1,24 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "True Joy Birthing",
+    "slug": "true-joy-birthing",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "scheme": "truejoybirthing",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "**/*",
+      "./assets/fonts/*.ttf"
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000"
+        "backgroundColor": "#9B6B9E"
       },
       "edgeToEdgeEnabled": true
     },
@@ -31,7 +35,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#000"
+          "backgroundColor": "#F8F4F9"
         }
       ]
     ],
