@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
+import { SECTION_FORMS, renderField } from '../../src/components/BirthPlanForms';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, SHADOWS } from '../../src/constants/theme';
@@ -22,6 +23,25 @@ const STATUS_COLORS: Record<string, string> = {
   'Not started': COLORS.textLight,
   'In progress': COLORS.warning,
   'Complete': COLORS.success,
+};
+
+const STATUS_ICONS: Record<string, string> = {
+  'Not started': 'ellipse-outline',
+  'In progress': 'time-outline',
+  'Complete': 'checkmark-circle',
+};
+
+// Section icons mapping
+const SECTION_ICONS: Record<string, string> = {
+  'about_me': 'person',
+  'labor_delivery': 'body',
+  'pain_management': 'medical',
+  'monitoring_iv': 'pulse',
+  'induction_interventions': 'medkit',
+  'pushing_safe_word': 'fitness',
+  'post_delivery': 'heart',
+  'newborn_care': 'happy',
+  'other_considerations': 'list',
 };
 
 export default function BirthPlanScreen() {
@@ -59,6 +79,10 @@ export default function BirthPlanScreen() {
     setModalVisible(true);
   };
   
+  const updateSectionData = (key: string, value: any) => {
+    setSectionData(prev => ({ ...prev, [key]: value }));
+  };
+  
   const saveSection = async () => {
     if (!selectedSection) return;
     
@@ -74,7 +98,7 @@ export default function BirthPlanScreen() {
       
       await fetchBirthPlan();
       setModalVisible(false);
-      Alert.alert('Saved', 'Your birth plan section has been saved.');
+      Alert.alert('Saved!', 'Your birth plan section has been saved.');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to save section');
     } finally {
@@ -82,88 +106,58 @@ export default function BirthPlanScreen() {
     }
   };
   
-  const handleExport = () => {
-    Alert.alert(
-      'Export Birth Plan',
-      'PDF export is currently mocked. In production, you would be able to download, email, or share your birth plan.',
-      [{ text: 'OK' }]
-    );
+  const handleExport = async () => {
+    try {
+      const exportData = await apiRequest(API_ENDPOINTS.BIRTH_PLAN_EXPORT);
+      Alert.alert(
+        'Export Birth Plan',
+        `Your birth plan is ${Math.round(birthPlan?.completion_percentage || 0)}% complete.\n\nPDF export feature coming soon! For now, you can share your preferences verbally with your care team or take screenshots of each section.`,
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Failed to prepare export');
+    }
+  };
+  
+  const getCompletedCount = () => {
+    if (!birthPlan?.sections) return 0;
+    return birthPlan.sections.filter((s: any) => s.status === 'Complete').length;
   };
   
   const renderSectionContent = () => {
     if (!selectedSection) return null;
     
-    const { section_id } = selectedSection;
+    const formConfig = SECTION_FORMS[selectedSection.section_id];
     
-    // Different field types based on section
-    switch (section_id) {
-      case 'pain_management':
-        return (
-          <View>
-            <Text style={styles.fieldLabel}>Pain Management Preferences</Text>
-            {['None/Unmedicated', 'Epidural', 'Nitrous Oxide', 'IV Pain Meds', 'Other'].map((option) => (
-              <TouchableOpacity
-                key={option}
-                style={styles.checkboxRow}
-                onPress={() => {
-                  const current = sectionData.painOptions || [];
-                  if (current.includes(option)) {
-                    setSectionData({ ...sectionData, painOptions: current.filter((o: string) => o !== option) });
-                  } else {
-                    setSectionData({ ...sectionData, painOptions: [...current, option] });
-                  }
-                }}
-              >
-                <View style={[styles.checkbox, (sectionData.painOptions || []).includes(option) && styles.checkboxChecked]}>
-                  {(sectionData.painOptions || []).includes(option) && (
-                    <Icon name="checkmark" size={14} color={COLORS.white} />
-                  )}
-                </View>
-                <Text style={styles.checkboxLabel}>{option}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        );
-      
-      case 'about_me':
-        return (
-          <View>
-            <Text style={styles.fieldLabel}>Who will be with you during labor?</Text>
-            <TextInput
-              style={styles.textInput}
-              value={sectionData.supportPeople || ''}
-              onChangeText={(text) => setSectionData({ ...sectionData, supportPeople: text })}
-              placeholder="e.g., Partner, mother, doula"
-              multiline
-            />
-            
-            <Text style={styles.fieldLabel}>Special considerations</Text>
-            <TextInput
-              style={[styles.textInput, styles.textArea]}
-              value={sectionData.specialConsiderations || ''}
-              onChangeText={(text) => setSectionData({ ...sectionData, specialConsiderations: text })}
-              placeholder="Any allergies, religious/cultural preferences, past trauma, etc."
-              multiline
-              numberOfLines={4}
-            />
-          </View>
-        );
-      
-      default:
-        return (
-          <View>
-            <Text style={styles.fieldLabel}>Your Preferences</Text>
-            <TextInput
-              style={[styles.textInput, styles.textArea]}
-              value={sectionData.preferences || ''}
-              onChangeText={(text) => setSectionData({ ...sectionData, preferences: text })}
-              placeholder={`Enter your ${selectedSection.title.toLowerCase()} preferences...`}
-              multiline
-              numberOfLines={6}
-            />
-          </View>
-        );
+    if (!formConfig) {
+      // Fallback for sections without specific form config
+      return (
+        <View>
+          <Text style={styles.fieldLabel}>Your Preferences</Text>
+          <TextInput
+            style={[styles.textInput, styles.textArea]}
+            value={sectionData.preferences || ''}
+            onChangeText={(text) => updateSectionData('preferences', text)}
+            placeholder={`Enter your ${selectedSection.title.toLowerCase()} preferences...`}
+            placeholderTextColor={COLORS.textLight}
+            multiline
+            numberOfLines={6}
+          />
+        </View>
+      );
     }
+    
+    return (
+      <View>
+        {formConfig.fields.map((field) => renderField(field, sectionData, updateSectionData))}
+      </View>
+    );
+  };
+  
+  const getSectionDescription = () => {
+    if (!selectedSection) return '';
+    const formConfig = SECTION_FORMS[selectedSection.section_id];
+    return formConfig?.description || 'Share your preferences for this section.';
   };
   
   return (
@@ -178,16 +172,25 @@ export default function BirthPlanScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Joyful Birth Plan</Text>
-          <Text style={styles.subtitle}>Create your personalized birth plan</Text>
+          <Text style={styles.subtitle}>
+            Create your personalized birth preferences
+          </Text>
         </View>
         
-        {/* Progress */}
+        {/* Progress Card */}
         <Card style={styles.progressCard}>
           <View style={styles.progressHeader}>
-            <Text style={styles.progressTitle}>Your Progress</Text>
-            <Text style={styles.progressPercent}>
-              {Math.round(birthPlan?.completion_percentage || 0)}%
-            </Text>
+            <View>
+              <Text style={styles.progressTitle}>Your Progress</Text>
+              <Text style={styles.progressSubtext}>
+                {getCompletedCount()} of {birthPlan?.sections?.length || 9} sections complete
+              </Text>
+            </View>
+            <View style={styles.progressCircle}>
+              <Text style={styles.progressPercent}>
+                {Math.round(birthPlan?.completion_percentage || 0)}%
+              </Text>
+            </View>
           </View>
           <View style={styles.progressBar}>
             <View
@@ -200,23 +203,36 @@ export default function BirthPlanScreen() {
         </Card>
         
         {/* Sections */}
-        <Text style={styles.sectionTitle}>Sections</Text>
-        {birthPlan?.sections?.map((section: any) => (
+        <Text style={styles.sectionTitle}>Birth Plan Sections</Text>
+        <Text style={styles.sectionSubtitle}>
+          Tap each section to add your preferences
+        </Text>
+        
+        {birthPlan?.sections?.map((section: any, index: number) => (
           <TouchableOpacity
             key={section.section_id}
             onPress={() => openSection(section)}
-            activeOpacity={0.8}
+            activeOpacity={0.7}
           >
             <Card style={styles.sectionCard}>
               <View style={styles.sectionRow}>
+                <View style={[
+                  styles.sectionIconContainer,
+                  section.status === 'Complete' && styles.sectionIconComplete,
+                ]}>
+                  <Icon 
+                    name={SECTION_ICONS[section.section_id] || 'document'} 
+                    size={20} 
+                    color={section.status === 'Complete' ? COLORS.white : COLORS.primary} 
+                  />
+                </View>
                 <View style={styles.sectionInfo}>
                   <Text style={styles.sectionName}>{section.title}</Text>
                   <View style={styles.statusRow}>
-                    <View
-                      style={[
-                        styles.statusDot,
-                        { backgroundColor: STATUS_COLORS[section.status] },
-                      ]}
+                    <Icon 
+                      name={STATUS_ICONS[section.status]} 
+                      size={14} 
+                      color={STATUS_COLORS[section.status]} 
                     />
                     <Text
                       style={[
@@ -235,14 +251,19 @@ export default function BirthPlanScreen() {
         ))}
         
         {/* Export Button */}
-        <Button
-          title="Export Birth Plan"
-          onPress={handleExport}
-          variant="outline"
-          fullWidth
-          icon={<Icon name="download-outline" size={20} color={COLORS.primary} />}
-          style={styles.exportButton}
-        />
+        <View style={styles.exportSection}>
+          <Button
+            title="Export Birth Plan"
+            onPress={handleExport}
+            variant="outline"
+            fullWidth
+            icon={<Icon name="download" size={20} color={COLORS.primary} />}
+            style={styles.exportButton}
+          />
+          <Text style={styles.exportHint}>
+            Share your completed birth plan with your care team
+          </Text>
+        </View>
       </ScrollView>
       
       {/* Section Edit Modal */}
@@ -254,34 +275,52 @@ export default function BirthPlanScreen() {
       >
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
+            <TouchableOpacity 
+              onPress={() => setModalVisible(false)}
+              style={styles.modalCloseButton}
+            >
               <Icon name="close" size={24} color={COLORS.textPrimary} />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>{selectedSection?.title}</Text>
-            <View style={{ width: 24 }} />
+            <Text style={styles.modalTitle} numberOfLines={1}>
+              {selectedSection?.title}
+            </Text>
+            <View style={{ width: 44 }} />
           </View>
           
-          <ScrollView style={styles.modalContent}>
-            <Text style={styles.modalDescription}>
-              Take your time to think about your preferences for this section. Remember, your birth plan is flexible and can be adjusted as needed.
-            </Text>
+          <ScrollView 
+            style={styles.modalContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Section Description */}
+            <View style={styles.descriptionCard}>
+              <Icon name="information-circle" size={20} color={COLORS.primary} />
+              <Text style={styles.modalDescription}>
+                {getSectionDescription()}
+              </Text>
+            </View>
             
-            <TouchableOpacity style={styles.videoButton}>
-              <Icon name="play-circle" size={24} color={COLORS.primary} />
-              <Text style={styles.videoButtonText}>Watch educational video</Text>
-            </TouchableOpacity>
-            
+            {/* Section Fields */}
             {renderSectionContent()}
             
-            <Text style={styles.fieldLabel}>Notes to Provider</Text>
-            <TextInput
-              style={[styles.textInput, styles.textArea]}
-              value={notesToProvider}
-              onChangeText={setNotesToProvider}
-              placeholder="Any additional notes for your healthcare team..."
-              multiline
-              numberOfLines={3}
-            />
+            {/* Notes to Provider */}
+            <View style={styles.notesSection}>
+              <Text style={styles.notesLabel}>
+                <Icon name="chatbubble" size={16} color={COLORS.primary} /> Notes to Your Care Team
+              </Text>
+              <TextInput
+                style={[styles.textInput, styles.textArea]}
+                value={notesToProvider}
+                onChangeText={setNotesToProvider}
+                placeholder="Any additional notes or context for your healthcare providers..."
+                placeholderTextColor={COLORS.textLight}
+                multiline
+                numberOfLines={3}
+              />
+            </View>
+            
+            {/* Spacer for bottom button */}
+            <View style={{ height: 100 }} />
           </ScrollView>
           
           <View style={styles.modalFooter}>
@@ -290,6 +329,7 @@ export default function BirthPlanScreen() {
               onPress={saveSection}
               loading={saving}
               fullWidth
+              icon={!saving ? <Icon name="checkmark" size={20} color={COLORS.white} /> : undefined}
             />
           </View>
         </SafeAreaView>
@@ -322,37 +362,56 @@ const styles = StyleSheet.create({
   },
   progressCard: {
     marginBottom: SIZES.lg,
+    padding: SIZES.lg,
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SIZES.sm,
+    marginBottom: SIZES.md,
   },
   progressTitle: {
-    fontSize: SIZES.fontMd,
+    fontSize: SIZES.fontLg,
     fontWeight: '600',
     color: COLORS.textPrimary,
+  },
+  progressSubtext: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  progressCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   progressPercent: {
     fontSize: SIZES.fontLg,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: COLORS.white,
   },
   progressBar: {
-    height: 10,
+    height: 8,
     backgroundColor: COLORS.border,
-    borderRadius: 5,
+    borderRadius: 4,
   },
   progressFill: {
     height: '100%',
     backgroundColor: COLORS.primary,
-    borderRadius: 5,
+    borderRadius: 4,
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
     color: COLORS.textPrimary,
+    marginBottom: SIZES.xs,
+  },
+  sectionSubtitle: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.textSecondary,
     marginBottom: SIZES.md,
   },
   sectionCard: {
@@ -361,7 +420,18 @@ const styles = StyleSheet.create({
   sectionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+  },
+  sectionIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.primaryLight + '30',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SIZES.md,
+  },
+  sectionIconComplete: {
+    backgroundColor: COLORS.success,
   },
   sectionInfo: {
     flex: 1,
@@ -376,17 +446,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 6,
-  },
   statusText: {
     fontSize: SIZES.fontSm,
+    marginLeft: 4,
+  },
+  exportSection: {
+    marginTop: SIZES.lg,
+    alignItems: 'center',
   },
   exportButton: {
-    marginTop: SIZES.lg,
+    marginBottom: SIZES.sm,
+  },
+  exportHint: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.textLight,
+    textAlign: 'center',
   },
   modalContainer: {
     flex: 1,
@@ -401,34 +475,48 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.border,
     backgroundColor: COLORS.white,
   },
+  modalCloseButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   modalTitle: {
+    flex: 1,
     fontSize: SIZES.fontLg,
     fontWeight: '600',
     color: COLORS.textPrimary,
+    textAlign: 'center',
   },
   modalContent: {
     flex: 1,
     padding: SIZES.md,
   },
-  modalDescription: {
-    fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
-    lineHeight: 22,
-    marginBottom: SIZES.md,
-  },
-  videoButton: {
+  descriptionCard: {
     flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: COLORS.primaryLight + '20',
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.lg,
   },
-  videoButtonText: {
-    marginLeft: SIZES.sm,
+  modalDescription: {
+    flex: 1,
     fontSize: SIZES.fontMd,
-    color: COLORS.primary,
-    fontWeight: '500',
+    color: COLORS.textSecondary,
+    lineHeight: 22,
+    marginLeft: SIZES.sm,
+  },
+  notesSection: {
+    marginTop: SIZES.md,
+    paddingTop: SIZES.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  notesLabel: {
+    fontSize: SIZES.fontSm,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    marginBottom: SIZES.sm,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
@@ -449,29 +537,6 @@ const styles = StyleSheet.create({
   textArea: {
     minHeight: 100,
     textAlignVertical: 'top',
-  },
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: SIZES.sm,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: COLORS.border,
-    marginRight: SIZES.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxChecked: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  checkboxLabel: {
-    fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
   },
   modalFooter: {
     padding: SIZES.md,
