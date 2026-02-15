@@ -65,8 +65,8 @@ export default function RootLayout() {
     }
   }, [isAuthenticated, isLoading, user, segments, isReady]);
   
-  // Show loading screen while initializing
-  if (!isReady || isLoading) {
+  // Show loading screen while initializing or fonts are loading
+  if (!isReady || isLoading || !fontsLoaded) {
     return (
       <SafeAreaProvider>
         <LoadingScreen message="Loading True Joy Birthing..." />
