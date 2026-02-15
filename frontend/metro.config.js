@@ -5,6 +5,11 @@ const { FileStore } = require('metro-cache');
 
 const config = getDefaultConfig(__dirname);
 
+// Ensure TTF fonts are processed as assets
+if (!config.resolver.assetExts.includes('ttf')) {
+  config.resolver.assetExts.push('ttf');
+}
+
 // Use a stable on-disk store (shared across web/android)
 const root = process.env.METRO_CACHE_ROOT || path.join(__dirname, '.metro-cache');
 config.cacheStores = [
