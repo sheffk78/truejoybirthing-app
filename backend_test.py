@@ -17,6 +17,7 @@ class APITester:
     def __init__(self, base_url):
         self.base_url = base_url
         self.session = requests.Session()
+        self.session.headers.update({"User-Agent": "True Joy Testing Suite"})
         self.test_users = {}
         self.test_clients = {}
         self.test_contracts = {}
