@@ -1294,6 +1294,7 @@ async def create_doula_note(note_data: NoteCreate, user: User = Depends(check_ro
     }
     
     await db.notes.insert_one(note)
+    note.pop('_id', None)  # Remove ObjectId added by insert_one
     return note
 
 @api_router.put("/doula/notes/{note_id}")
@@ -1620,6 +1621,7 @@ async def create_midwife_note(note_data: NoteCreate, user: User = Depends(check_
     }
     
     await db.notes.insert_one(note)
+    note.pop('_id', None)  # Remove ObjectId added by insert_one
     return note
 
 # ============== ADMIN ROUTES ==============
