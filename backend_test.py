@@ -1,172 +1,140 @@
 #!/usr/bin/env python3
 """
-True Joy Birthing API Backend Testing Suite
-Tests all core backend API endpoints for the birthing app with 4 user roles.
+Backend Test Suite for True Joy Birthing API
+Testing the full authentication flow for MOM users
 """
 
 import requests
 import json
+import uuid
 import sys
-import time
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 
-# Configuration
-BASE_URL = "https://birth-plan-hub.preview.emergentagent.com/api"
-TEST_PASSWORD = "SecureTestPass123!"
+# Backend URL from frontend .env (EXPO_PUBLIC_BACKEND_URL + /api)
+BACKEND_URL = "https://birth-plan-hub.preview.emergentagent.com/api"
 
-# Use timestamp to make emails unique
-timestamp = str(int(time.time()))
-
-class APITester:
-    def __init__(self, base_url):
-        self.base_url = base_url
-        self.session = requests.Session()
-        self.session.headers.update({"User-Agent": "True Joy Testing Suite"})
-        self.test_users = {}
-        self.test_clients = {}
-        self.test_contracts = {}
-        self.test_invoices = {}
-        self.results = {
-            "passed": 0,
-            "failed": 0,
-            "errors": []
-        }
-
-    def log_success(self, test_name):
-        """Log successful test"""
+class TestResults:
+    def __init__(self):
+        self.passed = 0
+        self.failed = 0
+        self.errors = []
+    
+    def add_success(self, test_name):
+        self.passed += 1
         print(f"✅ {test_name}")
-        self.results["passed"] += 1
+    
+    def add_failure(self, test_name, error_msg):
+        self.failed += 1
+        self.errors.append(f"{test_name}: {error_msg}")
+        print(f"❌ {test_name}: {error_msg}")
+    
+    def print_summary(self):
+        total = self.passed + self.failed
+        print(f"\n{'='*60}")
+        print(f"Test Results: {self.passed}/{total} tests passed")
+        if self.errors:
+            print(f"\nFailed Tests:")
+            for error in self.errors:
+                print(f"  - {error}")
 
-    def log_failure(self, test_name, error):
-        """Log failed test"""
-        print(f"❌ {test_name}: {error}")
-        self.results["failed"] += 1
-        self.results["errors"].append(f"{test_name}: {error}")
-
-    def make_request(self, method, endpoint, data=None, headers=None, auth_token=None):
-        """Make HTTP request with proper error handling"""
-        url = f"{self.base_url}{endpoint}"
-        request_headers = {"Content-Type": "application/json"}
+def test_mom_authentication_flow():
+    """Test the complete MOM user authentication and onboarding flow"""
+    
+    results = TestResults()
+    
+    # Generate unique test data
+    test_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    test_email = f"test_mom_{uuid.uuid4().hex[:8]}@example.com"
+    test_name = f"Sarah Johnson {test_timestamp}"
+    
+    print(f"Testing with email: {test_email}")
+    print(f"Backend URL: {BACKEND_URL}")
+    print(f"{'='*60}")
+    
+    session_token = None
+    
+    try:
+        # ============== TEST 1: POST /api/auth/register ==============
+        print("\n1. Testing user registration...")
         
-        if auth_token:
-            request_headers["Authorization"] = f"Bearer {auth_token}"
+        register_data = {
+            "email": test_email,
+            "full_name": test_name,
+            "role": "MOM",
+            "password": "SecurePassword123!"
+        }
         
-        if headers:
-            request_headers.update(headers)
-
-        try:
-            if method == "GET":
-                response = self.session.get(url, headers=request_headers, timeout=30)
-            elif method == "POST":
-                response = self.session.post(url, json=data, headers=request_headers, timeout=30)
-            elif method == "PUT":
-                response = self.session.put(url, json=data, headers=request_headers, timeout=30)
-            elif method == "DELETE":
-                response = self.session.delete(url, headers=request_headers, timeout=30)
-            else:
-                raise ValueError(f"Unsupported method: {method}")
-            
-            return response
-        except requests.exceptions.Timeout as e:
-            print(f"Timeout error for {url}: {e}")
-            return None
-        except requests.exceptions.ConnectionError as e:
-            print(f"Connection error for {url}: {e}")
-            return None
-        except Exception as e:
-            print(f"Request error for {url}: {e}")
-            return None
-
-    def test_auth_endpoints(self):
-        """Test all authentication endpoints"""
-        print("\n=== Testing Authentication Endpoints ===")
+        response = requests.post(f"{BACKEND_URL}/auth/register", json=register_data)
         
-        # Test user registration for each role
-        test_users_data = [
-            {"role": "MOM", "email": f"test.mom.{timestamp}@example.com", "name": "Sarah Johnson"},
-            {"role": "DOULA", "email": f"test.doula.{timestamp}@example.com", "name": "Lisa Smith"},
-            {"role": "MIDWIFE", "email": f"test.midwife.{timestamp}@example.com", "name": "Dr. Jane Wilson"}
-        ]
+        if response.status_code != 200:
+            results.add_failure("User Registration", f"Status {response.status_code}: {response.text}")
+            return results
         
-        for user_data in test_users_data:
-            # Test Registration
-            register_data = {
-                "email": user_data["email"],
-                "full_name": user_data["name"],
-                "role": user_data["role"],
-                "password": TEST_PASSWORD
-            }
-            
-            response = self.make_request("POST", "/auth/register", register_data)
-            if response and response.status_code == 200:
-                self.log_success(f"Register {user_data['role']} user")
-                response_data = response.json()
-                self.test_users[user_data["role"]] = {
-                    "user_id": response_data["user_id"],
-                    "email": user_data["email"],
-                    "session_token": response_data["session_token"],
-                    "role": user_data["role"]
-                }
-            else:
-                error_msg = f"Status: {response.status_code if response else 'No response'}"
-                if response:
-                    try:
-                        error_msg += f", Error: {response.json()}"
-                    except:
-                        error_msg += f", Text: {response.text}"
-                self.log_failure(f"Register {user_data['role']} user", error_msg)
-                continue
-            
-            # Test Login
-            login_data = {
-                "email": user_data["email"],
-                "password": TEST_PASSWORD
-            }
-            
-            response = self.make_request("POST", "/auth/login", login_data)
-            if response and response.status_code == 200:
-                self.log_success(f"Login {user_data['role']} user")
-                response_data = response.json()
-                # Update session token from login
-                self.test_users[user_data["role"]]["session_token"] = response_data["session_token"]
-            else:
-                error_msg = f"Status: {response.status_code if response else 'No response'}"
-                if response:
-                    try:
-                        error_msg += f", Error: {response.json()}"
-                    except:
-                        error_msg += f", Text: {response.text}"
-                self.log_failure(f"Login {user_data['role']} user", error_msg)
-            
-            # Test Get Current User
-            token = self.test_users[user_data["role"]]["session_token"]
-            response = self.make_request("GET", "/auth/me", auth_token=token)
-            if response and response.status_code == 200:
-                self.log_success(f"Get current user info for {user_data['role']}")
-                response_data = response.json()
-                if response_data["role"] != user_data["role"]:
-                    self.log_failure(f"User role verification for {user_data['role']}", 
-                                   f"Expected role {user_data['role']}, got {response_data['role']}")
-            else:
-                error_msg = f"Status: {response.status_code if response else 'No response'}"
-                if response:
-                    try:
-                        error_msg += f", Error: {response.json()}"
-                    except:
-                        error_msg += f", Text: {response.text}"
-                self.log_failure(f"Get current user info for {user_data['role']}", error_msg)
-
-    def test_mom_endpoints(self):
-        """Test Mom-specific endpoints"""
-        print("\n=== Testing Mom Endpoints ===")
+        register_response = response.json()
         
-        if "MOM" not in self.test_users:
-            self.log_failure("Mom endpoints test", "Mom user not available")
-            return
+        # Verify response structure
+        required_fields = ["user_id", "email", "full_name", "role", "session_token"]
+        missing_fields = [field for field in required_fields if field not in register_response]
         
-        token = self.test_users["MOM"]["session_token"]
+        if missing_fields:
+            results.add_failure("Registration Response Structure", f"Missing fields: {missing_fields}")
+            return results
         
-        # Test Mom Onboarding
+        # Verify response values
+        if register_response["email"] != test_email:
+            results.add_failure("Registration Email", f"Expected {test_email}, got {register_response['email']}")
+            return results
+        
+        if register_response["role"] != "MOM":
+            results.add_failure("Registration Role", f"Expected MOM, got {register_response['role']}")
+            return results
+        
+        if register_response["full_name"] != test_name:
+            results.add_failure("Registration Name", f"Expected {test_name}, got {register_response['full_name']}")
+            return results
+        
+        session_token = register_response["session_token"]
+        user_id = register_response["user_id"]
+        
+        if not session_token or not session_token.startswith("session_"):
+            results.add_failure("Session Token Format", f"Invalid token: {session_token}")
+            return results
+        
+        results.add_success("User Registration")
+        results.add_success("Registration Response Structure")
+        results.add_success("Session Token Generated")
+        
+        # ============== TEST 2: GET /api/auth/me ==============
+        print("\n2. Testing authentication with session token...")
+        
+        headers = {"Authorization": f"Bearer {session_token}"}
+        response = requests.get(f"{BACKEND_URL}/auth/me", headers=headers)
+        
+        if response.status_code != 200:
+            results.add_failure("Authentication Check", f"Status {response.status_code}: {response.text}")
+            return results
+        
+        me_response = response.json()
+        
+        # Verify authenticated user data
+        if me_response["user_id"] != user_id:
+            results.add_failure("Auth User ID", f"Expected {user_id}, got {me_response['user_id']}")
+            return results
+        
+        if me_response["email"] != test_email:
+            results.add_failure("Auth User Email", f"Expected {test_email}, got {me_response['email']}")
+            return results
+        
+        if me_response["role"] != "MOM":
+            results.add_failure("Auth User Role", f"Expected MOM, got {me_response['role']}")
+            return results
+        
+        results.add_success("Authentication with Bearer Token")
+        results.add_success("User Data Retrieval")
+        
+        # ============== TEST 3: POST /api/mom/onboarding ==============
+        print("\n3. Testing mom onboarding...")
+        
         onboarding_data = {
             "due_date": "2025-08-15",
             "planned_birth_setting": "Hospital",
@@ -174,354 +142,113 @@ class APITester:
             "location_state": "Texas"
         }
         
-        response = self.make_request("POST", "/mom/onboarding", onboarding_data, auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Mom onboarding")
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Mom onboarding", error_msg)
+        response = requests.post(f"{BACKEND_URL}/mom/onboarding", 
+                               json=onboarding_data, 
+                               headers=headers)
         
-        # Test Get Birth Plan
-        response = self.make_request("GET", "/birth-plan", auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Get birth plan")
+        if response.status_code != 200:
+            results.add_failure("Mom Onboarding", f"Status {response.status_code}: {response.text}")
+            return results
+        
+        onboarding_response = response.json()
+        
+        # Verify onboarding response
+        if "message" not in onboarding_response:
+            results.add_failure("Onboarding Response", "Missing message field")
+            return results
+        
+        if "profile" not in onboarding_response:
+            results.add_failure("Onboarding Response", "Missing profile field")
+            return results
+        
+        profile = onboarding_response["profile"]
+        
+        # Verify profile data was saved correctly
+        if profile["due_date"] != "2025-08-15":
+            results.add_failure("Onboarding Due Date", f"Expected 2025-08-15, got {profile['due_date']}")
+            return results
+        
+        if profile["planned_birth_setting"] != "Hospital":
+            results.add_failure("Onboarding Birth Setting", f"Expected Hospital, got {profile['planned_birth_setting']}")
+            return results
+        
+        if profile["location_city"] != "Austin":
+            results.add_failure("Onboarding City", f"Expected Austin, got {profile['location_city']}")
+            return results
+        
+        if profile["location_state"] != "Texas":
+            results.add_failure("Onboarding State", f"Expected Texas, got {profile['location_state']}")
+            return results
+        
+        results.add_success("Mom Onboarding")
+        results.add_success("Onboarding Data Persistence")
+        
+        # ============== TEST 4: Verify onboarding completion ==============
+        print("\n4. Verifying onboarding completion...")
+        
+        response = requests.get(f"{BACKEND_URL}/auth/me", headers=headers)
+        
+        if response.status_code != 200:
+            results.add_failure("Onboarding Completion Check", f"Status {response.status_code}: {response.text}")
+            return results
+        
+        me_response = response.json()
+        
+        if not me_response.get("onboarding_completed"):
+            results.add_failure("Onboarding Completion Flag", "onboarding_completed should be true after onboarding")
+            return results
+        
+        results.add_success("Onboarding Completion Flag Updated")
+        
+        # ============== TEST 5: Additional endpoint tests ==============
+        print("\n5. Testing additional MOM endpoints...")
+        
+        # Test birth plan creation (should be automatic after onboarding)
+        response = requests.get(f"{BACKEND_URL}/birth-plan", headers=headers)
+        
+        if response.status_code != 200:
+            results.add_failure("Birth Plan Access", f"Status {response.status_code}: {response.text}")
+        else:
             birth_plan = response.json()
-            
-            # Test Update Birth Plan Section
-            if birth_plan.get("sections") and len(birth_plan["sections"]) > 0:
-                section_id = birth_plan["sections"][0]["section_id"]
-                update_data = {
-                    "data": {
-                        "pain_management_preference": "Natural birth",
-                        "epidural_preference": "Open to it if needed"
-                    },
-                    "notes_to_provider": "Would like to try natural methods first"
-                }
-                
-                response = self.make_request("PUT", f"/birth-plan/section/{section_id}", 
-                                           update_data, auth_token=token)
-                if response and response.status_code == 200:
-                    self.log_success("Update birth plan section")
-                else:
-                    error_msg = f"Status: {response.status_code if response else 'No response'}"
-                    if response:
-                        try:
-                            error_msg += f", Error: {response.json()}"
-                        except:
-                            error_msg += f", Text: {response.text}"
-                    self.log_failure("Update birth plan section", error_msg)
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Get birth plan", error_msg)
-        
-        # Test Wellness Check-in
-        checkin_data = {
-            "mood": "Good",
-            "mood_note": "Feeling positive about the pregnancy today"
-        }
-        
-        response = self.make_request("POST", "/wellness/checkin", checkin_data, auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Create wellness check-in")
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Create wellness check-in", error_msg)
-        
-        # Test Get Pregnancy Timeline
-        response = self.make_request("GET", "/timeline", auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Get pregnancy timeline")
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Get pregnancy timeline", error_msg)
-
-    def test_doula_endpoints(self):
-        """Test Doula-specific endpoints"""
-        print("\n=== Testing Doula Endpoints ===")
-        
-        if "DOULA" not in self.test_users:
-            self.log_failure("Doula endpoints test", "Doula user not available")
-            return
-        
-        token = self.test_users["DOULA"]["session_token"]
-        
-        # Test Doula Onboarding
-        onboarding_data = {
-            "practice_name": "Peaceful Birth Doula Services",
-            "location_city": "Austin",
-            "location_state": "Texas",
-            "services_offered": ["Birth Doula", "Postpartum Doula"],
-            "years_in_practice": 5,
-            "accepting_new_clients": True,
-            "bio": "Experienced doula specializing in natural birth support"
-        }
-        
-        response = self.make_request("POST", "/doula/onboarding", onboarding_data, auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Doula onboarding")
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Doula onboarding", error_msg)
-        
-        # Test Get Dashboard
-        response = self.make_request("GET", "/doula/dashboard", auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Get doula dashboard")
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Get doula dashboard", error_msg)
-        
-        # Test Create Client
-        client_data = {
-            "name": "Emma Thompson",
-            "email": "emma.thompson@example.com",
-            "phone": "555-0123",
-            "edd": "2025-09-20",
-            "planned_birth_setting": "Home"
-        }
-        
-        response = self.make_request("POST", "/doula/clients", client_data, auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Create doula client")
-            client = response.json()
-            self.test_clients["DOULA"] = client
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Create doula client", error_msg)
-        
-        # Test Get Clients
-        response = self.make_request("GET", "/doula/clients", auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Get doula clients")
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Get doula clients", error_msg)
-        
-        # Test Create Contract (if client exists)
-        if "DOULA" in self.test_clients:
-            contract_data = {
-                "client_id": self.test_clients["DOULA"]["client_id"],
-                "contract_title": "Birth Doula Support Services",
-                "services_description": "Complete birth doula support including prenatal, birth, and immediate postpartum care",
-                "total_fee": 1500.00,
-                "payment_schedule_description": "$500 at signing, $500 at 36 weeks, $500 after birth",
-                "cancellation_policy": "48 hours notice required",
-                "scope_of_practice": "Emotional, physical, and informational support during labor and birth"
-            }
-            
-            response = self.make_request("POST", "/doula/contracts", contract_data, auth_token=token)
-            if response and response.status_code == 200:
-                self.log_success("Create doula contract")
-                contract = response.json()
-                self.test_contracts["DOULA"] = contract
+            if "plan_id" in birth_plan and "sections" in birth_plan:
+                results.add_success("Birth Plan Auto-Creation")
             else:
-                error_msg = f"Status: {response.status_code if response else 'No response'}"
-                if response:
-                    try:
-                        error_msg += f", Error: {response.json()}"
-                    except:
-                        error_msg += f", Text: {response.text}"
-                self.log_failure("Create doula contract", error_msg)
+                results.add_failure("Birth Plan Structure", "Missing plan_id or sections")
         
-        # Test Create Invoice (if client exists)
-        if "DOULA" in self.test_clients:
-            invoice_data = {
-                "client_id": self.test_clients["DOULA"]["client_id"],
-                "invoice_title": "Birth Doula Services - First Payment",
-                "amount": 500.00,
-                "due_date": "2025-03-15",
-                "notes": "First payment for birth doula services"
-            }
-            
-            response = self.make_request("POST", "/doula/invoices", invoice_data, auth_token=token)
-            if response and response.status_code == 200:
-                self.log_success("Create doula invoice")
-                invoice = response.json()
-                self.test_invoices["DOULA"] = invoice
+        # Test mom profile retrieval
+        response = requests.get(f"{BACKEND_URL}/mom/profile", headers=headers)
+        
+        if response.status_code != 200:
+            results.add_failure("Mom Profile Access", f"Status {response.status_code}: {response.text}")
+        else:
+            mom_profile = response.json()
+            if mom_profile.get("user_id") == user_id:
+                results.add_success("Mom Profile Retrieval")
             else:
-                error_msg = f"Status: {response.status_code if response else 'No response'}"
-                if response:
-                    try:
-                        error_msg += f", Error: {response.json()}"
-                    except:
-                        error_msg += f", Text: {response.text}"
-                self.log_failure("Create doula invoice", error_msg)
+                results.add_failure("Mom Profile Data", f"User ID mismatch")
+    
+    except requests.exceptions.RequestException as e:
+        results.add_failure("Network Connection", f"Connection error: {str(e)}")
+    except Exception as e:
+        results.add_failure("Unexpected Error", f"Error: {str(e)}")
+    
+    return results
 
-    def test_midwife_endpoints(self):
-        """Test Midwife-specific endpoints"""
-        print("\n=== Testing Midwife Endpoints ===")
-        
-        if "MIDWIFE" not in self.test_users:
-            self.log_failure("Midwife endpoints test", "Midwife user not available")
-            return
-        
-        token = self.test_users["MIDWIFE"]["session_token"]
-        
-        # Test Midwife Onboarding
-        onboarding_data = {
-            "practice_name": "Austin Midwifery Care",
-            "credentials": "CPM",
-            "location_city": "Austin",
-            "location_state": "Texas",
-            "years_in_practice": 8,
-            "birth_settings_served": ["Home", "Birth Center"],
-            "accepting_new_clients": True,
-            "bio": "Certified Professional Midwife with 8 years of experience in home and birth center births"
-        }
-        
-        response = self.make_request("POST", "/midwife/onboarding", onboarding_data, auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Midwife onboarding")
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Midwife onboarding", error_msg)
-        
-        # Test Get Dashboard
-        response = self.make_request("GET", "/midwife/dashboard", auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Get midwife dashboard")
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Get midwife dashboard", error_msg)
-        
-        # Test Create Client
-        client_data = {
-            "name": "Jessica Martinez",
-            "email": "jessica.martinez@example.com",
-            "phone": "555-0456",
-            "edd": "2025-07-10",
-            "planned_birth_setting": "Home"
-        }
-        
-        response = self.make_request("POST", "/midwife/clients", client_data, auth_token=token)
-        if response and response.status_code == 200:
-            self.log_success("Create midwife client")
-            client = response.json()
-            self.test_clients["MIDWIFE"] = client
-        else:
-            error_msg = f"Status: {response.status_code if response else 'No response'}"
-            if response:
-                try:
-                    error_msg += f", Error: {response.json()}"
-                except:
-                    error_msg += f", Text: {response.text}"
-            self.log_failure("Create midwife client", error_msg)
-        
-        # Test Create Visit (if client exists)
-        if "MIDWIFE" in self.test_clients:
-            visit_data = {
-                "client_id": self.test_clients["MIDWIFE"]["client_id"],
-                "visit_date": "2025-02-15",
-                "visit_type": "Prenatal",
-                "gestational_age": "20 weeks",
-                "blood_pressure": "110/70",
-                "weight": "145 lbs",
-                "fetal_heart_rate": "150 bpm",
-                "note": "Normal prenatal visit. Client is feeling well."
-            }
-            
-            response = self.make_request("POST", "/midwife/visits", visit_data, auth_token=token)
-            if response and response.status_code == 200:
-                self.log_success("Create midwife visit")
-            else:
-                error_msg = f"Status: {response.status_code if response else 'No response'}"
-                if response:
-                    try:
-                        error_msg += f", Error: {response.json()}"
-                    except:
-                        error_msg += f", Text: {response.text}"
-                self.log_failure("Create midwife visit", error_msg)
-
-    def run_all_tests(self):
-        """Run all test suites"""
-        print(f"🚀 Starting True Joy Birthing API Tests")
-        print(f"Base URL: {self.base_url}")
-        print(f"Test started at: {datetime.now()}")
-        
-        # Check if server is reachable
-        try:
-            response = requests.get(f"{self.base_url.replace('/api', '')}/health", timeout=10)
-            if response.status_code != 200:
-                # Try the API endpoint
-                response = requests.get(f"{self.base_url}/auth/me", timeout=10)
-        except Exception as e:
-            print(f"❌ Server unreachable: {e}")
-            return self.results
-        
-        # Run test suites
-        self.test_auth_endpoints()
-        self.test_mom_endpoints()
-        self.test_doula_endpoints()
-        self.test_midwife_endpoints()
-        
-        # Print results
-        print(f"\n📊 Test Results:")
-        print(f"✅ Passed: {self.results['passed']}")
-        print(f"❌ Failed: {self.results['failed']}")
-        
-        if self.results['errors']:
-            print(f"\n📋 Failed Tests:")
-            for error in self.results['errors']:
-                print(f"   - {error}")
-        
-        success_rate = (self.results['passed'] / (self.results['passed'] + self.results['failed']) * 100) if (self.results['passed'] + self.results['failed']) > 0 else 0
-        print(f"\n📈 Success Rate: {success_rate:.1f}%")
-        
-        return self.results
+def main():
+    """Run all authentication tests"""
+    print("True Joy Birthing API - MOM Authentication Flow Test")
+    print(f"Starting test at {datetime.now(timezone.utc).isoformat()}")
+    
+    results = test_mom_authentication_flow()
+    
+    results.print_summary()
+    
+    # Return appropriate exit code
+    if results.failed > 0:
+        sys.exit(1)
+    else:
+        print(f"\n🎉 All tests passed! The MOM authentication flow is working correctly.")
+        sys.exit(0)
 
 if __name__ == "__main__":
-    tester = APITester(BASE_URL)
-    results = tester.run_all_tests()
-    
-    # Exit with appropriate code
-    sys.exit(0 if results['failed'] == 0 else 1)
+    main()
