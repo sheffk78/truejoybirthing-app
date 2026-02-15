@@ -140,6 +140,6 @@ export default function Button({
           </Text>
         </>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
