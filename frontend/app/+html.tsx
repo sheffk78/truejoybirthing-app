@@ -12,10 +12,17 @@ export default function Root({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
-        {/* Load Ionicons font for web */}
-        <link
-          href="https://unpkg.com/ionicons@7.1.0/dist/css/ionicons.min.css"
-          rel="stylesheet"
+        {/* Load Ionicons font for @expo/vector-icons on web */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              @font-face {
+                font-family: 'Ionicons';
+                src: url('/assets/fonts/Ionicons.ttf') format('truetype');
+                font-display: swap;
+              }
+            `,
+          }}
         />
         {/*
           Disable body scrolling on web to make ScrollView components work correctly.
