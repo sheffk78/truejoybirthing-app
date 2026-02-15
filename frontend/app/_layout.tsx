@@ -13,6 +13,11 @@ export default function RootLayout() {
   const segments = useSegments();
   const router = useRouter();
   
+  // Load fonts for web
+  const [fontsLoaded] = useFonts({
+    ...Ionicons.font,
+  });
+  
   useEffect(() => {
     checkAuth();
   }, []);
