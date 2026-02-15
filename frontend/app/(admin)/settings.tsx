@@ -44,12 +44,12 @@ export default function AdminSettingsScreen() {
       >
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
-            <Ionicons name="person-circle-outline" size={80} color={COLORS.roleAdmin} />
+            <Icon name="person-circle-outline" size={80} color={COLORS.roleAdmin} />
           </View>
           <Text style={styles.userName}>{user?.full_name}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <View style={styles.roleBadge}>
-            <Ionicons name="shield" size={14} color={COLORS.white} />
+            <Icon name="shield" size={14} color={COLORS.white} />
             <Text style={styles.roleText}>Admin</Text>
           </View>
         </View>
@@ -77,31 +77,31 @@ export default function AdminSettingsScreen() {
           <Text style={styles.cardTitle}>MVP Features</Text>
           
           <View style={styles.featureItem}>
-            <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
+            <Icon name="checkmark-circle" size={20} color={COLORS.success} />
             <Text style={styles.featureText}>User Authentication (Email + Google)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
+            <Icon name="checkmark-circle" size={20} color={COLORS.success} />
             <Text style={styles.featureText}>Role-based Access Control</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
+            <Icon name="checkmark-circle" size={20} color={COLORS.success} />
             <Text style={styles.featureText}>Birth Plan Builder (Mom)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="checkmark-circle" size={20} color={COLORS.success} />
+            <Icon name="checkmark-circle" size={20} color={COLORS.success} />
             <Text style={styles.featureText}>Client Management (Doula/Midwife)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="ellipse-outline" size={20} color={COLORS.warning} />
+            <Icon name="ellipse-outline" size={20} color={COLORS.warning} />
             <Text style={styles.featureText}>E-Signature (Mocked)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="ellipse-outline" size={20} color={COLORS.warning} />
+            <Icon name="ellipse-outline" size={20} color={COLORS.warning} />
             <Text style={styles.featureText}>PDF Export (Mocked)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="close-circle-outline" size={20} color={COLORS.textLight} />
+            <Icon name="close-circle-outline" size={20} color={COLORS.textLight} />
             <Text style={styles.featureText}>Payment Integration (Skipped for MVP)</Text>
           </View>
         </Card>

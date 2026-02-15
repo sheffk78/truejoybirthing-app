@@ -116,7 +116,7 @@ export default function BirthPlanScreen() {
               >
                 <View style={[styles.checkbox, (sectionData.painOptions || []).includes(option) && styles.checkboxChecked]}>
                   {(sectionData.painOptions || []).includes(option) && (
-                    <Ionicons name="checkmark" size={14} color={COLORS.white} />
+                    <Icon name="checkmark" size={14} color={COLORS.white} />
                   )}
                 </View>
                 <Text style={styles.checkboxLabel}>{option}</Text>
@@ -228,7 +228,7 @@ export default function BirthPlanScreen() {
                     </Text>
                   </View>
                 </View>
-                <Ionicons name="chevron-forward" size={20} color={COLORS.textLight} />
+                <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
               </View>
             </Card>
           </TouchableOpacity>
@@ -240,7 +240,7 @@ export default function BirthPlanScreen() {
           onPress={handleExport}
           variant="outline"
           fullWidth
-          icon={<Ionicons name="download-outline" size={20} color={COLORS.primary} />}
+          icon={<Icon name="download-outline" size={20} color={COLORS.primary} />}
           style={styles.exportButton}
         />
       </ScrollView>
@@ -255,7 +255,7 @@ export default function BirthPlanScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={COLORS.textPrimary} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>{selectedSection?.title}</Text>
             <View style={{ width: 24 }} />
@@ -267,7 +267,7 @@ export default function BirthPlanScreen() {
             </Text>
             
             <TouchableOpacity style={styles.videoButton}>
-              <Ionicons name="play-circle" size={24} color={COLORS.primary} />
+              <Icon name="play-circle" size={24} color={COLORS.primary} />
               <Text style={styles.videoButtonText}>Watch educational video</Text>
             </TouchableOpacity>
             

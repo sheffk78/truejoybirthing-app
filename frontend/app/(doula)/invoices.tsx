@@ -147,7 +147,7 @@ export default function DoulaInvoicesScreen() {
             style={styles.addButton}
             onPress={() => setModalVisible(true)}
           >
-            <Ionicons name="add" size={24} color={COLORS.white} />
+            <Icon name="add" size={24} color={COLORS.white} />
           </TouchableOpacity>
         </View>
         
@@ -223,7 +223,7 @@ export default function DoulaInvoicesScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={COLORS.textPrimary} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>New Invoice</Text>
             <View style={{ width: 24 }} />

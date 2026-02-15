@@ -110,7 +110,7 @@ export default function SignupScreen() {
             style={styles.backButton}
             onPress={() => router.back()}
           >
-            <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
           
           <View style={styles.headerSection}>
@@ -189,7 +189,7 @@ export default function SignupScreen() {
                         selectedRole === option.value && styles.roleIconSelected,
                       ]}
                     >
-                      <Ionicons
+                      <Icon
                         name={option.icon}
                         size={24}
                         color={selectedRole === option.value ? COLORS.white : COLORS.primary}
@@ -207,7 +207,7 @@ export default function SignupScreen() {
                       <Text style={styles.roleDescription}>{option.description}</Text>
                     </View>
                     {selectedRole === option.value && (
-                      <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
+                      <Icon name="checkmark-circle" size={24} color={COLORS.primary} />
                     )}
                   </View>
                 </Card>

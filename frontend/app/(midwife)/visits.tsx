@@ -122,7 +122,7 @@ export default function MidwifeVisitsScreen() {
             style={styles.addButton}
             onPress={() => setModalVisible(true)}
           >
-            <Ionicons name="add" size={24} color={COLORS.white} />
+            <Icon name="add" size={24} color={COLORS.white} />
           </TouchableOpacity>
         </View>
         
@@ -203,7 +203,7 @@ export default function MidwifeVisitsScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={COLORS.textPrimary} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Record Visit</Text>
             <View style={{ width: 24 }} />

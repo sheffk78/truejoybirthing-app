@@ -97,12 +97,12 @@ export default function MidwifeProfileScreen() {
       >
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
-            <Ionicons name="person-circle-outline" size={80} color={COLORS.roleMidwife} />
+            <Icon name="person-circle-outline" size={80} color={COLORS.roleMidwife} />
           </View>
           <Text style={styles.userName}>{user?.full_name}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <View style={styles.roleBadge}>
-            <Ionicons name="medkit" size={14} color={COLORS.white} />
+            <Icon name="medkit" size={14} color={COLORS.white} />
             <Text style={styles.roleText}>Midwife</Text>
           </View>
         </View>
@@ -155,21 +155,21 @@ export default function MidwifeProfileScreen() {
           ) : (
             <View>
               <View style={styles.infoRow}>
-                <Ionicons name="briefcase-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="briefcase-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Practice Name</Text>
                   <Text style={styles.infoValue}>{profile?.practice_name || 'Not set'}</Text>
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Ionicons name="school-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="school-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Credentials</Text>
                   <Text style={styles.infoValue}>{profile?.credentials || 'Not set'}</Text>
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Ionicons name="location-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="location-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Location</Text>
                   <Text style={styles.infoValue}>

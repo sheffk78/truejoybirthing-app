@@ -155,7 +155,7 @@ export default function DoulaOnboardingScreen() {
                     servicesOffered.includes(service.value) && styles.serviceCardSelected,
                   ]}
                 >
-                  <Ionicons
+                  <Icon
                     name={service.icon as any}
                     size={24}
                     color={servicesOffered.includes(service.value) ? COLORS.primary : COLORS.textSecondary}
@@ -170,7 +170,7 @@ export default function DoulaOnboardingScreen() {
                   </Text>
                   <View style={styles.checkbox}>
                     {servicesOffered.includes(service.value) && (
-                      <Ionicons name="checkmark" size={16} color={COLORS.white} />
+                      <Icon name="checkmark" size={16} color={COLORS.white} />
                     )}
                   </View>
                 </Card>

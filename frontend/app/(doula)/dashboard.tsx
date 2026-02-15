@@ -60,7 +60,7 @@ export default function DoulaDashboardScreen() {
             <Text style={styles.subtitle}>Doula Dashboard</Text>
           </View>
           <TouchableOpacity style={styles.avatarContainer}>
-            <Ionicons name="person-circle-outline" size={44} color={COLORS.roleDoula} />
+            <Icon name="person-circle-outline" size={44} color={COLORS.roleDoula} />
           </TouchableOpacity>
         </View>
         
@@ -97,7 +97,7 @@ export default function DoulaDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.roleDoula + '30' }]}>
-              <Ionicons name="person-add" size={24} color={COLORS.roleDoula} />
+              <Icon name="person-add" size={24} color={COLORS.roleDoula} />
             </View>
             <Text style={styles.actionTitle}>Add Client</Text>
           </TouchableOpacity>
@@ -108,7 +108,7 @@ export default function DoulaDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.accent + '30' }]}>
-              <Ionicons name="document-text" size={24} color={COLORS.accent} />
+              <Icon name="document-text" size={24} color={COLORS.accent} />
             </View>
             <Text style={styles.actionTitle}>New Contract</Text>
           </TouchableOpacity>
@@ -119,7 +119,7 @@ export default function DoulaDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.success + '30' }]}>
-              <Ionicons name="receipt" size={24} color={COLORS.success} />
+              <Icon name="receipt" size={24} color={COLORS.success} />
             </View>
             <Text style={styles.actionTitle}>New Invoice</Text>
           </TouchableOpacity>
@@ -128,7 +128,7 @@ export default function DoulaDashboardScreen() {
         {/* Tip Card */}
         <Card style={styles.tipCard}>
           <View style={styles.tipHeader}>
-            <Ionicons name="bulb" size={20} color={COLORS.warning} />
+            <Icon name="bulb" size={20} color={COLORS.warning} />
             <Text style={styles.tipTitle}>Doula Tip</Text>
           </View>
           <Text style={styles.tipText}>

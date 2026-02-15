@@ -68,7 +68,7 @@ export default function TimelineScreen() {
             {timeline?.timeline && (
               <>
                 <View style={styles.babySection}>
-                  <Ionicons name="heart" size={24} color={COLORS.accent} />
+                  <Icon name="heart" size={24} color={COLORS.accent} />
                   <Text style={styles.babySectionTitle}>Baby Development</Text>
                 </View>
                 <Text style={styles.babyText}>
@@ -77,7 +77,7 @@ export default function TimelineScreen() {
                 </Text>
                 
                 <View style={styles.tipSection}>
-                  <Ionicons name="bulb" size={20} color={COLORS.warning} />
+                  <Icon name="bulb" size={20} color={COLORS.warning} />
                   <Text style={styles.tipSectionTitle}>Tip of the Week</Text>
                 </View>
                 <Text style={styles.tipText}>

@@ -60,7 +60,7 @@ export default function MidwifeDashboardScreen() {
             <Text style={styles.subtitle}>Midwife Dashboard</Text>
           </View>
           <TouchableOpacity style={styles.avatarContainer}>
-            <Ionicons name="person-circle-outline" size={44} color={COLORS.roleMidwife} />
+            <Icon name="person-circle-outline" size={44} color={COLORS.roleMidwife} />
           </TouchableOpacity>
         </View>
         
@@ -97,7 +97,7 @@ export default function MidwifeDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.roleMidwife + '30' }]}>
-              <Ionicons name="person-add" size={24} color={COLORS.roleMidwife} />
+              <Icon name="person-add" size={24} color={COLORS.roleMidwife} />
             </View>
             <Text style={styles.actionTitle}>Add Client</Text>
           </TouchableOpacity>
@@ -108,7 +108,7 @@ export default function MidwifeDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.accent + '30' }]}>
-              <Ionicons name="create" size={24} color={COLORS.accent} />
+              <Icon name="create" size={24} color={COLORS.accent} />
             </View>
             <Text style={styles.actionTitle}>Add Visit</Text>
           </TouchableOpacity>
@@ -118,7 +118,7 @@ export default function MidwifeDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.success + '30' }]}>
-              <Ionicons name="document-text" size={24} color={COLORS.success} />
+              <Icon name="document-text" size={24} color={COLORS.success} />
             </View>
             <Text style={styles.actionTitle}>Birth Summary</Text>
           </TouchableOpacity>
@@ -127,7 +127,7 @@ export default function MidwifeDashboardScreen() {
         {/* Info Card */}
         <Card style={styles.infoCard}>
           <View style={styles.infoHeader}>
-            <Ionicons name="information-circle" size={20} color={COLORS.roleMidwife} />
+            <Icon name="information-circle" size={20} color={COLORS.roleMidwife} />
             <Text style={styles.infoTitle}>Midwifery Tools</Text>
           </View>
           <Text style={styles.infoText}>

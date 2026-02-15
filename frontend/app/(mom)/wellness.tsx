@@ -129,7 +129,7 @@ export default function WellnessScreen() {
                 onPress={() => setSelectedMood(option.value)}
                 activeOpacity={0.7}
               >
-                <Ionicons
+                <Icon
                   name={option.emoji as any}
                   size={32}
                   color={selectedMood === option.value ? option.color : COLORS.textLight}
@@ -168,7 +168,7 @@ export default function WellnessScreen() {
         {/* Affirmation */}
         <Card style={styles.affirmationCard}>
           <View style={styles.affirmationHeader}>
-            <Ionicons name="sparkles" size={20} color={COLORS.accent} />
+            <Icon name="sparkles" size={20} color={COLORS.accent} />
             <Text style={styles.affirmationTitle}>Today's Affirmation</Text>
           </View>
           <Text style={styles.affirmationText}>
@@ -189,7 +189,7 @@ export default function WellnessScreen() {
             <Card key={checkin.checkin_id} style={styles.historyCard}>
               <View style={styles.historyRow}>
                 <View style={styles.historyLeft}>
-                  <Ionicons
+                  <Icon
                     name={getMoodEmoji(checkin.mood) as any}
                     size={28}
                     color={getMoodColor(checkin.mood)}

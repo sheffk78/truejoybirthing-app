@@ -136,7 +136,7 @@ export default function MomOnboardingScreen() {
                     ]}
                     padding="md"
                   >
-                    <Ionicons
+                    <Icon
                       name={setting.icon as any}
                       size={28}
                       color={plannedBirthSetting === setting.value ? COLORS.primary : COLORS.textSecondary}
@@ -151,7 +151,7 @@ export default function MomOnboardingScreen() {
                     </Text>
                     {plannedBirthSetting === setting.value && (
                       <View style={styles.checkmark}>
-                        <Ionicons name="checkmark" size={14} color={COLORS.white} />
+                        <Icon name="checkmark" size={14} color={COLORS.white} />
                       </View>
                     )}
                   </Card>

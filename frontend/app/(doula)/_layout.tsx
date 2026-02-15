@@ -29,7 +29,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" size={size} color={color} />
+            <Icon name="grid-outline" size={size} color={color} />
           ),
         }}
       />
@@ -38,7 +38,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Clients',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" size={size} color={color} />
+            <Icon name="people-outline" size={size} color={color} />
           ),
         }}
       />
@@ -47,7 +47,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Contracts',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-outline" size={size} color={color} />
+            <Icon name="document-outline" size={size} color={color} />
           ),
         }}
       />
@@ -56,7 +56,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Invoices',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt-outline" size={size} color={color} />
+            <Icon name="receipt-outline" size={size} color={color} />
           ),
         }}
       />
@@ -65,7 +65,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Icon name="person-outline" size={size} color={color} />
           ),
         }}
       />

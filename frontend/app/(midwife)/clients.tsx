@@ -109,7 +109,7 @@ export default function MidwifeClientsScreen() {
             style={styles.addButton}
             onPress={() => setModalVisible(true)}
           >
-            <Ionicons name="add" size={24} color={COLORS.white} />
+            <Icon name="add" size={24} color={COLORS.white} />
           </TouchableOpacity>
         </View>
         
@@ -141,20 +141,20 @@ export default function MidwifeClientsScreen() {
                       <Text style={styles.statusText}>{client.status}</Text>
                     </View>
                   </View>
-                  <Ionicons name="chevron-forward" size={20} color={COLORS.textLight} />
+                  <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
                 </View>
                 
                 {(client.edd || client.planned_birth_setting) && (
                   <View style={styles.clientDetails}>
                     {client.edd && (
                       <View style={styles.detailItem}>
-                        <Ionicons name="calendar-outline" size={14} color={COLORS.textSecondary} />
+                        <Icon name="calendar-outline" size={14} color={COLORS.textSecondary} />
                         <Text style={styles.detailText}>EDD: {client.edd}</Text>
                       </View>
                     )}
                     {client.planned_birth_setting && (
                       <View style={styles.detailItem}>
-                        <Ionicons name="location-outline" size={14} color={COLORS.textSecondary} />
+                        <Icon name="location-outline" size={14} color={COLORS.textSecondary} />
                         <Text style={styles.detailText}>{client.planned_birth_setting}</Text>
                       </View>
                     )}
@@ -175,7 +175,7 @@ export default function MidwifeClientsScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={COLORS.textPrimary} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Add New Client</Text>
             <View style={{ width: 24 }} />

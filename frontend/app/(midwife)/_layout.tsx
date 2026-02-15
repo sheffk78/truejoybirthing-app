@@ -29,7 +29,7 @@ export default function MidwifeLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" size={size} color={color} />
+            <Icon name="grid-outline" size={size} color={color} />
           ),
         }}
       />
@@ -38,7 +38,7 @@ export default function MidwifeLayout() {
         options={{
           title: 'Clients',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" size={size} color={color} />
+            <Icon name="people-outline" size={size} color={color} />
           ),
         }}
       />
@@ -47,7 +47,7 @@ export default function MidwifeLayout() {
         options={{
           title: 'Visits',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" size={size} color={color} />
+            <Icon name="calendar-outline" size={size} color={color} />
           ),
         }}
       />
@@ -56,7 +56,7 @@ export default function MidwifeLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Icon name="person-outline" size={size} color={color} />
           ),
         }}
       />

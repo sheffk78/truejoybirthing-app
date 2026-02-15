@@ -99,12 +99,12 @@ export default function DoulaProfileScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
-            <Ionicons name="person-circle-outline" size={80} color={COLORS.roleDoula} />
+            <Icon name="person-circle-outline" size={80} color={COLORS.roleDoula} />
           </View>
           <Text style={styles.userName}>{user?.full_name}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <View style={styles.roleBadge}>
-            <Ionicons name="heart" size={14} color={COLORS.white} />
+            <Icon name="heart" size={14} color={COLORS.white} />
             <Text style={styles.roleText}>Doula</Text>
           </View>
         </View>
@@ -159,14 +159,14 @@ export default function DoulaProfileScreen() {
           ) : (
             <View>
               <View style={styles.infoRow}>
-                <Ionicons name="briefcase-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="briefcase-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Practice Name</Text>
                   <Text style={styles.infoValue}>{profile?.practice_name || 'Not set'}</Text>
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Ionicons name="location-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="location-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Location</Text>
                   <Text style={styles.infoValue}>
@@ -177,7 +177,7 @@ export default function DoulaProfileScreen() {
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Ionicons name="time-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="time-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Years in Practice</Text>
                   <Text style={styles.infoValue}>
@@ -186,7 +186,7 @@ export default function DoulaProfileScreen() {
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Ionicons name="checkmark-circle-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="checkmark-circle-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Accepting Clients</Text>
                   <Text style={styles.infoValue}>

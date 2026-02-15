@@ -29,7 +29,7 @@ export default function MomLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
+            <Icon name="home-outline" size={size} color={color} />
           ),
         }}
       />
@@ -38,7 +38,7 @@ export default function MomLayout() {
         options={{
           title: 'Birth Plan',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-text-outline" size={size} color={color} />
+            <Icon name="document-text-outline" size={size} color={color} />
           ),
         }}
       />
@@ -47,7 +47,7 @@ export default function MomLayout() {
         options={{
           title: 'Timeline',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" size={size} color={color} />
+            <Icon name="calendar-outline" size={size} color={color} />
           ),
         }}
       />
@@ -56,7 +56,7 @@ export default function MomLayout() {
         options={{
           title: 'Wellness',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart-outline" size={size} color={color} />
+            <Icon name="heart-outline" size={size} color={color} />
           ),
         }}
       />
@@ -65,7 +65,7 @@ export default function MomLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Icon name="person-outline" size={size} color={color} />
           ),
         }}
       />

@@ -106,9 +106,9 @@ export default function MomProfileScreen() {
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
             {user?.picture ? (
-              <Ionicons name="person-circle" size={80} color={COLORS.primary} />
+              <Icon name="person-circle" size={80} color={COLORS.primary} />
             ) : (
-              <Ionicons name="person-circle-outline" size={80} color={COLORS.primary} />
+              <Icon name="person-circle-outline" size={80} color={COLORS.primary} />
             )}
           </View>
           <Text style={styles.userName}>{user?.full_name}</Text>
@@ -166,14 +166,14 @@ export default function MomProfileScreen() {
           ) : (
             <View>
               <View style={styles.infoRow}>
-                <Ionicons name="calendar-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Due Date</Text>
                   <Text style={styles.infoValue}>{profile?.due_date || 'Not set'}</Text>
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Ionicons name="location-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="location-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Location</Text>
                   <Text style={styles.infoValue}>
@@ -184,7 +184,7 @@ export default function MomProfileScreen() {
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Ionicons name="medical-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="medical-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Birth Setting</Text>
                   <Text style={styles.infoValue}>{profile?.planned_birth_setting || 'Not set'}</Text>
@@ -201,7 +201,7 @@ export default function MomProfileScreen() {
           {/* Doula */}
           <View style={styles.teamMember}>
             <View style={styles.teamIcon}>
-              <Ionicons name="heart" size={24} color={COLORS.roleDoula} />
+              <Icon name="heart" size={24} color={COLORS.roleDoula} />
             </View>
             <View style={styles.teamInfo}>
               <Text style={styles.teamRole}>Doula</Text>
@@ -221,7 +221,7 @@ export default function MomProfileScreen() {
           {/* Midwife */}
           <View style={styles.teamMember}>
             <View style={styles.teamIcon}>
-              <Ionicons name="medkit" size={24} color={COLORS.roleMidwife} />
+              <Icon name="medkit" size={24} color={COLORS.roleMidwife} />
             </View>
             <View style={styles.teamInfo}>
               <Text style={styles.teamRole}>Midwife</Text>
@@ -243,9 +243,9 @@ export default function MomProfileScreen() {
         <TouchableOpacity activeOpacity={0.8}>
           <Card style={styles.menuCard}>
             <View style={styles.menuRow}>
-              <Ionicons name="moon-outline" size={24} color={COLORS.primary} />
+              <Icon name="moon-outline" size={24} color={COLORS.primary} />
               <Text style={styles.menuText}>Postpartum Plan</Text>
-              <Ionicons name="chevron-forward" size={20} color={COLORS.textLight} />
+              <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
             </View>
           </Card>
         </TouchableOpacity>

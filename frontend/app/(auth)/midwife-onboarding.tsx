@@ -192,7 +192,7 @@ export default function MidwifeOnboardingScreen() {
                     ]}
                     padding="md"
                   >
-                    <Ionicons
+                    <Icon
                       name={setting.icon as any}
                       size={24}
                       color={birthSettingsServed.includes(setting.value) ? COLORS.primary : COLORS.textSecondary}

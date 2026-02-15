@@ -74,7 +74,7 @@ export default function MomHomeScreen() {
             )}
           </View>
           <TouchableOpacity style={styles.avatarContainer}>
-            <Ionicons name="person-circle-outline" size={44} color={COLORS.primary} />
+            <Icon name="person-circle-outline" size={44} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
         
@@ -82,7 +82,7 @@ export default function MomHomeScreen() {
         <Card style={styles.mainCard}>
           <View style={styles.cardHeader}>
             <View style={styles.cardIcon}>
-              <Ionicons name="document-text" size={24} color={COLORS.white} />
+              <Icon name="document-text" size={24} color={COLORS.white} />
             </View>
             <Text style={styles.cardTitle}>Joyful Birth Plan</Text>
           </View>
@@ -103,7 +103,7 @@ export default function MomHomeScreen() {
           </View>
           
           <Text style={styles.nextStep}>
-            <Ionicons name="arrow-forward-circle" size={16} color={COLORS.primary} />
+            <Icon name="arrow-forward-circle" size={16} color={COLORS.primary} />
             {' '}{getNextStep()}
           </Text>
           
@@ -124,7 +124,7 @@ export default function MomHomeScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.accent + '30' }]}>
-              <Ionicons name="calendar" size={24} color={COLORS.accent} />
+              <Icon name="calendar" size={24} color={COLORS.accent} />
             </View>
             <Text style={styles.actionTitle}>Timeline</Text>
             <Text style={styles.actionSubtitle}>
@@ -138,7 +138,7 @@ export default function MomHomeScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.success + '30' }]}>
-              <Ionicons name="heart" size={24} color={COLORS.success} />
+              <Icon name="heart" size={24} color={COLORS.success} />
             </View>
             <Text style={styles.actionTitle}>Wellness</Text>
             <Text style={styles.actionSubtitle}>How are you feeling?</Text>
@@ -149,7 +149,7 @@ export default function MomHomeScreen() {
         {timeline?.current_week && timeline?.timeline && (
           <Card style={styles.tipCard}>
             <View style={styles.tipHeader}>
-              <Ionicons name="bulb" size={20} color={COLORS.warning} />
+              <Icon name="bulb" size={20} color={COLORS.warning} />
               <Text style={styles.tipTitle}>Week {timeline.current_week} Tip</Text>
             </View>
             <Text style={styles.tipText}>
@@ -162,7 +162,7 @@ export default function MomHomeScreen() {
         {/* My Team */}
         <Card style={styles.teamCard}>
           <View style={styles.teamHeader}>
-            <Ionicons name="people" size={20} color={COLORS.primary} />
+            <Icon name="people" size={20} color={COLORS.primary} />
             <Text style={styles.teamTitle}>My Team</Text>
           </View>
           <Text style={styles.teamText}>

@@ -29,7 +29,7 @@ export default function AdminLayout() {
         options={{
           title: 'Content',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-text-outline" size={size} color={color} />
+            <Icon name="document-text-outline" size={size} color={color} />
           ),
         }}
       />
@@ -38,7 +38,7 @@ export default function AdminLayout() {
         options={{
           title: 'Users',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" size={size} color={color} />
+            <Icon name="people-outline" size={size} color={color} />
           ),
         }}
       />
@@ -47,7 +47,7 @@ export default function AdminLayout() {
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={size} color={color} />
+            <Icon name="settings-outline" size={size} color={color} />
           ),
         }}
       />

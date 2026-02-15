@@ -114,14 +114,14 @@ export default function AdminContentScreen() {
             <Card style={styles.contentCard}>
               <View style={styles.contentHeader}>
                 <Text style={styles.sectionTitle}>{getSectionTitle(item.section_id)}</Text>
-                <Ionicons name="create-outline" size={20} color={COLORS.roleAdmin} />
+                <Icon name="create-outline" size={20} color={COLORS.roleAdmin} />
               </View>
               <Text style={styles.explanatoryPreview} numberOfLines={2}>
                 {item.explanatory_text || 'No content set'}
               </Text>
               {item.video_url && (
                 <View style={styles.videoIndicator}>
-                  <Ionicons name="videocam" size={14} color={COLORS.success} />
+                  <Icon name="videocam" size={14} color={COLORS.success} />
                   <Text style={styles.videoText}>Video attached</Text>
                 </View>
               )}
@@ -139,7 +139,7 @@ export default function AdminContentScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={COLORS.textPrimary} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Edit Content</Text>
             <View style={{ width: 24 }} />
