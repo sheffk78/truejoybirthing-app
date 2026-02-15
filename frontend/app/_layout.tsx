@@ -3,7 +3,6 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { COLORS } from '../src/constants/theme';
@@ -13,9 +12,10 @@ export default function RootLayout() {
   const segments = useSegments();
   const router = useRouter();
   
-  // Load fonts for web
+  // Load fonts - explicitly load Ionicons for web compatibility
   const [fontsLoaded] = useFonts({
-    ...Ionicons.font,
+    'Ionicons': require('../assets/fonts/Ionicons.ttf'),
+    'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
   
   // Check auth on mount, but only after hydration
