@@ -11,7 +11,7 @@ import time
 from datetime import datetime, timedelta
 
 # Configuration
-BASE_URL = "https://joy-birth-v1.preview.emergentagent.com/api"
+BASE_URL = "https://birth-plan-hub.preview.emergentagent.com/api"
 TEST_PASSWORD = "SecureTestPass123!"
 
 # Use timestamp to make emails unique
