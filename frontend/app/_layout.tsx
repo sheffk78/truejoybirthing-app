@@ -2,74 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as Font from 'expo-font';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { COLORS } from '../src/constants/theme';
 
 export default function RootLayout() {
-  const { user, isAuthenticated, isLoading, checkAuth, _hasHydrated, setHasHydrated, setLoading } = useAuthStore();
+  const { user, isAuthenticated, isLoading, checkAuth } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
-  const [fontsLoaded, setFontsLoaded] = useState(false);
   const [isReady, setIsReady] = useState(false);
   
-  // Load fonts and handle initial setup
+  // Initialize the app
   useEffect(() => {
     async function prepare() {
-      try {
-        // For native, load fonts
-        if (Platform.OS !== 'web') {
-          await Font.loadAsync({
-            'Ionicons': require('../assets/fonts/Ionicons.ttf'),
-          });
-        }
-        setFontsLoaded(true);
-      } catch (error) {
-        console.log('Font loading error:', error);
-        setFontsLoaded(true);
-      }
-      
-      // Ensure hydration completes with a timeout fallback
-      // If hydration doesn't complete in 2 seconds, proceed anyway
-      const timeoutId = setTimeout(() => {
-        if (!useAuthStore.getState()._hasHydrated) {
-          console.log('Hydration timeout, forcing ready state');
-          setHasHydrated(true);
-          setLoading(false);
-        }
-        setIsReady(true);
-      }, 2000);
-      
-      // If already hydrated, set ready immediately
-      if (_hasHydrated) {
-        clearTimeout(timeoutId);
-        setIsReady(true);
-      }
-      
-      return () => clearTimeout(timeoutId);
+      // Check auth status
+      await checkAuth();
+      setIsReady(true);
     }
     
     prepare();
   }, []);
   
-  // Also listen for hydration changes
-  useEffect(() => {
-    if (_hasHydrated) {
-      setIsReady(true);
-    }
-  }, [_hasHydrated]);
-  
-  // Check auth when ready
-  useEffect(() => {
-    if (isReady && _hasHydrated) {
-      checkAuth();
-    }
-  }, [isReady, _hasHydrated]);
-  
   // Handle navigation based on auth state
   useEffect(() => {
-    // Wait for ready state and loading to complete
     if (!isReady || isLoading) return;
     
     const inAuthGroup = segments[0] === '(auth)';
@@ -105,7 +60,7 @@ export default function RootLayout() {
   }, [isAuthenticated, isLoading, user, segments, isReady]);
   
   // Show loading screen while initializing
-  if (!isReady || isLoading || !fontsLoaded) {
+  if (!isReady || isLoading) {
     return (
       <SafeAreaProvider>
         <LoadingScreen message="Loading True Joy Birthing..." />
