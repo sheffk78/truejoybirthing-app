@@ -1,7 +1,18 @@
 // API Configuration
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+// In web environment, use relative path since backend and frontend are on same domain
+// The /api prefix is handled by the Kubernetes ingress
+import { Platform } from 'react-native';
 
-export const API_BASE = `${BACKEND_URL}/api`;
+const getBackendUrl = () => {
+  if (Platform.OS === 'web') {
+    // On web, use relative path - the proxy will handle routing to backend
+    return '';
+  }
+  // On native, use the environment variable
+  return process.env.EXPO_PUBLIC_BACKEND_URL || '';
+};
+
+export const API_BASE = `${getBackendUrl()}/api`;
 
 export const API_ENDPOINTS = {
   // Auth
