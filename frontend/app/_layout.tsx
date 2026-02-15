@@ -8,45 +8,69 @@ import LoadingScreen from '../src/components/LoadingScreen';
 import { COLORS } from '../src/constants/theme';
 
 export default function RootLayout() {
-  const { user, isAuthenticated, isLoading, checkAuth, _hasHydrated } = useAuthStore();
+  const { user, isAuthenticated, isLoading, checkAuth, _hasHydrated, setHasHydrated, setLoading } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   
-  // Load fonts asynchronously - don't block the app
+  // Load fonts and handle initial setup
   useEffect(() => {
-    async function loadFonts() {
+    async function prepare() {
       try {
-        await Font.loadAsync({
-          'Ionicons': require('../assets/fonts/Ionicons.ttf'),
-        });
+        // For native, load fonts
+        if (Platform.OS !== 'web') {
+          await Font.loadAsync({
+            'Ionicons': require('../assets/fonts/Ionicons.ttf'),
+          });
+        }
         setFontsLoaded(true);
       } catch (error) {
-        console.log('Font loading error, continuing anyway:', error);
-        // Continue without fonts on web if they fail to load
+        console.log('Font loading error:', error);
         setFontsLoaded(true);
       }
+      
+      // Ensure hydration completes with a timeout fallback
+      // If hydration doesn't complete in 2 seconds, proceed anyway
+      const timeoutId = setTimeout(() => {
+        if (!useAuthStore.getState()._hasHydrated) {
+          console.log('Hydration timeout, forcing ready state');
+          setHasHydrated(true);
+          setLoading(false);
+        }
+        setIsReady(true);
+      }, 2000);
+      
+      // If already hydrated, set ready immediately
+      if (_hasHydrated) {
+        clearTimeout(timeoutId);
+        setIsReady(true);
+      }
+      
+      return () => clearTimeout(timeoutId);
     }
     
-    // For web, set fonts as loaded immediately (fallback to system fonts)
-    if (Platform.OS === 'web') {
-      setFontsLoaded(true);
-    } else {
-      loadFonts();
-    }
+    prepare();
   }, []);
   
-  // Check auth on mount, but only after hydration
+  // Also listen for hydration changes
   useEffect(() => {
     if (_hasHydrated) {
-      checkAuth();
+      setIsReady(true);
     }
   }, [_hasHydrated]);
   
+  // Check auth when ready
+  useEffect(() => {
+    if (isReady && _hasHydrated) {
+      checkAuth();
+    }
+  }, [isReady, _hasHydrated]);
+  
   // Handle navigation based on auth state
   useEffect(() => {
-    // Wait for hydration and loading to complete
-    if (!_hasHydrated || isLoading) return;
+    // Wait for ready state and loading to complete
+    if (!isReady || isLoading) return;
     
     const inAuthGroup = segments[0] === '(auth)';
     const currentScreen = segments[1];
@@ -78,10 +102,10 @@ export default function RootLayout() {
         }
       }
     }
-  }, [isAuthenticated, isLoading, user, segments, _hasHydrated]);
+  }, [isAuthenticated, isLoading, user, segments, isReady]);
   
-  // Show loading screen while hydrating or loading
-  if (!_hasHydrated || isLoading || !fontsLoaded) {
+  // Show loading screen while initializing
+  if (!isReady || isLoading || !fontsLoaded) {
     return (
       <SafeAreaProvider>
         <LoadingScreen message="Loading True Joy Birthing..." />
