@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useAuthStore } from '../../src/store/authStore';
-import LoadingScreen from '../../src/components/LoadingScreen';
-import { COLORS } from '../../src/constants/theme';
+import { useAuthStore } from '../src/store/authStore';
+import LoadingScreen from '../src/components/LoadingScreen';
+import { COLORS } from '../src/constants/theme';
 import { Platform } from 'react-native';
 
 export default function AuthCallback() {
