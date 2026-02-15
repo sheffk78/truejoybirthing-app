@@ -116,6 +116,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "All authentication endpoints working correctly. Registration, login, and get current user work for all roles (MOM, DOULA, MIDWIFE). Session tokens are properly generated and validated."
+      - working: true
+        agent: "testing"
+        comment: "FOCUSED RE-TEST (2026-02-15): Performed comprehensive authentication flow testing for MOM users as specifically requested. Tested complete end-to-end workflow: POST /api/auth/register → GET /api/auth/me → POST /api/mom/onboarding. All 10 test cases passed perfectly. Session token authentication with Bearer header working flawlessly. Backend URL https://birth-plan-hub.preview.emergentagent.com/api confirmed functional."
 
   - task: "Mom Onboarding Endpoint"
     implemented: true
