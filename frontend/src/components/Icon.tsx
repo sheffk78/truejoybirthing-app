@@ -208,6 +208,25 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   'happy-outline': 'Smile',
   'sad': 'Frown',
   'sad-outline': 'Frown',
+  
+  // Arrow forward circle
+  'arrow-forward-circle': 'ArrowRightCircle',
+  'arrow-forward-circle-outline': 'ArrowRightCircle',
+  
+  // Baby
+  'baby': 'Baby',
+  
+  // Gift
+  'gift': 'Gift',
+  'gift-outline': 'Gift',
+  
+  // Bed
+  'bed': 'Bed',
+  'bed-outline': 'Bed',
+  
+  // Sparkles
+  'sparkles': 'Sparkles',
+  'sparkles-outline': 'Sparkles',
 };
 
 interface IconProps {
