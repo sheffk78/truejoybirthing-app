@@ -7,11 +7,15 @@ Tests all core backend API endpoints for the birthing app with 4 user roles.
 import requests
 import json
 import sys
+import time
 from datetime import datetime, timedelta
 
 # Configuration
 BASE_URL = "https://joy-birth-v1.preview.emergentagent.com/api"
 TEST_PASSWORD = "SecureTestPass123!"
+
+# Use timestamp to make emails unique
+timestamp = str(int(time.time()))
 
 class APITester:
     def __init__(self, base_url):
