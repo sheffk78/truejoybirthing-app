@@ -131,6 +131,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "Mom onboarding endpoint (POST /api/mom/onboarding) works correctly. Manual testing shows proper profile creation with due_date, planned_birth_setting, location fields."
+      - working: true
+        agent: "testing"
+        comment: "RE-VERIFIED (2026-02-15): Mom onboarding endpoint thoroughly tested with session token authentication. POST /api/mom/onboarding correctly processes due_date, planned_birth_setting, location_city, location_state. Profile data persistence verified. Onboarding completion flag correctly updated. Birth plan auto-creation working."
 
   - task: "Birth Plan Endpoints"
     implemented: true
