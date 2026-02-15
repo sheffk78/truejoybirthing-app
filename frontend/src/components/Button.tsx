@@ -117,11 +117,15 @@ export default function Button({
   };
   
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
       disabled={disabled || loading}
-      style={[getButtonStyle(), SHADOWS.sm, style]}
-      activeOpacity={0.8}
+      style={({ pressed }) => [
+        getButtonStyle(),
+        SHADOWS.sm,
+        style,
+        pressed && { opacity: 0.8 }
+      ]}
     >
       {loading ? (
         <ActivityIndicator
