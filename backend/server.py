@@ -1511,6 +1511,7 @@ async def create_visit(visit_data: VisitCreate, user: User = Depends(check_role(
     }
     
     await db.visits.insert_one(visit)
+    visit.pop('_id', None)  # Remove ObjectId added by insert_one
     return visit
 
 @api_router.put("/midwife/visits/{visit_id}")
