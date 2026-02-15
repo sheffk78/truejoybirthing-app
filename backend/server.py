@@ -1017,6 +1017,7 @@ async def create_doula_client(client_data: ClientCreate, user: User = Depends(ch
     }
     
     await db.clients.insert_one(client)
+    client.pop('_id', None)  # Remove ObjectId added by insert_one
     return client
 
 @api_router.get("/doula/clients/{client_id}")
