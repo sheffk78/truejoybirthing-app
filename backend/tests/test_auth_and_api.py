@@ -572,18 +572,53 @@ class TestMarketplace:
 
 
 class TestTimeline:
-    """Pregnancy timeline tests"""
+    """Pregnancy timeline tests (requires MOM role)"""
+    
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        """Create test MOM user"""
+        self.timestamp = str(int(time.time() * 1000))
+        
+        reg_response = requests.post(f"{BASE_URL}/api/auth/register", json={
+            "email": f"TEST_timeline_{self.timestamp}@example.com",
+            "password": "TestPassword123!",
+            "full_name": f"TEST Timeline User {self.timestamp}",
+            "role": "MOM"
+        })
+        
+        if reg_response.status_code == 200:
+            self.token = reg_response.json()["session_token"]
+        else:
+            pytest.skip(f"Failed to create test user: {reg_response.text}")
+        
+        self.headers = {"Authorization": f"Bearer {self.token}"}
+        
+        # Complete onboarding
+        requests.post(
+            f"{BASE_URL}/api/mom/onboarding",
+            headers=self.headers,
+            json={
+                "due_date": "2026-06-15",
+                "planned_birth_setting": "Hospital",
+                "location_city": "Test City",
+                "location_state": "TC"
+            }
+        )
     
     def test_get_timeline(self):
         """Test getting pregnancy timeline"""
-        response = requests.get(f"{BASE_URL}/api/timeline")
+        response = requests.get(
+            f"{BASE_URL}/api/timeline",
+            headers=self.headers
+        )
         
         assert response.status_code == 200
         data = response.json()
-        assert isinstance(data, list)
-        assert len(data) > 0
-        assert "week" in data[0]
-        print(f"✓ Got timeline with {len(data)} weeks of info")
+        assert "timeline" in data
+        assert isinstance(data["timeline"], list)
+        assert len(data["timeline"]) > 0
+        assert "week" in data["timeline"][0]
+        print(f"✓ Got timeline with {len(data['timeline'])} weeks of info")
 
 
 # Cleanup fixture
