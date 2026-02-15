@@ -60,7 +60,7 @@ export default function RootLayout() {
     }
   }, [isAuthenticated, isLoading, user, segments]);
   
-  if (isLoading) {
+  if (isLoading || !fontsLoaded) {
     return (
       <SafeAreaProvider>
         <LoadingScreen message="Loading True Joy Birthing..." />
