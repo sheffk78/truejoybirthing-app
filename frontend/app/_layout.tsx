@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useFonts } from 'expo-font';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { COLORS } from '../src/constants/theme';
@@ -11,6 +12,11 @@ export default function RootLayout() {
   const segments = useSegments();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
+  
+  // Load Ionicons font for web platform
+  const [fontsLoaded] = useFonts({
+    Ionicons: require('../assets/fonts/Ionicons.ttf'),
+  });
   
   // Initialize the app
   useEffect(() => {
