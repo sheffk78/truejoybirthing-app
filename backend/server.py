@@ -1105,6 +1105,7 @@ async def create_contract(contract_data: ContractCreate, user: User = Depends(ch
     }
     
     await db.contracts.insert_one(contract)
+    contract.pop('_id', None)  # Remove ObjectId added by insert_one
     return contract
 
 @api_router.put("/doula/contracts/{contract_id}")
