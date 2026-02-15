@@ -18,7 +18,7 @@ export default function Root({ children }: PropsWithChildren) {
             __html: `
               @font-face {
                 font-family: 'Ionicons';
-                src: url('/assets/fonts/Ionicons.ttf') format('truetype');
+                src: url('https://cdn.jsdelivr.net/npm/@expo/vector-icons@14.0.3/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf') format('truetype');
                 font-display: swap;
               }
             `,
