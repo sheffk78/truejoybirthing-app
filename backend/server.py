@@ -828,6 +828,7 @@ async def create_wellness_checkin(checkin_data: WellnessCheckInCreate, user: Use
     }
     
     await db.wellness_checkins.insert_one(checkin)
+    checkin.pop('_id', None)  # Remove ObjectId added by insert_one
     return checkin
 
 @api_router.get("/wellness/checkins")
