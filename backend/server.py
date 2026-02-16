@@ -984,6 +984,8 @@ async def get_birth_plan(user: User = Depends(check_role(["MOM"]))):
             "updated_at": now
         }
         await db.birth_plans.insert_one(plan)
+        # Remove _id that MongoDB adds after insertion
+        plan.pop("_id", None)
     return plan
 
 @api_router.put("/birth-plan/section/{section_id}")
