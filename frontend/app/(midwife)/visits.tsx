@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
   addButton: {
@@ -350,6 +350,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
@@ -367,12 +368,13 @@ const styles = StyleSheet.create({
   },
   clientName: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
   visitDate: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   typeBadge: {
@@ -382,7 +384,7 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: SIZES.fontXs,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   vitalsRow: {
     flexDirection: 'row',
@@ -398,15 +400,17 @@ const styles = StyleSheet.create({
   },
   vitalLabel: {
     fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
     color: COLORS.textLight,
   },
   vitalValue: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.textPrimary,
-    fontWeight: '500',
   },
   noteText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: SIZES.sm,
     fontStyle: 'italic',
@@ -426,7 +430,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
   },
   modalContent: {
@@ -435,7 +439,7 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
@@ -458,11 +462,12 @@ const styles = StyleSheet.create({
   },
   clientOptionText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
   },
   clientOptionTextSelected: {
     color: COLORS.white,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   typeSelector: {
     flexDirection: 'row',
@@ -484,11 +489,12 @@ const styles = StyleSheet.create({
   },
   typeOptionText: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
   },
   typeOptionTextSelected: {
     color: COLORS.white,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   vitalsGrid: {
     flexDirection: 'row',
@@ -504,6 +510,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
   },
   textArea: {
