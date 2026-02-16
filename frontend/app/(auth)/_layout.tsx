@@ -15,6 +15,7 @@ export default function AuthLayout() {
       <Stack.Screen name="mom-onboarding" />
       <Stack.Screen name="doula-onboarding" />
       <Stack.Screen name="midwife-onboarding" />
+      <Stack.Screen name="tutorial" />
     </Stack>
   );
 }
