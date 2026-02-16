@@ -56,7 +56,7 @@ export const FONTS = {
   subheading: 'PlayfairDisplay_500Medium',
   // Lato for body text
   body: 'Lato_400Regular',
-  bodyMedium: 'Lato_500Medium',
+  bodyMedium: 'Lato_400Regular',
   bodyBold: 'Lato_700Bold',
   // Fallbacks
   regular: 'System',
