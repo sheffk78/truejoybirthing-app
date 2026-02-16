@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
   addButton: {
@@ -355,6 +355,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
@@ -372,12 +373,13 @@ const styles = StyleSheet.create({
   },
   contractTitle: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
   clientName: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   statusBadge: {
@@ -387,10 +389,11 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: SIZES.fontXs,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   feeText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginBottom: SIZES.sm,
   },
@@ -412,7 +415,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
   },
   modalContent: {
@@ -421,7 +424,7 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
@@ -444,11 +447,12 @@ const styles = StyleSheet.create({
   },
   clientOptionText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
   },
   clientOptionTextSelected: {
     color: COLORS.white,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   textInput: {
     backgroundColor: COLORS.white,
@@ -457,6 +461,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
     marginBottom: SIZES.md,
   },
