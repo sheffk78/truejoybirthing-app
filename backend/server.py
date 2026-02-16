@@ -934,6 +934,7 @@ async def mom_onboarding(profile_data: MomProfileUpdate, user: User = Depends(ch
         "user_id": user.user_id,
         "due_date": profile_data.due_date,
         "planned_birth_setting": profile_data.planned_birth_setting,
+        "zip_code": profile_data.zip_code,
         "location_city": profile_data.location_city,
         "location_state": profile_data.location_state,
         "connected_doula_id": None,
