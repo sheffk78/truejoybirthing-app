@@ -1911,15 +1911,30 @@ async def send_contract(contract_id: str, user: User = Depends(check_role(["DOUL
 
 @api_router.post("/doula/contracts/{contract_id}/sign")
 async def sign_contract(contract_id: str, request: Request):
-    """Sign a contract (mock signature)"""
+    """Sign a contract with timestamp - simple click to sign"""
     body = await request.json()
-    signature_data = body.get("signature_data", "mock_signature")
+    signer_name = body.get("signer_name", "")
+    signer_email = body.get("signer_email", "")
+    
+    if not signer_name.strip():
+        raise HTTPException(status_code=400, detail="Signer name is required")
     
     now = datetime.now(timezone.utc)
     
     contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
+    
+    if contract.get("status") == "Signed":
+        raise HTTPException(status_code=400, detail="Contract already signed")
+    
+    # Create signature data with timestamp
+    signature_data = {
+        "signer_name": signer_name.strip(),
+        "signer_email": signer_email.strip() if signer_email else None,
+        "signed_at": now.isoformat(),
+        "ip_address": "recorded"  # In production, capture real IP
+    }
     
     await db.contracts.update_one(
         {"contract_id": contract_id},
@@ -1937,7 +1952,20 @@ async def sign_contract(contract_id: str, request: Request):
         {"$set": {"status": "Contract Signed", "updated_at": now}}
     )
     
-    return {"message": "Contract signed (mocked)"}
+    # Notify the doula that contract was signed
+    await create_notification(
+        user_id=contract["doula_id"],
+        notif_type="contract_signed",
+        title="Contract Signed",
+        message=f"{signer_name} has signed the contract: {contract['contract_title']}",
+        data={"contract_id": contract_id, "signer_name": signer_name}
+    )
+    
+    return {
+        "message": "Contract signed successfully",
+        "signed_at": now.isoformat(),
+        "signer_name": signer_name
+    }
 
 # ============== INVOICE ROUTES ==============
 
