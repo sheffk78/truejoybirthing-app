@@ -1,49 +1,64 @@
-// True Joy Birthing Theme - Based on truejoybirthing.com
+// True Joy Birthing Theme - Official Brand Colors
+// Logo: Lavender pregnant silhouette + Pink script text
+
 export const COLORS = {
-  // Primary colors from the website
-  primary: '#9B6B9E',      // Soft purple
-  primaryLight: '#C4A8C7',  // Light purple
-  primaryDark: '#7A4D7D',   // Dark purple
+  // Primary - Lavender from logo silhouette
+  primary: '#9F83B6',         // Soft Lavender
+  primaryLight: '#C4B1D3',    // Light Lavender
+  primaryDark: '#7D628C',     // Deep Lavender
   
-  // Accent colors
-  accent: '#E8A4B8',        // Soft pink
-  accentLight: '#F5D1DC',   // Light pink
-  accentDark: '#D68A9E',    // Dark pink
+  // Secondary - Pink from logo text
+  secondary: '#D4A5A5',       // Dusty Rose
+  secondaryLight: '#E3C0C0',  // Light Rose
+  secondaryDark: '#B88A8A',   // Deep Rose
   
-  // Neutral colors
+  // Accent - Calming Sage Green
+  accent: '#8CAF8C',
+  accentLight: '#A8CFA8',
+  accentDark: '#6E8F6E',
+  
+  // Backgrounds
   white: '#FFFFFF',
-  background: '#FBF9FC',    // Soft off-white with purple tint
+  background: '#FEFCFF',      // Warm White with hint of pink
   surface: '#FFFFFF',
-  border: '#E8E0EA',
+  subtle: '#F9F5FA',          // Subtle lavender tint
+  border: '#EFE6F2',
   
-  // Text colors
-  textPrimary: '#2D2D2D',
-  textSecondary: '#6B6B6B',
-  textLight: '#9B9B9B',
+  // Text
+  textPrimary: '#4A3B4E',     // Deep warm gray
+  textSecondary: '#8A7E8E',   // Medium gray
+  textLight: '#B0A6B4',       // Light gray
   textOnPrimary: '#FFFFFF',
   
-  // Status colors
-  success: '#6B9B6B',
-  warning: '#D4A574',
-  error: '#C46B6B',
-  info: '#6B8B9B',
+  // Status
+  success: '#8CAF8C',
+  warning: '#E6C685',
+  error: '#D48A8A',
+  info: '#8CA8AF',
   
   // Mood colors
-  moodVeryLow: '#C46B6B',
-  moodLow: '#D4A574',
-  moodNeutral: '#9B9B9B',
-  moodGood: '#6B9B6B',
-  moodGreat: '#6B8B9B',
+  moodVeryLow: '#D48A8A',
+  moodLow: '#E6C685',
+  moodNeutral: '#B0A6B4',
+  moodGood: '#8CAF8C',
+  moodGreat: '#8CA8AF',
   
-  // Role colors
-  roleMom: '#E8A4B8',
-  roleDoula: '#9B6B9E',
-  roleMidwife: '#6B8B9B',
-  roleAdmin: '#6B6B6B',
+  // Role-specific colors
+  roleMom: '#D4A5A5',         // Dusty Rose for Mom
+  roleDoula: '#9F83B6',       // Lavender for Doula
+  roleMidwife: '#8CAF8C',     // Sage Green for Midwife
+  roleAdmin: '#8A7E8E',       // Gray for Admin
 };
 
 export const FONTS = {
-  // Font families (using system fonts that look similar to the website)
+  // Playfair Display for headings
+  heading: 'PlayfairDisplay_700Bold',
+  subheading: 'PlayfairDisplay_500Medium',
+  // Quicksand for body text
+  body: 'Quicksand_400Regular',
+  bodyMedium: 'Quicksand_500Medium',
+  bodyBold: 'Quicksand_700Bold',
+  // Fallbacks
   regular: 'System',
   medium: 'System',
   semiBold: 'System',
@@ -58,6 +73,7 @@ export const SIZES = {
   lg: 24,
   xl: 32,
   xxl: 48,
+  xxxl: 64,
   
   // Border radius
   radiusSm: 8,
@@ -73,7 +89,7 @@ export const SIZES = {
   fontLg: 18,
   fontXl: 20,
   fontXxl: 24,
-  fontTitle: 28,
+  fontTitle: 30,
   fontHero: 36,
   
   // Touch targets
@@ -82,26 +98,34 @@ export const SIZES = {
 
 export const SHADOWS = {
   sm: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowColor: '#4A3B4E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
     elevation: 2,
   },
   md: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowColor: '#4A3B4E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
     elevation: 4,
   },
   lg: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
+    shadowColor: '#4A3B4E',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
     elevation: 8,
   },
 };
 
-export default { COLORS, FONTS, SIZES, SHADOWS };
+// Logo URLs
+export const BRAND = {
+  logoSvg: 'https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/ccxz8is7_Logo%20TJB.svg',
+  logoJpg: 'https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/oqwstugf_true-joy-birthing-full-color-200%20%281%29.jpg',
+  name: 'True Joy Birthing',
+  tagline: 'Your birth plan, your team, your support in one place.',
+};
+
+export default { COLORS, FONTS, SIZES, SHADOWS, BRAND };
