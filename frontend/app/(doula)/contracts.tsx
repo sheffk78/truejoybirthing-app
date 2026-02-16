@@ -470,4 +470,30 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.border,
     backgroundColor: COLORS.white,
   },
+  signatureInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SIZES.sm,
+    paddingTop: SIZES.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  signatureText: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.success,
+    marginLeft: SIZES.xs,
+  },
+  sentInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SIZES.sm,
+    paddingTop: SIZES.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  sentText: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.warning,
+    marginLeft: SIZES.xs,
+  },
 });
