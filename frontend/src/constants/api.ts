@@ -32,6 +32,17 @@ export const API_ENDPOINTS = {
   BIRTH_PLAN: '/birth-plan',
   BIRTH_PLAN_SECTION: '/birth-plan/section',
   BIRTH_PLAN_EXPORT: '/birth-plan/export',
+  BIRTH_PLAN_SHARE: '/birth-plan/share',
+  BIRTH_PLAN_SHARE_REQUESTS: '/birth-plan/share-requests',
+  
+  // Provider Search
+  PROVIDERS_SEARCH: '/providers/search',
+  
+  // Provider Share Endpoints
+  PROVIDER_SHARE_REQUESTS: '/provider/share-requests',
+  PROVIDER_SHARED_BIRTH_PLANS: '/provider/shared-birth-plans',
+  PROVIDER_BIRTH_PLAN_NOTES: '/provider/birth-plan',
+  PROVIDER_NOTES: '/provider/notes',
   
   // Wellness
   WELLNESS_CHECKIN: '/wellness/checkin',
