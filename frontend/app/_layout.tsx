@@ -3,6 +3,15 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
+import {
+  PlayfairDisplay_500Medium,
+  PlayfairDisplay_700Bold,
+} from '@expo-google-fonts/playfair-display';
+import {
+  Quicksand_400Regular,
+  Quicksand_500Medium,
+  Quicksand_700Bold,
+} from '@expo-google-fonts/quicksand';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { COLORS } from '../src/constants/theme';
@@ -13,9 +22,14 @@ export default function RootLayout() {
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
   
-  // Load Ionicons font for web platform
+  // Load all fonts including Ionicons and brand fonts
   const [fontsLoaded] = useFonts({
     Ionicons: require('../assets/fonts/Ionicons.ttf'),
+    PlayfairDisplay_500Medium,
+    PlayfairDisplay_700Bold,
+    Quicksand_400Regular,
+    Quicksand_500Medium,
+    Quicksand_700Bold,
   });
   
   // Initialize the app
