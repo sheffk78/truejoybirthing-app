@@ -215,7 +215,7 @@ export default function DoulaProfileScreen() {
         {/* App Tutorial */}
         <TouchableOpacity 
           activeOpacity={0.8}
-          onPress={() => router.push('/(auth)/tutorial?role=DOULA')}
+          onPress={() => router.push('/tutorial?role=DOULA')}
         >
           <Card style={styles.menuCard}>
             <View style={styles.menuRow}>

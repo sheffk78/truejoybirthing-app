@@ -71,7 +71,7 @@ export default function MomOnboardingScreen() {
       });
       
       updateUser({ onboarding_completed: true });
-      router.replace('/(auth)/tutorial?role=MOM');
+      router.replace('/tutorial?role=MOM');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to save your information');
     } finally {

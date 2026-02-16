@@ -199,7 +199,7 @@ export default function MidwifeProfileScreen() {
         {/* App Tutorial */}
         <TouchableOpacity 
           activeOpacity={0.8}
-          onPress={() => router.push('/(auth)/tutorial?role=MIDWIFE')}
+          onPress={() => router.push('/tutorial?role=MIDWIFE')}
         >
           <Card style={styles.menuCard}>
             <View style={styles.menuRow}>

@@ -253,7 +253,7 @@ export default function MomProfileScreen() {
         {/* App Tutorial */}
         <TouchableOpacity 
           activeOpacity={0.8}
-          onPress={() => router.push('/(auth)/tutorial?role=MOM')}
+          onPress={() => router.push('/tutorial?role=MOM')}
         >
           <Card style={styles.menuCard}>
             <View style={styles.menuRow}>

@@ -80,7 +80,7 @@ export default function DoulaOnboardingScreen() {
       });
       
       updateUser({ onboarding_completed: true });
-      router.replace('/(auth)/tutorial?role=DOULA');
+      router.replace('/tutorial?role=DOULA');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to save your information');
     } finally {
