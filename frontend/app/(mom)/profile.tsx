@@ -265,13 +265,21 @@ export default function MomProfileScreen() {
         </TouchableOpacity>
         
         {/* Logout */}
-        <Button
-          title="Log Out"
+        <TouchableOpacity
           onPress={handleLogout}
-          variant="outline"
-          fullWidth
-          style={styles.logoutButton}
-        />
+          activeOpacity={0.8}
+        >
+          <Card style={styles.logoutCard}>
+            <View style={styles.menuRow}>
+              <Icon name="log-out-outline" size={24} color={COLORS.error} />
+              <Text style={styles.logoutText}>Log Out</Text>
+              <Icon name="chevron-forward" size={20} color={COLORS.error} />
+            </View>
+          </Card>
+        </TouchableOpacity>
+        
+        {/* Bottom spacing for tab bar */}
+        <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
   );
