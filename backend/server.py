@@ -844,6 +844,331 @@ async def export_birth_plan(user: User = Depends(check_role(["MOM"]))):
         "export_note": "PDF generation is mocked. In production, this would generate a downloadable PDF."
     }
 
+# ============== BIRTH PLAN SHARING ROUTES ==============
+
+@api_router.get("/providers/search")
+async def search_providers(
+    query: str,
+    user: User = Depends(check_role(["MOM"]))
+):
+    """Search for doulas and midwives by name or email"""
+    if len(query) < 2:
+        return {"providers": []}
+    
+    # Search in users collection for DOULA and MIDWIFE roles
+    search_regex = {"$regex": query, "$options": "i"}
+    
+    providers = await db.users.find(
+        {
+            "role": {"$in": ["DOULA", "MIDWIFE"]},
+            "$or": [
+                {"full_name": search_regex},
+                {"email": search_regex}
+            ]
+        },
+        {"_id": 0, "password_hash": 0}
+    ).limit(20).to_list(20)
+    
+    # Enhance with profile data
+    result = []
+    for provider in providers:
+        profile = None
+        if provider["role"] == "DOULA":
+            profile = await db.doula_profiles.find_one({"user_id": provider["user_id"]}, {"_id": 0})
+        elif provider["role"] == "MIDWIFE":
+            profile = await db.midwife_profiles.find_one({"user_id": provider["user_id"]}, {"_id": 0})
+        
+        # Check if already shared with this provider
+        existing_share = await db.share_requests.find_one({
+            "mom_user_id": user.user_id,
+            "provider_id": provider["user_id"],
+            "status": {"$in": ["pending", "accepted"]}
+        })
+        
+        result.append({
+            "user_id": provider["user_id"],
+            "full_name": provider["full_name"],
+            "email": provider["email"],
+            "role": provider["role"],
+            "picture": provider.get("picture"),
+            "profile": profile,
+            "already_shared": existing_share is not None,
+            "share_status": existing_share["status"] if existing_share else None
+        })
+    
+    return {"providers": result}
+
+@api_router.post("/birth-plan/share")
+async def share_birth_plan(
+    share_data: ShareRequestCreate,
+    user: User = Depends(check_role(["MOM"]))
+):
+    """Send a share request to a provider"""
+    # Verify provider exists and is a doula or midwife
+    provider = await db.users.find_one(
+        {"user_id": share_data.provider_id, "role": {"$in": ["DOULA", "MIDWIFE"]}},
+        {"_id": 0}
+    )
+    
+    if not provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+    
+    # Check if request already exists
+    existing = await db.share_requests.find_one({
+        "mom_user_id": user.user_id,
+        "provider_id": share_data.provider_id,
+        "status": {"$in": ["pending", "accepted"]}
+    })
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Share request already exists")
+    
+    now = datetime.now(timezone.utc)
+    
+    request_doc = {
+        "request_id": f"share_{uuid.uuid4().hex[:12]}",
+        "mom_user_id": user.user_id,
+        "mom_name": user.full_name,
+        "provider_id": share_data.provider_id,
+        "provider_name": provider["full_name"],
+        "provider_role": provider["role"],
+        "status": "pending",
+        "created_at": now,
+        "responded_at": None
+    }
+    
+    await db.share_requests.insert_one(request_doc)
+    request_doc.pop('_id', None)
+    
+    return {"message": "Share request sent", "request": request_doc}
+
+@api_router.get("/birth-plan/share-requests")
+async def get_my_share_requests(user: User = Depends(check_role(["MOM"]))):
+    """Get all share requests sent by the mom"""
+    requests = await db.share_requests.find(
+        {"mom_user_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"requests": requests}
+
+@api_router.delete("/birth-plan/share/{request_id}")
+async def revoke_share(request_id: str, user: User = Depends(check_role(["MOM"]))):
+    """Revoke a share request"""
+    result = await db.share_requests.delete_one({
+        "request_id": request_id,
+        "mom_user_id": user.user_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Share request not found")
+    
+    # Also delete any provider notes for this birth plan from this provider
+    request = await db.share_requests.find_one({"request_id": request_id})
+    if request:
+        await db.provider_notes.delete_many({
+            "birth_plan_id": user.user_id,  # Using mom's user_id as birth plan identifier
+            "provider_id": request["provider_id"]
+        })
+    
+    return {"message": "Share access revoked"}
+
+# --- Provider-side share endpoints ---
+
+@api_router.get("/provider/share-requests")
+async def get_provider_share_requests(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Get all share requests received by the provider"""
+    requests = await db.share_requests.find(
+        {"provider_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"requests": requests}
+
+@api_router.put("/provider/share-requests/{request_id}/respond")
+async def respond_to_share_request(
+    request_id: str,
+    request: Request,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+):
+    """Accept or reject a share request"""
+    body = await request.json()
+    action = body.get("action")  # "accept" or "reject"
+    
+    if action not in ["accept", "reject"]:
+        raise HTTPException(status_code=400, detail="Action must be 'accept' or 'reject'")
+    
+    now = datetime.now(timezone.utc)
+    new_status = "accepted" if action == "accept" else "rejected"
+    
+    result = await db.share_requests.update_one(
+        {"request_id": request_id, "provider_id": user.user_id, "status": "pending"},
+        {"$set": {"status": new_status, "responded_at": now}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Share request not found or already responded")
+    
+    # If accepted, link the mom to the provider's client list (optional enhancement)
+    if action == "accept":
+        share_request = await db.share_requests.find_one({"request_id": request_id}, {"_id": 0})
+        if share_request:
+            # Update mom's profile to show connected provider
+            if user.role == "DOULA":
+                await db.mom_profiles.update_one(
+                    {"user_id": share_request["mom_user_id"]},
+                    {"$set": {"connected_doula_id": user.user_id}}
+                )
+            elif user.role == "MIDWIFE":
+                await db.mom_profiles.update_one(
+                    {"user_id": share_request["mom_user_id"]},
+                    {"$set": {"connected_midwife_id": user.user_id}}
+                )
+    
+    return {"message": f"Share request {new_status}"}
+
+@api_router.get("/provider/shared-birth-plans")
+async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Get all birth plans shared with this provider"""
+    # Get accepted share requests
+    accepted_requests = await db.share_requests.find(
+        {"provider_id": user.user_id, "status": "accepted"},
+        {"_id": 0}
+    ).to_list(100)
+    
+    birth_plans = []
+    for req in accepted_requests:
+        # Get the mom's birth plan
+        plan = await db.birth_plans.find_one({"user_id": req["mom_user_id"]}, {"_id": 0})
+        mom_profile = await db.mom_profiles.find_one({"user_id": req["mom_user_id"]}, {"_id": 0})
+        
+        # Get provider notes for this plan
+        notes = await db.provider_notes.find(
+            {"birth_plan_id": req["mom_user_id"], "provider_id": user.user_id},
+            {"_id": 0}
+        ).to_list(100)
+        
+        if plan:
+            birth_plans.append({
+                "mom_user_id": req["mom_user_id"],
+                "mom_name": req["mom_name"],
+                "due_date": mom_profile.get("due_date") if mom_profile else None,
+                "birth_setting": mom_profile.get("planned_birth_setting") if mom_profile else None,
+                "plan": plan,
+                "provider_notes": notes,
+                "shared_at": req["responded_at"]
+            })
+    
+    return {"birth_plans": birth_plans}
+
+@api_router.get("/provider/shared-birth-plan/{mom_user_id}")
+async def get_shared_birth_plan_detail(
+    mom_user_id: str,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+):
+    """Get a specific shared birth plan with provider notes"""
+    # Verify access
+    share_request = await db.share_requests.find_one({
+        "mom_user_id": mom_user_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    
+    if not share_request:
+        raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
+    
+    plan = await db.birth_plans.find_one({"user_id": mom_user_id}, {"_id": 0})
+    mom = await db.users.find_one({"user_id": mom_user_id}, {"_id": 0, "password_hash": 0})
+    mom_profile = await db.mom_profiles.find_one({"user_id": mom_user_id}, {"_id": 0})
+    
+    # Get all provider notes for this plan (from all providers)
+    all_notes = await db.provider_notes.find(
+        {"birth_plan_id": mom_user_id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    return {
+        "mom": mom,
+        "mom_profile": mom_profile,
+        "plan": plan,
+        "provider_notes": all_notes
+    }
+
+@api_router.post("/provider/birth-plan/{mom_user_id}/notes")
+async def add_provider_note(
+    mom_user_id: str,
+    note_data: ProviderNoteCreate,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+):
+    """Add a note to a section of a shared birth plan"""
+    # Verify access
+    share_request = await db.share_requests.find_one({
+        "mom_user_id": mom_user_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    
+    if not share_request:
+        raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
+    
+    now = datetime.now(timezone.utc)
+    
+    note_doc = {
+        "note_id": f"pnote_{uuid.uuid4().hex[:12]}",
+        "birth_plan_id": mom_user_id,
+        "section_id": note_data.section_id,
+        "provider_id": user.user_id,
+        "provider_name": user.full_name,
+        "provider_role": user.role,
+        "note_content": note_data.note_content,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.provider_notes.insert_one(note_doc)
+    note_doc.pop('_id', None)
+    
+    return {"message": "Note added", "note": note_doc}
+
+@api_router.put("/provider/notes/{note_id}")
+async def update_provider_note(
+    note_id: str,
+    request: Request,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+):
+    """Update a provider note"""
+    body = await request.json()
+    note_content = body.get("note_content")
+    
+    if not note_content:
+        raise HTTPException(status_code=400, detail="Note content required")
+    
+    result = await db.provider_notes.update_one(
+        {"note_id": note_id, "provider_id": user.user_id},
+        {"$set": {"note_content": note_content, "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Note not found")
+    
+    return {"message": "Note updated"}
+
+@api_router.delete("/provider/notes/{note_id}")
+async def delete_provider_note(
+    note_id: str,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+):
+    """Delete a provider note"""
+    result = await db.provider_notes.delete_one({
+        "note_id": note_id,
+        "provider_id": user.user_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Note not found")
+    
+    return {"message": "Note deleted"}
+
 # ============== WELLNESS ROUTES ==============
 
 @api_router.post("/wellness/checkin")
