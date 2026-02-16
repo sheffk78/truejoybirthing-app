@@ -2414,8 +2414,9 @@ async def get_admin_content(user: User = Depends(check_role(["ADMIN"]))):
                 "updated_by": user.user_id,
                 "updated_at": now
             }
-            default_content.append(item)
             await db.admin_content.insert_one(item)
+            item.pop('_id', None)  # Remove ObjectId added by insert_one
+            default_content.append(item)
         return default_content
     
     return content
