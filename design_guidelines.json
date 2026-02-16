@@ -1,0 +1,195 @@
+{
+  "brand_identity": {
+    "name": "True Joy Birthing",
+    "archetype": "The Nurturing Embrace",
+    "tone": "Feminine, Soft, Supportive, Joyful, Calm",
+    "keywords": ["Gentle", "Empowering", "Natural", "Connected", "Safe"]
+  },
+  "design_system": {
+    "colors": {
+      "primary": {
+        "DEFAULT": "#9F83B6",
+        "light": "#C4B1D3",
+        "dark": "#7D628C",
+        "contrast": "#FFFFFF"
+      },
+      "secondary": {
+        "DEFAULT": "#D4A5A5",
+        "light": "#E3C0C0",
+        "dark": "#B88A8A",
+        "contrast": "#FFFFFF"
+      },
+      "accent": {
+        "DEFAULT": "#8CAF8C",
+        "light": "#A8CFA8",
+        "dark": "#6E8F6E"
+      },
+      "background": {
+        "DEFAULT": "#FEFCFF",
+        "paper": "#FFFFFF",
+        "subtle": "#F9F5FA"
+      },
+      "text": {
+        "primary": "#4A3B4E",
+        "secondary": "#8A7E8E",
+        "tertiary": "#B0A6B4",
+        "disabled": "#D1CWD4"
+      },
+      "status": {
+        "success": "#8CAF8C",
+        "warning": "#E6C685",
+        "error": "#D48A8A",
+        "info": "#8CA8AF"
+      },
+      "role": {
+        "mom": "#D4A5A5",
+        "doula": "#9F83B6",
+        "midwife": "#8CAF8C",
+        "admin": "#8A7E8E"
+      }
+    },
+    "typography": {
+      "fontFamily": {
+        "heading": "PlayfairDisplay_700Bold",
+        "subheading": "PlayfairDisplay_500Medium",
+        "body": "Quicksand_400Regular",
+        "bodyBold": "Quicksand_700Bold",
+        "label": "Quicksand_500Medium"
+      },
+      "fontSize": {
+        "xs": 12,
+        "sm": 14,
+        "base": 16,
+        "lg": 18,
+        "xl": 20,
+        "2xl": 24,
+        "3xl": 30,
+        "4xl": 36
+      }
+    },
+    "spacing": {
+      "xs": 4,
+      "sm": 8,
+      "md": 16,
+      "lg": 24,
+      "xl": 32,
+      "2xl": 48,
+      "3xl": 64
+    },
+    "borderRadius": {
+      "sm": 8,
+      "md": 12,
+      "lg": 16,
+      "xl": 24,
+      "full": 9999
+    },
+    "shadows": {
+      "sm": {
+        "shadowColor": "#4A3B4E",
+        "shadowOffset": { "width": 0, "height": 2 },
+        "shadowOpacity": 0.05,
+        "shadowRadius": 4,
+        "elevation": 2
+      },
+      "md": {
+        "shadowColor": "#4A3B4E",
+        "shadowOffset": { "width": 0, "height": 4 },
+        "shadowOpacity": 0.1,
+        "shadowRadius": 8,
+        "elevation": 4
+      },
+      "lg": {
+        "shadowColor": "#4A3B4E",
+        "shadowOffset": { "width": 0, "height": 8 },
+        "shadowOpacity": 0.15,
+        "shadowRadius": 16,
+        "elevation": 8
+      }
+    }
+  },
+  "component_styles": {
+    "card": {
+      "container": {
+        "backgroundColor": "#FFFFFF",
+        "borderRadius": 16,
+        "padding": 20,
+        "marginVertical": 8,
+        "shadowColor": "#4A3B4E",
+        "shadowOffset": { "width": 0, "height": 4 },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 12,
+        "elevation": 3
+      }
+    },
+    "button": {
+      "primary": {
+        "backgroundColor": "#9F83B6",
+        "borderRadius": 9999,
+        "paddingVertical": 16,
+        "paddingHorizontal": 32,
+        "alignItems": "center",
+        "justifyContent": "center",
+        "elevation": 2
+      },
+      "secondary": {
+        "backgroundColor": "#F9F5FA",
+        "borderRadius": 9999,
+        "paddingVertical": 16,
+        "paddingHorizontal": 32,
+        "alignItems": "center",
+        "justifyContent": "center",
+        "borderWidth": 1,
+        "borderColor": "#C4B1D3"
+      },
+      "text": {
+        "color": "#FFFFFF",
+        "fontFamily": "Quicksand_700Bold",
+        "fontSize": 16
+      }
+    },
+    "input": {
+      "container": {
+        "backgroundColor": "#F9F5FA",
+        "borderRadius": 12,
+        "paddingHorizontal": 16,
+        "paddingVertical": 14,
+        "borderWidth": 1,
+        "borderColor": "#EFE6F2",
+        "marginBottom": 16
+      },
+      "text": {
+        "color": "#4A3B4E",
+        "fontFamily": "Quicksand_400Regular",
+        "fontSize": 16
+      }
+    }
+  },
+  "assets": {
+    "logo": {
+      "svg_url": "https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/ccxz8is7_Logo%20TJB.svg",
+      "jpg_url": "https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/oqwstugf_true-joy-birthing-full-color-200%20%281%29.jpg"
+    },
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1759801694493-ec532735be3d?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Silhouette of pregnant woman - matches logo vibe",
+        "category": "hero"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1558636436-bcb3f9a0e581?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Woman in natural light",
+        "category": "lifestyle"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "UPDATE THEME FILE: Replace content of /app/frontend/src/constants/theme.ts with the provided theme object structure.",
+    "INSTALL FONTS: Install @expo-google-fonts/playfair-display and @expo-google-fonts/quicksand.",
+    "LOAD FONTS: Ensure fonts are loaded in the root layout (App.js or app/_layout.js) before rendering.",
+    "APPLY STYLES: Use the new theme constants for all colors and typography.",
+    "LOGO INTEGRATION: Use the SVG logo if possible (react-native-svg), otherwise fallback to JPG.",
+    "ACCESSIBILITY: Ensure text contrast ratios are met (use primary.dark for text on light backgrounds).",
+    "DO NOT BREAK: Keep existing logic, only update the visual layer (colors, fonts, spacings)."
+  ],
+  "theme_file_content": "import { Dimensions } from 'react-native';\n\nconst { width, height } = Dimensions.get('window');\n\nexport const COLORS = {\n  primary: '#9F83B6',\n  primaryLight: '#C4B1D3',\n  primaryDark: '#7D628C',\n  secondary: '#D4A5A5',\n  secondaryLight: '#E3C0C0',\n  secondaryDark: '#B88A8A',\n  accent: '#8CAF8C',\n  background: '#FEFCFF',\n  surface: '#FFFFFF',\n  textPrimary: '#4A3B4E',\n  textSecondary: '#8A7E8E',\n  textLight: '#B0A6B4',\n  border: '#EFE6F2',\n  success: '#8CAF8C',\n  warning: '#E6C685',\n  error: '#D48A8A',\n  roleMom: '#D4A5A5',\n  roleDoula: '#9F83B6',\n  roleMidwife: '#8CAF8C',\n  roleAdmin: '#8A7E8E'\n};\n\nexport const SIZES = {\n  xs: 4,\n  sm: 8,\n  md: 16,\n  lg: 24,\n  xl: 32,\n  xxl: 48,\n  width,\n  height,\n  radiusSm: 8,\n  radiusMd: 12,\n  radiusLg: 16,\n  radiusXl: 24\n};\n\nexport const FONTS = {\n  h1: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 36, lineHeight: 44, color: COLORS.textPrimary },\n  h2: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 30, lineHeight: 38, color: COLORS.textPrimary },\n  h3: { fontFamily: 'PlayfairDisplay_500Medium', fontSize: 24, lineHeight: 32, color: COLORS.textPrimary },\n  body1: { fontFamily: 'Quicksand_400Regular', fontSize: 16, lineHeight: 24, color: COLORS.textPrimary },\n  body2: { fontFamily: 'Quicksand_400Regular', fontSize: 14, lineHeight: 22, color: COLORS.textSecondary },\n  button: { fontFamily: 'Quicksand_700Bold', fontSize: 16, lineHeight: 24, color: COLORS.surface }\n};\n\nexport const SHADOWS = {\n  light: {\n    shadowColor: COLORS.textPrimary,\n    shadowOffset: { width: 0, height: 2 },\n    shadowOpacity: 0.05,\n    shadowRadius: 4,\n    elevation: 2\n  },\n  medium: {\n    shadowColor: COLORS.textPrimary,\n    shadowOffset: { width: 0, height: 4 },\n    shadowOpacity: 0.1,\n    shadowRadius: 8,\n    elevation: 4\n  }\n};\n\nexport default { COLORS, SIZES, FONTS, SHADOWS };"
+}
