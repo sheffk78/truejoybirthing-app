@@ -14,7 +14,7 @@ import Card from '../../src/components/Card';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, SHADOWS } from '../../src/constants/theme';
+import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 
 export default function MidwifeDashboardScreen() {
   const router = useRouter();
