@@ -45,9 +45,22 @@ export default function MarketplaceScreen() {
       }
       
       const data = await apiRequest(endpoint + params.join('&'));
-      setProviders(data);
+      // API returns {doulas: [...], midwives: [...]} - combine into single array
+      const allProviders = [
+        ...(data.doulas || []),
+        ...(data.midwives || [])
+      ].map(p => ({
+        user_id: p.user?.user_id,
+        full_name: p.user?.full_name,
+        email: p.user?.email,
+        picture: p.user?.picture,
+        provider_type: p.provider_type,
+        ...p.profile
+      }));
+      setProviders(allProviders);
     } catch (error) {
       console.error('Error fetching providers:', error);
+      setProviders([]);
     }
   };
   
