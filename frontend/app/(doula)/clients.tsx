@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
   addButton: {
@@ -276,6 +276,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
   },
   clientInitial: {
     fontSize: SIZES.fontLg,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.roleDoula,
   },
   clientInfo: {
@@ -305,7 +306,7 @@ const styles = StyleSheet.create({
   },
   clientName: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
@@ -321,6 +322,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   clientDetails: {
@@ -337,6 +339,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginLeft: 4,
   },
@@ -355,7 +358,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
   },
   modalContent: {
