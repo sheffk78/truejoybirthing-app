@@ -420,7 +420,17 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     color: COLORS.textPrimary,
   },
-  logoutButton: {
-    marginTop: SIZES.lg,
+  logoutCard: {
+    marginTop: SIZES.md,
+    marginBottom: SIZES.sm,
+    borderColor: COLORS.error + '30',
+    borderWidth: 1,
+  },
+  logoutText: {
+    flex: 1,
+    marginLeft: SIZES.md,
+    fontSize: SIZES.fontMd,
+    color: COLORS.error,
+    fontFamily: FONTS.bodyBold,
   },
 });
