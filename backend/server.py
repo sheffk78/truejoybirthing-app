@@ -1405,7 +1405,7 @@ async def mark_all_notifications_read(user: User = Depends(get_current_user)):
     )
     return {"message": "All notifications marked as read"}
 
-# ============== WELLNESS ROUTES ==============
+# ============== WELLNESS ROUTES (Enhanced) ==============
 
 @api_router.post("/wellness/checkin")
 async def create_wellness_checkin(checkin_data: WellnessCheckInCreate, user: User = Depends(check_role(["MOM"]))):
@@ -1432,6 +1432,60 @@ async def get_wellness_checkins(user: User = Depends(check_role(["MOM"])), limit
         {"_id": 0}
     ).sort("created_at", -1).limit(limit).to_list(limit)
     return checkins
+
+@api_router.post("/wellness/entry")
+async def create_wellness_entry(entry_data: WellnessEntryCreate, user: User = Depends(check_role(["MOM"]))):
+    """Create a detailed wellness entry with mood, energy, sleep, symptoms, and journal"""
+    now = datetime.now(timezone.utc)
+    
+    entry = {
+        "entry_id": f"wellness_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "mood": entry_data.mood,
+        "energy_level": entry_data.energy_level,
+        "sleep_quality": entry_data.sleep_quality,
+        "symptoms": entry_data.symptoms or [],
+        "journal_notes": entry_data.journal_notes,
+        "created_at": now
+    }
+    
+    await db.wellness_entries.insert_one(entry)
+    entry.pop('_id', None)
+    return entry
+
+@api_router.get("/wellness/entries")
+async def get_wellness_entries(user: User = Depends(check_role(["MOM"])), limit: int = 30):
+    """Get wellness entry history"""
+    entries = await db.wellness_entries.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"entries": entries}
+
+@api_router.get("/wellness/stats")
+async def get_wellness_stats(user: User = Depends(check_role(["MOM"])), days: int = 7):
+    """Get wellness statistics for the past N days"""
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    
+    entries = await db.wellness_entries.find(
+        {"user_id": user.user_id, "created_at": {"$gte": cutoff}},
+        {"_id": 0}
+    ).to_list(100)
+    
+    if not entries:
+        return {"entries_count": 0, "avg_mood": None, "avg_energy": None, "avg_sleep": None}
+    
+    moods = [e["mood"] for e in entries if e.get("mood")]
+    energies = [e["energy_level"] for e in entries if e.get("energy_level")]
+    sleeps = [e["sleep_quality"] for e in entries if e.get("sleep_quality")]
+    
+    return {
+        "entries_count": len(entries),
+        "avg_mood": sum(moods) / len(moods) if moods else None,
+        "avg_energy": sum(energies) / len(energies) if energies else None,
+        "avg_sleep": sum(sleeps) / len(sleeps) if sleeps else None,
+        "entries": entries
+    }
 
 # ============== POSTPARTUM ROUTES ==============
 
