@@ -273,6 +273,23 @@ const styles = StyleSheet.create({
     gap: SIZES.xs 
   },
   addButtonText: { color: COLORS.white, fontWeight: '600', fontSize: SIZES.fontMd },
+  marketplaceButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    padding: SIZES.md,
+    borderRadius: SIZES.radiusMd,
+    marginBottom: SIZES.lg,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+  },
+  marketplaceButtonText: { 
+    flex: 1, 
+    color: COLORS.primary, 
+    fontWeight: '600', 
+    fontSize: SIZES.fontMd, 
+    marginLeft: SIZES.sm 
+  },
   section: { marginBottom: SIZES.lg },
   sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary, marginBottom: SIZES.xs },
   sectionSubtitle: { fontSize: SIZES.fontSm, color: COLORS.textSecondary, marginBottom: SIZES.md },
