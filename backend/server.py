@@ -378,6 +378,8 @@ NOTIFICATION_TYPES = [
     "provider_note",      # Provider added note to birth plan
     "wellness_reminder",  # Daily wellness check-in reminder
     "timeline_milestone", # New timeline milestone
+    "new_message",        # New message received
+    "contract_signed",    # Contract was signed
 ]
 
 class Notification(BaseModel):
