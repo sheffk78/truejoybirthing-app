@@ -1084,13 +1084,14 @@ async def search_providers(
     query: str,
     user: User = Depends(check_role(["MOM"]))
 ):
-    """Search for doulas and midwives by name or email"""
+    """Search for doulas and midwives by name, email, city, or state"""
     if len(query) < 2:
         return {"providers": []}
     
     # Search in users collection for DOULA and MIDWIFE roles
     search_regex = {"$regex": query, "$options": "i"}
     
+    # First search users by name/email
     providers = await db.users.find(
         {
             "role": {"$in": ["DOULA", "MIDWIFE"]},
@@ -1101,6 +1102,36 @@ async def search_providers(
         },
         {"_id": 0, "password_hash": 0}
     ).limit(20).to_list(20)
+    
+    provider_ids = {p["user_id"] for p in providers}
+    
+    # Also search profiles by location (city/state)
+    doula_location_matches = await db.doula_profiles.find(
+        {"$or": [
+            {"location_city": search_regex},
+            {"location_state": search_regex}
+        ]},
+        {"_id": 0}
+    ).to_list(20)
+    
+    midwife_location_matches = await db.midwife_profiles.find(
+        {"$or": [
+            {"location_city": search_regex},
+            {"location_state": search_regex}
+        ]},
+        {"_id": 0}
+    ).to_list(20)
+    
+    # Add location-matched providers
+    for profile in doula_location_matches + midwife_location_matches:
+        if profile.get("user_id") and profile["user_id"] not in provider_ids:
+            user_data = await db.users.find_one(
+                {"user_id": profile["user_id"]},
+                {"_id": 0, "password_hash": 0}
+            )
+            if user_data:
+                providers.append(user_data)
+                provider_ids.add(profile["user_id"])
     
     # Enhance with profile data
     result = []
