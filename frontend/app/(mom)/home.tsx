@@ -224,13 +224,13 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
   weekText: {
     fontSize: SIZES.fontMd,
     color: COLORS.primary,
-    fontWeight: '500',
+    fontFamily: FONTS.bodyMedium,
     marginTop: 2,
   },
   avatarContainer: {
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
   progressContainer: {
@@ -280,10 +280,12 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   nextStep: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.primary,
     marginBottom: SIZES.md,
   },
@@ -292,7 +294,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
     marginBottom: SIZES.md,
   },
@@ -319,12 +321,13 @@ const styles = StyleSheet.create({
   },
   actionTitle: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
   actionSubtitle: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   tipCard: {
@@ -338,12 +341,13 @@ const styles = StyleSheet.create({
   },
   tipTitle: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginLeft: SIZES.sm,
   },
   tipText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     lineHeight: 20,
   },
@@ -357,12 +361,13 @@ const styles = StyleSheet.create({
   },
   teamTitle: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginLeft: SIZES.sm,
   },
   teamText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginBottom: SIZES.md,
     lineHeight: 20,
