@@ -362,11 +362,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: 4,
   },
@@ -382,11 +383,12 @@ const styles = StyleSheet.create({
   },
   progressTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
   },
   progressSubtext: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: 2,
   },
@@ -400,7 +402,7 @@ const styles = StyleSheet.create({
   },
   progressPercent: {
     fontSize: SIZES.fontLg,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.white,
   },
   progressBar: {
@@ -415,12 +417,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
     marginBottom: SIZES.xs,
   },
   sectionSubtitle: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginBottom: SIZES.md,
   },
@@ -448,7 +451,7 @@ const styles = StyleSheet.create({
   },
   sectionName: {
     fontSize: SIZES.fontMd,
-    fontWeight: '500',
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.textPrimary,
     marginBottom: 4,
   },
@@ -476,6 +479,7 @@ const styles = StyleSheet.create({
   },
   exportHint: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textLight,
     textAlign: 'center',
   },
@@ -501,7 +505,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     flex: 1,
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
     textAlign: 'center',
   },
@@ -519,6 +523,7 @@ const styles = StyleSheet.create({
   modalDescription: {
     flex: 1,
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     lineHeight: 22,
     marginLeft: SIZES.sm,
@@ -531,13 +536,13 @@ const styles = StyleSheet.create({
   },
   notesLabel: {
     fontSize: SIZES.fontSm,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: SIZES.sm,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
@@ -549,6 +554,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
   },
   textArea: {
