@@ -44,15 +44,23 @@ export const API_ENDPOINTS = {
   PROVIDER_BIRTH_PLAN_NOTES: '/provider/birth-plan',
   PROVIDER_NOTES: '/provider/notes',
   
-  // Wellness
+  // Notifications
+  NOTIFICATIONS: '/notifications',
+  NOTIFICATIONS_READ_ALL: '/notifications/read-all',
+  
+  // Wellness (Enhanced)
   WELLNESS_CHECKIN: '/wellness/checkin',
   WELLNESS_CHECKINS: '/wellness/checkins',
-  
-  // Postpartum
-  POSTPARTUM_PLAN: '/postpartum/plan',
+  WELLNESS_ENTRY: '/wellness/entry',
+  WELLNESS_ENTRIES: '/wellness/entries',
+  WELLNESS_STATS: '/wellness/stats',
   
   // Timeline
   TIMELINE: '/timeline',
+  TIMELINE_EVENTS: '/timeline/events',
+  
+  // Postpartum
+  POSTPARTUM_PLAN: '/postpartum/plan',
   
   // Doula
   DOULA_ONBOARDING: '/doula/onboarding',
