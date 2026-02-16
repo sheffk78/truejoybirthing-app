@@ -180,24 +180,24 @@ export default function MomHomeScreen() {
               <Text style={styles.tipTitle}>Week {timeline.current_week} Tip</Text>
             </View>
             <Text style={styles.tipText}>
-              {timeline.timeline.find((w: any) => w.week === timeline.current_week)?.tip ||
+              {timeline.milestones.find((w: any) => w.week === timeline.current_week)?.description ||
                 'Stay hydrated and rest when you can!'}
             </Text>
           </Card>
         )}
         
-        {/* My Team */}
+        {/* Share Your Plan */}
         <Card style={styles.teamCard}>
           <View style={styles.teamHeader}>
-            <Icon name="people" size={20} color={COLORS.primary} />
-            <Text style={styles.teamTitle}>My Team</Text>
+            <Icon name="share-social" size={20} color={COLORS.primary} />
+            <Text style={styles.teamTitle}>Share Your Birth Plan</Text>
           </View>
           <Text style={styles.teamText}>
-            Connect with doulas and midwives to support your birth journey.
+            Share your birth plan with your doula or midwife so they can review it and add their professional notes.
           </Text>
           <Button
-            title="Find Support"
-            onPress={() => router.push('/(mom)/profile')}
+            title="Share with Provider"
+            onPress={() => router.push('/(mom)/share-birth-plan')}
             variant="outline"
             size="sm"
           />
