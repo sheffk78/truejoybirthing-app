@@ -87,6 +87,14 @@ export const API_ENDPOINTS = {
   // Marketplace
   MARKETPLACE_PROVIDERS: '/marketplace/providers',
   MARKETPLACE_PROVIDER: '/marketplace/provider',
+  
+  // Messages
+  MESSAGES_CONVERSATIONS: '/messages/conversations',
+  MESSAGES: '/messages',
+  MESSAGES_UNREAD_COUNT: '/messages/unread/count',
+  
+  // Contracts (public)
+  CONTRACT_BY_ID: '/contracts',
 };
 
 export default API_ENDPOINTS;
