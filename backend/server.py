@@ -332,6 +332,38 @@ class AdminContent(BaseModel):
     updated_by: str
     updated_at: datetime
 
+# --- Birth Plan Share Models ---
+SHARE_REQUEST_STATUS = ["pending", "accepted", "rejected"]
+
+class ShareRequestCreate(BaseModel):
+    provider_id: str  # The doula or midwife user_id
+
+class ShareRequest(BaseModel):
+    request_id: str
+    mom_user_id: str
+    mom_name: str
+    provider_id: str
+    provider_name: str
+    provider_role: str  # DOULA or MIDWIFE
+    status: str = "pending"  # pending, accepted, rejected
+    created_at: datetime
+    responded_at: Optional[datetime] = None
+
+class ProviderNoteCreate(BaseModel):
+    section_id: str
+    note_content: str
+
+class ProviderNote(BaseModel):
+    note_id: str
+    birth_plan_id: str
+    section_id: str
+    provider_id: str
+    provider_name: str
+    provider_role: str
+    note_content: str
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
 # ============== AUTH HELPERS ==============
 
 def generate_user_id():
