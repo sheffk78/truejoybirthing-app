@@ -69,6 +69,15 @@ export default function MomLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="messages"
+        options={{
+          title: 'Messages',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="chatbubbles-outline" size={size} color={color} />
+          ),
+        }}
+      />
       {/* Hidden screens accessible via navigation */}
       <Tabs.Screen
         name="profile"
