@@ -9,113 +9,113 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] Role-based signup (MOM, DOULA, MIDWIFE)
 - [x] Email/password login
 - [x] **Google Social Login** (via Emergent-managed OAuth)
-- [x] JWT/session-based authentication with httpOnly cookies
+- [x] JWT/session-based authentication
 
 ### MOM Experience
 - [x] Onboarding flow
-- [x] Home dashboard with progress tracking
-- [x] **Birth Plan - All 9 Sections Implemented per PDF Specification**
-- [x] **Share Birth Plan with Providers** - Search for doulas/midwives, send share requests, manage access
-- [ ] Pregnancy Timeline
-- [ ] Wellness/Emotional Check-in
-- [ ] Postpartum Plan
-- [ ] "My Team" screen to connect with doulas/midwives
+- [x] Home dashboard with quick actions (Timeline, Wellness, Postpartum, My Team)
+- [x] **Birth Plan - All 9 Sections** per PDF specification (50+ fields)
+- [x] **Share Birth Plan** - Search providers, send requests, manage access
+- [x] **Timeline** - Week-by-week pregnancy milestones + custom events/appointments
+- [x] **Wellness Journal** - Mood, energy, sleep, symptoms tracking + journal notes
+- [x] **Postpartum Plan** - Support network, meal prep, recovery goals, warning signs
+- [x] **My Team** - View connected providers, manage invitations
+
+### Notifications
+- [x] **In-app Notifications** - Created when birth plan is shared
+- [x] **Email Notifications** - Resend integration (requires domain verification)
+- [x] **Polling** - GET /api/notifications returns unread count
 
 ### DOULA/MIDWIFE Experience
 - [x] Onboarding flow
-- [x] **Client Birth Plans** - View shared birth plans from moms
-- [x] **Provider Notes** - Add professional notes to birth plan sections
-- [x] **Share Request Management** - Accept/reject birth plan share requests
+- [x] **Client Birth Plans** - View shared birth plans
+- [x] **Provider Notes** - Add professional notes to sections
+- [x] **Share Request Management** - Accept/reject requests
 - [ ] Dashboard
-- [ ] Client management
 - [ ] Contract management
 - [ ] Invoicing
 
-### ADMIN Experience
+### ADMIN Experience (Future)
 - [ ] Content management
 - [ ] User management
 
 ### Phase 3 (Future)
-- [ ] Provider marketplace for moms to find and connect with doulas/midwives
+- [ ] Provider marketplace
 
 ## Technical Architecture
 
 ### Frontend
 - **Framework**: React Native with Expo SDK 51
 - **Routing**: Expo Router v3
-- **State Management**: Zustand with AsyncStorage for persistence
-- **Icons**: lucide-react-native (SVG-based)
-- **Forms**: Custom form components (BirthPlanForms.tsx)
+- **State Management**: Zustand
+- **Icons**: lucide-react-native
 
 ### Backend
 - **Framework**: FastAPI (Python)
 - **Database**: MongoDB
-- **Authentication**: Session tokens with 7-day expiry
+- **Email**: Resend
+- **Authentication**: Session tokens
 
-### Key Files
-- `/app/frontend/src/components/Icon.tsx` - Icon wrapper
-- `/app/frontend/src/components/BirthPlanForms.tsx` - Birth plan form configurations
-- `/app/frontend/app/(mom)/birth-plan.tsx` - Birth plan screen
-- `/app/frontend/app/(mom)/share-birth-plan.tsx` - NEW: Share with providers screen
-- `/app/frontend/app/(provider)/client-birth-plans.tsx` - NEW: Provider view for shared plans
-- `/app/backend/server.py` - All API routes and models
+### Key API Endpoints
 
-## What's Been Implemented
+#### Notifications
+- `GET /api/notifications` - Get notifications with unread count
+- `PUT /api/notifications/{id}/read` - Mark as read
+- `PUT /api/notifications/read-all` - Mark all as read
 
-### Session 3 (Feb 16, 2025)
-1. **Birth Plan - Full PDF Implementation** - COMPLETED
-   - All 9 sections with 50+ form fields from PDF spec
-   - Proper form field types (text, textarea, multiselect, singleselect)
-   - Tested: 100% backend, 100% frontend
+#### Timeline
+- `GET /api/timeline` - Get milestones + custom events
+- `POST /api/timeline/events` - Add custom event
+- `DELETE /api/timeline/events/{id}` - Delete event
 
-2. **Share Birth Plan Feature** - COMPLETED
-   - MOM can search for doulas/midwives by name or email
-   - MOM sends share requests (request-based, not instant access)
-   - Provider receives notifications of pending requests
-   - Provider accepts/rejects share requests
-   - Upon acceptance, provider can view full birth plan
-   - Provider can add notes to any birth plan section
-   - MOM can revoke provider access at any time
-   - Tested: 100% backend (24/24 tests), 95% frontend
+#### Wellness
+- `POST /api/wellness/entry` - Save wellness entry (mood, energy, sleep, symptoms, journal)
+- `GET /api/wellness/entries` - Get entry history
+- `GET /api/wellness/stats?days=7` - Get weekly averages
 
-### API Endpoints - Share Feature
-- `GET /api/providers/search?query=X` - Search doulas/midwives
-- `POST /api/birth-plan/share` - Send share request
-- `GET /api/birth-plan/share-requests` - MOM's share requests
-- `DELETE /api/birth-plan/share/{request_id}` - Revoke access
-- `GET /api/provider/share-requests` - Provider's pending requests
-- `PUT /api/provider/share-requests/{id}/respond` - Accept/reject
-- `GET /api/provider/shared-birth-plans` - Provider's shared plans
-- `POST /api/provider/birth-plan/{mom_id}/notes` - Add note
-- `PUT /api/provider/notes/{note_id}` - Update note
-- `DELETE /api/provider/notes/{note_id}` - Delete note
+#### Postpartum
+- `GET /api/postpartum/plan` - Get postpartum plan
+- `PUT /api/postpartum/plan` - Save postpartum plan
+
+## What's Been Implemented (Feb 16, 2025)
+
+### Session 3 - Major Feature Release
+1. **Birth Plan - Full PDF Implementation** - 9 sections, 50+ fields ✅
+2. **Share Birth Plan Feature** - Search, request, accept/reject, provider notes ✅
+3. **Email Notifications** - Resend integration configured ✅
+4. **In-app Notifications** - Polling system ✅
+5. **Timeline Screen** - Milestones + custom events ✅
+6. **Wellness Journal** - Mood/energy/sleep/symptoms + journal ✅
+7. **Postpartum Plan** - Full plan with 10+ sections ✅
+8. **My Team Screen** - Provider management ✅
+9. **Home Dashboard** - 4 quick action cards ✅
 
 ## Test Reports
-- `/app/test_reports/iteration_1.json` - Google OAuth tests
-- `/app/test_reports/iteration_2.json` - Initial Birth Plan tests
-- `/app/test_reports/iteration_3.json` - Full Birth Plan PDF implementation
-- `/app/test_reports/iteration_4.json` - Share Birth Plan feature (24/24 backend, frontend verified)
-- `/app/backend/tests/test_share_birth_plan.py` - Comprehensive backend tests
+- `/app/test_reports/iteration_5.json` - Latest comprehensive tests
+- Backend: 100% (21/21 tests passed)
 
-## Known Issues
-- Console warning: 'shadow*' style props are deprecated (minor React Native Web deprecation)
-- Playwright button clicks don't work well with React Native Web Pressable (test automation limitation)
+## Important Notes
+
+### Email Notifications
+Resend requires domain verification to send emails to external recipients. The code is complete but emails to external addresses will fail until domain is verified at resend.com/domains. In-app notifications work regardless.
+
+### Known Limitations
+- React Native Web Pressable/TouchableOpacity components don't work well with Playwright automation
+- Console warnings about deprecated shadow* props (cosmetic only)
 
 ## Prioritized Backlog
 
 ### P1 (High Priority)
-- Implement remaining Mom screens (Timeline, Wellness, Postpartum, Profile, My Team)
-- Implement full Doula dashboard
-- Implement full Midwife dashboard
+- Full Doula dashboard with contract management
+- Full Midwife dashboard with visit logging
 
 ### P2 (Medium Priority)
-- Contract and invoicing features for providers
-- Real-time notifications for share requests
+- Push notifications (mobile)
+- PDF export for birth plan
 
 ### P3 (Lower Priority)
-- Admin content and user management
+- Admin content/user management
 - Provider marketplace (Phase 3)
-- iOS/Android native builds
 
 ## Test Credentials
 - MOM: `sharemom2_1771213474@test.com` / `password123`
