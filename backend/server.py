@@ -112,12 +112,12 @@ BIRTH_PLAN_SECTIONS = [
     {"section_id": "about_me", "title": "About Me & My Preferences"},
     {"section_id": "labor_delivery", "title": "Labor & Delivery Preferences"},
     {"section_id": "pain_management", "title": "Pain Management"},
-    {"section_id": "monitoring_iv", "title": "Monitoring & IV / Saline Lock"},
+    {"section_id": "monitoring_iv", "title": "Labor Environment & Comfort"},
     {"section_id": "induction_interventions", "title": "Induction & Birth Interventions"},
-    {"section_id": "pushing_safe_word", "title": "Pushing & Safe Word"},
+    {"section_id": "pushing_safe_word", "title": "Pushing, Delivery & Safe Word"},
     {"section_id": "post_delivery", "title": "Post-Delivery Preferences"},
     {"section_id": "newborn_care", "title": "Newborn Care Preferences"},
-    {"section_id": "other_considerations", "title": "Other Considerations"},
+    {"section_id": "other_considerations", "title": "Other Important Considerations"},
 ]
 
 # --- Wellness Models ---
