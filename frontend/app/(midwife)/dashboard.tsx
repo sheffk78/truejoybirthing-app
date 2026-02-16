@@ -156,13 +156,13 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     color: COLORS.roleMidwife,
-    fontWeight: '500',
+    fontFamily: FONTS.bodyMedium,
     marginTop: 2,
   },
   avatarContainer: {
@@ -188,17 +188,18 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: SIZES.fontHero,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.roleMidwife,
   },
   statLabel: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: SIZES.xs,
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
     marginBottom: SIZES.md,
   },
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
   },
   actionTitle: {
     fontSize: SIZES.fontSm,
-    fontWeight: '500',
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.textPrimary,
     textAlign: 'center',
   },
@@ -240,12 +241,13 @@ const styles = StyleSheet.create({
   },
   infoTitle: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginLeft: SIZES.sm,
   },
   infoText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     lineHeight: 20,
   },
