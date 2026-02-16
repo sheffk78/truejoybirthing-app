@@ -76,6 +76,13 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] Role-based colors: MOM (dusty rose), DOULA (lavender), MIDWIFE (sage green)
 - [x] All screens updated with FONTS constants instead of fontWeight
 
+#### Onboarding Tutorial (COMPLETED - 2026-02-16)
+- [x] Swipeable 6-step tutorial for new users after role-specific onboarding
+- [x] Role-specific content and tips for MOM, DOULA, MIDWIFE
+- [x] Skip button to bypass tutorial
+- [x] "Get Started" button on final step to enter app
+- [x] "View App Tour" option in all profile screens to revisit tutorial
+
 #### Authentication & Onboarding
 - [x] User registration (MOM, DOULA, MIDWIFE roles)
 - [x] Login with JWT authentication
