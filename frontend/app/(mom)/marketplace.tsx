@@ -22,11 +22,15 @@ import { API_ENDPOINTS } from '../../src/constants/api';
 const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE'];
 
 export default function MarketplaceScreen() {
+  const router = useRouter();
   const [providers, setProviders] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedType, setSelectedType] = useState('All');
   const [searchCity, setSearchCity] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageText, setMessageText] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
   
   const fetchProviders = async () => {
     try {
@@ -59,6 +63,41 @@ export default function MarketplaceScreen() {
   
   const handleSearch = () => {
     fetchProviders();
+  };
+  
+  const handleContactProvider = () => {
+    setShowMessageModal(true);
+  };
+  
+  const sendMessage = async () => {
+    if (!messageText.trim() || !selectedProvider || sendingMessage) return;
+    
+    setSendingMessage(true);
+    try {
+      await apiRequest(API_ENDPOINTS.MESSAGES, {
+        method: 'POST',
+        body: {
+          receiver_id: selectedProvider.user_id,
+          content: messageText.trim(),
+        },
+      });
+      
+      setMessageText('');
+      setShowMessageModal(false);
+      setSelectedProvider(null);
+      Alert.alert(
+        'Message Sent!',
+        `Your message has been sent to ${selectedProvider.full_name}. You can continue the conversation in Messages.`,
+        [
+          { text: 'Go to Messages', onPress: () => router.push('/(mom)/messages') },
+          { text: 'OK', style: 'cancel' }
+        ]
+      );
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to send message');
+    } finally {
+      setSendingMessage(false);
+    }
   };
   
   const getRoleColor = (role: string) => {
