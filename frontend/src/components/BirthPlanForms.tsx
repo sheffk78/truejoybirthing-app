@@ -1,32 +1,23 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Icon } from './Icon';
-import { COLORS, SIZES } from '../constants/theme';
+import { COLORS, SIZES, FONTS } from '../constants/theme';
 
-// Types
-interface FieldProps {
-  label: string;
-  value: any;
-  onChange: (value: any) => void;
-  placeholder?: string;
-}
-
-interface MultiSelectProps extends FieldProps {
-  options: string[];
-}
-
-interface SingleSelectProps extends FieldProps {
-  options: string[];
-}
-
-// Reusable Components
-export const TextInputField: React.FC<FieldProps & { multiline?: boolean; numberOfLines?: number }> = ({
+// Component for text input fields
+const TextInputField = ({
   label,
   value,
   onChange,
   placeholder,
   multiline = false,
   numberOfLines = 1,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  multiline?: boolean;
+  numberOfLines?: number;
 }) => (
   <View style={styles.fieldContainer}>
     <Text style={styles.fieldLabel}>{label}</Text>
@@ -42,42 +33,60 @@ export const TextInputField: React.FC<FieldProps & { multiline?: boolean; number
   </View>
 );
 
-export const MultiSelectField: React.FC<MultiSelectProps> = ({
-  label,
-  value = [],
-  onChange,
-  options,
-}) => (
-  <View style={styles.fieldContainer}>
-    <Text style={styles.fieldLabel}>{label}</Text>
-    {options.map((option) => (
-      <TouchableOpacity
-        key={option}
-        style={styles.checkboxRow}
-        onPress={() => {
-          const current = value || [];
-          if (current.includes(option)) {
-            onChange(current.filter((o: string) => o !== option));
-          } else {
-            onChange([...current, option]);
-          }
-        }}
-        data-testid={`checkbox-${option.toLowerCase().replace(/\s+/g, '-')}`}
-      >
-        <View style={[styles.checkbox, value?.includes(option) && styles.checkboxChecked]}>
-          {value?.includes(option) && <Icon name="checkmark" size={14} color={COLORS.white} />}
-        </View>
-        <Text style={styles.checkboxLabel}>{option}</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-);
-
-export const SingleSelectField: React.FC<SingleSelectProps> = ({
+// Component for multi-select checkboxes
+const MultiSelectField = ({
   label,
   value,
   onChange,
   options,
+}: {
+  label: string;
+  value: string[];
+  onChange: (value: string[]) => void;
+  options: string[];
+}) => {
+  const selectedValues = Array.isArray(value) ? value : [];
+  
+  const toggleOption = (option: string) => {
+    if (selectedValues.includes(option)) {
+      onChange(selectedValues.filter(v => v !== option));
+    } else {
+      onChange([...selectedValues, option]);
+    }
+  };
+  
+  return (
+    <View style={styles.fieldContainer}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      {options.map((option) => (
+        <TouchableOpacity
+          key={option}
+          style={styles.checkboxRow}
+          onPress={() => toggleOption(option)}
+        >
+          <View style={[styles.checkbox, selectedValues.includes(option) && styles.checkboxChecked]}>
+            {selectedValues.includes(option) && (
+              <Icon name="checkmark" size={16} color={COLORS.white} />
+            )}
+          </View>
+          <Text style={styles.checkboxLabel}>{option}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
+
+// Component for single-select radio buttons
+const SingleSelectField = ({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
 }) => (
   <View style={styles.fieldContainer}>
     <Text style={styles.fieldLabel}>{label}</Text>
@@ -86,7 +95,6 @@ export const SingleSelectField: React.FC<SingleSelectProps> = ({
         key={option}
         style={styles.radioRow}
         onPress={() => onChange(option)}
-        data-testid={`radio-${option.toLowerCase().replace(/\s+/g, '-')}`}
       >
         <View style={[styles.radio, value === option && styles.radioSelected]}>
           {value === option && <View style={styles.radioInner} />}
@@ -97,10 +105,10 @@ export const SingleSelectField: React.FC<SingleSelectProps> = ({
   </View>
 );
 
-// ============================================
-// SECTION FORM CONFIGURATIONS
-// Based on "True Joy Birthing Fillout Form FINAL.pdf"
-// ============================================
+// =============================================
+// COMPREHENSIVE BIRTH PLAN FORM CONFIGURATION
+// Based on True Joy Birthing requirements
+// =============================================
 
 export const SECTION_FORMS: Record<string, {
   description: string;
@@ -152,13 +160,30 @@ export const SECTION_FORMS: Record<string, {
         key: 'birthSupport',
         type: 'textarea',
         label: 'Birth Support (and relationship)',
-        placeholder: 'e.g., John Doe (Partner), Jane Smith (Doula), Mary Doe (Mother)',
+        placeholder: 'List people who will support you during birth (e.g., John Doe - Partner, Jane Smith - Doula)',
       },
       {
-        key: 'doctorName',
+        key: 'doctorMidwife',
         type: 'text',
-        label: "Doctor's Name",
-        placeholder: 'Dr. Name',
+        label: 'Doctor/Midwife Name',
+        placeholder: 'Dr./Midwife Name',
+      },
+      {
+        key: 'birthLocation',
+        type: 'singleselect',
+        label: 'Where do you plan to give birth?',
+        options: [
+          'Hospital',
+          'Birth Center',
+          'Home Birth',
+          'Not sure yet',
+        ],
+      },
+      {
+        key: 'hospitalName',
+        type: 'text',
+        label: 'Hospital/Birth Center Name (if applicable)',
+        placeholder: 'Name of facility',
       },
     ],
   },
@@ -167,140 +192,216 @@ export const SECTION_FORMS: Record<string, {
   // SECTION 2: LABOR & DELIVERY PREFERENCES
   // ============================================
   labor_delivery: {
-    description: 'Share your preferences for the labor environment and early stages of delivery. These help your care team create a comfortable space for you.',
+    description: 'Share your preferences for the labor environment and early stages of delivery.',
     fields: [
       {
+        key: 'laborEnvironment',
+        type: 'multiselect',
+        label: 'Labor Environment Preferences',
+        options: [
+          'Dim lighting',
+          'Quiet atmosphere',
+          'Music playing',
+          'Aromatherapy',
+          'Limited visitors',
+          'Freedom to move around',
+          'Access to shower/tub',
+          'Birth ball available',
+        ],
+      },
+      {
         key: 'clothingPreference',
-        type: 'multiselect',
-        label: 'Clothing Preference',
-        options: [
-          'Hospital Gown',
-          'My Own Clothes',
-        ],
-      },
-      {
-        key: 'fetalMonitoring',
-        type: 'multiselect',
-        label: 'Fetal Monitoring (check all that apply)',
-        options: [
-          'Continuous External Monitoring (Belly Band)',
-          'Bluetooth Fetal Monitoring (If available)',
-          'Intermittent External Monitoring (Doppler)',
-          'Internal Fetal Monitoring (Internal Electrode)',
-        ],
-      },
-      {
-        key: 'fetalMonitoringNotes',
-        type: 'textarea',
-        label: 'Fetal Monitoring - Additional Notes',
-        placeholder: 'Explain any specific preferences for monitoring...',
-      },
-      {
-        key: 'ivSalineLock',
-        type: 'multiselect',
-        label: 'IV/Saline Lock Preference',
-        options: [
-          'IV Access',
-          'Saline Lock Only',
-          'No IV/Saline Lock',
-        ],
-      },
-      {
-        key: 'ivRationale',
-        type: 'textarea',
-        label: 'If selecting No IV/Saline Lock, please explain rationale',
-        placeholder: 'Your reasoning...',
-      },
-      {
-        key: 'eatingDrinking',
         type: 'singleselect',
-        label: 'Eating and Drinking During Labor',
-        options: ['Yes', 'No'],
+        label: 'What would you like to wear during labor?',
+        options: [
+          'Hospital gown',
+          'My own clothes/gown',
+          'Birthing skirt',
+          'No preference',
+        ],
       },
       {
-        key: 'eatingDrinkingNotes',
+        key: 'laborPositions',
+        type: 'multiselect',
+        label: 'Labor Positions You Want to Try',
+        options: [
+          'Walking',
+          'Standing',
+          'Squatting',
+          'Hands and knees',
+          'Side lying',
+          'Using birth ball',
+          'In water/tub',
+          'Whatever feels right',
+        ],
+      },
+      {
+        key: 'hydrationFood',
+        type: 'singleselect',
+        label: 'Food and Drink During Labor',
+        options: [
+          'Clear liquids only',
+          'Light snacks if allowed',
+          'Ice chips only',
+          'Whatever is permitted',
+        ],
+      },
+      {
+        key: 'peoplePresent',
         type: 'textarea',
-        label: 'Eating/Drinking - Specify Preferences',
-        placeholder: 'What foods/drinks would you like available?',
+        label: 'Who would you like present during labor?',
+        placeholder: 'List names and relationships',
+      },
+      {
+        key: 'photographyPreferences',
+        type: 'multiselect',
+        label: 'Photography/Video Preferences',
+        options: [
+          'Photos during labor',
+          'Photos during delivery',
+          'Video during labor',
+          'Video during delivery',
+          'No photos or video',
+          'Photos of baby only after birth',
+        ],
       },
     ],
   },
 
   // ============================================
   // SECTION 3: PAIN MANAGEMENT
-  // (Separated from Labor for better organization)
   // ============================================
   pain_management: {
-    description: 'Everyone experiences labor differently. Share your preferences for managing discomfort during labor. Rank in order of preference if applicable.',
+    description: 'Your preferences for managing pain during labor. Remember, you can always change your mind.',
     fields: [
       {
-        key: 'painManagement',
-        type: 'multiselect',
-        label: 'Pain Management Preferences (rank in order of preference)',
+        key: 'painManagementApproach',
+        type: 'singleselect',
+        label: 'Overall Approach to Pain Management',
         options: [
-          'None',
-          'Epidural',
-          'Nitrous Oxide (not standard)',
-          'Other',
+          'I prefer to avoid medication if possible',
+          'I am open to medication if needed',
+          'I plan to use an epidural',
+          'I want to decide during labor',
         ],
       },
       {
-        key: 'painManagementOther',
+        key: 'naturalMethods',
+        type: 'multiselect',
+        label: 'Non-Medication Pain Relief Methods',
+        options: [
+          'Breathing techniques',
+          'Massage',
+          'Counter-pressure',
+          'Hydrotherapy (shower/tub)',
+          'TENS unit',
+          'Birthing ball',
+          'Position changes',
+          'Aromatherapy',
+          'Hypnobirthing techniques',
+          'Meditation/visualization',
+          'Hot/cold compresses',
+        ],
+      },
+      {
+        key: 'medicationOptions',
+        type: 'multiselect',
+        label: 'Medication Options (if needed)',
+        options: [
+          'IV pain medication',
+          'Epidural',
+          'Spinal block',
+          'Local anesthesia',
+          'Nitrous oxide (laughing gas)',
+          'Please discuss all options with me first',
+        ],
+      },
+      {
+        key: 'epiduralPreferences',
+        type: 'singleselect',
+        label: 'If you choose an epidural',
+        options: [
+          'Light/walking epidural if available',
+          'Full epidural',
+          'I want to wait as long as possible',
+          'Please offer when appropriate',
+          'Do not offer unless I ask',
+        ],
+      },
+      {
+        key: 'painNotes',
         type: 'textarea',
-        label: 'Other Pain Management - Specify',
-        placeholder: 'Describe other pain management methods you prefer...',
+        label: 'Additional Notes About Pain Management',
+        placeholder: 'Any specific concerns or preferences...',
       },
     ],
   },
 
   // ============================================
-  // SECTION 4: MONITORING & IV / SALINE LOCK
-  // (Labor Environment continued)
+  // SECTION 4: LABOR ENVIRONMENT & COMFORT
+  // (Previously monitoring_iv)
   // ============================================
   monitoring_iv: {
-    description: 'Share your preferences for your labor environment including lighting, sounds, aromatherapy, and comfort measures.',
+    description: 'Your preferences for fetal monitoring, IVs, and other medical interventions during labor.',
     fields: [
       {
-        key: 'laborEnvironment',
-        type: 'multiselect',
-        label: 'Labor Environment Preferences (check all that apply)',
+        key: 'fetalMonitoring',
+        type: 'singleselect',
+        label: 'Fetal Monitoring Preference',
         options: [
-          'Lighting',
-          'Specific Sounds/Music',
-          'Aromatherapy',
-          'Comfort Items (e.g., blanket, pillow)',
-          'Other Environmental Preferences',
+          'Intermittent monitoring (more freedom to move)',
+          'Continuous monitoring',
+          'Wireless/waterproof monitoring if available',
+          'Whatever is medically recommended',
         ],
       },
       {
-        key: 'environmentDescription',
-        type: 'textarea',
-        label: 'Describe your ideal environment',
-        placeholder: 'e.g., Dim lights, calming music, lavender essential oil...',
-      },
-      {
-        key: 'counterPressure',
+        key: 'ivPreference',
         type: 'singleselect',
-        label: 'Counter Pressure',
-        options: ['Yes', 'No'],
+        label: 'IV/Hep-Lock Preference',
+        options: [
+          'Hep-lock only (no fluids unless needed)',
+          'IV fluids',
+          'No IV unless medically necessary',
+          'Whatever is recommended',
+        ],
       },
       {
-        key: 'counterPressureDescription',
-        type: 'textarea',
-        label: 'Counter Pressure Details',
-        placeholder: 'Specify location, pressure level, continuous or intermittent. Ex.: "Yes, firm counter pressure on my lower back during contractions."',
-      },
-      {
-        key: 'physicalTouch',
+        key: 'vaginalExams',
         type: 'singleselect',
-        label: 'Physical Touch (head massage, back rubs, holding hands, etc.)',
-        options: ['Yes', 'No'],
+        label: 'Vaginal Exams',
+        options: [
+          'Only when necessary',
+          'Frequent updates on progress',
+          'Please ask before each exam',
+          'Minimal exams preferred',
+        ],
       },
       {
-        key: 'physicalTouchDetails',
-        type: 'textarea',
-        label: 'Physical Touch - Specify Preferences',
-        placeholder: 'What type of touch would you find comforting?',
+        key: 'artificialRupture',
+        type: 'singleselect',
+        label: 'Artificial Rupture of Membranes (Breaking Water)',
+        options: [
+          'Allow to happen naturally',
+          'Okay to speed up labor',
+          'Please discuss with me first',
+          'Only if medically necessary',
+        ],
+      },
+      {
+        key: 'comfortMeasures',
+        type: 'multiselect',
+        label: 'Comfort Measures Available',
+        options: [
+          'Birth ball',
+          'Peanut ball',
+          'Rocking chair',
+          'Birth stool',
+          'Squat bar',
+          'Warm compresses',
+          'Cold compresses',
+          'Fan or cool cloth',
+        ],
       },
     ],
   },
@@ -309,118 +410,150 @@ export const SECTION_FORMS: Record<string, {
   // SECTION 5: INDUCTION & BIRTH INTERVENTIONS
   // ============================================
   induction_interventions: {
-    description: 'Share your thoughts on induction methods and medical interventions if they become medically necessary. Rank in order of preference.',
+    description: 'Your preferences regarding induction and medical interventions during birth.',
     fields: [
       {
-        key: 'inductionInterventions',
-        type: 'multiselect',
-        label: 'Induction Interventions (if medically necessary) - Rank in order of preference',
+        key: 'inductionPreference',
+        type: 'singleselect',
+        label: 'Induction Preferences',
         options: [
-          'Membrane Sweep',
-          'Amniotomy (Artificial Rupture of Membranes)',
-          'Cytotec',
-          'Pitocin',
-          'Balloon Foley',
-          'Other',
+          'I prefer to go into labor naturally',
+          'Open to induction if medically needed',
+          'Planning a scheduled induction',
+          'Discuss options with me before proceeding',
         ],
       },
       {
-        key: 'inductionOther',
+        key: 'pitocinAugmentation',
+        type: 'singleselect',
+        label: 'Pitocin/Augmentation',
+        options: [
+          'Prefer to avoid unless necessary',
+          'Okay if labor stalls',
+          'Please discuss with me first',
+          'Whatever is medically recommended',
+        ],
+      },
+      {
+        key: 'episiotomy',
+        type: 'singleselect',
+        label: 'Episiotomy Preferences',
+        options: [
+          'Prefer to tear naturally',
+          'Okay if necessary to prevent tearing',
+          'Only in emergency',
+          'Please discuss with me',
+        ],
+      },
+      {
+        key: 'assistedDelivery',
+        type: 'singleselect',
+        label: 'Assisted Delivery (Vacuum/Forceps)',
+        options: [
+          'Only in emergency',
+          'Okay if recommended by doctor',
+          'Please discuss all options with me',
+          'Prefer cesarean if assisted delivery needed',
+        ],
+      },
+      {
+        key: 'cesareanPreferences',
+        type: 'multiselect',
+        label: 'If Cesarean Becomes Necessary',
+        options: [
+          'Partner present in OR',
+          'Clear drape to see baby born',
+          'Immediate skin-to-skin if possible',
+          'Delayed cord clamping if possible',
+          'Music in operating room',
+          'Narrate what is happening',
+          'Lower the drape at birth',
+        ],
+      },
+      {
+        key: 'interventionNotes',
         type: 'textarea',
-        label: 'Other Induction Method - Specify',
-        placeholder: 'Describe other induction methods you prefer...',
-      },
-      {
-        key: 'birthingInterventions',
-        type: 'multiselect',
-        label: 'Birthing Interventions (if medically necessary) - Rank in order of preference',
-        options: [
-          'Forceps',
-          'Vacuum Extraction',
-          'Episiotomy',
-          'Other',
-        ],
-      },
-      {
-        key: 'birthingOther',
-        type: 'textarea',
-        label: 'Other Birthing Intervention - Specify',
-        placeholder: 'Describe other interventions you prefer...',
-      },
-      {
-        key: 'movementDuringLabor',
-        type: 'multiselect',
-        label: 'Movement During Labor',
-        options: [
-          'Free movement (walk, change positions as needed)',
-          'Primarily in bed',
-          'Exercise ball',
-          'Peanut ball',
-        ],
+        label: 'Additional Notes About Interventions',
+        placeholder: 'Any specific concerns...',
       },
     ],
   },
 
   // ============================================
-  // SECTION 6: PUSHING & SAFE WORD
+  // SECTION 6: PUSHING, DELIVERY & SAFE WORD
   // ============================================
   pushing_safe_word: {
-    description: 'Share your preferences for cervical checks, pushing, and establish a safe word for communication with your care team.',
+    description: 'Your preferences for the pushing stage and delivery, plus your safe word for communication.',
     fields: [
       {
-        key: 'cervicalChecks',
+        key: 'pushingApproach',
         type: 'singleselect',
-        label: 'Cervical Checks',
+        label: 'Pushing Approach',
         options: [
-          'Yes, only when asked for',
-          'Yes (specify frequency below)',
-          "Yes, but don't want to know the dilation",
+          'Spontaneous pushing (push when I feel the urge)',
+          'Directed/coached pushing',
+          'Laboring down (wait for urge)',
+          'Whatever feels right',
+        ],
+      },
+      {
+        key: 'pushingPositions',
+        type: 'multiselect',
+        label: 'Pushing Positions to Try',
+        options: [
+          'Semi-reclined',
+          'Side lying',
+          'Squatting',
+          'Hands and knees',
+          'Using squat bar',
+          'Standing',
+          'In water',
+          'Whatever works best',
+        ],
+      },
+      {
+        key: 'mirrorUse',
+        type: 'singleselect',
+        label: 'Would you like to use a mirror?',
+        options: [
+          'Yes, I want to see',
+          'No, I do not want to see',
+          'Maybe, I will decide then',
+        ],
+      },
+      {
+        key: 'touchBaby',
+        type: 'singleselect',
+        label: 'Would you like to touch baby\'s head as they crown?',
+        options: [
+          'Yes',
           'No',
+          'I will decide in the moment',
         ],
       },
       {
-        key: 'cervicalCheckFrequency',
-        type: 'text',
-        label: 'Cervical Check Frequency (if applicable)',
-        placeholder: 'e.g., Every 4 hours',
-      },
-      {
-        key: 'pushing',
-        type: 'singleselect',
-        label: 'Pushing Preference',
+        key: 'perinealSupport',
+        type: 'multiselect',
+        label: 'Perineal Support Preferences',
         options: [
-          'Mother-Led Pushing (intuitive pushing)',
-          'Coached Pushing (guided by healthcare provider or birth coach)',
-        ],
-      },
-      {
-        key: 'mirrorDuringDelivery',
-        type: 'singleselect',
-        label: 'Mirror During Delivery',
-        options: ['Yes', 'No'],
-      },
-      {
-        key: 'photographyVideography',
-        type: 'singleselect',
-        label: 'Photography/Videography',
-        options: [
-          'Photos Only',
-          'Video Only',
-          'Both Photos and Video',
-          'Neither',
+          'Warm compresses',
+          'Perineal massage',
+          'Oil/lubricant',
+          'Hands-off approach',
+          'Trust provider\'s guidance',
         ],
       },
       {
         key: 'safeWord',
         type: 'text',
-        label: 'Safe Word',
-        placeholder: 'A word that indicates you need to switch to medicated birth if coping becomes difficult',
+        label: 'Safe Word (for communication with your team)',
+        placeholder: 'e.g., "PAUSE" or "RED"',
       },
       {
-        key: 'birthWordPreference',
-        type: 'text',
-        label: 'Any Birth Word Preference',
-        placeholder: 'Ex. Contractions being called surges or waves',
+        key: 'safeWordMeaning',
+        type: 'textarea',
+        label: 'What should happen when you use your safe word?',
+        placeholder: 'e.g., "Everyone stops, I need a moment to collect myself and discuss options"',
       },
     ],
   },
@@ -429,93 +562,87 @@ export const SECTION_FORMS: Record<string, {
   // SECTION 7: POST-DELIVERY PREFERENCES
   // ============================================
   post_delivery: {
-    description: 'Share your preferences for immediately after your baby is born, including skin-to-skin, cord care, and placenta options.',
+    description: 'Your preferences for immediately after birth and the golden hour.',
     fields: [
       {
-        key: 'immediateSkinToSkin',
+        key: 'skinToSkin',
         type: 'singleselect',
         label: 'Immediate Skin-to-Skin',
-        options: ['Yes', 'No'],
-      },
-      {
-        key: 'delayedCordClamping',
-        type: 'multiselect',
-        label: 'Delayed Cord Clamping',
         options: [
-          'Yes',
-          'No',
-          'After specified time',
-          'Until placenta is completely drained and cord is limp and white',
+          'Yes, immediately after birth',
+          'After baby is briefly assessed',
+          'Partner does skin-to-skin first',
+          'Flexible based on circumstances',
         ],
       },
       {
-        key: 'cuttingTheCord',
+        key: 'cordClamping',
         type: 'singleselect',
-        label: 'Who Cuts the Cord',
+        label: 'Cord Clamping',
+        options: [
+          'Delayed cord clamping (wait until cord stops pulsing)',
+          'Delayed 1-3 minutes',
+          'Immediate clamping',
+          'Whatever is recommended',
+        ],
+      },
+      {
+        key: 'cordCutting',
+        type: 'singleselect',
+        label: 'Who would you like to cut the cord?',
         options: [
           'Partner',
-          'Myself',
-          'Other (specify below)',
+          'Mother',
+          'Doctor/Midwife',
+          'No preference',
         ],
       },
       {
-        key: 'cordCuttingOther',
-        type: 'text',
-        label: 'Other Person to Cut Cord - Specify',
-        placeholder: 'Name of person',
-      },
-      {
-        key: 'placentaDelivery',
+        key: 'cordBloodBanking',
         type: 'singleselect',
-        label: 'Placenta Delivery',
+        label: 'Cord Blood Banking',
         options: [
-          'Spontaneous (natural delivery)',
-          'Dr. Assisted',
-          'Pitocin-assisted (if medically indicated)',
+          'Private cord blood banking',
+          'Public cord blood donation',
+          'Not banking cord blood',
+          'Still deciding',
         ],
       },
       {
-        key: 'placentaRetention',
-        type: 'singleselect',
-        label: 'Placenta Retention',
+        key: 'placentaPlans',
+        type: 'multiselect',
+        label: 'Placenta Preferences',
         options: [
-          'Discard Placenta',
-          'Keep Placenta',
+          'See the placenta',
+          'Take placenta home',
+          'Placenta encapsulation',
+          'No special requests',
         ],
-      },
-      {
-        key: 'postpartumPitocin',
-        type: 'singleselect',
-        label: 'Postpartum Pitocin',
-        options: ['Yes', 'No'],
-      },
-      {
-        key: 'postpartumPitocinRationale',
-        type: 'textarea',
-        label: 'If selecting No for Postpartum Pitocin, please explain rationale',
-        placeholder: 'Your reasoning...',
       },
       {
         key: 'goldenHour',
-        type: 'textarea',
+        type: 'multiselect',
         label: 'Golden Hour Preferences',
-        placeholder: 'Describe your preferences for undisturbed bonding time immediately following birth...',
-      },
-      {
-        key: 'feedingMethod',
-        type: 'singleselect',
-        label: 'Feeding Method',
         options: [
-          'Breastfeeding',
-          'Bottle Feeding (specify type of formula below)',
-          'Both',
+          'Uninterrupted skin-to-skin for at least one hour',
+          'Delay routine procedures',
+          'Breastfeed within first hour',
+          'Dim lights in room',
+          'Quiet environment',
+          'Limit visitors',
+          'Photos welcome',
         ],
       },
       {
-        key: 'formulaType',
-        type: 'text',
-        label: 'Formula Type (if applicable)',
-        placeholder: 'Brand/type of formula',
+        key: 'announcements',
+        type: 'singleselect',
+        label: 'Announcing Baby\'s Arrival',
+        options: [
+          'We will call/text family ourselves',
+          'Support person can make calls',
+          'Please help us notify family',
+          'Private - we will announce later',
+        ],
       },
     ],
   },
@@ -524,97 +651,162 @@ export const SECTION_FORMS: Record<string, {
   // SECTION 8: NEWBORN CARE PREFERENCES
   // ============================================
   newborn_care: {
-    description: 'Share your preferences for your baby\'s care in the first hours and days after birth.',
+    description: 'Your preferences for baby\'s care after birth.',
     fields: [
       {
-        key: 'antibacterialEyeOintment',
+        key: 'babyExamLocation',
         type: 'singleselect',
-        label: 'Antibacterial Eye Ointment',
-        options: ['Yes', 'No'],
+        label: 'Where should baby\'s exam take place?',
+        options: [
+          'On my chest/beside me',
+          'In the warmer with parent present',
+          'In nursery (if required)',
+          'Whatever is standard',
+        ],
       },
       {
-        key: 'hepatitisBVaccine',
+        key: 'delayedBathing',
         type: 'singleselect',
-        label: 'Hepatitis B Vaccine',
-        options: ['Yes', 'No'],
-      },
-      {
-        key: 'vitaminKShot',
-        type: 'singleselect',
-        label: 'Vitamin K Shot',
-        options: ['Yes', 'No'],
+        label: 'Baby\'s First Bath',
+        options: [
+          'Delay 24+ hours',
+          'Delay 8-12 hours',
+          'After initial bonding period',
+          'Parent wants to give first bath',
+          'Standard hospital timing',
+        ],
       },
       {
         key: 'vernixCleaning',
         type: 'singleselect',
-        label: 'Vernix Cleaning',
-        options: ['Leave', 'Wipe off'],
+        label: 'Vernix (White Coating)',
+        options: [
+          'Leave on - let it absorb naturally',
+          'Gently wipe off',
+          'Standard cleaning',
+        ],
+      },
+      {
+        key: 'eyeOintment',
+        type: 'singleselect',
+        label: 'Eye Prophylaxis (Erythromycin)',
+        options: [
+          'Yes, administer',
+          'Delay 1 hour for bonding',
+          'Decline (discuss with provider)',
+          'Follow hospital protocol',
+        ],
+      },
+      {
+        key: 'vitaminK',
+        type: 'singleselect',
+        label: 'Vitamin K',
+        options: [
+          'Yes, injection',
+          'Oral vitamin K',
+          'Decline (discuss with provider)',
+          'Follow hospital protocol',
+        ],
+      },
+      {
+        key: 'hepatitisB',
+        type: 'singleselect',
+        label: 'Hepatitis B Vaccine',
+        options: [
+          'Yes, administer before discharge',
+          'Delay until pediatrician visit',
+          'Decline (discuss with provider)',
+          'Still deciding',
+        ],
       },
       {
         key: 'circumcision',
-        type: 'multiselect',
+        type: 'singleselect',
         label: 'Circumcision (if applicable)',
         options: [
-          'Yes',
-          'No',
-          'In hospital',
-          "At doctor's office",
+          'Yes, during hospital stay',
+          'Yes, with pediatrician later',
+          'No circumcision',
+          'Not applicable',
         ],
       },
       {
-        key: 'newbornCareLocation',
+        key: 'feedingPlan',
         type: 'singleselect',
-        label: 'Newborn Care Location',
+        label: 'Feeding Plan',
         options: [
-          'Rooming-in (baby stays with mother)',
-          'Nursery (baby stays in nursery)',
-          'Both - at my request',
+          'Exclusive breastfeeding',
+          'Breastfeeding with supplementation if needed',
+          'Formula feeding',
+          'Combination feeding',
+          'Still deciding',
         ],
       },
       {
-        key: 'babyFootprints',
+        key: 'pacifierUse',
         type: 'singleselect',
-        label: 'Baby Footprints',
-        options: ['Yes', 'No'],
+        label: 'Pacifier Use',
+        options: [
+          'No pacifiers',
+          'Okay after breastfeeding established',
+          'Okay from the start',
+          'As needed for procedures',
+        ],
+      },
+      {
+        key: 'roomingIn',
+        type: 'singleselect',
+        label: 'Rooming In',
+        options: [
+          'Baby stays with me 24/7',
+          'Baby goes to nursery at night',
+          'Flexible based on my needs',
+        ],
       },
     ],
   },
 
   // ============================================
-  // SECTION 9: OTHER CONSIDERATIONS
+  // SECTION 9: OTHER IMPORTANT CONSIDERATIONS
   // ============================================
   other_considerations: {
-    description: 'Any additional preferences, requests, or information for your care team. This birth plan is a guide to assist communication with your healthcare provider. Medical needs may necessitate changes to the plan.',
+    description: 'Any additional preferences, cultural or religious considerations, or special circumstances.',
     fields: [
       {
-        key: 'otherPreferences',
+        key: 'culturalReligious',
         type: 'textarea',
-        label: 'Any Other Important Preferences or Considerations',
-        placeholder: 'Share any additional wishes, concerns, or information that your healthcare team should know...',
+        label: 'Cultural or Religious Considerations',
+        placeholder: 'Any cultural, spiritual, or religious practices you would like honored...',
       },
       {
-        key: 'religiousCultural',
+        key: 'previousBirthExperience',
         type: 'textarea',
-        label: 'Religious or Cultural Practices',
-        placeholder: 'Any ceremonies, prayers, or traditions you\'d like to observe...',
+        label: 'Previous Birth Experiences to Consider',
+        placeholder: 'Any experiences from previous births that inform your preferences...',
       },
       {
-        key: 'allergies',
+        key: 'anxietiesConcerns',
         type: 'textarea',
-        label: 'Allergies or Medical Conditions',
-        placeholder: 'List any allergies or conditions your team should know about...',
+        label: 'Special Anxieties or Concerns',
+        placeholder: 'Anything your care team should know about your anxieties or fears...',
       },
       {
-        key: 'visitors',
+        key: 'medicalConditions',
         type: 'textarea',
-        label: 'Visitor Preferences',
-        placeholder: 'Who is allowed to visit and when...',
+        label: 'Medical Conditions or Allergies',
+        placeholder: 'Any relevant medical conditions, allergies, or medications...',
       },
       {
-        key: 'photographyNotes',
+        key: 'emergencyContact',
+        type: 'text',
+        label: 'Emergency Contact (besides partner)',
+        placeholder: 'Name and phone number',
+      },
+      {
+        key: 'additionalNotes',
         type: 'textarea',
-        label: 'Photography/Videography Notes',
-        placeholder: 'Any specific requests about photos or videos...',
+        label: 'Anything Else Your Care Team Should Know',
+        placeholder: 'Any other preferences, wishes, or information...',
       },
       {
         key: 'musicPreferences',
@@ -688,8 +880,8 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.lg,
   },
   fieldLabel: {
-    fontSize: SIZES.fontSm,
-    fontWeight: '600',
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: SIZES.sm,
   },
@@ -700,6 +892,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
   },
   textArea: {
@@ -709,7 +902,8 @@ const styles = StyleSheet.create({
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: SIZES.xs,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.xs,
   },
   checkbox: {
     width: 24,
@@ -727,13 +921,15 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
     flex: 1,
   },
   radioRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: SIZES.xs,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.xs,
   },
   radio: {
     width: 24,
@@ -756,6 +952,7 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
     flex: 1,
   },
