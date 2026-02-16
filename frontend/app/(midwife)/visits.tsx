@@ -17,7 +17,7 @@ import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
 
 export default function MidwifeVisitsScreen() {
   const [visits, setVisits] = useState<any[]>([]);
