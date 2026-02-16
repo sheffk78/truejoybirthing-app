@@ -122,6 +122,16 @@ export default function DoulaContractsScreen() {
     }).format(amount);
   };
   
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
@@ -137,6 +147,7 @@ export default function DoulaContractsScreen() {
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => setModalVisible(true)}
+            data-testid="add-contract-btn"
           >
             <Icon name="add" size={24} color={COLORS.white} />
           </TouchableOpacity>
@@ -151,7 +162,7 @@ export default function DoulaContractsScreen() {
           </Card>
         ) : (
           contracts.map((contract) => (
-            <Card key={contract.contract_id} style={styles.contractCard}>
+            <Card key={contract.contract_id} style={styles.contractCard} data-testid={`contract-${contract.contract_id}`}>
               <View style={styles.contractHeader}>
                 <View style={styles.contractInfo}>
                   <Text style={styles.contractTitle}>{contract.contract_title}</Text>
@@ -180,6 +191,16 @@ export default function DoulaContractsScreen() {
                 </Text>
               )}
               
+              {/* Signature Info */}
+              {contract.status === 'Signed' && contract.signature_data && (
+                <View style={styles.signatureInfo}>
+                  <Icon name="checkmark-circle" size={16} color={COLORS.success} />
+                  <Text style={styles.signatureText}>
+                    Signed by {contract.signature_data.signer_name || 'Client'} on {formatDate(contract.signed_at)}
+                  </Text>
+                </View>
+              )}
+              
               {contract.status === 'Draft' && (
                 <Button
                   title="Send for Signature"
@@ -187,7 +208,15 @@ export default function DoulaContractsScreen() {
                   variant="outline"
                   size="sm"
                   style={styles.sendButton}
+                  testID={`send-contract-${contract.contract_id}`}
                 />
+              )}
+              
+              {contract.status === 'Sent' && (
+                <View style={styles.sentInfo}>
+                  <Icon name="time-outline" size={16} color={COLORS.warning} />
+                  <Text style={styles.sentText}>Awaiting client signature</Text>
+                </View>
               )}
             </Card>
           ))
