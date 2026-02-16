@@ -2604,6 +2604,164 @@ async def get_pregnancy_timeline(user: User = Depends(check_role(["MOM"]))):
         "timeline": PREGNANCY_TIMELINE
     }
 
+# ============== MESSAGING ROUTES ==============
+
+@api_router.get("/messages/conversations")
+async def get_conversations(user: User = Depends(get_current_user)):
+    """Get all conversations for the current user"""
+    # Find all unique conversations where user is sender or receiver
+    pipeline = [
+        {
+            "$match": {
+                "$or": [
+                    {"sender_id": user.user_id},
+                    {"receiver_id": user.user_id}
+                ]
+            }
+        },
+        {
+            "$sort": {"created_at": -1}
+        },
+        {
+            "$group": {
+                "_id": {
+                    "$cond": [
+                        {"$eq": ["$sender_id", user.user_id]},
+                        "$receiver_id",
+                        "$sender_id"
+                    ]
+                },
+                "last_message": {"$first": "$$ROOT"},
+                "unread_count": {
+                    "$sum": {
+                        "$cond": [
+                            {"$and": [
+                                {"$eq": ["$receiver_id", user.user_id]},
+                                {"$eq": ["$read", False]}
+                            ]},
+                            1,
+                            0
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "$sort": {"last_message.created_at": -1}
+        }
+    ]
+    
+    conversations_cursor = db.messages.aggregate(pipeline)
+    conversations = await conversations_cursor.to_list(100)
+    
+    # Enhance with user info
+    result = []
+    for conv in conversations:
+        other_user_id = conv["_id"]
+        other_user = await db.users.find_one({"user_id": other_user_id}, {"_id": 0, "password_hash": 0})
+        
+        if other_user:
+            last_msg = conv["last_message"]
+            result.append({
+                "other_user_id": other_user_id,
+                "other_user_name": other_user.get("full_name", "Unknown"),
+                "other_user_role": other_user.get("role", ""),
+                "other_user_picture": other_user.get("picture"),
+                "last_message_content": last_msg.get("content", "")[:50] + ("..." if len(last_msg.get("content", "")) > 50 else ""),
+                "last_message_time": last_msg.get("created_at"),
+                "unread_count": conv["unread_count"],
+                "is_sender": last_msg.get("sender_id") == user.user_id
+            })
+    
+    return {"conversations": result}
+
+@api_router.get("/messages/{other_user_id}")
+async def get_messages(other_user_id: str, user: User = Depends(get_current_user), limit: int = 50):
+    """Get messages between current user and another user"""
+    # Verify the other user exists
+    other_user = await db.users.find_one({"user_id": other_user_id}, {"_id": 0})
+    if not other_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get messages in conversation (both directions)
+    messages = await db.messages.find(
+        {
+            "$or": [
+                {"sender_id": user.user_id, "receiver_id": other_user_id},
+                {"sender_id": other_user_id, "receiver_id": user.user_id}
+            ]
+        },
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Mark received messages as read
+    await db.messages.update_many(
+        {"sender_id": other_user_id, "receiver_id": user.user_id, "read": False},
+        {"$set": {"read": True}}
+    )
+    
+    # Reverse to show oldest first
+    messages.reverse()
+    
+    return {
+        "messages": messages,
+        "other_user": {
+            "user_id": other_user_id,
+            "full_name": other_user.get("full_name"),
+            "role": other_user.get("role"),
+            "picture": other_user.get("picture")
+        }
+    }
+
+@api_router.post("/messages")
+async def send_message(message_data: MessageCreate, user: User = Depends(get_current_user)):
+    """Send a message to another user"""
+    # Verify receiver exists
+    receiver = await db.users.find_one({"user_id": message_data.receiver_id}, {"_id": 0})
+    if not receiver:
+        raise HTTPException(status_code=404, detail="Recipient not found")
+    
+    if message_data.receiver_id == user.user_id:
+        raise HTTPException(status_code=400, detail="Cannot send message to yourself")
+    
+    if not message_data.content.strip():
+        raise HTTPException(status_code=400, detail="Message content cannot be empty")
+    
+    now = datetime.now(timezone.utc)
+    
+    message_doc = {
+        "message_id": f"msg_{uuid.uuid4().hex[:12]}",
+        "sender_id": user.user_id,
+        "sender_name": user.full_name,
+        "sender_role": user.role,
+        "receiver_id": message_data.receiver_id,
+        "receiver_name": receiver.get("full_name", "Unknown"),
+        "receiver_role": receiver.get("role", ""),
+        "content": message_data.content.strip(),
+        "read": False,
+        "created_at": now
+    }
+    
+    await db.messages.insert_one(message_doc)
+    message_doc.pop('_id', None)
+    
+    # Create notification for receiver
+    await create_notification(
+        user_id=message_data.receiver_id,
+        notif_type="new_message",
+        title="New Message",
+        message=f"{user.full_name} sent you a message",
+        data={"sender_id": user.user_id, "message_id": message_doc["message_id"]}
+    )
+    
+    return {"message": "Message sent", "data": message_doc}
+
+@api_router.get("/messages/unread/count")
+async def get_unread_count(user: User = Depends(get_current_user)):
+    """Get count of unread messages"""
+    count = await db.messages.count_documents({"receiver_id": user.user_id, "read": False})
+    return {"unread_count": count}
+
 # ============== HEALTH CHECK ==============
 
 @api_router.get("/")
