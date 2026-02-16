@@ -54,10 +54,10 @@ export const FONTS = {
   // Playfair Display for headings
   heading: 'PlayfairDisplay_700Bold',
   subheading: 'PlayfairDisplay_500Medium',
-  // Quicksand for body text
-  body: 'Quicksand_400Regular',
-  bodyMedium: 'Quicksand_500Medium',
-  bodyBold: 'Quicksand_700Bold',
+  // Lato for body text
+  body: 'Lato_400Regular',
+  bodyMedium: 'Lato_500Medium',
+  bodyBold: 'Lato_700Bold',
   // Fallbacks
   regular: 'System',
   medium: 'System',
