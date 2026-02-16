@@ -20,6 +20,7 @@ interface ButtonProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
   icon?: React.ReactNode;
+  testID?: string;
 }
 
 export default function Button({
@@ -33,6 +34,7 @@ export default function Button({
   style,
   textStyle,
   icon,
+  testID,
 }: ButtonProps) {
   const getButtonStyle = (): ViewStyle => {
     const base: ViewStyle = {
@@ -120,6 +122,8 @@ export default function Button({
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
+      testID={testID}
+      data-testid={testID}
       style={({ pressed }) => [
         getButtonStyle(),
         SHADOWS.sm,
