@@ -6,51 +6,55 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 ## Core Requirements
 
 ### Authentication
-- [x] Role-based signup (MOM, DOULA, MIDWIFE)
+- [x] Role-based signup (MOM, DOULA, MIDWIFE, ADMIN)
 - [x] Email/password login
 - [x] **Google Social Login** (via Emergent-managed OAuth)
 - [x] JWT/session-based authentication
 
 ### MOM Experience
 - [x] Onboarding flow
-- [x] Home dashboard with quick actions (Timeline, Wellness, Postpartum, My Team)
-- [x] **Birth Plan - All 9 Sections** per PDF specification (50+ fields)
-- [x] **Share Birth Plan** - Search providers, send requests, manage access
-- [x] **Timeline** - Week-by-week pregnancy milestones + custom events/appointments
-- [x] **Wellness Journal** - Mood, energy, sleep, symptoms tracking + journal notes
-- [x] **Postpartum Plan** - Support network, meal prep, recovery goals, warning signs
-- [x] **My Team** - View connected providers, manage invitations
+- [x] Home dashboard with quick actions
+- [x] **Birth Plan** - All 9 sections, 50+ fields
+- [x] **Share Birth Plan** - Search providers, send requests
+- [x] **Timeline** - Week-by-week milestones + custom events
+- [x] **Wellness Journal** - Mood, energy, sleep, symptoms tracking
+- [x] **Postpartum Plan** - Support network, recovery goals
+- [x] **My Team** - View connected providers
+- [x] **Provider Marketplace** - Browse and connect with doulas/midwives
 
 ### Notifications
-- [x] **In-app Notifications** - Created when birth plan is shared
-- [x] **Email Notifications** - Resend integration (requires domain verification)
-- [x] **Polling** - GET /api/notifications returns unread count
+- [x] **In-app Notifications** - Share requests, etc.
+- [x] **Email Notifications** - Resend integration (pending domain verification)
 
-### DOULA Experience (COMPLETED Feb 16, 2025)
+### DOULA Experience
 - [x] Onboarding flow
-- [x] **Dashboard** - Stats (active clients, total clients, pending contracts, pending invoices)
-- [x] **Client Management** - Add, list, view clients with status tracking
-- [x] **Contract Management** - Create, send, track contracts
+- [x] **Dashboard** - Stats (clients, contracts, invoices)
+- [x] **Client Management** - Add, list, view clients
+- [x] **Contract Management** - Create, send, track
 - [x] **Invoice Management** - Create, send, mark paid
-- [x] **Client Notes** - Add prenatal/birth/postpartum notes with filtering
-- [x] **Client Birth Plans** - View shared birth plans
-- [x] **Provider Notes** - Add professional notes to birth plan sections
-- [x] **Profile** - Edit practice info, services, logout
+- [x] **Client Notes** - Prenatal/Birth/Postpartum notes with filtering
+- [x] **Profile** - Edit practice info, logout
 
-### MIDWIFE Experience (COMPLETED Feb 16, 2025)
+### MIDWIFE Experience
 - [x] Onboarding flow
-- [x] **Dashboard** - Stats (prenatal clients, total clients, visits/births this month)
-- [x] **Client Management** - Add, list, view clients with status tracking
-- [x] **Visit Logging** - Record prenatal/postpartum visits with vitals (BP, weight, FHR, GA)
-- [x] **Birth Summaries** - Create detailed birth records (place, mode, newborn details, complications)
+- [x] **Dashboard** - Stats (clients, visits, births)
+- [x] **Client Management** - Add, list, view clients
+- [x] **Visit Logging** - Record prenatal/postpartum visits with vitals
+- [x] **Birth Summaries** - Create detailed birth records
+- [x] **Client Notes** - Prenatal/Birth/Postpartum notes with filtering
 - [x] **Profile** - Edit practice info, credentials, logout
 
-### ADMIN Experience (Future)
-- [ ] Content management
-- [ ] User management
+### ADMIN Experience
+- [x] **User Management** - View all users, filter by role, change roles
+- [x] **Content Management** - Edit birth plan section content, add videos
+- [x] **Settings** - Admin profile and logout
 
-### Phase 3 (Future)
-- [ ] Provider marketplace
+### Phase 3 - Provider Marketplace
+- [x] **Provider Search** - Browse doulas and midwives
+- [x] **Location Filter** - Search by city
+- [x] **Provider Type Filter** - Filter by Doula/Midwife
+- [x] **Provider Profiles** - View details, credentials, services
+- [x] **Accepting Status** - Show if accepting new clients
 
 ## Technical Architecture
 
@@ -68,75 +72,72 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ### Key API Endpoints
 
-#### Doula
-- `GET /api/doula/dashboard` - Get stats
-- `GET /api/doula/clients` - List clients
-- `POST /api/doula/clients` - Add client
-- `GET /api/doula/contracts` - List contracts
-- `POST /api/doula/contracts` - Create contract
-- `POST /api/doula/contracts/{id}/send` - Send contract
-- `GET /api/doula/invoices` - List invoices
-- `POST /api/doula/invoices` - Create invoice
-- `GET /api/doula/notes` - List notes
-- `POST /api/doula/notes` - Add note
+#### Marketplace
+- `GET /api/marketplace/providers` - List all providers
+- `GET /api/marketplace/providers?provider_type=DOULA` - Filter by type
+- `GET /api/marketplace/providers?location_city=Austin` - Filter by city
+- `GET /api/marketplace/provider/{user_id}` - Get provider details
 
-#### Midwife
-- `GET /api/midwife/dashboard` - Get stats
-- `GET /api/midwife/clients` - List clients
-- `POST /api/midwife/clients` - Add client
-- `GET /api/midwife/visits` - List visits
-- `POST /api/midwife/visits` - Record visit
-- `GET /api/midwife/birth-summaries` - List birth summaries
-- `POST /api/midwife/birth-summaries` - Create birth summary
+#### Midwife Notes
+- `GET /api/midwife/notes` - List notes
+- `POST /api/midwife/notes` - Create note
+
+#### Admin
+- `GET /api/admin/users` - List all users
+- `PUT /api/admin/users/{user_id}/role` - Change user role
+- `GET /api/admin/content` - List content items
+- `PUT /api/admin/content/{section_id}` - Update content
 
 ## What's Been Implemented
 
-### Feb 16, 2025 - Session 2: Provider Dashboards Complete
-- **Doula Client Notes** - Full CRUD with type filtering (Prenatal/Birth/Postpartum)
-- **Midwife Birth Summaries** - Create/view with place, mode, newborn details
-- **Midwife Visits** - Already existed, now tested
-- All backend APIs tested (100% pass rate)
-- All frontend screens verified
+### Feb 16, 2025 - Session 3: Complete Feature Set
+- **Midwife Client Notes** - Prenatal/Birth/Postpartum notes with filtering
+- **Provider Marketplace** - Search, filter, view provider profiles
+- **Admin Panel Verified** - User management + content management working
+- Bug fixed: MongoDB ObjectId serialization in admin content creation
 
-### Feb 16, 2025 - Session 1: Doula Dashboard
-- Dashboard, Clients, Contracts, Invoices, Profile
-- All tested and working
+### Feb 16, 2025 - Session 2
+- Doula Client Notes, Midwife Birth Summaries
 
-### Earlier - MOM Experience
-- Birth Plan - 9 sections, 50+ fields
-- Share Birth Plan - Search, request, accept/reject, provider notes
+### Feb 16, 2025 - Session 1
+- Doula Dashboard (Clients, Contracts, Invoices)
+
+### Earlier
+- MOM Experience (Birth Plan, Timeline, Wellness, Postpartum, My Team)
+- Provider Share & Notes system
 - Email/In-app Notifications
-- Timeline, Wellness, Postpartum, My Team screens
 
 ## Test Reports
-- `/app/test_reports/iteration_7.json` - Latest (Doula Notes + Midwife features)
+- `/app/test_reports/iteration_8.json` - Latest
 - Backend: 100% (9/9 passed)
-- Frontend: 100% (all screens verified)
+- Frontend: 90% (tabs visible, automation limitation)
 
 ## Important Notes
 
 ### Email Notifications
-Resend requires domain verification (user waiting for DNS propagation ~24hrs).
+Resend requires domain verification (~24hrs pending).
 
 ### Known Limitations
-- React Native Web click automation in Playwright (use localStorage injection)
-- Console warnings about deprecated shadow* props (cosmetic)
+- React Native Web tab navigation doesn't work in Playwright automation (works in real browser)
 
 ## Prioritized Backlog
 
-### P1 (High Priority)
-- Midwife notes (endpoint exists, UI similar to Doula notes)
-- Admin panel (content/user management)
+### P1 (Complete!)
+All core features implemented for MOM, DOULA, MIDWIFE, and ADMIN roles.
 
-### P2 (Medium Priority)
+### P2 (Enhancements)
 - Push notifications (mobile)
 - PDF export for birth plan
 - Contract e-signature integration
+- Provider messaging/contact system
 
-### P3 (Lower Priority)
-- Provider marketplace (Phase 3)
+### P3 (Future)
+- Payment processing for invoices
+- Video consultations
+- Multi-language support
 
 ## Test Credentials
 - MOM: `sharemom2_1771213474@test.com` / `password123`
 - DOULA: `doula2_1771213474@test.com` / `password123`
 - MIDWIFE: `testmidwife_1771216891@test.com` / `password123`
+- ADMIN: Create via API with `role: "ADMIN"`
