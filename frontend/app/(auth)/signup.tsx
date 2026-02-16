@@ -16,7 +16,7 @@ import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import Card from '../../src/components/Card';
 import { useAuthStore } from '../../src/store/authStore';
-import { COLORS, SIZES, SHADOWS } from '../../src/constants/theme';
+import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 
 type RoleOption = 'MOM' | 'DOULA' | 'MIDWIFE';
 
