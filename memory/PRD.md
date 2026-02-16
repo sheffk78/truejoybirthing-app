@@ -26,14 +26,22 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Email Notifications** - Resend integration (requires domain verification)
 - [x] **Polling** - GET /api/notifications returns unread count
 
-### DOULA/MIDWIFE Experience
+### DOULA Experience (COMPLETED Feb 16, 2025)
 - [x] Onboarding flow
+- [x] **Dashboard** - Stats (active clients, total clients, pending contracts, pending invoices)
+- [x] **Client Management** - Add, list, view clients with status tracking
+- [x] **Contract Management** - Create, send, track contracts
+- [x] **Invoice Management** - Create, send, mark paid
 - [x] **Client Birth Plans** - View shared birth plans
 - [x] **Provider Notes** - Add professional notes to sections
-- [x] **Share Request Management** - Accept/reject requests
-- [ ] Dashboard
-- [ ] Contract management
-- [ ] Invoicing
+- [x] **Profile** - Edit practice info, services, logout
+
+### MIDWIFE Experience
+- [x] Onboarding flow
+- [x] Dashboard
+- [x] Client management
+- [ ] Visit logging (UI exists, needs testing)
+- [ ] Birth summary creation
 
 ### ADMIN Experience (Future)
 - [ ] Content management
@@ -58,6 +66,20 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ### Key API Endpoints
 
+#### Doula
+- `GET /api/doula/dashboard` - Get stats
+- `GET /api/doula/clients` - List clients
+- `POST /api/doula/clients` - Add client
+- `GET /api/doula/contracts` - List contracts
+- `POST /api/doula/contracts` - Create contract
+- `POST /api/doula/contracts/{id}/send` - Send contract
+- `GET /api/doula/invoices` - List invoices
+- `POST /api/doula/invoices` - Create invoice
+- `POST /api/doula/invoices/{id}/send` - Send invoice
+- `POST /api/doula/invoices/{id}/mark-paid` - Mark as paid
+- `GET /api/doula/notes` - Get notes
+- `POST /api/doula/notes` - Add note
+
 #### Notifications
 - `GET /api/notifications` - Get notifications with unread count
 - `PUT /api/notifications/{id}/read` - Mark as read
@@ -77,22 +99,32 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - `GET /api/postpartum/plan` - Get postpartum plan
 - `PUT /api/postpartum/plan` - Save postpartum plan
 
-## What's Been Implemented (Feb 16, 2025)
+## What's Been Implemented
 
-### Session 3 - Major Feature Release
-1. **Birth Plan - Full PDF Implementation** - 9 sections, 50+ fields ✅
-2. **Share Birth Plan Feature** - Search, request, accept/reject, provider notes ✅
-3. **Email Notifications** - Resend integration configured ✅
-4. **In-app Notifications** - Polling system ✅
-5. **Timeline Screen** - Milestones + custom events ✅
-6. **Wellness Journal** - Mood/energy/sleep/symptoms + journal ✅
-7. **Postpartum Plan** - Full plan with 10+ sections ✅
-8. **My Team Screen** - Provider management ✅
-9. **Home Dashboard** - 4 quick action cards ✅
+### Feb 16, 2025 - Doula Dashboard Complete
+- Full Doula dashboard with stats
+- Client management (list, add)
+- Contract management (create, send)
+- Invoice management (create, send, mark paid)
+- Profile management
+- All backend APIs tested (100% pass rate)
+- All frontend screens verified
+
+### Earlier - MOM Experience Complete
+- Birth Plan - 9 sections, 50+ fields
+- Share Birth Plan - Search, request, accept/reject, provider notes
+- Email Notifications - Resend integration
+- In-app Notifications - Polling system
+- Timeline Screen - Milestones + custom events
+- Wellness Journal - Mood/energy/sleep/symptoms + journal
+- Postpartum Plan - Full plan with 10+ sections
+- My Team Screen - Provider management
+- Home Dashboard - 4 quick action cards
 
 ## Test Reports
-- `/app/test_reports/iteration_5.json` - Latest comprehensive tests
-- Backend: 100% (21/21 tests passed)
+- `/app/test_reports/iteration_6.json` - Latest comprehensive tests
+- Backend: 100% (14/14 tests passed)
+- Frontend: 100% (all screens verified)
 
 ## Important Notes
 
@@ -100,18 +132,19 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 Resend requires domain verification to send emails to external recipients. The code is complete but emails to external addresses will fail until domain is verified at resend.com/domains. In-app notifications work regardless.
 
 ### Known Limitations
-- React Native Web Pressable/TouchableOpacity components don't work well with Playwright automation
+- React Native Web Pressable/TouchableOpacity components don't work well with Playwright automation (workaround: localStorage token injection)
 - Console warnings about deprecated shadow* props (cosmetic only)
 
 ## Prioritized Backlog
 
 ### P1 (High Priority)
-- Full Doula dashboard with contract management
-- Full Midwife dashboard with visit logging
+- Full Midwife dashboard with visit logging and birth summaries
+- Client notes for Doula (endpoint exists, UI needs linking)
 
 ### P2 (Medium Priority)
 - Push notifications (mobile)
 - PDF export for birth plan
+- Contract e-signature integration
 
 ### P3 (Lower Priority)
 - Admin content/user management
