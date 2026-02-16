@@ -460,6 +460,13 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontSm,
     marginLeft: 4,
   },
+  actionSection: {
+    marginTop: SIZES.lg,
+    alignItems: 'center',
+  },
+  shareButton: {
+    marginBottom: SIZES.sm,
+  },
   exportSection: {
     marginTop: SIZES.lg,
     alignItems: 'center',
