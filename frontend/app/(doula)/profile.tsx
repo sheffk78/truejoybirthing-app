@@ -353,4 +353,17 @@ const styles = StyleSheet.create({
   logoutButton: {
     marginTop: SIZES.lg,
   },
+  menuCard: {
+    marginBottom: SIZES.md,
+  },
+  menuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  menuText: {
+    flex: 1,
+    fontSize: SIZES.fontMd,
+    color: COLORS.textPrimary,
+    marginLeft: SIZES.md,
+  },
 });
