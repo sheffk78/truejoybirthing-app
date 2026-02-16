@@ -87,7 +87,7 @@ export default function MidwifeOnboardingScreen() {
       });
       
       updateUser({ onboarding_completed: true });
-      router.replace('/(midwife)/dashboard');
+      router.replace('/(auth)/tutorial?role=MIDWIFE');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to save your information');
     } finally {
