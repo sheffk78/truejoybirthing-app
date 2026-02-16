@@ -46,6 +46,7 @@ const SECTION_ICONS: Record<string, string> = {
 };
 
 export default function BirthPlanScreen() {
+  const router = useRouter();
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSection, setSelectedSection] = useState<any>(null);
