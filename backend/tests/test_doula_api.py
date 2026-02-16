@@ -29,10 +29,11 @@ class TestMomLogin:
         
         assert response.status_code == 200, f"MOM login failed: {response.text}"
         data = response.json()
-        assert "user" in data
-        assert data["user"]["email"] == MOM_EMAIL
-        assert data["user"]["role"] == "MOM"
-        print(f"MOM login successful: {data['user']['full_name']}")
+        # Login returns user data directly (not nested in "user" key)
+        assert "email" in data
+        assert data["email"] == MOM_EMAIL
+        assert data["role"] == "MOM"
+        print(f"MOM login successful: {data['full_name']}")
 
 
 class TestDoulaLogin:
@@ -48,10 +49,11 @@ class TestDoulaLogin:
         
         assert response.status_code == 200, f"DOULA login failed: {response.text}"
         data = response.json()
-        assert "user" in data
-        assert data["user"]["email"] == DOULA_EMAIL
-        assert data["user"]["role"] == "DOULA"
-        print(f"DOULA login successful: {data['user']['full_name']}")
+        # Login returns user data directly (not nested in "user" key)
+        assert "email" in data
+        assert data["email"] == DOULA_EMAIL
+        assert data["role"] == "DOULA"
+        print(f"DOULA login successful: {data['full_name']}")
 
 
 class TestDoulaDashboard:
@@ -363,9 +365,11 @@ class TestMomScreenAPIs:
         assert response.status_code == 200, f"Mom team API failed: {response.text}"
         data = response.json()
         
-        assert isinstance(data, list)
+        # Team API returns object with doula and midwife keys
+        assert isinstance(data, dict)
+        assert "doula" in data or "midwife" in data
         
-        print(f"Team members count: {len(data)}")
+        print(f"Team data: doula={bool(data.get('doula'))}, midwife={bool(data.get('midwife'))}")
     
     def test_birth_plan_api(self):
         """Test GET /api/birth-plan for MOM home screen"""
