@@ -69,6 +69,12 @@ export default function MomLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="share-birth-plan"
+        options={{
+          href: null,  // Hide from tab bar
+        }}
+      />
     </Tabs>
   );
 }
