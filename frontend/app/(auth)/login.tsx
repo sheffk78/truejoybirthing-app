@@ -112,6 +112,7 @@ export default function LoginScreen() {
               loading={isLoading}
               fullWidth
               style={styles.loginButton}
+              testID="login-submit-btn"
             />
           </View>
           
