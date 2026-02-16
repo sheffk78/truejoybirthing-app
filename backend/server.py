@@ -370,6 +370,176 @@ class ProviderNote(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
+# --- Notification Models ---
+NOTIFICATION_TYPES = [
+    "share_request",      # Mom shared birth plan with provider
+    "share_accepted",     # Provider accepted share request
+    "share_rejected",     # Provider rejected share request
+    "provider_note",      # Provider added note to birth plan
+    "wellness_reminder",  # Daily wellness check-in reminder
+    "timeline_milestone", # New timeline milestone
+]
+
+class Notification(BaseModel):
+    notification_id: str
+    user_id: str
+    type: str
+    title: str
+    message: str
+    data: Optional[Dict[str, Any]] = None
+    read: bool = False
+    created_at: datetime
+
+# --- Timeline Models ---
+PREGNANCY_MILESTONES = [
+    {"week": 4, "title": "Positive Test!", "description": "Your pregnancy test is positive. Baby is the size of a poppy seed."},
+    {"week": 6, "title": "Heartbeat Begins", "description": "Baby's heart starts beating. Size: lentil."},
+    {"week": 8, "title": "First Prenatal Visit", "description": "Schedule your first prenatal appointment. Baby is the size of a raspberry."},
+    {"week": 10, "title": "Fingers & Toes Form", "description": "Baby's fingers and toes are forming. Size: strawberry."},
+    {"week": 12, "title": "End of First Trimester", "description": "Risk of miscarriage drops significantly. Baby is the size of a lime."},
+    {"week": 16, "title": "Gender Can Be Determined", "description": "Baby's gender may be visible on ultrasound. Size: avocado."},
+    {"week": 20, "title": "Anatomy Scan", "description": "Detailed ultrasound to check baby's development. Baby is the size of a banana."},
+    {"week": 24, "title": "Viability Milestone", "description": "Baby has a chance of survival if born now. Size: ear of corn."},
+    {"week": 28, "title": "Third Trimester Begins", "description": "Final stretch! Baby is the size of an eggplant."},
+    {"week": 32, "title": "Baby Practices Breathing", "description": "Lungs are developing. Baby is the size of a squash."},
+    {"week": 36, "title": "Full Term Soon", "description": "Baby is considered early term at 37 weeks. Size: honeydew melon."},
+    {"week": 37, "title": "Full Term", "description": "Baby is now considered full term!"},
+    {"week": 40, "title": "Due Date", "description": "Your estimated due date has arrived!"},
+]
+
+class TimelineEventCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    event_date: str
+    event_type: str = "custom"  # "milestone" or "custom" or "appointment"
+
+class TimelineEvent(BaseModel):
+    event_id: str
+    user_id: str
+    title: str
+    description: Optional[str] = None
+    event_date: str
+    event_type: str
+    week_number: Optional[int] = None
+    created_at: datetime
+
+# --- Wellness Journal Models ---
+class WellnessEntryCreate(BaseModel):
+    mood: int  # 1-5 scale
+    energy_level: Optional[int] = None  # 1-5 scale
+    sleep_quality: Optional[int] = None  # 1-5 scale
+    symptoms: Optional[List[str]] = None
+    journal_notes: Optional[str] = None
+
+class WellnessEntry(BaseModel):
+    entry_id: str
+    user_id: str
+    mood: int
+    energy_level: Optional[int] = None
+    sleep_quality: Optional[int] = None
+    symptoms: Optional[List[str]] = None
+    journal_notes: Optional[str] = None
+    created_at: datetime
+
+# --- Postpartum Plan Models ---
+class PostpartumPlanCreate(BaseModel):
+    support_people: Optional[List[str]] = None
+    meal_prep_plans: Optional[str] = None
+    recovery_goals: Optional[str] = None
+    mental_health_resources: Optional[str] = None
+    baby_feeding_plan: Optional[str] = None
+    visitor_policy: Optional[str] = None
+    self_care_activities: Optional[List[str]] = None
+    warning_signs_to_watch: Optional[List[str]] = None
+    emergency_contacts: Optional[List[Dict[str, str]]] = None
+    notes: Optional[str] = None
+
+# ============== EMAIL HELPER ==============
+
+async def send_notification_email(to_email: str, subject: str, html_content: str):
+    """Send email notification using Resend"""
+    if not resend.api_key:
+        logging.warning("RESEND_API_KEY not configured, skipping email")
+        return None
+    
+    params = {
+        "from": SENDER_EMAIL,
+        "to": [to_email],
+        "subject": subject,
+        "html": html_content
+    }
+    
+    try:
+        result = await asyncio.to_thread(resend.Emails.send, params)
+        logging.info(f"Email sent to {to_email}: {result.get('id')}")
+        return result
+    except Exception as e:
+        logging.error(f"Failed to send email to {to_email}: {str(e)}")
+        return None
+
+def get_share_request_email_html(mom_name: str, provider_name: str):
+    """Generate HTML for share request notification email"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+            .header {{ background: linear-gradient(135deg, #9d7a9d, #c9a8c9); padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+            .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+            .content {{ background: #fff; padding: 30px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 10px 10px; }}
+            .highlight {{ background: #f9f5f9; padding: 15px; border-radius: 8px; margin: 20px 0; }}
+            .button {{ display: inline-block; background: #9d7a9d; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; margin-top: 20px; }}
+            .footer {{ text-align: center; margin-top: 30px; color: #888; font-size: 12px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>True Joy Birthing</h1>
+            </div>
+            <div class="content">
+                <h2>New Birth Plan Share Request</h2>
+                <p>Hi {provider_name},</p>
+                <div class="highlight">
+                    <p><strong>{mom_name}</strong> has shared their birth plan with you!</p>
+                </div>
+                <p>They've chosen you to be part of their birth support team and would like you to review their birth preferences.</p>
+                <p>Log in to your True Joy Birthing account to:</p>
+                <ul>
+                    <li>Accept or decline the share request</li>
+                    <li>Review their complete birth plan</li>
+                    <li>Add your professional notes and recommendations</li>
+                </ul>
+                <p style="text-align: center;">
+                    <a href="#" class="button">View Share Request</a>
+                </p>
+            </div>
+            <div class="footer">
+                <p>True Joy Birthing - Your birth plan, your team, your support.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+async def create_notification(user_id: str, notif_type: str, title: str, message: str, data: dict = None):
+    """Create an in-app notification"""
+    now = datetime.now(timezone.utc)
+    notif_doc = {
+        "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "type": notif_type,
+        "title": title,
+        "message": message,
+        "data": data or {},
+        "read": False,
+        "created_at": now
+    }
+    await db.notifications.insert_one(notif_doc)
+    return notif_doc
+
 # ============== AUTH HELPERS ==============
 
 def generate_user_id():
