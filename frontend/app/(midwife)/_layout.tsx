@@ -52,6 +52,15 @@ export default function MidwifeLayout() {
         }}
       />
       <Tabs.Screen
+        name="birth-summaries"
+        options={{
+          title: 'Births',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="heart-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
