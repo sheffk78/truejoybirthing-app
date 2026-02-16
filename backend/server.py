@@ -94,6 +94,7 @@ class MomProfile(BaseModel):
 class MomProfileUpdate(BaseModel):
     due_date: Optional[str] = None
     planned_birth_setting: Optional[str] = None
+    zip_code: Optional[str] = None
     location_city: Optional[str] = None
     location_state: Optional[str] = None
 
