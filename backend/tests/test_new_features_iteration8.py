@@ -15,14 +15,6 @@ MOM_PASSWORD = "password123"
 MIDWIFE_EMAIL = "testmidwife_1771216891@test.com"
 MIDWIFE_PASSWORD = "password123"
 
-# Storage for tokens - using a class to maintain state
-class TokenStore:
-    midwife_token = None
-    mom_token = None
-    admin_token = None
-
-store = TokenStore()
-
 
 @pytest.fixture(scope="module")
 def api_client():
@@ -32,46 +24,60 @@ def api_client():
     return session
 
 
-class TestAuth:
-    """Get auth tokens for testing"""
+@pytest.fixture(scope="module")
+def midwife_auth(api_client):
+    """Get midwife authentication token"""
+    response = api_client.post(f"{BASE_URL}/api/auth/login", json={
+        "email": MIDWIFE_EMAIL,
+        "password": MIDWIFE_PASSWORD
+    })
+    assert response.status_code == 200, f"Midwife login failed: {response.text}"
+    data = response.json()
+    print(f"Midwife logged in: {data.get('full_name')} (role: {data.get('role')})")
+    return data.get("session_token")
+
+
+@pytest.fixture(scope="module")
+def mom_auth(api_client):
+    """Get mom authentication token"""
+    response = api_client.post(f"{BASE_URL}/api/auth/login", json={
+        "email": MOM_EMAIL,
+        "password": MOM_PASSWORD
+    })
+    assert response.status_code == 200, f"Mom login failed: {response.text}"
+    data = response.json()
+    print(f"Mom logged in: {data.get('full_name')} (role: {data.get('role')})")
+    return data.get("session_token")
+
+
+@pytest.fixture(scope="module")
+def admin_auth(api_client):
+    """Create and get admin authentication token"""
+    admin_email = f"testadmin_{int(datetime.now().timestamp())}@test.com"
+    admin_password = "adminpass123"
     
-    def test_login_midwife(self, api_client):
-        """Login as midwife"""
-        response = api_client.post(f"{BASE_URL}/api/auth/login", json={
-            "email": MIDWIFE_EMAIL,
-            "password": MIDWIFE_PASSWORD
-        })
-        print(f"Midwife login response: {response.status_code}")
-        assert response.status_code == 200, f"Midwife login failed: {response.text}"
-        data = response.json()
-        store.midwife_token = data.get("session_token")
-        assert store.midwife_token is not None
-        print(f"Midwife logged in: {data.get('full_name')} (role: {data.get('role')})")
+    reg_response = api_client.post(f"{BASE_URL}/api/auth/register", json={
+        "email": admin_email,
+        "password": admin_password,
+        "full_name": "Test Admin Iter8",
+        "role": "ADMIN"
+    })
     
-    def test_login_mom(self, api_client):
-        """Login as mom"""
-        response = api_client.post(f"{BASE_URL}/api/auth/login", json={
-            "email": MOM_EMAIL,
-            "password": MOM_PASSWORD
-        })
-        print(f"Mom login response: {response.status_code}")
-        assert response.status_code == 200, f"Mom login failed: {response.text}"
-        data = response.json()
-        store.mom_token = data.get("session_token")
-        assert store.mom_token is not None
-        print(f"Mom logged in: {data.get('full_name')} (role: {data.get('role')})")
+    if reg_response.status_code == 200:
+        print(f"Created new admin: {admin_email}")
+        return reg_response.json().get("session_token")
+    
+    pytest.skip("Could not register admin user")
 
 
 class TestMidwifeNotes:
     """Test Midwife Notes feature"""
     
-    def test_get_midwife_notes_returns_array(self, api_client):
+    def test_get_midwife_notes_returns_array(self, api_client, midwife_auth):
         """GET /api/midwife/notes returns array"""
-        assert store.midwife_token is not None, "Midwife not logged in"
-        
         response = api_client.get(
             f"{BASE_URL}/api/midwife/notes",
-            headers={"Authorization": f"Bearer {store.midwife_token}"}
+            headers={"Authorization": f"Bearer {midwife_auth}"}
         )
         print(f"GET midwife/notes response: {response.status_code}")
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -79,14 +85,12 @@ class TestMidwifeNotes:
         assert isinstance(data, list), "Response should be an array"
         print(f"Midwife has {len(data)} notes")
     
-    def test_create_midwife_note(self, api_client):
+    def test_create_midwife_note(self, api_client, midwife_auth):
         """POST /api/midwife/notes creates note"""
-        assert store.midwife_token is not None, "Midwife not logged in"
-        
         # First get a client to add note for
         clients_response = api_client.get(
             f"{BASE_URL}/api/midwife/clients",
-            headers={"Authorization": f"Bearer {store.midwife_token}"}
+            headers={"Authorization": f"Bearer {midwife_auth}"}
         )
         assert clients_response.status_code == 200, f"Get clients failed: {clients_response.text}"
         clients = clients_response.json()
@@ -95,7 +99,7 @@ class TestMidwifeNotes:
             # Create a test client first
             client_response = api_client.post(
                 f"{BASE_URL}/api/midwife/clients",
-                headers={"Authorization": f"Bearer {store.midwife_token}"},
+                headers={"Authorization": f"Bearer {midwife_auth}"},
                 json={
                     "name": "TEST_NoteClient_Iter8",
                     "email": "testnote_iter8@test.com",
@@ -120,7 +124,7 @@ class TestMidwifeNotes:
         
         response = api_client.post(
             f"{BASE_URL}/api/midwife/notes",
-            headers={"Authorization": f"Bearer {store.midwife_token}"},
+            headers={"Authorization": f"Bearer {midwife_auth}"},
             json=note_data
         )
         print(f"POST midwife/notes response: {response.status_code}")
@@ -148,7 +152,6 @@ class TestMarketplace:
         assert isinstance(data["doulas"], list)
         assert isinstance(data["midwives"], list)
         
-        total_providers = len(data["doulas"]) + len(data["midwives"])
         print(f"Marketplace has {len(data['doulas'])} doulas and {len(data['midwives'])} midwives")
         
         # Validate provider structure if any exist
@@ -188,44 +191,21 @@ class TestMarketplace:
 class TestAdminPanel:
     """Test Admin Panel features"""
     
-    def test_admin_endpoints_require_admin_role(self, api_client):
+    def test_admin_endpoints_require_admin_role(self, api_client, mom_auth):
         """Admin endpoints require ADMIN role - test with non-admin"""
-        assert store.mom_token is not None, "Mom not logged in"
-        
         # Try to access admin users endpoint as MOM (should fail)
         response = api_client.get(
             f"{BASE_URL}/api/admin/users",
-            headers={"Authorization": f"Bearer {store.mom_token}"}
+            headers={"Authorization": f"Bearer {mom_auth}"}
         )
         print(f"Admin users as MOM: {response.status_code}")
         assert response.status_code == 403, "Non-admin should be forbidden"
     
-    def test_admin_registration_and_users_endpoint(self, api_client):
-        """Register admin and test GET /api/admin/users returns user list"""
-        # Register a new admin user for testing
-        admin_email = f"testadmin_{int(datetime.now().timestamp())}@test.com"
-        admin_password = "adminpass123"
-        
-        # Register as admin
-        reg_response = api_client.post(f"{BASE_URL}/api/auth/register", json={
-            "email": admin_email,
-            "password": admin_password,
-            "full_name": "Test Admin Iter8",
-            "role": "ADMIN"
-        })
-        
-        if reg_response.status_code == 200:
-            store.admin_token = reg_response.json().get("session_token")
-            print(f"Created new admin: {admin_email}")
-        else:
-            print(f"Admin registration response: {reg_response.status_code} - {reg_response.text}")
-            pytest.skip("Could not register admin user")
-        
-        assert store.admin_token is not None
-        
+    def test_admin_users_endpoint(self, api_client, admin_auth):
+        """GET /api/admin/users returns user list"""
         response = api_client.get(
             f"{BASE_URL}/api/admin/users",
-            headers={"Authorization": f"Bearer {store.admin_token}"}
+            headers={"Authorization": f"Bearer {admin_auth}"}
         )
         print(f"GET admin/users response: {response.status_code}")
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -242,28 +222,13 @@ class TestAdminPanel:
             assert "role" in user
             assert "password_hash" not in user, "Password hash should be excluded"
     
-    def test_admin_content_endpoint(self, api_client):
+    def test_admin_content_endpoint(self, api_client, admin_auth):
         """GET /api/admin/content returns content items"""
-        if not store.admin_token:
-            pytest.skip("Admin token not available")
-        
-        # Add retry logic for 520 errors
-        for attempt in range(3):
-            response = api_client.get(
-                f"{BASE_URL}/api/admin/content",
-                headers={"Authorization": f"Bearer {store.admin_token}"}
-            )
-            print(f"GET admin/content response (attempt {attempt+1}): {response.status_code}")
-            
-            if response.status_code == 200:
-                break
-            elif response.status_code == 520:
-                import time
-                time.sleep(1)
-                continue
-            else:
-                break
-        
+        response = api_client.get(
+            f"{BASE_URL}/api/admin/content",
+            headers={"Authorization": f"Bearer {admin_auth}"}
+        )
+        print(f"GET admin/content response: {response.status_code}")
         assert response.status_code == 200, f"Failed: {response.text[:500]}"
         
         data = response.json()
@@ -278,14 +243,11 @@ class TestAdminPanel:
         # Should have all birth plan sections (9 sections)
         assert len(data) >= 9, f"Should have at least 9 birth plan sections, got {len(data)}"
     
-    def test_admin_users_with_role_filter(self, api_client):
+    def test_admin_users_with_role_filter(self, api_client, admin_auth):
         """GET /api/admin/users?role=MOM filters users by role"""
-        if not store.admin_token:
-            pytest.skip("Admin token not available")
-        
         response = api_client.get(
             f"{BASE_URL}/api/admin/users?role=MOM",
-            headers={"Authorization": f"Bearer {store.admin_token}"}
+            headers={"Authorization": f"Bearer {admin_auth}"}
         )
         print(f"GET admin/users?role=MOM response: {response.status_code}")
         assert response.status_code == 200, f"Failed: {response.text}"
