@@ -262,12 +262,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontTitle,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   formSection: {
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
   },
   roleLabel: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: SIZES.sm,
   },
@@ -315,7 +316,7 @@ const styles = StyleSheet.create({
   },
   roleTitle: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
@@ -324,6 +325,7 @@ const styles = StyleSheet.create({
   },
   roleDescription: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   submitButton: {
