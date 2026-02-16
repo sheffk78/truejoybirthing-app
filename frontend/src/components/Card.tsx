@@ -19,17 +19,17 @@ export default function Card({
     switch (variant) {
       case 'outlined':
         return {
-          backgroundColor: COLORS.white,
+          backgroundColor: COLORS.surface,
           borderWidth: 1,
           borderColor: COLORS.border,
         };
       case 'filled':
         return {
-          backgroundColor: COLORS.background,
+          backgroundColor: COLORS.subtle,
         };
       default:
         return {
-          backgroundColor: COLORS.white,
+          backgroundColor: COLORS.surface,
           ...SHADOWS.md,
         };
     }
@@ -57,6 +57,6 @@ export default function Card({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: SIZES.radiusMd,
+    borderRadius: SIZES.radiusLg,
   },
 });
