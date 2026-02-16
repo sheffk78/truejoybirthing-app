@@ -8,7 +8,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://doula-feature-dev.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://true-joy-staging.preview.emergentagent.com').rstrip('/')
 # Provided test session token
 SESSION_TOKEN = "session_dc13e4b27ecd4ae88c9cd3a54be242d7"
 TEST_EMAIL = "birthplantest_1771201212@test.com"
