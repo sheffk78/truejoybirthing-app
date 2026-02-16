@@ -1116,6 +1116,23 @@ async def share_birth_plan(
     await db.share_requests.insert_one(request_doc)
     request_doc.pop('_id', None)
     
+    # Send email notification to provider
+    email_html = get_share_request_email_html(user.full_name, provider["full_name"])
+    await send_notification_email(
+        to_email=provider["email"],
+        subject=f"New Birth Plan Share Request from {user.full_name}",
+        html_content=email_html
+    )
+    
+    # Create in-app notification for provider
+    await create_notification(
+        user_id=provider["user_id"],
+        notif_type="share_request",
+        title="New Birth Plan Share Request",
+        message=f"{user.full_name} has shared their birth plan with you.",
+        data={"request_id": request_doc["request_id"], "mom_name": user.full_name}
+    )
+    
     return {"message": "Share request sent", "request": request_doc}
 
 @api_router.get("/birth-plan/share-requests")
