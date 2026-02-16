@@ -121,6 +121,17 @@ export default function MyTeamScreen() {
           <Text style={styles.addButtonText}>Add Team Member</Text>
         </TouchableOpacity>
 
+        {/* Browse Marketplace Button */}
+        <TouchableOpacity
+          style={styles.marketplaceButton}
+          onPress={() => router.push('/marketplace')}
+          data-testid="browse-marketplace-btn"
+        >
+          <Icon name="search" size={20} color={COLORS.primary} />
+          <Text style={styles.marketplaceButtonText}>Browse Provider Marketplace</Text>
+          <Icon name="chevron-forward" size={16} color={COLORS.primary} />
+        </TouchableOpacity>
+
         {/* Active Team Members */}
         {acceptedProviders.length > 0 && (
           <View style={styles.section}>
