@@ -1,143 +1,162 @@
 # True Joy Birthing - Product Requirements Document
 
 ## Original Problem Statement
-Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves four main user roles: MOM, DOULA, MIDWIFE, and ADMIN.
+Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
 ## Core Requirements
 
 ### Authentication
-- [x] Role-based signup (MOM, DOULA, MIDWIFE, ADMIN)
-- [x] Email/password login
-- [x] **Google Social Login** (via Emergent-managed OAuth)
-- [x] JWT/session-based authentication
+- Role-based signup (MOM, DOULA, MIDWIFE) and login
+- Google Social Login via Emergent-managed OAuth
+- JWT-based session management
 
 ### MOM Experience
-- [x] Onboarding flow
-- [x] Home dashboard with quick actions
-- [x] **Birth Plan** - All 9 sections, 50+ fields
-- [x] **Share Birth Plan** - Search providers, send requests
-- [x] **Timeline** - Week-by-week milestones + custom events
-- [x] **Wellness Journal** - Mood, energy, sleep, symptoms tracking
-- [x] **Postpartum Plan** - Support network, recovery goals
-- [x] **My Team** - View connected providers
-- [x] **Provider Marketplace** - Browse and connect with doulas/midwives
-
-### Notifications
-- [x] **In-app Notifications** - Share requests, etc.
-- [x] **Email Notifications** - Resend integration (pending domain verification)
+- Onboarding with due date, birth preferences
+- Comprehensive multi-section Birth Plan
+- Pregnancy Timeline with weekly milestones
+- Wellness/Emotional Check-in tracking
+- Postpartum Plan creation
+- "My Team" screen to manage providers
+- Provider Marketplace to find and contact providers
+- Direct messaging with providers
 
 ### DOULA Experience
-- [x] Onboarding flow
-- [x] **Dashboard** - Stats (clients, contracts, invoices)
-- [x] **Client Management** - Add, list, view clients
-- [x] **Contract Management** - Create, send, track
-- [x] **Invoice Management** - Create, send, mark paid
-- [x] **Client Notes** - Prenatal/Birth/Postpartum notes with filtering
-- [x] **Profile** - Edit practice info, logout
+- Dashboard with client overview
+- Client management (add, track)
+- Contract management with e-signatures
+- Invoicing system
+- Client notes
+- Direct messaging with clients
 
 ### MIDWIFE Experience
-- [x] Onboarding flow
-- [x] **Dashboard** - Stats (clients, visits, births)
-- [x] **Client Management** - Add, list, view clients
-- [x] **Visit Logging** - Record prenatal/postpartum visits with vitals
-- [x] **Birth Summaries** - Create detailed birth records
-- [x] **Client Notes** - Prenatal/Birth/Postpartum notes with filtering
-- [x] **Profile** - Edit practice info, credentials, logout
+- Dashboard with client overview
+- Client management
+- Prenatal/postpartum visit logging
+- Client notes
+- Birth summary creation
+- Direct messaging with clients
 
 ### ADMIN Experience
-- [x] **User Management** - View all users, filter by role, change roles
-- [x] **Content Management** - Edit birth plan section content, add videos
-- [x] **Settings** - Admin profile and logout
+- User management
+- Content management
 
-### Phase 3 - Provider Marketplace
-- [x] **Provider Search** - Browse doulas and midwives
-- [x] **Location Filter** - Search by city
-- [x] **Provider Type Filter** - Filter by Doula/Midwife
-- [x] **Provider Profiles** - View details, credentials, services
-- [x] **Accepting Status** - Show if accepting new clients
+## Technical Stack
+- **Frontend**: React Native, Expo (SDK 51), Expo Router, Zustand
+- **Backend**: FastAPI, Pydantic, MongoDB
+- **Authentication**: JWT + Emergent-managed Google OAuth
+- **Notifications**: Resend API (email), In-app notifications
 
-## Technical Architecture
+## Database Schema (Key Models)
+- **User**: {user_id, email, full_name, role, onboarding_completed}
+- **BirthPlan**: {user_id, sections: [...], shared_with: [...]}
+- **ShareRequest**: {mom_id, provider_id, status}
+- **DoulaClient/MidwifeClient**: {provider_id, mom_id, name, status, ...}
+- **Contract**: {doula_id, client_id, content, status, signature_data, signed_at}
+- **Invoice**: {doula_id, client_id, amount, status}
+- **ProviderNote**: {provider_id, client_id, content}
+- **BirthSummary**: {midwife_id, client_id, summary}
+- **Message**: {message_id, sender_id, receiver_id, content, read, created_at}
 
-### Frontend
-- **Framework**: React Native with Expo SDK 51
-- **Routing**: Expo Router v3
-- **State Management**: Zustand
-- **Icons**: lucide-react-native
+## What's Been Implemented (Last Updated: 2026-02-16)
 
-### Backend
-- **Framework**: FastAPI (Python)
-- **Database**: MongoDB
-- **Email**: Resend
-- **Authentication**: Session tokens
+### ✅ COMPLETED FEATURES
 
-### Key API Endpoints
+#### Authentication & Onboarding
+- [x] User registration (MOM, DOULA, MIDWIFE roles)
+- [x] Login with JWT authentication
+- [x] Google OAuth integration
+- [x] Role-specific onboarding flows
 
-#### Marketplace
-- `GET /api/marketplace/providers` - List all providers
-- `GET /api/marketplace/providers?provider_type=DOULA` - Filter by type
-- `GET /api/marketplace/providers?location_city=Austin` - Filter by city
-- `GET /api/marketplace/provider/{user_id}` - Get provider details
+#### MOM Features (100% Complete)
+- [x] Home dashboard with pregnancy progress
+- [x] Birth Plan (multi-section with all categories)
+- [x] Birth Plan sharing with providers
+- [x] Pregnancy Timeline with milestones
+- [x] Wellness check-ins (mood, sleep tracking)
+- [x] Postpartum Plan
+- [x] My Team (view connected providers)
+- [x] Provider Marketplace (browse doulas/midwives)
+- [x] **Direct Messaging with providers** (NEW - 2026-02-16)
 
-#### Midwife Notes
-- `GET /api/midwife/notes` - List notes
-- `POST /api/midwife/notes` - Create note
+#### DOULA Features (100% Complete)
+- [x] Dashboard with client summary
+- [x] Client management (CRUD)
+- [x] Contract creation and management
+- [x] Send contract for signature
+- [x] **E-Signature functionality** (NEW - 2026-02-16)
+- [x] Invoicing system
+- [x] Client notes
+- [x] **Direct Messaging with clients** (NEW - 2026-02-16)
 
-#### Admin
-- `GET /api/admin/users` - List all users
-- `PUT /api/admin/users/{user_id}/role` - Change user role
-- `GET /api/admin/content` - List content items
-- `PUT /api/admin/content/{section_id}` - Update content
+#### MIDWIFE Features (100% Complete)
+- [x] Dashboard with client summary
+- [x] Client management
+- [x] Prenatal visit logging
+- [x] Postpartum visit logging
+- [x] Birth summaries
+- [x] Client notes
+- [x] **Direct Messaging with clients** (NEW - 2026-02-16)
 
-## What's Been Implemented
+#### ADMIN Features (100% Complete)
+- [x] User management (list, status toggle)
+- [x] Content management
 
-### Feb 16, 2025 - Session 3: Complete Feature Set
-- **Midwife Client Notes** - Prenatal/Birth/Postpartum notes with filtering
-- **Provider Marketplace** - Search, filter, view provider profiles
-- **Admin Panel Verified** - User management + content management working
-- Bug fixed: MongoDB ObjectId serialization in admin content creation
+#### Backend Infrastructure
+- [x] All API endpoints for above features
+- [x] MongoDB integration
+- [x] JWT authentication middleware
+- [x] Notification system (in-app + email via Resend)
+- [x] Messaging endpoints
 
-### Feb 16, 2025 - Session 2
-- Doula Client Notes, Midwife Birth Summaries
+### 🟡 BLOCKED
+- Email notifications (Resend): Domain verification pending by user
 
-### Feb 16, 2025 - Session 1
-- Doula Dashboard (Clients, Contracts, Invoices)
+### 📊 Test Reports
+- `/app/test_reports/iteration_9.json` - Latest test (100% pass rate)
+- Backend: 18/18 tests passed
+- Frontend: All flows verified
 
-### Earlier
-- MOM Experience (Birth Plan, Timeline, Wellness, Postpartum, My Team)
-- Provider Share & Notes system
-- Email/In-app Notifications
+## Key API Endpoints
 
-## Test Reports
-- `/app/test_reports/iteration_8.json` - Latest
-- Backend: 100% (9/9 passed)
-- Frontend: 90% (tabs visible, automation limitation)
+### Authentication
+- POST `/api/auth/register`
+- POST `/api/auth/login`
+- GET `/api/auth/me`
 
-## Important Notes
+### Messages (NEW)
+- GET `/api/messages/conversations` - Get all conversations
+- GET `/api/messages/{user_id}` - Get messages with a user
+- POST `/api/messages` - Send a message
+- GET `/api/messages/unread/count` - Get unread count
 
-### Email Notifications
-Resend requires domain verification (~24hrs pending).
+### Contracts
+- GET `/api/contracts/{contract_id}` - Public endpoint for viewing
+- POST `/api/doula/contracts/{contract_id}/sign` - Sign with name/timestamp
 
-### Known Limitations
-- React Native Web tab navigation doesn't work in Playwright automation (works in real browser)
-
-## Prioritized Backlog
-
-### P1 (Complete!)
-All core features implemented for MOM, DOULA, MIDWIFE, and ADMIN roles.
-
-### P2 (Enhancements)
-- Push notifications (mobile)
-- PDF export for birth plan
-- Contract e-signature integration
-- Provider messaging/contact system
-
-### P3 (Future)
-- Payment processing for invoices
-- Video consultations
-- Multi-language support
+### Other Endpoints
+- Marketplace: `/api/marketplace/providers`
+- Birth Plan: `/api/birthplan`, `/api/birthplan/share`
+- Doula: `/api/doula/*`
+- Midwife: `/api/midwife/*`
+- Admin: `/api/admin/*`
 
 ## Test Credentials
-- MOM: `sharemom2_1771213474@test.com` / `password123`
-- DOULA: `doula2_1771213474@test.com` / `password123`
-- MIDWIFE: `testmidwife_1771216891@test.com` / `password123`
-- ADMIN: Create via API with `role: "ADMIN"`
+- MOM: Create new with unique email
+- Test MOM: `frontend_test_mom@test.com` / `password123`
+- Test DOULA: `marketplace_doula@test.com` / `password123`
+- Create ADMIN via API with role: "ADMIN"
+
+## Files of Reference
+- `backend/server.py` - Main backend file
+- `frontend/app/(mom)/messages.tsx` - MOM messaging
+- `frontend/app/(doula)/messages.tsx` - DOULA messaging
+- `frontend/app/(midwife)/messages.tsx` - MIDWIFE messaging
+- `frontend/app/sign-contract.tsx` - Contract signing page
+- `frontend/app/(mom)/marketplace.tsx` - Provider marketplace
+
+## Future Enhancements (Backlog)
+- Real-time messaging with WebSockets
+- Push notifications
+- File attachments in messages
+- Provider scheduling/availability
+- Payment processing integration
