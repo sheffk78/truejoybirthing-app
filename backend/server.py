@@ -1555,6 +1555,88 @@ async def get_mom_team(user: User = Depends(check_role(["MOM"]))):
     
     return team
 
+# ============== TIMELINE ROUTES ==============
+
+@api_router.get("/timeline")
+async def get_timeline(user: User = Depends(check_role(["MOM"]))):
+    """Get pregnancy timeline with milestones and custom events"""
+    # Get mom profile for due date
+    mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
+    
+    if not mom_profile or not mom_profile.get("due_date"):
+        return {"milestones": [], "custom_events": [], "message": "Please complete onboarding with your due date"}
+    
+    # Parse due date
+    due_date_str = mom_profile["due_date"]
+    try:
+        due_date = datetime.strptime(due_date_str, "%Y-%m-%d")
+    except:
+        return {"milestones": [], "custom_events": [], "message": "Invalid due date format"}
+    
+    # Calculate conception date (40 weeks before due date)
+    conception_date = due_date - timedelta(weeks=40)
+    today = datetime.now()
+    
+    # Calculate current week
+    days_pregnant = (today - conception_date).days
+    current_week = max(1, min(42, days_pregnant // 7))
+    
+    # Generate milestones with dates
+    milestones = []
+    for milestone in PREGNANCY_MILESTONES:
+        milestone_date = conception_date + timedelta(weeks=milestone["week"])
+        milestones.append({
+            **milestone,
+            "date": milestone_date.strftime("%Y-%m-%d"),
+            "is_past": milestone["week"] < current_week,
+            "is_current": milestone["week"] == current_week
+        })
+    
+    # Get custom events
+    custom_events = await db.timeline_events.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).sort("event_date", 1).to_list(100)
+    
+    return {
+        "current_week": current_week,
+        "due_date": due_date_str,
+        "milestones": milestones,
+        "custom_events": custom_events
+    }
+
+@api_router.post("/timeline/events")
+async def create_timeline_event(event_data: TimelineEventCreate, user: User = Depends(check_role(["MOM"]))):
+    """Create a custom timeline event"""
+    now = datetime.now(timezone.utc)
+    
+    event = {
+        "event_id": f"event_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "title": event_data.title,
+        "description": event_data.description,
+        "event_date": event_data.event_date,
+        "event_type": event_data.event_type,
+        "created_at": now
+    }
+    
+    await db.timeline_events.insert_one(event)
+    event.pop('_id', None)
+    return event
+
+@api_router.delete("/timeline/events/{event_id}")
+async def delete_timeline_event(event_id: str, user: User = Depends(check_role(["MOM"]))):
+    """Delete a custom timeline event"""
+    result = await db.timeline_events.delete_one({
+        "event_id": event_id,
+        "user_id": user.user_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    return {"message": "Event deleted"}
+
 # ============== DOULA ROUTES ==============
 
 @api_router.post("/doula/onboarding")
