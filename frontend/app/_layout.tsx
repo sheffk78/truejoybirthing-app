@@ -26,9 +26,8 @@ export default function RootLayout() {
     Ionicons: require('../assets/fonts/Ionicons.ttf'),
     PlayfairDisplay_500Medium,
     PlayfairDisplay_700Bold,
-    Quicksand_400Regular,
-    Quicksand_500Medium,
-    Quicksand_700Bold,
+    Lato_400Regular,
+    Lato_700Bold,
   });
   
   // Initialize the app
