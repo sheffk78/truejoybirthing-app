@@ -7,7 +7,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { COLORS, SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, SIZES, SHADOWS, FONTS } from '../constants/theme';
 
 interface ButtonProps {
   title: string;
@@ -41,7 +41,7 @@ export default function Button({
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: SIZES.radiusMd,
+      borderRadius: SIZES.radiusFull, // Pill-shaped buttons
       minHeight: SIZES.touchMin,
     };
     
@@ -63,12 +63,12 @@ export default function Button({
     // Variant styles
     switch (variant) {
       case 'secondary':
-        base.backgroundColor = COLORS.accent;
+        base.backgroundColor = COLORS.secondary;
         break;
       case 'outline':
-        base.backgroundColor = 'transparent';
-        base.borderWidth = 2;
-        base.borderColor = COLORS.primary;
+        base.backgroundColor = COLORS.subtle;
+        base.borderWidth = 1.5;
+        base.borderColor = COLORS.primaryLight;
         break;
       case 'ghost':
         base.backgroundColor = 'transparent';
@@ -91,6 +91,7 @@ export default function Button({
   const getTextStyle = (): TextStyle => {
     const base: TextStyle = {
       fontWeight: '600',
+      fontFamily: FONTS.bodyBold,
     };
     
     // Size styles
@@ -110,6 +111,9 @@ export default function Button({
       case 'outline':
       case 'ghost':
         base.color = COLORS.primary;
+        break;
+      case 'secondary':
+        base.color = COLORS.white;
         break;
       default:
         base.color = COLORS.textOnPrimary;
