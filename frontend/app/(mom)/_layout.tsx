@@ -88,6 +88,12 @@ export default function MomLayout() {
           href: null,  // Hide from tab bar, accessible from home
         }}
       />
+      <Tabs.Screen
+        name="marketplace"
+        options={{
+          href: null,  // Hide from tab bar, accessible from home/my-team
+        }}
+      />
     </Tabs>
   );
 }
