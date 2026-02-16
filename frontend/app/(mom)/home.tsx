@@ -145,8 +145,35 @@ export default function MomHomeScreen() {
           </TouchableOpacity>
         </View>
         
+        {/* More Actions Row */}
+        <View style={styles.actionsGrid}>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/(mom)/postpartum')}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '30' }]}>
+              <Icon name="sunny" size={24} color={COLORS.warning} />
+            </View>
+            <Text style={styles.actionTitle}>Postpartum</Text>
+            <Text style={styles.actionSubtitle}>Fourth trimester plan</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/(mom)/my-team')}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.primary + '30' }]}>
+              <Icon name="people" size={24} color={COLORS.primary} />
+            </View>
+            <Text style={styles.actionTitle}>My Team</Text>
+            <Text style={styles.actionSubtitle}>Care providers</Text>
+          </TouchableOpacity>
+        </View>
+        
         {/* This Week's Tip */}
-        {timeline?.current_week && timeline?.timeline && (
+        {timeline?.current_week && timeline?.milestones && (
           <Card style={styles.tipCard}>
             <View style={styles.tipHeader}>
               <Icon name="bulb" size={20} color={COLORS.warning} />
