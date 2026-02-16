@@ -47,7 +47,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Contracts',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="document-outline" size={size} color={color} />
+            <Icon name="document-text-outline" size={size} color={color} />
           ),
         }}
       />
@@ -56,7 +56,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Invoices',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="receipt-outline" size={size} color={color} />
+            <Icon name="card-outline" size={size} color={color} />
           ),
         }}
       />
