@@ -16,7 +16,7 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
-import { COLORS, SIZES, SHADOWS } from '../../src/constants/theme';
+import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 import { API_ENDPOINTS } from '../../src/constants/api';
 
 const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE'];
