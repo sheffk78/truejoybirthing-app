@@ -78,13 +78,16 @@ export default function MomLayout() {
           ),
         }}
       />
-      {/* Hidden screens accessible via navigation */}
       <Tabs.Screen
         name="profile"
         options={{
-          href: null,  // Hide from tab bar, accessible from home
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="person-circle-outline" size={size} color={color} />
+          ),
         }}
       />
+      {/* Hidden screens accessible via navigation */}
       <Tabs.Screen
         name="share-birth-plan"
         options={{
