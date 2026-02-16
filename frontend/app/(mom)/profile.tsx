@@ -250,6 +250,20 @@ export default function MomProfileScreen() {
           </Card>
         </TouchableOpacity>
         
+        {/* App Tutorial */}
+        <TouchableOpacity 
+          activeOpacity={0.8}
+          onPress={() => router.push('/(auth)/tutorial?role=MOM')}
+        >
+          <Card style={styles.menuCard}>
+            <View style={styles.menuRow}>
+              <Icon name="help-circle-outline" size={24} color={COLORS.accent} />
+              <Text style={styles.menuText}>View App Tour</Text>
+              <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+            </View>
+          </Card>
+        </TouchableOpacity>
+        
         {/* Logout */}
         <Button
           title="Log Out"
