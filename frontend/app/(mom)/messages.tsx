@@ -305,11 +305,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: 4,
   },
@@ -319,12 +320,13 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
     marginTop: SIZES.md,
   },
   emptySubtext: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
@@ -359,7 +361,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginRight: SIZES.sm,
   },
@@ -370,10 +372,11 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontSize: SIZES.fontXs,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   lastMessage: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   metaColumn: {
@@ -394,8 +397,8 @@ const styles = StyleSheet.create({
   },
   unreadText: {
     fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
     color: COLORS.white,
-    fontWeight: '600',
   },
   modalContainer: {
     flex: 1,
@@ -415,11 +418,12 @@ const styles = StyleSheet.create({
   },
   chatHeaderName: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
   },
   chatHeaderRole: {
     fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   chatContent: {
@@ -454,6 +458,7 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
     lineHeight: 20,
   },
@@ -484,6 +489,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
     maxHeight: 100,
     marginRight: SIZES.sm,
