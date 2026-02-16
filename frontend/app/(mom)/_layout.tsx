@@ -61,18 +61,31 @@ export default function MomLayout() {
         }}
       />
       <Tabs.Screen
+        name="my-team"
+        options={{
+          title: 'My Team',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="people-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      {/* Hidden screens accessible via navigation */}
+      <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="person-outline" size={size} color={color} />
-          ),
+          href: null,  // Hide from tab bar, accessible from home
         }}
       />
       <Tabs.Screen
         name="share-birth-plan"
         options={{
           href: null,  // Hide from tab bar
+        }}
+      />
+      <Tabs.Screen
+        name="postpartum"
+        options={{
+          href: null,  // Hide from tab bar, accessible from home
         }}
       />
     </Tabs>
