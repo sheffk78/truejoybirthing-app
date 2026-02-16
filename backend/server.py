@@ -454,6 +454,28 @@ class PostpartumPlanCreate(BaseModel):
     emergency_contacts: Optional[List[Dict[str, str]]] = None
     notes: Optional[str] = None
 
+# --- Message Models ---
+class MessageCreate(BaseModel):
+    receiver_id: str
+    content: str
+
+class Message(BaseModel):
+    message_id: str
+    sender_id: str
+    sender_name: str
+    sender_role: str
+    receiver_id: str
+    receiver_name: str
+    receiver_role: str
+    content: str
+    read: bool = False
+    created_at: datetime
+
+# --- Contract Signature Models ---
+class ContractSignRequest(BaseModel):
+    signer_name: str
+    signer_email: Optional[str] = None
+
 # ============== EMAIL HELPER ==============
 
 async def send_notification_email(to_email: str, subject: str, html_content: str):
