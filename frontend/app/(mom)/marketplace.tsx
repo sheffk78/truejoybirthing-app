@@ -54,8 +54,9 @@ export default function MarketplaceScreen() {
         full_name: p.user?.full_name,
         email: p.user?.email,
         picture: p.user?.picture,
+        role: p.user?.role || p.provider_type,
         provider_type: p.provider_type,
-        ...p.profile
+        profile: p.profile
       }));
       setProviders(allProviders);
     } catch (error) {
