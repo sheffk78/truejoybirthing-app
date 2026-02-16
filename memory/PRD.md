@@ -3,6 +3,14 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
+## Brand Identity (Updated 2026-02-16)
+- **Logo**: Lavender pregnant silhouette + Pink cursive "True Joy Birthing"
+- **Primary Color**: Soft Lavender (#9F83B6)
+- **Secondary Color**: Dusty Rose (#D4A5A5)
+- **Accent Color**: Sage Green (#8CAF8C)
+- **Typography**: Playfair Display (headings) + Quicksand (body)
+- See `/app/design_guidelines.md` for full design system
+
 ## Core Requirements
 
 ### Authentication
