@@ -12,7 +12,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
-import { COLORS, SIZES, SHADOWS } from '../../src/constants/theme';
+import { COLORS, SIZES, SHADOWS, BRAND, FONTS } from '../../src/constants/theme';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -38,21 +38,22 @@ export default function WelcomeScreen() {
         {/* Logo and Header */}
         <View style={styles.headerSection}>
           <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
-              <Icon name="heart" size={40} color={COLORS.primary} />
-            </View>
+            <Image
+              source={{ uri: BRAND.logoJpg }}
+              style={styles.logo}
+              resizeMode="contain"
+            />
           </View>
-          <Text style={styles.title}>True Joy Birthing</Text>
           <Text style={styles.subtitle}>
-            Your birth plan, your team, your support in one place.
+            {BRAND.tagline}
           </Text>
         </View>
         
         {/* Features */}
         <View style={styles.featuresSection}>
           <View style={styles.featureItem}>
-            <View style={styles.featureIcon}>
-              <Icon name="document-text-outline" size={24} color={COLORS.primary} />
+            <View style={[styles.featureIcon, { backgroundColor: COLORS.secondary + '20' }]}>
+              <Icon name="document-text-outline" size={24} color={COLORS.secondary} />
             </View>
             <View style={styles.featureText}>
               <Text style={styles.featureTitle}>Joyful Birth Plan</Text>
@@ -63,7 +64,7 @@ export default function WelcomeScreen() {
           </View>
           
           <View style={styles.featureItem}>
-            <View style={styles.featureIcon}>
+            <View style={[styles.featureIcon, { backgroundColor: COLORS.primary + '20' }]}>
               <Icon name="people-outline" size={24} color={COLORS.primary} />
             </View>
             <View style={styles.featureText}>
@@ -75,8 +76,8 @@ export default function WelcomeScreen() {
           </View>
           
           <View style={styles.featureItem}>
-            <View style={styles.featureIcon}>
-              <Icon name="calendar-outline" size={24} color={COLORS.primary} />
+            <View style={[styles.featureIcon, { backgroundColor: COLORS.accent + '20' }]}>
+              <Icon name="calendar-outline" size={24} color={COLORS.accent} />
             </View>
             <View style={styles.featureText}>
               <Text style={styles.featureTitle}>Track Your Journey</Text>
@@ -146,23 +147,13 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginBottom: SIZES.md,
   },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.primaryLight + '30',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: SIZES.fontHero,
-    fontWeight: '700',
-    color: COLORS.primary,
-    marginBottom: SIZES.sm,
-    textAlign: 'center',
+  logo: {
+    width: 280,
+    height: 100,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
@@ -174,17 +165,16 @@ const styles = StyleSheet.create({
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.surface,
     padding: SIZES.md,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: SIZES.radiusLg,
     marginBottom: SIZES.sm,
     ...SHADOWS.sm,
   },
   featureIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.primaryLight + '30',
+    borderRadius: SIZES.radiusMd,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.md,
@@ -194,12 +184,14 @@ const styles = StyleSheet.create({
   },
   featureTitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
     fontWeight: '600',
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
   featureDescription: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   authSection: {
@@ -224,10 +216,12 @@ const styles = StyleSheet.create({
   dividerText: {
     marginHorizontal: SIZES.md,
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textLight,
   },
   footerText: {
     fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
     color: COLORS.textLight,
     textAlign: 'center',
     marginTop: SIZES.md,
