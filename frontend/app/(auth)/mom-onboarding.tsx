@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,11 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
@@ -18,33 +20,95 @@ import Card from '../../src/components/Card';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
 
 const BIRTH_SETTINGS = [
-  { value: 'Home', label: 'Home Birth', icon: 'home-outline' },
-  { value: 'Hospital', label: 'Hospital', icon: 'business-outline' },
-  { value: 'Birth Center', label: 'Birth Center', icon: 'medical-outline' },
-  { value: 'Not sure', label: 'Not sure yet', icon: 'help-circle-outline' },
+  { value: 'Home', label: 'Home Birth', icon: 'home' },
+  { value: 'Hospital', label: 'Hospital', icon: 'business' },
+  { value: 'Birth Center', label: 'Birth Center', icon: 'medkit' },
+  { value: 'Not sure', label: 'Not sure yet', icon: 'help-circle' },
 ];
 
 export default function MomOnboardingScreen() {
   const router = useRouter();
   const { user, updateUser } = useAuthStore();
   
-  const [dueDate, setDueDate] = useState('');
+  const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [plannedBirthSetting, setPlannedBirthSetting] = useState('');
+  const [zipCode, setZipCode] = useState('');
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLookingUpZip, setIsLookingUpZip] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Format date as MM-DD-YYYY
+  const formatDate = (date: Date) => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}-${day}-${year}`;
+  };
+  
+  // Handle date change from picker
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    if (selectedDate) {
+      setDueDate(selectedDate);
+      if (errors.dueDate) {
+        setErrors(prev => ({ ...prev, dueDate: '' }));
+      }
+    }
+  };
+  
+  // Lookup city/state from zip code
+  const lookupZipCode = useCallback(async (zip: string) => {
+    if (zip.length !== 5 || !/^\d{5}$/.test(zip)) {
+      return;
+    }
+    
+    setIsLookingUpZip(true);
+    try {
+      const result = await apiRequest(`/api/lookup/zipcode/${zip}`, {
+        method: 'GET',
+      });
+      
+      if (result.city && result.state) {
+        setLocationCity(result.city);
+        setLocationState(result.state_abbreviation || result.state);
+      }
+    } catch (error: any) {
+      console.log('Zip code lookup error:', error.message);
+      // Don't show error - just silently fail and let user enter manually if needed
+    } finally {
+      setIsLookingUpZip(false);
+    }
+  }, []);
+  
+  // Handle zip code change
+  const handleZipCodeChange = (text: string) => {
+    // Only allow digits and max 5 characters
+    const cleaned = text.replace(/\D/g, '').slice(0, 5);
+    setZipCode(cleaned);
+    
+    // Auto-lookup when 5 digits entered
+    if (cleaned.length === 5) {
+      lookupZipCode(cleaned);
+    } else {
+      // Clear city/state if zip is incomplete
+      setLocationCity('');
+      setLocationState('');
+    }
+  };
   
   const validate = () => {
     const newErrors: Record<string, string> = {};
     
-    if (!dueDate.trim()) {
+    if (!dueDate) {
       newErrors.dueDate = 'Due date is required';
-    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
-      newErrors.dueDate = 'Please use format YYYY-MM-DD';
     }
     
     if (!plannedBirthSetting) {
@@ -63,8 +127,9 @@ export default function MomOnboardingScreen() {
       await apiRequest(API_ENDPOINTS.MOM_ONBOARDING, {
         method: 'POST',
         body: {
-          due_date: dueDate,
+          due_date: dueDate ? formatDate(dueDate) : '',
           planned_birth_setting: plannedBirthSetting,
+          zip_code: zipCode,
           location_city: locationCity,
           location_state: locationState,
         },
@@ -101,19 +166,43 @@ export default function MomOnboardingScreen() {
             </Text>
           </View>
           
-          {/* Due Date */}
+          {/* Due Date with Calendar Picker */}
           <View style={styles.formSection}>
-            <Input
-              label="When is your due date?"
-              placeholder="YYYY-MM-DD"
-              value={dueDate}
-              onChangeText={setDueDate}
-              leftIcon="calendar-outline"
-              error={errors.dueDate}
-            />
-            <Text style={styles.helperText}>
-              Enter your estimated due date in YYYY-MM-DD format
-            </Text>
+            <Text style={styles.sectionLabel}>When is your due date?</Text>
+            {errors.dueDate && <Text style={styles.errorText}>{errors.dueDate}</Text>}
+            
+            <TouchableOpacity
+              style={styles.datePickerButton}
+              onPress={() => setShowDatePicker(true)}
+              activeOpacity={0.7}
+            >
+              <Icon name="calendar" size={22} color={COLORS.primary} />
+              <Text style={[styles.dateText, !dueDate && styles.datePlaceholder]}>
+                {dueDate ? formatDate(dueDate) : 'Select your due date'}
+              </Text>
+              <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+            
+            {showDatePicker && (
+              <View style={styles.datePickerContainer}>
+                <DateTimePicker
+                  value={dueDate || new Date()}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={handleDateChange}
+                  minimumDate={new Date()}
+                  maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)} // Max 1 year ahead
+                />
+                {Platform.OS === 'ios' && (
+                  <Button
+                    title="Done"
+                    onPress={() => setShowDatePicker(false)}
+                    style={styles.datePickerDone}
+                    size="sm"
+                  />
+                )}
+              </View>
+            )}
           </View>
           
           {/* Birth Setting */}
@@ -138,7 +227,7 @@ export default function MomOnboardingScreen() {
                   >
                     <Icon
                       name={setting.icon as any}
-                      size={28}
+                      size={32}
                       color={plannedBirthSetting === setting.value ? COLORS.primary : COLORS.textSecondary}
                     />
                     <Text
@@ -160,24 +249,34 @@ export default function MomOnboardingScreen() {
             </View>
           </View>
           
-          {/* Location */}
+          {/* Zip Code Location */}
           <View style={styles.locationSection}>
             <Text style={styles.sectionLabel}>Where are you located? (Optional)</Text>
-            <View style={styles.locationRow}>
+            <Text style={styles.helperText}>Enter your zip code and we'll find your city</Text>
+            
+            <View style={styles.zipCodeRow}>
               <Input
-                placeholder="City"
-                value={locationCity}
-                onChangeText={setLocationCity}
-                containerStyle={styles.cityInput}
-                leftIcon="location-outline"
+                placeholder="Zip Code"
+                value={zipCode}
+                onChangeText={handleZipCodeChange}
+                containerStyle={styles.zipInput}
+                leftIcon="location"
+                keyboardType="number-pad"
+                maxLength={5}
               />
-              <Input
-                placeholder="State"
-                value={locationState}
-                onChangeText={setLocationState}
-                containerStyle={styles.stateInput}
-              />
+              {isLookingUpZip && (
+                <ActivityIndicator size="small" color={COLORS.primary} style={styles.zipLoader} />
+              )}
             </View>
+            
+            {locationCity && locationState && (
+              <View style={styles.locationResult}>
+                <Icon name="checkmark-circle" size={20} color={COLORS.success} />
+                <Text style={styles.locationResultText}>
+                  {locationCity}, {locationState}
+                </Text>
+              </View>
+            )}
           </View>
           
           {/* Continue Button */}
@@ -224,36 +323,67 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontTitle,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     lineHeight: 24,
   },
   formSection: {
     marginBottom: SIZES.lg,
   },
-  helperText: {
-    fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
-    marginTop: -SIZES.sm,
-  },
-  settingSection: {
-    marginBottom: SIZES.lg,
-  },
   sectionLabel: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
+    marginBottom: SIZES.sm,
+  },
+  helperText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
     marginBottom: SIZES.sm,
   },
   errorText: {
     fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
     color: COLORS.error,
     marginBottom: SIZES.sm,
+  },
+  datePickerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radiusMd,
+    padding: SIZES.md,
+  },
+  dateText: {
+    flex: 1,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textPrimary,
+    marginLeft: SIZES.sm,
+  },
+  datePlaceholder: {
+    color: COLORS.textLight,
+  },
+  datePickerContainer: {
+    backgroundColor: COLORS.white,
+    borderRadius: SIZES.radiusMd,
+    marginTop: SIZES.sm,
+    overflow: 'hidden',
+  },
+  datePickerDone: {
+    margin: SIZES.sm,
+  },
+  settingSection: {
+    marginBottom: SIZES.lg,
   },
   settingsGrid: {
     flexDirection: 'row',
@@ -266,7 +396,7 @@ const styles = StyleSheet.create({
   },
   settingCard: {
     alignItems: 'center',
-    paddingVertical: SIZES.md,
+    paddingVertical: SIZES.lg,
   },
   settingCardSelected: {
     borderWidth: 2,
@@ -275,12 +405,13 @@ const styles = StyleSheet.create({
   settingLabel: {
     marginTop: SIZES.sm,
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
   settingLabelSelected: {
     color: COLORS.primary,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   checkmark: {
     position: 'absolute',
@@ -296,15 +427,27 @@ const styles = StyleSheet.create({
   locationSection: {
     marginBottom: SIZES.xl,
   },
-  locationRow: {
+  zipCodeRow: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
-  cityInput: {
-    flex: 2,
-    marginRight: SIZES.sm,
-  },
-  stateInput: {
+  zipInput: {
     flex: 1,
+  },
+  zipLoader: {
+    marginLeft: SIZES.sm,
+  },
+  locationResult: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SIZES.sm,
+    paddingHorizontal: SIZES.sm,
+  },
+  locationResultText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.success,
+    marginLeft: SIZES.xs,
   },
   continueButton: {
     marginTop: SIZES.md,
