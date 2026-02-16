@@ -10,13 +10,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Icon } from '../../src/components/Icon';
-import Card from '../../src/components/Card';
-import Button from '../../src/components/Button';
-import Input from '../../src/components/Input';
-import { apiRequest } from '../../src/utils/api';
-import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { Icon } from '../src/components/Icon';
+import Card from '../src/components/Card';
+import Button from '../src/components/Button';
+import Input from '../src/components/Input';
+import { apiRequest } from '../src/utils/api';
+import { API_ENDPOINTS } from '../src/constants/api';
+import { COLORS, SIZES } from '../src/constants/theme';
 
 interface ContractData {
   contract: {
