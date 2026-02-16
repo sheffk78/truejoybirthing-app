@@ -468,11 +468,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: 4,
   },
@@ -528,14 +529,14 @@ const styles = StyleSheet.create({
   },
   typeChipTextActive: {
     color: COLORS.white,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   resultsHeader: {
     marginBottom: SIZES.md,
   },
   resultsTitle: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.textSecondary,
   },
   emptyCard: {
@@ -544,12 +545,13 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
     marginTop: SIZES.md,
   },
   emptySubtext: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
@@ -575,7 +577,7 @@ const styles = StyleSheet.create({
   },
   providerName: {
     fontSize: SIZES.fontMd,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
     marginBottom: 2,
   },
@@ -595,7 +597,7 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontSize: SIZES.fontXs,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   practiceName: {
     fontSize: SIZES.fontSm,
@@ -644,8 +646,8 @@ const styles = StyleSheet.create({
   },
   viewProfileText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.primary,
-    fontWeight: '500',
     marginRight: 4,
   },
   modalContainer: {
@@ -663,7 +665,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
   },
   modalContent: {
@@ -684,7 +686,7 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: SIZES.fontXl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
     marginBottom: SIZES.sm,
   },
@@ -695,7 +697,7 @@ const styles = StyleSheet.create({
   },
   profileRoleText: {
     fontSize: SIZES.fontSm,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.white,
   },
   profileSection: {
@@ -703,12 +705,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: SIZES.fontSm,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textSecondary,
     marginBottom: SIZES.xs,
   },
   sectionValue: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
   },
   profileTags: {
@@ -724,10 +727,11 @@ const styles = StyleSheet.create({
   },
   profileTagText: {
     fontSize: SIZES.fontSm,
-    fontWeight: '500',
+    fontFamily: FONTS.bodyMedium,
   },
   bioText: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
     lineHeight: 22,
   },
@@ -737,7 +741,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: SIZES.fontMd,
-    fontWeight: '500',
+    fontFamily: FONTS.bodyMedium,
     marginLeft: SIZES.sm,
   },
   modalFooter: {
@@ -769,7 +773,7 @@ const styles = StyleSheet.create({
   },
   messageModalTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
   },
   messageTextArea: {
@@ -779,6 +783,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusMd,
     minHeight: 120,
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
     textAlignVertical: 'top',
   },
