@@ -32,16 +32,18 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Client Management** - Add, list, view clients with status tracking
 - [x] **Contract Management** - Create, send, track contracts
 - [x] **Invoice Management** - Create, send, mark paid
+- [x] **Client Notes** - Add prenatal/birth/postpartum notes with filtering
 - [x] **Client Birth Plans** - View shared birth plans
-- [x] **Provider Notes** - Add professional notes to sections
+- [x] **Provider Notes** - Add professional notes to birth plan sections
 - [x] **Profile** - Edit practice info, services, logout
 
-### MIDWIFE Experience
+### MIDWIFE Experience (COMPLETED Feb 16, 2025)
 - [x] Onboarding flow
-- [x] Dashboard
-- [x] Client management
-- [ ] Visit logging (UI exists, needs testing)
-- [ ] Birth summary creation
+- [x] **Dashboard** - Stats (prenatal clients, total clients, visits/births this month)
+- [x] **Client Management** - Add, list, view clients with status tracking
+- [x] **Visit Logging** - Record prenatal/postpartum visits with vitals (BP, weight, FHR, GA)
+- [x] **Birth Summaries** - Create detailed birth records (place, mode, newborn details, complications)
+- [x] **Profile** - Edit practice info, credentials, logout
 
 ### ADMIN Experience (Future)
 - [ ] Content management
@@ -75,71 +77,56 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - `POST /api/doula/contracts/{id}/send` - Send contract
 - `GET /api/doula/invoices` - List invoices
 - `POST /api/doula/invoices` - Create invoice
-- `POST /api/doula/invoices/{id}/send` - Send invoice
-- `POST /api/doula/invoices/{id}/mark-paid` - Mark as paid
-- `GET /api/doula/notes` - Get notes
+- `GET /api/doula/notes` - List notes
 - `POST /api/doula/notes` - Add note
 
-#### Notifications
-- `GET /api/notifications` - Get notifications with unread count
-- `PUT /api/notifications/{id}/read` - Mark as read
-- `PUT /api/notifications/read-all` - Mark all as read
-
-#### Timeline
-- `GET /api/timeline` - Get milestones + custom events
-- `POST /api/timeline/events` - Add custom event
-- `DELETE /api/timeline/events/{id}` - Delete event
-
-#### Wellness
-- `POST /api/wellness/entry` - Save wellness entry (mood, energy, sleep, symptoms, journal)
-- `GET /api/wellness/entries` - Get entry history
-- `GET /api/wellness/stats?days=7` - Get weekly averages
-
-#### Postpartum
-- `GET /api/postpartum/plan` - Get postpartum plan
-- `PUT /api/postpartum/plan` - Save postpartum plan
+#### Midwife
+- `GET /api/midwife/dashboard` - Get stats
+- `GET /api/midwife/clients` - List clients
+- `POST /api/midwife/clients` - Add client
+- `GET /api/midwife/visits` - List visits
+- `POST /api/midwife/visits` - Record visit
+- `GET /api/midwife/birth-summaries` - List birth summaries
+- `POST /api/midwife/birth-summaries` - Create birth summary
 
 ## What's Been Implemented
 
-### Feb 16, 2025 - Doula Dashboard Complete
-- Full Doula dashboard with stats
-- Client management (list, add)
-- Contract management (create, send)
-- Invoice management (create, send, mark paid)
-- Profile management
+### Feb 16, 2025 - Session 2: Provider Dashboards Complete
+- **Doula Client Notes** - Full CRUD with type filtering (Prenatal/Birth/Postpartum)
+- **Midwife Birth Summaries** - Create/view with place, mode, newborn details
+- **Midwife Visits** - Already existed, now tested
 - All backend APIs tested (100% pass rate)
 - All frontend screens verified
 
-### Earlier - MOM Experience Complete
+### Feb 16, 2025 - Session 1: Doula Dashboard
+- Dashboard, Clients, Contracts, Invoices, Profile
+- All tested and working
+
+### Earlier - MOM Experience
 - Birth Plan - 9 sections, 50+ fields
 - Share Birth Plan - Search, request, accept/reject, provider notes
-- Email Notifications - Resend integration
-- In-app Notifications - Polling system
-- Timeline Screen - Milestones + custom events
-- Wellness Journal - Mood/energy/sleep/symptoms + journal
-- Postpartum Plan - Full plan with 10+ sections
-- My Team Screen - Provider management
-- Home Dashboard - 4 quick action cards
+- Email/In-app Notifications
+- Timeline, Wellness, Postpartum, My Team screens
 
 ## Test Reports
-- `/app/test_reports/iteration_6.json` - Latest comprehensive tests
-- Backend: 100% (14/14 tests passed)
+- `/app/test_reports/iteration_7.json` - Latest (Doula Notes + Midwife features)
+- Backend: 100% (9/9 passed)
 - Frontend: 100% (all screens verified)
 
 ## Important Notes
 
 ### Email Notifications
-Resend requires domain verification to send emails to external recipients. The code is complete but emails to external addresses will fail until domain is verified at resend.com/domains. In-app notifications work regardless.
+Resend requires domain verification (user waiting for DNS propagation ~24hrs).
 
 ### Known Limitations
-- React Native Web Pressable/TouchableOpacity components don't work well with Playwright automation (workaround: localStorage token injection)
-- Console warnings about deprecated shadow* props (cosmetic only)
+- React Native Web click automation in Playwright (use localStorage injection)
+- Console warnings about deprecated shadow* props (cosmetic)
 
 ## Prioritized Backlog
 
 ### P1 (High Priority)
-- Full Midwife dashboard with visit logging and birth summaries
-- Client notes for Doula (endpoint exists, UI needs linking)
+- Midwife notes (endpoint exists, UI similar to Doula notes)
+- Admin panel (content/user management)
 
 ### P2 (Medium Priority)
 - Push notifications (mobile)
@@ -147,9 +134,9 @@ Resend requires domain verification to send emails to external recipients. The c
 - Contract e-signature integration
 
 ### P3 (Lower Priority)
-- Admin content/user management
 - Provider marketplace (Phase 3)
 
 ## Test Credentials
 - MOM: `sharemom2_1771213474@test.com` / `password123`
 - DOULA: `doula2_1771213474@test.com` / `password123`
+- MIDWIFE: `testmidwife_1771216891@test.com` / `password123`
