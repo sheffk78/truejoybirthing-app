@@ -35,8 +35,12 @@ export default function RootLayout() {
     
     const inAuthGroup = segments[0] === '(auth)';
     const currentScreen = segments[1];
+    const currentPath = segments.join('/');
     
-    if (!isAuthenticated && !inAuthGroup) {
+    // Allow public routes without auth
+    const isPublicRoute = segments[0] === 'sign-contract' || segments[0] === 'auth-callback';
+    
+    if (!isAuthenticated && !inAuthGroup && !isPublicRoute) {
       // Not authenticated, redirect to welcome
       router.replace('/(auth)/welcome');
     } else if (isAuthenticated && user) {
