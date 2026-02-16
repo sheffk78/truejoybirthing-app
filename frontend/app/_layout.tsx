@@ -8,10 +8,9 @@ import {
   PlayfairDisplay_700Bold,
 } from '@expo-google-fonts/playfair-display';
 import {
-  Quicksand_400Regular,
-  Quicksand_500Medium,
-  Quicksand_700Bold,
-} from '@expo-google-fonts/quicksand';
+  Lato_400Regular,
+  Lato_700Bold,
+} from '@expo-google-fonts/lato';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { COLORS } from '../src/constants/theme';
