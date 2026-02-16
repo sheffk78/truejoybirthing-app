@@ -69,6 +69,13 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ### ✅ COMPLETED FEATURES
 
+#### Brand Styling (COMPLETED - 2026-02-16)
+- [x] Playfair Display font applied to all headings across the app
+- [x] Quicksand font applied to all body text
+- [x] Brand color palette (lavender, dusty rose, sage green) applied consistently
+- [x] Role-based colors: MOM (dusty rose), DOULA (lavender), MIDWIFE (sage green)
+- [x] All screens updated with FONTS constants instead of fontWeight
+
 #### Authentication & Onboarding
 - [x] User registration (MOM, DOULA, MIDWIFE roles)
 - [x] Login with JWT authentication
