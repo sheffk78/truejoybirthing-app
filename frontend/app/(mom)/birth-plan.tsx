@@ -252,8 +252,16 @@ export default function BirthPlanScreen() {
           </TouchableOpacity>
         ))}
         
-        {/* Export Button */}
-        <View style={styles.exportSection}>
+        {/* Action Buttons */}
+        <View style={styles.actionSection}>
+          <Button
+            title="Share with Provider"
+            onPress={() => router.push('/share-birth-plan')}
+            fullWidth
+            icon={<Icon name="share-social" size={20} color={COLORS.white} />}
+            style={styles.shareButton}
+            data-testid="share-birth-plan-btn"
+          />
           <Button
             title="Export Birth Plan"
             onPress={handleExport}
@@ -263,7 +271,7 @@ export default function BirthPlanScreen() {
             style={styles.exportButton}
           />
           <Text style={styles.exportHint}>
-            Share your completed birth plan with your care team
+            Share your birth plan with your doula or midwife
           </Text>
         </View>
       </ScrollView>
