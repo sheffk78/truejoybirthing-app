@@ -1503,13 +1503,23 @@ async def update_postpartum_plan(request: Request, user: User = Depends(check_ro
     body = await request.json()
     now = datetime.now(timezone.utc)
     
+    # Get existing plan to preserve plan_id
+    existing = await db.postpartum_plans.find_one({"user_id": user.user_id})
+    plan_id = existing.get("plan_id") if existing else f"postpartum_{uuid.uuid4().hex[:12]}"
+    
     plan_data = {
-        "plan_id": f"postpartum_{uuid.uuid4().hex[:12]}",
+        "plan_id": plan_id,
         "user_id": user.user_id,
-        "visitor_preferences": body.get("visitor_preferences"),
-        "feeding_preferences": body.get("feeding_preferences"),
-        "sleep_boundaries": body.get("sleep_boundaries"),
-        "mental_health_concerns": body.get("mental_health_concerns"),
+        "support_people": body.get("support_people"),
+        "meal_prep_plans": body.get("meal_prep_plans"),
+        "recovery_goals": body.get("recovery_goals"),
+        "mental_health_resources": body.get("mental_health_resources"),
+        "baby_feeding_plan": body.get("baby_feeding_plan"),
+        "visitor_policy": body.get("visitor_policy"),
+        "self_care_activities": body.get("self_care_activities"),
+        "warning_signs_to_watch": body.get("warning_signs_to_watch"),
+        "emergency_contacts": body.get("emergency_contacts"),
+        "notes": body.get("notes"),
         "updated_at": now
     }
     
