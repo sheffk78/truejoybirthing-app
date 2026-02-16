@@ -2306,6 +2306,7 @@ async def create_birth_summary(summary_data: BirthSummaryCreate, user: User = De
     }
     
     await db.birth_summaries.insert_one(summary)
+    summary.pop('_id', None)  # Remove ObjectId added by insert_one
     
     # Update client status to Postpartum
     await db.clients.update_one(
