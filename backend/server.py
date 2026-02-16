@@ -1871,6 +1871,28 @@ async def create_contract(contract_data: ContractCreate, user: User = Depends(ch
     contract.pop('_id', None)  # Remove ObjectId added by insert_one
     return contract
 
+@api_router.get("/contracts/{contract_id}")
+async def get_contract_by_id(contract_id: str):
+    """Get a contract by ID (public endpoint for signing)"""
+    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    # Get client and doula info
+    client = await db.clients.find_one({"client_id": contract.get("client_id")}, {"_id": 0})
+    doula = await db.users.find_one({"user_id": contract.get("doula_id")}, {"_id": 0, "password_hash": 0})
+    doula_profile = await db.doula_profiles.find_one({"user_id": contract.get("doula_id")}, {"_id": 0})
+    
+    return {
+        "contract": contract,
+        "client": client,
+        "doula": {
+            "full_name": doula.get("full_name") if doula else None,
+            "email": doula.get("email") if doula else None,
+            "practice_name": doula_profile.get("practice_name") if doula_profile else None
+        }
+    }
+
 @api_router.put("/doula/contracts/{contract_id}")
 async def update_contract(contract_id: str, request: Request, user: User = Depends(check_role(["DOULA"]))):
     """Update a contract"""
