@@ -154,12 +154,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontTitle,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   formSection: {
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     fontSize: SIZES.fontSm,
     color: COLORS.primary,
-    fontWeight: '500',
+    fontFamily: FONTS.bodyMedium,
   },
   loginButton: {
     marginTop: SIZES.sm,
@@ -184,11 +185,12 @@ const styles = StyleSheet.create({
   },
   signupText: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   signupLink: {
     fontSize: SIZES.fontMd,
     color: COLORS.primary,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
 });
