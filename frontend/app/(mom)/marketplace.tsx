@@ -386,15 +386,55 @@ export default function MarketplaceScreen() {
           <View style={styles.modalFooter}>
             <Button
               title="Contact Provider"
-              onPress={() => {
-                setSelectedProvider(null);
-                // Future: Implement contact/connect functionality
-              }}
+              onPress={handleContactProvider}
               fullWidth
               testID="contact-provider-btn"
             />
           </View>
         </SafeAreaView>
+      </Modal>
+      
+      {/* Send Message Modal */}
+      <Modal
+        visible={showMessageModal}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setShowMessageModal(false)}
+      >
+        <View style={styles.messageModalOverlay}>
+          <View style={styles.messageModalContent}>
+            <View style={styles.messageModalHeader}>
+              <Text style={styles.messageModalTitle}>
+                Message {selectedProvider?.full_name}
+              </Text>
+              <TouchableOpacity onPress={() => setShowMessageModal(false)} data-testid="close-message-modal">
+                <Icon name="close" size={24} color={COLORS.textPrimary} />
+              </TouchableOpacity>
+            </View>
+            
+            <TextInput
+              style={styles.messageTextArea}
+              value={messageText}
+              onChangeText={setMessageText}
+              placeholder={`Introduce yourself to ${selectedProvider?.full_name}...`}
+              placeholderTextColor={COLORS.textLight}
+              multiline
+              numberOfLines={5}
+              maxLength={500}
+              data-testid="message-textarea"
+            />
+            
+            <View style={styles.messageModalFooter}>
+              <Button
+                title={sendingMessage ? "Sending..." : "Send Message"}
+                onPress={sendMessage}
+                disabled={!messageText.trim() || sendingMessage}
+                fullWidth
+                testID="send-message-btn"
+              />
+            </View>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
