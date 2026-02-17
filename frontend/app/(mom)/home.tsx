@@ -250,20 +250,6 @@ export default function MomHomeScreen() {
           </TouchableOpacity>
         </View>
         
-        {/* This Week's Tip */}
-        {timeline?.current_week && timeline?.milestones && (
-          <Card style={styles.tipCard}>
-            <View style={styles.tipHeader}>
-              <Icon name="bulb" size={20} color={COLORS.warning} />
-              <Text style={styles.tipTitle}>Week {timeline.current_week} Tip</Text>
-            </View>
-            <Text style={styles.tipText}>
-              {timeline.milestones.find((w: any) => w.week === timeline.current_week)?.description ||
-                'Stay hydrated and rest when you can!'}
-            </Text>
-          </Card>
-        )}
-        
         {/* Share Your Plan */}
         <Card style={styles.teamCard}>
           <View style={styles.teamHeader}>
