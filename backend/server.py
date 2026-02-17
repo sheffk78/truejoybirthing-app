@@ -2917,6 +2917,30 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
     if not message_data.content.strip():
         raise HTTPException(status_code=400, detail="Message content cannot be empty")
     
+    # Check messaging permissions based on roles
+    sender_role = user.role
+    receiver_role = receiver.get("role")
+    
+    # Mom <-> Provider messaging requires an active connection with can_message permission
+    if sender_role == "MOM" and receiver_role in ["DOULA", "MIDWIFE"]:
+        can_msg = await check_provider_can_message(message_data.receiver_id, user.user_id)
+        if not can_msg:
+            raise HTTPException(status_code=403, detail="You don't have an active connection with this provider")
+    elif sender_role in ["DOULA", "MIDWIFE"] and receiver_role == "MOM":
+        can_msg = await check_provider_can_message(user.user_id, message_data.receiver_id)
+        if not can_msg:
+            raise HTTPException(status_code=403, detail="You don't have an active connection with this client")
+    # Doula <-> Midwife messaging only allowed if they share a common client (optional for MVP)
+    elif sender_role in ["DOULA", "MIDWIFE"] and receiver_role in ["DOULA", "MIDWIFE"]:
+        # For MVP, we allow providers to message each other if they have at least one shared client
+        sender_clients = await db.share_requests.find({"provider_id": user.user_id, "status": "accepted"}).to_list(1000)
+        receiver_clients = await db.share_requests.find({"provider_id": message_data.receiver_id, "status": "accepted"}).to_list(1000)
+        sender_mom_ids = {c["mom_user_id"] for c in sender_clients}
+        receiver_mom_ids = {c["mom_user_id"] for c in receiver_clients}
+        shared_clients = sender_mom_ids & receiver_mom_ids
+        if not shared_clients:
+            raise HTTPException(status_code=403, detail="You can only message providers who share a common client with you")
+    
     now = datetime.now(timezone.utc)
     
     message_doc = {
