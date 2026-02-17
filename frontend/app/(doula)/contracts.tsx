@@ -489,6 +489,14 @@ export default function DoulaContracts() {
           <Text style={styles.actionText}>PDF</Text>
         </TouchableOpacity>
         
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => handleDuplicateContract(contract.contract_id)}
+        >
+          <Ionicons name="copy-outline" size={18} color={COLORS.primary} />
+          <Text style={styles.actionText}>Duplicate</Text>
+        </TouchableOpacity>
+        
         {contract.status === 'Draft' && (
           <>
             <TouchableOpacity 
