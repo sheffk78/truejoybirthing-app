@@ -4120,6 +4120,174 @@ async def sign_midwife_contract(contract_id: str, request: Request):
     
     return {"message": "Contract signed successfully", "emails_sent": emails_sent}
 
+# ============== CONTRACT TEMPLATE ROUTES ==============
+
+@api_router.get("/contract-templates")
+async def get_contract_templates(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Get all contract templates for the current user"""
+    template_type = "doula" if user.role == "DOULA" else "midwife"
+    
+    templates = await db.contract_templates.find(
+        {"provider_id": user.user_id, "template_type": template_type},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return templates
+
+@api_router.post("/contract-templates")
+async def create_contract_template(template_data: ContractTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Create a new contract template"""
+    now = datetime.now(timezone.utc)
+    expected_type = "doula" if user.role == "DOULA" else "midwife"
+    
+    # Validate template type matches user role
+    if template_data.template_type != expected_type:
+        raise HTTPException(status_code=400, detail=f"Template type must be '{expected_type}' for your role")
+    
+    # If setting as default, unset any existing default
+    if template_data.is_default:
+        await db.contract_templates.update_many(
+            {"provider_id": user.user_id, "template_type": expected_type, "is_default": True},
+            {"$set": {"is_default": False, "updated_at": now}}
+        )
+    
+    # Build template_data dict with all provided fields
+    template_fields = {}
+    for field in [
+        "total_fee", "retainer_amount", "services_included", "terms_and_conditions",
+        "prenatal_visit_description", "on_call_window_description", "on_call_response_description",
+        "backup_doula_preferences", "postpartum_visit_description", "retainer_non_refundable_after_weeks",
+        "cancellation_weeks_threshold", "cesarean_alternative_support_description",
+        "planned_birth_location", "scope_description", "remaining_balance_due_description",
+        "fee_coverage_description", "refund_policy_description", "transfer_indications_description",
+        "client_refusal_of_transfer_note", "midwife_withdrawal_reasons", "no_refund_scenarios_description",
+        "backup_midwife_policy", "contact_instructions_routine", "contact_instructions_urgent",
+        "emergency_instructions"
+    ]:
+        value = getattr(template_data, field, None)
+        if value is not None:
+            template_fields[field] = value
+    
+    template = {
+        "template_id": f"tmpl_{uuid.uuid4().hex[:12]}",
+        "provider_id": user.user_id,
+        "template_name": template_data.template_name,
+        "template_type": template_data.template_type,
+        "description": template_data.description,
+        "is_default": template_data.is_default,
+        "template_data": template_fields,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.contract_templates.insert_one(template)
+    template.pop('_id', None)
+    return template
+
+@api_router.get("/contract-templates/{template_id}")
+async def get_contract_template(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Get a specific contract template"""
+    template = await db.contract_templates.find_one(
+        {"template_id": template_id, "provider_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    return template
+
+@api_router.put("/contract-templates/{template_id}")
+async def update_contract_template(template_id: str, template_data: ContractTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Update a contract template"""
+    now = datetime.now(timezone.utc)
+    expected_type = "doula" if user.role == "DOULA" else "midwife"
+    
+    # Check template exists and belongs to user
+    existing = await db.contract_templates.find_one(
+        {"template_id": template_id, "provider_id": user.user_id}
+    )
+    if not existing:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    # If setting as default, unset any existing default
+    if template_data.is_default:
+        await db.contract_templates.update_many(
+            {"provider_id": user.user_id, "template_type": expected_type, "is_default": True, "template_id": {"$ne": template_id}},
+            {"$set": {"is_default": False, "updated_at": now}}
+        )
+    
+    # Build template_data dict
+    template_fields = {}
+    for field in [
+        "total_fee", "retainer_amount", "services_included", "terms_and_conditions",
+        "prenatal_visit_description", "on_call_window_description", "on_call_response_description",
+        "backup_doula_preferences", "postpartum_visit_description", "retainer_non_refundable_after_weeks",
+        "cancellation_weeks_threshold", "cesarean_alternative_support_description",
+        "planned_birth_location", "scope_description", "remaining_balance_due_description",
+        "fee_coverage_description", "refund_policy_description", "transfer_indications_description",
+        "client_refusal_of_transfer_note", "midwife_withdrawal_reasons", "no_refund_scenarios_description",
+        "backup_midwife_policy", "contact_instructions_routine", "contact_instructions_urgent",
+        "emergency_instructions"
+    ]:
+        value = getattr(template_data, field, None)
+        if value is not None:
+            template_fields[field] = value
+    
+    update_data = {
+        "template_name": template_data.template_name,
+        "description": template_data.description,
+        "is_default": template_data.is_default,
+        "template_data": template_fields,
+        "updated_at": now
+    }
+    
+    await db.contract_templates.update_one(
+        {"template_id": template_id},
+        {"$set": update_data}
+    )
+    
+    return {"message": "Template updated", "template_id": template_id}
+
+@api_router.delete("/contract-templates/{template_id}")
+async def delete_contract_template(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Delete a contract template"""
+    result = await db.contract_templates.delete_one(
+        {"template_id": template_id, "provider_id": user.user_id}
+    )
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    return {"message": "Template deleted"}
+
+@api_router.post("/contract-templates/{template_id}/set-default")
+async def set_default_template(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Set a template as the default"""
+    now = datetime.now(timezone.utc)
+    expected_type = "doula" if user.role == "DOULA" else "midwife"
+    
+    # Check template exists
+    template = await db.contract_templates.find_one(
+        {"template_id": template_id, "provider_id": user.user_id}
+    )
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    # Unset all other defaults
+    await db.contract_templates.update_many(
+        {"provider_id": user.user_id, "template_type": expected_type},
+        {"$set": {"is_default": False, "updated_at": now}}
+    )
+    
+    # Set this one as default
+    await db.contract_templates.update_one(
+        {"template_id": template_id},
+        {"$set": {"is_default": True, "updated_at": now}}
+    )
+    
+    return {"message": "Template set as default"}
+
 # ============== INVOICE ROUTES ==============
 
 # Helper to generate invoice number
