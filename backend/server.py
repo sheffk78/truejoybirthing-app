@@ -164,6 +164,7 @@ class DoulaProfile(BaseModel):
 
 class DoulaProfileUpdate(BaseModel):
     practice_name: Optional[str] = None
+    zip_code: Optional[str] = None
     location_city: Optional[str] = None
     location_state: Optional[str] = None
     services_offered: Optional[List[str]] = None
@@ -275,6 +276,7 @@ class MidwifeProfile(BaseModel):
 class MidwifeProfileUpdate(BaseModel):
     practice_name: Optional[str] = None
     credentials: Optional[str] = None
+    zip_code: Optional[str] = None
     location_city: Optional[str] = None
     location_state: Optional[str] = None
     years_in_practice: Optional[int] = None
