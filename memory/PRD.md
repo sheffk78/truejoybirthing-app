@@ -158,6 +158,11 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - Provider-to-Provider messaging requires shared client
   - Midwife visits split into `summary_for_mom` (Mom visible) and `private_note` (Midwife only)
   - Providers view birth plan as read-only
+- [x] **Frontend UI for Appointments**:
+  - Mom appointments screen (view and respond to invitations)
+  - Provider appointments screen (create appointments, view status)
+  - Quick action cards on Mom home, Doula dashboard, Midwife dashboard
+  - Fixed layout issue with dashboard quick action grid (2x2 wrap)
 - [x] Doula onboarding with zip code lookup (auto-fills city/state)
 - [x] Midwife onboarding with zip code lookup (auto-fills city/state)
 - [x] Birth location icons in Birth Plan form (Hospital, Birth Center, Home Birth, Not sure yet)
