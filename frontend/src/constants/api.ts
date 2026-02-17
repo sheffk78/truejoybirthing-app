@@ -101,6 +101,10 @@ export const API_ENDPOINTS = {
   
   // Mom - Midwife Visits
   MOM_MIDWIFE_VISITS: '/mom/midwife-visits',
+  
+  // Weekly Content (Tips & Affirmations)
+  WEEKLY_CONTENT: '/weekly-content',
+  WEEKLY_CONTENT_ALL: '/weekly-content/all',
 };
 
 export default API_ENDPOINTS;
