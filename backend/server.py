@@ -293,7 +293,8 @@ class VisitCreate(BaseModel):
     blood_pressure: Optional[str] = None
     weight: Optional[str] = None
     fetal_heart_rate: Optional[str] = None
-    note: Optional[str] = None
+    summary_for_mom: Optional[str] = None  # Mom-friendly summary (visible to Mom)
+    private_note: Optional[str] = None  # Detailed clinical note (midwife only)
 
 class Visit(BaseModel):
     visit_id: str
@@ -302,10 +303,11 @@ class Visit(BaseModel):
     visit_date: str
     visit_type: str
     gestational_age: Optional[str] = None
-    blood_pressure: Optional[str] = None
-    weight: Optional[str] = None
-    fetal_heart_rate: Optional[str] = None
-    note: Optional[str] = None
+    blood_pressure: Optional[str] = None  # Clinical - NOT visible to Mom
+    weight: Optional[str] = None  # Clinical - NOT visible to Mom
+    fetal_heart_rate: Optional[str] = None  # Clinical - NOT visible to Mom
+    summary_for_mom: Optional[str] = None  # Mom-friendly summary (visible to Mom)
+    private_note: Optional[str] = None  # Detailed clinical note (midwife only, NOT visible to Mom)
     created_at: datetime
     updated_at: Optional[datetime] = None
 
