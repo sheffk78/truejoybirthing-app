@@ -218,15 +218,16 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     marginHorizontal: -SIZES.xs,
     marginBottom: SIZES.lg,
   },
   actionCard: {
-    flex: 1,
+    width: '48%',
     backgroundColor: COLORS.white,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
-    marginHorizontal: SIZES.xs,
+    margin: '1%',
     alignItems: 'center',
     ...SHADOWS.sm,
   },
