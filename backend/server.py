@@ -203,31 +203,64 @@ class Client(ClientBase):
     updated_at: Optional[datetime] = None
 
 # --- Contract Models ---
+class ContractSectionUpdate(BaseModel):
+    id: str
+    custom_content: Optional[str] = None
+
 class ContractCreate(BaseModel):
     client_id: str
-    contract_title: str
-    services_description: Optional[str] = None
-    total_fee: Optional[float] = None
-    payment_schedule_description: Optional[str] = None
-    cancellation_policy: Optional[str] = None
-    scope_of_practice: Optional[str] = None
+    # Client & Payment Details
+    client_names: str  # Full name(s) of client(s)
+    estimated_due_date: str  # YYYY-MM-DD
+    total_payment_amount: float
+    retainer_fee: float
+    remaining_payment_amount: Optional[float] = None  # Auto-calculated if not provided
+    final_payment_due_date: str = "Day after birth"
+    # Optional section customizations
+    section_customizations: Optional[List[ContractSectionUpdate]] = None
+    additional_terms: Optional[str] = None
+
+class ContractSignature(BaseModel):
+    signer_type: str  # "client" or "doula"
+    signer_name: str
+    signature_data: str  # Base64 encoded signature image or typed name
+    signed_at: datetime
 
 class Contract(BaseModel):
     contract_id: str
     doula_id: str
+    doula_name: str
     client_id: str
     client_name: str
+    # Client & Payment Details
+    client_names: str
+    estimated_due_date: str
+    total_payment_amount: float
+    retainer_fee: float
+    remaining_payment_amount: float
+    final_payment_due_date: str
+    agreement_date: str
+    # Template sections (with any customizations)
+    sections: List[dict]
+    additional_terms: Optional[str] = None
+    # Status and signatures
+    status: str = "Draft"  # Draft, Sent, Pending Signature, Signed
+    client_signature: Optional[dict] = None
+    doula_signature: Optional[dict] = None
+    sent_at: Optional[datetime] = None
+    signed_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+# Legacy contract model for backward compatibility
+class LegacyContractCreate(BaseModel):
+    client_id: str
     contract_title: str
     services_description: Optional[str] = None
     total_fee: Optional[float] = None
     payment_schedule_description: Optional[str] = None
     cancellation_policy: Optional[str] = None
     scope_of_practice: Optional[str] = None
-    status: str = "Draft"
-    signature_data: Optional[str] = None  # Mock signature
-    signed_at: Optional[datetime] = None
-    created_at: datetime
-    updated_at: Optional[datetime] = None
 
 # --- Invoice Models ---
 class InvoiceCreate(BaseModel):
