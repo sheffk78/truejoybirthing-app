@@ -3281,6 +3281,25 @@ async def update_midwife_contract(contract_id: str, request: Request, user: User
     
     return {"message": "Contract updated"}
 
+@api_router.delete("/midwife/contracts/{contract_id}")
+async def delete_midwife_contract(contract_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Delete a draft midwife contract"""
+    contract = await db.midwife_contracts.find_one(
+        {"contract_id": contract_id, "midwife_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    if contract.get("status") != "Draft":
+        raise HTTPException(status_code=400, detail="Only draft contracts can be deleted")
+    
+    await db.midwife_contracts.delete_one({"contract_id": contract_id, "midwife_id": user.user_id})
+    return {"message": "Contract deleted"}
+
+
+
 @api_router.post("/midwife/contracts/{contract_id}/send")
 async def send_midwife_contract(contract_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
     """Send midwife contract for signature"""
