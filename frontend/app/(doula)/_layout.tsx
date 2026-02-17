@@ -93,6 +93,12 @@ export default function DoulaLayout() {
           href: null,  // Hide from tab bar, accessible from dashboard
         }}
       />
+      <Tabs.Screen
+        name="contract-templates"
+        options={{
+          href: null,  // Hide from tab bar, accessible from contracts page
+        }}
+      />
     </Tabs>
   );
 }
