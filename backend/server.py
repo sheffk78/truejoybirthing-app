@@ -78,6 +78,273 @@ BIRTH_MODES = ["Spontaneous Vaginal", "Assisted Vaginal", "Cesarean", "Other"]
 SERVICES_OFFERED = ["Birth Doula", "Postpartum Doula", "Virtual Doula"]
 MIDWIFE_CREDENTIALS = ["CPM", "LM", "CNM"]
 
+# ============== PDF GENERATION HELPERS ==============
+
+def generate_midwife_contract_pdf_bytes(contract: dict) -> bytes:
+    """Generate PDF bytes for a midwife contract"""
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib import colors
+    from io import BytesIO
+    
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=20, textColor=colors.HexColor('#5B8C7A'), spaceAfter=6)
+    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#5B8C7A'), spaceBefore=20, spaceAfter=10)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=8)
+    intro_style = ParagraphStyle('Intro', parent=styles['Normal'], fontSize=10, leading=14, fontName='Helvetica-Oblique', spaceAfter=15)
+    
+    elements = []
+    
+    # Title
+    elements.append(Paragraph("Midwifery Services Agreement", title_style))
+    if contract.get("practice_name"):
+        elements.append(Paragraph(contract["practice_name"], styles['Normal']))
+    elements.append(Spacer(1, 20))
+    
+    # Intro
+    intro_text = f"This Midwifery Services Agreement is made between <b>{contract.get('midwife_name', '')}</b> (Midwife/Practice) and <b>{contract.get('client_name', '')}</b> (Client) as of <b>{contract.get('agreement_date', '')}</b>."
+    if contract.get("partner_name"):
+        intro_text += f" The Partner or primary support person is <b>{contract['partner_name']}</b>."
+    elements.append(Paragraph(intro_text, intro_style))
+    elements.append(Spacer(1, 10))
+    
+    # Care Details
+    elements.append(Paragraph("Care Details", heading_style))
+    care_data = [["Client Name", contract.get("client_name", "")]]
+    if contract.get("partner_name"):
+        care_data.append(["Partner/Support Person", contract["partner_name"]])
+    care_data.extend([
+        ["Estimated Due Date", contract.get("estimated_due_date", "")],
+        ["Planned Birth Location", contract.get("planned_birth_place", "")],
+        ["On-Call Period", f"{contract.get('on_call_start_week', '37')} to {contract.get('on_call_end_week', '42')} weeks"],
+    ])
+    care_table = Table(care_data, colWidths=[2.5*inch, 4*inch])
+    care_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f0f7f4')),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(care_table)
+    elements.append(Spacer(1, 15))
+    
+    # Payment Details
+    elements.append(Paragraph("Payment Details", heading_style))
+    payment_data = [
+        ["Total Fee", f"${contract.get('total_fee', 0):,.2f}"],
+        ["Non-Refundable Deposit", f"${contract.get('deposit', 0):,.2f}"],
+        ["Remaining Balance", f"${contract.get('remaining_balance', 0):,.2f}"],
+        ["Balance Due By", f"{contract.get('balance_due_week', '36')} weeks' gestation"],
+    ]
+    payment_table = Table(payment_data, colWidths=[2.5*inch, 4*inch])
+    payment_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f0f7f4')),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(payment_table)
+    
+    # Sections
+    for section in contract.get("sections", []):
+        elements.append(Paragraph(section.get("title", ""), heading_style))
+        content = section.get("custom_content") or section.get("content", "")
+        for para in content.split('\n\n'):
+            if para.strip():
+                elements.append(Paragraph(para.strip().replace('\n', '<br/>'), body_style))
+    
+    if contract.get("additional_terms"):
+        elements.append(Paragraph("Additional Terms", heading_style))
+        elements.append(Paragraph(contract["additional_terms"], body_style))
+    
+    # Signatures
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph("Signatures", heading_style))
+    sig_data = []
+    if contract.get("midwife_signature"):
+        sig_data.append(["Midwife Signature:", contract["midwife_signature"].get("signer_name", "")])
+        sig_data.append(["Date Signed:", contract["midwife_signature"].get("signed_at", "")[:10] if contract["midwife_signature"].get("signed_at") else ""])
+    if contract.get("client_signature"):
+        sig_data.append(["Client Signature:", contract["client_signature"].get("signer_name", "")])
+        sig_data.append(["Date Signed:", contract["client_signature"].get("signed_at", "")[:10] if contract["client_signature"].get("signed_at") else ""])
+    if sig_data:
+        sig_table = Table(sig_data, colWidths=[2*inch, 4.5*inch])
+        sig_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ]))
+        elements.append(sig_table)
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def generate_doula_contract_pdf_bytes(contract: dict) -> bytes:
+    """Generate PDF bytes for a doula contract"""
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib import colors
+    from io import BytesIO
+    
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=20, textColor=colors.HexColor('#9F83B6'), spaceAfter=6)
+    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#9F83B6'), spaceBefore=20, spaceAfter=10)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=8)
+    intro_style = ParagraphStyle('Intro', parent=styles['Normal'], fontSize=10, leading=14, fontName='Helvetica-Oblique', spaceAfter=15)
+    
+    elements = []
+    
+    # Title
+    elements.append(Paragraph("True Joy Birthing Doula Service Agreement", title_style))
+    elements.append(Spacer(1, 20))
+    
+    # Intro
+    intro_text = f"This Service Agreement is made between <b>{contract.get('doula_name', '')}</b> (Doula) and <b>{contract.get('client_name', '')}</b> (Client) as of <b>{contract.get('agreement_date', '')}</b>."
+    if contract.get("partner_name"):
+        intro_text += f" The Partner is <b>{contract['partner_name']}</b>."
+    elements.append(Paragraph(intro_text, intro_style))
+    elements.append(Spacer(1, 10))
+    
+    # Client Details
+    elements.append(Paragraph("Client Details", heading_style))
+    client_data = [["Client Name", contract.get("client_name", "")]]
+    if contract.get("partner_name"):
+        client_data.append(["Partner Name", contract["partner_name"]])
+    client_data.extend([
+        ["Estimated Due Date", contract.get("estimated_due_date", "")],
+        ["Birth Location", contract.get("intended_birth_place", "")],
+    ])
+    client_table = Table(client_data, colWidths=[2.5*inch, 4*inch])
+    client_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f5f0f7')),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(client_table)
+    elements.append(Spacer(1, 15))
+    
+    # Payment Details
+    elements.append(Paragraph("Payment Details", heading_style))
+    payment_data = [
+        ["Total Payment Amount", f"${contract.get('total_payment_amount', 0):,.2f}"],
+        ["Retainer Fee (Non-refundable)", f"${contract.get('retainer_fee', 0):,.2f}"],
+        ["Remaining Amount", f"${contract.get('remaining_payment_amount', 0):,.2f}"],
+        ["Final Payment Due", contract.get("final_payment_due_date", "")],
+    ]
+    payment_table = Table(payment_data, colWidths=[2.5*inch, 4*inch])
+    payment_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f5f0f7')),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(payment_table)
+    
+    # Sections
+    for section in contract.get("sections", []):
+        elements.append(Paragraph(section.get("title", ""), heading_style))
+        content = section.get("custom_content") or section.get("content", "")
+        for para in content.split('\n\n'):
+            if para.strip():
+                elements.append(Paragraph(para.strip().replace('\n', '<br/>'), body_style))
+    
+    if contract.get("additional_terms"):
+        elements.append(Paragraph("Additional Terms", heading_style))
+        elements.append(Paragraph(contract["additional_terms"], body_style))
+    
+    # Signatures
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph("Signatures", heading_style))
+    sig_data = []
+    if contract.get("doula_signature"):
+        sig_data.append(["Doula Signature:", contract["doula_signature"].get("signer_name", "")])
+        sig_data.append(["Date Signed:", contract["doula_signature"].get("signed_at", "")[:10] if contract["doula_signature"].get("signed_at") else ""])
+    if contract.get("client_signature"):
+        sig_data.append(["Client Signature:", contract["client_signature"].get("signer_name", "")])
+        sig_data.append(["Date Signed:", contract["client_signature"].get("signed_at", "")[:10] if contract["client_signature"].get("signed_at") else ""])
+    if sig_data:
+        sig_table = Table(sig_data, colWidths=[2*inch, 4.5*inch])
+        sig_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ]))
+        elements.append(sig_table)
+    
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+async def send_signed_contract_email(contract_type: str, contract: dict, recipient_email: str, recipient_name: str, provider_name: str):
+    """Send signed contract PDF via email"""
+    import base64
+    
+    try:
+        # Generate PDF
+        if contract_type == "midwife":
+            pdf_bytes = generate_midwife_contract_pdf_bytes(contract)
+            subject = f"Your Signed Midwifery Services Agreement - {provider_name}"
+            filename = f"Midwifery_Agreement_{contract.get('client_name', 'Client').replace(' ', '_')}.pdf"
+        else:
+            pdf_bytes = generate_doula_contract_pdf_bytes(contract)
+            subject = f"Your Signed Doula Service Agreement - {provider_name}"
+            filename = f"Doula_Agreement_{contract.get('client_name', 'Client').replace(' ', '_')}.pdf"
+        
+        # Encode PDF as base64
+        pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
+        
+        params = {
+            "from": SENDER_EMAIL,
+            "to": recipient_email,
+            "subject": subject,
+            "html": f"""
+            <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #5B8C7A;">True Joy Birthing</h2>
+                <p>Hi {recipient_name},</p>
+                <p>Your {"Midwifery Services" if contract_type == "midwife" else "Doula Service"} Agreement has been fully signed by both parties.</p>
+                <p>Please find the signed contract attached to this email for your records.</p>
+                <div style="background: #f9fdfb; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 0;"><strong>Agreement Details:</strong></p>
+                    <ul style="margin: 10px 0;">
+                        <li>Client: {contract.get('client_name', '')}</li>
+                        <li>{"Midwife" if contract_type == "midwife" else "Doula"}: {provider_name}</li>
+                        <li>Date Signed: {contract.get('signed_at', '')[:10] if contract.get('signed_at') else 'N/A'}</li>
+                    </ul>
+                </div>
+                <p>If you have any questions about your agreement, please contact your {"midwife" if contract_type == "midwife" else "doula"} directly.</p>
+                <p>Best wishes,<br>True Joy Birthing</p>
+            </div>
+            """,
+            "attachments": [
+                {
+                    "filename": filename,
+                    "content": pdf_base64,
+                }
+            ]
+        }
+        
+        await asyncio.to_thread(resend.Emails.send, params)
+        return True
+    except Exception as e:
+        print(f"Failed to send signed contract email: {e}")
+        return False
+
 # ============== PYDANTIC MODELS ==============
 
 # --- User Models ---
