@@ -228,6 +228,21 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - **ProGate Component**: `src/components/ProGate.tsx` for gating PRO features
   - **Note**: In-App Purchases (StoreKit/Google Play) are MOCKED for testing
   - **All tests passing** (iteration_26.json: 15/15 backend tests, 100% frontend)
+- [x] **Pro Feedback Form** (ADDED 2026-02-17):
+  - **Who can use**: Only active Pro users (Doulas/Midwives with trial or subscription)
+  - **Location**: Profile → "Send Feedback" menu item (only visible with Pro access)
+  - **Form Features**:
+    - Description explaining purpose
+    - Multi-line feedback text (500-800 character limit)
+    - Optional topic dropdown: Bug, Feature request, General comment
+    - Pre-fills user info (name, email, role)
+  - **On Submit**: 
+    - Sends email to shelbi@truejoybirthing.com with formatted details
+    - Stores feedback in `pro_feedback` collection for records
+    - Shows success confirmation
+  - **Validations**: Required text, character limit, Pro access check
+  - **Backend API**: `POST /api/pro/feedback`
+  - **Frontend**: `/pro-feedback` page accessible from Doula/Midwife profiles
 - [x] **Doula Contract Delete Endpoint** (ADDED 2026-02-17):
   - New endpoint: `DELETE /api/doula/contracts/{id}` for deleting Draft contracts
   - Delete button now functional on Doula contract cards
