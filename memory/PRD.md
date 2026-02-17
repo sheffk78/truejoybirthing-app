@@ -145,7 +145,13 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] Messaging endpoints
 
 ### 🟡 BLOCKED
-- Email notifications (Resend): Domain verification pending by user
+- None (previously: Email notifications domain verification - now resolved)
+
+### ✅ RECENTLY COMPLETED (2026-02-17)
+- [x] Doula onboarding with zip code lookup (auto-fills city/state)
+- [x] Midwife onboarding with zip code lookup (auto-fills city/state)
+- [x] Birth location icons in Birth Plan form (Hospital, Birth Center, Home Birth, Not sure yet)
+- [x] Email notifications sender domain configured (contact.truejoybirthing.com verified)
 
 ### 📊 Test Reports
 - `/app/test_reports/iteration_12.json` - Latest test (100% pass rate, birth plan forms)
