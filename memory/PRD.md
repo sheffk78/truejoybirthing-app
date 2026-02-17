@@ -208,6 +208,26 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - Tracks `last_reminder_sent` timestamp on invoice
   - "Remind" button added to invoice cards for Sent status
   - Backend endpoints: `POST /api/doula/invoices/{id}/send-reminder`, `POST /api/midwife/invoices/{id}/send-reminder`
+- [x] **Subscription System (Pro Plan + Free Moms + 30-Day Trial)** (ADDED 2026-02-17):
+  - **Pricing Model**:
+    - MOMs: Always FREE - no subscription needed
+    - Doulas & Midwives: True Joy Pro - $29/month or $276/year (save $72)
+    - 30-day free trial for all PRO users
+  - **Backend APIs**:
+    - `GET /api/subscription/pricing` - Public pricing info with features
+    - `GET /api/subscription/status` - User's subscription status
+    - `POST /api/subscription/start-trial` - Start 30-day free trial
+    - `POST /api/subscription/activate` - Activate paid subscription (MOCK)
+    - `POST /api/subscription/cancel` - Cancel subscription
+  - **Frontend**:
+    - `/plans-pricing` - Plans & Pricing page with MOMs free section and PRO plans
+    - Subscription card in Doula/Midwife profile pages
+    - Shows trial status with days remaining
+    - Upgrade prompts for non-subscribed PRO users
+  - **State Management**: `subscriptionStore.ts` with Zustand
+  - **ProGate Component**: `src/components/ProGate.tsx` for gating PRO features
+  - **Note**: In-App Purchases (StoreKit/Google Play) are MOCKED for testing
+  - **All tests passing** (iteration_26.json: 15/15 backend tests, 100% frontend)
 - [x] **Doula Contract Delete Endpoint** (ADDED 2026-02-17):
   - New endpoint: `DELETE /api/doula/contracts/{id}` for deleting Draft contracts
   - Delete button now functional on Doula contract cards
