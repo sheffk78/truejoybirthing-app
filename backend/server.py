@@ -713,24 +713,56 @@ class MidwifeContract(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
-# --- Invoice Models ---
+# --- Payment Instructions Template Models ---
+class PaymentInstructionsTemplateCreate(BaseModel):
+    label: str
+    instructions_text: str
+    is_default: bool = False
+
+class PaymentInstructionsTemplate(BaseModel):
+    template_id: str
+    user_id: str
+    label: str
+    instructions_text: str
+    is_default: bool = False
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+# --- Invoice Models (Enhanced) ---
 class InvoiceCreate(BaseModel):
     client_id: str
-    invoice_title: str
+    invoice_number: Optional[str] = None  # Auto-generated if not provided
+    description: str  # Renamed from invoice_title
     amount: float
-    due_date: str
-    notes: Optional[str] = None
+    issue_date: Optional[str] = None  # Defaults to today
+    due_date: Optional[str] = None
+    payment_instructions_text: Optional[str] = None  # Snapshot of payment instructions
+    notes_for_client: Optional[str] = None
+
+class InvoiceUpdate(BaseModel):
+    description: Optional[str] = None
+    amount: Optional[float] = None
+    issue_date: Optional[str] = None
+    due_date: Optional[str] = None
+    payment_instructions_text: Optional[str] = None
+    notes_for_client: Optional[str] = None
+    status: Optional[str] = None
 
 class Invoice(BaseModel):
     invoice_id: str
-    doula_id: str
+    pro_user_id: str  # Can be doula_id or midwife_id
+    pro_type: str  # "DOULA" or "MIDWIFE"
     client_id: str
     client_name: str
-    invoice_title: str
+    invoice_number: str
+    description: str
     amount: float
-    due_date: str
-    notes: Optional[str] = None
-    status: str = "Draft"
+    issue_date: str
+    due_date: Optional[str] = None
+    payment_instructions_text: Optional[str] = None
+    notes_for_client: Optional[str] = None
+    status: str = "Draft"  # Draft, Sent, Paid, Cancelled
+    sent_at: Optional[datetime] = None
     paid_at: Optional[datetime] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
