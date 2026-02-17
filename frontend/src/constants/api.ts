@@ -124,6 +124,9 @@ export const API_ENDPOINTS = {
   
   // Pro Feedback
   PRO_FEEDBACK: '/pro/feedback',
+  
+  // Contract Templates
+  CONTRACT_TEMPLATES: '/contract-templates',
 };
 
 export default API_ENDPOINTS;
