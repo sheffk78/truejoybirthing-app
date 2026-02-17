@@ -363,8 +363,8 @@ export default function BirthPlanScreen() {
               />
             </View>
             
-            {/* Spacer for bottom button */}
-            <View style={{ height: 100 }} />
+            {/* Spacer for bottom button - increased for better mobile scrolling */}
+            <View style={{ height: 180 }} />
           </ScrollView>
           
           <View style={styles.modalFooter}>
