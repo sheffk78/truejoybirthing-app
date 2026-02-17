@@ -26,9 +26,10 @@ from weekly_content import (
 
 # Import doula contract template
 from doula_contract_template import (
-    DOULA_CONTRACT_TEMPLATE,
     get_contract_template,
-    get_contract_html
+    get_contract_html,
+    generate_contract_text,
+    DEFAULT_CONTRACT_FIELDS
 )
 
 # Import midwife contract template
