@@ -3259,7 +3259,36 @@ async def sign_midwife_contract(contract_id: str, request: Request):
         data={"contract_id": contract_id}
     )
     
-    return {"message": "Contract signed successfully"}
+    # Fetch updated contract and send PDF emails to both parties
+    updated_contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    midwife = await db.users.find_one({"user_id": contract["midwife_id"]}, {"_id": 0, "password_hash": 0})
+    client_record = await db.clients.find_one({"client_id": contract["client_id"]}, {"_id": 0})
+    
+    emails_sent = {"midwife": False, "client": False}
+    
+    # Send to midwife
+    if midwife and midwife.get("email"):
+        emails_sent["midwife"] = await send_signed_contract_email(
+            "midwife", 
+            updated_contract,
+            midwife["email"],
+            midwife.get("full_name", ""),
+            midwife.get("full_name", "")
+        )
+    
+    # Send to client (via linked mom account)
+    if client_record and client_record.get("linked_mom_id"):
+        mom = await db.users.find_one({"user_id": client_record["linked_mom_id"]}, {"_id": 0})
+        if mom and mom.get("email"):
+            emails_sent["client"] = await send_signed_contract_email(
+                "midwife",
+                updated_contract,
+                mom["email"],
+                contract.get("client_name", ""),
+                midwife.get("full_name", "") if midwife else ""
+            )
+    
+    return {"message": "Contract signed successfully", "emails_sent": emails_sent}
 
 # ============== INVOICE ROUTES ==============
 
