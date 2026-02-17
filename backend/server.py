@@ -402,6 +402,28 @@ class User(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
+# --- Subscription Models ---
+class SubscriptionInfo(BaseModel):
+    subscription_status: str = "none"  # none, trial, active, expired, cancelled
+    plan_type: Optional[str] = None  # monthly, annual
+    trial_start_date: Optional[datetime] = None
+    trial_end_date: Optional[datetime] = None
+    subscription_start_date: Optional[datetime] = None
+    subscription_end_date: Optional[datetime] = None
+    store_transaction_id: Optional[str] = None  # For real IAP, store the transaction ID
+    store_type: Optional[str] = None  # ios, android, mock
+
+class StartTrialRequest(BaseModel):
+    plan_type: str  # monthly or annual
+
+class SubscriptionResponse(BaseModel):
+    has_pro_access: bool
+    subscription_status: str
+    plan_type: Optional[str] = None
+    trial_end_date: Optional[str] = None
+    days_remaining: Optional[int] = None
+    is_trial: bool = False
+
 # --- Mom Models ---
 class MomProfile(BaseModel):
     user_id: str
