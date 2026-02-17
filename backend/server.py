@@ -2680,7 +2680,7 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
     return {
         "message": "Contract sent",
         "email_sent": email_sent,
-        "signing_url": f"/midwife-contract/{contract_id}"
+        "signing_url": f"/sign-midwife-contract?contractId={contract_id}"
     }
 
 @api_router.post("/midwife-contracts/{contract_id}/sign")
