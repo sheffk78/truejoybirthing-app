@@ -3090,47 +3090,82 @@ async def create_midwife_contract(contract_data: MidwifeContractCreate, user: Us
     # Calculate remaining balance if not provided
     remaining = contract_data.remaining_balance
     if remaining is None:
-        remaining = contract_data.total_fee - contract_data.deposit
+        remaining = contract_data.total_fee - contract_data.retainer_amount
     
-    # Get template sections and apply any customizations
-    template = get_midwife_contract_template()
-    sections = []
-    for section in template["sections"]:
-        section_copy = section.copy()
-        # Check if there are customizations for this section
-        if contract_data.section_customizations:
-            for custom in contract_data.section_customizations:
-                if custom.id == section["id"] and custom.custom_content:
-                    section_copy["custom_content"] = custom.custom_content
-        sections.append(section_copy)
+    # Use practice name from input or default to user's full name
+    midwife_practice_name = contract_data.midwife_practice_name or user.full_name
+    
+    # Build contract data dictionary for text generation
+    contract_fields = {
+        "midwife_practice_name": midwife_practice_name,
+        "client_name": contract_data.client_name,
+        "partner_name": contract_data.partner_name or "N/A",
+        "agreement_date": now.strftime("%B %d, %Y"),
+        "estimated_due_date": contract_data.estimated_due_date,
+        "planned_birth_location": contract_data.planned_birth_location,
+        "scope_description": contract_data.scope_description,
+        "total_fee": contract_data.total_fee,
+        "retainer_amount": contract_data.retainer_amount,
+        "remaining_balance": remaining,
+        "remaining_balance_due_description": contract_data.remaining_balance_due_description,
+        "fee_coverage_description": contract_data.fee_coverage_description,
+        "refund_policy_description": contract_data.refund_policy_description,
+        "transfer_indications_description": contract_data.transfer_indications_description,
+        "client_refusal_of_transfer_note": contract_data.client_refusal_of_transfer_note,
+        "midwife_withdrawal_reasons": contract_data.midwife_withdrawal_reasons,
+        "no_refund_scenarios_description": contract_data.no_refund_scenarios_description,
+        "on_call_window_description": contract_data.on_call_window_description,
+        "backup_midwife_policy": contract_data.backup_midwife_policy,
+        "contact_instructions_routine": contract_data.contact_instructions_routine,
+        "contact_instructions_urgent": contract_data.contact_instructions_urgent,
+        "emergency_instructions": contract_data.emergency_instructions,
+        "special_arrangements": contract_data.special_arrangements
+    }
+    
+    # Generate the contract text
+    contract_text = generate_midwife_contract_text(contract_fields)
     
     contract = {
         "contract_id": f"mw_contract_{uuid.uuid4().hex[:12]}",
         "midwife_id": user.user_id,
-        "midwife_name": user.full_name,
+        "midwife_practice_name": midwife_practice_name,
         "client_id": contract_data.client_id,
         "client_name": contract_data.client_name,
         "partner_name": contract_data.partner_name,
-        # Care Details
+        # Basic Details
         "estimated_due_date": contract_data.estimated_due_date,
-        "planned_birth_place": contract_data.planned_birth_place,
-        "on_call_start_week": contract_data.on_call_start_week,
-        "on_call_end_week": contract_data.on_call_end_week,
-        # Payment Details
-        "total_fee": contract_data.total_fee,
-        "deposit": contract_data.deposit,
-        "remaining_balance": remaining,
-        "balance_due_week": contract_data.balance_due_week,
-        # Practice Info
-        "practice_name": contract_data.practice_name,
         "agreement_date": now.strftime("%Y-%m-%d"),
-        # Template sections
-        "sections": sections,
-        "additional_terms": contract_data.additional_terms,
+        # Place of Birth & Scope
+        "planned_birth_location": contract_data.planned_birth_location,
+        "scope_description": contract_data.scope_description,
+        # Fees & Payment
+        "total_fee": contract_data.total_fee,
+        "retainer_amount": contract_data.retainer_amount,
+        "remaining_balance": remaining,
+        "remaining_balance_due_description": contract_data.remaining_balance_due_description,
+        "fee_coverage_description": contract_data.fee_coverage_description,
+        "refund_policy_description": contract_data.refund_policy_description,
+        # Transfer & Withdrawal
+        "transfer_indications_description": contract_data.transfer_indications_description,
+        "client_refusal_of_transfer_note": contract_data.client_refusal_of_transfer_note,
+        "midwife_withdrawal_reasons": contract_data.midwife_withdrawal_reasons,
+        "no_refund_scenarios_description": contract_data.no_refund_scenarios_description,
+        # On-Call & Backup
+        "on_call_window_description": contract_data.on_call_window_description,
+        "backup_midwife_policy": contract_data.backup_midwife_policy,
+        # Communication & Emergencies
+        "contact_instructions_routine": contract_data.contact_instructions_routine,
+        "contact_instructions_urgent": contract_data.contact_instructions_urgent,
+        "emergency_instructions": contract_data.emergency_instructions,
+        # Special Arrangements
+        "special_arrangements": contract_data.special_arrangements,
+        # Generated contract text
+        "contract_text": contract_text,
         # Status
         "status": "Draft",
         "client_signature": None,
         "midwife_signature": None,
+        "partner_signature": None,
         "sent_at": None,
         "signed_at": None,
         "created_at": now,
