@@ -309,6 +309,18 @@ async def send_signed_contract_email(contract_type: str, contract: dict, recipie
         # Encode PDF as base64
         pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
         
+        # Format the signed_at date
+        signed_at = contract.get('signed_at', '')
+        if signed_at:
+            if hasattr(signed_at, 'strftime'):
+                signed_at_str = signed_at.strftime('%Y-%m-%d')
+            elif isinstance(signed_at, str):
+                signed_at_str = signed_at[:10]
+            else:
+                signed_at_str = str(signed_at)[:10]
+        else:
+            signed_at_str = 'N/A'
+        
         params = {
             "from": SENDER_EMAIL,
             "to": recipient_email,
@@ -324,7 +336,7 @@ async def send_signed_contract_email(contract_type: str, contract: dict, recipie
                     <ul style="margin: 10px 0;">
                         <li>Client: {contract.get('client_name', '')}</li>
                         <li>{"Midwife" if contract_type == "midwife" else "Doula"}: {provider_name}</li>
-                        <li>Date Signed: {contract.get('signed_at', '')[:10] if contract.get('signed_at') else 'N/A'}</li>
+                        <li>Date Signed: {signed_at_str}</li>
                     </ul>
                 </div>
                 <p>If you have any questions about your agreement, please contact your {"midwife" if contract_type == "midwife" else "doula"} directly.</p>
