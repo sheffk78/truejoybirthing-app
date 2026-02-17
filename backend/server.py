@@ -4128,11 +4128,10 @@ async def cancel_midwife_invoice(invoice_id: str, user: User = Depends(check_rol
 @api_router.get("/mom/invoices")
 async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
     """Get all invoices for the mom from their providers (only Sent, Paid, Cancelled - not Draft)"""
-    # Find all clients linked to this mom
-    doula_clients = await db.clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
-    midwife_clients = await db.midwife_clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
+    # Find all clients linked to this mom (both doula and midwife clients are in the same 'clients' collection)
+    all_clients = await db.clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
     
-    client_ids = [c["client_id"] for c in doula_clients] + [c["client_id"] for c in midwife_clients]
+    client_ids = [c["client_id"] for c in all_clients]
     
     if not client_ids:
         return []
@@ -4159,11 +4158,10 @@ async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
 @api_router.get("/mom/invoices/{invoice_id}")
 async def get_mom_invoice_detail(invoice_id: str, user: User = Depends(check_role(["MOM"]))):
     """Get a specific invoice detail for the mom"""
-    # Find all clients linked to this mom
-    doula_clients = await db.clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
-    midwife_clients = await db.midwife_clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
+    # Find all clients linked to this mom (both doula and midwife clients are in the same 'clients' collection)
+    all_clients = await db.clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
     
-    client_ids = [c["client_id"] for c in doula_clients] + [c["client_id"] for c in midwife_clients]
+    client_ids = [c["client_id"] for c in all_clients]
     
     invoice = await db.invoices.find_one(
         {"invoice_id": invoice_id, "client_id": {"$in": client_ids}, "status": {"$ne": "Draft"}},
