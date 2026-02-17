@@ -3640,17 +3640,103 @@ async def sign_midwife_contract(contract_id: str, request: Request):
 
 # ============== INVOICE ROUTES ==============
 
-@api_router.get("/doula/invoices")
-async def get_doula_invoices(user: User = Depends(check_role(["DOULA"]))):
-    """Get all invoices"""
-    invoices = await db.invoices.find(
-        {"doula_id": user.user_id},
+# Helper to generate invoice number
+async def generate_invoice_number(user_id: str) -> str:
+    """Generate a unique invoice number like TJ-2026-001"""
+    year = datetime.now().year
+    count = await db.invoices.count_documents({"pro_user_id": user_id})
+    return f"TJ-{year}-{str(count + 1).zfill(3)}"
+
+# ============== PAYMENT INSTRUCTIONS TEMPLATE ROUTES ==============
+
+@api_router.get("/payment-instructions")
+async def get_payment_instructions(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Get all payment instructions templates for the user"""
+    templates = await db.payment_instructions.find(
+        {"user_id": user.user_id},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
+    return templates
+
+@api_router.post("/payment-instructions")
+async def create_payment_instructions(data: PaymentInstructionsTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Create a new payment instructions template"""
+    now = datetime.now(timezone.utc)
+    
+    # If setting as default, unset others
+    if data.is_default:
+        await db.payment_instructions.update_many(
+            {"user_id": user.user_id},
+            {"$set": {"is_default": False}}
+        )
+    
+    template = {
+        "template_id": f"pi_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "label": data.label,
+        "instructions_text": data.instructions_text,
+        "is_default": data.is_default,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.payment_instructions.insert_one(template)
+    template.pop('_id', None)
+    return template
+
+@api_router.put("/payment-instructions/{template_id}")
+async def update_payment_instructions(template_id: str, data: PaymentInstructionsTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Update a payment instructions template"""
+    now = datetime.now(timezone.utc)
+    
+    # If setting as default, unset others
+    if data.is_default:
+        await db.payment_instructions.update_many(
+            {"user_id": user.user_id, "template_id": {"$ne": template_id}},
+            {"$set": {"is_default": False}}
+        )
+    
+    result = await db.payment_instructions.update_one(
+        {"template_id": template_id, "user_id": user.user_id},
+        {"$set": {
+            "label": data.label,
+            "instructions_text": data.instructions_text,
+            "is_default": data.is_default,
+            "updated_at": now
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    return {"message": "Template updated"}
+
+@api_router.delete("/payment-instructions/{template_id}")
+async def delete_payment_instructions(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Delete a payment instructions template"""
+    result = await db.payment_instructions.delete_one(
+        {"template_id": template_id, "user_id": user.user_id}
+    )
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    return {"message": "Template deleted"}
+
+# ============== DOULA INVOICE ROUTES ==============
+
+@api_router.get("/doula/invoices")
+async def get_doula_invoices(user: User = Depends(check_role(["DOULA"])), status: Optional[str] = None):
+    """Get all invoices, optionally filtered by status"""
+    query = {"pro_user_id": user.user_id, "pro_type": "DOULA"}
+    if status:
+        query["status"] = status
+    
+    invoices = await db.invoices.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
     return invoices
 
 @api_router.post("/doula/invoices")
-async def create_invoice(invoice_data: InvoiceCreate, user: User = Depends(check_role(["DOULA"]))):
+async def create_doula_invoice(invoice_data: InvoiceCreate, user: User = Depends(check_role(["DOULA"]))):
     """Create a new invoice"""
     # Get client name
     client = await db.clients.find_one({"client_id": invoice_data.client_id}, {"_id": 0})
@@ -3659,35 +3745,66 @@ async def create_invoice(invoice_data: InvoiceCreate, user: User = Depends(check
     
     now = datetime.now(timezone.utc)
     
+    # Generate invoice number if not provided
+    invoice_number = invoice_data.invoice_number or await generate_invoice_number(user.user_id)
+    
+    # Get default payment instructions if not provided
+    payment_text = invoice_data.payment_instructions_text
+    if not payment_text:
+        default_template = await db.payment_instructions.find_one(
+            {"user_id": user.user_id, "is_default": True},
+            {"_id": 0}
+        )
+        if default_template:
+            payment_text = default_template.get("instructions_text")
+    
     invoice = {
-        "invoice_id": f"invoice_{uuid.uuid4().hex[:12]}",
-        "doula_id": user.user_id,
+        "invoice_id": f"inv_{uuid.uuid4().hex[:12]}",
+        "pro_user_id": user.user_id,
+        "pro_type": "DOULA",
         "client_id": invoice_data.client_id,
         "client_name": client["name"],
-        "invoice_title": invoice_data.invoice_title,
+        "invoice_number": invoice_number,
+        "description": invoice_data.description,
         "amount": invoice_data.amount,
+        "issue_date": invoice_data.issue_date or now.strftime("%Y-%m-%d"),
         "due_date": invoice_data.due_date,
-        "notes": invoice_data.notes,
+        "payment_instructions_text": payment_text,
+        "notes_for_client": invoice_data.notes_for_client,
         "status": "Draft",
+        "sent_at": None,
         "paid_at": None,
         "created_at": now,
         "updated_at": now
     }
     
     await db.invoices.insert_one(invoice)
-    invoice.pop('_id', None)  # Remove ObjectId added by insert_one
+    invoice.pop('_id', None)
+    return invoice
+
+@api_router.get("/doula/invoices/{invoice_id}")
+async def get_doula_invoice(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
+    """Get a specific invoice"""
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"_id": 0}
+    )
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
     return invoice
 
 @api_router.put("/doula/invoices/{invoice_id}")
-async def update_invoice(invoice_id: str, request: Request, user: User = Depends(check_role(["DOULA"]))):
+async def update_doula_invoice(invoice_id: str, update_data: InvoiceUpdate, user: User = Depends(check_role(["DOULA"]))):
     """Update an invoice"""
-    body = await request.json()
-    update_data = {k: v for k, v in body.items() if k not in ["invoice_id", "doula_id", "created_at"]}
-    update_data["updated_at"] = datetime.now(timezone.utc)
+    now = datetime.now(timezone.utc)
+    
+    # Build update dict excluding None values
+    updates = {k: v for k, v in update_data.dict().items() if v is not None}
+    updates["updated_at"] = now
     
     result = await db.invoices.update_one(
-        {"invoice_id": invoice_id, "doula_id": user.user_id},
-        {"$set": update_data}
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"$set": updates}
     )
     
     if result.matched_count == 0:
@@ -3695,28 +3812,94 @@ async def update_invoice(invoice_id: str, request: Request, user: User = Depends
     
     return {"message": "Invoice updated"}
 
-@api_router.post("/doula/invoices/{invoice_id}/send")
-async def send_invoice(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
-    """Send invoice to client (mock)"""
-    now = datetime.now(timezone.utc)
-    
-    result = await db.invoices.update_one(
-        {"invoice_id": invoice_id, "doula_id": user.user_id},
-        {"$set": {"status": "Sent", "updated_at": now}}
+@api_router.delete("/doula/invoices/{invoice_id}")
+async def delete_doula_invoice(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
+    """Delete an invoice (only Draft invoices)"""
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"_id": 0}
     )
     
-    if result.matched_count == 0:
+    if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
-    return {"message": "Invoice sent (mocked)"}
+    if invoice.get("status") != "Draft":
+        raise HTTPException(status_code=400, detail="Only draft invoices can be deleted")
+    
+    await db.invoices.delete_one({"invoice_id": invoice_id})
+    return {"message": "Invoice deleted"}
+
+@api_router.post("/doula/invoices/{invoice_id}/send")
+async def send_doula_invoice(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
+    """Send invoice to client"""
+    now = datetime.now(timezone.utc)
+    
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Update status
+    await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {"status": "Sent", "sent_at": now, "updated_at": now}}
+    )
+    
+    # Get client and send notification
+    client = await db.clients.find_one({"client_id": invoice["client_id"]}, {"_id": 0})
+    if client and client.get("linked_mom_id"):
+        # Create in-app notification for the mom
+        notification = {
+            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+            "user_id": client["linked_mom_id"],
+            "type": "invoice_received",
+            "title": "New Invoice",
+            "message": f"You have received an invoice for ${invoice['amount']:.2f} from your doula.",
+            "data": {"invoice_id": invoice_id},
+            "read": False,
+            "created_at": now
+        }
+        await db.notifications.insert_one(notification)
+        
+        # Send email notification
+        mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
+        if mom and mom.get("email") and resend.api_key:
+            try:
+                resend.Emails.send({
+                    "from": SENDER_EMAIL,
+                    "to": mom["email"],
+                    "subject": f"Invoice #{invoice['invoice_number']} from {user.full_name}",
+                    "html": f"""
+                        <h2>You have received an invoice</h2>
+                        <p><strong>From:</strong> {user.full_name}</p>
+                        <p><strong>Description:</strong> {invoice['description']}</p>
+                        <p><strong>Amount:</strong> ${invoice['amount']:.2f}</p>
+                        <p><strong>Due Date:</strong> {invoice.get('due_date', 'Not specified')}</p>
+                        <hr>
+                        <p><strong>Payment Instructions:</strong></p>
+                        <p>{invoice.get('payment_instructions_text', 'Contact your provider for payment details.')}</p>
+                        <hr>
+                        <p style="font-size: 12px; color: #666;">
+                            Payments are made directly to your doula using the instructions provided. 
+                            True Joy Birthing does not process or guarantee payments between you and your provider.
+                        </p>
+                    """
+                })
+            except Exception as e:
+                logging.error(f"Failed to send invoice email: {e}")
+    
+    return {"message": "Invoice sent"}
 
 @api_router.post("/doula/invoices/{invoice_id}/mark-paid")
-async def mark_invoice_paid(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
+async def mark_doula_invoice_paid(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
     """Mark invoice as paid"""
     now = datetime.now(timezone.utc)
     
     result = await db.invoices.update_one(
-        {"invoice_id": invoice_id, "doula_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"$set": {"status": "Paid", "paid_at": now, "updated_at": now}}
     )
     
@@ -3724,6 +3907,283 @@ async def mark_invoice_paid(invoice_id: str, user: User = Depends(check_role(["D
         raise HTTPException(status_code=404, detail="Invoice not found")
     
     return {"message": "Invoice marked as paid"}
+
+@api_router.post("/doula/invoices/{invoice_id}/cancel")
+async def cancel_doula_invoice(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
+    """Cancel an invoice"""
+    now = datetime.now(timezone.utc)
+    
+    result = await db.invoices.update_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"$set": {"status": "Cancelled", "updated_at": now}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    return {"message": "Invoice cancelled"}
+
+# ============== MIDWIFE INVOICE ROUTES ==============
+
+@api_router.get("/midwife/invoices")
+async def get_midwife_invoices(user: User = Depends(check_role(["MIDWIFE"])), status: Optional[str] = None):
+    """Get all invoices, optionally filtered by status"""
+    query = {"pro_user_id": user.user_id, "pro_type": "MIDWIFE"}
+    if status:
+        query["status"] = status
+    
+    invoices = await db.invoices.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return invoices
+
+@api_router.post("/midwife/invoices")
+async def create_midwife_invoice(invoice_data: InvoiceCreate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Create a new invoice"""
+    # Get client name from midwife_clients collection
+    client = await db.midwife_clients.find_one({"client_id": invoice_data.client_id}, {"_id": 0})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Generate invoice number if not provided
+    invoice_number = invoice_data.invoice_number or await generate_invoice_number(user.user_id)
+    
+    # Get default payment instructions if not provided
+    payment_text = invoice_data.payment_instructions_text
+    if not payment_text:
+        default_template = await db.payment_instructions.find_one(
+            {"user_id": user.user_id, "is_default": True},
+            {"_id": 0}
+        )
+        if default_template:
+            payment_text = default_template.get("instructions_text")
+    
+    invoice = {
+        "invoice_id": f"inv_{uuid.uuid4().hex[:12]}",
+        "pro_user_id": user.user_id,
+        "pro_type": "MIDWIFE",
+        "client_id": invoice_data.client_id,
+        "client_name": client["name"],
+        "invoice_number": invoice_number,
+        "description": invoice_data.description,
+        "amount": invoice_data.amount,
+        "issue_date": invoice_data.issue_date or now.strftime("%Y-%m-%d"),
+        "due_date": invoice_data.due_date,
+        "payment_instructions_text": payment_text,
+        "notes_for_client": invoice_data.notes_for_client,
+        "status": "Draft",
+        "sent_at": None,
+        "paid_at": None,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.invoices.insert_one(invoice)
+    invoice.pop('_id', None)
+    return invoice
+
+@api_router.get("/midwife/invoices/{invoice_id}")
+async def get_midwife_invoice(invoice_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get a specific invoice"""
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"_id": 0}
+    )
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    return invoice
+
+@api_router.put("/midwife/invoices/{invoice_id}")
+async def update_midwife_invoice(invoice_id: str, update_data: InvoiceUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Update an invoice"""
+    now = datetime.now(timezone.utc)
+    
+    # Build update dict excluding None values
+    updates = {k: v for k, v in update_data.dict().items() if v is not None}
+    updates["updated_at"] = now
+    
+    result = await db.invoices.update_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"$set": updates}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    return {"message": "Invoice updated"}
+
+@api_router.delete("/midwife/invoices/{invoice_id}")
+async def delete_midwife_invoice(invoice_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Delete an invoice (only Draft invoices)"""
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    if invoice.get("status") != "Draft":
+        raise HTTPException(status_code=400, detail="Only draft invoices can be deleted")
+    
+    await db.invoices.delete_one({"invoice_id": invoice_id})
+    return {"message": "Invoice deleted"}
+
+@api_router.post("/midwife/invoices/{invoice_id}/send")
+async def send_midwife_invoice(invoice_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Send invoice to client"""
+    now = datetime.now(timezone.utc)
+    
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Update status
+    await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {"status": "Sent", "sent_at": now, "updated_at": now}}
+    )
+    
+    # Get client and send notification
+    client = await db.midwife_clients.find_one({"client_id": invoice["client_id"]}, {"_id": 0})
+    if client and client.get("linked_mom_id"):
+        # Create in-app notification for the mom
+        notification = {
+            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+            "user_id": client["linked_mom_id"],
+            "type": "invoice_received",
+            "title": "New Invoice",
+            "message": f"You have received an invoice for ${invoice['amount']:.2f} from your midwife.",
+            "data": {"invoice_id": invoice_id},
+            "read": False,
+            "created_at": now
+        }
+        await db.notifications.insert_one(notification)
+        
+        # Send email notification
+        mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
+        if mom and mom.get("email") and resend.api_key:
+            try:
+                resend.Emails.send({
+                    "from": SENDER_EMAIL,
+                    "to": mom["email"],
+                    "subject": f"Invoice #{invoice['invoice_number']} from {user.full_name}",
+                    "html": f"""
+                        <h2>You have received an invoice</h2>
+                        <p><strong>From:</strong> {user.full_name}</p>
+                        <p><strong>Description:</strong> {invoice['description']}</p>
+                        <p><strong>Amount:</strong> ${invoice['amount']:.2f}</p>
+                        <p><strong>Due Date:</strong> {invoice.get('due_date', 'Not specified')}</p>
+                        <hr>
+                        <p><strong>Payment Instructions:</strong></p>
+                        <p>{invoice.get('payment_instructions_text', 'Contact your provider for payment details.')}</p>
+                        <hr>
+                        <p style="font-size: 12px; color: #666;">
+                            Payments are made directly to your midwife using the instructions provided. 
+                            True Joy Birthing does not process or guarantee payments between you and your provider.
+                        </p>
+                    """
+                })
+            except Exception as e:
+                logging.error(f"Failed to send invoice email: {e}")
+    
+    return {"message": "Invoice sent"}
+
+@api_router.post("/midwife/invoices/{invoice_id}/mark-paid")
+async def mark_midwife_invoice_paid(invoice_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Mark invoice as paid"""
+    now = datetime.now(timezone.utc)
+    
+    result = await db.invoices.update_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"$set": {"status": "Paid", "paid_at": now, "updated_at": now}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    return {"message": "Invoice marked as paid"}
+
+@api_router.post("/midwife/invoices/{invoice_id}/cancel")
+async def cancel_midwife_invoice(invoice_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Cancel an invoice"""
+    now = datetime.now(timezone.utc)
+    
+    result = await db.invoices.update_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"$set": {"status": "Cancelled", "updated_at": now}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    return {"message": "Invoice cancelled"}
+
+# ============== MOM INVOICE VIEW ROUTES ==============
+
+@api_router.get("/mom/invoices")
+async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
+    """Get all invoices for the mom from their providers (only Sent, Paid, Cancelled - not Draft)"""
+    # Find all clients linked to this mom
+    doula_clients = await db.clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
+    midwife_clients = await db.midwife_clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
+    
+    client_ids = [c["client_id"] for c in doula_clients] + [c["client_id"] for c in midwife_clients]
+    
+    if not client_ids:
+        return []
+    
+    # Get invoices for these clients (exclude Draft)
+    invoices = await db.invoices.find(
+        {"client_id": {"$in": client_ids}, "status": {"$ne": "Draft"}},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Add provider info to each invoice
+    for invoice in invoices:
+        provider = await db.users.find_one(
+            {"user_id": invoice["pro_user_id"]},
+            {"_id": 0, "full_name": 1, "email": 1, "role": 1}
+        )
+        if provider:
+            invoice["provider_name"] = provider.get("full_name", "")
+            invoice["provider_email"] = provider.get("email", "")
+            invoice["provider_type"] = provider.get("role", "")
+    
+    return invoices
+
+@api_router.get("/mom/invoices/{invoice_id}")
+async def get_mom_invoice_detail(invoice_id: str, user: User = Depends(check_role(["MOM"]))):
+    """Get a specific invoice detail for the mom"""
+    # Find all clients linked to this mom
+    doula_clients = await db.clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
+    midwife_clients = await db.midwife_clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
+    
+    client_ids = [c["client_id"] for c in doula_clients] + [c["client_id"] for c in midwife_clients]
+    
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "client_id": {"$in": client_ids}, "status": {"$ne": "Draft"}},
+        {"_id": 0}
+    )
+    
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Add provider info
+    provider = await db.users.find_one(
+        {"user_id": invoice["pro_user_id"]},
+        {"_id": 0, "full_name": 1, "email": 1, "role": 1}
+    )
+    if provider:
+        invoice["provider_name"] = provider.get("full_name", "")
+        invoice["provider_email"] = provider.get("email", "")
+        invoice["provider_type"] = provider.get("role", "")
+    
+    return invoice
 
 # ============== DOULA NOTES ROUTES ==============
 
