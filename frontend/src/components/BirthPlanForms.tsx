@@ -1025,4 +1025,52 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     flex: 1,
   },
+  // Birth location grid styles
+  birthLocationGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -SIZES.xs,
+  },
+  birthLocationCard: {
+    width: '50%',
+    padding: SIZES.xs,
+  },
+  birthLocationInner: {
+    backgroundColor: COLORS.white,
+    borderRadius: SIZES.radiusMd,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: SIZES.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 100,
+    position: 'relative',
+  },
+  birthLocationSelected: {
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.primaryLight,
+  },
+  birthLocationLabel: {
+    marginTop: SIZES.sm,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
+  birthLocationLabelSelected: {
+    color: COLORS.primary,
+    fontFamily: FONTS.bodyBold,
+  },
+  birthLocationCheck: {
+    position: 'absolute',
+    top: SIZES.xs,
+    right: SIZES.xs,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
