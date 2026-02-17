@@ -420,16 +420,41 @@ export default function ProviderAppointmentsScreen() {
             </TouchableOpacity>
 
             {showDatePicker && (
-              <DateTimePicker
-                value={appointmentDate}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                onChange={(event, date) => {
-                  setShowDatePicker(Platform.OS === 'ios');
-                  if (date) setAppointmentDate(date);
-                }}
-                minimumDate={new Date()}
-              />
+              Platform.OS === 'web' ? (
+                <View style={styles.webDatePickerContainer}>
+                  <input
+                    type="date"
+                    value={appointmentDate.toISOString().split('T')[0]}
+                    min={new Date().toISOString().split('T')[0]}
+                    onChange={(e: any) => {
+                      const date = new Date(e.target.value);
+                      if (!isNaN(date.getTime())) {
+                        setAppointmentDate(date);
+                      }
+                      setShowDatePicker(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: 12,
+                      fontSize: 16,
+                      borderRadius: 8,
+                      border: `1px solid ${COLORS.border}`,
+                      backgroundColor: COLORS.white,
+                    }}
+                  />
+                </View>
+              ) : DateTimePicker && (
+                <DateTimePicker
+                  value={appointmentDate}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={(event: any, date?: Date) => {
+                    setShowDatePicker(Platform.OS === 'ios');
+                    if (date) setAppointmentDate(date);
+                  }}
+                  minimumDate={new Date()}
+                />
+              )
             )}
 
             {/* Time Selection */}
