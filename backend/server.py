@@ -503,16 +503,40 @@ class ContractSectionUpdate(BaseModel):
 
 class ContractCreate(BaseModel):
     client_id: str
-    # Client & Payment Details
-    client_names: str  # Full name(s) of client(s)
+    # Parties & Basic Details
+    client_name: str  # Full name(s) of client(s)
+    doula_name: Optional[str] = None  # Will default to user's name
     estimated_due_date: str  # YYYY-MM-DD
-    total_payment_amount: float
-    retainer_fee: float
-    remaining_payment_amount: Optional[float] = None  # Auto-calculated if not provided
-    final_payment_due_date: str = "Day after birth"
-    # Optional section customizations
-    section_customizations: Optional[List[ContractSectionUpdate]] = None
-    additional_terms: Optional[str] = None
+    total_fee: float
+    retainer_amount: float
+    remaining_balance: Optional[float] = None  # Auto-calculated if not provided
+    final_payment_due_description: str = "Day after birth"
+    
+    # Services & Scope
+    prenatal_visit_description: Optional[str] = None
+    on_call_window_description: Optional[str] = None
+    on_call_response_description: Optional[str] = None
+    backup_doula_preferences: Optional[str] = None
+    postpartum_visit_description: Optional[str] = None
+    
+    # Boundaries & Communication
+    speak_for_client_exception: Optional[str] = None
+    
+    # Payment & Refunds
+    retainer_non_refundable_after_weeks: Optional[int] = 37
+    cancellation_weeks_threshold: Optional[int] = 37
+    final_payment_due_detail: Optional[str] = None
+    cesarean_alternative_support_description: Optional[str] = None
+    
+    # Unavailability & Special Circumstances
+    unreachable_timeframe_description: Optional[str] = None
+    unreachable_remedy_description: Optional[str] = None
+    precipitous_labor_definition: Optional[str] = None
+    precipitous_labor_compensation_description: Optional[str] = None
+    other_absence_policy: Optional[str] = None
+    
+    # Addendum
+    special_arrangements: Optional[str] = None
 
 class ContractSignature(BaseModel):
     signer_type: str  # "client" or "doula"
