@@ -175,6 +175,31 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - **Cancel/Save Actions**: Cancel returns to preview mode without saving; Save updates contract via PUT API
   - Accessible via "Quick Edit" button at bottom of Contract Preview modal
   - **All tests passing** (iteration_23.json)
+- [x] **Simple Invoicing + Payment Instructions** (ADDED 2026-02-17):
+  - **Payment Instructions Templates**:
+    - Create/edit/delete reusable payment instruction templates
+    - Set default template that auto-fills new invoices
+    - Fields: Label, Instructions Text, Is Default
+    - Shared endpoint: `/api/payment-instructions` (for both Doula & Midwife)
+  - **Invoice Management** (for Doulas & Midwives):
+    - Create invoices with: Client, Description, Amount, Issue Date, Due Date, Payment Instructions, Notes
+    - Auto-generated invoice numbers: TJ-YYYY-NNN format
+    - Status filters: All, Draft, Sent, Paid, Cancelled
+    - Status flow: Draft → Sent → Paid (or Draft → Cancelled)
+    - Only Draft invoices can be deleted
+    - Sending invoice triggers email + in-app notification to client
+  - **Client (Mom) Invoice View**:
+    - Moms see invoices from their Doula/Midwife providers
+    - Draft invoices NOT visible to clients (privacy protection)
+    - Clear payment instructions display
+    - Disclaimer: "Payments are made directly to your provider. True Joy Birthing does not process payments."
+  - **Backend APIs**:
+    - `POST/GET/PUT/DELETE /api/payment-instructions`
+    - `POST/GET/PUT/DELETE /api/doula/invoices` + `/send`, `/mark-paid`, `/cancel`
+    - `POST/GET/PUT/DELETE /api/midwife/invoices` + `/send`, `/mark-paid`, `/cancel`
+    - `GET /api/mom/invoices`
+  - **Frontend**: `(doula)/invoices.tsx`, `(midwife)/invoices.tsx`, `(mom)/invoices.tsx`
+  - **All 21 backend tests passing** (iteration_24.json)
 - [x] **Doula Contract Delete Endpoint** (ADDED 2026-02-17):
   - New endpoint: `DELETE /api/doula/contracts/{id}` for deleting Draft contracts
   - Delete button now functional on Doula contract cards
