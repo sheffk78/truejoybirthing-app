@@ -105,6 +105,63 @@ const SingleSelectField = ({
   </View>
 );
 
+// Icon mapping for birth location options
+const BIRTH_LOCATION_ICONS: Record<string, string> = {
+  'Hospital': 'business',
+  'Birth Center': 'medkit',
+  'Home Birth': 'home',
+  'Not sure yet': 'help-circle',
+};
+
+// Component for birth location selection with icons
+const BirthLocationSelectField = ({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
+}) => (
+  <View style={styles.fieldContainer}>
+    <Text style={styles.fieldLabel}>{label}</Text>
+    <View style={styles.birthLocationGrid}>
+      {options.map((option) => (
+        <TouchableOpacity
+          key={option}
+          style={styles.birthLocationCard}
+          onPress={() => onChange(option)}
+          activeOpacity={0.7}
+        >
+          <View style={[
+            styles.birthLocationInner,
+            value === option && styles.birthLocationSelected,
+          ]}>
+            <Icon
+              name={(BIRTH_LOCATION_ICONS[option] || 'help-circle') as any}
+              size={32}
+              color={value === option ? COLORS.primary : COLORS.textSecondary}
+            />
+            <Text style={[
+              styles.birthLocationLabel,
+              value === option && styles.birthLocationLabelSelected,
+            ]}>
+              {option}
+            </Text>
+            {value === option && (
+              <View style={styles.birthLocationCheck}>
+                <Icon name="checkmark" size={14} color={COLORS.white} />
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+      ))}
+    </View>
+  </View>
+);
+
 // =============================================
 // COMPREHENSIVE BIRTH PLAN FORM CONFIGURATION
 // Based on True Joy Birthing requirements
