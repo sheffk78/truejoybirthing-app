@@ -9,9 +9,14 @@ NOTE: This uses MOCK in-app purchases - real StoreKit/Google Play NOT implemente
 import pytest
 import requests
 import os
+import uuid
 from datetime import datetime
 
 BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://joy-birthing.preview.emergentagent.com')
+
+def unique_id():
+    """Generate a unique identifier for test data"""
+    return f"{int(datetime.now().timestamp())}_{uuid.uuid4().hex[:6]}"
 
 class TestSubscriptionPricing:
     """Test subscription pricing endpoint - public, no auth required"""
@@ -58,11 +63,11 @@ class TestMomSubscriptionStatus:
     def setup(self, api_client):
         """Create a fresh MOM user for each test"""
         self.client = api_client
-        timestamp = int(datetime.now().timestamp())
+        uid = unique_id()
         
         # Register MOM user
         register_data = {
-            "email": f"TEST_subtest_mom_{timestamp}@test.com",
+            "email": f"TEST_subtest_mom_{uid}@test.com",
             "full_name": "Test Subscription Mom",
             "role": "MOM",
             "password": "password123"
@@ -100,11 +105,11 @@ class TestDoulaSubscriptionWorkflow:
     def setup(self, api_client):
         """Create a fresh DOULA user for each test"""
         self.client = api_client
-        timestamp = int(datetime.now().timestamp())
+        uid = unique_id()
         
         # Register DOULA user
         register_data = {
-            "email": f"TEST_subtest_doula_{timestamp}@test.com",
+            "email": f"TEST_subtest_doula_{uid}@test.com",
             "full_name": "Test Subscription Doula",
             "role": "DOULA",
             "password": "password123"
@@ -214,11 +219,11 @@ class TestMidwifeSubscriptionWorkflow:
     def setup(self, api_client):
         """Create a fresh MIDWIFE user for each test"""
         self.client = api_client
-        timestamp = int(datetime.now().timestamp())
+        uid = unique_id()
         
         # Register MIDWIFE user
         register_data = {
-            "email": f"TEST_subtest_midwife_{timestamp}@test.com",
+            "email": f"TEST_subtest_midwife_{uid}@test.com",
             "full_name": "Test Subscription Midwife",
             "role": "MIDWIFE",
             "password": "password123"
@@ -278,10 +283,10 @@ class TestSubscriptionEdgeCases:
     def setup(self, api_client):
         """Create a fresh DOULA user"""
         self.client = api_client
-        timestamp = int(datetime.now().timestamp())
+        uid = unique_id()
         
         register_data = {
-            "email": f"TEST_subtest_edge_{timestamp}@test.com",
+            "email": f"TEST_subtest_edge_{uid}@test.com",
             "full_name": "Test Edge Case Doula",
             "role": "DOULA",
             "password": "password123"
