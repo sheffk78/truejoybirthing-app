@@ -404,4 +404,14 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     marginLeft: SIZES.md,
   },
+  proActiveCard: {
+    borderWidth: 1,
+    borderColor: '#f59e0b',
+    backgroundColor: '#fffbeb',
+  },
+  subscriptionSubtext: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
 });
