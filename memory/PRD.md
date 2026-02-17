@@ -175,10 +175,10 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] Email notifications sender domain configured (contact.truejoybirthing.com verified)
 
 ### 📊 Test Reports
-- `/app/test_reports/iteration_15.json` - Frontend UI testing (identified layout fix needed)
+- `/app/test_reports/iteration_17.json` - Weekly Tips & Affirmations (100% pass rate, 22 backend tests)
+- `/app/test_reports/iteration_16.json` - Appointment E2E flow (100% pass rate, 11 tests)
+- `/app/test_reports/iteration_15.json` - Frontend UI testing
 - `/app/test_reports/iteration_14.json` - Backend collaboration rules (100% pass rate, 19 tests)
-- `/app/test_reports/iteration_13.json` - Zip code lookup & birth location icons (100% pass rate)
-- `/app/backend/tests/test_collaboration_permissions.py` - Pytest test suite for collaboration rules
 - Backend: 18/18 tests passed
 - Frontend: All flows verified
 
