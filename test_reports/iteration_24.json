@@ -1,0 +1,88 @@
+{
+  "summary": "Invoice & Payment Instructions Feature Testing - 21 backend tests passed, UI verified for Doula and Midwife roles. Fixed critical bug in Midwife invoice creation (was querying wrong collection). Mom invoices API works via backend tests.",
+  "backend_issues": {
+    "critical": [],
+    "fixed_during_testing": [
+      {"endpoint": "POST /api/midwife/invoices", "issue": "Was querying db.midwife_clients instead of db.clients for MIDWIFE clients", "status": "FIXED"},
+      {"endpoint": "POST /api/midwife/invoices/{id}/send", "issue": "Same collection issue", "status": "FIXED"},
+      {"endpoint": "GET /api/mom/invoices", "issue": "Was querying both db.clients and non-existent db.midwife_clients", "status": "FIXED"}
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Midwife Dashboard", "issues": ["Invoices tab not visible on dashboard - need to scroll or access via direct URL. Tab bar has too many items (9 tabs) causing overflow"]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_invoicing_feature.py",
+    "/app/test_reports/pytest/pytest_invoicing.xml"
+  ],
+  "action_items": [
+    "Consider reducing Midwife tab bar items or implementing scrollable tabs for better UX",
+    "Mom test user is stuck on onboarding - consider completing profile for better testing or using a different test mom account with completed profile"
+  ],
+  "critical_code_review_comments": [
+    "FIXED: server.py lines 3934-3936 - Midwife invoice creation was using db.midwife_clients (non-existent) instead of db.clients with provider_type=MIDWIFE filter",
+    "FIXED: server.py lines 4002 - Midwife invoice send notification was using wrong collection",
+    "FIXED: server.py lines 4130-4140 - Mom invoices was querying db.midwife_clients which doesn't exist - consolidated to just db.clients"
+  ],
+  "updated_files": [
+    "/app/backend/server.py",
+    "/app/backend/tests/test_invoicing_feature.py"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "80%"
+  },
+  "test_credentials": {
+    "doula": "doula2_1771213474@test.com / password123",
+    "midwife": "testmidwife@test.com / password123",
+    "mom": "testmom@test.com / password123"
+  },
+  "seed_data_creation": "Test invoices created via backend tests (prefixed with TEST_)",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Invoice feature is working. Backend APIs all pass. Doula and Midwife invoices UI verified. Mom invoices API works but UI testing blocked by onboarding flow. Midwife tab bar has 9 items - consider UX improvement.",
+  "backend_tests_summary": {
+    "total": 21,
+    "passed": 21,
+    "failed": 0,
+    "skipped": 0
+  },
+  "features_verified": {
+    "payment_instructions_templates": {
+      "create": "PASS",
+      "read": "PASS",
+      "update": "PASS",
+      "delete": "PASS",
+      "default_template": "PASS"
+    },
+    "doula_invoices": {
+      "create": "PASS",
+      "read": "PASS",
+      "update": "PASS",
+      "delete_draft": "PASS",
+      "send": "PASS",
+      "mark_paid": "PASS",
+      "cancel": "PASS",
+      "cannot_delete_non_draft": "PASS",
+      "invoice_number_format_TJ_YYYY_NNN": "PASS",
+      "ui_loads": "PASS"
+    },
+    "midwife_invoices": {
+      "create": "PASS (after fix)",
+      "read": "PASS",
+      "full_workflow": "PASS",
+      "cancel_workflow": "PASS",
+      "ui_loads": "PASS (via direct URL)"
+    },
+    "mom_invoices": {
+      "api_get": "PASS",
+      "excludes_draft": "PASS",
+      "ui_loads": "NOT TESTED (blocked by onboarding)"
+    }
+  }
+}
