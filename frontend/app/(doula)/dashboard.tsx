@@ -123,6 +123,18 @@ export default function DoulaDashboardScreen() {
             </View>
             <Text style={styles.actionTitle}>New Invoice</Text>
           </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/(doula)/appointments')}
+            activeOpacity={0.8}
+            data-testid="appointments-action"
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '30' }]}>
+              <Icon name="calendar-number" size={24} color={COLORS.warning} />
+            </View>
+            <Text style={styles.actionTitle}>Appointments</Text>
+          </TouchableOpacity>
         </View>
         
         {/* Tip Card */}
