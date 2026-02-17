@@ -1056,6 +1056,7 @@ async def get_birth_plan(user: User = Depends(check_role(["MOM"]))):
                 for s in BIRTH_PLAN_SECTIONS
             ],
             "completion_percentage": 0.0,
+            "birth_plan_status": "not_started",
             "created_at": now,
             "updated_at": now
         }
@@ -1063,6 +1064,43 @@ async def get_birth_plan(user: User = Depends(check_role(["MOM"]))):
         # Remove _id that MongoDB adds after insertion
         plan.pop("_id", None)
     return plan
+
+@api_router.get("/mom/midwife-visits")
+async def get_mom_midwife_visits(user: User = Depends(check_role(["MOM"]))):
+    """Get Mom's visits from connected midwife (only mom-friendly summary, no clinical data)"""
+    # Get connected midwife from mom's profile
+    mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id})
+    if not mom_profile or not mom_profile.get("connected_midwife_id"):
+        return {"visits": [], "message": "No connected midwife"}
+    
+    midwife_id = mom_profile["connected_midwife_id"]
+    
+    # Get Mom's client record with this midwife
+    client = await db.clients.find_one({
+        "linked_mom_id": user.user_id,
+        "provider_id": midwife_id,
+        "provider_type": "MIDWIFE"
+    })
+    
+    if not client:
+        return {"visits": [], "message": "No client record found"}
+    
+    # Get visits - only return mom-visible fields
+    visits = await db.visits.find(
+        {"midwife_id": midwife_id, "client_id": client["client_id"]},
+        {
+            "_id": 0,
+            "visit_id": 1,
+            "visit_date": 1,
+            "visit_type": 1,
+            "gestational_age": 1,
+            "summary_for_mom": 1,  # Only the mom-friendly summary
+            "created_at": 1
+            # Exclude: blood_pressure, weight, fetal_heart_rate, private_note
+        }
+    ).sort("visit_date", -1).to_list(100)
+    
+    return {"visits": visits}
 
 @api_router.put("/birth-plan/section/{section_id}")
 async def update_birth_plan_section(section_id: str, request: Request, user: User = Depends(check_role(["MOM"]))):
