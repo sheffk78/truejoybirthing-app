@@ -298,6 +298,22 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
     - POST `/api/midwife-contracts/{id}/sign` - Client signs
   - **Frontend UI**: `(midwife)/contracts.tsx` with multi-step modal form, `sign-midwife-contract.tsx`
   - **All E2E tests passing** (iteration_21.json: 13/13 backend tests, full frontend verification)
+- [x] **Contract Templates Feature** (ADDED 2026-02-17):
+  - **Purpose**: Allow Doulas and Midwives to create, manage, and reuse contract templates for faster contract creation
+  - **Backend APIs**:
+    - `GET /api/contract-templates` - Get all templates for current provider
+    - `POST /api/contract-templates` - Create a new template
+    - `PUT /api/contract-templates/{template_id}` - Update a template
+    - `DELETE /api/contract-templates/{template_id}` - Delete a template
+    - `POST /api/contract-templates/{template_id}/set-default` - Set as default template
+  - **Template Data**: Stores all contract form fields (fees, services, terms, etc.) for quick reuse
+  - **Frontend Pages**:
+    - `(doula)/contract-templates.tsx` - Full CRUD for Doula templates
+    - `(midwife)/contract-templates.tsx` - Full CRUD for Midwife templates
+  - **Templates Button**: Added to Contracts page header for both roles
+  - **Create from Template**: When creating new contract, users can select a template to pre-fill form fields
+  - **Default Template**: Auto-applied when opening New Contract modal if set
+  - **All tests passing** (iteration_27.json: 100% backend - 16 tests, iteration_28.json: 100% frontend verification)
 - [x] **DateTimePicker Web Fix**:
   - Added conditional rendering for web platform using HTML date/time inputs
   - Native platforms continue to use @react-native-community/datetimepicker
