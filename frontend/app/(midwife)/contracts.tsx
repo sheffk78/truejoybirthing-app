@@ -767,17 +767,23 @@ export default function MidwifeContracts() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <TouchableOpacity onPress={() => setShowPreviewModal(false)}>
+              <TouchableOpacity onPress={() => { setShowPreviewModal(false); setIsQuickEditMode(false); }}>
                 <Ionicons name="close" size={24} color={COLORS.text} />
               </TouchableOpacity>
-              <Text style={styles.modalTitle}>Contract Preview</Text>
-              <TouchableOpacity onPress={() => selectedContract && handleDownloadPDF(selectedContract.contract_id)}>
-                <Ionicons name="download-outline" size={24} color={COLORS.secondary} />
-              </TouchableOpacity>
+              <Text style={styles.modalTitle}>
+                {isQuickEditMode ? 'Quick Edit' : 'Contract Preview'}
+              </Text>
+              {!isQuickEditMode ? (
+                <TouchableOpacity onPress={() => selectedContract && handleDownloadPDF(selectedContract.contract_id)}>
+                  <Ionicons name="download-outline" size={24} color={COLORS.secondary} />
+                </TouchableOpacity>
+              ) : (
+                <View style={{ width: 24 }} />
+              )}
             </View>
 
             <ScrollView style={styles.previewContent}>
-              {selectedContract && (
+              {selectedContract && !isQuickEditMode && (
                 <>
                   <Text style={styles.previewTitle}>Midwifery Services Agreement</Text>
                   <Text style={styles.previewSubtitle}>Powered by True Joy Birthing</Text>
@@ -838,6 +844,152 @@ export default function MidwifeContracts() {
                         <Text style={styles.previewTextPending}>○ Partner: Pending</Text>
                       )
                     )}
+                  </View>
+
+                  {/* Edit button for Draft contracts */}
+                  {selectedContract.status === 'Draft' && (
+                    <TouchableOpacity style={styles.quickEditButton} onPress={startQuickEdit}>
+                      <Ionicons name="create-outline" size={20} color="#fff" />
+                      <Text style={styles.quickEditButtonText}>Quick Edit</Text>
+                    </TouchableOpacity>
+                  )}
+                </>
+              )}
+
+              {/* Quick Edit Form */}
+              {isQuickEditMode && (
+                <>
+                  <View style={styles.quickEditSection}>
+                    <Text style={styles.quickEditSectionTitle}>Client Details</Text>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>Client Name(s)</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={quickEditData.client_name}
+                        onChangeText={(text) => updateQuickEditField('client_name', text)}
+                        placeholder="Client name(s)"
+                        placeholderTextColor={COLORS.textSecondary}
+                      />
+                    </View>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>Partner/Support Person</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={quickEditData.partner_name}
+                        onChangeText={(text) => updateQuickEditField('partner_name', text)}
+                        placeholder="Partner name (optional)"
+                        placeholderTextColor={COLORS.textSecondary}
+                      />
+                    </View>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>Due Date</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={quickEditData.estimated_due_date}
+                        onChangeText={(text) => updateQuickEditField('estimated_due_date', text)}
+                        placeholder="YYYY-MM-DD"
+                        placeholderTextColor={COLORS.textSecondary}
+                      />
+                    </View>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>Birth Location</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={quickEditData.planned_birth_location}
+                        onChangeText={(text) => updateQuickEditField('planned_birth_location', text)}
+                        placeholder="Home, birth center, hospital..."
+                        placeholderTextColor={COLORS.textSecondary}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={styles.quickEditSection}>
+                    <Text style={styles.quickEditSectionTitle}>Payment Details</Text>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>Total Fee ($)</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={quickEditData.total_fee}
+                        onChangeText={(text) => updateQuickEditField('total_fee', text)}
+                        placeholder="0.00"
+                        placeholderTextColor={COLORS.textSecondary}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>Retainer Amount ($)</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={quickEditData.retainer_amount}
+                        onChangeText={(text) => updateQuickEditField('retainer_amount', text)}
+                        placeholder="0.00"
+                        placeholderTextColor={COLORS.textSecondary}
+                        keyboardType="numeric"
+                      />
+                    </View>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>Remaining Balance</Text>
+                      <Text style={styles.calculatedField}>
+                        ${((parseFloat(quickEditData.total_fee) || 0) - (parseFloat(quickEditData.retainer_amount) || 0)).toFixed(2)}
+                      </Text>
+                    </View>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>Balance Due By</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={quickEditData.remaining_balance_due_description}
+                        onChangeText={(text) => updateQuickEditField('remaining_balance_due_description', text)}
+                        placeholder="e.g., 36 weeks' gestation"
+                        placeholderTextColor={COLORS.textSecondary}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={styles.quickEditSection}>
+                    <Text style={styles.quickEditSectionTitle}>Additional Details</Text>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>On-Call Window</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={quickEditData.on_call_window_description}
+                        onChangeText={(text) => updateQuickEditField('on_call_window_description', text)}
+                        placeholder="e.g., 37 to 42 weeks"
+                        placeholderTextColor={COLORS.textSecondary}
+                      />
+                    </View>
+                    <View style={styles.fieldContainer}>
+                      <Text style={styles.fieldLabel}>Special Arrangements</Text>
+                      <TextInput
+                        style={[styles.input, styles.textArea]}
+                        value={quickEditData.special_arrangements}
+                        onChangeText={(text) => updateQuickEditField('special_arrangements', text)}
+                        placeholder="Any additional terms or arrangements"
+                        placeholderTextColor={COLORS.textSecondary}
+                        multiline
+                        numberOfLines={3}
+                      />
+                    </View>
+                  </View>
+
+                  {/* Action buttons */}
+                  <View style={styles.quickEditActions}>
+                    <TouchableOpacity style={styles.cancelButton} onPress={cancelQuickEdit}>
+                      <Text style={styles.cancelButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={[styles.saveButton, submitting && styles.saveButtonDisabled]} 
+                      onPress={saveQuickEdit}
+                      disabled={submitting}
+                    >
+                      {submitting ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                      ) : (
+                        <>
+                          <Ionicons name="checkmark" size={20} color="#fff" />
+                          <Text style={styles.saveButtonText}>Save Changes</Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
                   </View>
                 </>
               )}
