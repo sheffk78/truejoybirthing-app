@@ -276,6 +276,60 @@ class LegacyContractCreate(BaseModel):
     cancellation_policy: Optional[str] = None
     scope_of_practice: Optional[str] = None
 
+# --- Midwife Contract Models ---
+class MidwifeContractCreate(BaseModel):
+    client_id: str
+    # Client & Care Details
+    client_name: str
+    partner_name: Optional[str] = None
+    estimated_due_date: str  # YYYY-MM-DD
+    planned_birth_place: str  # e.g., "Home Birth", "Birth Center", "Hospital"
+    # On-call period
+    on_call_start_week: str = "37"
+    on_call_end_week: str = "42"
+    # Payment Details
+    total_fee: float
+    deposit: float
+    remaining_balance: Optional[float] = None  # Auto-calculated if not provided
+    balance_due_week: str = "36"  # Week by which balance is due
+    # Practice Info
+    practice_name: Optional[str] = None
+    # Optional section customizations
+    section_customizations: Optional[List[ContractSectionUpdate]] = None
+    additional_terms: Optional[str] = None
+
+class MidwifeContract(BaseModel):
+    contract_id: str
+    midwife_id: str
+    midwife_name: str
+    client_id: str
+    client_name: str
+    partner_name: Optional[str] = None
+    # Care Details
+    estimated_due_date: str
+    planned_birth_place: str
+    on_call_start_week: str
+    on_call_end_week: str
+    # Payment Details
+    total_fee: float
+    deposit: float
+    remaining_balance: float
+    balance_due_week: str
+    # Practice Info
+    practice_name: Optional[str] = None
+    agreement_date: str
+    # Template sections (with any customizations)
+    sections: List[dict]
+    additional_terms: Optional[str] = None
+    # Status and signatures
+    status: str = "Draft"  # Draft, Sent, Signed
+    client_signature: Optional[dict] = None
+    midwife_signature: Optional[dict] = None
+    sent_at: Optional[datetime] = None
+    signed_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
 # --- Invoice Models ---
 class InvoiceCreate(BaseModel):
     client_id: str
