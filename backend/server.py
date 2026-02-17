@@ -817,7 +817,7 @@ class Note(BaseModel):
 class MidwifeProfile(BaseModel):
     user_id: str
     practice_name: Optional[str] = None
-    credentials: Optional[str] = None
+    credentials: Optional[Union[str, List[str]]] = None  # Accept string or list
     location_city: Optional[str] = None
     location_state: Optional[str] = None
     years_in_practice: Optional[int] = None
@@ -828,7 +828,7 @@ class MidwifeProfile(BaseModel):
 
 class MidwifeProfileUpdate(BaseModel):
     practice_name: Optional[str] = None
-    credentials: Optional[str] = None
+    credentials: Optional[Union[str, List[str]]] = None  # Accept string or list
     zip_code: Optional[str] = None
     location_city: Optional[str] = None
     location_state: Optional[str] = None
