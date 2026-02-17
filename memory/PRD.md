@@ -185,17 +185,30 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - Download PDF button appears on signed contracts in both Doula and Midwife contract screens
   - PDF includes all contract details, sections, additional terms, and signatures
   - Professional formatting with brand colors (Lavender for Doula, Sage for Midwife)
-- [x] **Midwifery Services Agreement** (from user-provided DOCX):
-  - Full-featured contract system mirroring the Doula contract implementation
-  - 12 sections from official Midwifery Services Agreement template
-  - Sections: Scope of Services, Client Responsibilities, Birth Setting & Transfer, On-Call Period, Fees & Payment, Termination & Refunds, Risks & Consent, Scope Limitations, Confidentiality, Communication & Emergencies, Liability, Acknowledgement
-  - Form fields: client name, partner name, due date, planned birth place, on-call weeks, total fee, deposit (auto-calculates remaining balance)
-  - Digital signatures: Midwife signs when sending, Client signs via public link
-  - Email notification to client when contract is sent
-  - Client status updates: "Contract Sent" → "Contract Signed"
-  - Backend APIs: 8 endpoints for full CRUD + signing workflow
-  - Frontend UI: (midwife)/contracts.tsx, sign-midwife-contract.tsx
-  - **All 25 backend tests passing** (iteration_19.json)
+- [x] **Midwifery Services Agreement - Complete Overhaul** (UPDATED 2026-02-17):
+  - **7-Section Multi-Step Contract Form** (matching Doula contract system):
+    1. Parties & Basic Details: Client name, Partner/Support person, Estimated Due Date
+    2. Place of Birth & Scope: Planned birth location, Services description (with defaults)
+    3. Fees & Payment: Total fee, Retainer, Remaining balance (auto-calc), Fee coverage, Refund policy
+    4. Transfer & Withdrawal: Transfer indications, Client refusal notes, Midwife withdrawal reasons, No-refund scenarios
+    5. On-Call & Backup: On-call window (e.g., 37-42 weeks), Backup midwife policy
+    6. Communication & Emergencies: Routine contact, Urgent contact, Emergency instructions
+    7. Special Arrangements: Addendum for any additional terms
+  - **Full CRUD Operations**: Create, Read, Update, Delete (Draft contracts only)
+  - **Digital Signatures**: Midwife signs when sending, Client (and Partner if applicable) signs via public link
+  - **PDF Generation**: Professional PDF with all contract details and signatures
+  - **Email Delivery**: Signed contracts automatically emailed to all parties
+  - **Contract Text Generation**: Full legal agreement text generated from template with user inputs
+  - **Backend APIs**: 12 endpoints for complete workflow
+    - GET/POST `/api/midwife/contracts` - List/Create
+    - GET/PUT/DELETE `/api/midwife/contracts/{id}` - Read/Update/Delete
+    - POST `/api/midwife/contracts/{id}/send` - Send to client
+    - GET `/api/midwife-contracts/{id}` - Public view
+    - GET `/api/midwife-contracts/{id}/html` - HTML view
+    - GET `/api/midwife-contracts/{id}/pdf` - PDF download
+    - POST `/api/midwife-contracts/{id}/sign` - Client signs
+  - **Frontend UI**: `(midwife)/contracts.tsx` with multi-step modal form, `sign-midwife-contract.tsx`
+  - **All E2E tests passing** (iteration_21.json: 13/13 backend tests, full frontend verification)
 - [x] **DateTimePicker Web Fix**:
   - Added conditional rendering for web platform using HTML date/time inputs
   - Native platforms continue to use @react-native-community/datetimepicker
