@@ -288,7 +288,7 @@ class TestExportPDFAndRevokeInvitation:
         )
         
         if create_resp.status_code in [200, 201]:
-            request_id = create_resp.json().get("request_id")
+            request_id = create_resp.json().get("request", {}).get("request_id")
             
             # Try to revoke with doula's token (should fail - doula can't revoke mom's request)
             doula_headers = {"Authorization": f"Bearer {doula_session['token']}"}
