@@ -106,6 +106,7 @@ export default function RootLayout() {
         <Stack.Screen name="(admin)" />
         <Stack.Screen name="sign-midwife-contract" />
         <Stack.Screen name="plans-pricing" />
+        <Stack.Screen name="pro-feedback" />
         <Stack.Screen name="index" />
       </Stack>
     </SafeAreaProvider>
