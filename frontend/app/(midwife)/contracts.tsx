@@ -116,6 +116,7 @@ export default function MidwifeContracts() {
   const router = useRouter();
   const [contracts, setContracts] = useState([]);
   const [clients, setClients] = useState([]);
+  const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -124,6 +125,7 @@ export default function MidwifeContracts() {
   const [currentSection, setCurrentSection] = useState(0);
   const [formData, setFormData] = useState({});
   const [selectedClientId, setSelectedClientId] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [isQuickEditMode, setIsQuickEditMode] = useState(false);
   const [quickEditData, setQuickEditData] = useState({});
@@ -134,12 +136,14 @@ export default function MidwifeContracts() {
 
   const loadData = async () => {
     try {
-      const [contractsRes, clientsRes] = await Promise.all([
+      const [contractsRes, clientsRes, templatesRes] = await Promise.all([
         apiRequest(API_ENDPOINTS.MIDWIFE_CONTRACTS),
         apiRequest(API_ENDPOINTS.MIDWIFE_CLIENTS),
+        apiRequest(API_ENDPOINTS.CONTRACT_TEMPLATES),
       ]);
       setContracts(contractsRes || []);
       setClients(clientsRes || []);
+      setTemplates(templatesRes || []);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -153,12 +157,43 @@ export default function MidwifeContracts() {
     loadData();
   };
 
+  const applyTemplate = (templateId: string) => {
+    const template = templates.find(t => t.template_id === templateId);
+    if (template && template.template_data) {
+      const data = template.template_data;
+      setFormData(prev => ({
+        ...DEFAULT_VALUES,
+        ...prev,
+        total_fee: data.total_fee?.toString() || prev.total_fee || '',
+        retainer_amount: data.retainer_amount?.toString() || prev.retainer_amount || '',
+        planned_birth_location: data.planned_birth_location || prev.planned_birth_location || '',
+        scope_description: data.scope_description || prev.scope_description || DEFAULT_VALUES.scope_description,
+        on_call_window_description: data.on_call_window_description || prev.on_call_window_description || DEFAULT_VALUES.on_call_window_description,
+        remaining_balance_due_description: data.remaining_balance_due_description || prev.remaining_balance_due_description || DEFAULT_VALUES.remaining_balance_due_description,
+        fee_coverage_description: data.fee_coverage_description || prev.fee_coverage_description || DEFAULT_VALUES.fee_coverage_description,
+        refund_policy_description: data.refund_policy_description || prev.refund_policy_description || DEFAULT_VALUES.refund_policy_description,
+        transfer_indications_description: data.transfer_indications_description || prev.transfer_indications_description || DEFAULT_VALUES.transfer_indications_description,
+        backup_midwife_policy: data.backup_midwife_policy || prev.backup_midwife_policy || DEFAULT_VALUES.backup_midwife_policy,
+        no_refund_scenarios_description: data.no_refund_scenarios_description || prev.no_refund_scenarios_description || DEFAULT_VALUES.no_refund_scenarios_description,
+      }));
+    }
+  };
+
   const openCreateModal = () => {
     // Initialize form with default values
     const initialData = { ...DEFAULT_VALUES };
     setFormData(initialData);
     setSelectedClientId('');
+    setSelectedTemplateId('');
     setCurrentSection(0);
+    
+    // Check if there's a default template
+    const defaultTemplate = templates.find(t => t.is_default);
+    if (defaultTemplate) {
+      setSelectedTemplateId(defaultTemplate.template_id);
+      applyTemplate(defaultTemplate.template_id);
+    }
+    
     setShowCreateModal(true);
   };
 
