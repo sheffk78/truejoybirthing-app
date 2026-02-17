@@ -115,12 +115,25 @@ export default function MidwifeDashboardScreen() {
           
           <TouchableOpacity
             style={styles.actionCard}
+            onPress={() => router.push('/(midwife)/birth-summaries')}
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.success + '30' }]}>
               <Icon name="document-text" size={24} color={COLORS.success} />
             </View>
             <Text style={styles.actionTitle}>Birth Summary</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/(midwife)/appointments')}
+            activeOpacity={0.8}
+            data-testid="appointments-action"
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '30' }]}>
+              <Icon name="calendar-number" size={24} color={COLORS.warning} />
+            </View>
+            <Text style={styles.actionTitle}>Appointments</Text>
           </TouchableOpacity>
         </View>
         
