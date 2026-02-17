@@ -1081,6 +1081,7 @@ async def update_birth_plan_section(section_id: str, request: Request, user: Use
     sections = plan.get("sections", [])
     section_found = False
     completed_count = 0
+    previous_status = plan.get("birth_plan_status", "not_started")
     
     for section in sections:
         if section["section_id"] == section_id:
@@ -1096,16 +1097,29 @@ async def update_birth_plan_section(section_id: str, request: Request, user: Use
     
     completion_percentage = (completed_count / len(sections)) * 100 if sections else 0
     
+    # Determine birth plan status
+    if completion_percentage == 100:
+        new_status = "complete"
+    elif completion_percentage > 0:
+        new_status = "in_progress"
+    else:
+        new_status = "not_started"
+    
     await db.birth_plans.update_one(
         {"user_id": user.user_id},
         {"$set": {
             "sections": sections,
             "completion_percentage": completion_percentage,
+            "birth_plan_status": new_status,
             "updated_at": now
         }}
     )
     
-    return {"message": "Section updated", "completion_percentage": completion_percentage}
+    # Notify providers when birth plan is marked complete for the first time
+    if new_status == "complete" and previous_status != "complete":
+        await notify_providers_birth_plan_complete(user.user_id, user.full_name)
+    
+    return {"message": "Section updated", "completion_percentage": completion_percentage, "birth_plan_status": new_status}
 
 @api_router.get("/birth-plan/export")
 async def export_birth_plan(user: User = Depends(check_role(["MOM"]))):
