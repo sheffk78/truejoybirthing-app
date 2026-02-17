@@ -1584,8 +1584,6 @@ def calculate_subscription_status(subscription: dict) -> dict:
     # Check active subscription
     if status == "active":
         if sub_end:
-            if isinstance(sub_end, str):
-                sub_end = datetime.fromisoformat(sub_end.replace('Z', '+00:00'))
             if now < sub_end:
                 days_remaining = (sub_end - now).days
                 return {
