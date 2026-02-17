@@ -49,6 +49,7 @@ export default function DoulaProfileScreen() {
   
   useEffect(() => {
     fetchProfile();
+    fetchSubscriptionStatus();
   }, []);
   
   const handleSave = async () => {
