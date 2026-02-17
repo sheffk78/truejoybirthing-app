@@ -222,6 +222,14 @@ class TestConnectionSetup:
         mom = connected_users["mom"]
         doula = connected_users["doula"]
         
+        # IMPORTANT: First ensure Mom's birth plan exists by fetching it
+        # The birth plan is created lazily when first accessed
+        bp_resp = requests.get(
+            f"{BASE_URL}/api/birth-plan",
+            headers={"Authorization": f"Bearer {mom['session_token']}"}
+        )
+        assert bp_resp.status_code == 200, "Mom should be able to get/create birth plan"
+        
         # Verify doula can see shared birth plan
         shared_resp = requests.get(
             f"{BASE_URL}/api/provider/shared-birth-plans",
@@ -507,6 +515,14 @@ class TestBirthPlanReadOnly:
         """Test that provider's view of shared birth plan includes read_only flag"""
         mom = connected_users["mom"]
         doula = connected_users["doula"]
+        
+        # IMPORTANT: First ensure Mom's birth plan exists by fetching it
+        # The birth plan is created lazily when first accessed
+        bp_resp = requests.get(
+            f"{BASE_URL}/api/birth-plan",
+            headers={"Authorization": f"Bearer {mom['session_token']}"}
+        )
+        assert bp_resp.status_code == 200, "Mom should be able to get/create birth plan"
         
         # Get shared birth plans
         response = requests.get(
@@ -799,14 +815,21 @@ class TestMidwifeVisitsForMom:
                 "name": mom["full_name"],
                 "email": mom["email"],
                 "edd": "2026-06-15",
-                "planned_birth_setting": "Home",
-                "linked_mom_id": mom["user_id"]
+                "planned_birth_setting": "Home"
             },
             headers={"Authorization": f"Bearer {midwife['session_token']}"}
         )
         assert client_resp.status_code in [200, 201], f"Failed to create client: {client_resp.text}"
         client = client_resp.json()
         client_id = client.get("client_id") or client.get("client", {}).get("client_id")
+        
+        # Update client to link with Mom user account
+        update_resp = requests.put(
+            f"{BASE_URL}/api/midwife/clients/{client_id}",
+            json={"linked_mom_id": mom["user_id"]},
+            headers={"Authorization": f"Bearer {midwife['session_token']}"}
+        )
+        assert update_resp.status_code == 200, f"Failed to link client to mom: {update_resp.text}"
         
         # Create a visit with clinical data
         visit_resp = requests.post(
