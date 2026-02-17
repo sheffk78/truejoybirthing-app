@@ -77,9 +77,16 @@ export const API_ENDPOINTS = {
   MIDWIFE_DASHBOARD: '/midwife/dashboard',
   MIDWIFE_CLIENTS: '/midwife/clients',
   MIDWIFE_CONTRACTS: '/midwife/contracts',
+  MIDWIFE_INVOICES: '/midwife/invoices',
   MIDWIFE_VISITS: '/midwife/visits',
   MIDWIFE_BIRTH_SUMMARIES: '/midwife/birth-summaries',
   MIDWIFE_NOTES: '/midwife/notes',
+  
+  // Payment Instructions (shared by Doula & Midwife)
+  PAYMENT_INSTRUCTIONS: '/payment-instructions',
+  
+  // Mom Invoices
+  MOM_INVOICES: '/mom/invoices',
   
   // Admin
   ADMIN_USERS: '/admin/users',
