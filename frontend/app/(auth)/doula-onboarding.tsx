@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,7 +19,7 @@ import Card from '../../src/components/Card';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
 
 const SERVICES = [
   { value: 'Birth Doula', icon: 'heart-outline' },
@@ -31,13 +32,51 @@ export default function DoulaOnboardingScreen() {
   const { user, updateUser } = useAuthStore();
   
   const [practiceName, setPracticeName] = useState('');
+  const [zipCode, setZipCode] = useState('');
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
   const [servicesOffered, setServicesOffered] = useState<string[]>([]);
   const [yearsInPractice, setYearsInPractice] = useState('');
   const [acceptingNewClients, setAcceptingNewClients] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLookingUpZip, setIsLookingUpZip] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Lookup city/state from zip code
+  const lookupZipCode = useCallback(async (zip: string) => {
+    if (zip.length !== 5 || !/^\d{5}$/.test(zip)) {
+      return;
+    }
+    
+    setIsLookingUpZip(true);
+    try {
+      const result = await apiRequest(`/api/lookup/zipcode/${zip}`, {
+        method: 'GET',
+      });
+      
+      if (result.city && result.state) {
+        setLocationCity(result.city);
+        setLocationState(result.state_abbreviation || result.state);
+      }
+    } catch (error: any) {
+      console.log('Zip code lookup error:', error.message);
+    } finally {
+      setIsLookingUpZip(false);
+    }
+  }, []);
+  
+  // Handle zip code change
+  const handleZipCodeChange = (text: string) => {
+    const cleaned = text.replace(/\D/g, '').slice(0, 5);
+    setZipCode(cleaned);
+    
+    if (cleaned.length === 5) {
+      lookupZipCode(cleaned);
+    } else {
+      setLocationCity('');
+      setLocationState('');
+    }
+  };
   
   const toggleService = (service: string) => {
     setServicesOffered((prev) =>
@@ -71,6 +110,7 @@ export default function DoulaOnboardingScreen() {
         method: 'POST',
         body: {
           practice_name: practiceName,
+          zip_code: zipCode,
           location_city: locationCity,
           location_state: locationState,
           services_offered: servicesOffered,
@@ -120,22 +160,34 @@ export default function DoulaOnboardingScreen() {
             error={errors.practiceName}
           />
           
-          {/* Location */}
-          <Text style={styles.sectionLabel}>Location</Text>
-          <View style={styles.locationRow}>
-            <Input
-              placeholder="City"
-              value={locationCity}
-              onChangeText={setLocationCity}
-              containerStyle={styles.cityInput}
-              leftIcon="location-outline"
-            />
-            <Input
-              placeholder="State"
-              value={locationState}
-              onChangeText={setLocationState}
-              containerStyle={styles.stateInput}
-            />
+          {/* Location with Zip Code Lookup */}
+          <View style={styles.locationSection}>
+            <Text style={styles.sectionLabel}>Location</Text>
+            <Text style={styles.helperText}>Enter your zip code and we'll find your city</Text>
+            
+            <View style={styles.zipCodeRow}>
+              <Input
+                placeholder="Zip Code"
+                value={zipCode}
+                onChangeText={handleZipCodeChange}
+                containerStyle={styles.zipInput}
+                leftIcon="location"
+                keyboardType="number-pad"
+                maxLength={5}
+              />
+              {isLookingUpZip && (
+                <ActivityIndicator size="small" color={COLORS.primary} style={styles.zipLoader} />
+              )}
+            </View>
+            
+            {locationCity && locationState && (
+              <View style={styles.locationResult}>
+                <Icon name="checkmark-circle" size={20} color={COLORS.success} />
+                <Text style={styles.locationResultText}>
+                  {locationCity}, {locationState}
+                </Text>
+              </View>
+            )}
           </View>
           
           {/* Services */}
@@ -148,6 +200,7 @@ export default function DoulaOnboardingScreen() {
                 key={service.value}
                 onPress={() => toggleService(service.value)}
                 activeOpacity={0.8}
+                data-testid={`service-${service.value.toLowerCase().replace(/\s/g, '-')}`}
               >
                 <Card
                   style={[
@@ -168,7 +221,7 @@ export default function DoulaOnboardingScreen() {
                   >
                     {service.value}
                   </Text>
-                  <View style={styles.checkbox}>
+                  <View style={[styles.checkbox, servicesOffered.includes(service.value) && styles.checkboxSelected]}>
                     {servicesOffered.includes(service.value) && (
                       <Icon name="checkmark" size={16} color={COLORS.white} />
                     )}
@@ -193,6 +246,7 @@ export default function DoulaOnboardingScreen() {
             onPress={() => setAcceptingNewClients(!acceptingNewClients)}
             style={styles.toggleRow}
             activeOpacity={0.8}
+            data-testid="toggle-accepting-clients"
           >
             <Text style={styles.toggleLabel}>Accepting new clients</Text>
             <View style={[styles.toggle, acceptingNewClients && styles.toggleActive]}>
@@ -207,6 +261,7 @@ export default function DoulaOnboardingScreen() {
             loading={isLoading}
             fullWidth
             style={styles.continueButton}
+            data-testid="doula-onboarding-continue-btn"
           />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -244,36 +299,58 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: SIZES.fontTitle,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     lineHeight: 24,
   },
   sectionLabel: {
-    fontSize: SIZES.fontSm,
-    fontWeight: '600',
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
+    marginBottom: SIZES.sm,
+  },
+  helperText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
     marginBottom: SIZES.sm,
   },
   errorText: {
     fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
     color: COLORS.error,
     marginBottom: SIZES.sm,
   },
-  locationRow: {
+  locationSection: {
+    marginBottom: SIZES.lg,
+  },
+  zipCodeRow: {
     flexDirection: 'row',
-    marginBottom: SIZES.md,
+    alignItems: 'center',
   },
-  cityInput: {
-    flex: 2,
-    marginRight: SIZES.sm,
-  },
-  stateInput: {
+  zipInput: {
     flex: 1,
+  },
+  zipLoader: {
+    marginLeft: SIZES.sm,
+  },
+  locationResult: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SIZES.sm,
+    paddingHorizontal: SIZES.sm,
+  },
+  locationResultText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.success,
+    marginLeft: SIZES.xs,
   },
   servicesSection: {
     marginBottom: SIZES.md,
@@ -291,11 +368,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: SIZES.md,
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   serviceLabelSelected: {
     color: COLORS.primary,
-    fontWeight: '600',
+    fontFamily: FONTS.bodyBold,
   },
   checkbox: {
     width: 24,
@@ -307,6 +385,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  checkboxSelected: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
   toggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -316,6 +398,7 @@ const styles = StyleSheet.create({
   },
   toggleLabel: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textPrimary,
   },
   toggle: {
