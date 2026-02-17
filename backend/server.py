@@ -332,6 +332,36 @@ class BirthSummary(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
+# --- Appointment Models ---
+APPOINTMENT_STATUS = ["pending", "accepted", "declined", "cancelled"]
+APPOINTMENT_TYPES = ["prenatal_visit", "birth_planning_session", "postpartum_visit", "consultation"]
+
+class AppointmentCreate(BaseModel):
+    mom_user_id: str
+    appointment_date: str  # ISO date string
+    appointment_time: str  # HH:MM format
+    appointment_type: str  # prenatal_visit, birth_planning_session, postpartum_visit, consultation
+    location: Optional[str] = None
+    is_virtual: bool = False
+    notes: Optional[str] = None  # Provider's private notes for the appointment
+
+class Appointment(BaseModel):
+    appointment_id: str
+    provider_id: str
+    provider_name: str
+    provider_role: str  # DOULA or MIDWIFE
+    mom_user_id: str
+    mom_name: str
+    appointment_date: str
+    appointment_time: str
+    appointment_type: str
+    location: Optional[str] = None
+    is_virtual: bool = False
+    notes: Optional[str] = None  # Provider's private notes - NOT visible to Mom
+    status: str = "pending"  # pending, accepted, declined, cancelled
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
 # --- Admin Content Models ---
 class AdminContent(BaseModel):
     content_id: str
