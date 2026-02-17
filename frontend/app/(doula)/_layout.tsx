@@ -27,9 +27,9 @@ export default function DoulaLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="grid-outline" size={size} color={color} />
+            <Icon name="home-outline" size={size} color={color} />
           ),
         }}
       />
@@ -56,7 +56,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Invoices',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="card-outline" size={size} color={color} />
+            <Icon name="cash-outline" size={size} color={color} />
           ),
         }}
       />
