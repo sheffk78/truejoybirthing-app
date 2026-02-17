@@ -2443,7 +2443,7 @@ async def get_midwife_visits(user: User = Depends(check_role(["MIDWIFE"])), clie
 
 @api_router.post("/midwife/visits")
 async def create_visit(visit_data: VisitCreate, user: User = Depends(check_role(["MIDWIFE"]))):
-    """Create a new visit"""
+    """Create a new visit with split notes (summary_for_mom and private_note)"""
     now = datetime.now(timezone.utc)
     
     visit = {
@@ -2453,10 +2453,11 @@ async def create_visit(visit_data: VisitCreate, user: User = Depends(check_role(
         "visit_date": visit_data.visit_date,
         "visit_type": visit_data.visit_type,
         "gestational_age": visit_data.gestational_age,
-        "blood_pressure": visit_data.blood_pressure,
-        "weight": visit_data.weight,
-        "fetal_heart_rate": visit_data.fetal_heart_rate,
-        "note": visit_data.note,
+        "blood_pressure": visit_data.blood_pressure,  # Clinical - NOT visible to Mom
+        "weight": visit_data.weight,  # Clinical - NOT visible to Mom
+        "fetal_heart_rate": visit_data.fetal_heart_rate,  # Clinical - NOT visible to Mom
+        "summary_for_mom": visit_data.summary_for_mom,  # Mom-friendly summary
+        "private_note": visit_data.private_note,  # Private clinical note
         "created_at": now,
         "updated_at": now
     }
