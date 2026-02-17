@@ -5,165 +5,168 @@
 - **MOM Experience**: Onboarding, a comprehensive multi-section Birth Plan, Pregnancy Timeline, Wellness/Emotional Check-in, Postpartum Plan, a My Team screen, and a Provider Marketplace.
 - **Birth Plan Sharing**: Moms should be able to share their birth plan with a Doula or Midwife.
 - **Notifications**: Providers should receive an email notification (via Resend) and an in-app notification when a mom shares her birth plan.
-- **DOULA Experience**: A dashboard, client management, contract management with e-signatures, invoicing, and client notes.
-- **MIDWIFE Experience**: A dashboard, client management, prenatal/postpartum visit logging, client notes, and birth summary creation.
+- **DOULA Experience**: A dashboard, client management, a customizable, multi-step contract management system with e-signatures, invoicing, and client notes.
+- **MIDWIFE Experience**: A dashboard, client management, prenatal/postpartum visit logging, client notes, and a customizable, multi-step contract system.
 - **ADMIN Experience**: Content management and user management.
 - **Messaging**: A system for Moms to directly contact providers from the marketplace.
+- **Collaboration Rules**: The interactions and data visibility between MOM, DOULA, and MIDWIFE roles must follow specific permission rules.
+- **Content Updates**: Integrate weekly tips and affirmations for moms.
+- **PDF Export**: Ability to export contracts and birth plans as PDFs.
+- **Email Automation**: Automatically email signed contracts to all parties.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is feature-complete for all core user flows (MOM, DOULA, MIDWIFE, ADMIN). A direct messaging system between Moms and Providers has been implemented. E-signature functionality for Doula contracts has been added. A complete UI/UX redesign has been initiated based on a new brand identity, with updates applied to the welcome screen, buttons, cards, and loading screen.
+The application is a full-featured platform with role-based authentication and distinct dashboards for Moms, Doulas, and Midwives. Recently, a batch of user-reported bugs (Export Birth Plan, Cancel Invitation) was fixed and verified. A major overhaul of the Doula contract system was completed, introducing a new customizable, multi-step contract creation form on the frontend and updating the backend models, API endpoints, and PDF generation logic accordingly. The agent has just begun a similar, large-scale rework for the Midwife contract system based on new user-provided requirements.
 
 **Last working item**:
-- **Last item agent was working**: The agent was in the middle of applying the new brand styling more deeply across the application, following a user request. This involves updating key screens with the Playfair Display font for headings and ensuring consistent styling across all user roles.
+- **Last item agent was working**: The agent was in the middle of a complete overhaul of the Midwife contract system, mirroring the recent successful rework of the Doula contracts. It had already updated the backend by creating a new HTML template, updating the Pydantic models in  with the new customizable fields, and updating the API endpoints for contract creation and PDF generation. The next step is to rewrite the frontend.
 - **Status**: IN PROGRESS
-- **Agent Testing Done**: N (Only initial changes were made and verified with a screenshot)
-- **Which testing method agent to use?**: screenshot tool
+- **Agent Testing Done**: N
+- **Which testing method agent to use?**: both
 - **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-- **Issue 1**: Email Notifications Blocked by Domain Verification (Priority: P1)
+- **Issue 1**: Midwife contract feature is broken. (Priority: P0)
 
 **Issues Detail**:
-- **Issue 1**:
-    - **Description**: The Resend integration for email notifications is complete, but emails cannot be delivered because the user's domain is pending verification with Resend.
-    - **Attempted fixes**: The backend integration is complete. The issue is external and depends on the user's DNS configuration.
-    - **Next debug checklist**: Check with the user if the domain has been verified. If so, perform a test to confirm email delivery.
-    - **Why fix this issue and what will be achieved with the fix?**: This will enable a key feature: notifying providers via email when a Mom shares her birth plan.
-    - **Status**: BLOCKED (on user action)
+- **Issue 1**: Midwife contract feature is broken.
+    - **Description**: The feature is in a broken state because the backend API and data models for Midwife contracts have been updated, but the frontend UI at  has not yet been modified. It is still based on the old, simpler contract structure.
+    - **Attempted fixes**: The backend portion of the rework is largely complete in .
+    - **Next debug checklist**:
+        1.  Completely rewrite the frontend component , using the recently implemented  as a template.
+        2.  Implement the new multi-step modal form for creating/editing Midwife contracts, based on the new fields defined in the  Pydantic model.
+        3.  Ensure the new UI correctly fetches, displays, creates, and updates the new complex contract objects.
+        4.  Perform end-to-end testing: create a midwife, create a client, create a contract using the new UI, download the PDF, and ensure the signed contract is emailed correctly.
+    - **Why fix this issue and what will be achieved with the fix?**: This will bring the Midwife contract functionality in line with the new user requirements and restore a critical feature for Midwife users.
+    - **Status**: IN PROGRESS
     - **Is recurring issue?**: N
-    - **Should Test frontend/backend/both after fix?**: Backend
+    - **Should Test frontend/backend/both after fix?**: Both
     - **Blocked on other issue**: None.
 
 **In progress Task List**:
-- **Task 1**: Deeply Apply Brand Styling (Priority: P0)
+- **Task 1**: Complete the Midwife contract system overhaul. (Priority: P0)
 
 **Task Detail**:
 - **Task 1**:
-    - **Where to resume**: The user has requested to apply the brand styling more deeply. The agent has already updated the root layout, theme, welcome screen, buttons, cards, and loading screen. The next step is to methodically go through the main screens of each user role (MOM, DOULA, MIDWIFE) and apply the new design language, particularly using the 'Playfair Display' font for headings and ensuring the color palette from  is used consistently.
-    - **What will be achieved with this?**: A cohesive and professional user interface that aligns with the True Joy Birthing brand identity across the entire application.
+    - **Where to resume**: The agent needs to start by creating a new version of the file . The new implementation should be a near-copy of the recently built , adapted for the Midwife-specific data models and API endpoints.
+    - **What will be achieved with this?**: A fully functional, customizable contract management system for Midwife users, matching the advanced functionality recently built for Doulas.
     - **Status**: IN PROGRESS
-    - **Should Test frontend/backend/both after fix?**: Frontend (using screenshots or testing agent)
-    - **Blocked on something**: No.
+    - **Should Test frontend/backend/both after fix?**: Both
+    - **Blocked on something**: None.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks**:
-    - **P0**: Complete the deep application of brand styling across all user-facing screens.
+    - **P1: Implement Contract Templates**: After the Midwife rework is complete, the user has requested the ability to create and manage multiple contract templates for both Doulas and Midwives.
 - **Future Tasks**:
-    - Based on the original PRD, all core features are now implemented. Future work will likely consist of user-requested enhancements, refinements, and bug fixes after a full review of the application.
+    - No other future tasks are currently defined. The agent should solicit the next priorities from the user after completing the Midwife and template tasks.
 
 **Completed work in this session**
-- **List of all completed tasks with file and method name**:
-  - **Direct Messaging System**: Implemented a full-featured messaging system.
-    - Backend: Added  model and API endpoints (, ) in .
-    - Frontend: Created messaging screens for MOM (), DOULA (), and MIDWIFE ().
-  - **Contract E-Signature**: Implemented functionality for users to sign contracts.
-    - Backend: Enhanced the  endpoint in .
-    - Frontend: Created a public-facing signing page () and updated the Doula's contract view ().
-  - **UI/UX Redesign (Phase 1)**: Initiated a major visual overhaul based on  output.
-    - Installed 'Playfair Display' and 'Lato' fonts.
-    - Updated the color palette in .
-    - Integrated the official logo and new branding on the Welcome screen ().
-    - Re-styled core UI components: , , .
-
-- **Recently completed**:
-  - Direct Messaging System (DONE)
-  - Contract E-Signature (DONE)
-  - Initial Brand Style Integration (DONE)
+- **User-Reported Bug Fixes (COMPLETED)**:
+    - **Export Birth Plan**: Fixed the frontend button to call the correct backend endpoint () and successfully download the generated PDF. Verified with  and screenshot tool.
+    - **Cancel Invitation**: Fixed a backend logic bug in  where a share request was deleted before associated data was queried. The logic was reordered to fix the issue. Verified with .
+- **Doula Contract System Rework (COMPLETED)**:
+    - **Backend**:
+        - Updated  with a new, complex  Pydantic model including dozens of customizable fields.
+        - Updated all Doula contract CRUD endpoints () to handle the new data structure.
+        - Replaced the contract text with a new user-provided version in .
+        - Updated the PDF generation logic to populate the new complex template.
+    - **Frontend**:
+        - Updated the Doula layout  with new icons for Home (house) and Invoices (dollar sign).
+        - Completely rewrote  to feature a new UI: a contract list view and a multi-step modal form for creating and editing contracts.
+    - **Testing**: Verified the complete flow E2E, including UI functionality, API calls, and PDF generation.
 
 **Earlier issues found/mentioned but not fixed**
 - None.
 
 **Known issue recurrence from previous fork**
-- None.
+- **Issue**: Frontend instability leading to  tunnel errors (e.g., , ).
+- **Recurrence count**: 2+
+- **Status**: RESOLVED (in this session).
+- **Note**: This issue has appeared multiple times. In this session, it was caused by a fatal JavaScript error (a wrong import in ) that crashed the Metro bundler. When the frontend becomes unavailable, the first step should always be to check for errors in the frontend code and supervisor logs before assuming it's a platform or network issue. Restarting the  supervisor service is often necessary after fixing such errors.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend**: React (with Expo Router for native), TailwindCSS.
+- **Frontend**: React (with Expo Router), TailwindCSS, Zustand for state management (), .
 - **Backend**: FastAPI, Pydantic, MongoDB.
-- **Authentication**: JWT custom auth and Emergent-managed Google OAuth.
-- **State Management**: Zustand.
-- **Styling**: TailwindCSS, with custom theme and fonts ('Playfair Display', 'Lato').
+- **PDF Generation**:  library converting Jinja2-rendered HTML to PDF.
+- **Architecture**: The agent is building reusable, complex frontend components (e.g., the multi-step contract form) that can be adapted for different user roles (Doula, Midwife).
 
 **key DB schema**
-- **User**: {uid=0(root) gid=0(root) groups=0(root), , , }
-- **BirthPlan**: {, : [...]}
-- **Contract**: {, , , , : [...]}
-- **Message**: {, , , } (NEW)
-- **Conversation**: {, , } (NEW - conceptual model in backend logic)
+- ** collection**: The schema was significantly expanded with numerous optional fields to support customizable Doula contracts. A similar expansion is in progress for Midwife contracts. The model now includes nested Pydantic models for different sections (e.g., , ).
+- ** collection**: Similar to the  collection, the schema for this is currently being updated to be more complex and customizable.
 
 **changes in tech stack**
-- None.
+- No changes to the tech stack itself, but a major refactor of the contract data models and corresponding frontend/backend logic.
 
 **All files of reference**
-- **New Features**:
-  - : Heavily modified to add messaging and enhance contract signing logic.
-  - , , : New screens for messaging.
-  - : New page for signing contracts.
-- **Design Overhaul**:
-  - : New file containing the brand style guide.
-  - : Updated with the new color palette.
-  - : Updated to load new Google Fonts.
-  - : Updated with the official logo and new design.
-  - , , : Updated to reflect new branding.
-- **Modified for Integration**:
-  - , : Modified to integrate new messaging and signing features.
-  - : All updated to include a Messages tab.
-- **Test Reports**:
-  - : Test report from the messaging/e-signature implementation.
-
-**Areas that need refactoring**:
-- None identified.
+- : Contains all logic for both Doula and Midwife contracts. This is the primary file for the current backend work.
+- : The file that needs a complete rewrite.
+- : The reference file for the new Midwife contracts UI.
+- : The new HTML template for Midwife contract PDFs.
+- : The user-provided requirements document for the current task.
 
 **key api endpoints**
-- : Get all conversations for the logged-in user.
-- : Get all messages for a specific conversation.
-- : Send a new message.
-- : Sign a contract.
-- : Get a single contract by ID.
+- **Doula Contracts (Updated)**:
+  - 
+  - 
+  - 
+- **Midwife Contracts (Partially Updated, In Progress)**:
+  - 
+  - 
+  - 
+- **Birth Plan Export (Fixed)**: 
+- **Share Request (Fixed)**: 
 
 **Critical Info for New Agent**
-- **Priority Task**: Your immediate task is to continue the UI/UX redesign. The user wants the new brand styling applied more deeply throughout the app. Use  as your source of truth.
-- **Focus Areas for Styling**: Prioritize applying the new styles (especially 'Playfair Display' for headings and the brand color palette) to the main dashboard/home screens for Mom, Doula, and Midwife roles first, then move to secondary screens.
-- **Stable Base**: The backend functionality for all features, including the new messaging and e-signature systems, is complete and has been tested. You can focus on the frontend work with confidence.
-- **Blocked Feature**: Do not work on the Resend email notifications. This remains blocked by the user.
+- Your highest priority (P0) is to complete the Midwife contract system overhaul.
+- Use the implementation of the Doula contract system as a direct blueprint. The backend changes are mostly done; the main task is to rewrite  based on .
+- Be aware of the frontend's sensitivity. If the preview URL goes down after a change, immediately check the frontend code for syntax/runtime errors and review the supervisor logs (). Restarting the  service via supervisorctl is often required after fixing a code error.
 
 **documents and test reports created in this job**
-- 
-- 
--  (Updated)
+-  (Passed with 100% success after bug fixes)
+-  (Updated with completed bug fixes and the Doula contract rework)
+- The agent also extracted the user-provided  files into the workspace for reference.
 
 **Last 10 User Messages and any pending HUMAN messages**
--  - User confirmed they want the new design applied across the rest of the application. (In Progress)
--  - User requested a full design overhaul and provided the official logo. (Completed)
--  - User approved implementation of messaging and e-signatures. (Completed)
+1.  **User**: *Finishes a session.* (COMPLETED)
+2.  **User**: When a doula is logged in, the dashboard icon needs to be updated... The Doulas contract area needs to be reworked." + provides 2 documents. (IN PROGRESS)
+3.  **Agent**: *Presents plan for Doula rework.*
+4.  **User**: "1. yes 2. Fresh start" (approval to proceed). (COMPLETED)
+5.  **Agent**: *Completes the entire Doula contract rework, including fixing a major frontend crash.* (COMPLETED)
+6.  **User**: "Before we add contract templates, lets do a similar process for the Midwives side. + provides 2 new documents for midwives. (IN PROGRESS)
+7.  **Agent**: *Begins the Midwife contract rework, starting with the backend.* (This is the current state).
 
 **Project Health Check:**
-- **Broken**: None.
+- **Broken**:
+    - The Midwife contract feature is non-functional as the frontend () is out of sync with the updated backend API.
 - **Mocked**: None.
-- **Blocked**:
-  - Resend email notifications are blocked pending user domain verification.
+- **Blocked**: None.
+- **In-Progress**: Rewriting the Midwife contract system to fix the above.
 
 **3rd Party Integrations**
-- ** / **: For SVG icons.
-- **Emergent-managed Google Auth**: For Google Social Login.
-- ****: For frontend state management.
-- ** & **: For form handling and validation.
-- **Resend**: For transactional emails (partially blocked).
+-  / 
+- Emergent-managed Google Auth
+- 
+-  & 
+- Resend (for emails)
+-  (for zip code lookups)
+- 
+-  (for PDF generation)
 
 **Testing status**
-- **Testing agent used after significant changes**: YES. The testing agent was used to validate the messaging and e-signature features. It found and fixed several minor bugs.
+- **Testing agent used after significant changes**: YES, for the initial bug fixes.
+- **Troubleshoot agent used after agent stuck in loop**: YES, the  was successfully used to diagnose a frontend crash (import error) that was causing ngrok tunnel failures.
 - **Test files created**: None.
 - **Known regressions**: None.
 
 **Credentials to test flow:**
-- Use a new unique email for MOM role (e.g., , password ).
-- Use  (password ) for the Doula role.
-- Use  (password ) for the Midwife role.
-- Use  (password ) for the Admin role.
+- **MOM**: Use a new unique email like , password .
+- **DOULA**: , password .
+- **MIDWIFE**: , password .
+- **ADMIN**: , password .
 
 **What agent forgot to execute**
-- The agent was in the process of a multi-step task (UI redesign) when the session ended. It did not forget a specific step but was interrupted mid-task by the user's request to continue the styling. It also did not get to call the  tool after its last major implementation, as it immediately pivoted to the user's design request.</analysis>
+- Nothing was forgotten. The agent was executing a large, multi-step task (Midwife contract rework) and the session ended midway through the implementation. The next logical step is to continue that implementation.</analysis>

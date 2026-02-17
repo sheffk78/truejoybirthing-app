@@ -8,7 +8,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '').rstrip('/') or "https://joy-birth-dev.preview.emergentagent.com"
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '').rstrip('/') or "https://birth-midwife.preview.emergentagent.com"
 
 # Test credentials from main agent
 DOULA_EMAIL = "doula2_1771213474@test.com"
