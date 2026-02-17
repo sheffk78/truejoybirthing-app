@@ -17,6 +17,7 @@ import { apiRequest } from '../../src/utils/api';
 import useAuthStore from '../../src/store/authStore';
 import API_ENDPOINTS from '../../src/constants/api';
 import { useRouter } from 'expo-router';
+import { COLORS, SIZES } from '../../src/constants/theme';
 
 // Contract form sections based on the new agreement structure
 const CONTRACT_SECTIONS = [
