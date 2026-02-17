@@ -68,7 +68,7 @@ api_router = APIRouter(prefix="/api")
 ROLES = ["MOM", "DOULA", "MIDWIFE", "ADMIN"]
 BIRTH_SETTINGS = ["Home", "Hospital", "Birth Center", "Not sure"]
 CLIENT_STATUS_DOULA = ["Lead", "Contract Sent", "Contract Signed", "Active", "Postpartum", "Completed"]
-CLIENT_STATUS_MIDWIFE = ["Prenatal", "In Labor", "Postpartum", "Completed"]
+CLIENT_STATUS_MIDWIFE = ["Prenatal", "Contract Sent", "Contract Signed", "In Labor", "Postpartum", "Completed"]
 CONTRACT_STATUS = ["Draft", "Sent", "Signed"]
 INVOICE_STATUS = ["Draft", "Sent", "Paid", "Overdue"]
 MOOD_SCALE = ["Very low", "Low", "Neutral", "Good", "Great"]
