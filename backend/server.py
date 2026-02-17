@@ -2677,7 +2677,7 @@ async def get_doula_contract_template(user: User = Depends(check_role(["DOULA"])
 
 @api_router.post("/doula/contracts")
 async def create_contract(contract_data: ContractCreate, user: User = Depends(check_role(["DOULA"]))):
-    """Create a new True Joy Birthing Doula Service Agreement"""
+    """Create a new Doula Service Agreement"""
     # Get client info
     client = await db.clients.find_one({"client_id": contract_data.client_id}, {"_id": 0})
     if not client:
@@ -2686,39 +2686,80 @@ async def create_contract(contract_data: ContractCreate, user: User = Depends(ch
     now = datetime.now(timezone.utc)
     
     # Calculate remaining amount if not provided
-    remaining = contract_data.remaining_payment_amount
+    remaining = contract_data.remaining_balance
     if remaining is None:
-        remaining = contract_data.total_payment_amount - contract_data.retainer_fee
+        remaining = contract_data.total_fee - contract_data.retainer_amount
     
-    # Get template sections and apply any customizations
-    template = get_contract_template()
-    sections = []
-    for section in template["sections"]:
-        section_copy = section.copy()
-        # Check if there are customizations for this section
-        if contract_data.section_customizations:
-            for custom in contract_data.section_customizations:
-                if custom.id == section["id"] and custom.custom_content:
-                    section_copy["custom_content"] = custom.custom_content
-        sections.append(section_copy)
+    # Use doula name from input or default to user's full name
+    doula_name = contract_data.doula_name or user.full_name
+    
+    # Build contract data dictionary for text generation
+    contract_fields = {
+        "client_name": contract_data.client_name,
+        "doula_name": doula_name,
+        "estimated_due_date": contract_data.estimated_due_date,
+        "total_fee": contract_data.total_fee,
+        "retainer_amount": contract_data.retainer_amount,
+        "remaining_balance": remaining,
+        "final_payment_due_description": contract_data.final_payment_due_description,
+        "prenatal_visit_description": contract_data.prenatal_visit_description,
+        "on_call_window_description": contract_data.on_call_window_description,
+        "on_call_response_description": contract_data.on_call_response_description,
+        "backup_doula_preferences": contract_data.backup_doula_preferences,
+        "postpartum_visit_description": contract_data.postpartum_visit_description,
+        "speak_for_client_exception": contract_data.speak_for_client_exception,
+        "retainer_non_refundable_after_weeks": contract_data.retainer_non_refundable_after_weeks,
+        "cancellation_weeks_threshold": contract_data.cancellation_weeks_threshold,
+        "final_payment_due_detail": contract_data.final_payment_due_detail,
+        "cesarean_alternative_support_description": contract_data.cesarean_alternative_support_description,
+        "unreachable_timeframe_description": contract_data.unreachable_timeframe_description,
+        "unreachable_remedy_description": contract_data.unreachable_remedy_description,
+        "precipitous_labor_definition": contract_data.precipitous_labor_definition,
+        "precipitous_labor_compensation_description": contract_data.precipitous_labor_compensation_description,
+        "other_absence_policy": contract_data.other_absence_policy,
+        "special_arrangements": contract_data.special_arrangements,
+        "agreement_date": now.strftime("%Y-%m-%d")
+    }
+    
+    # Generate the contract text
+    contract_text = generate_contract_text(contract_fields)
     
     contract = {
         "contract_id": f"contract_{uuid.uuid4().hex[:12]}",
         "doula_id": user.user_id,
-        "doula_name": user.full_name,
+        "doula_name": doula_name,
         "client_id": contract_data.client_id,
-        "client_name": client["name"],
-        # Client & Payment Details
-        "client_names": contract_data.client_names,
+        "client_name": contract_data.client_name,
+        # Parties & Basic Details
         "estimated_due_date": contract_data.estimated_due_date,
-        "total_payment_amount": contract_data.total_payment_amount,
-        "retainer_fee": contract_data.retainer_fee,
-        "remaining_payment_amount": remaining,
-        "final_payment_due_date": contract_data.final_payment_due_date,
+        "total_fee": contract_data.total_fee,
+        "retainer_amount": contract_data.retainer_amount,
+        "remaining_balance": remaining,
+        "final_payment_due_description": contract_data.final_payment_due_description,
         "agreement_date": now.strftime("%Y-%m-%d"),
-        # Template sections
-        "sections": sections,
-        "additional_terms": contract_data.additional_terms,
+        # Services & Scope
+        "prenatal_visit_description": contract_data.prenatal_visit_description,
+        "on_call_window_description": contract_data.on_call_window_description,
+        "on_call_response_description": contract_data.on_call_response_description,
+        "backup_doula_preferences": contract_data.backup_doula_preferences,
+        "postpartum_visit_description": contract_data.postpartum_visit_description,
+        # Boundaries & Communication
+        "speak_for_client_exception": contract_data.speak_for_client_exception,
+        # Payment & Refunds
+        "retainer_non_refundable_after_weeks": contract_data.retainer_non_refundable_after_weeks,
+        "cancellation_weeks_threshold": contract_data.cancellation_weeks_threshold,
+        "final_payment_due_detail": contract_data.final_payment_due_detail,
+        "cesarean_alternative_support_description": contract_data.cesarean_alternative_support_description,
+        # Unavailability & Special Circumstances
+        "unreachable_timeframe_description": contract_data.unreachable_timeframe_description,
+        "unreachable_remedy_description": contract_data.unreachable_remedy_description,
+        "precipitous_labor_definition": contract_data.precipitous_labor_definition,
+        "precipitous_labor_compensation_description": contract_data.precipitous_labor_compensation_description,
+        "other_absence_policy": contract_data.other_absence_policy,
+        # Addendum
+        "special_arrangements": contract_data.special_arrangements,
+        # Generated contract text
+        "contract_text": contract_text,
         # Status
         "status": "Draft",
         "client_signature": None,
