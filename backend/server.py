@@ -24,6 +24,13 @@ from weekly_content import (
     get_weekly_tip, get_weekly_affirmation
 )
 
+# Import doula contract template
+from doula_contract_template import (
+    DOULA_CONTRACT_TEMPLATE,
+    get_contract_template,
+    get_contract_html
+)
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
