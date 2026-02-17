@@ -9,142 +9,134 @@
 - **MIDWIFE Experience**: A dashboard, client management, prenatal/postpartum visit logging, client notes, and a customizable, multi-step contract system.
 - **ADMIN Experience**: Content management and user management.
 - **Messaging**: A system for Moms to directly contact providers from the marketplace.
-- **Collaboration Rules**: The interactions and data visibility between MOM, DOULA, and MIDWIFE roles must follow specific permission rules.
-- **Content Updates**: Integrate weekly tips and affirmations for moms.
 - **PDF Export**: Ability to export contracts and birth plans as PDFs.
 - **Email Automation**: Automatically email signed contracts to all parties.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-featured platform with role-based authentication and distinct dashboards for Moms, Doulas, and Midwives. Recently, a batch of user-reported bugs (Export Birth Plan, Cancel Invitation) was fixed and verified. A major overhaul of the Doula contract system was completed, introducing a new customizable, multi-step contract creation form on the frontend and updating the backend models, API endpoints, and PDF generation logic accordingly. The agent has just begun a similar, large-scale rework for the Midwife contract system based on new user-provided requirements.
+The application is a comprehensive platform for moms, doulas, and midwives. In this session, the agent completed a significant amount of work, building on the existing contract system and adding a major new feature.
+1.  **Midwife Contracts Verified**: The agent discovered that the complex, multi-step Midwife contract form was already implemented on the frontend, contrary to the previous handoff summary. This was verified end-to-end, and a missing backend DELETE endpoint was added by the testing agent.
+2.  **Duplicate Contract Feature**: A Duplicate feature was added for both Doula and Midwife contracts, allowing users to create a copy of an existing contract.
+3.  **Quick Edit Feature**: A Quick Edit feature was implemented for both Doula and Midwife contracts, enabling users to modify key fields (like client name, due date, and payment details) from a preview modal for  contracts without navigating the full multi-step form.
+4.  **Invoicing System**: A complete invoicing system was built from scratch based on user requirements. This includes backend models and endpoints for invoices and reusable payment instruction templates, and frontend UIs for Doulas, Midwives, and Moms.
 
 **Last working item**:
-- **Last item agent was working**: The agent was in the middle of a complete overhaul of the Midwife contract system, mirroring the recent successful rework of the Doula contracts. It had already updated the backend by creating a new HTML template, updating the Pydantic models in  with the new customizable fields, and updating the API endpoints for contract creation and PDF generation. The next step is to rewrite the frontend.
-- **Status**: IN PROGRESS
-- **Agent Testing Done**: N
-- **Which testing method agent to use?**: both
+- **Last item agent was working**: The agent just finished implementing a comprehensive invoicing system for Doulas and Midwives, including a client-facing view for Moms. This involved creating backend models, API endpoints, and entirely new frontend pages and components.
+- **Status**: USER VERIFICATION PENDING
+- **Agent Testing Done**: Y
+- **Which testing method agent to use?**: NA
 - **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-- **Issue 1**: Midwife contract feature is broken. (Priority: P0)
-
-**Issues Detail**:
-- **Issue 1**: Midwife contract feature is broken.
-    - **Description**: The feature is in a broken state because the backend API and data models for Midwife contracts have been updated, but the frontend UI at  has not yet been modified. It is still based on the old, simpler contract structure.
-    - **Attempted fixes**: The backend portion of the rework is largely complete in .
-    - **Next debug checklist**:
-        1.  Completely rewrite the frontend component , using the recently implemented  as a template.
-        2.  Implement the new multi-step modal form for creating/editing Midwife contracts, based on the new fields defined in the  Pydantic model.
-        3.  Ensure the new UI correctly fetches, displays, creates, and updates the new complex contract objects.
-        4.  Perform end-to-end testing: create a midwife, create a client, create a contract using the new UI, download the PDF, and ensure the signed contract is emailed correctly.
-    - **Why fix this issue and what will be achieved with the fix?**: This will bring the Midwife contract functionality in line with the new user requirements and restore a critical feature for Midwife users.
-    - **Status**: IN PROGRESS
-    - **Is recurring issue?**: N
-    - **Should Test frontend/backend/both after fix?**: Both
-    - **Blocked on other issue**: None.
+- None.
 
 **In progress Task List**:
-- **Task 1**: Complete the Midwife contract system overhaul. (Priority: P0)
-
-**Task Detail**:
-- **Task 1**:
-    - **Where to resume**: The agent needs to start by creating a new version of the file . The new implementation should be a near-copy of the recently built , adapted for the Midwife-specific data models and API endpoints.
-    - **What will be achieved with this?**: A fully functional, customizable contract management system for Midwife users, matching the advanced functionality recently built for Doulas.
-    - **Status**: IN PROGRESS
-    - **Should Test frontend/backend/both after fix?**: Both
-    - **Blocked on something**: None.
+- None.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks**:
-    - **P1: Implement Contract Templates**: After the Midwife rework is complete, the user has requested the ability to create and manage multiple contract templates for both Doulas and Midwives.
-- **Future Tasks**:
-    - No other future tasks are currently defined. The agent should solicit the next priorities from the user after completing the Midwife and template tasks.
+    - **P0: User Verification for Invoicing**: Confirm with the user that the new invoicing system meets their requirements.
+    - **P1: Implement Contract Templates**: The user previously requested the ability to create and manage multiple contract templates for both Doulas and Midwives. This was the next planned task before the invoicing feature was requested.
 
 **Completed work in this session**
-- **User-Reported Bug Fixes (COMPLETED)**:
-    - **Export Birth Plan**: Fixed the frontend button to call the correct backend endpoint () and successfully download the generated PDF. Verified with  and screenshot tool.
-    - **Cancel Invitation**: Fixed a backend logic bug in  where a share request was deleted before associated data was queried. The logic was reordered to fix the issue. Verified with .
-- **Doula Contract System Rework (COMPLETED)**:
-    - **Backend**:
-        - Updated  with a new, complex  Pydantic model including dozens of customizable fields.
-        - Updated all Doula contract CRUD endpoints () to handle the new data structure.
-        - Replaced the contract text with a new user-provided version in .
-        - Updated the PDF generation logic to populate the new complex template.
+- **Midwife Contract System Verification (DONE)**:
+    - Confirmed  was already updated.
+    - Verified the entire E2E flow for Midwife contracts (creation, PDF download, etc.).
+    - Fixed a missing backend endpoint  via the testing agent.
+- **Duplicate Contract Feature (DONE)**:
+    - **Backend ()**: Added  endpoints for both Doula and Midwife contracts. Also added the missing .
+    - **Frontend**: Added a Duplicate button and handler logic to the contract cards in  and .
+- **Quick Edit Contract Feature (DONE)**:
+    - **Frontend**: Implemented a Quick Edit mode in the preview modal for  contracts in both  and , allowing for rapid updates to key fields.
+- **Invoicing System (DONE - Pending User Verification)**:
+    - **Backend ()**:
+        - Created  model and CRUD API endpoints.
+        - Enhanced the  model and created comprehensive CRUD API endpoints for both Doulas and Midwives.
+        - Added an API endpoint for Moms to view their invoices.
     - **Frontend**:
-        - Updated the Doula layout  with new icons for Home (house) and Invoices (dollar sign).
-        - Completely rewrote  to feature a new UI: a contract list view and a multi-step modal form for creating and editing contracts.
-    - **Testing**: Verified the complete flow E2E, including UI functionality, API calls, and PDF generation.
+        - Rewrote  to include new functionality.
+        - Created .
+        - Created .
+        - Added navigation tabs to Midwife and Mom layouts.
 
 **Earlier issues found/mentioned but not fixed**
 - None.
 
 **Known issue recurrence from previous fork**
-- **Issue**: Frontend instability leading to  tunnel errors (e.g., , ).
-- **Recurrence count**: 2+
-- **Status**: RESOLVED (in this session).
-- **Note**: This issue has appeared multiple times. In this session, it was caused by a fatal JavaScript error (a wrong import in ) that crashed the Metro bundler. When the frontend becomes unavailable, the first step should always be to check for errors in the frontend code and supervisor logs before assuming it's a platform or network issue. Restarting the  supervisor service is often necessary after fixing such errors.
+- **Issue recurrence in previous fork**: Frontend UI elements not rendering correctly after code changes, requiring a manual restart of the  service.
+- **Recurrence count**: 1 (in this session)
+- **Status**: RESOLVED
+- **Note**: The frontend hot-reloading seems sensitive. If the UI doesn't update as expected after a change, the first step should be to restart the service with frontend: ERROR (no such process)
+frontend: ERROR (no such process) before assuming a code bug.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend**: React (with Expo Router), TailwindCSS, Zustand for state management (), .
+- **Frontend**: React (with Expo Router), TailwindCSS, Zustand for state management (),  for complex forms. The agent implemented complex multi-modal flows (Preview, Quick Edit, Full Form).
 - **Backend**: FastAPI, Pydantic, MongoDB.
 - **PDF Generation**:  library converting Jinja2-rendered HTML to PDF.
-- **Architecture**: The agent is building reusable, complex frontend components (e.g., the multi-step contract form) that can be adapted for different user roles (Doula, Midwife).
 
 **key DB schema**
-- ** collection**: The schema was significantly expanded with numerous optional fields to support customizable Doula contracts. A similar expansion is in progress for Midwife contracts. The model now includes nested Pydantic models for different sections (e.g., , ).
-- ** collection**: Similar to the  collection, the schema for this is currently being updated to be more complex and customizable.
+- ****: New collection to store reusable payment instructions for providers (Doulas/Midwives).
+- ****: New collection to store invoice data, linked to clients, providers, and contracts. Includes fields for items, amounts, due dates, status, and associated payment instructions.
 
 **changes in tech stack**
-- No changes to the tech stack itself, but a major refactor of the contract data models and corresponding frontend/backend logic.
+- None.
 
 **All files of reference**
-- : Contains all logic for both Doula and Midwife contracts. This is the primary file for the current backend work.
-- : The file that needs a complete rewrite.
-- : The reference file for the new Midwife contracts UI.
-- : The new HTML template for Midwife contract PDFs.
-- : The user-provided requirements document for the current task.
+- : The single source of truth for all backend logic. Was heavily updated.
+- : Reference for contract features.
+- : Reference for contract features.
+- : New comprehensive invoice page.
+- : New comprehensive invoice page.
+- : New client-facing invoice page.
+
+**Areas that need refactoring**:
+- The contract pages ( and ) are now very large and contain significant duplicated logic for the list view, the full 7-step form modal, the preview modal, and the quick-edit modal. This logic could be extracted into shared, reusable components to improve maintainability.
 
 **key api endpoints**
-- **Doula Contracts (Updated)**:
+- **Contract Duplication**:
+  - 
+  - 
+- **Payment Instructions**:
   - 
   - 
   - 
-- **Midwife Contracts (Partially Updated, In Progress)**:
   - 
+- **Invoices (Doula, Midwife, Mom)**:
+  - Full CRUD endpoints at 
   - 
-  - 
-- **Birth Plan Export (Fixed)**: 
-- **Share Request (Fixed)**: 
 
 **Critical Info for New Agent**
-- Your highest priority (P0) is to complete the Midwife contract system overhaul.
-- Use the implementation of the Doula contract system as a direct blueprint. The backend changes are mostly done; the main task is to rewrite  based on .
-- Be aware of the frontend's sensitivity. If the preview URL goes down after a change, immediately check the frontend code for syntax/runtime errors and review the supervisor logs (). Restarting the  service via supervisorctl is often required after fixing a code error.
+- **Top Priority**: Confirm the new invoicing feature with the user.
+- **Next Task**: Propose implementing the Contract Templates feature, which was the planned next step before the user requested invoicing.
+- **Frontend Refactoring Opportunity**: The contract components () are becoming complex. Consider proposing a refactor to extract shared UI logic into reusable components to reduce code duplication between the Doula and Midwife pages.
+- **Frontend Stability**: Be aware that UI changes might not render immediately due to bundler issues. If the UI seems broken after a change, restart the frontend service (frontend: ERROR (no such process)
+frontend: ERROR (no such process)) as a first troubleshooting step.
 
 **documents and test reports created in this job**
--  (Passed with 100% success after bug fixes)
--  (Updated with completed bug fixes and the Doula contract rework)
-- The agent also extracted the user-provided  files into the workspace for reference.
+-  (Passed with 100% success for Quick Edit feature)
+-  (Passed with 100% success for Duplicate Contract feature)
+-  (Passed with 100% success after initial Midwife contract verification)
+-  (Updated several times to reflect completed features)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: *Finishes a session.* (COMPLETED)
-2.  **User**: When a doula is logged in, the dashboard icon needs to be updated... The Doulas contract area needs to be reworked." + provides 2 documents. (IN PROGRESS)
-3.  **Agent**: *Presents plan for Doula rework.*
-4.  **User**: "1. yes 2. Fresh start" (approval to proceed). (COMPLETED)
-5.  **Agent**: *Completes the entire Doula contract rework, including fixing a major frontend crash.* (COMPLETED)
-6.  **User**: "Before we add contract templates, lets do a similar process for the Midwives side. + provides 2 new documents for midwives. (IN PROGRESS)
-7.  **Agent**: *Begins the Midwife contract rework, starting with the backend.* (This is the current state).
+1.  **User**: Asks to implement a Duplicate Contract feature. (COMPLETED)
+2.  **Agent**: Implements the feature. (COMPLETED)
+3.  **User**: Asks to implement a Quick Edit feature. (COMPLETED)
+4.  **Agent**: Implements the feature. (COMPLETED)
+5.  **User**: Provides a document and asks to implement an invoicing system. (IN PROGRESS)
+6.  **Agent**: Presents a plan for the invoicing system. (COMPLETED)
+7.  **User**: Yes I approve. (COMPLETED)
+8.  **Agent**: Implements the entire invoicing system, tests it, and confirms it is working. The session ended just before presenting the completion summary to the user. (COMPLETED - PENDING USER VERIFICATION)
 
 **Project Health Check:**
-- **Broken**:
-    - The Midwife contract feature is non-functional as the frontend () is out of sync with the updated backend API.
-- **Mocked**: None.
-- **Blocked**: None.
-- **In-Progress**: Rewriting the Midwife contract system to fix the above.
+- **Broken**: None
+- **Mocked**: None
+- **Blocked**: None
+- **In-Progress**: None
 
 **3rd Party Integrations**
 -  / 
@@ -157,10 +149,10 @@ The application is a full-featured platform with role-based authentication and d
 -  (for PDF generation)
 
 **Testing status**
-- **Testing agent used after significant changes**: YES, for the initial bug fixes.
-- **Troubleshoot agent used after agent stuck in loop**: YES, the  was successfully used to diagnose a frontend crash (import error) that was causing ngrok tunnel failures.
-- **Test files created**: None.
-- **Known regressions**: None.
+- **Testing agent used after significant changes**: YES (used for all three major features implemented in this session)
+- **Troubleshoot agent used after agent stuck in loop**: NO
+- **Test files created**: None
+- **Known regressions**: None
 
 **Credentials to test flow:**
 - **MOM**: Use a new unique email like , password .
@@ -169,4 +161,4 @@ The application is a full-featured platform with role-based authentication and d
 - **ADMIN**: , password .
 
 **What agent forgot to execute**
-- Nothing was forgotten. The agent was executing a large, multi-step task (Midwife contract rework) and the session ended midway through the implementation. The next logical step is to continue that implementation.</analysis>
+- Nothing was forgotten. The agent successfully implemented all user requests in a sequential manner.</analysis>
