@@ -19,7 +19,7 @@ DOULA_EMAIL = "doula2_1771213474@test.com"
 DOULA_PASSWORD = "password123"
 MIDWIFE_EMAIL = "testmidwife@test.com"
 MIDWIFE_PASSWORD = "password123"
-MOM_EMAIL = "test.mom@example.com"
+MOM_EMAIL = "testmom@test.com"
 MOM_PASSWORD = "password123"
 
 class TestPaymentInstructionsTemplates:
