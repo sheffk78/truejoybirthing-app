@@ -565,6 +565,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
+  webDatePickerContainer: {
+    marginVertical: SIZES.sm,
+    backgroundColor: COLORS.white,
+    borderRadius: SIZES.radiusMd,
+    overflow: 'hidden',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
