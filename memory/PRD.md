@@ -148,6 +148,19 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - None (previously: Email notifications domain verification - now resolved)
 
 ### ✅ RECENTLY COMPLETED (2026-02-17)
+- [x] **Export Birth Plan as PDF** (Bug Fix):
+  - Implemented working PDF export for birth plans using ReportLab
+  - Endpoint: GET `/api/birth-plan/export/pdf` - Returns downloadable PDF
+  - Frontend handleExport function updated to call new endpoint and trigger download
+  - PDF includes: Mom's name, due date, birth setting, all birth plan sections with preferences
+- [x] **Cancel Invitation Button Fix** (Bug Fix):
+  - Fixed backend logic bug where share request data was being queried AFTER deletion
+  - Now correctly fetches request data BEFORE deletion for proper cleanup
+  - Properly removes provider connections from Mom's profile when invitation is cancelled
+  - Cleans up any provider notes associated with the cancelled share
+- [x] **UI Improvements** (Bug Fixes):
+  - Changed Postpartum icon to baby icon on Mom dashboard
+  - Removed unnecessary long-text fields from Birth Plan form
 - [x] **Email Delivery of Signed Contracts**:
   - Automatic PDF generation and email delivery when a contract is signed
   - Both parties (provider and client) receive the signed contract PDF via email
