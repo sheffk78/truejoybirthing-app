@@ -321,64 +321,78 @@ export default function BirthPlanScreen() {
         onRequestClose={() => setModalVisible(false)}
       >
         <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <TouchableOpacity 
-              onPress={() => setModalVisible(false)}
-              style={styles.modalCloseButton}
-            >
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle} numberOfLines={1}>
-              {selectedSection?.title}
-            </Text>
-            <View style={{ width: 44 }} />
-          </View>
-          
-          <ScrollView 
-            style={styles.modalContent}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
+          <KeyboardAvoidingView 
+            style={{ flex: 1 }} 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
           >
-            {/* Section Description */}
-            <View style={styles.descriptionCard}>
-              <Icon name="information-circle" size={20} color={COLORS.primary} />
-              <Text style={styles.modalDescription}>
-                {getSectionDescription()}
+            <View style={styles.modalHeader}>
+              <TouchableOpacity 
+                onPress={() => setModalVisible(false)}
+                style={styles.modalCloseButton}
+              >
+                <Icon name="close" size={24} color={COLORS.textPrimary} />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle} numberOfLines={1}>
+                {selectedSection?.title}
               </Text>
+              <View style={{ width: 44 }} />
             </View>
             
-            {/* Section Fields */}
-            {renderSectionContent()}
+            <ScrollView 
+              ref={scrollViewRef}
+              style={styles.modalContent}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={{ paddingBottom: 40 }}
+            >
+              {/* Section Description */}
+              <View style={styles.descriptionCard}>
+                <Icon name="information-circle" size={20} color={COLORS.primary} />
+                <Text style={styles.modalDescription}>
+                  {getSectionDescription()}
+                </Text>
+              </View>
+              
+              {/* Section Fields */}
+              {renderSectionContent()}
+              
+              {/* Notes to Provider */}
+              <View style={styles.notesSection}>
+                <Text style={styles.notesLabel}>
+                  <Icon name="chatbubble" size={16} color={COLORS.primary} /> Notes to Your Care Team
+                </Text>
+                <TextInput
+                  style={[styles.textInput, styles.textArea]}
+                  value={notesToProvider}
+                  onChangeText={setNotesToProvider}
+                  placeholder="Any additional notes or context for your healthcare providers..."
+                  placeholderTextColor={COLORS.textLight}
+                  multiline
+                  numberOfLines={4}
+                  onFocus={() => {
+                    // Scroll to bottom when notes field is focused
+                    setTimeout(() => {
+                      scrollViewRef.current?.scrollToEnd({ animated: true });
+                    }, 300);
+                  }}
+                />
+              </View>
+              
+              {/* Large spacer for keyboard and button */}
+              <View style={{ height: 280 }} />
+            </ScrollView>
             
-            {/* Notes to Provider */}
-            <View style={styles.notesSection}>
-              <Text style={styles.notesLabel}>
-                <Icon name="chatbubble" size={16} color={COLORS.primary} /> Notes to Your Care Team
-              </Text>
-              <TextInput
-                style={[styles.textInput, styles.textArea]}
-                value={notesToProvider}
-                onChangeText={setNotesToProvider}
-                placeholder="Any additional notes or context for your healthcare providers..."
-                placeholderTextColor={COLORS.textLight}
-                multiline
-                numberOfLines={3}
+            <View style={styles.modalFooter}>
+              <Button
+                title="Save Section"
+                onPress={saveSection}
+                loading={saving}
+                fullWidth
+                icon={!saving ? <Icon name="checkmark" size={20} color={COLORS.white} /> : undefined}
               />
             </View>
-            
-            {/* Spacer for bottom button - increased for better mobile scrolling */}
-            <View style={{ height: 180 }} />
-          </ScrollView>
-          
-          <View style={styles.modalFooter}>
-            <Button
-              title="Save Section"
-              onPress={saveSection}
-              loading={saving}
-              fullWidth
-              icon={!saving ? <Icon name="checkmark" size={20} color={COLORS.white} /> : undefined}
-            />
-          </View>
+          </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
