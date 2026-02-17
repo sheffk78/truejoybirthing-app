@@ -295,6 +295,31 @@ export default function MidwifeContracts() {
     );
   };
 
+  const handleDuplicateContract = async (contractId) => {
+    Alert.alert(
+      'Duplicate Contract',
+      'This will create a new draft contract with the same settings. You will need to select a client for the new contract.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Duplicate',
+          onPress: async () => {
+            try {
+              const response = await apiRequest(`${API_ENDPOINTS.MIDWIFE_CONTRACTS}/${contractId}/duplicate`, {
+                method: 'POST',
+              });
+              Alert.alert('Success', 'Contract duplicated! Open the new draft to select a client and finalize.');
+              loadData();
+            } catch (error) {
+              console.error('Error duplicating contract:', error);
+              Alert.alert('Error', 'Failed to duplicate contract');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleDownloadPDF = async (contractId) => {
     try {
       if (Platform.OS === 'web') {
