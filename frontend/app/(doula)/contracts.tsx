@@ -712,6 +712,57 @@ export default function DoulaContracts() {
             </View>
 
             <ScrollView style={styles.modalBody}>
+              {/* Template Selection - always visible at top */}
+              {currentSection === 0 && templates.length > 0 && (
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.fieldLabel}>Start from Template (optional)</Text>
+                  <View style={styles.templateGrid}>
+                    <TouchableOpacity
+                      style={[
+                        styles.templateOption,
+                        selectedTemplateId === '' && styles.templateOptionSelected
+                      ]}
+                      onPress={() => {
+                        setSelectedTemplateId('');
+                        setFormData({ ...DEFAULT_VALUES });
+                      }}
+                      data-testid="template-option-none"
+                    >
+                      <Ionicons name="document-outline" size={16} color={selectedTemplateId === '' ? COLORS.primary : COLORS.textSecondary} />
+                      <Text style={[
+                        styles.templateOptionText,
+                        selectedTemplateId === '' && styles.templateOptionTextSelected
+                      ]}>From Scratch</Text>
+                    </TouchableOpacity>
+                    {templates.map((template) => (
+                      <TouchableOpacity
+                        key={template.template_id}
+                        style={[
+                          styles.templateOption,
+                          selectedTemplateId === template.template_id && styles.templateOptionSelected
+                        ]}
+                        onPress={() => {
+                          setSelectedTemplateId(template.template_id);
+                          applyTemplate(template.template_id);
+                        }}
+                        data-testid={`template-option-${template.template_id}`}
+                      >
+                        <Ionicons name="copy-outline" size={16} color={selectedTemplateId === template.template_id ? COLORS.primary : COLORS.textSecondary} />
+                        <Text style={[
+                          styles.templateOptionText,
+                          selectedTemplateId === template.template_id && styles.templateOptionTextSelected
+                        ]}>{template.template_name}</Text>
+                        {template.is_default && (
+                          <View style={styles.defaultLabel}>
+                            <Text style={styles.defaultLabelText}>Default</Text>
+                          </View>
+                        )}
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              )}
+
               {/* Client Selection - always visible at top */}
               {currentSection === 0 && (
                 <View style={styles.fieldContainer}>
@@ -728,6 +779,7 @@ export default function DoulaContracts() {
                           setSelectedClientId(client.client_id);
                           updateFormField('client_name', client.name);
                         }}
+                        data-testid={`client-option-${client.client_id}`}
                       >
                         <Text style={[
                           styles.clientOptionText,
