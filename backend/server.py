@@ -3383,6 +3383,74 @@ async def delete_midwife_contract(contract_id: str, user: User = Depends(check_r
     await db.midwife_contracts.delete_one({"contract_id": contract_id, "midwife_id": user.user_id})
     return {"message": "Contract deleted"}
 
+@api_router.post("/midwife/contracts/{contract_id}/duplicate")
+async def duplicate_midwife_contract(contract_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Duplicate an existing midwife contract (creates a new draft with same settings)"""
+    # Fetch the original contract
+    original = await db.midwife_contracts.find_one(
+        {"contract_id": contract_id, "midwife_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not original:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    now = datetime.now(timezone.utc)
+    new_contract_id = f"mw_contract_{uuid.uuid4().hex[:12]}"
+    
+    # Copy fields but reset status, signatures, and dates
+    new_contract = {
+        "contract_id": new_contract_id,
+        "midwife_id": user.user_id,
+        "midwife_practice_name": original.get("midwife_practice_name", user.full_name),
+        "client_id": None,  # Must select new client
+        "client_name": f"[Copy of {original.get('client_name', 'Contract')}]",
+        "partner_name": original.get("partner_name"),
+        "estimated_due_date": original.get("estimated_due_date", ""),
+        "agreement_date": now.strftime("%Y-%m-%d"),
+        # Place of Birth & Scope
+        "planned_birth_location": original.get("planned_birth_location", ""),
+        "scope_description": original.get("scope_description"),
+        # Fees & Payment
+        "total_fee": original.get("total_fee", 0),
+        "retainer_amount": original.get("retainer_amount", 0),
+        "remaining_balance": original.get("remaining_balance", 0),
+        "remaining_balance_due_description": original.get("remaining_balance_due_description"),
+        "fee_coverage_description": original.get("fee_coverage_description"),
+        "refund_policy_description": original.get("refund_policy_description"),
+        # Transfer & Withdrawal
+        "transfer_indications_description": original.get("transfer_indications_description"),
+        "client_refusal_of_transfer_note": original.get("client_refusal_of_transfer_note"),
+        "midwife_withdrawal_reasons": original.get("midwife_withdrawal_reasons"),
+        "no_refund_scenarios_description": original.get("no_refund_scenarios_description"),
+        # On-Call & Backup
+        "on_call_window_description": original.get("on_call_window_description"),
+        "backup_midwife_policy": original.get("backup_midwife_policy"),
+        # Communication & Emergencies
+        "contact_instructions_routine": original.get("contact_instructions_routine"),
+        "contact_instructions_urgent": original.get("contact_instructions_urgent"),
+        "emergency_instructions": original.get("emergency_instructions"),
+        # Special Arrangements
+        "special_arrangements": original.get("special_arrangements"),
+        # Status and timestamps
+        "contract_text": None,  # Will be regenerated when client is selected
+        "status": "Draft",
+        "client_signature": None,
+        "midwife_signature": None,
+        "partner_signature": None,
+        "sent_at": None,
+        "signed_at": None,
+        "created_at": now,
+        "updated_at": now,
+    }
+    
+    await db.midwife_contracts.insert_one(new_contract)
+    del new_contract["_id"]
+    
+    return {
+        "message": "Contract duplicated successfully",
+        "contract": new_contract
+    }
 
 
 @api_router.post("/midwife/contracts/{contract_id}/send")
