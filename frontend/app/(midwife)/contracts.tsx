@@ -357,7 +357,73 @@ export default function MidwifeContracts() {
 
   const openPreview = (contract) => {
     setSelectedContract(contract);
+    setIsQuickEditMode(false);
+    setQuickEditData({});
     setShowPreviewModal(true);
+  };
+
+  const startQuickEdit = () => {
+    if (selectedContract) {
+      setQuickEditData({
+        client_name: selectedContract.client_name || '',
+        partner_name: selectedContract.partner_name || '',
+        estimated_due_date: selectedContract.estimated_due_date || '',
+        planned_birth_location: selectedContract.planned_birth_location || '',
+        total_fee: selectedContract.total_fee?.toString() || '0',
+        retainer_amount: selectedContract.retainer_amount?.toString() || '0',
+        remaining_balance_due_description: selectedContract.remaining_balance_due_description || '',
+        on_call_window_description: selectedContract.on_call_window_description || '',
+        special_arrangements: selectedContract.special_arrangements || '',
+      });
+      setIsQuickEditMode(true);
+    }
+  };
+
+  const cancelQuickEdit = () => {
+    setIsQuickEditMode(false);
+    setQuickEditData({});
+  };
+
+  const saveQuickEdit = async () => {
+    if (!selectedContract) return;
+    
+    setSubmitting(true);
+    try {
+      const total = parseFloat(quickEditData.total_fee) || 0;
+      const retainer = parseFloat(quickEditData.retainer_amount) || 0;
+      
+      const updateData = {
+        client_name: quickEditData.client_name,
+        partner_name: quickEditData.partner_name,
+        estimated_due_date: quickEditData.estimated_due_date,
+        planned_birth_location: quickEditData.planned_birth_location,
+        total_fee: total,
+        retainer_amount: retainer,
+        remaining_balance: total - retainer,
+        remaining_balance_due_description: quickEditData.remaining_balance_due_description,
+        on_call_window_description: quickEditData.on_call_window_description,
+        special_arrangements: quickEditData.special_arrangements,
+      };
+      
+      await apiRequest(`${API_ENDPOINTS.MIDWIFE_CONTRACTS}/${selectedContract.contract_id}`, {
+        method: 'PUT',
+        body: JSON.stringify(updateData),
+      });
+      
+      Alert.alert('Success', 'Contract updated successfully');
+      setIsQuickEditMode(false);
+      setShowPreviewModal(false);
+      loadData();
+    } catch (error) {
+      console.error('Error updating contract:', error);
+      Alert.alert('Error', 'Failed to update contract');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const updateQuickEditField = (field, value) => {
+    setQuickEditData(prev => ({ ...prev, [field]: value }));
   };
 
   const getStatusColor = (status) => {
