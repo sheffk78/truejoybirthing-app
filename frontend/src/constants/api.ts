@@ -76,6 +76,7 @@ export const API_ENDPOINTS = {
   MIDWIFE_PROFILE: '/midwife/profile',
   MIDWIFE_DASHBOARD: '/midwife/dashboard',
   MIDWIFE_CLIENTS: '/midwife/clients',
+  MIDWIFE_CONTRACTS: '/midwife/contracts',
   MIDWIFE_VISITS: '/midwife/visits',
   MIDWIFE_BIRTH_SUMMARIES: '/midwife/birth-summaries',
   MIDWIFE_NOTES: '/midwife/notes',
