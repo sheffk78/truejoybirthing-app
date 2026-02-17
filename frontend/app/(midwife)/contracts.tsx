@@ -495,6 +495,14 @@ export default function MidwifeContracts() {
           <Text style={[styles.actionText, { color: COLORS.secondary }]}>PDF</Text>
         </TouchableOpacity>
         
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => handleDuplicateContract(contract.contract_id)}
+        >
+          <Ionicons name="copy-outline" size={18} color={COLORS.secondary} />
+          <Text style={[styles.actionText, { color: COLORS.secondary }]}>Duplicate</Text>
+        </TouchableOpacity>
+        
         {contract.status === 'Draft' && (
           <>
             <TouchableOpacity 
