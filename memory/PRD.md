@@ -148,6 +148,12 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - None (previously: Email notifications domain verification - now resolved)
 
 ### ✅ RECENTLY COMPLETED (2026-02-17)
+- [x] **Email Delivery of Signed Contracts**:
+  - Automatic PDF generation and email delivery when a contract is signed
+  - Both parties (provider and client) receive the signed contract PDF via email
+  - Professional email template with agreement details summary
+  - Uses existing Resend integration for email delivery
+  - Works for both Doula and Midwife contracts
 - [x] **PDF Export for Contracts**:
   - Added ReportLab-based PDF generation for both Doula and Midwife contracts
   - New endpoints: `/api/contracts/{id}/pdf` and `/api/midwife-contracts/{id}/pdf`
