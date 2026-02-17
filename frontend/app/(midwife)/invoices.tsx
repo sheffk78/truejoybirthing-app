@@ -493,6 +493,10 @@ export default function MidwifeInvoicesScreen() {
                 )}
                 {invoice.status === 'Sent' && (
                   <>
+                    <TouchableOpacity style={[styles.actionButton, styles.reminderButton]} onPress={() => handleSendReminder(invoice.invoice_id)}>
+                      <Ionicons name="notifications-outline" size={18} color="#FF9800" />
+                      <Text style={[styles.actionText, { color: '#FF9800' }]}>Remind</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity style={[styles.actionButton, styles.paidButton]} onPress={() => handleMarkPaid(invoice.invoice_id)}>
                       <Ionicons name="checkmark-circle-outline" size={18} color="#fff" />
                       <Text style={[styles.actionText, { color: '#fff' }]}>Mark Paid</Text>
