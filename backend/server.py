@@ -2839,12 +2839,21 @@ async def update_contract(contract_id: str, request: Request, user: User = Depen
     update_data["updated_at"] = datetime.now(timezone.utc)
     
     # Recalculate remaining amount if fees changed
-    if "total_payment_amount" in update_data or "retainer_fee" in update_data:
+    if "total_fee" in update_data or "retainer_amount" in update_data:
         contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
         if contract:
-            total = update_data.get("total_payment_amount", contract.get("total_payment_amount", 0))
-            retainer = update_data.get("retainer_fee", contract.get("retainer_fee", 0))
-            update_data["remaining_payment_amount"] = total - retainer
+            total = update_data.get("total_fee", contract.get("total_fee", 0))
+            retainer = update_data.get("retainer_amount", contract.get("retainer_amount", 0))
+            update_data["remaining_balance"] = total - retainer
+    
+    # Regenerate contract text if any content fields changed
+    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if contract:
+        # Merge existing contract with updates
+        merged = {**contract, **update_data}
+        # Regenerate contract text
+        contract_text = generate_contract_text(merged)
+        update_data["contract_text"] = contract_text
     
     result = await db.contracts.update_one(
         {"contract_id": contract_id, "doula_id": user.user_id},
