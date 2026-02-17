@@ -199,6 +199,41 @@ export default function MidwifeProfileScreen() {
           </Card>
         )}
         
+        {/* Subscription */}
+        <TouchableOpacity 
+          activeOpacity={0.8}
+          onPress={() => router.push('/plans-pricing')}
+        >
+          <Card style={[styles.menuCard, subscriptionStatus?.has_pro_access && styles.proActiveCard]}>
+            <View style={styles.menuRow}>
+              <Icon 
+                name={subscriptionStatus?.has_pro_access ? 'star' : 'diamond-outline'} 
+                size={24} 
+                color={subscriptionStatus?.has_pro_access ? '#f59e0b' : COLORS.secondary} 
+              />
+              <View style={{ flex: 1, marginLeft: 12 }}>
+                <Text style={styles.menuText}>
+                  {subscriptionStatus?.has_pro_access 
+                    ? subscriptionStatus.is_trial 
+                      ? 'True Joy Pro (Trial)' 
+                      : 'True Joy Pro' 
+                    : 'Upgrade to Pro'
+                  }
+                </Text>
+                <Text style={styles.subscriptionSubtext}>
+                  {subscriptionStatus?.has_pro_access 
+                    ? subscriptionStatus.is_trial 
+                      ? `${subscriptionStatus.days_remaining} days remaining` 
+                      : `${subscriptionStatus.plan_type === 'annual' ? 'Annual' : 'Monthly'} plan`
+                    : 'Unlock all professional features'
+                  }
+                </Text>
+              </View>
+              <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+            </View>
+          </Card>
+        </TouchableOpacity>
+        
         {/* App Tutorial */}
         <TouchableOpacity 
           activeOpacity={0.8}
