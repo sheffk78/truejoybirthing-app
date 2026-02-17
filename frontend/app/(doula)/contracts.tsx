@@ -608,10 +608,16 @@ export default function DoulaContracts() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Contracts</Text>
-        <TouchableOpacity style={styles.createButton} onPress={openCreateModal}>
-          <Ionicons name="add" size={24} color="#fff" />
-          <Text style={styles.createButtonText}>New Contract</Text>
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity style={styles.templatesButton} onPress={() => router.push('/(doula)/contract-templates')}>
+            <Ionicons name="copy-outline" size={18} color={COLORS.roleDoula} />
+            <Text style={styles.templatesButtonText}>Templates</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.createButton} onPress={openCreateModal}>
+            <Ionicons name="add" size={24} color="#fff" />
+            <Text style={styles.createButtonText}>New Contract</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView
