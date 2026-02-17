@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,1001 +6,972 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
-  Modal,
   Alert,
+  Modal,
   TextInput,
+  Platform,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { Icon } from '../../src/components/Icon';
-import Card from '../../src/components/Card';
-import Button from '../../src/components/Button';
-import Input from '../../src/components/Input';
-import { apiRequest } from '../../src/utils/api';
-import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { Ionicons } from '@expo/vector-icons';
+import { apiRequest, useAuth } from '../../src/utils/auth';
+import API_ENDPOINTS from '../../src/constants/api';
+import { COLORS, SIZES } from '../../src/constants/theme';
 
-const STATUS_COLORS: Record<string, string> = {
-  'Draft': COLORS.textLight,
-  'Sent': COLORS.warning,
-  'Pending Signature': COLORS.warning,
-  'Signed': COLORS.success,
+// Contract form sections based on the new agreement structure
+const CONTRACT_SECTIONS = [
+  {
+    id: 'parties_basics',
+    title: 'Parties & Basic Details',
+    icon: 'person-outline',
+    fields: [
+      { id: 'client_name', label: 'Client Name(s)', type: 'text', required: true, placeholder: 'Full name(s) of the birthing parent and partner' },
+      { id: 'estimated_due_date', label: 'Estimated Due Date', type: 'date', required: true },
+      { id: 'total_fee', label: 'Total Fee ($)', type: 'number', required: true, placeholder: '0.00' },
+      { id: 'retainer_amount', label: 'Retainer Amount ($)', type: 'number', required: true, placeholder: '0.00' },
+      { id: 'final_payment_due_description', label: 'Final Payment Due', type: 'text', placeholder: 'e.g., Day after birth, at 38 weeks' },
+    ]
+  },
+  {
+    id: 'services_scope',
+    title: 'Services & Scope',
+    icon: 'clipboard-outline',
+    fields: [
+      { id: 'prenatal_visit_description', label: 'Prenatal Visits', type: 'textarea', placeholder: 'e.g., Three prenatal visits of 60-90 minutes each to discuss preferences, birth plan, and support' },
+      { id: 'on_call_window_description', label: 'On-Call Window', type: 'text', placeholder: 'e.g., 38 to 42 weeks' },
+      { id: 'on_call_response_description', label: 'Response Expectations', type: 'textarea', placeholder: 'e.g., Respond to non-urgent messages within 24 hours...' },
+      { id: 'backup_doula_preferences', label: 'Backup Doula Preferences', type: 'textarea', placeholder: 'Any preferences or limits on backup doula use' },
+      { id: 'postpartum_visit_description', label: 'Postpartum Support', type: 'textarea', placeholder: 'e.g., Two in-home visits within the first two weeks after birth' },
+    ]
+  },
+  {
+    id: 'boundaries_communication',
+    title: 'Boundaries & Communication',
+    icon: 'chatbubble-outline',
+    fields: [
+      { id: 'speak_for_client_exception', label: 'Exception for Speaking on Client\'s Behalf', type: 'textarea', placeholder: 'Leave blank for standard language ("None"), or specify any agreed exceptions' },
+    ]
+  },
+  {
+    id: 'payment_refunds',
+    title: 'Payment & Refunds',
+    icon: 'card-outline',
+    fields: [
+      { id: 'retainer_non_refundable_after_weeks', label: 'Retainer Non-Refundable After (weeks)', type: 'number', placeholder: '37' },
+      { id: 'cancellation_weeks_threshold', label: 'Cancellation Threshold (weeks)', type: 'number', placeholder: '37' },
+      { id: 'final_payment_due_detail', label: 'Final Payment Due Detail', type: 'text', placeholder: 'e.g., Day after birth' },
+      { id: 'cesarean_alternative_support_description', label: 'Cesarean Alternative Support', type: 'textarea', placeholder: 'e.g., Two postpartum sessions if Doula does not attend cesarean birth' },
+    ]
+  },
+  {
+    id: 'unavailability_circumstances',
+    title: 'Unavailability & Special Circumstances',
+    icon: 'alert-circle-outline',
+    fields: [
+      { id: 'unreachable_timeframe_description', label: 'Unreachable Timeframe', type: 'text', placeholder: 'e.g., Within two hours after notification at onset of labor' },
+      { id: 'unreachable_remedy_description', label: 'Remedy if Unreachable', type: 'textarea', placeholder: 'e.g., Contract may be void and payments refunded' },
+      { id: 'precipitous_labor_definition', label: 'Precipitous Labor Definition', type: 'text', placeholder: 'e.g., Less than two hours from first call' },
+      { id: 'precipitous_labor_compensation_description', label: 'Rapid Birth Compensation', type: 'textarea', placeholder: 'e.g., Four extra postpartum hours at no cost' },
+      { id: 'other_absence_policy', label: 'Other Absence Policy', type: 'textarea', placeholder: 'How other absences are handled' },
+    ]
+  },
+  {
+    id: 'addendum',
+    title: 'Addendum / Special Arrangements',
+    icon: 'document-text-outline',
+    fields: [
+      { id: 'special_arrangements', label: 'Special Arrangements', type: 'textarea', placeholder: 'Any additional boundaries, services, or exceptions specific to this agreement' },
+    ]
+  },
+];
+
+// Default values for optional fields
+const DEFAULT_VALUES = {
+  prenatal_visit_description: 'Three prenatal visits to discuss preferences, birth plan, and support roles',
+  on_call_window_description: '38 to 42 weeks',
+  on_call_response_description: 'Respond to non-urgent messages within 24 hours and as promptly as possible while on call',
+  backup_doula_preferences: 'A backup doula may be introduced prior to labor in case coverage is needed',
+  postpartum_visit_description: 'One or two in-home visits within the first two weeks after birth',
+  speak_for_client_exception: 'None - the Doula will not speak on the Client\'s behalf to staff',
+  retainer_non_refundable_after_weeks: 37,
+  cancellation_weeks_threshold: 37,
+  final_payment_due_detail: 'Day after birth',
+  cesarean_alternative_support_description: 'Two postpartum sessions even if Doula does not attend the birth',
+  unreachable_timeframe_description: 'Within two hours after notification at onset of labor',
+  unreachable_remedy_description: 'The contract may be considered void and payments may be refunded',
+  precipitous_labor_definition: 'Less than two hours from first call',
+  precipitous_labor_compensation_description: 'Four extra postpartum hours at no cost as a gesture of goodwill',
+  other_absence_policy: 'Reviewed case-by-case, any refund or waiver at the Doula\'s discretion',
+  special_arrangements: 'None at this time',
+  final_payment_due_description: 'Day after birth',
 };
 
-interface ContractTemplate {
-  title: string;
-  sections: Array<{
-    id: string;
-    title: string;
-    content?: string;
-    editable?: boolean;
-    subsections?: Array<{ id: string; title: string; content: string }>;
-  }>;
-}
-
-export default function DoulaContractsScreen() {
-  const router = useRouter();
-  const [contracts, setContracts] = useState<any[]>([]);
-  const [clients, setClients] = useState<any[]>([]);
-  const [template, setTemplate] = useState<ContractTemplate | null>(null);
+export default function DoulaContracts() {
+  const { user } = useAuth();
+  const [contracts, setContracts] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [viewModalVisible, setViewModalVisible] = useState(false);
-  const [selectedContract, setSelectedContract] = useState<any>(null);
-  const [saving, setSaving] = useState(false);
-  const [sending, setSending] = useState(false);
-  
-  // Form state for new contract
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [selectedContract, setSelectedContract] = useState(null);
+  const [currentSection, setCurrentSection] = useState(0);
+  const [formData, setFormData] = useState({});
   const [selectedClientId, setSelectedClientId] = useState('');
-  const [clientNames, setClientNames] = useState('');
-  const [estimatedDueDate, setEstimatedDueDate] = useState('');
-  const [totalAmount, setTotalAmount] = useState('');
-  const [retainerFee, setRetainerFee] = useState('');
-  const [finalPaymentDue, setFinalPaymentDue] = useState('Day after birth');
-  const [additionalTerms, setAdditionalTerms] = useState('');
-  const [showClientPicker, setShowClientPicker] = useState(false);
-  
-  const fetchData = useCallback(async () => {
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
     try {
-      const [contractsData, clientsData, templateData] = await Promise.all([
+      const [contractsRes, clientsRes] = await Promise.all([
         apiRequest(API_ENDPOINTS.DOULA_CONTRACTS),
         apiRequest(API_ENDPOINTS.DOULA_CLIENTS),
-        apiRequest('/api/doula/contract-template'),
       ]);
-      setContracts(contractsData || []);
-      setClients(clientsData || []);
-      setTemplate(templateData);
+      setContracts(contractsRes || []);
+      setClients(clientsRes || []);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error loading data:', error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
+      setRefreshing(false);
     }
-  }, []);
-  
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-  
-  const onRefresh = async () => {
+  };
+
+  const onRefresh = () => {
     setRefreshing(true);
-    await fetchData();
-    setRefreshing(false);
+    loadData();
   };
-  
-  const resetForm = () => {
+
+  const openCreateModal = () => {
+    // Initialize form with default values
+    const initialData = { ...DEFAULT_VALUES };
+    setFormData(initialData);
     setSelectedClientId('');
-    setClientNames('');
-    setEstimatedDueDate('');
-    setTotalAmount('');
-    setRetainerFee('');
-    setFinalPaymentDue('Day after birth');
-    setAdditionalTerms('');
-    setShowClientPicker(false);
+    setCurrentSection(0);
+    setShowCreateModal(true);
   };
-  
+
+  const updateFormField = (fieldId, value) => {
+    setFormData(prev => ({ ...prev, [fieldId]: value }));
+  };
+
+  const calculateRemainingBalance = () => {
+    const total = parseFloat(formData.total_fee) || 0;
+    const retainer = parseFloat(formData.retainer_amount) || 0;
+    return (total - retainer).toFixed(2);
+  };
+
+  const validateCurrentSection = () => {
+    const section = CONTRACT_SECTIONS[currentSection];
+    for (const field of section.fields) {
+      if (field.required && !formData[field.id]) {
+        Alert.alert('Required Field', `Please fill in ${field.label}`);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const goToNextSection = () => {
+    if (validateCurrentSection()) {
+      if (currentSection < CONTRACT_SECTIONS.length - 1) {
+        setCurrentSection(currentSection + 1);
+      }
+    }
+  };
+
+  const goToPreviousSection = () => {
+    if (currentSection > 0) {
+      setCurrentSection(currentSection - 1);
+    }
+  };
+
   const handleCreateContract = async () => {
     if (!selectedClientId) {
       Alert.alert('Error', 'Please select a client');
       return;
     }
-    if (!clientNames.trim()) {
-      Alert.alert('Error', 'Please enter client name(s)');
-      return;
-    }
-    if (!totalAmount || isNaN(parseFloat(totalAmount))) {
-      Alert.alert('Error', 'Please enter a valid total payment amount');
-      return;
-    }
-    if (!retainerFee || isNaN(parseFloat(retainerFee))) {
-      Alert.alert('Error', 'Please enter a valid retainer fee');
-      return;
-    }
     
-    setSaving(true);
+    if (!validateCurrentSection()) return;
+
+    setSubmitting(true);
     try {
-      const newContract = await apiRequest(API_ENDPOINTS.DOULA_CONTRACTS, {
+      const payload = {
+        client_id: selectedClientId,
+        client_name: formData.client_name,
+        estimated_due_date: formData.estimated_due_date,
+        total_fee: parseFloat(formData.total_fee) || 0,
+        retainer_amount: parseFloat(formData.retainer_amount) || 0,
+        remaining_balance: parseFloat(calculateRemainingBalance()),
+        final_payment_due_description: formData.final_payment_due_description || DEFAULT_VALUES.final_payment_due_description,
+        prenatal_visit_description: formData.prenatal_visit_description || DEFAULT_VALUES.prenatal_visit_description,
+        on_call_window_description: formData.on_call_window_description || DEFAULT_VALUES.on_call_window_description,
+        on_call_response_description: formData.on_call_response_description || DEFAULT_VALUES.on_call_response_description,
+        backup_doula_preferences: formData.backup_doula_preferences || DEFAULT_VALUES.backup_doula_preferences,
+        postpartum_visit_description: formData.postpartum_visit_description || DEFAULT_VALUES.postpartum_visit_description,
+        speak_for_client_exception: formData.speak_for_client_exception || DEFAULT_VALUES.speak_for_client_exception,
+        retainer_non_refundable_after_weeks: parseInt(formData.retainer_non_refundable_after_weeks) || DEFAULT_VALUES.retainer_non_refundable_after_weeks,
+        cancellation_weeks_threshold: parseInt(formData.cancellation_weeks_threshold) || DEFAULT_VALUES.cancellation_weeks_threshold,
+        final_payment_due_detail: formData.final_payment_due_detail || DEFAULT_VALUES.final_payment_due_detail,
+        cesarean_alternative_support_description: formData.cesarean_alternative_support_description || DEFAULT_VALUES.cesarean_alternative_support_description,
+        unreachable_timeframe_description: formData.unreachable_timeframe_description || DEFAULT_VALUES.unreachable_timeframe_description,
+        unreachable_remedy_description: formData.unreachable_remedy_description || DEFAULT_VALUES.unreachable_remedy_description,
+        precipitous_labor_definition: formData.precipitous_labor_definition || DEFAULT_VALUES.precipitous_labor_definition,
+        precipitous_labor_compensation_description: formData.precipitous_labor_compensation_description || DEFAULT_VALUES.precipitous_labor_compensation_description,
+        other_absence_policy: formData.other_absence_policy || DEFAULT_VALUES.other_absence_policy,
+        special_arrangements: formData.special_arrangements || DEFAULT_VALUES.special_arrangements,
+      };
+
+      await apiRequest(API_ENDPOINTS.DOULA_CONTRACTS, {
         method: 'POST',
-        body: {
-          client_id: selectedClientId,
-          client_names: clientNames.trim(),
-          estimated_due_date: estimatedDueDate,
-          total_payment_amount: parseFloat(totalAmount),
-          retainer_fee: parseFloat(retainerFee),
-          final_payment_due_date: finalPaymentDue.trim() || 'Day after birth',
-          additional_terms: additionalTerms.trim() || null,
-        },
+        body: JSON.stringify(payload),
       });
-      
-      setContracts([newContract, ...contracts]);
-      setModalVisible(false);
-      resetForm();
-      Alert.alert('Success', 'Contract created! You can now review and send it to your client.');
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to create contract');
+
+      Alert.alert('Success', 'Contract created successfully!');
+      setShowCreateModal(false);
+      loadData();
+    } catch (error) {
+      console.error('Error creating contract:', error);
+      Alert.alert('Error', 'Failed to create contract');
     } finally {
-      setSaving(false);
+      setSubmitting(false);
     }
   };
-  
-  const handleSendContract = async (contract: any) => {
+
+  const handleSendContract = async (contractId) => {
     Alert.alert(
       'Send Contract',
-      `Send this Doula Service Agreement to ${contract.client_name}? They will receive an email with a link to review and sign.`,
+      'This will sign the contract on your behalf and send it to the client for their signature. Continue?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Send',
           onPress: async () => {
-            setSending(true);
             try {
-              const result = await apiRequest(`/api/doula/contracts/${contract.contract_id}/send`, {
+              await apiRequest(`${API_ENDPOINTS.DOULA_CONTRACTS}/${contractId}/send`, {
                 method: 'POST',
               });
-              
-              setContracts(contracts.map(c =>
-                c.contract_id === contract.contract_id
-                  ? { ...c, status: 'Sent' }
-                  : c
-              ));
-              
-              Alert.alert(
-                'Contract Sent',
-                result.email_sent
-                  ? 'The contract has been sent to the client via email.'
-                  : 'The contract is ready for signing. Share the signing link with your client.'
-              );
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to send contract');
-            } finally {
-              setSending(false);
+              Alert.alert('Success', 'Contract sent to client for signature!');
+              loadData();
+            } catch (error) {
+              console.error('Error sending contract:', error);
+              Alert.alert('Error', 'Failed to send contract');
             }
           },
         },
       ]
     );
   };
-  
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-  
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return '-';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  };
-  
-  const selectedClient = clients.find(c => c.client_id === selectedClientId);
-  
-  if (isLoading) {
-    return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
-        </View>
-      </SafeAreaView>
+
+  const handleDeleteContract = async (contractId) => {
+    Alert.alert(
+      'Delete Contract',
+      'Are you sure you want to delete this contract? This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await apiRequest(`${API_ENDPOINTS.DOULA_CONTRACTS}/${contractId}`, {
+                method: 'DELETE',
+              });
+              Alert.alert('Success', 'Contract deleted');
+              loadData();
+            } catch (error) {
+              console.error('Error deleting contract:', error);
+              Alert.alert('Error', 'Failed to delete contract');
+            }
+          },
+        },
+      ]
     );
-  }
-  
-  return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Contracts</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setModalVisible(true)}
-        >
-          <Icon name="add-circle" size={28} color={COLORS.primary} />
-        </TouchableOpacity>
+  };
+
+  const handleDownloadPDF = async (contractId) => {
+    try {
+      if (Platform.OS === 'web') {
+        const token = localStorage.getItem('authToken');
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+        const pdfUrl = `${backendUrl}/api/contracts/${contractId}/pdf`;
+        
+        const response = await fetch(pdfUrl, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!response.ok) throw new Error('Failed to download PDF');
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Doula_Contract_${contractId}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        Alert.alert('Success', 'PDF downloaded!');
+      } else {
+        Alert.alert('Info', 'PDF download is available on web platform');
+      }
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      Alert.alert('Error', 'Failed to download PDF');
+    }
+  };
+
+  const openPreview = (contract) => {
+    setSelectedContract(contract);
+    setShowPreviewModal(true);
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Signed': return '#4CAF50';
+      case 'Sent': return '#FF9800';
+      case 'Draft': return '#9E9E9E';
+      default: return COLORS.textSecondary;
+    }
+  };
+
+  const renderField = (field) => {
+    const value = formData[field.id] || '';
+    
+    if (field.type === 'textarea') {
+      return (
+        <View key={field.id} style={styles.fieldContainer}>
+          <Text style={styles.fieldLabel}>{field.label}{field.required ? ' *' : ''}</Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            value={value}
+            onChangeText={(text) => updateFormField(field.id, text)}
+            placeholder={field.placeholder}
+            placeholderTextColor={COLORS.textSecondary}
+            multiline
+            numberOfLines={4}
+          />
+        </View>
+      );
+    }
+    
+    if (field.type === 'number') {
+      return (
+        <View key={field.id} style={styles.fieldContainer}>
+          <Text style={styles.fieldLabel}>{field.label}{field.required ? ' *' : ''}</Text>
+          <TextInput
+            style={styles.input}
+            value={value.toString()}
+            onChangeText={(text) => updateFormField(field.id, text)}
+            placeholder={field.placeholder}
+            placeholderTextColor={COLORS.textSecondary}
+            keyboardType="numeric"
+          />
+          {(field.id === 'total_fee' || field.id === 'retainer_amount') && formData.total_fee && formData.retainer_amount && (
+            <Text style={styles.calculatedText}>
+              Remaining Balance: ${calculateRemainingBalance()}
+            </Text>
+          )}
+        </View>
+      );
+    }
+    
+    if (field.type === 'date') {
+      return (
+        <View key={field.id} style={styles.fieldContainer}>
+          <Text style={styles.fieldLabel}>{field.label}{field.required ? ' *' : ''}</Text>
+          {Platform.OS === 'web' ? (
+            <input
+              type="date"
+              value={value}
+              onChange={(e) => updateFormField(field.id, e.target.value)}
+              style={{
+                padding: 12,
+                borderWidth: 1,
+                borderColor: COLORS.border,
+                borderRadius: 8,
+                fontSize: 16,
+                width: '100%',
+              }}
+            />
+          ) : (
+            <TextInput
+              style={styles.input}
+              value={value}
+              onChangeText={(text) => updateFormField(field.id, text)}
+              placeholder="YYYY-MM-DD"
+              placeholderTextColor={COLORS.textSecondary}
+            />
+          )}
+        </View>
+      );
+    }
+    
+    return (
+      <View key={field.id} style={styles.fieldContainer}>
+        <Text style={styles.fieldLabel}>{field.label}{field.required ? ' *' : ''}</Text>
+        <TextInput
+          style={styles.input}
+          value={value}
+          onChangeText={(text) => updateFormField(field.id, text)}
+          placeholder={field.placeholder}
+          placeholderTextColor={COLORS.textSecondary}
+        />
+      </View>
+    );
+  };
+
+  const renderContractCard = (contract) => (
+    <View key={contract.contract_id} style={styles.contractCard}>
+      <View style={styles.contractHeader}>
+        <View style={styles.contractInfo}>
+          <Text style={styles.clientName}>{contract.client_name}</Text>
+          <Text style={styles.contractDate}>Due: {contract.estimated_due_date}</Text>
+        </View>
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(contract.status) + '20' }]}>
+          <Text style={[styles.statusText, { color: getStatusColor(contract.status) }]}>
+            {contract.status}
+          </Text>
+        </View>
       </View>
       
+      <View style={styles.contractDetails}>
+        <Text style={styles.feeText}>Total: ${contract.total_fee?.toFixed(2) || '0.00'}</Text>
+        <Text style={styles.detailText}>
+          Retainer: ${contract.retainer_amount?.toFixed(2) || '0.00'} | 
+          Balance: ${contract.remaining_balance?.toFixed(2) || '0.00'}
+        </Text>
+      </View>
+
+      <View style={styles.contractActions}>
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => openPreview(contract)}
+        >
+          <Ionicons name="eye-outline" size={18} color={COLORS.primary} />
+          <Text style={styles.actionText}>Preview</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => handleDownloadPDF(contract.contract_id)}
+        >
+          <Ionicons name="download-outline" size={18} color={COLORS.primary} />
+          <Text style={styles.actionText}>PDF</Text>
+        </TouchableOpacity>
+        
+        {contract.status === 'Draft' && (
+          <>
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.sendButton]}
+              onPress={() => handleSendContract(contract.contract_id)}
+            >
+              <Ionicons name="send-outline" size={18} color="#fff" />
+              <Text style={[styles.actionText, { color: '#fff' }]}>Send</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => handleDeleteContract(contract.contract_id)}
+            >
+              <Ionicons name="trash-outline" size={18} color="#f44336" />
+            </TouchableOpacity>
+          </>
+        )}
+        
+        {contract.status === 'Signed' && (
+          <View style={styles.signedBadge}>
+            <Ionicons name="checkmark-circle" size={18} color="#4CAF50" />
+            <Text style={styles.signedText}>Fully Signed</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Contracts</Text>
+        <TouchableOpacity style={styles.createButton} onPress={openCreateModal}>
+          <Ionicons name="add" size={24} color="#fff" />
+          <Text style={styles.createButtonText}>New Contract</Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primary]} />
-        }
-        showsVerticalScrollIndicator={false}
+        style={styles.content}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {contracts.length === 0 ? (
           <View style={styles.emptyState}>
-            <Icon name="document-text-outline" size={64} color={COLORS.border} />
+            <Ionicons name="document-text-outline" size={64} color={COLORS.textSecondary} />
             <Text style={styles.emptyTitle}>No Contracts Yet</Text>
-            <Text style={styles.emptySubtitle}>
-              Create your first True Joy Birthing Doula Service Agreement
+            <Text style={styles.emptyText}>
+              Create your first Doula Service Agreement to get started
             </Text>
-            <Button
-              title="Create Contract"
-              onPress={() => setModalVisible(true)}
-              style={styles.emptyButton}
-            />
           </View>
         ) : (
-          contracts.map((contract) => (
-            <Card key={contract.contract_id} style={styles.contractCard}>
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedContract(contract);
-                  setViewModalVisible(true);
-                }}
-                activeOpacity={0.7}
-              >
-                <View style={styles.contractHeader}>
-                  <View style={styles.contractInfo}>
-                    <Text style={styles.contractTitle}>Doula Service Agreement</Text>
-                    <Text style={styles.clientName}>{contract.client_names || contract.client_name}</Text>
-                  </View>
-                  <View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[contract.status] + '20' }]}>
-                    <Text style={[styles.statusText, { color: STATUS_COLORS[contract.status] }]}>
-                      {contract.status}
-                    </Text>
-                  </View>
-                </View>
-                
-                <View style={styles.contractDetails}>
-                  <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>Due Date:</Text>
-                    <Text style={styles.detailValue}>{formatDate(contract.estimated_due_date)}</Text>
-                  </View>
-                  <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>Total:</Text>
-                    <Text style={styles.detailValue}>{formatCurrency(contract.total_payment_amount || 0)}</Text>
-                  </View>
-                  <View style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>Retainer:</Text>
-                    <Text style={styles.detailValue}>{formatCurrency(contract.retainer_fee || 0)}</Text>
-                  </View>
-                </View>
-                
-                {contract.status === 'Signed' && contract.client_signature && (
-                  <View style={styles.signedInfo}>
-                    <Icon name="checkmark-circle" size={16} color={COLORS.success} />
-                    <Text style={styles.signedText}>
-                      Signed by {contract.client_signature.signer_name} on {formatDate(contract.client_signature.signed_at)}
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-              
-              {contract.status === 'Draft' && (
-                <View style={styles.actionButtons}>
-                  <Button
-                    title="Send to Client"
-                    onPress={() => handleSendContract(contract)}
-                    loading={sending}
-                    fullWidth
-                  />
-                </View>
-              )}
-              
-              {contract.status === 'Signed' && (
-                <View style={styles.actionButtons}>
-                  <Button
-                    title="Download PDF"
-                    variant="outline"
-                    onPress={() => {
-                      const pdfUrl = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/contracts/${contract.contract_id}/pdf`;
-                      if (typeof window !== 'undefined') {
-                        window.open(pdfUrl, '_blank');
-                      }
-                    }}
-                    leftIcon="download-outline"
-                    fullWidth
-                    data-testid={`download-pdf-btn-${contract.contract_id}`}
-                  />
-                </View>
-              )}
-            </Card>
-          ))
+          contracts.map(renderContractCard)
         )}
       </ScrollView>
-      
+
       {/* Create Contract Modal */}
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={() => { setModalVisible(false); resetForm(); }}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>New Service Agreement</Text>
-            <View style={{ width: 24 }} />
-          </View>
-          
-          <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
-            <Text style={styles.templateInfo}>
-              This contract uses the True Joy Birthing Doula Service Agreement template with all standard terms and conditions.
-            </Text>
-            
-            {/* Client Selection */}
-            <Text style={styles.inputLabel}>Select Client *</Text>
-            <TouchableOpacity
-              style={styles.selectButton}
-              onPress={() => setShowClientPicker(!showClientPicker)}
-            >
-              <Text style={selectedClient ? styles.selectText : styles.selectPlaceholder}>
-                {selectedClient?.name || 'Choose a client'}
-              </Text>
-              <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
-            </TouchableOpacity>
-            
-            {showClientPicker && (
-              <View style={styles.pickerContainer}>
-                {clients.length === 0 ? (
-                  <Text style={styles.noClientsText}>No clients available. Add a client first.</Text>
-                ) : (
-                  clients.map(client => (
-                    <TouchableOpacity
-                      key={client.client_id}
-                      style={[
-                        styles.pickerItem,
-                        selectedClientId === client.client_id && styles.pickerItemSelected,
-                      ]}
-                      onPress={() => {
-                        setSelectedClientId(client.client_id);
-                        setClientNames(client.name);
-                        setShowClientPicker(false);
-                      }}
-                    >
-                      <Text style={styles.pickerItemText}>{client.name}</Text>
-                      {selectedClientId === client.client_id && (
-                        <Icon name="checkmark" size={20} color={COLORS.primary} />
-                      )}
-                    </TouchableOpacity>
-                  ))
-                )}
-              </View>
-            )}
-            
-            <Text style={styles.sectionTitle}>Client & Payment Details</Text>
-            
-            <Input
-              label="Client Name(s) *"
-              placeholder="Full name(s) as they appear on the agreement"
-              value={clientNames}
-              onChangeText={setClientNames}
-              leftIcon="person"
-            />
-            
-            <Input
-              label="Estimated Due Date"
-              placeholder="YYYY-MM-DD"
-              value={estimatedDueDate}
-              onChangeText={setEstimatedDueDate}
-              leftIcon="calendar"
-            />
-            
-            <Input
-              label="Total Payment Amount *"
-              placeholder="e.g., 1500"
-              value={totalAmount}
-              onChangeText={setTotalAmount}
-              keyboardType="decimal-pad"
-              leftIcon="cash"
-            />
-            
-            <Input
-              label="Retainer Fee (Down Payment) *"
-              placeholder="e.g., 500"
-              value={retainerFee}
-              onChangeText={setRetainerFee}
-              keyboardType="decimal-pad"
-              leftIcon="wallet"
-            />
-            
-            {totalAmount && retainerFee && (
-              <View style={styles.calculatedField}>
-                <Text style={styles.calculatedLabel}>Remaining Balance:</Text>
-                <Text style={styles.calculatedValue}>
-                  {formatCurrency(parseFloat(totalAmount || '0') - parseFloat(retainerFee || '0'))}
-                </Text>
-              </View>
-            )}
-            
-            <Input
-              label="Final Payment Due Date"
-              placeholder="Day after birth"
-              value={finalPaymentDue}
-              onChangeText={setFinalPaymentDue}
-              leftIcon="time"
-            />
-            
-            <Text style={styles.sectionTitle}>Additional Terms (Optional)</Text>
-            <Text style={styles.helperText}>
-              Add any special arrangements, notes, or additional terms specific to this client.
-            </Text>
-            <TextInput
-              style={styles.textArea}
-              placeholder="Enter any additional terms or special arrangements..."
-              placeholderTextColor={COLORS.textLight}
-              value={additionalTerms}
-              onChangeText={setAdditionalTerms}
-              multiline
-              numberOfLines={4}
-            />
-            
-            <View style={styles.templatePreview}>
-              <Text style={styles.templatePreviewTitle}>Contract Includes:</Text>
-              {template?.sections.map(section => (
-                <View key={section.id} style={styles.templateSection}>
-                  <Icon name="checkmark-circle" size={16} color={COLORS.success} />
-                  <Text style={styles.templateSectionText}>{section.title}</Text>
+      <Modal visible={showCreateModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={() => setShowCreateModal(false)}>
+                <Ionicons name="close" size={24} color={COLORS.text} />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>New Service Agreement</Text>
+              <View style={{ width: 24 }} />
+            </View>
+
+            {/* Progress indicator */}
+            <View style={styles.progressContainer}>
+              {CONTRACT_SECTIONS.map((section, index) => (
+                <View key={section.id} style={styles.progressStep}>
+                  <View style={[
+                    styles.progressDot,
+                    index <= currentSection && styles.progressDotActive
+                  ]}>
+                    {index < currentSection ? (
+                      <Ionicons name="checkmark" size={12} color="#fff" />
+                    ) : (
+                      <Text style={[
+                        styles.progressNumber,
+                        index <= currentSection && styles.progressNumberActive
+                      ]}>{index + 1}</Text>
+                    )}
+                  </View>
+                  {index < CONTRACT_SECTIONS.length - 1 && (
+                    <View style={[
+                      styles.progressLine,
+                      index < currentSection && styles.progressLineActive
+                    ]} />
+                  )}
                 </View>
               ))}
             </View>
-            
-            <Button
-              title="Create Contract"
-              onPress={handleCreateContract}
-              loading={saving}
-              fullWidth
-              style={styles.createButton}
-            />
-          </ScrollView>
-        </SafeAreaView>
-      </Modal>
-      
-      {/* View Contract Modal */}
-      <Modal
-        visible={viewModalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setViewModalVisible(false)}
-      >
-        <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={() => setViewModalVisible(false)}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Contract Details</Text>
-            <View style={{ width: 24 }} />
-          </View>
-          
-          {selectedContract && (
-            <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
-              <View style={styles.viewHeader}>
-                <Text style={styles.viewTitle}>True Joy Birthing</Text>
-                <Text style={styles.viewSubtitle}>Doula Service Agreement</Text>
-                <View style={[styles.statusBadgeLarge, { backgroundColor: STATUS_COLORS[selectedContract.status] + '20' }]}>
-                  <Text style={[styles.statusTextLarge, { color: STATUS_COLORS[selectedContract.status] }]}>
-                    {selectedContract.status}
-                  </Text>
-                </View>
-              </View>
-              
-              <Card style={styles.viewCard}>
-                <Text style={styles.viewSectionTitle}>Client & Payment Details</Text>
-                <View style={styles.viewRow}>
-                  <Text style={styles.viewLabel}>Client Name(s):</Text>
-                  <Text style={styles.viewValue}>{selectedContract.client_names}</Text>
-                </View>
-                <View style={styles.viewRow}>
-                  <Text style={styles.viewLabel}>Estimated Due Date:</Text>
-                  <Text style={styles.viewValue}>{formatDate(selectedContract.estimated_due_date)}</Text>
-                </View>
-                <View style={styles.viewRow}>
-                  <Text style={styles.viewLabel}>Total Payment:</Text>
-                  <Text style={styles.viewValue}>{formatCurrency(selectedContract.total_payment_amount)}</Text>
-                </View>
-                <View style={styles.viewRow}>
-                  <Text style={styles.viewLabel}>Retainer Fee:</Text>
-                  <Text style={styles.viewValue}>{formatCurrency(selectedContract.retainer_fee)}</Text>
-                </View>
-                <View style={styles.viewRow}>
-                  <Text style={styles.viewLabel}>Remaining Balance:</Text>
-                  <Text style={styles.viewValue}>{formatCurrency(selectedContract.remaining_payment_amount)}</Text>
-                </View>
-                <View style={styles.viewRow}>
-                  <Text style={styles.viewLabel}>Final Payment Due:</Text>
-                  <Text style={styles.viewValue}>{selectedContract.final_payment_due_date}</Text>
-                </View>
-                <View style={styles.viewRow}>
-                  <Text style={styles.viewLabel}>Agreement Date:</Text>
-                  <Text style={styles.viewValue}>{formatDate(selectedContract.agreement_date)}</Text>
-                </View>
-              </Card>
-              
-              {selectedContract.sections?.map((section: any) => (
-                <Card key={section.id} style={styles.viewCard}>
-                  <Text style={styles.viewSectionTitle}>{section.title}</Text>
-                  {section.subsections ? (
-                    section.subsections.map((sub: any) => (
-                      <View key={sub.id} style={styles.subsection}>
-                        <Text style={styles.subsectionTitle}>{sub.title}</Text>
-                        <Text style={styles.subsectionContent}>{sub.content}</Text>
-                      </View>
-                    ))
-                  ) : (
-                    <Text style={styles.sectionContent}>{section.custom_content || section.content}</Text>
+
+            <ScrollView style={styles.modalBody}>
+              {/* Client Selection - always visible at top */}
+              {currentSection === 0 && (
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.fieldLabel}>Select Client *</Text>
+                  <View style={styles.clientGrid}>
+                    {clients.map((client) => (
+                      <TouchableOpacity
+                        key={client.client_id}
+                        style={[
+                          styles.clientOption,
+                          selectedClientId === client.client_id && styles.clientOptionSelected
+                        ]}
+                        onPress={() => {
+                          setSelectedClientId(client.client_id);
+                          updateFormField('client_name', client.name);
+                        }}
+                      >
+                        <Text style={[
+                          styles.clientOptionText,
+                          selectedClientId === client.client_id && styles.clientOptionTextSelected
+                        ]}>{client.name}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  {clients.length === 0 && (
+                    <Text style={styles.noClientsText}>
+                      No clients found. Add a client first.
+                    </Text>
                   )}
-                </Card>
-              ))}
-              
-              {selectedContract.additional_terms && (
-                <Card style={styles.viewCard}>
-                  <Text style={styles.viewSectionTitle}>Additional Terms</Text>
-                  <Text style={styles.sectionContent}>{selectedContract.additional_terms}</Text>
-                </Card>
+                </View>
               )}
-              
-              {/* Signatures */}
-              <Card style={styles.viewCard}>
-                <Text style={styles.viewSectionTitle}>Signatures</Text>
-                
-                <View style={styles.signatureRow}>
-                  <Text style={styles.signatureLabel}>Doula:</Text>
-                  {selectedContract.doula_signature ? (
-                    <View style={styles.signatureInfo}>
-                      <Icon name="checkmark-circle" size={18} color={COLORS.success} />
-                      <Text style={styles.signatureName}>{selectedContract.doula_signature.signer_name}</Text>
-                      <Text style={styles.signatureDate}>{formatDate(selectedContract.doula_signature.signed_at)}</Text>
-                    </View>
-                  ) : (
-                    <Text style={styles.signaturePending}>Pending</Text>
-                  )}
-                </View>
-                
-                <View style={styles.signatureRow}>
-                  <Text style={styles.signatureLabel}>Client:</Text>
-                  {selectedContract.client_signature ? (
-                    <View style={styles.signatureInfo}>
-                      <Icon name="checkmark-circle" size={18} color={COLORS.success} />
-                      <Text style={styles.signatureName}>{selectedContract.client_signature.signer_name}</Text>
-                      <Text style={styles.signatureDate}>{formatDate(selectedContract.client_signature.signed_at)}</Text>
-                    </View>
-                  ) : (
-                    <Text style={styles.signaturePending}>Awaiting signature</Text>
-                  )}
-                </View>
-              </Card>
-              
-              {selectedContract.status === 'Draft' && (
-                <Button
-                  title="Send to Client for Signature"
-                  onPress={() => {
-                    setViewModalVisible(false);
-                    handleSendContract(selectedContract);
-                  }}
-                  fullWidth
-                  style={styles.sendButton}
+
+              {/* Section header */}
+              <View style={styles.sectionHeader}>
+                <Ionicons 
+                  name={CONTRACT_SECTIONS[currentSection].icon} 
+                  size={24} 
+                  color={COLORS.primary} 
                 />
+                <Text style={styles.sectionTitle}>
+                  {CONTRACT_SECTIONS[currentSection].title}
+                </Text>
+              </View>
+
+              {/* Section fields */}
+              {CONTRACT_SECTIONS[currentSection].fields.map(renderField)}
+            </ScrollView>
+
+            {/* Navigation buttons */}
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={[styles.navButton, currentSection === 0 && styles.navButtonDisabled]}
+                onPress={goToPreviousSection}
+                disabled={currentSection === 0}
+              >
+                <Ionicons name="arrow-back" size={20} color={currentSection === 0 ? '#ccc' : COLORS.primary} />
+                <Text style={[styles.navButtonText, currentSection === 0 && styles.navButtonTextDisabled]}>
+                  Previous
+                </Text>
+              </TouchableOpacity>
+
+              {currentSection === CONTRACT_SECTIONS.length - 1 ? (
+                <TouchableOpacity
+                  style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
+                  onPress={handleCreateContract}
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <>
+                      <Ionicons name="checkmark-circle" size={20} color="#fff" />
+                      <Text style={styles.submitButtonText}>Create Contract</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.navButton} onPress={goToNextSection}>
+                  <Text style={styles.navButtonText}>Next</Text>
+                  <Ionicons name="arrow-forward" size={20} color={COLORS.primary} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Preview Modal */}
+      <Modal visible={showPreviewModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={() => setShowPreviewModal(false)}>
+                <Ionicons name="close" size={24} color={COLORS.text} />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>Contract Preview</Text>
+              <TouchableOpacity onPress={() => selectedContract && handleDownloadPDF(selectedContract.contract_id)}>
+                <Ionicons name="download-outline" size={24} color={COLORS.primary} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.previewContent}>
+              {selectedContract && (
+                <>
+                  <Text style={styles.previewTitle}>Doula Service Agreement</Text>
+                  <Text style={styles.previewSubtitle}>Powered by True Joy Birthing</Text>
+
+                  <View style={styles.previewSection}>
+                    <Text style={styles.previewSectionTitle}>Parties</Text>
+                    <Text style={styles.previewText}>Client: {selectedContract.client_name}</Text>
+                    <Text style={styles.previewText}>Doula: {selectedContract.doula_name}</Text>
+                    <Text style={styles.previewText}>Due Date: {selectedContract.estimated_due_date}</Text>
+                  </View>
+
+                  <View style={styles.previewSection}>
+                    <Text style={styles.previewSectionTitle}>Payment</Text>
+                    <Text style={styles.previewText}>Total Fee: ${selectedContract.total_fee?.toFixed(2)}</Text>
+                    <Text style={styles.previewText}>Retainer: ${selectedContract.retainer_amount?.toFixed(2)}</Text>
+                    <Text style={styles.previewText}>Balance: ${selectedContract.remaining_balance?.toFixed(2)}</Text>
+                    <Text style={styles.previewText}>Due: {selectedContract.final_payment_due_description}</Text>
+                  </View>
+
+                  {selectedContract.contract_text && (
+                    <View style={styles.previewSection}>
+                      <Text style={styles.previewSectionTitle}>Full Agreement</Text>
+                      <Text style={styles.previewAgreementText}>
+                        {selectedContract.contract_text}
+                      </Text>
+                    </View>
+                  )}
+
+                  <View style={styles.previewSection}>
+                    <Text style={styles.previewSectionTitle}>Signatures</Text>
+                    {selectedContract.doula_signature ? (
+                      <Text style={styles.previewText}>
+                        ✓ Doula: {selectedContract.doula_signature.signer_name} 
+                        ({selectedContract.doula_signature.signed_at?.substring(0, 10)})
+                      </Text>
+                    ) : (
+                      <Text style={styles.previewTextPending}>○ Doula: Pending</Text>
+                    )}
+                    {selectedContract.client_signature ? (
+                      <Text style={styles.previewText}>
+                        ✓ Client: {selectedContract.client_signature.signer_name}
+                        ({selectedContract.client_signature.signed_at?.substring(0, 10)})
+                      </Text>
+                    ) : (
+                      <Text style={styles.previewTextPending}>○ Client: Pending</Text>
+                    )}
+                  </View>
+                </>
               )}
             </ScrollView>
-          )}
-        </SafeAreaView>
+          </View>
+        </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
+  container: { flex: 1, backgroundColor: COLORS.background },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: SIZES.lg,
+    alignItems: 'center',
+    paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.white,
   },
-  headerTitle: {
-    fontSize: SIZES.fontXl,
-    fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
-  },
-  addButton: {
-    padding: SIZES.xs,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  title: { fontSize: 24, fontWeight: '700', color: COLORS.text },
+  createButton: {
+    flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
+    borderRadius: 8,
   },
-  scrollContent: {
-    padding: SIZES.lg,
-    paddingBottom: SIZES.xl * 2,
-  },
+  createButtonText: { color: '#fff', fontWeight: '600', marginLeft: 4 },
+  content: { flex: 1, padding: SIZES.md },
   emptyState: {
     alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: SIZES.xl * 2,
   },
-  emptyTitle: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
-    marginTop: SIZES.lg,
-    marginBottom: SIZES.sm,
-  },
-  emptySubtitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    paddingHorizontal: SIZES.xl,
-    marginBottom: SIZES.lg,
-  },
-  emptyButton: {
-    minWidth: 200,
-  },
+  emptyTitle: { fontSize: 18, fontWeight: '600', color: COLORS.text, marginTop: SIZES.md },
+  emptyText: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center', marginTop: SIZES.sm },
   contractCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 12,
+    padding: SIZES.md,
     marginBottom: SIZES.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
   contractHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: SIZES.md,
-  },
-  contractInfo: {
-    flex: 1,
-  },
-  contractTitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-  },
-  clientName: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  statusBadge: {
-    paddingHorizontal: SIZES.sm,
-    paddingVertical: SIZES.xs,
-    borderRadius: SIZES.radiusSm,
-  },
-  statusText: {
-    fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
-  },
-  contractDetails: {
-    backgroundColor: COLORS.background,
-    borderRadius: SIZES.radiusMd,
-    padding: SIZES.md,
     marginBottom: SIZES.sm,
   },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: SIZES.xs,
-  },
-  detailLabel: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-  },
-  detailValue: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-  },
-  signedInfo: {
+  contractInfo: { flex: 1 },
+  clientName: { fontSize: 16, fontWeight: '600', color: COLORS.text },
+  contractDate: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
+  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  statusText: { fontSize: 12, fontWeight: '600' },
+  contractDetails: { marginBottom: SIZES.sm },
+  feeText: { fontSize: 15, fontWeight: '600', color: COLORS.text },
+  detailText: { fontSize: 13, color: COLORS.textSecondary, marginTop: 2 },
+  contractActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: SIZES.sm,
-  },
-  signedText: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.success,
-    marginLeft: SIZES.xs,
-  },
-  actionButtons: {
-    marginTop: SIZES.md,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
-    paddingTop: SIZES.md,
+    paddingTop: SIZES.sm,
+    gap: 8,
   },
-  // Modal styles
-  modalContainer: {
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: COLORS.background,
+  },
+  actionText: { fontSize: 13, color: COLORS.primary, marginLeft: 4 },
+  sendButton: { backgroundColor: COLORS.primary },
+  signedBadge: { flexDirection: 'row', alignItems: 'center', marginLeft: 'auto' },
+  signedText: { fontSize: 13, color: '#4CAF50', marginLeft: 4 },
+  modalOverlay: {
     flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
     backgroundColor: COLORS.white,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '90%',
+    minHeight: '70%',
   },
   modalHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: SIZES.lg,
+    alignItems: 'center',
+    paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
-  modalTitle: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
-  },
-  modalContent: {
-    flex: 1,
-    padding: SIZES.lg,
-  },
-  templateInfo: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    backgroundColor: COLORS.primaryLight + '30',
-    padding: SIZES.md,
-    borderRadius: SIZES.radiusMd,
-    marginBottom: SIZES.lg,
-    lineHeight: 20,
-  },
-  inputLabel: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-    marginBottom: SIZES.sm,
-    marginTop: SIZES.md,
-  },
-  selectButton: {
+  modalTitle: { fontSize: 18, fontWeight: '600', color: COLORS.text },
+  modalBody: { flex: 1, padding: SIZES.md },
+  modalFooter: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: COLORS.background,
-    borderRadius: SIZES.radiusMd,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: SIZES.md,
-  },
-  selectText: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
-  },
-  selectPlaceholder: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: COLORS.textLight,
-  },
-  pickerContainer: {
-    backgroundColor: COLORS.white,
-    borderRadius: SIZES.radiusMd,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginTop: SIZES.xs,
-    maxHeight: 200,
-  },
-  pickerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SIZES.md,
+    paddingHorizontal: SIZES.lg,
+  },
+  progressStep: { flexDirection: 'row', alignItems: 'center' },
+  progressDot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: COLORS.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressDotActive: { backgroundColor: COLORS.primary },
+  progressNumber: { fontSize: 12, color: COLORS.textSecondary, fontWeight: '600' },
+  progressNumberActive: { color: '#fff' },
+  progressLine: {
+    width: 20,
+    height: 2,
+    backgroundColor: COLORS.border,
+  },
+  progressLineActive: { backgroundColor: COLORS.primary },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SIZES.md,
+    paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
-  pickerItemSelected: {
-    backgroundColor: COLORS.primaryLight,
-  },
-  pickerItemText: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
-  },
-  noClientsText: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    padding: SIZES.md,
-    textAlign: 'center',
-  },
   sectionTitle: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
-    marginTop: SIZES.xl,
-    marginBottom: SIZES.sm,
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginLeft: SIZES.sm,
   },
-  helperText: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    marginBottom: SIZES.sm,
+  fieldContainer: { marginBottom: SIZES.md },
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: COLORS.text,
+    marginBottom: 6,
   },
-  textArea: {
-    backgroundColor: COLORS.background,
-    borderRadius: SIZES.radiusMd,
+  input: {
     borderWidth: 1,
     borderColor: COLORS.border,
-    padding: SIZES.md,
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: COLORS.text,
+    backgroundColor: COLORS.white,
+  },
+  textArea: {
     minHeight: 100,
     textAlignVertical: 'top',
   },
-  calculatedField: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: COLORS.success + '10',
-    padding: SIZES.md,
-    borderRadius: SIZES.radiusMd,
-    marginTop: SIZES.sm,
-  },
-  calculatedLabel: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
-  },
-  calculatedValue: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.success,
-  },
-  templatePreview: {
-    backgroundColor: COLORS.background,
-    borderRadius: SIZES.radiusMd,
-    padding: SIZES.md,
-    marginTop: SIZES.lg,
-  },
-  templatePreviewTitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-    marginBottom: SIZES.sm,
-  },
-  templateSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SIZES.xs,
-  },
-  templateSectionText: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    marginLeft: SIZES.sm,
-  },
-  createButton: {
-    marginTop: SIZES.xl,
-    marginBottom: SIZES.xl,
-  },
-  // View modal styles
-  viewHeader: {
-    alignItems: 'center',
-    marginBottom: SIZES.lg,
-  },
-  viewTitle: {
-    fontSize: SIZES.fontXl,
-    fontFamily: FONTS.heading,
+  calculatedText: {
+    fontSize: 12,
     color: COLORS.primary,
+    marginTop: 4,
+    fontWeight: '500',
   },
-  viewSubtitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+  clientGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  clientOption: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.background,
+  },
+  clientOptionSelected: {
+    backgroundColor: COLORS.primary + '20',
+    borderColor: COLORS.primary,
+  },
+  clientOptionText: { fontSize: 14, color: COLORS.text },
+  clientOptionTextSelected: { color: COLORS.primary, fontWeight: '600' },
+  noClientsText: {
+    fontSize: 14,
     color: COLORS.textSecondary,
-    marginTop: SIZES.xs,
+    fontStyle: 'italic',
+    marginTop: 8,
   },
-  statusBadgeLarge: {
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
-    borderRadius: SIZES.radiusMd,
-    marginTop: SIZES.md,
   },
-  statusTextLarge: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+  navButtonDisabled: { opacity: 0.5 },
+  navButtonText: { fontSize: 16, color: COLORS.primary, fontWeight: '500' },
+  navButtonTextDisabled: { color: '#ccc' },
+  submitButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SIZES.lg,
+    paddingVertical: SIZES.sm,
+    borderRadius: 8,
   },
-  viewCard: {
-    marginBottom: SIZES.md,
-  },
-  viewSectionTitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+  submitButtonDisabled: { opacity: 0.7 },
+  submitButtonText: { fontSize: 16, color: '#fff', fontWeight: '600', marginLeft: 6 },
+  previewContent: { flex: 1, padding: SIZES.md },
+  previewTitle: {
+    fontSize: 22,
+    fontWeight: '700',
     color: COLORS.primary,
-    marginBottom: SIZES.md,
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  previewSubtitle: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginBottom: SIZES.lg,
+  },
+  previewSection: {
+    marginBottom: SIZES.lg,
+    paddingBottom: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    paddingBottom: SIZES.sm,
   },
-  viewRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  previewSectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.primary,
     marginBottom: SIZES.sm,
   },
-  viewLabel: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    flex: 1,
-  },
-  viewValue: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-    flex: 1,
-    textAlign: 'right',
-  },
-  subsection: {
-    marginBottom: SIZES.md,
-  },
-  subsectionTitle: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-    marginBottom: SIZES.xs,
-  },
-  subsectionContent: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+  previewText: { fontSize: 14, color: COLORS.text, lineHeight: 20, marginBottom: 4 },
+  previewTextPending: { fontSize: 14, color: COLORS.textSecondary, lineHeight: 20, marginBottom: 4 },
+  previewAgreementText: {
+    fontSize: 13,
+    color: COLORS.text,
     lineHeight: 20,
-  },
-  sectionContent: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
-  },
-  signatureRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: SIZES.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  signatureLabel: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-  },
-  signatureInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  signatureName: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
-    marginLeft: SIZES.xs,
-  },
-  signatureDate: {
-    fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    marginLeft: SIZES.sm,
-  },
-  signaturePending: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textLight,
-    fontStyle: 'italic',
-  },
-  sendButton: {
-    marginTop: SIZES.lg,
-    marginBottom: SIZES.xl,
+    textAlign: 'justify',
   },
 });
