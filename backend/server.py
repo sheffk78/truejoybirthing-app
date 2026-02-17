@@ -16,6 +16,14 @@ from jose import JWTError, jwt
 import httpx
 import resend
 
+# Import weekly content
+from weekly_content import (
+    WEEKLY_TIPS, POSTPARTUM_TIPS,
+    WEEKLY_AFFIRMATIONS, POSTPARTUM_AFFIRMATIONS,
+    GENERIC_POSTPARTUM_AFFIRMATION,
+    get_weekly_tip, get_weekly_affirmation
+)
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
