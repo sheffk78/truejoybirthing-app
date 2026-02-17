@@ -107,7 +107,7 @@ const DEFAULT_VALUES = {
 };
 
 export default function DoulaContracts() {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const [contracts, setContracts] = useState([]);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
