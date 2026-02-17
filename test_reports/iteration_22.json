@@ -1,0 +1,71 @@
+{
+  "summary": "Duplicate Contract Feature Testing Complete - Backend 100% (17/17 tests passed), Frontend UI verified for both Doula and Midwife. All duplicate contract API endpoints and UI buttons working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_duplicate_contracts.py",
+    "/app/test_reports/pytest/pytest_duplicate_contracts.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_duplicate_contracts.py"
+  ],
+  "success_rate": {
+    "backend": "100% (17/17 tests passed)",
+    "frontend": "100% (Duplicate button visible on both Midwife and Doula contracts pages)"
+  },
+  "seed_data_creation": "Duplicated contracts created during testing with '[Copy of...]' prefix",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Duplicate contract feature fully tested and working. Backend APIs POST /api/midwife/contracts/{id}/duplicate and POST /api/doula/contracts/{id}/duplicate both create new Draft contracts with null client_id and '[Copy of...]' client_name prefix. Frontend 'Duplicate' buttons visible on contract cards for both Midwife and Doula roles.",
+  "features_tested": {
+    "midwife_duplicate_api": "PASS - POST /api/midwife/contracts/{id}/duplicate returns 200 with new contract",
+    "midwife_duplicate_creates_draft": "PASS - Duplicated contract has status='Draft', client_id=null",
+    "midwife_duplicate_copy_prefix": "PASS - Duplicated contract has '[Copy of...]' client_name prefix",
+    "midwife_duplicate_preserves_fees": "PASS - total_fee, retainer_amount, remaining_balance preserved",
+    "midwife_duplicate_clears_signatures": "PASS - client_signature and midwife_signature are null",
+    "midwife_duplicate_nonexistent_404": "PASS - Returns 404 for non-existent contract",
+    "midwife_delete_api": "PASS - DELETE /api/midwife/contracts/{id} works for Draft contracts",
+    "midwife_ui_duplicate_button": "PASS - Duplicate button visible on contract cards (15 instances found)",
+    "doula_duplicate_api": "PASS - POST /api/doula/contracts/{id}/duplicate returns 200 with new contract",
+    "doula_duplicate_creates_draft": "PASS - Duplicated contract has status='Draft', client_id=null",
+    "doula_duplicate_copy_prefix": "PASS - Duplicated contract has '[Copy of...]' client_name prefix",
+    "doula_delete_api": "PASS - DELETE /api/doula/contracts/{id} works for Draft contracts",
+    "doula_duplicate_nonexistent_404": "PASS - Returns 404 for non-existent contract",
+    "doula_ui_duplicate_button": "PASS - Duplicate button visible on contract card"
+  },
+  "api_endpoints_tested": [
+    "POST /api/auth/login - Authentication for both midwife and doula",
+    "GET /api/midwife/clients - List midwife clients",
+    "GET /api/midwife/contracts - List midwife contracts",
+    "POST /api/midwife/contracts/{id}/duplicate - Duplicate midwife contract",
+    "DELETE /api/midwife/contracts/{id} - Delete draft midwife contract",
+    "GET /api/doula/clients - List doula clients",
+    "GET /api/doula/contracts - List doula contracts",
+    "POST /api/doula/contracts - Create doula contract",
+    "POST /api/doula/contracts/{id}/duplicate - Duplicate doula contract",
+    "DELETE /api/doula/contracts/{id} - Delete draft doula contract"
+  ],
+  "test_credentials": {
+    "midwife": "testmidwife@test.com / password123",
+    "doula": "marketplace_doula@test.com / password123"
+  },
+  "duplicate_contract_behavior": {
+    "new_contract_id": "Generated with new UUID",
+    "client_id": "Set to null - requires new client selection",
+    "client_name": "Prefixed with '[Copy of original_client_name]'",
+    "status": "Always 'Draft'",
+    "signatures": "All cleared (null)",
+    "fees": "Preserved from original (total_fee, retainer_amount, remaining_balance)",
+    "contract_text": "Set to null - regenerated when client is selected",
+    "timestamps": "New created_at and updated_at"
+  }
+}
