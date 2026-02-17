@@ -13,7 +13,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { apiRequest, useAuth } from '../../src/utils/auth';
+import { apiRequest } from '../../src/utils/api';
+import useAuthStore from '../../src/store/authStore';
 import API_ENDPOINTS from '../../src/constants/api';
 import { COLORS, SIZES } from '../../src/constants/theme';
 
