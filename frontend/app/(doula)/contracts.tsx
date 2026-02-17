@@ -119,6 +119,8 @@ export default function DoulaContracts() {
   const [formData, setFormData] = useState({});
   const [selectedClientId, setSelectedClientId] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [isQuickEditMode, setIsQuickEditMode] = useState(false);
+  const [quickEditData, setQuickEditData] = useState({});
 
   useEffect(() => {
     loadData();
