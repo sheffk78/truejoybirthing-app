@@ -11,7 +11,7 @@ BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://birth-midwife.prev
 # Test credentials
 MIDWIFE_EMAIL = "testmidwife@test.com"
 MIDWIFE_PASSWORD = "password123"
-DOULA_EMAIL = "test.doula@example.com"
+DOULA_EMAIL = "marketplace_doula@test.com"
 DOULA_PASSWORD = "password123"
 
 
