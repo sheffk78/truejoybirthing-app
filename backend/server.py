@@ -2677,6 +2677,16 @@ async def create_doula_client(client_data: ClientCreate, user: User = Depends(ch
     """Create a new client"""
     now = datetime.now(timezone.utc)
     
+    # Auto-link to mom user if email matches
+    linked_mom_id = None
+    if client_data.email:
+        existing_mom = await db.users.find_one(
+            {"email": client_data.email, "role": "MOM"},
+            {"_id": 0, "user_id": 1}
+        )
+        if existing_mom:
+            linked_mom_id = existing_mom["user_id"]
+    
     client = {
         "client_id": f"client_{uuid.uuid4().hex[:12]}",
         "provider_id": user.user_id,
@@ -2687,7 +2697,7 @@ async def create_doula_client(client_data: ClientCreate, user: User = Depends(ch
         "edd": client_data.edd,
         "planned_birth_setting": client_data.planned_birth_setting,
         "status": "Lead",
-        "linked_mom_id": None,
+        "linked_mom_id": linked_mom_id,
         "risk_flags": [],
         "internal_notes": None,
         "created_at": now,
@@ -4332,6 +4342,16 @@ async def create_midwife_client(client_data: ClientCreate, user: User = Depends(
     """Create a new client"""
     now = datetime.now(timezone.utc)
     
+    # Auto-link to mom user if email matches
+    linked_mom_id = None
+    if client_data.email:
+        existing_mom = await db.users.find_one(
+            {"email": client_data.email, "role": "MOM"},
+            {"_id": 0, "user_id": 1}
+        )
+        if existing_mom:
+            linked_mom_id = existing_mom["user_id"]
+    
     client = {
         "client_id": f"client_{uuid.uuid4().hex[:12]}",
         "provider_id": user.user_id,
@@ -4342,7 +4362,7 @@ async def create_midwife_client(client_data: ClientCreate, user: User = Depends(
         "edd": client_data.edd,
         "planned_birth_setting": client_data.planned_birth_setting,
         "status": "Prenatal",
-        "linked_mom_id": None,
+        "linked_mom_id": linked_mom_id,
         "risk_flags": [],
         "internal_notes": None,
         "created_at": now,
