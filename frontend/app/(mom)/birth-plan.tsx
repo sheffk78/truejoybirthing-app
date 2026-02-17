@@ -57,6 +57,7 @@ export default function BirthPlanScreen() {
   const [sectionData, setSectionData] = useState<Record<string, any>>({});
   const [notesToProvider, setNotesToProvider] = useState('');
   const [saving, setSaving] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
   
   const fetchBirthPlan = async () => {
     try {
