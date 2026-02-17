@@ -104,7 +104,7 @@ export default function RootLayout() {
         <Stack.Screen name="(doula)" />
         <Stack.Screen name="(midwife)" />
         <Stack.Screen name="(admin)" />
-        <Stack.Screen name="midwife-contract" />
+        <Stack.Screen name="sign-midwife-contract" />
         <Stack.Screen name="index" />
       </Stack>
     </SafeAreaProvider>
