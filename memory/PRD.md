@@ -148,6 +148,18 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - None (previously: Email notifications domain verification - now resolved)
 
 ### ✅ RECENTLY COMPLETED (2026-02-17)
+- [x] **Doula Contract System Rework** (Major Feature):
+  - Replaced old contract system with new customizable Doula Service Agreement
+  - 6-section multi-step form: Parties & Basics, Services & Scope, Boundaries, Payment & Refunds, Unavailability, Addendum
+  - New agreement text template with dynamic field merging
+  - All contract fields customizable: prenatal visits, on-call window, backup doula preferences, cancellation terms, etc.
+  - Full agreement text generated from template with user inputs
+  - PDF export with new agreement format
+  - E-signature support for both doula and client
+  - Email delivery of signed contracts to both parties
+- [x] **Doula Dashboard Icon Updates**:
+  - Dashboard icon changed to Home icon (matching Mom section)
+  - Invoice icon changed to dollar sign ($) icon
 - [x] **Export Birth Plan as PDF** (Bug Fix):
   - Implemented working PDF export for birth plans using ReportLab
   - Endpoint: GET `/api/birth-plan/export/pdf` - Returns downloadable PDF
