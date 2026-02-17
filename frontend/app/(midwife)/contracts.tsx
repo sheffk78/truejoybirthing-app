@@ -17,6 +17,7 @@ import { apiRequest } from '../../src/utils/api';
 import useAuthStore from '../../src/store/authStore';
 import API_ENDPOINTS from '../../src/constants/api';
 import { COLORS, SIZES } from '../../src/constants/theme';
+import { useRouter } from 'expo-router';
 
 // Contract form sections based on the new Midwifery agreement structure
 const CONTRACT_SECTIONS = [
