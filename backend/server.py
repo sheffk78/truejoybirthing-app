@@ -31,6 +31,13 @@ from doula_contract_template import (
     get_contract_html
 )
 
+# Import midwife contract template
+from midwife_contract_template import (
+    MIDWIFE_CONTRACT_TEMPLATE,
+    get_midwife_contract_template,
+    get_midwife_contract_html
+)
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
