@@ -148,6 +148,16 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - None (previously: Email notifications domain verification - now resolved)
 
 ### ✅ RECENTLY COMPLETED (2026-02-17)
+- [x] **Collaboration & Permission Rules** (from PDF):
+  - Connection permissions (`can_view_birth_plan`, `can_message`) on share requests
+  - Birth plan status tracking (`not_started`, `in_progress`, `complete`)
+  - Auto-notification to providers when Mom completes birth plan
+  - Appointment system: Doula/Midwife can create appointments with Moms (private notes hidden from Mom)
+  - Mom can accept/decline appointment invitations
+  - Messaging permissions enforce active connections
+  - Provider-to-Provider messaging requires shared client
+  - Midwife visits split into `summary_for_mom` (Mom visible) and `private_note` (Midwife only)
+  - Providers view birth plan as read-only
 - [x] Doula onboarding with zip code lookup (auto-fills city/state)
 - [x] Midwife onboarding with zip code lookup (auto-fills city/state)
 - [x] Birth location icons in Birth Plan form (Hospital, Birth Center, Home Birth, Not sure yet)
