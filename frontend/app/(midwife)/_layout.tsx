@@ -70,6 +70,15 @@ export default function MidwifeLayout() {
         }}
       />
       <Tabs.Screen
+        name="contracts"
+        options={{
+          title: 'Contracts',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="document-text-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="messages"
         options={{
           title: 'Messages',
