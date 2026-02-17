@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://true-joy-birth.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://joy-birth-dev.preview.emergentagent.com').rstrip('/')
 SESSION_TOKEN = "session_da507d0afef44a36b86836e42407a759"  # Test user session
 
 # Expected 9 birth plan sections

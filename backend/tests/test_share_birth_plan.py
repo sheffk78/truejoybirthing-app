@@ -21,7 +21,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://true-joy-birth.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://joy-birth-dev.preview.emergentagent.com').rstrip('/')
 
 # Test credentials from main agent
 MOM_EMAIL = "sharemom2_1771213474@test.com"
