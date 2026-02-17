@@ -23,16 +23,19 @@ export default function MomHomeScreen() {
   
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [timeline, setTimeline] = useState<any>(null);
+  const [weeklyContent, setWeeklyContent] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   
   const fetchData = async () => {
     try {
-      const [planData, timelineData] = await Promise.all([
+      const [planData, timelineData, contentData] = await Promise.all([
         apiRequest(API_ENDPOINTS.BIRTH_PLAN),
         apiRequest(API_ENDPOINTS.TIMELINE),
+        apiRequest(API_ENDPOINTS.WEEKLY_CONTENT),
       ]);
       setBirthPlan(planData);
       setTimeline(timelineData);
+      setWeeklyContent(contentData);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
