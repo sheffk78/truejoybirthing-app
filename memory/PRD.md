@@ -157,6 +157,18 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - PDF export with new agreement format
   - E-signature support for both doula and client
   - Email delivery of signed contracts to both parties
+- [x] **Duplicate Contract Feature** (ADDED 2026-02-17):
+  - Allows Doulas and Midwives to quickly create new contracts from existing ones
+  - New endpoints: `POST /api/doula/contracts/{id}/duplicate` and `POST /api/midwife/contracts/{id}/duplicate`
+  - Duplicated contracts preserve: all fee settings, service descriptions, on-call windows, and custom terms
+  - Duplicated contracts reset: status to "Draft", all signatures cleared, client_id set to null
+  - Client name prefixed with "[Copy of...]" to indicate duplication
+  - "Duplicate" button added to contract cards in both Doula and Midwife contract pages
+  - Users must select a new client after duplication before sending
+  - **All 17 tests passing** (iteration_22.json)
+- [x] **Doula Contract Delete Endpoint** (ADDED 2026-02-17):
+  - New endpoint: `DELETE /api/doula/contracts/{id}` for deleting Draft contracts
+  - Delete button now functional on Doula contract cards
 - [x] **Doula Dashboard Icon Updates**:
   - Dashboard icon changed to Home icon (matching Mom section)
   - Invoice icon changed to dollar sign ($) icon
