@@ -114,6 +114,13 @@ export const API_ENDPOINTS = {
   // Weekly Content (Tips & Affirmations)
   WEEKLY_CONTENT: '/weekly-content',
   WEEKLY_CONTENT_ALL: '/weekly-content/all',
+  
+  // Subscription
+  SUBSCRIPTION_STATUS: '/subscription/status',
+  SUBSCRIPTION_PRICING: '/subscription/pricing',
+  SUBSCRIPTION_START_TRIAL: '/subscription/start-trial',
+  SUBSCRIPTION_ACTIVATE: '/subscription/activate',
+  SUBSCRIPTION_CANCEL: '/subscription/cancel',
 };
 
 export default API_ENDPOINTS;
