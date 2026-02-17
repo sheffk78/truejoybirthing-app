@@ -521,12 +521,6 @@ export const SECTION_FORMS: Record<string, {
           'Lower the drape at birth',
         ],
       },
-      {
-        key: 'interventionNotes',
-        type: 'textarea',
-        label: 'Additional Notes About Interventions',
-        placeholder: 'Any specific concerns...',
-      },
     ],
   },
 
