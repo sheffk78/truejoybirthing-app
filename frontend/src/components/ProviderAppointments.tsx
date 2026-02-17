@@ -19,7 +19,8 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
-import DateTimePicker from '@react-native-community/datetimepicker';
+// Conditionally import DateTimePicker for native platforms only
+const DateTimePicker = Platform.OS === 'web' ? null : require('@react-native-community/datetimepicker').default;
 
 interface Appointment {
   appointment_id: string;
