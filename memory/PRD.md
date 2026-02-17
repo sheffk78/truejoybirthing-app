@@ -148,6 +148,12 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - None (previously: Email notifications domain verification - now resolved)
 
 ### ✅ RECENTLY COMPLETED (2026-02-17)
+- [x] **Weekly Tips & Affirmations Integration** (from PDFs):
+  - Added comprehensive content: 42 pregnancy weeks + 6 postpartum weeks
+  - Backend API: `/api/weekly-content` (personalized), `/api/weekly-content/all` (browse)
+  - Mom home screen: Weekly Tip card and Weekly Affirmation card
+  - Weekly Tips browsing screen: Tabbed view (Pregnancy 1-42, Postpartum 1-6) with week selector
+  - Content dynamically calculated based on Mom's due date
 - [x] **Collaboration & Permission Rules** (from PDF):
   - Connection permissions (`can_view_birth_plan`, `can_message`) on share requests
   - Birth plan status tracking (`not_started`, `in_progress`, `complete`)
