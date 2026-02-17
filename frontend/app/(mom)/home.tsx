@@ -394,27 +394,6 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
-  tipCard: {
-    marginBottom: SIZES.lg,
-    backgroundColor: COLORS.warning + '15',
-  },
-  tipHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SIZES.sm,
-  },
-  tipTitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-    marginLeft: SIZES.sm,
-  },
-  tipText: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
-  },
   teamCard: {
     marginBottom: SIZES.md,
   },
