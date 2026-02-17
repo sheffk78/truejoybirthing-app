@@ -80,6 +80,13 @@ BIRTH_MODES = ["Spontaneous Vaginal", "Assisted Vaginal", "Cesarean", "Other"]
 SERVICES_OFFERED = ["Birth Doula", "Postpartum Doula", "Virtual Doula"]
 MIDWIFE_CREDENTIALS = ["CPM", "LM", "CNM"]
 
+# Subscription constants
+SUBSCRIPTION_STATUS = ["none", "trial", "active", "expired", "cancelled"]
+SUBSCRIPTION_PLANS = ["monthly", "annual"]
+PRO_MONTHLY_PRICE = 29.00
+PRO_ANNUAL_PRICE = 276.00
+TRIAL_DURATION_DAYS = 30
+
 # ============== PDF GENERATION HELPERS ==============
 
 def generate_midwife_contract_pdf_bytes(contract: dict) -> bytes:
