@@ -195,12 +195,19 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
     - Disclaimer: "Payments are made directly to your provider. True Joy Birthing does not process payments."
   - **Backend APIs**:
     - `POST/GET/PUT/DELETE /api/payment-instructions`
-    - `POST/GET/PUT/DELETE /api/doula/invoices` + `/send`, `/mark-paid`, `/cancel`
-    - `POST/GET/PUT/DELETE /api/midwife/invoices` + `/send`, `/mark-paid`, `/cancel`
+    - `POST/GET/PUT/DELETE /api/doula/invoices` + `/send`, `/mark-paid`, `/cancel`, `/send-reminder`
+    - `POST/GET/PUT/DELETE /api/midwife/invoices` + `/send`, `/mark-paid`, `/cancel`, `/send-reminder`
     - `GET /api/mom/invoices`
   - **Frontend**: `(doula)/invoices.tsx`, `(midwife)/invoices.tsx`, `(mom)/invoices.tsx`
   - **Auto-link Mom Feature**: When provider creates client with a Mom's email, linked_mom_id is automatically set
   - **All 21 backend tests passing** (iteration_25.json)
+- [x] **Invoice Payment Reminder Feature** (ADDED 2026-02-17):
+  - Providers can send payment reminders for Sent invoices
+  - Reminder sends email notification + in-app notification to client
+  - Shows days overdue if invoice is past due date
+  - Tracks `last_reminder_sent` timestamp on invoice
+  - "Remind" button added to invoice cards for Sent status
+  - Backend endpoints: `POST /api/doula/invoices/{id}/send-reminder`, `POST /api/midwife/invoices/{id}/send-reminder`
 - [x] **Doula Contract Delete Endpoint** (ADDED 2026-02-17):
   - New endpoint: `DELETE /api/doula/contracts/{id}` for deleting Draft contracts
   - Delete button now functional on Doula contract cards
