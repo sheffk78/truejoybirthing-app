@@ -1369,8 +1369,8 @@ async def respond_to_share_request(
 
 @api_router.get("/provider/shared-birth-plans")
 async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
-    """Get all birth plans shared with this provider"""
-    # Get accepted share requests
+    """Get all birth plans shared with this provider (read-only)"""
+    # Get accepted share requests where provider has view permission
     accepted_requests = await db.share_requests.find(
         {"provider_id": user.user_id, "status": "accepted"},
         {"_id": 0}
@@ -1378,6 +1378,10 @@ async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDW
     
     birth_plans = []
     for req in accepted_requests:
+        # Check if provider has permission to view birth plan
+        if not req.get("can_view_birth_plan", True):
+            continue
+            
         # Get the mom's birth plan
         plan = await db.birth_plans.find_one({"user_id": req["mom_user_id"]}, {"_id": 0})
         mom_profile = await db.mom_profiles.find_one({"user_id": req["mom_user_id"]}, {"_id": 0})
@@ -1395,8 +1399,10 @@ async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDW
                 "due_date": mom_profile.get("due_date") if mom_profile else None,
                 "birth_setting": mom_profile.get("planned_birth_setting") if mom_profile else None,
                 "plan": plan,
+                "birth_plan_status": plan.get("birth_plan_status", "not_started"),
                 "provider_notes": notes,
-                "shared_at": req["responded_at"]
+                "shared_at": req["responded_at"],
+                "read_only": True  # Provider can only VIEW, not edit
             })
     
     return {"birth_plans": birth_plans}
@@ -1406,8 +1412,8 @@ async def get_shared_birth_plan_detail(
     mom_user_id: str,
     user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
 ):
-    """Get a specific shared birth plan with provider notes"""
-    # Verify access
+    """Get a specific shared birth plan with provider notes (read-only view)"""
+    # Verify access and permissions
     share_request = await db.share_requests.find_one({
         "mom_user_id": mom_user_id,
         "provider_id": user.user_id,
@@ -1416,6 +1422,10 @@ async def get_shared_birth_plan_detail(
     
     if not share_request:
         raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
+    
+    # Check if provider has permission to view birth plan
+    if not share_request.get("can_view_birth_plan", True):
+        raise HTTPException(status_code=403, detail="You do not have permission to view this birth plan")
     
     plan = await db.birth_plans.find_one({"user_id": mom_user_id}, {"_id": 0})
     mom = await db.users.find_one({"user_id": mom_user_id}, {"_id": 0, "password_hash": 0})
@@ -1431,7 +1441,10 @@ async def get_shared_birth_plan_detail(
         "mom": mom,
         "mom_profile": mom_profile,
         "plan": plan,
-        "provider_notes": all_notes
+        "birth_plan_status": plan.get("birth_plan_status", "not_started") if plan else "not_started",
+        "provider_notes": all_notes,
+        "read_only": True,  # Indicates this is a read-only view - provider cannot edit Mom's answers
+        "can_add_notes": True  # Provider can add their own discussion notes
     }
 
 @api_router.post("/provider/birth-plan/{mom_user_id}/notes")
