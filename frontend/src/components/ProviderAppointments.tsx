@@ -470,15 +470,39 @@ export default function ProviderAppointmentsScreen() {
             </TouchableOpacity>
 
             {showTimePicker && (
-              <DateTimePicker
-                value={appointmentTime}
-                mode="time"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                onChange={(event, time) => {
-                  setShowTimePicker(Platform.OS === 'ios');
-                  if (time) setAppointmentTime(time);
-                }}
-              />
+              Platform.OS === 'web' ? (
+                <View style={styles.webDatePickerContainer}>
+                  <input
+                    type="time"
+                    value={appointmentTime.toTimeString().slice(0, 5)}
+                    onChange={(e: any) => {
+                      const [hours, minutes] = e.target.value.split(':');
+                      const time = new Date();
+                      time.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+                      setAppointmentTime(time);
+                      setShowTimePicker(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: 12,
+                      fontSize: 16,
+                      borderRadius: 8,
+                      border: `1px solid ${COLORS.border}`,
+                      backgroundColor: COLORS.white,
+                    }}
+                  />
+                </View>
+              ) : DateTimePicker && (
+                <DateTimePicker
+                  value={appointmentTime}
+                  mode="time"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={(event: any, time?: Date) => {
+                    setShowTimePicker(Platform.OS === 'ios');
+                    if (time) setAppointmentTime(time);
+                  }}
+                />
+              )
             )}
 
             {/* Virtual Toggle */}
