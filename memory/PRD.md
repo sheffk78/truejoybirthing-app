@@ -166,6 +166,15 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - "Duplicate" button added to contract cards in both Doula and Midwife contract pages
   - Users must select a new client after duplication before sending
   - **All 17 tests passing** (iteration_22.json)
+- [x] **Quick Edit Feature** (ADDED 2026-02-17):
+  - Edit key contract fields directly from the preview modal without going through all 7 steps
+  - Available only for Draft contracts (not shown for Signed or Sent)
+  - **Midwife Quick Edit Fields**: Client name, Partner/Support person, Due date, Birth location, Total fee, Retainer, Balance due by, On-call window, Special arrangements
+  - **Doula Quick Edit Fields**: Client name, Due date, Total fee, Retainer, Final payment due, Prenatal visits, On-call window, Postpartum visits, Special arrangements
+  - **Auto-Calculation**: Remaining balance auto-updates when fee or retainer changes
+  - **Cancel/Save Actions**: Cancel returns to preview mode without saving; Save updates contract via PUT API
+  - Accessible via "Quick Edit" button at bottom of Contract Preview modal
+  - **All tests passing** (iteration_23.json)
 - [x] **Doula Contract Delete Endpoint** (ADDED 2026-02-17):
   - New endpoint: `DELETE /api/doula/contracts/{id}` for deleting Draft contracts
   - Delete button now functional on Doula contract cards
