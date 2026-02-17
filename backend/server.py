@@ -1747,6 +1747,7 @@ async def doula_onboarding(profile_data: DoulaProfileUpdate, user: User = Depend
     doula_profile = {
         "user_id": user.user_id,
         "practice_name": profile_data.practice_name,
+        "zip_code": profile_data.zip_code,
         "location_city": profile_data.location_city,
         "location_state": profile_data.location_state,
         "services_offered": profile_data.services_offered or [],
@@ -2204,6 +2205,7 @@ async def midwife_onboarding(profile_data: MidwifeProfileUpdate, user: User = De
         "user_id": user.user_id,
         "practice_name": profile_data.practice_name,
         "credentials": profile_data.credentials,
+        "zip_code": profile_data.zip_code,
         "location_city": profile_data.location_city,
         "location_state": profile_data.location_state,
         "years_in_practice": profile_data.years_in_practice,
