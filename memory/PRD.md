@@ -148,6 +148,12 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - None (previously: Email notifications domain verification - now resolved)
 
 ### ✅ RECENTLY COMPLETED (2026-02-17)
+- [x] **PDF Export for Contracts**:
+  - Added ReportLab-based PDF generation for both Doula and Midwife contracts
+  - New endpoints: `/api/contracts/{id}/pdf` and `/api/midwife-contracts/{id}/pdf`
+  - Download PDF button appears on signed contracts in both Doula and Midwife contract screens
+  - PDF includes all contract details, sections, additional terms, and signatures
+  - Professional formatting with brand colors (Lavender for Doula, Sage for Midwife)
 - [x] **Midwifery Services Agreement** (from user-provided DOCX):
   - Full-featured contract system mirroring the Doula contract implementation
   - 12 sections from official Midwifery Services Agreement template
