@@ -2152,41 +2152,72 @@ async def get_doula_contracts(user: User = Depends(check_role(["DOULA"]))):
     ).sort("created_at", -1).to_list(100)
     return contracts
 
+@api_router.get("/doula/contract-template")
+async def get_doula_contract_template(user: User = Depends(check_role(["DOULA"]))):
+    """Get the True Joy Birthing contract template"""
+    return get_contract_template()
+
 @api_router.post("/doula/contracts")
 async def create_contract(contract_data: ContractCreate, user: User = Depends(check_role(["DOULA"]))):
-    """Create a new contract"""
-    # Get client name
+    """Create a new True Joy Birthing Doula Service Agreement"""
+    # Get client info
     client = await db.clients.find_one({"client_id": contract_data.client_id}, {"_id": 0})
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
     now = datetime.now(timezone.utc)
     
+    # Calculate remaining amount if not provided
+    remaining = contract_data.remaining_payment_amount
+    if remaining is None:
+        remaining = contract_data.total_payment_amount - contract_data.retainer_fee
+    
+    # Get template sections and apply any customizations
+    template = get_contract_template()
+    sections = []
+    for section in template["sections"]:
+        section_copy = section.copy()
+        # Check if there are customizations for this section
+        if contract_data.section_customizations:
+            for custom in contract_data.section_customizations:
+                if custom.id == section["id"] and custom.custom_content:
+                    section_copy["custom_content"] = custom.custom_content
+        sections.append(section_copy)
+    
     contract = {
         "contract_id": f"contract_{uuid.uuid4().hex[:12]}",
         "doula_id": user.user_id,
+        "doula_name": user.full_name,
         "client_id": contract_data.client_id,
         "client_name": client["name"],
-        "contract_title": contract_data.contract_title,
-        "services_description": contract_data.services_description,
-        "total_fee": contract_data.total_fee,
-        "payment_schedule_description": contract_data.payment_schedule_description,
-        "cancellation_policy": contract_data.cancellation_policy,
-        "scope_of_practice": contract_data.scope_of_practice,
+        # Client & Payment Details
+        "client_names": contract_data.client_names,
+        "estimated_due_date": contract_data.estimated_due_date,
+        "total_payment_amount": contract_data.total_payment_amount,
+        "retainer_fee": contract_data.retainer_fee,
+        "remaining_payment_amount": remaining,
+        "final_payment_due_date": contract_data.final_payment_due_date,
+        "agreement_date": now.strftime("%Y-%m-%d"),
+        # Template sections
+        "sections": sections,
+        "additional_terms": contract_data.additional_terms,
+        # Status
         "status": "Draft",
-        "signature_data": None,
+        "client_signature": None,
+        "doula_signature": None,
+        "sent_at": None,
         "signed_at": None,
         "created_at": now,
         "updated_at": now
     }
     
     await db.contracts.insert_one(contract)
-    contract.pop('_id', None)  # Remove ObjectId added by insert_one
+    contract.pop('_id', None)
     return contract
 
 @api_router.get("/contracts/{contract_id}")
 async def get_contract_by_id(contract_id: str):
-    """Get a contract by ID (public endpoint for signing)"""
+    """Get a contract by ID (public endpoint for viewing/signing)"""
     contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
@@ -2206,12 +2237,34 @@ async def get_contract_by_id(contract_id: str):
         }
     }
 
+@api_router.get("/contracts/{contract_id}/html")
+async def get_contract_html_view(contract_id: str):
+    """Get HTML version of contract for viewing/printing"""
+    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    from fastapi.responses import HTMLResponse
+    html_content = get_contract_html(contract)
+    return HTMLResponse(content=html_content)
+
 @api_router.put("/doula/contracts/{contract_id}")
 async def update_contract(contract_id: str, request: Request, user: User = Depends(check_role(["DOULA"]))):
     """Update a contract"""
     body = await request.json()
-    update_data = {k: v for k, v in body.items() if k not in ["contract_id", "doula_id", "created_at"]}
+    
+    # Prevent updating certain fields
+    protected_fields = ["contract_id", "doula_id", "created_at", "client_signature", "doula_signature", "signed_at"]
+    update_data = {k: v for k, v in body.items() if k not in protected_fields}
     update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    # Recalculate remaining amount if fees changed
+    if "total_payment_amount" in update_data or "retainer_fee" in update_data:
+        contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+        if contract:
+            total = update_data.get("total_payment_amount", contract.get("total_payment_amount", 0))
+            retainer = update_data.get("retainer_fee", contract.get("retainer_fee", 0))
+            update_data["remaining_payment_amount"] = total - retainer
     
     result = await db.contracts.update_one(
         {"contract_id": contract_id, "doula_id": user.user_id},
@@ -2225,33 +2278,77 @@ async def update_contract(contract_id: str, request: Request, user: User = Depen
 
 @api_router.post("/doula/contracts/{contract_id}/send")
 async def send_contract(contract_id: str, user: User = Depends(check_role(["DOULA"]))):
-    """Send contract for signature (mock)"""
+    """Send contract for signature"""
     now = datetime.now(timezone.utc)
+    
+    contract = await db.contracts.find_one({"contract_id": contract_id, "doula_id": user.user_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    # First, doula signs the contract
+    doula_signature = {
+        "signer_type": "doula",
+        "signer_name": user.full_name,
+        "signed_at": now.isoformat()
+    }
     
     result = await db.contracts.update_one(
         {"contract_id": contract_id, "doula_id": user.user_id},
-        {"$set": {"status": "Sent", "updated_at": now}}
+        {"$set": {
+            "status": "Sent",
+            "doula_signature": doula_signature,
+            "sent_at": now,
+            "updated_at": now
+        }}
     )
     
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Contract not found")
-    
     # Update client status
-    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
-    if contract:
-        await db.clients.update_one(
-            {"client_id": contract["client_id"]},
-            {"$set": {"status": "Contract Sent", "updated_at": now}}
-        )
+    await db.clients.update_one(
+        {"client_id": contract["client_id"]},
+        {"$set": {"status": "Contract Sent", "updated_at": now}}
+    )
     
-    return {"message": "Contract sent (mocked)", "note": "In production, this would send an email with signing link"}
+    # Get client email to send notification
+    client = await db.clients.find_one({"client_id": contract["client_id"]}, {"_id": 0})
+    
+    # Try to send email notification if client has linked mom account
+    email_sent = False
+    if client and client.get("linked_mom_id"):
+        mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
+        if mom and mom.get("email"):
+            try:
+                signing_url = f"https://doula-midwife-hub.preview.emergentagent.com/contract/{contract_id}"
+                params = {
+                    "from": SENDER_EMAIL,
+                    "to": mom["email"],
+                    "subject": f"Doula Service Agreement from {user.full_name}",
+                    "html": f"""
+                    <h2>True Joy Birthing</h2>
+                    <p>Hi {client['name']},</p>
+                    <p>{user.full_name} has sent you a Doula Service Agreement to review and sign.</p>
+                    <p><strong>Please review the agreement carefully and sign to confirm your services.</strong></p>
+                    <p><a href="{signing_url}" style="background-color: #8B6F9C; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">View & Sign Contract</a></p>
+                    <p>If you have any questions, please contact your doula directly.</p>
+                    <p>Best wishes,<br>True Joy Birthing</p>
+                    """
+                }
+                await asyncio.to_thread(resend.Emails.send, params)
+                email_sent = True
+            except Exception as e:
+                print(f"Failed to send contract email: {e}")
+    
+    return {
+        "message": "Contract sent",
+        "email_sent": email_sent,
+        "signing_url": f"/contract/{contract_id}"
+    }
 
-@api_router.post("/doula/contracts/{contract_id}/sign")
+@api_router.post("/contracts/{contract_id}/sign")
 async def sign_contract(contract_id: str, request: Request):
-    """Sign a contract with timestamp - simple click to sign"""
+    """Client signs the contract"""
     body = await request.json()
     signer_name = body.get("signer_name", "")
-    signer_email = body.get("signer_email", "")
+    signature_data = body.get("signature_data", "")  # Base64 signature or typed name
     
     if not signer_name.strip():
         raise HTTPException(status_code=400, detail="Signer name is required")
@@ -2265,19 +2362,43 @@ async def sign_contract(contract_id: str, request: Request):
     if contract.get("status") == "Signed":
         raise HTTPException(status_code=400, detail="Contract already signed")
     
-    # Create signature data with timestamp
-    signature_data = {
+    if contract.get("status") != "Sent":
+        raise HTTPException(status_code=400, detail="Contract must be sent before signing")
+    
+    # Create client signature
+    client_signature = {
+        "signer_type": "client",
         "signer_name": signer_name.strip(),
-        "signer_email": signer_email.strip() if signer_email else None,
-        "signed_at": now.isoformat(),
-        "ip_address": "recorded"  # In production, capture real IP
+        "signature_data": signature_data,
+        "signed_at": now.isoformat()
     }
     
     await db.contracts.update_one(
         {"contract_id": contract_id},
         {"$set": {
             "status": "Signed",
-            "signature_data": signature_data,
+            "client_signature": client_signature,
+            "signed_at": now,
+            "updated_at": now
+        }}
+    )
+    
+    # Update client status
+    await db.clients.update_one(
+        {"client_id": contract["client_id"]},
+        {"$set": {"status": "Contract Signed", "updated_at": now}}
+    )
+    
+    # Notify doula
+    await create_notification(
+        user_id=contract["doula_id"],
+        notif_type="contract_signed",
+        title="Contract Signed",
+        message=f"{signer_name} has signed the Doula Service Agreement",
+        data={"contract_id": contract_id}
+    )
+    
+    return {"message": "Contract signed successfully"}
             "signed_at": now,
             "updated_at": now
         }}
