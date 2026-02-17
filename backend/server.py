@@ -3016,38 +3016,19 @@ async def get_midwife_contract_pdf(contract_id: str):
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
     
-    from reportlab.lib.pagesizes import letter
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from reportlab.lib import colors
     from io import BytesIO
     from fastapi.responses import StreamingResponse
     
-    # Create PDF buffer
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    pdf_bytes = generate_midwife_contract_pdf_bytes(contract)
+    buffer = BytesIO(pdf_bytes)
     
-    # Styles
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=20, textColor=colors.HexColor('#5B8C7A'), spaceAfter=6)
-    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#5B8C7A'), spaceBefore=20, spaceAfter=10)
-    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=8)
-    intro_style = ParagraphStyle('Intro', parent=styles['Normal'], fontSize=10, leading=14, fontName='Helvetica-Oblique', spaceAfter=15)
+    filename = f"Midwifery_Agreement_{contract.get('client_name', 'Client').replace(' ', '_')}_{contract_id}.pdf"
     
-    elements = []
-    
-    # Title
-    elements.append(Paragraph("Midwifery Services Agreement", title_style))
-    if contract.get("practice_name"):
-        elements.append(Paragraph(contract["practice_name"], styles['Normal']))
-    elements.append(Spacer(1, 20))
-    
-    # Intro paragraph
-    intro_text = f"This Midwifery Services Agreement is made between <b>{contract.get('midwife_name', '')}</b> (Midwife/Practice) and <b>{contract.get('client_name', '')}</b> (Client) as of <b>{contract.get('agreement_date', '')}</b>."
-    if contract.get("partner_name"):
-        intro_text += f" The Partner or primary support person is <b>{contract['partner_name']}</b>."
-    elements.append(Paragraph(intro_text, intro_style))
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
     elements.append(Spacer(1, 10))
     
     # Care Details Table
