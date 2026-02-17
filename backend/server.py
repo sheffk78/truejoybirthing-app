@@ -1827,21 +1827,41 @@ async def get_my_share_requests(user: User = Depends(check_role(["MOM"]))):
 @api_router.delete("/birth-plan/share/{request_id}")
 async def revoke_share(request_id: str, user: User = Depends(check_role(["MOM"]))):
     """Revoke a share request"""
-    result = await db.share_requests.delete_one({
+    # First, fetch the request to get provider info BEFORE deleting
+    request_doc = await db.share_requests.find_one({
         "request_id": request_id,
         "mom_user_id": user.user_id
     })
     
-    if result.deleted_count == 0:
+    if not request_doc:
         raise HTTPException(status_code=404, detail="Share request not found")
     
+    provider_id = request_doc.get("provider_id")
+    
+    # Delete the share request
+    await db.share_requests.delete_one({
+        "request_id": request_id,
+        "mom_user_id": user.user_id
+    })
+    
     # Also delete any provider notes for this birth plan from this provider
-    request = await db.share_requests.find_one({"request_id": request_id})
-    if request:
+    if provider_id:
         await db.provider_notes.delete_many({
             "birth_plan_id": user.user_id,  # Using mom's user_id as birth plan identifier
-            "provider_id": request["provider_id"]
+            "provider_id": provider_id
         })
+        
+        # If this provider was connected to mom's profile, remove the connection
+        if request_doc.get("provider_role") == "DOULA":
+            await db.mom_profiles.update_one(
+                {"user_id": user.user_id, "connected_doula_id": provider_id},
+                {"$unset": {"connected_doula_id": ""}}
+            )
+        elif request_doc.get("provider_role") == "MIDWIFE":
+            await db.mom_profiles.update_one(
+                {"user_id": user.user_id, "connected_midwife_id": provider_id},
+                {"$unset": {"connected_midwife_id": ""}}
+            )
     
     return {"message": "Share access revoked"}
 
