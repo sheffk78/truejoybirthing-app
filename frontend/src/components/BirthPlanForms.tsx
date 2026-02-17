@@ -107,8 +107,8 @@ const SingleSelectField = ({
 
 // Icon mapping for birth location options
 const BIRTH_LOCATION_ICONS: Record<string, string> = {
-  'Hospital': 'business',
-  'Birth Center': 'medkit',
+  'Hospital': 'medkit',
+  'Birth Center': 'fitness',
   'Home Birth': 'home',
   'Not sure yet': 'help-circle',
 };
