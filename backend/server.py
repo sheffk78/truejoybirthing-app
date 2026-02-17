@@ -34,9 +34,10 @@ from doula_contract_template import (
 
 # Import midwife contract template
 from midwife_contract_template import (
-    MIDWIFE_CONTRACT_TEMPLATE,
     get_midwife_contract_template,
-    get_midwife_contract_html
+    get_midwife_contract_html,
+    generate_midwife_contract_text,
+    DEFAULT_MIDWIFE_CONTRACT_FIELDS
 )
 
 ROOT_DIR = Path(__file__).parent
