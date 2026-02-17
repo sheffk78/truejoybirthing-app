@@ -203,7 +203,7 @@ export default function MomHomeScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '30' }]}>
-              <Icon name="sunny" size={24} color={COLORS.warning} />
+              <Icon name="happy" size={24} color={COLORS.warning} />
             </View>
             <Text style={styles.actionTitle}>Postpartum</Text>
             <Text style={styles.actionSubtitle}>Fourth trimester plan</Text>
