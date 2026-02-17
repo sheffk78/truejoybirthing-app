@@ -3070,6 +3070,91 @@ async def sign_contract(contract_id: str, request: Request):
     
     return {"message": "Contract signed successfully", "emails_sent": emails_sent}
 
+@api_router.delete("/doula/contracts/{contract_id}")
+async def delete_doula_contract(contract_id: str, user: User = Depends(check_role(["DOULA"]))):
+    """Delete a draft doula contract"""
+    contract = await db.contracts.find_one(
+        {"contract_id": contract_id, "doula_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    if contract.get("status") != "Draft":
+        raise HTTPException(status_code=400, detail="Only draft contracts can be deleted")
+    
+    await db.contracts.delete_one({"contract_id": contract_id, "doula_id": user.user_id})
+    return {"message": "Contract deleted"}
+
+@api_router.post("/doula/contracts/{contract_id}/duplicate")
+async def duplicate_doula_contract(contract_id: str, user: User = Depends(check_role(["DOULA"]))):
+    """Duplicate an existing doula contract (creates a new draft with same settings)"""
+    # Fetch the original contract
+    original = await db.contracts.find_one(
+        {"contract_id": contract_id, "doula_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not original:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    now = datetime.now(timezone.utc)
+    new_contract_id = f"contract_{uuid.uuid4().hex[:12]}"
+    
+    # Copy fields but reset status, signatures, and dates
+    new_contract = {
+        "contract_id": new_contract_id,
+        "doula_id": user.user_id,
+        "doula_name": original.get("doula_name", user.full_name),
+        "client_id": None,  # Must select new client
+        "client_name": f"[Copy of {original.get('client_name', 'Contract')}]",
+        "estimated_due_date": original.get("estimated_due_date", ""),
+        "total_fee": original.get("total_fee", 0),
+        "retainer_amount": original.get("retainer_amount", 0),
+        "remaining_balance": original.get("remaining_balance", 0),
+        "final_payment_due_description": original.get("final_payment_due_description", "Day after birth"),
+        "agreement_date": now.strftime("%Y-%m-%d"),
+        # Services & Scope
+        "prenatal_visit_description": original.get("prenatal_visit_description"),
+        "on_call_window_description": original.get("on_call_window_description"),
+        "on_call_response_description": original.get("on_call_response_description"),
+        "backup_doula_preferences": original.get("backup_doula_preferences"),
+        "postpartum_visit_description": original.get("postpartum_visit_description"),
+        # Boundaries & Communication
+        "speak_for_client_exception": original.get("speak_for_client_exception"),
+        # Payment & Refunds
+        "retainer_non_refundable_after_weeks": original.get("retainer_non_refundable_after_weeks", 37),
+        "cancellation_weeks_threshold": original.get("cancellation_weeks_threshold", 37),
+        "final_payment_due_detail": original.get("final_payment_due_detail"),
+        "cesarean_alternative_support_description": original.get("cesarean_alternative_support_description"),
+        # Unavailability & Special Circumstances
+        "unreachable_timeframe_description": original.get("unreachable_timeframe_description"),
+        "unreachable_remedy_description": original.get("unreachable_remedy_description"),
+        "precipitous_labor_definition": original.get("precipitous_labor_definition"),
+        "precipitous_labor_compensation_description": original.get("precipitous_labor_compensation_description"),
+        "other_absence_policy": original.get("other_absence_policy"),
+        # Addendum
+        "special_arrangements": original.get("special_arrangements"),
+        # Status and timestamps
+        "contract_text": None,  # Will be regenerated when client is selected
+        "status": "Draft",
+        "client_signature": None,
+        "doula_signature": None,
+        "sent_at": None,
+        "signed_at": None,
+        "created_at": now,
+        "updated_at": now,
+    }
+    
+    await db.contracts.insert_one(new_contract)
+    del new_contract["_id"]
+    
+    return {
+        "message": "Contract duplicated successfully",
+        "contract": new_contract
+    }
+
 # ============== MIDWIFE CONTRACT ROUTES ==============
 
 @api_router.get("/midwife/contracts")
