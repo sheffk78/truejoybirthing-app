@@ -2461,6 +2461,285 @@ async def sign_contract(contract_id: str, request: Request):
     
     return {"message": "Contract signed successfully"}
 
+# ============== MIDWIFE CONTRACT ROUTES ==============
+
+@api_router.get("/midwife/contracts")
+async def get_midwife_contracts(user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get all midwife contracts"""
+    contracts = await db.midwife_contracts.find(
+        {"midwife_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return contracts
+
+@api_router.get("/midwife/contract-template")
+async def get_midwife_contract_template_route(user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get the Midwifery Services Agreement template"""
+    return get_midwife_contract_template()
+
+@api_router.post("/midwife/contracts")
+async def create_midwife_contract(contract_data: MidwifeContractCreate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Create a new Midwifery Services Agreement"""
+    # Get client info
+    client = await db.clients.find_one(
+        {"client_id": contract_data.client_id, "provider_id": user.user_id, "provider_type": "MIDWIFE"},
+        {"_id": 0}
+    )
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Calculate remaining balance if not provided
+    remaining = contract_data.remaining_balance
+    if remaining is None:
+        remaining = contract_data.total_fee - contract_data.deposit
+    
+    # Get template sections and apply any customizations
+    template = get_midwife_contract_template()
+    sections = []
+    for section in template["sections"]:
+        section_copy = section.copy()
+        # Check if there are customizations for this section
+        if contract_data.section_customizations:
+            for custom in contract_data.section_customizations:
+                if custom.id == section["id"] and custom.custom_content:
+                    section_copy["custom_content"] = custom.custom_content
+        sections.append(section_copy)
+    
+    contract = {
+        "contract_id": f"mw_contract_{uuid.uuid4().hex[:12]}",
+        "midwife_id": user.user_id,
+        "midwife_name": user.full_name,
+        "client_id": contract_data.client_id,
+        "client_name": contract_data.client_name,
+        "partner_name": contract_data.partner_name,
+        # Care Details
+        "estimated_due_date": contract_data.estimated_due_date,
+        "planned_birth_place": contract_data.planned_birth_place,
+        "on_call_start_week": contract_data.on_call_start_week,
+        "on_call_end_week": contract_data.on_call_end_week,
+        # Payment Details
+        "total_fee": contract_data.total_fee,
+        "deposit": contract_data.deposit,
+        "remaining_balance": remaining,
+        "balance_due_week": contract_data.balance_due_week,
+        # Practice Info
+        "practice_name": contract_data.practice_name,
+        "agreement_date": now.strftime("%Y-%m-%d"),
+        # Template sections
+        "sections": sections,
+        "additional_terms": contract_data.additional_terms,
+        # Status
+        "status": "Draft",
+        "client_signature": None,
+        "midwife_signature": None,
+        "sent_at": None,
+        "signed_at": None,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.midwife_contracts.insert_one(contract)
+    contract.pop('_id', None)
+    return contract
+
+@api_router.get("/midwife/contracts/{contract_id}")
+async def get_midwife_contract_detail(contract_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get a specific midwife contract"""
+    contract = await db.midwife_contracts.find_one(
+        {"contract_id": contract_id, "midwife_id": user.user_id},
+        {"_id": 0}
+    )
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    return contract
+
+@api_router.get("/midwife-contracts/{contract_id}")
+async def get_midwife_contract_by_id(contract_id: str):
+    """Get a midwife contract by ID (public endpoint for viewing/signing)"""
+    contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    # Get client and midwife info
+    client = await db.clients.find_one({"client_id": contract.get("client_id")}, {"_id": 0})
+    midwife = await db.users.find_one({"user_id": contract.get("midwife_id")}, {"_id": 0, "password_hash": 0})
+    midwife_profile = await db.midwife_profiles.find_one({"user_id": contract.get("midwife_id")}, {"_id": 0})
+    
+    return {
+        "contract": contract,
+        "client": client,
+        "midwife": {
+            "full_name": midwife.get("full_name") if midwife else None,
+            "email": midwife.get("email") if midwife else None,
+            "practice_name": midwife_profile.get("practice_name") if midwife_profile else None
+        }
+    }
+
+@api_router.get("/midwife-contracts/{contract_id}/html")
+async def get_midwife_contract_html_view(contract_id: str):
+    """Get HTML version of midwife contract for viewing/printing"""
+    contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    from fastapi.responses import HTMLResponse
+    html_content = get_midwife_contract_html(contract)
+    return HTMLResponse(content=html_content)
+
+@api_router.put("/midwife/contracts/{contract_id}")
+async def update_midwife_contract(contract_id: str, request: Request, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Update a midwife contract"""
+    body = await request.json()
+    
+    # Prevent updating certain fields
+    protected_fields = ["contract_id", "midwife_id", "created_at", "client_signature", "midwife_signature", "signed_at"]
+    update_data = {k: v for k, v in body.items() if k not in protected_fields}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    # Recalculate remaining balance if fees changed
+    if "total_fee" in update_data or "deposit" in update_data:
+        contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+        if contract:
+            total = update_data.get("total_fee", contract.get("total_fee", 0))
+            deposit = update_data.get("deposit", contract.get("deposit", 0))
+            update_data["remaining_balance"] = total - deposit
+    
+    result = await db.midwife_contracts.update_one(
+        {"contract_id": contract_id, "midwife_id": user.user_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    return {"message": "Contract updated"}
+
+@api_router.post("/midwife/contracts/{contract_id}/send")
+async def send_midwife_contract(contract_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Send midwife contract for signature"""
+    now = datetime.now(timezone.utc)
+    
+    contract = await db.midwife_contracts.find_one({"contract_id": contract_id, "midwife_id": user.user_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    # First, midwife signs the contract
+    midwife_signature = {
+        "signer_type": "midwife",
+        "signer_name": user.full_name,
+        "signed_at": now.isoformat()
+    }
+    
+    result = await db.midwife_contracts.update_one(
+        {"contract_id": contract_id, "midwife_id": user.user_id},
+        {"$set": {
+            "status": "Sent",
+            "midwife_signature": midwife_signature,
+            "sent_at": now,
+            "updated_at": now
+        }}
+    )
+    
+    # Update client status
+    await db.clients.update_one(
+        {"client_id": contract["client_id"]},
+        {"$set": {"status": "Contract Sent", "updated_at": now}}
+    )
+    
+    # Get client email to send notification
+    client = await db.clients.find_one({"client_id": contract["client_id"]}, {"_id": 0})
+    
+    # Try to send email notification if client has linked mom account
+    email_sent = False
+    if client and client.get("linked_mom_id"):
+        mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
+        if mom and mom.get("email"):
+            try:
+                signing_url = f"https://true-joy-birth.preview.emergentagent.com/midwife-contract/{contract_id}"
+                params = {
+                    "from": SENDER_EMAIL,
+                    "to": mom["email"],
+                    "subject": f"Midwifery Services Agreement from {user.full_name}",
+                    "html": f"""
+                    <h2>True Joy Birthing</h2>
+                    <p>Hi {contract['client_name']},</p>
+                    <p>{user.full_name} has sent you a Midwifery Services Agreement to review and sign.</p>
+                    <p><strong>Please review the agreement carefully and sign to confirm your care arrangement.</strong></p>
+                    <p><a href="{signing_url}" style="background-color: #5B8C7A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">View & Sign Agreement</a></p>
+                    <p>If you have any questions, please contact your midwife directly.</p>
+                    <p>Best wishes,<br>True Joy Birthing</p>
+                    """
+                }
+                await asyncio.to_thread(resend.Emails.send, params)
+                email_sent = True
+            except Exception as e:
+                print(f"Failed to send midwife contract email: {e}")
+    
+    return {
+        "message": "Contract sent",
+        "email_sent": email_sent,
+        "signing_url": f"/midwife-contract/{contract_id}"
+    }
+
+@api_router.post("/midwife-contracts/{contract_id}/sign")
+async def sign_midwife_contract(contract_id: str, request: Request):
+    """Client signs the midwife contract"""
+    body = await request.json()
+    signer_name = body.get("signer_name", "")
+    signature_data = body.get("signature_data", "")  # Base64 signature or typed name
+    
+    if not signer_name.strip():
+        raise HTTPException(status_code=400, detail="Signer name is required")
+    
+    now = datetime.now(timezone.utc)
+    
+    contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    if contract.get("status") == "Signed":
+        raise HTTPException(status_code=400, detail="Contract already signed")
+    
+    if contract.get("status") != "Sent":
+        raise HTTPException(status_code=400, detail="Contract must be sent before signing")
+    
+    # Create client signature
+    client_signature = {
+        "signer_type": "client",
+        "signer_name": signer_name.strip(),
+        "signature_data": signature_data,
+        "signed_at": now.isoformat()
+    }
+    
+    await db.midwife_contracts.update_one(
+        {"contract_id": contract_id},
+        {"$set": {
+            "status": "Signed",
+            "client_signature": client_signature,
+            "signed_at": now,
+            "updated_at": now
+        }}
+    )
+    
+    # Update client status
+    await db.clients.update_one(
+        {"client_id": contract["client_id"]},
+        {"$set": {"status": "Contract Signed", "updated_at": now}}
+    )
+    
+    # Notify midwife
+    await create_notification(
+        user_id=contract["midwife_id"],
+        notif_type="contract_signed",
+        title="Contract Signed",
+        message=f"{signer_name} has signed the Midwifery Services Agreement",
+        data={"contract_id": contract_id}
+    )
+    
+    return {"message": "Contract signed successfully"}
+
 # ============== INVOICE ROUTES ==============
 
 @api_router.get("/doula/invoices")
