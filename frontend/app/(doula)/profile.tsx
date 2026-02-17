@@ -22,6 +22,7 @@ import { COLORS, SIZES } from '../../src/constants/theme';
 export default function DoulaProfileScreen() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
+  const { status: subscriptionStatus, fetchStatus: fetchSubscriptionStatus } = useSubscriptionStore();
   
   const [profile, setProfile] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
