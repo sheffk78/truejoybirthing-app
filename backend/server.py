@@ -3933,6 +3933,87 @@ async def cancel_doula_invoice(invoice_id: str, user: User = Depends(check_role(
     
     return {"message": "Invoice cancelled"}
 
+@api_router.post("/doula/invoices/{invoice_id}/send-reminder")
+async def send_doula_invoice_reminder(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
+    """Send a payment reminder for a Sent invoice"""
+    now = datetime.now(timezone.utc)
+    
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    if invoice["status"] != "Sent":
+        raise HTTPException(status_code=400, detail="Reminders can only be sent for invoices with 'Sent' status")
+    
+    # Update last_reminder_sent timestamp
+    await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {"last_reminder_sent": now, "updated_at": now}}
+    )
+    
+    # Get client and send reminder
+    client = await db.clients.find_one({"client_id": invoice["client_id"]}, {"_id": 0})
+    if client and client.get("linked_mom_id"):
+        # Create in-app notification for the mom
+        notification = {
+            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+            "user_id": client["linked_mom_id"],
+            "type": "invoice_reminder",
+            "title": "Payment Reminder",
+            "message": f"Friendly reminder: You have an unpaid invoice for ${invoice['amount']:.2f} due {invoice.get('due_date', 'soon')}.",
+            "data": {"invoice_id": invoice_id},
+            "read": False,
+            "created_at": now
+        }
+        await db.notifications.insert_one(notification)
+        
+        # Send email reminder
+        mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
+        if mom and mom.get("email") and resend.api_key:
+            try:
+                days_overdue = ""
+                if invoice.get("due_date"):
+                    try:
+                        due_date = datetime.strptime(invoice["due_date"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                        if now > due_date:
+                            days = (now - due_date).days
+                            days_overdue = f"<p style='color: #d32f2f;'><strong>This invoice is {days} day(s) overdue.</strong></p>"
+                    except:
+                        pass
+                
+                resend.Emails.send({
+                    "from": SENDER_EMAIL,
+                    "to": mom["email"],
+                    "subject": f"Payment Reminder: Invoice #{invoice['invoice_number']}",
+                    "html": f"""
+                        <h2>Payment Reminder</h2>
+                        <p>This is a friendly reminder about your outstanding invoice.</p>
+                        {days_overdue}
+                        <hr>
+                        <p><strong>Invoice #:</strong> {invoice['invoice_number']}</p>
+                        <p><strong>From:</strong> {user.full_name}</p>
+                        <p><strong>Description:</strong> {invoice['description']}</p>
+                        <p><strong>Amount Due:</strong> ${invoice['amount']:.2f}</p>
+                        <p><strong>Due Date:</strong> {invoice.get('due_date', 'Not specified')}</p>
+                        <hr>
+                        <p><strong>Payment Instructions:</strong></p>
+                        <p>{invoice.get('payment_instructions_text', 'Contact your provider for payment details.')}</p>
+                        <hr>
+                        <p style="font-size: 12px; color: #666;">
+                            If you have already made this payment, please disregard this reminder.
+                            Payments are made directly to your doula using the instructions provided.
+                        </p>
+                    """
+                })
+            except Exception as e:
+                logging.error(f"Failed to send invoice reminder email: {e}")
+    
+    return {"message": "Reminder sent"}
+
 # ============== MIDWIFE INVOICE ROUTES ==============
 
 @api_router.get("/midwife/invoices")
