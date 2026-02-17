@@ -50,7 +50,7 @@ export default function RootLayout() {
     const currentPath = segments.join('/');
     
     // Allow public routes without auth
-    const isPublicRoute = segments[0] === 'sign-contract' || segments[0] === 'auth-callback' || segments[0] === 'sign-midwife-contract';
+    const isPublicRoute = segments[0] === 'sign-contract' || segments[0] === 'auth-callback' || segments[0] === 'sign-midwife-contract' || segments[0] === 'plans-pricing';
     
     if (!isAuthenticated && !inAuthGroup && !isPublicRoute) {
       // Not authenticated, redirect to welcome
