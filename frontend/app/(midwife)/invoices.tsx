@@ -219,6 +219,30 @@ export default function MidwifeInvoicesScreen() {
     );
   };
 
+  const handleSendReminder = async (invoiceId: string) => {
+    Alert.alert(
+      'Send Payment Reminder',
+      'This will send a payment reminder email and in-app notification to the client.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Send Reminder',
+          onPress: async () => {
+            try {
+              await apiRequest(`${API_ENDPOINTS.MIDWIFE_INVOICES}/${invoiceId}/send-reminder`, {
+                method: 'POST',
+              });
+              await fetchData();
+              Alert.alert('Reminder Sent', 'Payment reminder has been sent to the client');
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to send reminder');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleDeleteInvoice = async (invoiceId: string) => {
     Alert.alert(
       'Delete Invoice',
