@@ -757,6 +757,58 @@ class PaymentInstructionsTemplate(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
+# --- Contract Template Models ---
+class ContractTemplateCreate(BaseModel):
+    template_name: str
+    template_type: str  # "doula" or "midwife"
+    description: Optional[str] = None
+    is_default: bool = False
+    
+    # Common fields that can be templated
+    total_fee: Optional[float] = None
+    retainer_amount: Optional[float] = None
+    services_included: Optional[List[str]] = None
+    terms_and_conditions: Optional[str] = None
+    
+    # Doula-specific template fields
+    prenatal_visit_description: Optional[str] = None
+    on_call_window_description: Optional[str] = None
+    on_call_response_description: Optional[str] = None
+    backup_doula_preferences: Optional[str] = None
+    postpartum_visit_description: Optional[str] = None
+    retainer_non_refundable_after_weeks: Optional[int] = None
+    cancellation_weeks_threshold: Optional[int] = None
+    cesarean_alternative_support_description: Optional[str] = None
+    
+    # Midwife-specific template fields
+    planned_birth_location: Optional[str] = None
+    scope_description: Optional[str] = None
+    remaining_balance_due_description: Optional[str] = None
+    fee_coverage_description: Optional[str] = None
+    refund_policy_description: Optional[str] = None
+    transfer_indications_description: Optional[str] = None
+    client_refusal_of_transfer_note: Optional[str] = None
+    midwife_withdrawal_reasons: Optional[str] = None
+    no_refund_scenarios_description: Optional[str] = None
+    backup_midwife_policy: Optional[str] = None
+    contact_instructions_routine: Optional[str] = None
+    contact_instructions_urgent: Optional[str] = None
+    emergency_instructions: Optional[str] = None
+
+class ContractTemplate(BaseModel):
+    template_id: str
+    provider_id: str
+    template_name: str
+    template_type: str  # "doula" or "midwife"
+    description: Optional[str] = None
+    is_default: bool = False
+    
+    # All templatable fields stored as JSON
+    template_data: Dict[str, Any] = {}
+    
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
 # --- Invoice Models (Enhanced) ---
 class InvoiceCreate(BaseModel):
     client_id: str
