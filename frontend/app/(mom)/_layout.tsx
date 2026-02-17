@@ -112,6 +112,12 @@ export default function MomLayout() {
           href: null,  // Hide from tab bar, accessible from home/my-team
         }}
       />
+      <Tabs.Screen
+        name="weekly-tips"
+        options={{
+          href: null,  // Hide from tab bar, accessible from home
+        }}
+      />
     </Tabs>
   );
 }
