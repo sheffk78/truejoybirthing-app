@@ -330,6 +330,24 @@ export default function MidwifeContractsScreen() {
                   />
                 </View>
               )}
+              
+              {contract.status === 'Signed' && (
+                <View style={styles.actionButtons}>
+                  <Button
+                    title="Download PDF"
+                    variant="outline"
+                    onPress={() => {
+                      const pdfUrl = `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/midwife-contracts/${contract.contract_id}/pdf`;
+                      if (typeof window !== 'undefined') {
+                        window.open(pdfUrl, '_blank');
+                      }
+                    }}
+                    leftIcon="download-outline"
+                    fullWidth
+                    data-testid={`download-pdf-btn-${contract.contract_id}`}
+                  />
+                </View>
+              )}
             </Card>
           ))
         )}
