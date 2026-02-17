@@ -2851,7 +2851,36 @@ async def sign_contract(contract_id: str, request: Request):
         data={"contract_id": contract_id}
     )
     
-    return {"message": "Contract signed successfully"}
+    # Fetch updated contract and send PDF emails to both parties
+    updated_contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    doula = await db.users.find_one({"user_id": contract["doula_id"]}, {"_id": 0, "password_hash": 0})
+    client_record = await db.clients.find_one({"client_id": contract["client_id"]}, {"_id": 0})
+    
+    emails_sent = {"doula": False, "client": False}
+    
+    # Send to doula
+    if doula and doula.get("email"):
+        emails_sent["doula"] = await send_signed_contract_email(
+            "doula", 
+            updated_contract,
+            doula["email"],
+            doula.get("full_name", ""),
+            doula.get("full_name", "")
+        )
+    
+    # Send to client (via linked mom account)
+    if client_record and client_record.get("linked_mom_id"):
+        mom = await db.users.find_one({"user_id": client_record["linked_mom_id"]}, {"_id": 0})
+        if mom and mom.get("email"):
+            emails_sent["client"] = await send_signed_contract_email(
+                "doula",
+                updated_contract,
+                mom["email"],
+                contract.get("client_name", ""),
+                doula.get("full_name", "") if doula else ""
+            )
+    
+    return {"message": "Contract signed successfully", "emails_sent": emails_sent}
 
 # ============== MIDWIFE CONTRACT ROUTES ==============
 
