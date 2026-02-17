@@ -7,7 +7,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://doula-midwife-hub.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://true-joy-birth.preview.emergentagent.com')
 
 # Test credentials from previous iterations
 MOM_EMAIL = "sharemom2_1771213474@test.com"
