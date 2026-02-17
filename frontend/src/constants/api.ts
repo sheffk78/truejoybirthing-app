@@ -95,6 +95,12 @@ export const API_ENDPOINTS = {
   
   // Contracts (public)
   CONTRACT_BY_ID: '/contracts',
+  
+  // Appointments
+  APPOINTMENTS: '/appointments',
+  
+  // Mom - Midwife Visits
+  MOM_MIDWIFE_VISITS: '/mom/midwife-visits',
 };
 
 export default API_ENDPOINTS;
