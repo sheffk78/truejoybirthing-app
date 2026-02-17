@@ -118,6 +118,53 @@ export default function MomHomeScreen() {
           />
         </Card>
         
+        {/* Weekly Tip Card */}
+        {weeklyContent?.tip && (
+          <Card style={styles.weeklyCard}>
+            <View style={styles.weeklyHeader}>
+              <View style={[styles.weeklyIconContainer, { backgroundColor: COLORS.primary + '20' }]}>
+                <Icon name="bulb" size={22} color={COLORS.primary} />
+              </View>
+              <View style={styles.weeklyHeaderText}>
+                <Text style={styles.weeklyLabel}>Weekly Tip</Text>
+                <Text style={styles.weeklyWeek}>
+                  {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.weeklyContent} numberOfLines={4}>
+              {weeklyContent.tip}
+            </Text>
+            <TouchableOpacity 
+              style={styles.weeklyReadMore}
+              onPress={() => router.push('/(mom)/weekly-tips')}
+            >
+              <Text style={styles.weeklyReadMoreText}>Read more</Text>
+              <Icon name="chevron-forward" size={16} color={COLORS.primary} />
+            </TouchableOpacity>
+          </Card>
+        )}
+        
+        {/* Weekly Affirmation Card */}
+        {weeklyContent?.affirmation && (
+          <Card style={[styles.weeklyCard, styles.affirmationCard]}>
+            <View style={styles.weeklyHeader}>
+              <View style={[styles.weeklyIconContainer, { backgroundColor: COLORS.roleDoula + '20' }]}>
+                <Icon name="heart" size={22} color={COLORS.roleDoula} />
+              </View>
+              <View style={styles.weeklyHeaderText}>
+                <Text style={styles.weeklyLabel}>Weekly Affirmation</Text>
+                <Text style={styles.weeklyWeek}>
+                  {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.affirmationContent}>
+              "{weeklyContent.affirmation}"
+            </Text>
+          </Card>
+        )}
+        
         {/* Quick Actions */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionsGrid}>
