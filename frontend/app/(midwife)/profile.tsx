@@ -48,6 +48,7 @@ export default function MidwifeProfileScreen() {
   
   useEffect(() => {
     fetchProfile();
+    fetchSubscriptionStatus();
   }, []);
   
   const handleSave = async () => {
