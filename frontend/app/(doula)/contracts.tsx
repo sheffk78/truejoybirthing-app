@@ -112,6 +112,7 @@ export default function DoulaContracts() {
   const router = useRouter();
   const [contracts, setContracts] = useState([]);
   const [clients, setClients] = useState([]);
+  const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -120,6 +121,7 @@ export default function DoulaContracts() {
   const [currentSection, setCurrentSection] = useState(0);
   const [formData, setFormData] = useState({});
   const [selectedClientId, setSelectedClientId] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [isQuickEditMode, setIsQuickEditMode] = useState(false);
   const [quickEditData, setQuickEditData] = useState({});
@@ -130,12 +132,14 @@ export default function DoulaContracts() {
 
   const loadData = async () => {
     try {
-      const [contractsRes, clientsRes] = await Promise.all([
+      const [contractsRes, clientsRes, templatesRes] = await Promise.all([
         apiRequest(API_ENDPOINTS.DOULA_CONTRACTS),
         apiRequest(API_ENDPOINTS.DOULA_CLIENTS),
+        apiRequest(API_ENDPOINTS.CONTRACT_TEMPLATES),
       ]);
       setContracts(contractsRes || []);
       setClients(clientsRes || []);
+      setTemplates(templatesRes || []);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -149,12 +153,43 @@ export default function DoulaContracts() {
     loadData();
   };
 
+  const applyTemplate = (templateId: string) => {
+    const template = templates.find(t => t.template_id === templateId);
+    if (template && template.template_data) {
+      const data = template.template_data;
+      setFormData(prev => ({
+        ...DEFAULT_VALUES,
+        ...prev,
+        total_fee: data.total_fee?.toString() || prev.total_fee || '',
+        retainer_amount: data.retainer_amount?.toString() || prev.retainer_amount || '',
+        prenatal_visit_description: data.prenatal_visit_description || prev.prenatal_visit_description || DEFAULT_VALUES.prenatal_visit_description,
+        on_call_window_description: data.on_call_window_description || prev.on_call_window_description || DEFAULT_VALUES.on_call_window_description,
+        on_call_response_description: data.on_call_response_description || prev.on_call_response_description || DEFAULT_VALUES.on_call_response_description,
+        backup_doula_preferences: data.backup_doula_preferences || prev.backup_doula_preferences || DEFAULT_VALUES.backup_doula_preferences,
+        postpartum_visit_description: data.postpartum_visit_description || prev.postpartum_visit_description || DEFAULT_VALUES.postpartum_visit_description,
+        retainer_non_refundable_after_weeks: data.retainer_non_refundable_after_weeks?.toString() || prev.retainer_non_refundable_after_weeks?.toString() || DEFAULT_VALUES.retainer_non_refundable_after_weeks.toString(),
+        cancellation_weeks_threshold: data.cancellation_weeks_threshold?.toString() || prev.cancellation_weeks_threshold?.toString() || DEFAULT_VALUES.cancellation_weeks_threshold.toString(),
+        cesarean_alternative_support_description: data.cesarean_alternative_support_description || prev.cesarean_alternative_support_description || DEFAULT_VALUES.cesarean_alternative_support_description,
+        terms_and_conditions: data.terms_and_conditions || prev.terms_and_conditions || '',
+      }));
+    }
+  };
+
   const openCreateModal = () => {
     // Initialize form with default values
     const initialData = { ...DEFAULT_VALUES };
     setFormData(initialData);
     setSelectedClientId('');
+    setSelectedTemplateId('');
     setCurrentSection(0);
+    
+    // Check if there's a default template
+    const defaultTemplate = templates.find(t => t.is_default);
+    if (defaultTemplate) {
+      setSelectedTemplateId(defaultTemplate.template_id);
+      applyTemplate(defaultTemplate.template_id);
+    }
+    
     setShowCreateModal(true);
   };
 
