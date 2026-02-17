@@ -1520,6 +1520,276 @@ async def lookup_zipcode(zipcode: str):
     except httpx.RequestError:
         raise HTTPException(status_code=500, detail="Unable to reach zip code service")
 
+# ============== SUBSCRIPTION ROUTES ==============
+
+def is_pro_role(role: str) -> bool:
+    """Check if the role is a PRO role (DOULA or MIDWIFE)"""
+    return role in ["DOULA", "MIDWIFE"]
+
+def calculate_subscription_status(subscription: dict) -> dict:
+    """Calculate current subscription status and access"""
+    now = datetime.now(timezone.utc)
+    
+    if not subscription:
+        return {
+            "has_pro_access": False,
+            "subscription_status": "none",
+            "plan_type": None,
+            "trial_end_date": None,
+            "days_remaining": None,
+            "is_trial": False
+        }
+    
+    status = subscription.get("subscription_status", "none")
+    trial_end = subscription.get("trial_end_date")
+    sub_end = subscription.get("subscription_end_date")
+    
+    # Check trial status
+    if status == "trial" and trial_end:
+        if isinstance(trial_end, str):
+            trial_end = datetime.fromisoformat(trial_end.replace('Z', '+00:00'))
+        if now < trial_end:
+            days_remaining = (trial_end - now).days
+            return {
+                "has_pro_access": True,
+                "subscription_status": "trial",
+                "plan_type": subscription.get("plan_type"),
+                "trial_end_date": trial_end.isoformat(),
+                "days_remaining": days_remaining,
+                "is_trial": True
+            }
+        else:
+            # Trial expired
+            return {
+                "has_pro_access": False,
+                "subscription_status": "expired",
+                "plan_type": subscription.get("plan_type"),
+                "trial_end_date": trial_end.isoformat(),
+                "days_remaining": 0,
+                "is_trial": False
+            }
+    
+    # Check active subscription
+    if status == "active":
+        if sub_end:
+            if isinstance(sub_end, str):
+                sub_end = datetime.fromisoformat(sub_end.replace('Z', '+00:00'))
+            if now < sub_end:
+                days_remaining = (sub_end - now).days
+                return {
+                    "has_pro_access": True,
+                    "subscription_status": "active",
+                    "plan_type": subscription.get("plan_type"),
+                    "trial_end_date": None,
+                    "days_remaining": days_remaining,
+                    "is_trial": False
+                }
+        else:
+            # No end date means perpetual (for mock)
+            return {
+                "has_pro_access": True,
+                "subscription_status": "active",
+                "plan_type": subscription.get("plan_type"),
+                "trial_end_date": None,
+                "days_remaining": None,
+                "is_trial": False
+            }
+    
+    return {
+        "has_pro_access": False,
+        "subscription_status": status,
+        "plan_type": subscription.get("plan_type"),
+        "trial_end_date": trial_end.isoformat() if trial_end else None,
+        "days_remaining": 0,
+        "is_trial": False
+    }
+
+@api_router.get("/subscription/status")
+async def get_subscription_status(user: User = Depends(get_current_user)):
+    """Get current user's subscription status"""
+    # MOMs always have free access (no subscription needed)
+    if user.role == "MOM":
+        return {
+            "has_pro_access": True,  # Moms have full access to mom features
+            "subscription_status": "free",
+            "plan_type": "mom_free",
+            "trial_end_date": None,
+            "days_remaining": None,
+            "is_trial": False,
+            "is_mom": True
+        }
+    
+    # Get subscription info for PRO users
+    subscription = await db.subscriptions.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    result = calculate_subscription_status(subscription)
+    result["is_mom"] = False
+    return result
+
+@api_router.get("/subscription/pricing")
+async def get_pricing():
+    """Get subscription pricing info"""
+    return {
+        "plans": [
+            {
+                "id": "monthly",
+                "name": "True Joy Pro – Monthly",
+                "price": PRO_MONTHLY_PRICE,
+                "currency": "USD",
+                "period": "month",
+                "trial_days": TRIAL_DURATION_DAYS,
+                "features": [
+                    "Client management and history",
+                    "Digital contracts and e-signatures",
+                    "Invoices and payments",
+                    "Notes and visit summaries",
+                    "Marketplace profile and visibility"
+                ]
+            },
+            {
+                "id": "annual",
+                "name": "True Joy Pro – Annual",
+                "price": PRO_ANNUAL_PRICE,
+                "currency": "USD",
+                "period": "year",
+                "trial_days": TRIAL_DURATION_DAYS,
+                "savings": round((PRO_MONTHLY_PRICE * 12) - PRO_ANNUAL_PRICE, 2),
+                "features": [
+                    "Client management and history",
+                    "Digital contracts and e-signatures",
+                    "Invoices and payments",
+                    "Notes and visit summaries",
+                    "Marketplace profile and visibility"
+                ]
+            }
+        ],
+        "mom_features": [
+            "Weekly tips and affirmations",
+            "Joyful Birth Plan builder",
+            "Pregnancy timeline",
+            "Postpartum support tools",
+            "Connect with your team"
+        ]
+    }
+
+@api_router.post("/subscription/start-trial")
+async def start_trial(request: StartTrialRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Start a 30-day free trial (mock implementation)"""
+    now = datetime.now(timezone.utc)
+    
+    # Check if user already has subscription
+    existing = await db.subscriptions.find_one({"user_id": user.user_id})
+    if existing:
+        status = calculate_subscription_status(existing)
+        if status["has_pro_access"]:
+            raise HTTPException(status_code=400, detail="You already have an active subscription or trial")
+    
+    # Validate plan type
+    if request.plan_type not in SUBSCRIPTION_PLANS:
+        raise HTTPException(status_code=400, detail="Invalid plan type. Must be 'monthly' or 'annual'")
+    
+    trial_end = now + timedelta(days=TRIAL_DURATION_DAYS)
+    
+    subscription = {
+        "subscription_id": f"sub_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "subscription_status": "trial",
+        "plan_type": request.plan_type,
+        "trial_start_date": now,
+        "trial_end_date": trial_end,
+        "subscription_start_date": None,
+        "subscription_end_date": None,
+        "store_transaction_id": f"mock_trial_{uuid.uuid4().hex[:8]}",
+        "store_type": "mock",
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    if existing:
+        await db.subscriptions.update_one(
+            {"user_id": user.user_id},
+            {"$set": subscription}
+        )
+    else:
+        await db.subscriptions.insert_one(subscription)
+    
+    return {
+        "message": "Trial started successfully",
+        "trial_end_date": trial_end.isoformat(),
+        "plan_type": request.plan_type,
+        "days_remaining": TRIAL_DURATION_DAYS
+    }
+
+@api_router.post("/subscription/activate")
+async def activate_subscription(request: StartTrialRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Activate a full subscription after trial (mock implementation)"""
+    now = datetime.now(timezone.utc)
+    
+    # Calculate subscription end based on plan
+    if request.plan_type == "monthly":
+        sub_end = now + timedelta(days=30)
+    else:
+        sub_end = now + timedelta(days=365)
+    
+    subscription = {
+        "subscription_id": f"sub_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "subscription_status": "active",
+        "plan_type": request.plan_type,
+        "trial_start_date": None,
+        "trial_end_date": None,
+        "subscription_start_date": now,
+        "subscription_end_date": sub_end,
+        "store_transaction_id": f"mock_purchase_{uuid.uuid4().hex[:8]}",
+        "store_type": "mock",
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.subscriptions.update_one(
+        {"user_id": user.user_id},
+        {"$set": subscription},
+        upsert=True
+    )
+    
+    return {
+        "message": "Subscription activated successfully",
+        "subscription_end_date": sub_end.isoformat(),
+        "plan_type": request.plan_type
+    }
+
+@api_router.post("/subscription/cancel")
+async def cancel_subscription(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Cancel subscription (mock implementation)"""
+    now = datetime.now(timezone.utc)
+    
+    result = await db.subscriptions.update_one(
+        {"user_id": user.user_id},
+        {"$set": {"subscription_status": "cancelled", "updated_at": now}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="No subscription found")
+    
+    return {"message": "Subscription cancelled. You will retain access until the end of your current period."}
+
+# Helper function to check Pro access (used by other routes)
+async def check_pro_access(user: User) -> bool:
+    """Check if a PRO user has active subscription or trial"""
+    if user.role == "MOM":
+        return True  # Moms don't need Pro access
+    
+    subscription = await db.subscriptions.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    status = calculate_subscription_status(subscription)
+    return status["has_pro_access"]
+
 # ============== MOM ROUTES ==============
 
 @api_router.post("/mom/onboarding")
