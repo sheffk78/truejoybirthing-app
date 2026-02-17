@@ -148,6 +148,21 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - None (previously: Email notifications domain verification - now resolved)
 
 ### ✅ RECENTLY COMPLETED (2026-02-17)
+- [x] **Midwifery Services Agreement** (from user-provided DOCX):
+  - Full-featured contract system mirroring the Doula contract implementation
+  - 12 sections from official Midwifery Services Agreement template
+  - Sections: Scope of Services, Client Responsibilities, Birth Setting & Transfer, On-Call Period, Fees & Payment, Termination & Refunds, Risks & Consent, Scope Limitations, Confidentiality, Communication & Emergencies, Liability, Acknowledgement
+  - Form fields: client name, partner name, due date, planned birth place, on-call weeks, total fee, deposit (auto-calculates remaining balance)
+  - Digital signatures: Midwife signs when sending, Client signs via public link
+  - Email notification to client when contract is sent
+  - Client status updates: "Contract Sent" → "Contract Signed"
+  - Backend APIs: 8 endpoints for full CRUD + signing workflow
+  - Frontend UI: (midwife)/contracts.tsx, sign-midwife-contract.tsx
+  - **All 25 backend tests passing** (iteration_19.json)
+- [x] **DateTimePicker Web Fix**:
+  - Added conditional rendering for web platform using HTML date/time inputs
+  - Native platforms continue to use @react-native-community/datetimepicker
+  - Fixes P2 issue: DateTimePicker component not working on web
 - [x] **True Joy Birthing Doula Service Agreement** (from PDF):
   - Pre-populated contract template with 8 sections and ability to add additional terms
   - Form fields: client names, due date, total payment, retainer fee, final payment due date
