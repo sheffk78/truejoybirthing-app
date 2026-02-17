@@ -199,7 +199,8 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
     - `POST/GET/PUT/DELETE /api/midwife/invoices` + `/send`, `/mark-paid`, `/cancel`
     - `GET /api/mom/invoices`
   - **Frontend**: `(doula)/invoices.tsx`, `(midwife)/invoices.tsx`, `(mom)/invoices.tsx`
-  - **All 21 backend tests passing** (iteration_24.json)
+  - **Auto-link Mom Feature**: When provider creates client with a Mom's email, linked_mom_id is automatically set
+  - **All 21 backend tests passing** (iteration_25.json)
 - [x] **Doula Contract Delete Endpoint** (ADDED 2026-02-17):
   - New endpoint: `DELETE /api/doula/contracts/{id}` for deleting Draft contracts
   - Delete button now functional on Doula contract cards
