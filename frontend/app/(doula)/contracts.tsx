@@ -132,14 +132,21 @@ export default function DoulaContracts() {
 
   const loadData = async () => {
     try {
-      const [contractsRes, clientsRes, templatesRes] = await Promise.all([
+      const [contractsRes, clientsRes] = await Promise.all([
         apiRequest(API_ENDPOINTS.DOULA_CONTRACTS),
         apiRequest(API_ENDPOINTS.DOULA_CLIENTS),
-        apiRequest(API_ENDPOINTS.CONTRACT_TEMPLATES),
       ]);
       setContracts(contractsRes || []);
       setClients(clientsRes || []);
-      setTemplates(templatesRes || []);
+      
+      // Load templates separately to prevent failure from blocking main data
+      try {
+        const templatesRes = await apiRequest(API_ENDPOINTS.CONTRACT_TEMPLATES);
+        setTemplates(templatesRes || []);
+      } catch (templateError) {
+        console.log('Templates not available:', templateError);
+        setTemplates([]);
+      }
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
