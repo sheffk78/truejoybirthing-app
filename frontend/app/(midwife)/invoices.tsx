@@ -757,6 +757,7 @@ const styles = StyleSheet.create({
   actionButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: COLORS.secondary + '10', gap: 4 },
   actionText: { fontSize: 13, fontWeight: '500' },
   sendButton: { backgroundColor: COLORS.secondary },
+  reminderButton: { backgroundColor: '#FF9800' + '15', borderWidth: 1, borderColor: '#FF9800' },
   paidButton: { backgroundColor: '#4CAF50' },
   paidBadge: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   paidText: { fontSize: 13, color: '#4CAF50' },
