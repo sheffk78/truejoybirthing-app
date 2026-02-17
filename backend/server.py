@@ -2399,31 +2399,6 @@ async def sign_contract(contract_id: str, request: Request):
     )
     
     return {"message": "Contract signed successfully"}
-            "signed_at": now,
-            "updated_at": now
-        }}
-    )
-    
-    # Update client status
-    await db.clients.update_one(
-        {"client_id": contract["client_id"]},
-        {"$set": {"status": "Contract Signed", "updated_at": now}}
-    )
-    
-    # Notify the doula that contract was signed
-    await create_notification(
-        user_id=contract["doula_id"],
-        notif_type="contract_signed",
-        title="Contract Signed",
-        message=f"{signer_name} has signed the contract: {contract['contract_title']}",
-        data={"contract_id": contract_id, "signer_name": signer_name}
-    )
-    
-    return {
-        "message": "Contract signed successfully",
-        "signed_at": now.isoformat(),
-        "signer_name": signer_name
-    }
 
 # ============== INVOICE ROUTES ==============
 
