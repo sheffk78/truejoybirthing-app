@@ -14,6 +14,7 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { useAuthStore } from '../../src/store/authStore';
+import { useSubscriptionStore } from '../../src/store/subscriptionStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES } from '../../src/constants/theme';
