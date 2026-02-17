@@ -1544,10 +1544,22 @@ def calculate_subscription_status(subscription: dict) -> dict:
     trial_end = subscription.get("trial_end_date")
     sub_end = subscription.get("subscription_end_date")
     
-    # Check trial status
-    if status == "trial" and trial_end:
+    # Convert trial_end to timezone-aware datetime
+    if trial_end:
         if isinstance(trial_end, str):
             trial_end = datetime.fromisoformat(trial_end.replace('Z', '+00:00'))
+        elif isinstance(trial_end, datetime) and trial_end.tzinfo is None:
+            trial_end = trial_end.replace(tzinfo=timezone.utc)
+    
+    # Convert sub_end to timezone-aware datetime  
+    if sub_end:
+        if isinstance(sub_end, str):
+            sub_end = datetime.fromisoformat(sub_end.replace('Z', '+00:00'))
+        elif isinstance(sub_end, datetime) and sub_end.tzinfo is None:
+            sub_end = sub_end.replace(tzinfo=timezone.utc)
+    
+    # Check trial status
+    if status == "trial" and trial_end:
         if now < trial_end:
             days_remaining = (trial_end - now).days
             return {
