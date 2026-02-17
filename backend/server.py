@@ -610,52 +610,92 @@ class LegacyContractCreate(BaseModel):
 # --- Midwife Contract Models ---
 class MidwifeContractCreate(BaseModel):
     client_id: str
-    # Client & Care Details
+    # Parties & Basic Details
+    midwife_practice_name: Optional[str] = None  # Will default to user's name
     client_name: str
     partner_name: Optional[str] = None
     estimated_due_date: str  # YYYY-MM-DD
-    planned_birth_place: str  # e.g., "Home Birth", "Birth Center", "Hospital"
-    # On-call period
-    on_call_start_week: str = "37"
-    on_call_end_week: str = "42"
-    # Payment Details
+    
+    # Place of Birth & Scope
+    planned_birth_location: str  # e.g., "home at...", "ABC Birth Center", "XYZ Hospital"
+    scope_description: Optional[str] = None
+    
+    # Fees & Payment
     total_fee: float
-    deposit: float
+    retainer_amount: float
     remaining_balance: Optional[float] = None  # Auto-calculated if not provided
-    balance_due_week: str = "36"  # Week by which balance is due
-    # Practice Info
-    practice_name: Optional[str] = None
-    # Optional section customizations
-    section_customizations: Optional[List[ContractSectionUpdate]] = None
-    additional_terms: Optional[str] = None
+    remaining_balance_due_description: Optional[str] = None  # e.g., "36 weeks' gestation"
+    fee_coverage_description: Optional[str] = None
+    refund_policy_description: Optional[str] = None
+    
+    # Transfer & Withdrawal
+    transfer_indications_description: Optional[str] = None
+    client_refusal_of_transfer_note: Optional[str] = None
+    midwife_withdrawal_reasons: Optional[str] = None
+    no_refund_scenarios_description: Optional[str] = None
+    
+    # On-Call & Backup
+    on_call_window_description: Optional[str] = None  # e.g., "37 to 42 weeks"
+    backup_midwife_policy: Optional[str] = None
+    
+    # Communication & Emergencies
+    contact_instructions_routine: Optional[str] = None
+    contact_instructions_urgent: Optional[str] = None
+    emergency_instructions: Optional[str] = None
+    
+    # Special Arrangements
+    special_arrangements: Optional[str] = None
 
 class MidwifeContract(BaseModel):
     contract_id: str
     midwife_id: str
-    midwife_name: str
+    midwife_practice_name: str
     client_id: str
     client_name: str
     partner_name: Optional[str] = None
-    # Care Details
+    
+    # Basic Details
     estimated_due_date: str
-    planned_birth_place: str
-    on_call_start_week: str
-    on_call_end_week: str
-    # Payment Details
-    total_fee: float
-    deposit: float
-    remaining_balance: float
-    balance_due_week: str
-    # Practice Info
-    practice_name: Optional[str] = None
     agreement_date: str
-    # Template sections (with any customizations)
-    sections: List[dict]
-    additional_terms: Optional[str] = None
+    
+    # Place of Birth & Scope
+    planned_birth_location: str
+    scope_description: Optional[str] = None
+    
+    # Fees & Payment
+    total_fee: float
+    retainer_amount: float
+    remaining_balance: float
+    remaining_balance_due_description: Optional[str] = None
+    fee_coverage_description: Optional[str] = None
+    refund_policy_description: Optional[str] = None
+    
+    # Transfer & Withdrawal
+    transfer_indications_description: Optional[str] = None
+    client_refusal_of_transfer_note: Optional[str] = None
+    midwife_withdrawal_reasons: Optional[str] = None
+    no_refund_scenarios_description: Optional[str] = None
+    
+    # On-Call & Backup
+    on_call_window_description: Optional[str] = None
+    backup_midwife_policy: Optional[str] = None
+    
+    # Communication & Emergencies
+    contact_instructions_routine: Optional[str] = None
+    contact_instructions_urgent: Optional[str] = None
+    emergency_instructions: Optional[str] = None
+    
+    # Special Arrangements
+    special_arrangements: Optional[str] = None
+    
+    # Generated contract text
+    contract_text: Optional[str] = None
+    
     # Status and signatures
     status: str = "Draft"  # Draft, Sent, Signed
     client_signature: Optional[dict] = None
     midwife_signature: Optional[dict] = None
+    partner_signature: Optional[dict] = None
     sent_at: Optional[datetime] = None
     signed_at: Optional[datetime] = None
     created_at: datetime
