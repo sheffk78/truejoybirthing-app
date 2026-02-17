@@ -2925,6 +2925,178 @@ async def get_unread_count(user: User = Depends(get_current_user)):
     count = await db.messages.count_documents({"receiver_id": user.user_id, "read": False})
     return {"unread_count": count}
 
+# ============== APPOINTMENT ROUTES ==============
+
+@api_router.post("/appointments")
+async def create_appointment(appointment_data: AppointmentCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Create an appointment with a Mom client"""
+    now = datetime.now(timezone.utc)
+    
+    # Verify the Mom exists and has an active connection with this provider
+    mom = await db.users.find_one({"user_id": appointment_data.mom_user_id, "role": "MOM"}, {"_id": 0})
+    if not mom:
+        raise HTTPException(status_code=404, detail="Mom not found")
+    
+    # Check for active connection
+    connection = await db.share_requests.find_one({
+        "mom_user_id": appointment_data.mom_user_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    if not connection:
+        raise HTTPException(status_code=403, detail="No active connection with this Mom")
+    
+    appointment_id = f"appt_{uuid.uuid4().hex[:12]}"
+    appointment_doc = {
+        "appointment_id": appointment_id,
+        "provider_id": user.user_id,
+        "provider_name": user.full_name,
+        "provider_role": user.role,
+        "mom_user_id": appointment_data.mom_user_id,
+        "mom_name": mom["full_name"],
+        "appointment_date": appointment_data.appointment_date,
+        "appointment_time": appointment_data.appointment_time,
+        "appointment_type": appointment_data.appointment_type,
+        "location": appointment_data.location,
+        "is_virtual": appointment_data.is_virtual,
+        "notes": appointment_data.notes,  # Private notes for provider
+        "status": "pending",
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.appointments.insert_one(appointment_doc)
+    appointment_doc.pop('_id', None)
+    
+    # Send notification to Mom
+    await create_notification(
+        user_id=appointment_data.mom_user_id,
+        notif_type="appointment_invite",
+        title="Appointment Invitation",
+        message=f"{user.full_name} invited you to an appointment on {appointment_data.appointment_date}",
+        data={"appointment_id": appointment_id, "provider_id": user.user_id}
+    )
+    
+    return {"message": "Appointment created", "appointment": appointment_doc}
+
+@api_router.get("/appointments")
+async def get_appointments(user: User = Depends(get_current_user)):
+    """Get appointments based on user role"""
+    if user.role == "MOM":
+        # Mom sees appointments where she's invited (without provider's private notes)
+        appointments = await db.appointments.find(
+            {"mom_user_id": user.user_id},
+            {"_id": 0, "notes": 0}  # Exclude provider's private notes
+        ).sort("appointment_date", 1).to_list(100)
+    else:
+        # Providers see their own appointments (including private notes)
+        appointments = await db.appointments.find(
+            {"provider_id": user.user_id},
+            {"_id": 0}
+        ).sort("appointment_date", 1).to_list(100)
+    
+    return appointments
+
+@api_router.put("/appointments/{appointment_id}/respond")
+async def respond_to_appointment(appointment_id: str, response: str, user: User = Depends(check_role(["MOM"]))):
+    """Mom responds to an appointment invitation"""
+    if response not in ["accepted", "declined"]:
+        raise HTTPException(status_code=400, detail="Response must be 'accepted' or 'declined'")
+    
+    appointment = await db.appointments.find_one({"appointment_id": appointment_id, "mom_user_id": user.user_id})
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    
+    now = datetime.now(timezone.utc)
+    await db.appointments.update_one(
+        {"appointment_id": appointment_id},
+        {"$set": {"status": response, "updated_at": now}}
+    )
+    
+    # Notify the provider
+    await create_notification(
+        user_id=appointment["provider_id"],
+        notif_type="appointment_response",
+        title=f"Appointment {response.title()}",
+        message=f"{user.full_name} has {response} your appointment invitation",
+        data={"appointment_id": appointment_id, "status": response}
+    )
+    
+    return {"message": f"Appointment {response}"}
+
+@api_router.delete("/appointments/{appointment_id}")
+async def cancel_appointment(appointment_id: str, user: User = Depends(get_current_user)):
+    """Cancel an appointment (either party can cancel)"""
+    query = {"appointment_id": appointment_id}
+    if user.role == "MOM":
+        query["mom_user_id"] = user.user_id
+    else:
+        query["provider_id"] = user.user_id
+    
+    appointment = await db.appointments.find_one(query)
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    
+    await db.appointments.update_one(
+        {"appointment_id": appointment_id},
+        {"$set": {"status": "cancelled", "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    # Notify the other party
+    notify_user_id = appointment["mom_user_id"] if user.role != "MOM" else appointment["provider_id"]
+    await create_notification(
+        user_id=notify_user_id,
+        notif_type="appointment_response",
+        title="Appointment Cancelled",
+        message=f"{user.full_name} has cancelled the appointment",
+        data={"appointment_id": appointment_id, "status": "cancelled"}
+    )
+    
+    return {"message": "Appointment cancelled"}
+
+# ============== COLLABORATION HELPERS ==============
+
+async def check_provider_can_view_birth_plan(provider_id: str, mom_user_id: str) -> bool:
+    """Check if provider has permission to view Mom's birth plan"""
+    connection = await db.share_requests.find_one({
+        "provider_id": provider_id,
+        "mom_user_id": mom_user_id,
+        "status": "accepted"
+    })
+    if not connection:
+        return False
+    # Default to True for active connections, but check explicit permission if set
+    return connection.get("can_view_birth_plan", True)
+
+async def check_provider_can_message(provider_id: str, mom_user_id: str) -> bool:
+    """Check if provider has permission to message Mom"""
+    connection = await db.share_requests.find_one({
+        "provider_id": provider_id,
+        "mom_user_id": mom_user_id,
+        "status": "accepted"
+    })
+    if not connection:
+        return False
+    return connection.get("can_message", True)
+
+async def notify_providers_birth_plan_complete(mom_user_id: str, mom_name: str):
+    """Notify all connected providers when Mom completes her birth plan"""
+    # Find all active connections
+    connections = await db.share_requests.find({
+        "mom_user_id": mom_user_id,
+        "status": "accepted"
+    }).to_list(100)
+    
+    for conn in connections:
+        if conn.get("can_view_birth_plan", True):
+            await create_notification(
+                user_id=conn["provider_id"],
+                notif_type="birth_plan_complete",
+                title="Birth Plan Complete",
+                message=f"{mom_name} has completed her Joyful Birth Plan. Tap to review and discuss together.",
+                data={"mom_user_id": mom_user_id}
+            )
+
 # ============== HEALTH CHECK ==============
 
 @api_router.get("/")
