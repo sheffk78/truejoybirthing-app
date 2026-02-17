@@ -1003,6 +1003,18 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   title: { fontSize: 24, fontWeight: '700', color: COLORS.text },
+  headerButtons: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  templatesButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.roleDoula + '15',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.roleDoula,
+  },
+  templatesButtonText: { color: COLORS.roleDoula, fontWeight: '500', marginLeft: 4, fontSize: 13 },
   createButton: {
     flexDirection: 'row',
     alignItems: 'center',
