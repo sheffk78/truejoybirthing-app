@@ -171,7 +171,8 @@ class TestExportPDFAndRevokeInvitation:
         
         assert response.status_code in [200, 201], f"Expected 200/201, got {response.status_code}: {response.text}"
         data = response.json()
-        request_id = data.get("request_id")
+        request_data = data.get("request", {})
+        request_id = request_data.get("request_id")
         assert request_id is not None, "Response should contain request_id"
         print(f"✓ Share request created: {request_id}")
         return request_id
