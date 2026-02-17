@@ -2309,6 +2309,131 @@ async def get_contract_html_view(contract_id: str):
     html_content = get_contract_html(contract)
     return HTMLResponse(content=html_content)
 
+@api_router.get("/contracts/{contract_id}/pdf")
+async def get_contract_pdf(contract_id: str):
+    """Generate and download PDF version of doula contract"""
+    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib import colors
+    from io import BytesIO
+    from fastapi.responses import StreamingResponse
+    
+    # Create PDF buffer
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=20, textColor=colors.HexColor('#9F83B6'), spaceAfter=6)
+    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#9F83B6'), spaceBefore=20, spaceAfter=10)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=8)
+    intro_style = ParagraphStyle('Intro', parent=styles['Normal'], fontSize=10, leading=14, fontName='Helvetica-Oblique', spaceAfter=15)
+    
+    elements = []
+    
+    # Title
+    elements.append(Paragraph("True Joy Birthing Doula Service Agreement", title_style))
+    elements.append(Spacer(1, 20))
+    
+    # Intro paragraph
+    intro_text = f"This Service Agreement is made between <b>{contract.get('doula_name', '')}</b> (Doula) and <b>{contract.get('client_name', '')}</b> (Client) as of <b>{contract.get('agreement_date', '')}</b>."
+    if contract.get("partner_name"):
+        intro_text += f" The Partner is <b>{contract['partner_name']}</b>."
+    elements.append(Paragraph(intro_text, intro_style))
+    elements.append(Spacer(1, 10))
+    
+    # Client Details Table
+    elements.append(Paragraph("Client Details", heading_style))
+    client_data = [
+        ["Client Name", contract.get("client_name", "")],
+    ]
+    if contract.get("partner_name"):
+        client_data.append(["Partner Name", contract["partner_name"]])
+    client_data.extend([
+        ["Estimated Due Date", contract.get("estimated_due_date", "")],
+        ["Birth Location", contract.get("intended_birth_place", "")],
+    ])
+    client_table = Table(client_data, colWidths=[2.5*inch, 4*inch])
+    client_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f5f0f7')),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(client_table)
+    elements.append(Spacer(1, 15))
+    
+    # Payment Details Table
+    elements.append(Paragraph("Payment Details", heading_style))
+    payment_data = [
+        ["Total Payment Amount", f"${contract.get('total_payment_amount', 0):,.2f}"],
+        ["Retainer Fee (Non-refundable)", f"${contract.get('retainer_fee', 0):,.2f}"],
+        ["Remaining Amount", f"${contract.get('remaining_payment_amount', 0):,.2f}"],
+        ["Final Payment Due", contract.get("final_payment_due_date", "")],
+    ]
+    payment_table = Table(payment_data, colWidths=[2.5*inch, 4*inch])
+    payment_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f5f0f7')),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(payment_table)
+    
+    # Contract Sections
+    for section in contract.get("sections", []):
+        elements.append(Paragraph(section.get("title", ""), heading_style))
+        content = section.get("custom_content") or section.get("content", "")
+        for para in content.split('\n\n'):
+            if para.strip():
+                elements.append(Paragraph(para.strip().replace('\n', '<br/>'), body_style))
+    
+    # Additional Terms
+    if contract.get("additional_terms"):
+        elements.append(Paragraph("Additional Terms", heading_style))
+        elements.append(Paragraph(contract["additional_terms"], body_style))
+    
+    # Signatures
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph("Signatures", heading_style))
+    
+    sig_data = []
+    if contract.get("doula_signature"):
+        sig_data.append(["Doula Signature:", contract["doula_signature"].get("signer_name", "")])
+        sig_data.append(["Date Signed:", contract["doula_signature"].get("signed_at", "")[:10] if contract["doula_signature"].get("signed_at") else ""])
+    if contract.get("client_signature"):
+        sig_data.append(["Client Signature:", contract["client_signature"].get("signer_name", "")])
+        sig_data.append(["Date Signed:", contract["client_signature"].get("signed_at", "")[:10] if contract["client_signature"].get("signed_at") else ""])
+    
+    if sig_data:
+        sig_table = Table(sig_data, colWidths=[2*inch, 4.5*inch])
+        sig_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ]))
+        elements.append(sig_table)
+    
+    # Build PDF
+    doc.build(elements)
+    buffer.seek(0)
+    
+    filename = f"Doula_Agreement_{contract.get('client_name', 'Client').replace(' ', '_')}_{contract_id}.pdf"
+    
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
 @api_router.put("/doula/contracts/{contract_id}")
 async def update_contract(contract_id: str, request: Request, user: User = Depends(check_role(["DOULA"]))):
     """Update a contract"""
