@@ -343,6 +343,7 @@ class AdminContent(BaseModel):
 
 # --- Birth Plan Share Models ---
 SHARE_REQUEST_STATUS = ["pending", "accepted", "rejected"]
+CONNECTION_STATUS = ["pending", "active", "ended"]
 
 class ShareRequestCreate(BaseModel):
     provider_id: str  # The doula or midwife user_id
@@ -355,6 +356,9 @@ class ShareRequest(BaseModel):
     provider_name: str
     provider_role: str  # DOULA or MIDWIFE
     status: str = "pending"  # pending, accepted, rejected
+    connection_status: str = "pending"  # pending, active, ended
+    can_view_birth_plan: bool = True  # Default true for active connections
+    can_message: bool = True  # Default true for active connections
     created_at: datetime
     responded_at: Optional[datetime] = None
 
