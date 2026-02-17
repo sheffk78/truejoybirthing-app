@@ -106,6 +106,12 @@ export default function MomLayout() {
           href: null,  // Hide from tab bar, accessible from home/my-team
         }}
       />
+      <Tabs.Screen
+        name="appointments"
+        options={{
+          href: null,  // Hide from tab bar, accessible from home/my-team
+        }}
+      />
     </Tabs>
   );
 }
