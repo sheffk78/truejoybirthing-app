@@ -387,7 +387,14 @@ NOTIFICATION_TYPES = [
     "timeline_milestone", # New timeline milestone
     "new_message",        # New message received
     "contract_signed",    # Contract was signed
+    "birth_plan_complete", # Mom completed her birth plan
+    "birth_plan_updated",  # Mom updated her birth plan (optional)
+    "appointment_invite",  # Provider invited Mom to appointment
+    "appointment_response", # Mom responded to appointment
 ]
+
+# Birth plan status values
+BIRTH_PLAN_STATUS = ["not_started", "in_progress", "complete"]
 
 class Notification(BaseModel):
     notification_id: str
