@@ -2588,6 +2588,135 @@ async def get_midwife_contract_html_view(contract_id: str):
     html_content = get_midwife_contract_html(contract)
     return HTMLResponse(content=html_content)
 
+@api_router.get("/midwife-contracts/{contract_id}/pdf")
+async def get_midwife_contract_pdf(contract_id: str):
+    """Generate and download PDF version of midwife contract"""
+    contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib import colors
+    from io import BytesIO
+    from fastapi.responses import StreamingResponse
+    
+    # Create PDF buffer
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    
+    # Styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=20, textColor=colors.HexColor('#5B8C7A'), spaceAfter=6)
+    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#5B8C7A'), spaceBefore=20, spaceAfter=10)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=8)
+    intro_style = ParagraphStyle('Intro', parent=styles['Normal'], fontSize=10, leading=14, fontName='Helvetica-Oblique', spaceAfter=15)
+    
+    elements = []
+    
+    # Title
+    elements.append(Paragraph("Midwifery Services Agreement", title_style))
+    if contract.get("practice_name"):
+        elements.append(Paragraph(contract["practice_name"], styles['Normal']))
+    elements.append(Spacer(1, 20))
+    
+    # Intro paragraph
+    intro_text = f"This Midwifery Services Agreement is made between <b>{contract.get('midwife_name', '')}</b> (Midwife/Practice) and <b>{contract.get('client_name', '')}</b> (Client) as of <b>{contract.get('agreement_date', '')}</b>."
+    if contract.get("partner_name"):
+        intro_text += f" The Partner or primary support person is <b>{contract['partner_name']}</b>."
+    elements.append(Paragraph(intro_text, intro_style))
+    elements.append(Spacer(1, 10))
+    
+    # Care Details Table
+    elements.append(Paragraph("Care Details", heading_style))
+    care_data = [
+        ["Client Name", contract.get("client_name", "")],
+    ]
+    if contract.get("partner_name"):
+        care_data.append(["Partner/Support Person", contract["partner_name"]])
+    care_data.extend([
+        ["Estimated Due Date", contract.get("estimated_due_date", "")],
+        ["Planned Birth Location", contract.get("planned_birth_place", "")],
+        ["On-Call Period", f"{contract.get('on_call_start_week', '37')} to {contract.get('on_call_end_week', '42')} weeks"],
+    ])
+    care_table = Table(care_data, colWidths=[2.5*inch, 4*inch])
+    care_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f0f7f4')),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(care_table)
+    elements.append(Spacer(1, 15))
+    
+    # Payment Details Table
+    elements.append(Paragraph("Payment Details", heading_style))
+    payment_data = [
+        ["Total Fee", f"${contract.get('total_fee', 0):,.2f}"],
+        ["Non-Refundable Deposit", f"${contract.get('deposit', 0):,.2f}"],
+        ["Remaining Balance", f"${contract.get('remaining_balance', 0):,.2f}"],
+        ["Balance Due By", f"{contract.get('balance_due_week', '36')} weeks' gestation"],
+    ]
+    payment_table = Table(payment_data, colWidths=[2.5*inch, 4*inch])
+    payment_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f0f7f4')),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    elements.append(payment_table)
+    
+    # Contract Sections
+    for section in contract.get("sections", []):
+        elements.append(Paragraph(section.get("title", ""), heading_style))
+        content = section.get("custom_content") or section.get("content", "")
+        # Split content into paragraphs and clean up
+        for para in content.split('\n\n'):
+            if para.strip():
+                elements.append(Paragraph(para.strip().replace('\n', '<br/>'), body_style))
+    
+    # Additional Terms
+    if contract.get("additional_terms"):
+        elements.append(Paragraph("Additional Terms", heading_style))
+        elements.append(Paragraph(contract["additional_terms"], body_style))
+    
+    # Signatures
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph("Signatures", heading_style))
+    
+    sig_data = []
+    if contract.get("midwife_signature"):
+        sig_data.append(["Midwife Signature:", contract["midwife_signature"].get("signer_name", "")])
+        sig_data.append(["Date Signed:", contract["midwife_signature"].get("signed_at", "")[:10] if contract["midwife_signature"].get("signed_at") else ""])
+    if contract.get("client_signature"):
+        sig_data.append(["Client Signature:", contract["client_signature"].get("signer_name", "")])
+        sig_data.append(["Date Signed:", contract["client_signature"].get("signed_at", "")[:10] if contract["client_signature"].get("signed_at") else ""])
+    
+    if sig_data:
+        sig_table = Table(sig_data, colWidths=[2*inch, 4.5*inch])
+        sig_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ]))
+        elements.append(sig_table)
+    
+    # Build PDF
+    doc.build(elements)
+    buffer.seek(0)
+    
+    filename = f"Midwifery_Agreement_{contract.get('client_name', 'Client').replace(' ', '_')}_{contract_id}.pdf"
+    
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
 @api_router.put("/midwife/contracts/{contract_id}")
 async def update_midwife_contract(contract_id: str, request: Request, user: User = Depends(check_role(["MIDWIFE"]))):
     """Update a midwife contract"""
