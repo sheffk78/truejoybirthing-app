@@ -148,6 +148,14 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - None (previously: Email notifications domain verification - now resolved)
 
 ### ✅ RECENTLY COMPLETED (2026-02-17)
+- [x] **True Joy Birthing Doula Service Agreement** (from PDF):
+  - Pre-populated contract template with 8 sections and ability to add additional terms
+  - Form fields: client names, due date, total payment, retainer fee, final payment due date
+  - Auto-calculated remaining balance (total - retainer)
+  - Digital signatures: Doula signs when sending, Client signs via link
+  - Email notification to client when contract is sent
+  - HTML view for printing/reviewing full contract
+  - Sections: Introduction, Role & Boundaries, Services (6 subsections), Restrictions, Privacy, Payment Terms, Cancellations, Acknowledgements
 - [x] **Weekly Tips & Affirmations Integration** (from PDFs):
   - Added comprehensive content: 42 pregnancy weeks + 6 postpartum weeks
   - Backend API: `/api/weekly-content` (personalized), `/api/weekly-content/all` (browse)
