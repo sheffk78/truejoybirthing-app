@@ -234,6 +234,22 @@ export default function MidwifeProfileScreen() {
           </Card>
         </TouchableOpacity>
         
+        {/* Send Feedback - Only for Pro users */}
+        {subscriptionStatus?.has_pro_access && (
+          <TouchableOpacity 
+            activeOpacity={0.8}
+            onPress={() => router.push('/pro-feedback')}
+          >
+            <Card style={styles.menuCard}>
+              <View style={styles.menuRow}>
+                <Icon name="chatbubble-ellipses-outline" size={24} color={COLORS.secondary} />
+                <Text style={styles.menuText}>Send Feedback</Text>
+                <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+              </View>
+            </Card>
+          </TouchableOpacity>
+        )}
+        
         {/* App Tutorial */}
         <TouchableOpacity 
           activeOpacity={0.8}
