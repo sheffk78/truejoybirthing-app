@@ -918,6 +918,18 @@ export const renderField = (
         />
       );
     case 'singleselect':
+      // Use special component for birth location field
+      if (key === 'birthLocation') {
+        return (
+          <BirthLocationSelectField
+            key={key}
+            label={label}
+            value={value}
+            onChange={(v) => onChange(key, v)}
+            options={options || []}
+          />
+        );
+      }
       return (
         <SingleSelectField
           key={key}
