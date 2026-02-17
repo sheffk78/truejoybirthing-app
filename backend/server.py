@@ -83,7 +83,7 @@ MIDWIFE_CREDENTIALS = ["CPM", "LM", "CNM"]
 # ============== PDF GENERATION HELPERS ==============
 
 def generate_midwife_contract_pdf_bytes(contract: dict) -> bytes:
-    """Generate PDF bytes for a midwife contract"""
+    """Generate PDF bytes for a midwife contract using the new agreement format"""
     from reportlab.lib.pagesizes import letter
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import inch
@@ -97,85 +97,97 @@ def generate_midwife_contract_pdf_bytes(contract: dict) -> bytes:
     styles = getSampleStyleSheet()
     title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=20, textColor=colors.HexColor('#5B8C7A'), spaceAfter=6)
     heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#5B8C7A'), spaceBefore=20, spaceAfter=10)
-    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=8)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=8, alignment=4)  # justified
     intro_style = ParagraphStyle('Intro', parent=styles['Normal'], fontSize=10, leading=14, fontName='Helvetica-Oblique', spaceAfter=15)
     
     elements = []
     
     # Title
     elements.append(Paragraph("Midwifery Services Agreement", title_style))
-    if contract.get("practice_name"):
-        elements.append(Paragraph(contract["practice_name"], styles['Normal']))
+    elements.append(Paragraph("<i>Powered by True Joy Birthing</i>", ParagraphStyle('Subtitle', parent=styles['Normal'], fontSize=10, textColor=colors.grey, alignment=1)))
     elements.append(Spacer(1, 20))
     
-    # Intro
-    intro_text = f"This Midwifery Services Agreement is made between <b>{contract.get('midwife_name', '')}</b> (Midwife/Practice) and <b>{contract.get('client_name', '')}</b> (Client) as of <b>{contract.get('agreement_date', '')}</b>."
-    if contract.get("partner_name"):
-        intro_text += f" The Partner or primary support person is <b>{contract['partner_name']}</b>."
-    elements.append(Paragraph(intro_text, intro_style))
-    elements.append(Spacer(1, 10))
-    
-    # Care Details
-    elements.append(Paragraph("Care Details", heading_style))
-    care_data = [["Client Name", contract.get("client_name", "")]]
-    if contract.get("partner_name"):
-        care_data.append(["Partner/Support Person", contract["partner_name"]])
-    care_data.extend([
-        ["Estimated Due Date", contract.get("estimated_due_date", "")],
-        ["Planned Birth Location", contract.get("planned_birth_place", "")],
-        ["On-Call Period", f"{contract.get('on_call_start_week', '37')} to {contract.get('on_call_end_week', '42')} weeks"],
-    ])
-    care_table = Table(care_data, colWidths=[2.5*inch, 4*inch])
-    care_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f0f7f4')),
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
-        ('PADDING', (0, 0), (-1, -1), 8),
-    ]))
-    elements.append(care_table)
-    elements.append(Spacer(1, 15))
-    
-    # Payment Details
-    elements.append(Paragraph("Payment Details", heading_style))
-    payment_data = [
-        ["Total Fee", f"${contract.get('total_fee', 0):,.2f}"],
-        ["Non-Refundable Deposit", f"${contract.get('deposit', 0):,.2f}"],
-        ["Remaining Balance", f"${contract.get('remaining_balance', 0):,.2f}"],
-        ["Balance Due By", f"{contract.get('balance_due_week', '36')} weeks' gestation"],
+    # Key Details Summary
+    elements.append(Paragraph("Agreement Overview", heading_style))
+    key_data = [
+        ["Practice/Midwife", contract.get("midwife_practice_name", "")],
+        ["Client", contract.get("client_name", "")],
     ]
-    payment_table = Table(payment_data, colWidths=[2.5*inch, 4*inch])
-    payment_table.setStyle(TableStyle([
+    if contract.get("partner_name") and contract.get("partner_name") != "N/A":
+        key_data.append(["Partner/Support Person", contract["partner_name"]])
+    key_data.extend([
+        ["Estimated Due Date", contract.get("estimated_due_date", "")],
+        ["Planned Birth Location", contract.get("planned_birth_location", "")],
+        ["Total Fee", f"${contract.get('total_fee', 0):,.2f}"],
+        ["Retainer Amount", f"${contract.get('retainer_amount', 0):,.2f}"],
+        ["Remaining Balance", f"${contract.get('remaining_balance', 0):,.2f}"],
+        ["Agreement Date", contract.get("agreement_date", "")],
+    ])
+    key_table = Table(key_data, colWidths=[2*inch, 4.5*inch])
+    key_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f0f7f4')),
         ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#ddd')),
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
-    elements.append(payment_table)
+    elements.append(key_table)
+    elements.append(Spacer(1, 20))
     
-    # Sections
-    for section in contract.get("sections", []):
-        elements.append(Paragraph(section.get("title", ""), heading_style))
-        content = section.get("custom_content") or section.get("content", "")
-        for para in content.split('\n\n'):
+    # Contract Text - use the pre-generated contract text if available
+    contract_text = contract.get("contract_text", "")
+    if contract_text:
+        elements.append(Paragraph("Full Agreement", heading_style))
+        paragraphs = contract_text.split('\n\n')
+        for para in paragraphs:
             if para.strip():
+                # Skip the title as we already have it
+                if para.strip() == "Midwifery Services Agreement":
+                    continue
                 elements.append(Paragraph(para.strip().replace('\n', '<br/>'), body_style))
-    
-    if contract.get("additional_terms"):
-        elements.append(Paragraph("Additional Terms", heading_style))
-        elements.append(Paragraph(contract["additional_terms"], body_style))
+    else:
+        # Fallback: Generate sections from contract fields
+        elements.append(Paragraph("Agreement Terms", heading_style))
+        
+        if contract.get("scope_description"):
+            elements.append(Paragraph(f"<b>Services:</b> {contract['scope_description']}", body_style))
+        if contract.get("on_call_window_description"):
+            elements.append(Paragraph(f"<b>On-Call Period:</b> {contract['on_call_window_description']}", body_style))
+        if contract.get("transfer_indications_description"):
+            elements.append(Paragraph(f"<b>Transfer Indications:</b> {contract['transfer_indications_description']}", body_style))
+        if contract.get("special_arrangements"):
+            elements.append(Paragraph(f"<b>Special Arrangements:</b> {contract['special_arrangements']}", body_style))
     
     # Signatures
     elements.append(Spacer(1, 30))
     elements.append(Paragraph("Signatures", heading_style))
     sig_data = []
+    
+    # Midwife signature
     if contract.get("midwife_signature"):
         sig_data.append(["Midwife Signature:", contract["midwife_signature"].get("signer_name", "")])
         sig_data.append(["Date Signed:", contract["midwife_signature"].get("signed_at", "")[:10] if contract["midwife_signature"].get("signed_at") else ""])
+    else:
+        sig_data.append(["Midwife Signature:", "________________________________"])
+        sig_data.append(["Date:", "________________________________"])
+    
+    # Client signature
     if contract.get("client_signature"):
         sig_data.append(["Client Signature:", contract["client_signature"].get("signer_name", "")])
         sig_data.append(["Date Signed:", contract["client_signature"].get("signed_at", "")[:10] if contract["client_signature"].get("signed_at") else ""])
+    else:
+        sig_data.append(["Client Signature:", "________________________________"])
+        sig_data.append(["Date:", "________________________________"])
+    
+    # Partner signature (if applicable)
+    if contract.get("partner_name") and contract.get("partner_name") != "N/A":
+        if contract.get("partner_signature"):
+            sig_data.append(["Partner Signature:", contract["partner_signature"].get("signer_name", "")])
+            sig_data.append(["Date Signed:", contract["partner_signature"].get("signed_at", "")[:10] if contract["partner_signature"].get("signed_at") else ""])
+        else:
+            sig_data.append(["Partner Signature:", "________________________________"])
+            sig_data.append(["Date:", "________________________________"])
+    
     if sig_data:
         sig_table = Table(sig_data, colWidths=[2*inch, 4.5*inch])
         sig_table.setStyle(TableStyle([
