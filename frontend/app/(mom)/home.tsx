@@ -450,4 +450,63 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.md,
     lineHeight: 20,
   },
+  // Weekly Tip & Affirmation Card Styles
+  weeklyCard: {
+    marginBottom: SIZES.md,
+    padding: SIZES.md,
+  },
+  weeklyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SIZES.sm,
+  },
+  weeklyIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SIZES.sm,
+  },
+  weeklyHeaderText: {
+    flex: 1,
+  },
+  weeklyLabel: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textPrimary,
+  },
+  weeklyWeek: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.primary,
+  },
+  weeklyContent: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    lineHeight: 22,
+    marginBottom: SIZES.sm,
+  },
+  weeklyReadMore: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  weeklyReadMoreText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.primary,
+  },
+  affirmationCard: {
+    backgroundColor: COLORS.roleDoula + '08',
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.roleDoula,
+  },
+  affirmationContent: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyItalic || FONTS.body,
+    color: COLORS.textPrimary,
+    lineHeight: 24,
+    fontStyle: 'italic',
+  },
 });
