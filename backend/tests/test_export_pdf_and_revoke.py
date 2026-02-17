@@ -161,7 +161,7 @@ class TestExportPDFAndRevokeInvitation:
         if response.status_code == 400 and "already" in response.text.lower():
             print("✓ Share request already exists - will use existing for cancellation test")
             # Get existing requests
-            existing_resp = requests.get(f"{BASE_URL}/api/birth-plan/share/requests", headers=headers)
+            existing_resp = requests.get(f"{BASE_URL}/api/birth-plan/share-requests", headers=headers)
             if existing_resp.status_code == 200:
                 requests_data = existing_resp.json().get("requests", [])
                 for req in requests_data:
@@ -180,7 +180,7 @@ class TestExportPDFAndRevokeInvitation:
         """Verify MOM can list share requests"""
         headers = {"Authorization": f"Bearer {mom_session['token']}"}
         
-        response = requests.get(f"{BASE_URL}/api/birth-plan/share/requests", headers=headers)
+        response = requests.get(f"{BASE_URL}/api/birth-plan/share-requests", headers=headers)
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         data = response.json()
@@ -206,7 +206,7 @@ class TestExportPDFAndRevokeInvitation:
         headers = {"Authorization": f"Bearer {mom_session['token']}"}
         
         # First get the share requests to find one to cancel
-        list_resp = requests.get(f"{BASE_URL}/api/birth-plan/share/requests", headers=headers)
+        list_resp = requests.get(f"{BASE_URL}/api/birth-plan/share-requests", headers=headers)
         assert list_resp.status_code == 200, f"Expected 200, got {list_resp.status_code}"
         
         requests_list = list_resp.json().get("requests", [])
@@ -247,7 +247,7 @@ class TestExportPDFAndRevokeInvitation:
         print(f"✓ Share request revoked successfully: {data.get('message')}")
         
         # Verify the request is gone
-        verify_resp = requests.get(f"{BASE_URL}/api/birth-plan/share/requests", headers=headers)
+        verify_resp = requests.get(f"{BASE_URL}/api/birth-plan/share-requests", headers=headers)
         assert verify_resp.status_code == 200
         
         remaining_requests = verify_resp.json().get("requests", [])
