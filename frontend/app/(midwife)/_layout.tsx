@@ -87,6 +87,12 @@ export default function MidwifeLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="appointments"
+        options={{
+          href: null,  // Hide from tab bar, accessible from dashboard
+        }}
+      />
     </Tabs>
   );
 }
