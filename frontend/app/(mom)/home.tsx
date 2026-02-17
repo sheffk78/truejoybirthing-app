@@ -161,6 +161,22 @@ export default function MomHomeScreen() {
           
           <TouchableOpacity
             style={styles.actionCard}
+            onPress={() => router.push('/(mom)/appointments')}
+            activeOpacity={0.8}
+            data-testid="appointments-quick-action"
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.roleDoula + '30' }]}>
+              <Icon name="calendar-number" size={24} color={COLORS.roleDoula} />
+            </View>
+            <Text style={styles.actionTitle}>Appointments</Text>
+            <Text style={styles.actionSubtitle}>Upcoming visits</Text>
+          </TouchableOpacity>
+        </View>
+        
+        {/* Team Row */}
+        <View style={styles.actionsGrid}>
+          <TouchableOpacity
+            style={styles.actionCard}
             onPress={() => router.push('/(mom)/my-team')}
             activeOpacity={0.8}
           >
@@ -169,6 +185,18 @@ export default function MomHomeScreen() {
             </View>
             <Text style={styles.actionTitle}>My Team</Text>
             <Text style={styles.actionSubtitle}>Care providers</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/(mom)/marketplace')}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.roleMidwife + '30' }]}>
+              <Icon name="search" size={24} color={COLORS.roleMidwife} />
+            </View>
+            <Text style={styles.actionTitle}>Find Providers</Text>
+            <Text style={styles.actionSubtitle}>Browse marketplace</Text>
           </TouchableOpacity>
         </View>
         
