@@ -1,0 +1,60 @@
+{
+  "summary": "Contract Templates feature testing - Backend APIs pass (100%), Frontend has one bug: template selection not appearing in New Contract modal",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Contracts - New Contract Modal",
+        "issue": "Template selection ('Start from Template' / 'From Scratch') not appearing in the modal. The API call to /api/contract-templates is NOT being made when contracts page loads. Promise.all only fetches /doula/contracts and /doula/clients, skipping /contract-templates.",
+        "selector": "[data-testid='template-option-none']",
+        "priority": "HIGH",
+        "affected_pages": ["/(doula)/contracts.tsx", "/(midwife)/contracts.tsx"],
+        "evidence": "Network trace shows only 2 of 3 API calls in loadData() are executed. Contract-templates API never called."
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_contract_templates.py",
+    "/app/test_reports/pytest/pytest_contract_templates.xml"
+  ],
+  "action_items": [
+    "FIX: Debug why API_ENDPOINTS.CONTRACT_TEMPLATES call in contracts.tsx loadData() is not executing. Possible issues: 1) API endpoint path mismatch, 2) Promise rejection causing early exit, 3) React component not reaching the useEffect properly",
+    "VERIFY: Check if the template API call fails silently - add console.log in catch block",
+    "VERIFY: Ensure API_ENDPOINTS import is correct (default vs named export)"
+  ],
+  "critical_code_review_comments": [
+    "Bug in contracts.tsx line 138: The Promise.all should call 3 APIs but only 2 are being made. Need to investigate why apiRequest(API_ENDPOINTS.CONTRACT_TEMPLATES) is not executing.",
+    "The template selection UI code (lines 716-764) is correct and will work once templates state is populated."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_contract_templates.py"
+  ],
+  "success_rate": {
+    "backend": "100% (16/16 tests passed)",
+    "frontend": "75% (Templates page works, Templates button works, but template selection in contract creation fails)"
+  },
+  "test_credentials": {
+    "doula": {"email": "testdoula123@test.com", "password": "password123"},
+    "midwife": {"email": "testmidwife_ui@test.com", "password": "password123"}
+  },
+  "seed_data_creation": "Created test midwife user (testmidwife_ui@test.com) for testing",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Backend APIs for contract templates are fully working. Frontend contract-templates.tsx pages work correctly for both Doula and Midwife (CRUD operations). The bug is in contracts.tsx - the loadData() function's Promise.all call to CONTRACT_TEMPLATES endpoint is not executing. Network trace confirms only 2 of 3 API calls are made.",
+  "rca_of_the_issue": {
+    "root_cause": "The API call to /api/contract-templates in contracts.tsx loadData() function is not being executed. This could be due to: 1) Early rejection of Promise.all if one promise fails before the third executes, 2) The endpoint path not being resolved correctly, or 3) Some React lifecycle issue preventing the full execution.",
+    "reproduction_steps": [
+      "1. Login as testdoula123@test.com",
+      "2. Navigate to /contracts page",
+      "3. Click 'New Contract' button",
+      "4. Observe that 'Start from Template' section is missing above 'Select Client'",
+      "5. Check Network tab - only /doula/contracts and /doula/clients APIs called, /contract-templates is NOT called"
+    ],
+    "mitigation": "Need to add error logging to identify why the third API call is not executing. Could also try separating the contract-templates API call into its own try-catch to prevent it from being affected by other API failures."
+  }
+}
