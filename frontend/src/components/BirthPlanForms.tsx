@@ -848,12 +848,6 @@ export const SECTION_FORMS: Record<string, {
         placeholder: 'Name and phone number',
       },
       {
-        key: 'additionalNotes',
-        type: 'textarea',
-        label: 'Anything Else Your Care Team Should Know',
-        placeholder: 'Any other preferences, wishes, or information...',
-      },
-      {
         key: 'musicPreferences',
         type: 'text',
         label: 'Music Preferences',
