@@ -228,7 +228,7 @@ class TestExportPDFAndRevokeInvitation:
             )
             
             if create_resp.status_code in [200, 201]:
-                test_request = create_resp.json()
+                test_request = create_resp.json().get("request", {})
             else:
                 pytest.skip(f"No share request to revoke and could not create one: {create_resp.text}")
         
