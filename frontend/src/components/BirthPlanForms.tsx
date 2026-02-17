@@ -385,12 +385,6 @@ export const SECTION_FORMS: Record<string, {
           'Do not offer unless I ask',
         ],
       },
-      {
-        key: 'painNotes',
-        type: 'textarea',
-        label: 'Additional Notes About Pain Management',
-        placeholder: 'Any specific concerns or preferences...',
-      },
     ],
   },
 
