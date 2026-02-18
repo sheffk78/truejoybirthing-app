@@ -351,51 +351,6 @@ export default function MomProfileScreen() {
           )}
         </Card>
         
-        {/* My Team */}
-        <Card style={styles.teamCard}>
-          <Text style={styles.cardTitle}>My Team</Text>
-          
-          {/* Doula */}
-          <View style={styles.teamMember}>
-            <View style={styles.teamIcon}>
-              <Icon name="heart" size={24} color={COLORS.roleDoula} />
-            </View>
-            <View style={styles.teamInfo}>
-              <Text style={styles.teamRole}>Doula</Text>
-              {team.doula ? (
-                <Text style={styles.teamName}>{team.doula.name}</Text>
-              ) : (
-                <Text style={styles.teamEmpty}>Not connected</Text>
-              )}
-            </View>
-            <TouchableOpacity style={styles.connectButton}>
-              <Text style={styles.connectText}>
-                {team.doula ? 'View' : 'Find'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          
-          {/* Midwife */}
-          <View style={styles.teamMember}>
-            <View style={styles.teamIcon}>
-              <Icon name="medkit" size={24} color={COLORS.roleMidwife} />
-            </View>
-            <View style={styles.teamInfo}>
-              <Text style={styles.teamRole}>Midwife</Text>
-              {team.midwife ? (
-                <Text style={styles.teamName}>{team.midwife.name}</Text>
-              ) : (
-                <Text style={styles.teamEmpty}>Not connected</Text>
-              )}
-            </View>
-            <TouchableOpacity style={styles.connectButton}>
-              <Text style={styles.connectText}>
-                {team.midwife ? 'View' : 'Find'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </Card>
-        
         {/* Postpartum */}
         <TouchableOpacity activeOpacity={0.8}>
           <Card style={styles.menuCard}>
