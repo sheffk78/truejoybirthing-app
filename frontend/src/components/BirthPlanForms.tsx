@@ -1,7 +1,9 @@
-import React from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, Modal } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from './Icon';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
+import Button from './Button';
 
 // Component for text input fields
 const TextInputField = ({
