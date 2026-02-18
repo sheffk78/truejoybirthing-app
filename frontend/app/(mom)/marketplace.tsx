@@ -78,38 +78,57 @@ export default function MarketplaceScreen() {
     fetchProviders();
   };
   
-  const handleContactProvider = () => {
-    setShowMessageModal(true);
-  };
-  
-  const sendMessage = async () => {
-    if (!messageText.trim() || !selectedProvider || sendingMessage) return;
+  const handleContactProvider = async (provider: any) => {
+    if (!provider?.user_id || contactingProvider) return;
     
-    setSendingMessage(true);
+    setContactingProvider(true);
+    setSelectedProvider(provider);
+    
     try {
-      await apiRequest(API_ENDPOINTS.MESSAGES, {
-        method: 'POST',
-        body: {
-          receiver_id: selectedProvider.user_id,
-          content: messageText.trim(),
-        },
-      });
+      // Check if there's an existing conversation with this provider
+      const conversationsData = await apiRequest(API_ENDPOINTS.MESSAGES_CONVERSATIONS);
+      const existingConv = conversationsData.conversations?.find(
+        (c: any) => c.other_user_id === provider.user_id
+      );
       
-      setMessageText('');
-      setShowMessageModal(false);
-      setSelectedProvider(null);
+      if (existingConv) {
+        // Navigate to existing conversation
+        router.push({
+          pathname: '/(mom)/messages',
+          params: { openConversation: provider.user_id }
+        });
+      } else {
+        // Create a new conversation with pre-populated message
+        const prefilledMessage = `Hi ${provider.full_name}, I found you on True Joy Birthing and would love to learn more about working together.`;
+        
+        // Send the initial message to create the thread
+        await apiRequest(API_ENDPOINTS.MESSAGES, {
+          method: 'POST',
+          body: {
+            receiver_id: provider.user_id,
+            content: prefilledMessage,
+          },
+        });
+        
+        // Navigate to messages with this provider
+        router.push({
+          pathname: '/(mom)/messages',
+          params: { openConversation: provider.user_id }
+        });
+      }
+    } catch (error: any) {
+      // If message sending fails (e.g., no connection), still navigate to messages
       Alert.alert(
-        'Message Sent!',
-        `Your message has been sent to ${selectedProvider.full_name}. You can continue the conversation in Messages.`,
+        'Start Conversation',
+        `Would you like to connect with ${provider.full_name}? You may need to share your birth plan with them first to send messages.`,
         [
-          { text: 'Go to Messages', onPress: () => router.push('/(mom)/messages') },
-          { text: 'OK', style: 'cancel' }
+          { text: 'Go to My Team', onPress: () => router.push('/(mom)/my-team') },
+          { text: 'Cancel', style: 'cancel' }
         ]
       );
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to send message');
     } finally {
-      setSendingMessage(false);
+      setContactingProvider(false);
+      setSelectedProvider(null);
     }
   };
   
