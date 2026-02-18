@@ -29,6 +29,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function DoulaClientsScreen() {
+  const router = useRouter();
   const [clients, setClients] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
