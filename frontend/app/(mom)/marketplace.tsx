@@ -60,9 +60,30 @@ export default function MarketplaceScreen() {
         profile: p.profile
       }));
       setProviders(allProviders);
+      
+      // Fetch team status for each provider
+      await fetchTeamStatus(allProviders);
     } catch (error) {
       console.error('Error fetching providers:', error);
       setProviders([]);
+    }
+  };
+  
+  const fetchTeamStatus = async (providerList: any[]) => {
+    try {
+      // Fetch share requests to check status
+      const shareRequests = await apiRequest('/birth-plan/share-requests');
+      const statusMap: Record<string, string> = {};
+      
+      if (shareRequests?.requests) {
+        shareRequests.requests.forEach((req: any) => {
+          statusMap[req.provider_id] = req.status;
+        });
+      }
+      
+      setTeamStatus(statusMap);
+    } catch (error) {
+      console.error('Error fetching team status:', error);
     }
   };
   
