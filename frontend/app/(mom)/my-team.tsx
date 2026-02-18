@@ -313,6 +313,11 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     justifyContent: 'center' 
   },
+  avatarImage: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+  },
   pendingAvatar: { backgroundColor: COLORS.warning + '20' },
   teamInfo: { flex: 1, marginLeft: SIZES.md },
   teamName: { fontSize: SIZES.fontMd, fontWeight: '600', color: COLORS.textPrimary },
