@@ -218,7 +218,7 @@ export const SECTION_FORMS: Record<string, {
   description: string;
   fields: Array<{
     key: string;
-    type: 'text' | 'textarea' | 'multiselect' | 'singleselect';
+    type: 'text' | 'textarea' | 'multiselect' | 'singleselect' | 'date';
     label: string;
     placeholder?: string;
     options?: string[];
