@@ -2344,6 +2344,117 @@ async def export_birth_plan_pdf(user: User = Depends(check_role(["MOM"]))):
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
 
+@api_router.get("/provider/client/{mom_id}/birth-plan/pdf")
+async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Generate and download PDF version of a client's birth plan for providers"""
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib import colors
+    from io import BytesIO
+    from fastapi.responses import StreamingResponse
+    
+    # Verify provider has access to this mom's birth plan
+    share_request = await db.share_requests.find_one({
+        "mom_user_id": mom_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    
+    if not share_request:
+        raise HTTPException(status_code=403, detail="You don't have access to this client's birth plan")
+    
+    plan = await db.birth_plans.find_one({"user_id": mom_id}, {"_id": 0})
+    user_doc = await db.users.find_one({"user_id": mom_id}, {"_id": 0})
+    mom_profile = await db.mom_profiles.find_one({"user_id": mom_id}, {"_id": 0})
+    
+    if not plan:
+        raise HTTPException(status_code=404, detail="Birth plan not found")
+    
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=24, textColor=colors.HexColor('#9F83B6'), spaceAfter=6)
+    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#9F83B6'), spaceBefore=20, spaceAfter=10)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=6)
+    
+    elements = []
+    
+    # Title
+    user_name = user_doc.get("full_name", "Client") if user_doc else "Client"
+    elements.append(Paragraph(f"{user_name}'s Birth Plan", title_style))
+    elements.append(Spacer(1, 10))
+    
+    # Basic info
+    if mom_profile:
+        info_data = []
+        if mom_profile.get("due_date"):
+            info_data.append(["Expected Due Date:", mom_profile["due_date"]])
+        if mom_profile.get("planned_birth_setting"):
+            info_data.append(["Planned Birth Setting:", mom_profile["planned_birth_setting"]])
+        
+        if info_data:
+            info_table = Table(info_data, colWidths=[2*inch, 4*inch])
+            info_table.setStyle(TableStyle([
+                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ]))
+            elements.append(info_table)
+            elements.append(Spacer(1, 15))
+    
+    # Sections
+    sections = plan.get("sections", [])
+    section_names = {
+        "getting_started": "Getting Started",
+        "support_preferences": "Support & Atmosphere",
+        "pain_management": "Pain Management",
+        "monitoring_iv": "Labor Environment & Comfort",
+        "interventions": "Interventions & C-Section",
+        "pushing_safe_word": "Pushing, Delivery & Safe Word",
+        "baby_care": "Baby Care After Birth",
+        "feeding": "Feeding Preferences",
+        "postpartum": "Postpartum Care",
+        "additional_info": "Additional Information"
+    }
+    
+    for section in sections:
+        section_id = section.get("section_id", "")
+        section_name = section_names.get(section_id, section_id.replace("_", " ").title())
+        data = section.get("data", {})
+        
+        if not data:
+            continue
+        
+        elements.append(Paragraph(section_name, heading_style))
+        
+        for key, value in data.items():
+            if value:
+                label = key.replace("_", " ").replace("Preference", "").title()
+                
+                if isinstance(value, list):
+                    value_str = ", ".join(str(v) for v in value)
+                else:
+                    value_str = str(value)
+                
+                elements.append(Paragraph(f"<b>{label}:</b> {value_str}", body_style))
+        
+        elements.append(Spacer(1, 10))
+    
+    # Build PDF
+    doc.build(elements)
+    buffer.seek(0)
+    
+    filename = f"Birth_Plan_{user_name.replace(' ', '_')}.pdf"
+    
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
 # ============== BIRTH PLAN SHARING ROUTES ==============
 
 @api_router.get("/providers/search")
