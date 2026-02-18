@@ -19,6 +19,8 @@ import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { useAuthStore } from '../../src/store/authStore';
+import wsClient from '../../src/utils/websocket';
 
 interface Conversation {
   other_user_id: string;
