@@ -524,12 +524,27 @@ const styles = StyleSheet.create({
     marginTop: SIZES.md,
     gap: SIZES.sm,
   },
-  autoShareText: {
+  autoShareTextContainer: {
     flex: 1,
+  },
+  autoShareText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     lineHeight: 20,
+  },
+  sharedWithText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.success,
+    marginTop: 4,
+  },
+  notSharedText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    fontStyle: 'italic',
+    marginTop: 4,
   },
   modalContainer: {
     flex: 1,
