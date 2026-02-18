@@ -69,14 +69,21 @@ export default function BirthPlanScreen() {
       // API_BASE already includes /api, so we just need the endpoint path
       const pdfUrl = `${getApiBaseUrl()}/birth-plan/export/pdf`;
       
+      console.log('PDF Download - URL:', pdfUrl);
+      console.log('PDF Download - Token available:', !!token);
+      
       if (Platform.OS === 'web') {
-        // For web: Open in new window to trigger browser's native download
+        // Robust download using fetch + blob + hidden anchor
         const response = await fetch(pdfUrl, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
+            'Accept': 'application/pdf',
           },
         });
+        
+        console.log('PDF Download - Response status:', response.status);
+        console.log('PDF Download - Content-Type:', response.headers.get('content-type'));
         
         if (!response.ok) {
           const errorText = await response.text();
@@ -84,22 +91,34 @@ export default function BirthPlanScreen() {
           throw new Error('Failed to download PDF');
         }
         
+        // Get the blob from response
         const blob = await response.blob();
+        console.log('PDF Download - Blob size:', blob.size, 'bytes');
         
-        // Create object URL and trigger download
+        if (blob.size === 0) {
+          throw new Error('Downloaded PDF is empty');
+        }
+        
+        // Create a temporary object URL
         const blobUrl = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = 'My_Birth_Plan.pdf';
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
         
-        // Cleanup
+        // Create a hidden anchor element for download
+        const downloadLink = document.createElement('a');
+        downloadLink.href = blobUrl;
+        downloadLink.download = 'My_Birth_Plan.pdf';
+        downloadLink.style.cssText = 'position: absolute; left: -9999px; top: -9999px;';
+        
+        // Append to body, click, and clean up
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        
+        // Clean up after a short delay to ensure download starts
         setTimeout(() => {
-          document.body.removeChild(link);
+          if (downloadLink.parentNode) {
+            document.body.removeChild(downloadLink);
+          }
           window.URL.revokeObjectURL(blobUrl);
-        }, 100);
+        }, 250);
         
         Alert.alert('Success', 'Your birth plan PDF has been downloaded! Check your Downloads folder.');
       } else {
@@ -108,7 +127,7 @@ export default function BirthPlanScreen() {
       }
     } catch (error: any) {
       console.error('PDF download error:', error);
-      Alert.alert('Error', 'Failed to download PDF. Please try again.');
+      Alert.alert('Error', error.message || 'Failed to download PDF. Please try again.');
     } finally {
       setExporting(false);
     }
