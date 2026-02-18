@@ -61,6 +61,7 @@ export default function MessagesScreen() {
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loadingTeam, setLoadingTeam] = useState(false);
+  const [pendingInvoices, setPendingInvoices] = useState<any[]>([]);
   const scrollViewRef = useRef<ScrollView>(null);
   
   const fetchConversations = async () => {
@@ -78,6 +79,19 @@ export default function MessagesScreen() {
       setCurrentUserId(data.user_id);
     } catch (error) {
       console.error('Error fetching user:', error);
+    }
+  };
+
+  const fetchInvoices = async () => {
+    try {
+      const data = await apiRequest(API_ENDPOINTS.MOM_INVOICES);
+      // Filter to pending/unpaid invoices
+      const pending = (data || []).filter((inv: any) => 
+        inv.status === 'pending' || inv.status === 'sent'
+      );
+      setPendingInvoices(pending);
+    } catch (error) {
+      console.error('Error fetching invoices:', error);
     }
   };
 
