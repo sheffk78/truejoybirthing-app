@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,30 +17,81 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 
+interface ShareRequest {
+  request_id: string;
+  mom_user_id: string;
+  mom_name: string;
+  status: string;
+  created_at: string;
+}
+
 export default function MidwifeDashboardScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
   
   const [stats, setStats] = useState<any>(null);
+  const [shareRequests, setShareRequests] = useState<ShareRequest[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   
-  const fetchStats = async () => {
+  const fetchData = async () => {
     try {
-      const data = await apiRequest(API_ENDPOINTS.MIDWIFE_DASHBOARD);
-      setStats(data);
+      const [dashboardData, requestsData] = await Promise.all([
+        apiRequest(API_ENDPOINTS.MIDWIFE_DASHBOARD),
+        apiRequest(API_ENDPOINTS.PROVIDER_SHARE_REQUESTS),
+      ]);
+      setStats(dashboardData);
+      setShareRequests(requestsData.requests?.filter((r: ShareRequest) => r.status === 'pending') || []);
     } catch (error) {
       console.error('Error fetching dashboard:', error);
     }
   };
   
   useEffect(() => {
-    fetchStats();
+    fetchData();
   }, []);
   
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchStats();
+    await fetchData();
     setRefreshing(false);
+  };
+
+  const handleAcceptRequest = async (requestId: string) => {
+    try {
+      await apiRequest(`${API_ENDPOINTS.PROVIDER_SHARE_REQUESTS}/${requestId}/respond`, {
+        method: 'PUT',
+        body: { action: 'accept' },
+      });
+      Alert.alert('Success', 'You are now connected with this mom!');
+      fetchData();
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to accept request');
+    }
+  };
+
+  const handleDeclineRequest = async (requestId: string) => {
+    Alert.alert(
+      'Decline Request',
+      'Are you sure you want to decline this share request?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Decline',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await apiRequest(`${API_ENDPOINTS.PROVIDER_SHARE_REQUESTS}/${requestId}/respond`, {
+                method: 'PUT',
+                body: { action: 'decline' },
+              });
+              fetchData();
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to decline request');
+            }
+          },
+        },
+      ]
+    );
   };
   
   const firstName = user?.full_name?.split(' ')[0] || 'there';
