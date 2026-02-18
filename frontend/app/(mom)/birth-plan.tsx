@@ -260,14 +260,16 @@ export default function BirthPlanScreen() {
         {/* Action Buttons */}
         <View style={styles.actionSection}>
           <Button
-            title="Preview & Print"
-            onPress={handleExport}
+            title="Download Birth Plan PDF"
+            onPress={handleDownloadPDF}
+            loading={exporting}
             fullWidth
-            icon={<Icon name="print" size={20} color={COLORS.white} />}
+            icon={<Icon name="download" size={20} color={COLORS.white} />}
             style={styles.shareButton}
+            data-testid="download-pdf-btn"
           />
           <Text style={styles.exportHint}>
-            Preview your birth plan and print or save as PDF
+            Download your birth plan as a PDF file to print or share
           </Text>
           
           {/* Auto-share notice */}
