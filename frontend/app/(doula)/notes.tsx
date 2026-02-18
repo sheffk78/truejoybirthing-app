@@ -224,7 +224,12 @@ export default function DoulaNotesScreen() {
             <View style={{ width: 24 }} />
           </View>
           
-          <ScrollView style={styles.modalContent}>
+          <KeyboardAvoidingView 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+          >
+            <ScrollView style={styles.modalContent} keyboardShouldPersistTaps="handled">
             {/* Client Selector */}
             <Text style={styles.fieldLabel}>Select Client *</Text>
             {clients.filter(c => c.status !== 'Completed').length === 0 ? (
