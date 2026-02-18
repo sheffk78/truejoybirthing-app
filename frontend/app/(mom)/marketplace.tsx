@@ -507,13 +507,49 @@ export default function MarketplaceScreen() {
           )}
           
           <View style={styles.modalFooter}>
-            <Button
-              title={contactingProvider ? "Connecting..." : "Contact Provider"}
-              onPress={() => handleContactProvider(selectedProvider)}
-              fullWidth
-              loading={contactingProvider}
-              testID="contact-provider-btn"
-            />
+            <View style={styles.footerButtonsRow}>
+              <TouchableOpacity
+                style={[styles.footerButton, styles.contactButton]}
+                onPress={() => handleContactProvider(selectedProvider)}
+                disabled={contactingProvider}
+                data-testid="contact-provider-btn"
+              >
+                {contactingProvider ? (
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                ) : (
+                  <>
+                    <Icon name="chatbubble-outline" size={20} color={COLORS.white} />
+                    <Text style={styles.footerButtonText}>Contact</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[
+                  styles.footerButton, 
+                  styles.addButton,
+                  getTeamButtonDisabled(selectedProvider?.user_id) && styles.disabledButton
+                ]}
+                onPress={() => handleAddToTeam(selectedProvider)}
+                disabled={addingToTeam || getTeamButtonDisabled(selectedProvider?.user_id)}
+                data-testid="add-to-team-btn"
+              >
+                {addingToTeam ? (
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                ) : (
+                  <>
+                    <Icon 
+                      name={teamStatus[selectedProvider?.user_id] === 'accepted' ? 'checkmark-circle' : 'person-add-outline'} 
+                      size={20} 
+                      color={COLORS.white} 
+                    />
+                    <Text style={styles.footerButtonText}>
+                      {getTeamButtonText(selectedProvider?.user_id)}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </SafeAreaView>
       </Modal>
