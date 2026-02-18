@@ -140,6 +140,48 @@ export default function DoulaDashboardScreen() {
             <Text style={styles.statLabel}>Pending Invoices</Text>
           </Card>
         </View>
+
+        {/* Pending Share Requests */}
+        {shareRequests.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>
+              <Icon name="heart" size={18} color={COLORS.roleDoula} /> New Connection Requests
+            </Text>
+            {shareRequests.map((request) => (
+              <Card key={request.request_id} style={styles.requestCard}>
+                <View style={styles.requestHeader}>
+                  <View style={styles.requestAvatar}>
+                    <Icon name="person" size={24} color={COLORS.primary} />
+                  </View>
+                  <View style={styles.requestInfo}>
+                    <Text style={styles.requestName}>{request.mom_name}</Text>
+                    <Text style={styles.requestSubtext}>
+                      Wants to share their birth plan with you
+                    </Text>
+                    <Text style={styles.requestDate}>
+                      {new Date(request.created_at).toLocaleDateString()}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.requestActions}>
+                  <TouchableOpacity
+                    style={styles.declineButton}
+                    onPress={() => handleDeclineRequest(request.request_id)}
+                  >
+                    <Text style={styles.declineButtonText}>Decline</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.acceptButton}
+                    onPress={() => handleAcceptRequest(request.request_id)}
+                  >
+                    <Icon name="checkmark" size={16} color={COLORS.white} />
+                    <Text style={styles.acceptButtonText}>Accept</Text>
+                  </TouchableOpacity>
+                </View>
+              </Card>
+            ))}
+          </>
+        )}
         
         {/* Quick Actions */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
