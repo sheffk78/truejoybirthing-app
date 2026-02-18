@@ -32,9 +32,29 @@ export default function DoulaProfileScreen() {
   
   // Form state
   const [practiceName, setPracticeName] = useState('');
+  const [zipCode, setZipCode] = useState('');
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
   const [yearsInPractice, setYearsInPractice] = useState('');
+  const [lookingUpZip, setLookingUpZip] = useState(false);
+  
+  const handleZipChange = async (zip: string) => {
+    setZipCode(zip);
+    if (zip.length === 5) {
+      setLookingUpZip(true);
+      try {
+        const data = await apiRequest(`/api/zip-lookup/${zip}`);
+        setLocationCity(data.city || '');
+        setLocationState(data.state || '');
+      } catch (error) {
+        console.error('Zip lookup failed:', error);
+        setLocationCity('');
+        setLocationState('');
+      } finally {
+        setLookingUpZip(false);
+      }
+    }
+  };
   
   const fetchProfile = async () => {
     try {
