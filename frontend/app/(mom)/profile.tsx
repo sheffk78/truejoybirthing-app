@@ -54,8 +54,6 @@ export default function MomProfileScreen() {
       setZipCode(profileData.zip_code || '');
       setLocationCity(profileData.location_city || '');
       setLocationState(profileData.location_state || '');
-      setLocationState(profileData.location_state || '');
-      setPlannedBirthSetting(profileData.planned_birth_setting || '');
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -64,6 +62,59 @@ export default function MomProfileScreen() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Get birth setting from birth plan
+  const getBirthSetting = () => {
+    if (birthPlan?.sections) {
+      const aboutSection = birthPlan.sections.find((s: any) => s.section_id === 'about_me');
+      if (aboutSection?.data?.planned_birth_location) {
+        return aboutSection.data.planned_birth_location;
+      }
+    }
+    return profile?.planned_birth_setting || 'Not set';
+  };
+
+  // Format due date for display
+  const formatDueDate = (dateStr: string) => {
+    if (!dateStr) return 'Not set';
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  // Zip code lookup
+  const lookupZipCode = async (zip: string) => {
+    if (zip.length !== 5) return;
+    
+    setLookingUpZip(true);
+    try {
+      const data = await apiRequest(`/zip-lookup/${zip}`);
+      if (data.city && data.state) {
+        setLocationCity(data.city);
+        setLocationState(data.state);
+      }
+    } catch (error) {
+      console.log('Zip lookup failed:', error);
+    } finally {
+      setLookingUpZip(false);
+    }
+  };
+
+  const handleZipChange = (zip: string) => {
+    // Only allow numbers
+    const numericZip = zip.replace(/\D/g, '').slice(0, 5);
+    setZipCode(numericZip);
+    if (numericZip.length === 5) {
+      lookupZipCode(numericZip);
+    }
+  };
   
   const handleSave = async () => {
     setSaving(true);
@@ -72,9 +123,9 @@ export default function MomProfileScreen() {
         method: 'PUT',
         body: {
           due_date: dueDate,
+          zip_code: zipCode,
           location_city: locationCity,
           location_state: locationState,
-          planned_birth_setting: plannedBirthSetting,
         },
       });
       
