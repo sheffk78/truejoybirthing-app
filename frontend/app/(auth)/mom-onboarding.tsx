@@ -72,7 +72,7 @@ export default function MomOnboardingScreen() {
     
     setIsLookingUpZip(true);
     try {
-      const result = await apiRequest(`/api/lookup/zipcode/${zip}`, {
+      const result = await apiRequest(`/lookup/zipcode/${zip}`, {
         method: 'GET',
       });
       
