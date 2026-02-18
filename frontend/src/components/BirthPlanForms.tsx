@@ -33,6 +33,53 @@ const TextInputField = ({
   </View>
 );
 
+// Component for date input fields
+const DateInputField = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) => (
+  <View style={styles.fieldContainer}>
+    <Text style={styles.fieldLabel}>{label}</Text>
+    {Platform.OS === 'web' ? (
+      <View style={styles.dateInputWrapper}>
+        <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} />
+        <input
+          type="date"
+          value={value || ''}
+          onChange={(e: any) => onChange(e.target.value)}
+          placeholder={placeholder}
+          style={{
+            flex: 1,
+            border: 'none',
+            outline: 'none',
+            fontSize: 16,
+            fontFamily: 'inherit',
+            color: COLORS.textPrimary,
+            backgroundColor: 'transparent',
+            marginLeft: 8,
+            padding: 0,
+          }}
+        />
+      </View>
+    ) : (
+      <TextInput
+        style={styles.textInput}
+        value={value || ''}
+        onChangeText={onChange}
+        placeholder={placeholder || 'YYYY-MM-DD'}
+        placeholderTextColor={COLORS.textLight}
+      />
+    )}
+  </View>
+);
+
 // Component for multi-select checkboxes
 const MultiSelectField = ({
   label,
