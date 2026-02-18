@@ -777,6 +777,35 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginLeft: 4,
   },
+  cardActions: {
+    flexDirection: 'row',
+    gap: SIZES.sm,
+    marginBottom: SIZES.sm,
+  },
+  cardActionBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SIZES.sm,
+    borderRadius: SIZES.radiusMd,
+    gap: 4,
+  },
+  cardContactBtn: {
+    backgroundColor: COLORS.primary,
+  },
+  cardAddBtn: {
+    backgroundColor: COLORS.success,
+  },
+  cardDisabledBtn: {
+    backgroundColor: COLORS.textLight,
+    opacity: 0.7,
+  },
+  cardActionBtnText: {
+    color: COLORS.white,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+  },
   viewProfile: {
     flexDirection: 'row',
     alignItems: 'center',
