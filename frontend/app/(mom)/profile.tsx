@@ -504,6 +504,31 @@ const styles = StyleSheet.create({
     color: COLORS.textLight,
     marginTop: 4,
   },
+  zipLookupRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SIZES.xs,
+    gap: SIZES.xs,
+  },
+  zipLookupText: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.textSecondary,
+  },
+  locationDisplay: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SIZES.xs,
+    paddingHorizontal: SIZES.sm,
+    backgroundColor: COLORS.success + '15',
+    borderRadius: SIZES.radiusSm,
+    marginTop: SIZES.xs,
+    gap: SIZES.xs,
+  },
+  locationDisplayText: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.success,
+    fontWeight: '500',
+  },
   profileCard: {
     marginBottom: SIZES.md,
   },
