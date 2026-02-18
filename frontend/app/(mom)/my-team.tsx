@@ -229,11 +229,11 @@ export default function MyTeamScreen() {
             </View>
             <Text style={styles.emptyTitle}>No Team Members Yet</Text>
             <Text style={styles.emptyText}>
-              Share your birth plan with your doula or midwife to add them to your care team.
+              Find and connect with a doula or midwife in the marketplace. They'll automatically get access to your birth plan once connected.
             </Text>
             <Button
               title="Find Providers"
-              onPress={() => router.push('/share-birth-plan')}
+              onPress={() => router.push('/marketplace')}
               style={styles.emptyButton}
               data-testid="find-providers-btn"
             />
