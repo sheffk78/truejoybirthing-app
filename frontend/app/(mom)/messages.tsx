@@ -85,10 +85,11 @@ export default function MessagesScreen() {
   const fetchInvoices = async () => {
     try {
       const data = await apiRequest(API_ENDPOINTS.MOM_INVOICES);
-      // Filter to pending/unpaid invoices
-      const pending = (data || []).filter((inv: any) => 
-        inv.status === 'pending' || inv.status === 'sent'
-      );
+      // Filter to pending/unpaid invoices (case-insensitive check)
+      const pending = (data || []).filter((inv: any) => {
+        const status = (inv.status || '').toLowerCase();
+        return status === 'pending' || status === 'sent';
+      });
       setPendingInvoices(pending);
     } catch (error) {
       console.error('Error fetching invoices:', error);
