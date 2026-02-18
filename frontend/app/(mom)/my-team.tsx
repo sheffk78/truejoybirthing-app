@@ -119,9 +119,9 @@ export default function MyTeamScreen() {
           onPress={() => router.push('/marketplace')}
           data-testid="browse-marketplace-btn"
         >
-          <Icon name="search" size={20} color={COLORS.primary} />
+          <Icon name="search" size={20} color={COLORS.white} />
           <Text style={styles.marketplaceButtonText}>Browse Provider Marketplace</Text>
-          <Icon name="chevron-forward" size={16} color={COLORS.primary} />
+          <Icon name="chevron-forward" size={16} color={COLORS.white} />
         </TouchableOpacity>
 
         {/* Active Team Members */}
