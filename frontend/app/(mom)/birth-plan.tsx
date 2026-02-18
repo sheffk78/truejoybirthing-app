@@ -51,6 +51,7 @@ const SECTION_ICONS: Record<string, string> = {
 export default function BirthPlanScreen() {
   const router = useRouter();
   const [birthPlan, setBirthPlan] = useState<any>(null);
+  const [shareRequests, setShareRequests] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSection, setSelectedSection] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -61,8 +62,12 @@ export default function BirthPlanScreen() {
   
   const fetchBirthPlan = async () => {
     try {
-      const data = await apiRequest(API_ENDPOINTS.BIRTH_PLAN);
-      setBirthPlan(data);
+      const [planData, requestsData] = await Promise.all([
+        apiRequest(API_ENDPOINTS.BIRTH_PLAN),
+        apiRequest(API_ENDPOINTS.BIRTH_PLAN_SHARE_REQUESTS).catch(() => ({ requests: [] })),
+      ]);
+      setBirthPlan(planData);
+      setShareRequests(requestsData?.requests || []);
     } catch (error) {
       console.error('Error fetching birth plan:', error);
     }
