@@ -6,7 +6,7 @@ Simple backend connectivity test
 import requests
 import json
 
-BASE_URL = "https://birth-joy-preview.preview.emergentagent.com/api"
+BASE_URL = "https://pregnancy-timeline-1.preview.emergentagent.com/api"
 
 def test_basic_connectivity():
     """Test basic server connectivity"""
