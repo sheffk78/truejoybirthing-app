@@ -13,12 +13,13 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
 
 interface Milestone {
   week: number;
