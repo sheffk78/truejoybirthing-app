@@ -67,6 +67,36 @@ app = FastAPI(title="True Joy Birthing API")
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# ============== WEBSOCKET CONNECTION MANAGER ==============
+class ConnectionManager:
+    """Manages WebSocket connections for real-time messaging"""
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}  # user_id -> WebSocket
+    
+    async def connect(self, websocket: WebSocket, user_id: str):
+        await websocket.accept()
+        self.active_connections[user_id] = websocket
+        logger.info(f"WebSocket connected: {user_id}")
+    
+    def disconnect(self, user_id: str):
+        if user_id in self.active_connections:
+            del self.active_connections[user_id]
+            logger.info(f"WebSocket disconnected: {user_id}")
+    
+    async def send_personal_message(self, message: dict, user_id: str):
+        if user_id in self.active_connections:
+            try:
+                await self.active_connections[user_id].send_json(message)
+            except Exception as e:
+                logger.error(f"Error sending WebSocket message to {user_id}: {e}")
+                self.disconnect(user_id)
+    
+    async def broadcast_to_users(self, message: dict, user_ids: List[str]):
+        for user_id in user_ids:
+            await self.send_personal_message(message, user_id)
+
+ws_manager = ConnectionManager()
+
 # ============== ENUMS ==============
 ROLES = ["MOM", "DOULA", "MIDWIFE", "ADMIN"]
 BIRTH_SETTINGS = ["Home", "Hospital", "Birth Center", "Not sure"]
