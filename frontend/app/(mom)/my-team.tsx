@@ -32,6 +32,7 @@ interface ShareRequest {
   provider_id: string;
   provider_name: string;
   provider_role: string;
+  provider_picture?: string;
   status: string;
   created_at: string;
 }
