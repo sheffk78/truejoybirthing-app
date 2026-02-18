@@ -2653,6 +2653,35 @@ async def get_shared_birth_plan_detail(
         "can_add_notes": True  # Provider can add their own discussion notes
     }
 
+@api_router.get("/provider/client/{mom_user_id}/birth-plan")
+async def get_client_birth_plan(
+    mom_user_id: str,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+):
+    """Get a client's birth plan (simplified view for client list)"""
+    # Verify the provider has access via share request or client relationship
+    share_request = await db.share_requests.find_one({
+        "mom_user_id": mom_user_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    
+    # Also check if they have a client with this linked_mom_id
+    client = await db.clients.find_one({
+        "pro_user_id": user.user_id,
+        "linked_mom_id": mom_user_id
+    })
+    
+    if not share_request and not client:
+        raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
+    
+    plan = await db.birth_plans.find_one({"user_id": mom_user_id}, {"_id": 0})
+    
+    if not plan:
+        raise HTTPException(status_code=404, detail="Birth plan not found")
+    
+    return plan
+
 @api_router.post("/provider/birth-plan/{mom_user_id}/notes")
 async def add_provider_note(
     mom_user_id: str,
