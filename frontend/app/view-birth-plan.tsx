@@ -24,6 +24,8 @@ export default function ViewBirthPlanScreen() {
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const { token } = useAuthStore();
 
   useEffect(() => {
     fetchBirthPlan();
@@ -39,6 +41,46 @@ export default function ViewBirthPlanScreen() {
       setError(err.message || 'Unable to load birth plan');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    setDownloadingPdf(true);
+    try {
+      const baseUrl = getApiBaseUrl();
+      const pdfUrl = `${baseUrl}/api/provider/client/${momId}/birth-plan/pdf`;
+      
+      if (Platform.OS === 'web') {
+        // For web, open in new tab with auth header via fetch
+        const response = await fetch(pdfUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to download PDF');
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Birth_Plan_${decodeURIComponent(clientName || 'Client').replace(' ', '_')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        Alert.alert('Success', 'Birth Plan PDF downloaded successfully');
+      } else {
+        // For native, open in browser
+        Alert.alert('Info', 'PDF download will open in your browser');
+      }
+    } catch (err: any) {
+      console.error('Error downloading PDF:', err);
+      Alert.alert('Error', err.message || 'Failed to download PDF');
+    } finally {
+      setDownloadingPdf(false);
     }
   };
 
