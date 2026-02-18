@@ -146,7 +146,7 @@ export default function BirthPlanPreviewScreen() {
         <View style={styles.printableContent} id="birth-plan-content">
           {/* Title */}
           <View style={styles.titleSection}>
-            <Text style={styles.documentTitle}>My Birth Plan</Text>
+            <Text style={styles.documentTitle}>My Joyful Birth Plan</Text>
             <Text style={styles.documentSubtitle}>True Joy Birthing</Text>
             <Text style={styles.documentDate}>
               Created: {new Date().toLocaleDateString('en-US', { 
@@ -157,12 +157,20 @@ export default function BirthPlanPreviewScreen() {
             </Text>
           </View>
 
+          {/* Healthcare Provider Message - Fixed Header */}
+          <View style={styles.providerMessage}>
+            <Text style={styles.providerMessageTitle}>TO MY HEALTHCARE PROVIDER(S)</Text>
+            <Text style={styles.providerMessageText}>
+              This birth plan outlines my preferences and requests for my labor and delivery. I understand that unforeseen circumstances may necessitate deviations from this plan, and I am open to discussing alternatives with you. However, this document serves as formal notice of my wishes and priorities, and I request that you give them serious consideration. I appreciate your collaboration in making my birth experience as safe, positive, and aligned with my preferences as possible.
+            </Text>
+          </View>
+
           {/* Sections */}
-          {birthPlan?.sections?.map((section: any) => (
+          {birthPlan?.sections?.map((section: any, index: number) => (
             <View key={section.section_id} style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>
-                  {SECTION_LABELS[section.section_id] || section.title}
+                  Section {index + 1} – {SECTION_LABELS[section.section_id] || section.title}
                 </Text>
                 <View style={[
                   styles.statusBadge,
