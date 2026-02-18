@@ -446,8 +446,9 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - `frontend/app/(mom)/marketplace.tsx` - Provider marketplace
 
 ## Future Enhancements (Backlog)
-- Real-time messaging with WebSockets
-- Push notifications
+- Push notifications (deferred per user request)
+- Stripe integration for subscription payment processing
+- Admin Panel enhancements
 - File attachments in messages
 - Provider scheduling/availability
-- Payment processing integration
+- Backend refactoring (split server.py into modular routers)
