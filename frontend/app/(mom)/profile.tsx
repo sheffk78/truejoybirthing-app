@@ -319,36 +319,90 @@ export default function MomProfileScreen() {
           
           {isEditing ? (
             <View>
-              {/* Due Date with native date picker */}
+              {/* Due Date with calendar picker */}
               <View style={styles.dateInputContainer}>
                 <Text style={styles.inputLabel}>Due Date</Text>
-                {Platform.OS === 'web' ? (
-                  <View style={styles.datePickerWrapper}>
-                    <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} style={{ marginRight: 8 }} />
-                    <input
-                      type="date"
-                      value={dueDate || ''}
-                      onChange={(e: any) => setDueDate(e.target.value)}
-                      style={{
-                        flex: 1,
-                        border: 'none',
-                        outline: 'none',
-                        fontSize: 16,
-                        fontFamily: 'inherit',
-                        color: COLORS.textPrimary,
-                        backgroundColor: 'transparent',
-                      }}
-                    />
-                  </View>
-                ) : (
-                  <Input
-                    placeholder="YYYY-MM-DD"
-                    value={dueDate}
-                    onChangeText={setDueDate}
-                    leftIcon="calendar-outline"
-                  />
-                )}
+                <TouchableOpacity 
+                  style={styles.datePickerButton}
+                  onPress={() => setShowDatePicker(true)}
+                  data-testid="due-date-picker-btn"
+                >
+                  <Icon name="calendar" size={20} color={COLORS.primary} />
+                  <Text style={[styles.datePickerText, !dueDate && styles.datePickerPlaceholder]}>
+                    {dueDate ? formatDisplayDate(dueDate) : 'Select your due date'}
+                  </Text>
+                  <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
+                </TouchableOpacity>
               </View>
+
+              {/* Date Picker Modal */}
+              {showDatePicker && (
+                Platform.OS === 'web' ? (
+                  <Modal
+                    visible={showDatePicker}
+                    transparent
+                    animationType="fade"
+                    onRequestClose={() => setShowDatePicker(false)}
+                  >
+                    <View style={styles.dateModalOverlay}>
+                      <View style={styles.dateModalContent}>
+                        <View style={styles.dateModalHeader}>
+                          <Text style={styles.dateModalTitle}>Select Due Date</Text>
+                          <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                            <Icon name="close" size={24} color={COLORS.textPrimary} />
+                          </TouchableOpacity>
+                        </View>
+                        <View style={styles.webCalendarWrapper}>
+                          <input
+                            type="date"
+                            value={dueDate || ''}
+                            onChange={(e: any) => {
+                              setDueDate(e.target.value);
+                              if (e.target.value) {
+                                setDueDateObj(new Date(e.target.value));
+                              }
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: 16,
+                              fontSize: 18,
+                              border: `2px solid ${COLORS.primary}`,
+                              borderRadius: 12,
+                              outline: 'none',
+                              cursor: 'pointer',
+                            }}
+                          />
+                        </View>
+                        <Button
+                          title="Done"
+                          onPress={() => setShowDatePicker(false)}
+                          fullWidth
+                          style={{ marginTop: 16 }}
+                        />
+                      </View>
+                    </View>
+                  </Modal>
+                ) : (
+                  <View style={styles.datePickerContainer}>
+                    <DateTimePicker
+                      value={dueDateObj || new Date()}
+                      mode="date"
+                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                      onChange={handleDateChange}
+                      minimumDate={new Date()}
+                      maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
+                    />
+                    {Platform.OS === 'ios' && (
+                      <Button
+                        title="Done"
+                        onPress={() => setShowDatePicker(false)}
+                        size="sm"
+                        style={{ marginTop: 8 }}
+                      />
+                    )}
+                  </View>
+                )
+              )}
               
               <Input
                 label="Zip Code"
