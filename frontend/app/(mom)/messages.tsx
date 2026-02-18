@@ -434,6 +434,9 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: SIZES.lg,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   title: {
     fontSize: SIZES.fontXxl,
@@ -445,6 +448,14 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: 4,
+  },
+  newMessageButton: {
+    backgroundColor: COLORS.primary,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyCard: {
     alignItems: 'center',
