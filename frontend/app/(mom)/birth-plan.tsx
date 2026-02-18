@@ -51,7 +51,7 @@ const SECTION_ICONS: Record<string, string> = {
 
 export default function BirthPlanScreen() {
   const router = useRouter();
-  const { token } = useAuthStore();
+  const { sessionToken: token } = useAuthStore();
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [shareRequests, setShareRequests] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
