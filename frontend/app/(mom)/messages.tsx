@@ -355,6 +355,70 @@ export default function MessagesScreen() {
           </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
+
+      {/* New Message Modal - Select Team Member */}
+      <Modal
+        visible={showNewMessageModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowNewMessageModal(false)}
+      >
+        <SafeAreaView style={styles.modalContainer} edges={['top']}>
+          <View style={styles.chatHeader}>
+            <TouchableOpacity onPress={() => setShowNewMessageModal(false)}>
+              <Icon name="close" size={24} color={COLORS.textPrimary} />
+            </TouchableOpacity>
+            <Text style={styles.chatHeaderTitle}>New Message</Text>
+            <View style={{ width: 24 }} />
+          </View>
+          
+          <View style={styles.teamSelectionContent}>
+            <Text style={styles.teamSelectionTitle}>Select a team member to message</Text>
+            
+            {loadingTeam ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={COLORS.primary} />
+              </View>
+            ) : teamMembers.length === 0 ? (
+              <View style={styles.noTeamContainer}>
+                <Icon name="people-outline" size={48} color={COLORS.textLight} />
+                <Text style={styles.noTeamText}>No team members yet</Text>
+                <Text style={styles.noTeamSubtext}>
+                  Share your birth plan with a doula or midwife to add them to your team
+                </Text>
+              </View>
+            ) : (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {teamMembers.map((member) => (
+                  <TouchableOpacity
+                    key={member.user_id}
+                    style={styles.teamMemberCard}
+                    onPress={() => startConversation(member)}
+                    data-testid={`team-member-${member.user_id}`}
+                  >
+                    <View style={[styles.memberAvatar, { backgroundColor: getRoleColor(member.role) + '20' }]}>
+                      <Icon 
+                        name={member.role === 'DOULA' ? 'heart' : 'medkit'} 
+                        size={24} 
+                        color={getRoleColor(member.role)} 
+                      />
+                    </View>
+                    <View style={styles.memberInfo}>
+                      <Text style={styles.memberName}>{member.name}</Text>
+                      <View style={[styles.memberRoleBadge, { backgroundColor: getRoleColor(member.role) + '20' }]}>
+                        <Text style={[styles.memberRoleText, { color: getRoleColor(member.role) }]}>
+                          {member.role}
+                        </Text>
+                      </View>
+                    </View>
+                    <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+          </View>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
