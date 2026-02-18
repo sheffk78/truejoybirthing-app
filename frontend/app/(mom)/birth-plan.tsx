@@ -379,8 +379,8 @@ export default function BirthPlanScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <KeyboardAvoidingView 
             style={{ flex: 1 }} 
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
           >
             <View style={styles.modalHeader}>
               <TouchableOpacity 
