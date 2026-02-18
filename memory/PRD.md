@@ -353,6 +353,8 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] Email notifications sender domain configured (contact.truejoybirthing.com verified)
 
 ### 📊 Test Reports
+- `/app/test_reports/iteration_33.json` - **3 User-Requested Fixes VERIFIED** (100% pass - Contact Provider, Auto-share Birth Plan, Invoices in Messages)
+- `/app/test_reports/iteration_32.json` - **Initial testing of 3 fixes** (identified invoice rendering bug)
 - `/app/test_reports/iteration_28.json` - **Contract Templates Bug Fix** (100% frontend verification - template selection working)
 - `/app/test_reports/iteration_27.json` - **Contract Templates Feature** (100% backend - 16 tests, frontend partial)
 - `/app/test_reports/iteration_26.json` - **Subscription System** (100% backend - 15 tests, 100% frontend verification)
