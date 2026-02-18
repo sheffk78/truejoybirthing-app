@@ -1007,6 +1007,15 @@ const styles = StyleSheet.create({
     minHeight: 100,
     textAlignVertical: 'top',
   },
+  dateInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radiusMd,
+    padding: SIZES.md,
+  },
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
