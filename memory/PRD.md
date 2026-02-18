@@ -351,6 +351,15 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] Midwife onboarding with zip code lookup (auto-fills city/state)
 - [x] Birth location icons in Birth Plan form (Hospital, Birth Center, Home Birth, Not sure yet)
 - [x] Email notifications sender domain configured (contact.truejoybirthing.com verified)
+- [x] **7 UI/UX Improvements** (COMPLETED 2026-02-18):
+  - **Fix 1: Profile Photo in Header** - Mom's profile photo now shows in top-right avatar on home page
+  - **Fix 3: Native Date Picker** - Profile page uses native HTML date input for web instead of text field
+  - **Fix 4: Birth Plan to Profile Sync** - Due date and birth setting automatically sync to profile when "About Me" section is saved
+  - **Fix 5: Remove My Team from Profile** - My Team section removed from Mom's Profile page (view team via My Team tab)
+  - **Fix 6: Provider Photos in Team** - Provider profile photos display in My Team list (shows default icon if no photo)
+  - **Fix 7a: Remove Share Card** - "Share Your Birth Plan" card removed from Mom Home page
+  - **Fix 7b: Shared With Display** - Birth Plan page shows "Shared with: [providers]" for accepted connections
+  - **Fix 7c: View Birth Plan Button** - Doula/Midwife clients page has "View Birth Plan" button for linked moms
 - [x] **3 User-Requested Fixes** (COMPLETED 2026-02-18):
   - **Contact Provider**: Fixed marketplace flow - opens messages with pre-filled intro message for connected providers, shows helpful alert for unconnected providers
   - **Auto-share Birth Plan**: UI notice added to birth plan page informing moms that their plan is automatically shared with team members on save
