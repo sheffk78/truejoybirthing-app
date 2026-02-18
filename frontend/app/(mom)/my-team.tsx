@@ -275,16 +275,14 @@ const styles = StyleSheet.create({
   marketplaceButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.primary,
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.lg,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
   },
   marketplaceButtonText: { 
     flex: 1, 
-    color: COLORS.primary, 
+    color: COLORS.white, 
     fontWeight: '600', 
     fontSize: SIZES.fontMd, 
     marginLeft: SIZES.sm 
