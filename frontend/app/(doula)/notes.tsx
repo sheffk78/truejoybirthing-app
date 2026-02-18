@@ -225,28 +225,38 @@ export default function DoulaNotesScreen() {
           <ScrollView style={styles.modalContent}>
             {/* Client Selector */}
             <Text style={styles.fieldLabel}>Select Client *</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.clientSelector}>
-              {clients.map((client) => (
-                <TouchableOpacity
-                  key={client.client_id}
-                  style={[
-                    styles.clientOption,
-                    selectedClientId === client.client_id && styles.clientOptionSelected,
-                  ]}
-                  onPress={() => setSelectedClientId(client.client_id)}
-                  data-testid={`select-client-${client.client_id}`}
-                >
-                  <Text
+            {clients.filter(c => c.status !== 'Completed').length === 0 ? (
+              <View style={styles.noClientsMessage}>
+                <Icon name="alert-circle-outline" size={24} color={COLORS.textLight} />
+                <Text style={styles.noClientsText}>
+                  You don't have any current clients yet. Add a client first to create notes.
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.clientGrid}>
+                {clients.filter(c => c.status !== 'Completed').map((client) => (
+                  <TouchableOpacity
+                    key={client.client_id}
                     style={[
-                      styles.clientOptionText,
-                      selectedClientId === client.client_id && styles.clientOptionTextSelected,
+                      styles.clientOption,
+                      selectedClientId === client.client_id && styles.clientOptionSelected,
                     ]}
+                    onPress={() => setSelectedClientId(client.client_id)}
+                    activeOpacity={0.7}
+                    data-testid={`select-client-${client.client_id}`}
                   >
-                    {client.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+                    <Text
+                      style={[
+                        styles.clientOptionText,
+                        selectedClientId === client.client_id && styles.clientOptionTextSelected,
+                      ]}
+                    >
+                      {client.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
             
             {/* Note Type Selector */}
             <Text style={styles.fieldLabel}>Note Type *</Text>
