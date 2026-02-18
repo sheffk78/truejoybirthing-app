@@ -151,6 +151,20 @@ export default function DoulaProfileScreen() {
                 value={practiceName}
                 onChangeText={setPracticeName}
               />
+              <Input
+                label="Zip Code"
+                placeholder="Enter 5-digit zip code"
+                value={zipCode}
+                onChangeText={handleZipChange}
+                keyboardType="number-pad"
+                maxLength={5}
+              />
+              {lookingUpZip && (
+                <View style={styles.zipLookupStatus}>
+                  <ActivityIndicator size="small" color={COLORS.roleDoula} />
+                  <Text style={styles.zipLookupText}>Looking up location...</Text>
+                </View>
+              )}
               <View style={styles.locationRow}>
                 <Input
                   label="City"
@@ -158,6 +172,7 @@ export default function DoulaProfileScreen() {
                   value={locationCity}
                   onChangeText={setLocationCity}
                   containerStyle={styles.cityInput}
+                  editable={false}
                 />
                 <Input
                   label="State"
@@ -165,6 +180,7 @@ export default function DoulaProfileScreen() {
                   value={locationState}
                   onChangeText={setLocationState}
                   containerStyle={styles.stateInput}
+                  editable={false}
                 />
               </View>
               <Input
