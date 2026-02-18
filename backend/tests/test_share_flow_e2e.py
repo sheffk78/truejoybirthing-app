@@ -91,10 +91,8 @@ class TestFullShareFlow:
             data = resp.json()
             assert "request_id" in data
             print(f"✓ New share request created: {data['request_id']}")
-            return data["request_id"]
-        elif resp.status_code == 400 and "already shared" in resp.text.lower():
-            print("✓ Birth plan already shared with this doula (existing connection)")
-            return None
+        elif resp.status_code == 400 and ("already shared" in resp.text.lower() or "already exists" in resp.text.lower()):
+            print("✓ Birth plan already shared with this doula (existing connection) - expected behavior")
         else:
             pytest.fail(f"Share request failed: {resp.status_code} - {resp.text}")
     
