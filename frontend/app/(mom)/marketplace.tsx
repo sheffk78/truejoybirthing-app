@@ -68,6 +68,11 @@ export default function MarketplaceScreen() {
     fetchProviders();
   }, [selectedType]);
   
+  // Also fetch on mount
+  useEffect(() => {
+    fetchProviders();
+  }, []);
+  
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchProviders();
