@@ -110,18 +110,8 @@ export default function MyTeamScreen() {
         {/* Header */}
         <Text style={styles.title}>My Care Team</Text>
         <Text style={styles.subtitle}>
-          Your birth support team with access to your birth plan
+          Your birth support team with automatic access to your birth plan
         </Text>
-
-        {/* Add Provider Button */}
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => router.push('/share-birth-plan')}
-          data-testid="add-team-member-btn"
-        >
-          <Icon name="person-add" size={20} color={COLORS.white} />
-          <Text style={styles.addButtonText}>Add Team Member</Text>
-        </TouchableOpacity>
 
         {/* Browse Marketplace Button */}
         <TouchableOpacity
