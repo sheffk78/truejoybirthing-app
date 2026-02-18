@@ -124,8 +124,10 @@ export default function DoulaDashboardScreen() {
             <Text style={styles.statLabel}>Active Clients</Text>
           </Card>
           <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>{stats?.total_clients || 0}</Text>
-            <Text style={styles.statLabel}>Total Clients</Text>
+            <Text style={[styles.statNumber, { color: COLORS.accent }]}>
+              {stats?.upcoming_appointments || 0}
+            </Text>
+            <Text style={styles.statLabel}>Upcoming Appts</Text>
           </Card>
           <Card style={styles.statCard}>
             <Text style={[styles.statNumber, { color: COLORS.warning }]}>

@@ -123,8 +123,10 @@ export default function MidwifeDashboardScreen() {
             <Text style={styles.statLabel}>Prenatal Clients</Text>
           </Card>
           <Card style={styles.statCard}>
-            <Text style={styles.statNumber}>{stats?.total_clients || 0}</Text>
-            <Text style={styles.statLabel}>Total Clients</Text>
+            <Text style={[styles.statNumber, { color: COLORS.warning }]}>
+              {stats?.upcoming_appointments || 0}
+            </Text>
+            <Text style={styles.statLabel}>Upcoming Appts</Text>
           </Card>
           <Card style={styles.statCard}>
             <Text style={[styles.statNumber, { color: COLORS.accent }]}>
