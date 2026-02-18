@@ -351,6 +351,17 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] Midwife onboarding with zip code lookup (auto-fills city/state)
 - [x] Birth location icons in Birth Plan form (Hospital, Birth Center, Home Birth, Not sure yet)
 - [x] Email notifications sender domain configured (contact.truejoybirthing.com verified)
+- [x] **9 Doula/Messaging Fixes** (COMPLETED 2026-02-18):
+  - **Fix 1: Doula Client Acceptance** - Accepting a share request now automatically creates a client entry in doula/midwife's client list
+  - **Fix 2: Paid Invoices Filter** - Paid invoices no longer appear in Mom's pending invoices section
+  - **Fix 3: Invoice Client Picker** - Fixed client selector using grid layout (flexWrap) instead of broken horizontal scroll
+  - **Fix 4a: Service Agreement** - Removed duplicate "Final Payment Due" field
+  - **Fix 4b: Create Contract** - Fixed Create Contract button (payload field name mismatch)
+  - **Fix 6a: Active Clients Section** - Doula clients page shows "Active Clients" section
+  - **Fix 6b: Past Clients Section** - Doula clients page shows "Past Clients" section for completed clients
+  - **Fix 6c: Dashboard Button** - Changed "Add Client" to "See Clients" on doula dashboard
+  - **Fix 8: Paper-plane Icon** - Send button in messages now uses paper-plane icon
+  - **Fix 9: Real-time Messages** - Added WebSocket support for real-time messaging (`/ws/messages/{token}`)
 - [x] **7 UI/UX Improvements** (COMPLETED 2026-02-18):
   - **Fix 1: Profile Photo in Header** - Mom's profile photo now shows in top-right avatar on home page
   - **Fix 3: Native Date Picker** - Profile page uses native HTML date input for web instead of text field
