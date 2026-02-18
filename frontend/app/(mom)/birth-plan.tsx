@@ -19,9 +19,10 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { SECTION_FORMS, renderField } from '../../src/components/BirthPlanForms';
-import { apiRequest } from '../../src/utils/api';
+import { apiRequest, getApiBaseUrl } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { useAuthStore } from '../../src/store/authStore';
 
 const STATUS_COLORS: Record<string, string> = {
   'Not started': COLORS.textLight,
