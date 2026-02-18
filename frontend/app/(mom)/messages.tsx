@@ -84,8 +84,29 @@ export default function MessagesScreen() {
   const fetchTeamMembers = async () => {
     setLoadingTeam(true);
     try {
-      const data = await apiRequest<{ team: TeamMember[] }>(API_ENDPOINTS.MOM_TEAM);
-      setTeamMembers(data.team || []);
+      const data = await apiRequest(API_ENDPOINTS.MOM_TEAM);
+      // API returns { doula: {...}, midwife: {...} } format
+      // Convert to array of team members
+      const members: TeamMember[] = [];
+      if (data.doula) {
+        members.push({
+          user_id: data.doula.user_id,
+          name: data.doula.name,
+          role: 'DOULA',
+          email: '',
+          picture: data.doula.picture,
+        });
+      }
+      if (data.midwife) {
+        members.push({
+          user_id: data.midwife.user_id,
+          name: data.midwife.name,
+          role: 'MIDWIFE',
+          email: '',
+          picture: data.midwife.picture,
+        });
+      }
+      setTeamMembers(members);
     } catch (error) {
       console.error('Error fetching team:', error);
     } finally {
