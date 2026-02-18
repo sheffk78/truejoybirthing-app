@@ -381,17 +381,6 @@ export default function MomProfileScreen() {
           )}
         </Card>
         
-        {/* Postpartum */}
-        <TouchableOpacity activeOpacity={0.8}>
-          <Card style={styles.menuCard}>
-            <View style={styles.menuRow}>
-              <Icon name="moon-outline" size={24} color={COLORS.primary} />
-              <Text style={styles.menuText}>Postpartum Plan</Text>
-              <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
-            </View>
-          </Card>
-        </TouchableOpacity>
-        
         {/* App Tutorial */}
         <TouchableOpacity 
           activeOpacity={0.8}
