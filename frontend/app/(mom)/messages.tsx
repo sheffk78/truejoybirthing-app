@@ -159,11 +159,41 @@ export default function MessagesScreen() {
     }
   };
   
+  const { sessionToken } = useAuthStore();
+  
   useEffect(() => {
     fetchConversations();
     fetchCurrentUser();
     fetchInvoices();
-  }, []);
+    
+    // Connect to WebSocket for real-time messages
+    if (sessionToken) {
+      wsClient.connect(sessionToken);
+      
+      // Subscribe to new messages
+      const unsubscribe = wsClient.subscribe('new_message', (data) => {
+        // If currently in a conversation with the sender, add the message
+        if (selectedConversation && data.message?.sender_id === selectedConversation.other_user_id) {
+          setMessages((prev) => [...prev, {
+            message_id: data.message.message_id,
+            sender_id: data.message.sender_id,
+            sender_name: data.message.sender_name,
+            sender_role: data.message.sender_role,
+            receiver_id: currentUserId,
+            content: data.message.content,
+            created_at: data.message.created_at,
+            read: false,
+          }]);
+        }
+        // Refresh conversation list to update unread counts
+        fetchConversations();
+      });
+      
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, [sessionToken, selectedConversation?.other_user_id]);
   
   const onRefresh = async () => {
     setRefreshing(true);
