@@ -164,7 +164,7 @@ export default function MessagesScreen() {
   
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchConversations();
+    await Promise.all([fetchConversations(), fetchInvoices()]);
     setRefreshing(false);
   };
   
