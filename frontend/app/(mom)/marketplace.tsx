@@ -40,7 +40,7 @@ export default function MarketplaceScreen() {
         params.push(`provider_type=${selectedType}`);
       }
       if (searchCity.trim()) {
-        params.push(`location_city=${encodeURIComponent(searchCity.trim())}`);
+        params.push(`search=${encodeURIComponent(searchCity.trim())}`);
       }
       
       const data = await apiRequest(endpoint + params.join('&'));
