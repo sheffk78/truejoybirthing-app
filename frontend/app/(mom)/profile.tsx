@@ -469,6 +469,26 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.white,
   },
+  dateInputContainer: {
+    marginBottom: SIZES.md,
+  },
+  inputLabel: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textSecondary,
+    marginBottom: SIZES.xs,
+  },
+  datePickerWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.cardBackground,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radiusMd,
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
+    height: 48,
+  },
   userName: {
     fontSize: SIZES.fontXl,
     fontWeight: '700',
