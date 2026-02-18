@@ -26,28 +26,34 @@ export default function MomProfileScreen() {
   const { user, logout, updateUser } = useAuthStore();
   
   const [profile, setProfile] = useState<any>(null);
+  const [birthPlan, setBirthPlan] = useState<any>(null);
   const [team, setTeam] = useState<any>({ doula: null, midwife: null });
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [lookingUpZip, setLookingUpZip] = useState(false);
   
   const [dueDate, setDueDate] = useState('');
+  const [zipCode, setZipCode] = useState('');
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
-  const [plannedBirthSetting, setPlannedBirthSetting] = useState('');
   
   const fetchData = async () => {
     try {
-      const [profileData, teamData] = await Promise.all([
+      const [profileData, teamData, birthPlanData] = await Promise.all([
         apiRequest(API_ENDPOINTS.MOM_PROFILE),
         apiRequest(API_ENDPOINTS.MOM_TEAM),
+        apiRequest(API_ENDPOINTS.BIRTH_PLAN).catch(() => null),
       ]);
       setProfile(profileData);
       setTeam(teamData);
+      setBirthPlan(birthPlanData);
       
       // Set form values
       setDueDate(profileData.due_date || '');
+      setZipCode(profileData.zip_code || '');
       setLocationCity(profileData.location_city || '');
+      setLocationState(profileData.location_state || '');
       setLocationState(profileData.location_state || '');
       setPlannedBirthSetting(profileData.planned_birth_setting || '');
     } catch (error) {
