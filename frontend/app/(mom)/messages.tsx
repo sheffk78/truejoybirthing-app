@@ -80,6 +80,46 @@ export default function MessagesScreen() {
       console.error('Error fetching user:', error);
     }
   };
+
+  const fetchTeamMembers = async () => {
+    setLoadingTeam(true);
+    try {
+      const data = await apiRequest<{ team: TeamMember[] }>(API_ENDPOINTS.MOM_TEAM);
+      setTeamMembers(data.team || []);
+    } catch (error) {
+      console.error('Error fetching team:', error);
+    } finally {
+      setLoadingTeam(false);
+    }
+  };
+
+  const openNewMessageModal = () => {
+    setShowNewMessageModal(true);
+    fetchTeamMembers();
+  };
+
+  const startConversation = (member: TeamMember) => {
+    setShowNewMessageModal(false);
+    // Check if conversation already exists
+    const existingConv = conversations.find(c => c.other_user_id === member.user_id);
+    if (existingConv) {
+      openConversation(existingConv);
+    } else {
+      // Create a new conversation object
+      const newConv: Conversation = {
+        other_user_id: member.user_id,
+        other_user_name: member.name,
+        other_user_role: member.role,
+        other_user_picture: member.picture || null,
+        last_message_content: '',
+        last_message_time: new Date().toISOString(),
+        unread_count: 0,
+        is_sender: false,
+      };
+      setSelectedConversation(newConv);
+      setMessages([]);
+    }
+  };
   
   useEffect(() => {
     fetchConversations();
