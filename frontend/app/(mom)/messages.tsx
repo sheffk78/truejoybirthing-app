@@ -159,6 +159,7 @@ export default function MessagesScreen() {
   useEffect(() => {
     fetchConversations();
     fetchCurrentUser();
+    fetchInvoices();
   }, []);
   
   const onRefresh = async () => {
