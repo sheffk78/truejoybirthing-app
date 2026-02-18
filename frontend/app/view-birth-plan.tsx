@@ -5,14 +5,18 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Icon } from '../src/components/Icon';
 import Card from '../src/components/Card';
 import Button from '../src/components/Button';
-import { apiRequest } from '../src/utils/api';
+import { apiRequest, getApiBaseUrl } from '../src/utils/api';
 import { COLORS, SIZES, FONTS } from '../src/constants/theme';
+import { useAuthStore } from '../src/store/authStore';
 
 export default function ViewBirthPlanScreen() {
   const router = useRouter();
