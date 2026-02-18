@@ -66,8 +66,8 @@ export default function BirthPlanScreen() {
   const handleDownloadPDF = async () => {
     setExporting(true);
     try {
-      const baseUrl = getApiBaseUrl();
-      const pdfUrl = `${baseUrl}/api/birth-plan/export/pdf`;
+      // API_BASE already includes /api, so we just need the endpoint path
+      const pdfUrl = `${getApiBaseUrl()}/birth-plan/export/pdf`;
       
       if (Platform.OS === 'web') {
         const response = await fetch(pdfUrl, {
