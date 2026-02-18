@@ -314,7 +314,10 @@ export default function DoulaNotesScreen() {
               textAlignVertical="top"
               data-testid="note-content-input"
             />
+            {/* Extra space for keyboard */}
+            <View style={{ height: 100 }} />
           </ScrollView>
+          </KeyboardAvoidingView>
           
           <View style={styles.modalFooter}>
             <Button
