@@ -429,29 +429,6 @@ export default function MarketplaceScreen() {
     </SafeAreaView>
   );
 }
-              placeholder={`Introduce yourself to ${selectedProvider?.full_name}...`}
-              placeholderTextColor={COLORS.textLight}
-              multiline
-              numberOfLines={5}
-              maxLength={500}
-              data-testid="message-textarea"
-            />
-            
-            <View style={styles.messageModalFooter}>
-              <Button
-                title={sendingMessage ? "Sending..." : "Send Message"}
-                onPress={sendMessage}
-                disabled={!messageText.trim() || sendingMessage}
-                fullWidth
-                testID="send-message-btn"
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
