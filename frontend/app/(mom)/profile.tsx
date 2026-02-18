@@ -324,12 +324,16 @@ export default function MomProfileScreen() {
                 <Text style={styles.inputLabel}>Due Date</Text>
                 <TouchableOpacity 
                   style={styles.datePickerButton}
-                  onPress={() => setShowDatePicker(true)}
+                  onPress={() => {
+                    console.log('Due date button pressed');
+                    setShowDatePicker(true);
+                  }}
+                  activeOpacity={0.7}
                   data-testid="due-date-picker-btn"
                 >
                   <Icon name="calendar" size={20} color={COLORS.primary} />
                   <Text style={[styles.datePickerText, !dueDate && styles.datePickerPlaceholder]}>
-                    {dueDate ? formatDisplayDate(dueDate) : 'Select your due date'}
+                    {dueDate ? formatDisplayDate(dueDate) : 'Tap to select your due date'}
                   </Text>
                   <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
                 </TouchableOpacity>
