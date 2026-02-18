@@ -167,6 +167,18 @@ export default function DoulaClientsScreen() {
                     )}
                   </View>
                 )}
+                
+                {/* View Birth Plan button for linked moms */}
+                {client.linked_mom_id && (
+                  <TouchableOpacity
+                    style={styles.viewBirthPlanButton}
+                    onPress={() => router.push(`/view-birth-plan?momId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`)}
+                    data-testid={`view-birth-plan-${client.client_id}`}
+                  >
+                    <Icon name="document-text-outline" size={16} color={COLORS.primary} />
+                    <Text style={styles.viewBirthPlanText}>View Birth Plan</Text>
+                  </TouchableOpacity>
+                )}
               </Card>
             </TouchableOpacity>
           ))
