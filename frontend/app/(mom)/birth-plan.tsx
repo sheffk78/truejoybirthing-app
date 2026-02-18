@@ -496,6 +496,22 @@ const styles = StyleSheet.create({
     color: COLORS.textLight,
     textAlign: 'center',
   },
+  autoShareNotice: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: COLORS.primary + '10',
+    padding: SIZES.md,
+    borderRadius: SIZES.radiusMd,
+    marginTop: SIZES.md,
+    gap: SIZES.sm,
+  },
+  autoShareText: {
+    flex: 1,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    lineHeight: 20,
+  },
   modalContainer: {
     flex: 1,
     backgroundColor: COLORS.background,
