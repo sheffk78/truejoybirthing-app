@@ -96,7 +96,7 @@ export default function MomProfileScreen() {
     
     setLookingUpZip(true);
     try {
-      const data = await apiRequest(`/zip-lookup/${zip}`);
+      const data = await apiRequest(`/api/lookup/zipcode/${zip}`);
       if (data.city && data.state) {
         setLocationCity(data.city);
         setLocationState(data.state);
@@ -112,6 +112,11 @@ export default function MomProfileScreen() {
     // Only allow numbers
     const numericZip = zip.replace(/\D/g, '').slice(0, 5);
     setZipCode(numericZip);
+    // Clear city/state when changing zip code
+    if (numericZip.length < 5) {
+      setLocationCity('');
+      setLocationState('');
+    }
     if (numericZip.length === 5) {
       lookupZipCode(numericZip);
     }
