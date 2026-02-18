@@ -30,7 +30,6 @@ const CONTRACT_SECTIONS = [
       { id: 'estimated_due_date', label: 'Estimated Due Date', type: 'date', required: true },
       { id: 'total_fee', label: 'Total Fee ($)', type: 'number', required: true, placeholder: '0.00' },
       { id: 'retainer_amount', label: 'Retainer Amount ($)', type: 'number', required: true, placeholder: '0.00' },
-      { id: 'final_payment_due_description', label: 'Final Payment Due', type: 'text', placeholder: 'e.g., Day after birth, at 38 weeks' },
     ]
   },
   {
