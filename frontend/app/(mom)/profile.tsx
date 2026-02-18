@@ -99,6 +99,91 @@ export default function MomProfileScreen() {
       ]
     );
   };
+
+  const pickImage = async () => {
+    Alert.alert(
+      'Update Profile Photo',
+      'Choose how you want to add your photo',
+      [
+        {
+          text: 'Take Photo',
+          onPress: () => launchCamera(),
+        },
+        {
+          text: 'Choose from Library',
+          onPress: () => launchLibrary(),
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
+  const launchCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Camera permission is required to take photos');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+      base64: true,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      uploadPhoto(result.assets[0]);
+    }
+  };
+
+  const launchLibrary = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Photo library permission is required');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+      base64: true,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      uploadPhoto(result.assets[0]);
+    }
+  };
+
+  const uploadPhoto = async (asset: ImagePicker.ImagePickerAsset) => {
+    setUploadingPhoto(true);
+    try {
+      // Upload as base64
+      const base64Image = `data:image/jpeg;base64,${asset.base64}`;
+      
+      await apiRequest(API_ENDPOINTS.AUTH_UPDATE_PROFILE, {
+        method: 'PUT',
+        body: { picture: base64Image },
+      });
+      
+      // Update local user state
+      if (updateUser) {
+        updateUser({ picture: base64Image });
+      }
+      
+      Alert.alert('Success', 'Profile photo updated!');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to upload photo');
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
