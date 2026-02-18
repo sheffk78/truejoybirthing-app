@@ -289,34 +289,33 @@ export default function MomProfileScreen() {
                 onChangeText={setDueDate}
                 leftIcon="calendar-outline"
               />
-              <View style={styles.locationRow}>
-                <Input
-                  label="City"
-                  placeholder="City"
-                  value={locationCity}
-                  onChangeText={setLocationCity}
-                  containerStyle={styles.cityInput}
-                />
-                <Input
-                  label="State"
-                  placeholder="State"
-                  value={locationState}
-                  onChangeText={setLocationState}
-                  containerStyle={styles.stateInput}
-                />
-              </View>
               <Input
-                label="Planned Birth Setting"
-                placeholder="Home, Hospital, Birth Center"
-                value={plannedBirthSetting}
-                onChangeText={setPlannedBirthSetting}
-                leftIcon="medical-outline"
+                label="Zip Code"
+                placeholder="Enter 5-digit zip code"
+                value={zipCode}
+                onChangeText={handleZipChange}
+                leftIcon="location-outline"
+                keyboardType="numeric"
+                maxLength={5}
               />
+              {lookingUpZip && (
+                <View style={styles.zipLookupRow}>
+                  <ActivityIndicator size="small" color={COLORS.primary} />
+                  <Text style={styles.zipLookupText}>Looking up location...</Text>
+                </View>
+              )}
+              {locationCity && locationState && (
+                <View style={styles.locationDisplay}>
+                  <Icon name="checkmark-circle" size={16} color={COLORS.success} />
+                  <Text style={styles.locationDisplayText}>{locationCity}, {locationState}</Text>
+                </View>
+              )}
               <Button
                 title="Save Changes"
                 onPress={handleSave}
                 loading={saving}
                 fullWidth
+                style={{ marginTop: SIZES.md }}
               />
             </View>
           ) : (
@@ -325,7 +324,7 @@ export default function MomProfileScreen() {
                 <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Due Date</Text>
-                  <Text style={styles.infoValue}>{profile?.due_date || 'Not set'}</Text>
+                  <Text style={styles.infoValue}>{formatDueDate(profile?.due_date)}</Text>
                 </View>
               </View>
               <View style={styles.infoRow}>
