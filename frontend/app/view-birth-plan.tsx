@@ -318,6 +318,22 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontSm,
     color: COLORS.textSecondary,
   },
+  downloadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.lg,
+    borderRadius: SIZES.radiusMd,
+    marginTop: SIZES.md,
+  },
+  downloadButtonText: {
+    color: COLORS.white,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
+    marginLeft: SIZES.sm,
+  },
   sectionCard: {
     marginBottom: SIZES.md,
   },
