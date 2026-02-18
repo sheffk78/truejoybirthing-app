@@ -209,66 +209,81 @@ export default function TimelineScreen() {
 
       {/* Add Event Modal */}
       <Modal visible={modalVisible} animationType="slide" transparent onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.modalOverlay}>
+        <KeyboardAvoidingView 
+          style={styles.modalOverlay} 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Event</Text>
+            <Text style={styles.modalTitle}>Add Appointment</Text>
             
-            <Text style={styles.inputLabel}>Title *</Text>
-            <TextInput
-              style={styles.input}
-              value={newEvent.title}
-              onChangeText={(text) => setNewEvent({ ...newEvent, title: text })}
-              placeholder="e.g., Prenatal Appointment"
-              placeholderTextColor={COLORS.textLight}
-              data-testid="event-title-input"
-            />
-            
-            <Text style={styles.inputLabel}>Date * (YYYY-MM-DD)</Text>
-            <TextInput
-              style={styles.input}
-              value={newEvent.event_date}
-              onChangeText={(text) => setNewEvent({ ...newEvent, event_date: text })}
-              placeholder="2025-06-15"
-              placeholderTextColor={COLORS.textLight}
-              data-testid="event-date-input"
-            />
-            
-            <Text style={styles.inputLabel}>Description</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              value={newEvent.description}
-              onChangeText={(text) => setNewEvent({ ...newEvent, description: text })}
-              placeholder="Optional notes..."
-              placeholderTextColor={COLORS.textLight}
-              multiline
-              numberOfLines={3}
-            />
-            
-            <Text style={styles.inputLabel}>Type</Text>
-            <View style={styles.typeButtons}>
-              {['appointment', 'custom'].map((type) => (
-                <TouchableOpacity
-                  key={type}
-                  style={[styles.typeButton, newEvent.event_type === type && styles.typeButtonActive]}
-                  onPress={() => setNewEvent({ ...newEvent, event_type: type })}
-                >
-                  <Text style={[styles.typeButtonText, newEvent.event_type === type && styles.typeButtonTextActive]}>
-                    {type === 'appointment' ? 'Appointment' : 'Custom Event'}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <ScrollView style={styles.modalScroll} keyboardShouldPersistTaps="handled">
+              <Text style={styles.inputLabel}>Title *</Text>
+              <TextInput
+                style={styles.input}
+                value={newEvent.title}
+                onChangeText={(text) => setNewEvent({ ...newEvent, title: text })}
+                placeholder="e.g., Prenatal Checkup"
+                placeholderTextColor={COLORS.textLight}
+                data-testid="event-title-input"
+              />
+              
+              <Text style={styles.inputLabel}>Date *</Text>
+              {Platform.OS === 'web' ? (
+                <View style={styles.datePickerWrapper}>
+                  <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} />
+                  <input
+                    type="date"
+                    value={newEvent.event_date || ''}
+                    onChange={(e: any) => setNewEvent({ ...newEvent, event_date: e.target.value })}
+                    style={{
+                      flex: 1,
+                      border: 'none',
+                      outline: 'none',
+                      fontSize: 16,
+                      fontFamily: 'inherit',
+                      color: COLORS.textPrimary,
+                      backgroundColor: 'transparent',
+                      marginLeft: 8,
+                    }}
+                    data-testid="event-date-input"
+                  />
+                </View>
+              ) : (
+                <TextInput
+                  style={styles.input}
+                  value={newEvent.event_date}
+                  onChangeText={(text) => setNewEvent({ ...newEvent, event_date: text })}
+                  placeholder="YYYY-MM-DD"
+                  placeholderTextColor={COLORS.textLight}
+                  data-testid="event-date-input"
+                />
+              )}
+              
+              <Text style={styles.inputLabel}>Description</Text>
+              <TextInput
+                style={[styles.input, styles.textArea]}
+                value={newEvent.description}
+                onChangeText={(text) => setNewEvent({ ...newEvent, description: text })}
+                placeholder="Optional notes..."
+                placeholderTextColor={COLORS.textLight}
+                multiline
+                numberOfLines={3}
+              />
+              
+              {/* Extra padding for keyboard */}
+              <View style={{ height: 40 }} />
+            </ScrollView>
             
             <View style={styles.modalActions}>
               <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
                 <Text style={styles.cancelBtnText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.saveBtn} onPress={addEvent} disabled={saving} data-testid="save-event-btn">
-                <Text style={styles.saveBtnText}>{saving ? 'Saving...' : 'Save Event'}</Text>
+                <Text style={styles.saveBtnText}>{saving ? 'Saving...' : 'Save'}</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
