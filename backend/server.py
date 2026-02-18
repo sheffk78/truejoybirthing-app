@@ -6104,6 +6104,34 @@ async def root():
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
+# ============== WEBSOCKET ENDPOINT ==============
+@app.websocket("/ws/messages/{token}")
+async def websocket_messages(websocket: WebSocket, token: str):
+    """WebSocket endpoint for real-time messaging"""
+    # Authenticate user from token
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("user_id")
+        if not user_id:
+            await websocket.close(code=4001)
+            return
+        
+        # Connect the user
+        await ws_manager.connect(websocket, user_id)
+        
+        try:
+            while True:
+                # Wait for messages (keepalive pings are handled automatically)
+                data = await websocket.receive_text()
+                # Client can send ping messages to keep connection alive
+                if data == "ping":
+                    await websocket.send_text("pong")
+        except WebSocketDisconnect:
+            ws_manager.disconnect(user_id)
+    except JWTError:
+        await websocket.close(code=4001)
+        return
+
 # Include the router in the main app
 app.include_router(api_router)
 
