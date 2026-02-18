@@ -421,6 +421,17 @@ const styles = StyleSheet.create({
   stateInput: {
     flex: 1,
   },
+  zipLookupStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SIZES.sm,
+    marginTop: -SIZES.xs,
+  },
+  zipLookupText: {
+    marginLeft: SIZES.sm,
+    fontSize: SIZES.fontSm,
+    color: COLORS.textSecondary,
+  },
   servicesCard: {
     marginBottom: SIZES.md,
   },
