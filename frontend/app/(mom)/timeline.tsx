@@ -404,4 +404,52 @@ const styles = StyleSheet.create({
   cancelBtnText: { color: COLORS.textSecondary, fontWeight: '600' },
   saveBtn: { flex: 1, padding: SIZES.md, borderRadius: SIZES.radiusMd, backgroundColor: COLORS.primary, alignItems: 'center' },
   saveBtnText: { color: COLORS.white, fontWeight: '600' },
+  datePickerButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: COLORS.background, 
+    borderRadius: SIZES.radiusMd, 
+    padding: SIZES.md, 
+    marginBottom: SIZES.md, 
+    borderWidth: 1, 
+    borderColor: COLORS.border,
+    minHeight: 52,
+  },
+  dateButtonText: { 
+    flex: 1, 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.textPrimary, 
+    marginLeft: SIZES.sm 
+  },
+  dateButtonPlaceholder: { 
+    color: COLORS.textLight 
+  },
+  dateModalOverlay: { 
+    flex: 1, 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    padding: SIZES.lg 
+  },
+  dateModalContent: { 
+    backgroundColor: COLORS.white, 
+    borderRadius: SIZES.radiusLg, 
+    padding: SIZES.lg, 
+    width: '100%', 
+    maxWidth: 400 
+  },
+  dateModalHeader: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    marginBottom: SIZES.lg 
+  },
+  dateModalTitle: { 
+    fontSize: SIZES.fontLg, 
+    fontFamily: FONTS.heading, 
+    color: COLORS.textPrimary 
+  },
+  webCalendarWrapper: { 
+    marginVertical: SIZES.md 
+  },
 });
