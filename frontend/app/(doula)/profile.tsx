@@ -43,7 +43,7 @@ export default function DoulaProfileScreen() {
     if (zip.length === 5) {
       setLookingUpZip(true);
       try {
-        const data = await apiRequest(`/api/lookup/zipcode/${zip}`);
+        const data = await apiRequest(`/lookup/zipcode/${zip}`);
         setLocationCity(data.city || '');
         setLocationState(data.state || '');
       } catch (error) {
