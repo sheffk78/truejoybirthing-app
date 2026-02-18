@@ -163,7 +163,7 @@ class TestMomProfileEndpoints:
             "event_date": "2026-02-15",
             "event_type": "appointment"
         }
-        response = self.session.post(f"{BASE_URL}/api/mom/timeline/events", json=event_data)
+        response = self.session.post(f"{BASE_URL}/api/timeline/events", json=event_data)
         assert response.status_code in [200, 201], f"Expected 200/201, got {response.status_code}: {response.text}"
         print(f"SUCCESS: Timeline event created")
 
