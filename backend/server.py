@@ -1543,6 +1543,29 @@ async def set_role(request: Request, user: User = Depends(get_current_user)):
     
     return {"message": "Role updated", "role": new_role}
 
+@api_router.put("/auth/update-profile")
+async def update_profile(request: Request, user: User = Depends(get_current_user)):
+    """Update user profile (picture, name, etc.)"""
+    body = await request.json()
+    
+    update_data = {}
+    if "picture" in body:
+        update_data["picture"] = body["picture"]
+    if "full_name" in body:
+        update_data["full_name"] = body["full_name"]
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No valid fields to update")
+    
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.users.update_one(
+        {"user_id": user.user_id},
+        {"$set": update_data}
+    )
+    
+    return {"message": "Profile updated", **update_data}
+
 # ============== ZIP CODE LOOKUP ==============
 
 @api_router.get("/lookup/zipcode/{zipcode}")
