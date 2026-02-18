@@ -253,36 +253,17 @@ export default function TimelineScreen() {
               />
               
               <Text style={styles.inputLabel}>Date *</Text>
-              {Platform.OS === 'web' ? (
-                <View style={styles.datePickerWrapper}>
-                  <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} />
-                  <input
-                    type="date"
-                    value={newEvent.event_date || ''}
-                    onChange={(e: any) => setNewEvent({ ...newEvent, event_date: e.target.value })}
-                    style={{
-                      flex: 1,
-                      border: 'none',
-                      outline: 'none',
-                      fontSize: 16,
-                      fontFamily: 'inherit',
-                      color: COLORS.textPrimary,
-                      backgroundColor: 'transparent',
-                      marginLeft: 8,
-                    }}
-                    data-testid="event-date-input"
-                  />
-                </View>
-              ) : (
-                <TextInput
-                  style={styles.input}
-                  value={newEvent.event_date}
-                  onChangeText={(text) => setNewEvent({ ...newEvent, event_date: text })}
-                  placeholder="YYYY-MM-DD"
-                  placeholderTextColor={COLORS.textLight}
-                  data-testid="event-date-input"
-                />
-              )}
+              <TouchableOpacity 
+                style={styles.datePickerButton}
+                onPress={() => setShowDatePicker(true)}
+                data-testid="event-date-picker-btn"
+              >
+                <Icon name="calendar" size={20} color={COLORS.primary} />
+                <Text style={[styles.dateButtonText, !newEvent.event_date && styles.dateButtonPlaceholder]}>
+                  {newEvent.event_date ? formatDisplayDate(newEvent.event_date) : 'Select appointment date'}
+                </Text>
+                <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
+              </TouchableOpacity>
               
               <Text style={styles.inputLabel}>Description</Text>
               <TextInput
