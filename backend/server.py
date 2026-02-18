@@ -2453,6 +2453,15 @@ async def get_my_share_requests(user: User = Depends(check_role(["MOM"]))):
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     
+    # Enrich with provider pictures
+    for req in requests:
+        provider = await db.users.find_one(
+            {"user_id": req.get("provider_id")}, 
+            {"_id": 0, "picture": 1}
+        )
+        if provider:
+            req["provider_picture"] = provider.get("picture")
+    
     return {"requests": requests}
 
 @api_router.delete("/birth-plan/share/{request_id}")
