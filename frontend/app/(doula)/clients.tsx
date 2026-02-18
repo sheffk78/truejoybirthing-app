@@ -184,6 +184,38 @@ export default function DoulaClientsScreen() {
             </TouchableOpacity>
           ))
         )}
+
+        {/* Past Clients Section */}
+        {clients.filter((c) => c.status === 'Completed').length > 0 && (
+          <>
+            <Text style={[styles.sectionTitle, { marginTop: SIZES.lg }]}>Past Clients</Text>
+            {clients.filter((c) => c.status === 'Completed').map((client) => (
+              <TouchableOpacity key={client.client_id + '_past'} activeOpacity={0.8}>
+                <Card style={[styles.clientCard, { opacity: 0.7 }]}>
+                  <View style={styles.clientHeader}>
+                    <View style={[styles.clientAvatar, { backgroundColor: COLORS.textLight }]}>
+                      <Text style={styles.clientInitial}>
+                        {client.name.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                    <View style={styles.clientInfo}>
+                      <Text style={styles.clientName}>{client.name}</Text>
+                      <View style={styles.statusRow}>
+                        <View
+                          style={[
+                            styles.statusDot,
+                            { backgroundColor: COLORS.textLight },
+                          ]}
+                        />
+                        <Text style={styles.statusText}>Completed</Text>
+                      </View>
+                    </View>
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
       </ScrollView>
       
       {/* Add Client Modal */}
