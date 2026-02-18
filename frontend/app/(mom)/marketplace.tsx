@@ -417,37 +417,18 @@ export default function MarketplaceScreen() {
           
           <View style={styles.modalFooter}>
             <Button
-              title="Contact Provider"
-              onPress={handleContactProvider}
+              title={contactingProvider ? "Connecting..." : "Contact Provider"}
+              onPress={() => handleContactProvider(selectedProvider)}
               fullWidth
+              loading={contactingProvider}
               testID="contact-provider-btn"
             />
           </View>
         </SafeAreaView>
       </Modal>
-      
-      {/* Send Message Modal */}
-      <Modal
-        visible={showMessageModal}
-        animationType="fade"
-        transparent
-        onRequestClose={() => setShowMessageModal(false)}
-      >
-        <View style={styles.messageModalOverlay}>
-          <View style={styles.messageModalContent}>
-            <View style={styles.messageModalHeader}>
-              <Text style={styles.messageModalTitle}>
-                Message {selectedProvider?.full_name}
-              </Text>
-              <TouchableOpacity onPress={() => setShowMessageModal(false)} data-testid="close-message-modal">
-                <Icon name="close" size={24} color={COLORS.textPrimary} />
-              </TouchableOpacity>
-            </View>
-            
-            <TextInput
-              style={styles.messageTextArea}
-              value={messageText}
-              onChangeText={setMessageText}
+    </SafeAreaView>
+  );
+}
               placeholder={`Introduce yourself to ${selectedProvider?.full_name}...`}
               placeholderTextColor={COLORS.textLight}
               multiline
