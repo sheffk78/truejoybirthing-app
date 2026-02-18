@@ -150,6 +150,12 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 ### ✅ RECENTLY COMPLETED (2026-02-18)
 - [x] **Critical Bug Fix: PDF Download** - Fixed token variable being undefined (was using non-existent `token` property, now correctly uses `sessionToken` from authStore)
 - [x] **KeyboardAvoidingView Improvement** - Updated Birth Plan modal to use better keyboard offset settings for iOS
+- [x] **Marketplace Contact & Add to Team Buttons** - Added two action buttons for each provider:
+  - **Contact**: Opens messages with a pre-filled intro message (or existing conversation)
+  - **Add to Team**: Sends a share request to add provider to Mom's team (shares birth plan)
+  - Buttons appear on both provider cards and in the provider profile modal
+  - Status tracking: "Add to Team" → "Pending" → "On Team"
+  - Backend integration with `/api/birth-plan/share` endpoint
 
 ### ✅ RECENTLY COMPLETED (2026-02-17)
 - [x] **Doula Contract System Rework** (Major Feature):
