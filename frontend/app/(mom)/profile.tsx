@@ -104,7 +104,7 @@ export default function MomProfileScreen() {
     
     setLookingUpZip(true);
     try {
-      const data = await apiRequest(`/api/lookup/zipcode/${zip}`);
+      const data = await apiRequest(`/lookup/zipcode/${zip}`);
       if (data.city && data.state) {
         setLocationCity(data.city);
         setLocationState(data.state);
