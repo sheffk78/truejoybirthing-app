@@ -1,0 +1,177 @@
+<analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing for web, iOS, and Android. The app will serve three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
+
+**PRODUCT REQUIREMENTS**:
+- **Authentication**: Role-based signup (MOM, DOULA, MIDWIFE) and login. Google Social Login is also required.
+- **MOM Experience**: Onboarding, a comprehensive multi-section Birth Plan, Pregnancy Timeline, Wellness/Emotional Check-in, Postpartum Plan, a My Team screen, and a Provider Marketplace.
+- **Birth Plan Sharing**: Moms' birth plans are automatically shared with their connected providers.
+- **Notifications**: Providers should receive an email notification (via Resend) and an in-app notification when a mom shares her birth plan.
+- **DOULA Experience**: A dashboard, client management, a customizable, multi-step contract management system with e-signatures, invoicing, and client notes.
+- **MIDWIFE Experience**: A dashboard, client management, prenatal/postpartum visit logging, client notes, and a customizable, multi-step contract system.
+- **ADMIN Experience**: Content management and user management.
+- **Messaging**: A real-time system for Moms to directly contact providers from the marketplace.
+- **PDF Export**: Ability to export contracts and birth plans as PDFs.
+- **Email Automation**: Automatically email signed contracts to all parties.
+- **Subscription Model**: Doulas and Midwives have Pro plans (with a 30-day trial) and Free plans. Moms are always free. A pricing page is required.
+- **Pro Feedback Form**: A simple, in-app form for Pro users to send feedback directly to the admin's email.
+- **Mom Profile**: Moms can upload a profile picture.
+- **Content**: Weekly tips and affirmations should be displayed on the Mom's dashboard.
+
+**User's preferred language**: English
+
+**what currently exists?**
+The application is a robust platform for moms, doulas, and midwives. Key features are implemented, including role-based authentication, birth plan management with auto-sharing, provider connection flows, contract management, invoicing, and real-time messaging via WebSockets. The previous sessions focused on implementing several large batches of user-requested features and bug fixes from  files, significantly improving UI/UX and core workflows.
+
+**Last working item**:
+- **Last item agent was working**: The agent started working on a new batch of user requests from the latest  file. The implemented fixes include:
+    1.  Updating dashboard icons for Doula/Midwife (, , ).
+    2.  Fixing the Select Client UI on the Client Notes page for Doulas.
+    3.  Replacing the City/State input with a Zip Code lookup on the Doula profile page.
+- **Status**: IN PROGRESS
+- **Agent Testing Done**: N
+- **Which testing method agent to use?**: testing agent
+- **User Testing Done**: N
+
+**All Pending/In progress Issue list**:
+- **Issue 1: Complete and verify the latest batch of user-requested fixes (P0)**
+    - **Description**: The user provided a  file with a list of fixes. The agent has started implementation but needs to complete and verify all items.
+    - **Attempted fixes**: The agent has already implemented the dashboard icon updates, the Client Note Select Client fix, and the Doula zip code profile update.
+    - **Next debug checklist**:
+        1.  **Implement Fix #2**: Ensure Upcoming Appointments counters on Doula/Midwife dashboards are functional.
+        2.  **Implement Fix #3**: Ensure Birth Plan and Service Agreement PDFs can be downloaded/printed from the provider's client view.
+        3.  **Implement Fix #5**: Address keyboard overlap issues on all input screens.
+        4.  **Implement Fix #7**: Add All, Prenatal, and Postpartum tabs to the Midwife appointments page.
+        5.  Once all code is written, use the  to create a comprehensive test plan covering all 8 items from the user's document.
+    - **Why fix this issue and what will be achieved with the fix?**: This will complete the user's latest set of high-priority requests, polishing core features and improving usability for providers.
+    - **Status**: IN PROGRESS
+    - **Is recurring issue?**: N
+    - **Should Test frontend/backend/both after fix?**: Both
+
+**In progress Task List**:
+- This is captured in the All Pending/In progress Issue list above.
+
+**Upcoming and Future Tasks**
+- **Upcoming Tasks**:
+    - **P0: Push Notifications**: Implement push notifications for new messages, appointment reminders, etc. (User requested to save this for later).
+    - **P1: Stripe Integration**: Replace the mocked subscription purchase flow with a real Stripe integration.
+- **Future Tasks**:
+    - **P2: Admin Panel**: Implement the Admin experience for content and user management.
+    - **P3: Automated Emails**: Ensure signed contracts are automatically emailed to all parties.
+
+**Completed work in this session**
+- **Batch 1 Fixes (Verified & Completed)**:
+    - **Contact Provider**: Fixed logic to correctly open/create message threads.
+    - **Auto-share Birth Plan**: Confirmed plan is auto-shared upon connection.
+    - **Invoices in Messages**: Fixed the UI to correctly display a list of pending invoices on the Mom's messages page.
+- **Batch 2 Fixes (Verified & Completed)**:
+    - Displayed Mom's profile photo in the header.
+    - Removed the My Team section from the Profile page.
+    - Displayed provider profile photos on the My Team page.
+    - Synced Due Date & Birth Setting from the Birth Plan back to the Mom's profile on save.
+    - Removed all manual Share Birth Plan prompts and buttons.
+    - Added a Shared with: [providers] display on the Birth Plan page.
+    - Added a View Birth Plan button on the provider's client profile page.
+- **Batch 3 Fixes (Verified & Completed)**:
+    - **Real-time Messaging**: Implemented WebSockets for instant message delivery.
+    - **Doula Client Acceptance**: Fixed the flow to automatically create a client record upon accepting a Mom's connection request.
+    - **Invoice Display**: Ensured Paid invoices are hidden from the pending list.
+    - **UI/UX Fixes**:
+        - Fixed the Select Client UI for Doula invoices.
+        - Fixed the Create Contract button by correcting a field name mismatch and removed a duplicate field.
+        - Improved the Doula clients list by separating Active and Past clients.
+        - Updated message Send button to a paper airplane icon.
+
+**Earlier issues found/mentioned but not fixed**
+- None.
+
+**Known issue recurrence from previous fork**
+- **Issue recurrence in previous fork**: Frontend hot-reloading can be unreliable.
+- **Recurrence count**: 2+
+- **Status**: RESOLVED (Workaround: frontend: ERROR (no such process)
+frontend: ERROR (no such process) or clear bundler cache [05:36:25] Starting project at /app/frontend).
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+- **Frontend**: React (with Expo Router), TailwindCSS, Zustand.
+- **Backend**: FastAPI, Pydantic, MongoDB, WebSockets.
+- **Real-time**: Implemented a WebSocket manager on the backend and a  hook on the frontend for live messaging.
+
+**key DB schema**
+- ****: Now automatically populated when a doula/midwife accepts a Mom's share request.
+- No other schema changes, but significant logic updates for , , and .
+
+**changes in tech stack**
+- Added usage: websockets [--version | <uri>] to .
+
+**All files of reference**
+-  (Current task source)
+- 
+- 
+- 
+- 
+- 
+
+**Areas that need refactoring**:
+- **Monolithic Backend**:  is now extremely large and complex, handling all API logic including WebSockets. It MUST be broken down into multiple  files (e.g., , , , ). This is the highest priority refactoring task.
+- **Duplicated Frontend Logic**: The Doula and Midwife dashboards, client lists, and other components share nearly identical logic. This should be extracted into reusable components to reduce code duplication.
+
+**key api endpoints**
+- **WebSocket**: 
+- **Provider view of Birth Plan**: 
+- **Doula/Midwife Accept Request**:  (Modified to create a client record).
+
+**Critical Info for New Agent**
+- **Top Priority**: Continue implementing the pending fixes from the latest  file (). The user wants all items addressed in priority order, except for push notifications, which are deferred.
+- **Next, Propose Refactoring**: After completing the current batch of fixes, you MUST propose refactoring the monolithic . This is critical for the project's long-term health and scalability.
+- **WebSocket Implementation**: The app now uses WebSockets for real-time messaging. Be mindful of this when working on messaging features. The connection is managed in  and consumed via .
+
+**documents and test reports created in this job**
+- User-provided document for current tasks: 
+- Previous user documents:
+    - 
+    - 
+-  (Verified Batch 3 fixes)
+-  (Verified Batch 2 fixes)
+-  (Updated with all completed features)
+
+**Last 10 User Messages and any pending HUMAN messages**
+1.  **User**: Provides a new  file with instructions for fixes (Doula Client Acceptance, Messaging, etc.).
+2.  **Agent**: Presents a plan to implement all 9 fixes from the document, asking about WebSocket preference.
+3.  **User**: Confirms to proceed with all 9 items and to use WebSockets.
+4.  **Agent**: Implements and tests all 9 items successfully, including WebSockets. Finishes the task.
+5.  **User**: Provides another new  file (Appointments, Icons, Counters, etc.) and asks to add push notifications.
+6.  **Agent**: Analyzes the new document and presents a plan with 8 items plus push notifications.
+7.  **User**: 1. proceed with all items in priority order. 2. Save push notifications for later.
+8.  **Agent**: Acknowledges and starts implementing the 8 fixes, deferring push notifications.
+
+**Project Health Check:**
+- **Broken**: None.
+- **Mocked**: Subscription payment processing via Stripe.
+
+**3rd Party Integrations**
+-  / 
+- Emergent-managed Google Auth
+- 
+-  & 
+- Resend (for emails)
+-  (for zip code lookups)
+- 
+-  (for PDF generation)
+-  (for photo uploads)
+- usage: websockets [--version | <uri>] (for real-time messaging)
+
+**Testing status**
+- **Testing agent used after significant changes**: YES
+- **Troubleshoot agent used after agent stuck in loop**: NO
+- **Test files created**: None
+- **Known regressions**: None
+
+**Credentials to test flow:**
+- **MOM**: , password .
+- **DOULA**: , password .
+- **MIDWIFE**: , password .
+- **ADMIN**: , password .
+
+**What agent forgot to execute**
+- Nothing. The agent correctly deferred the push notification task as per the user's instruction.</analysis>
