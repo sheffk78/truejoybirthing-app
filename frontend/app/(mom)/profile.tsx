@@ -129,6 +129,29 @@ export default function MomProfileScreen() {
       lookupZipCode(numericZip);
     }
   };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    if (selectedDate) {
+      setDueDateObj(selectedDate);
+      // Format as YYYY-MM-DD for storage
+      const formatted = selectedDate.toISOString().split('T')[0];
+      setDueDate(formatted);
+    }
+  };
+
+  const formatDisplayDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
   
   const handleSave = async () => {
     setSaving(true);
