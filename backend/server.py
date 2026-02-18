@@ -5914,6 +5914,19 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
         data={"sender_id": user.user_id, "message_id": message_doc["message_id"]}
     )
     
+    # Send real-time WebSocket notification to receiver
+    await ws_manager.send_personal_message({
+        "type": "new_message",
+        "message": {
+            "message_id": message_doc["message_id"],
+            "sender_id": user.user_id,
+            "sender_name": user.full_name,
+            "sender_role": user.role,
+            "content": message_doc["content"],
+            "created_at": message_doc["created_at"].isoformat()
+        }
+    }, message_data.receiver_id)
+    
     return {"message": "Message sent", "data": message_doc}
 
 @api_router.get("/messages/unread/count")
