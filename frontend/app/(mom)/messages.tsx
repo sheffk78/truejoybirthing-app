@@ -10,10 +10,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
+import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
@@ -40,6 +42,14 @@ interface Message {
   created_at: string;
 }
 
+interface TeamMember {
+  user_id: string;
+  name: string;
+  role: string;
+  email: string;
+  picture?: string;
+}
+
 export default function MessagesScreen() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -48,6 +58,9 @@ export default function MessagesScreen() {
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [loadingTeam, setLoadingTeam] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   
   const fetchConversations = async () => {
