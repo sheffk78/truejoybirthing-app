@@ -447,7 +447,7 @@ export default function MessagesScreen() {
                 disabled={!newMessage.trim() || sending}
                 data-testid="send-message-btn"
               >
-                <Icon name="send" size={20} color={COLORS.white} />
+                <Icon name="paper-plane" size={20} color={COLORS.white} />
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
