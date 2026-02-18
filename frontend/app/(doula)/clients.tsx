@@ -313,6 +313,13 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
+  sectionTitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textSecondary,
+    marginTop: SIZES.md,
+    marginBottom: SIZES.sm,
+  },
   addButton: {
     width: 44,
     height: 44,
