@@ -113,49 +113,12 @@ export default function BirthPlanScreen() {
   };
   
   const handleExport = async () => {
-    try {
-      // For web platform, open the PDF in a new tab for download
-      if (Platform.OS === 'web') {
-        // Get auth token from storage
-        const token = localStorage.getItem('authToken');
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
-        const pdfUrl = `${backendUrl}/api/birth-plan/export/pdf`;
-        
-        // Fetch the PDF with authentication
-        const response = await fetch(pdfUrl, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to generate PDF');
-        }
-        
-        // Create blob and download
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'Birth_Plan.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        
-        Alert.alert('Success', 'Your birth plan has been downloaded as a PDF.');
-      } else {
-        // For native platforms, show info about sharing
-        Alert.alert(
-          'Export Birth Plan',
-          `Your birth plan is ${Math.round(birthPlan?.completion_percentage || 0)}% complete.\n\nUse the "Share with Provider" button to share your birth plan digitally with your care team.`,
-          [{ text: 'OK' }]
-        );
-      }
-    } catch (error) {
-      console.error('Export error:', error);
-      Alert.alert('Error', 'Failed to export birth plan. Please try again.');
-    }
+    // Navigate to the preview screen for printing
+    router.push('/(mom)/birth-plan-preview');
+  };
+
+  const handleShareWithProvider = () => {
+    router.push('/(mom)/my-team');
   };
   
   const getCompletedCount = () => {
