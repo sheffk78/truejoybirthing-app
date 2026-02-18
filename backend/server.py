@@ -3281,11 +3281,20 @@ async def get_doula_dashboard(user: User = Depends(check_role(["DOULA"]))):
     # Count contracts this week
     contracts_pending = await db.contracts.count_documents({"doula_id": user.user_id, "status": "Sent"})
     
+    # Count upcoming appointments (accepted, future dates)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    upcoming_appointments = await db.appointments.count_documents({
+        "provider_id": user.user_id,
+        "status": "accepted",
+        "appointment_date": {"$gte": today}
+    })
+    
     return {
         "total_clients": total_clients,
         "active_clients": active_clients,
         "pending_invoices": pending_invoices,
-        "contracts_pending_signature": contracts_pending
+        "contracts_pending_signature": contracts_pending,
+        "upcoming_appointments": upcoming_appointments
     }
 
 # ============== DOULA CLIENT ROUTES ==============
@@ -5276,11 +5285,20 @@ async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
         "created_at": {"$gte": start_of_month}
     })
     
+    # Count upcoming appointments (accepted, future dates)
+    today = now.strftime("%Y-%m-%d")
+    upcoming_appointments = await db.appointments.count_documents({
+        "provider_id": user.user_id,
+        "status": "accepted",
+        "appointment_date": {"$gte": today}
+    })
+    
     return {
         "total_clients": total_clients,
         "prenatal_clients": prenatal_clients,
         "visits_this_month": visits_this_month,
-        "births_this_month": births_this_month
+        "births_this_month": births_this_month,
+        "upcoming_appointments": upcoming_appointments
     }
 
 # ============== MIDWIFE CLIENT ROUTES ==============
