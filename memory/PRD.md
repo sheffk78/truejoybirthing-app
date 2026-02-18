@@ -147,6 +147,10 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 ### 🟡 BLOCKED
 - None (previously: Email notifications domain verification - now resolved)
 
+### ✅ RECENTLY COMPLETED (2026-02-18)
+- [x] **Critical Bug Fix: PDF Download** - Fixed token variable being undefined (was using non-existent `token` property, now correctly uses `sessionToken` from authStore)
+- [x] **KeyboardAvoidingView Improvement** - Updated Birth Plan modal to use better keyboard offset settings for iOS
+
 ### ✅ RECENTLY COMPLETED (2026-02-17)
 - [x] **Doula Contract System Rework** (Major Feature):
   - Replaced old contract system with new customizable Doula Service Agreement
