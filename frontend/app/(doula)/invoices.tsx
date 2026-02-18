@@ -540,19 +540,46 @@ export default function DoulaInvoicesScreen() {
 
             <ScrollView style={styles.modalBody}>
               <Text style={styles.fieldLabel}>Select Client *</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.clientSelector}>
-                {clients.map((client) => (
-                  <TouchableOpacity
-                    key={client.client_id}
-                    style={[styles.clientOption, selectedClientId === client.client_id && styles.clientOptionSelected]}
-                    onPress={() => setSelectedClientId(client.client_id)}
-                  >
-                    <Text style={[styles.clientOptionText, selectedClientId === client.client_id && styles.clientOptionTextSelected]}>
-                      {client.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+              {clients.length === 0 ? (
+                <View style={styles.noClientsMessage}>
+                  <Ionicons name="alert-circle-outline" size={24} color={COLORS.textLight} />
+                  <Text style={styles.noClientsText}>
+                    You don't have any active clients yet. Add a client first to create an invoice.
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.clientGrid}>
+                  {clients.map((client) => (
+                    <TouchableOpacity
+                      key={client.client_id}
+                      style={[
+                        styles.clientOption, 
+                        selectedClientId === client.client_id && styles.clientOptionSelected
+                      ]}
+                      onPress={() => setSelectedClientId(client.client_id)}
+                      activeOpacity={0.7}
+                      data-testid={`client-option-${client.client_id}`}
+                    >
+                      <Text 
+                        style={[
+                          styles.clientOptionText, 
+                          selectedClientId === client.client_id && styles.clientOptionTextSelected
+                        ]}
+                      >
+                        {client.name}
+                      </Text>
+                      {client.edd && (
+                        <Text style={[
+                          styles.clientOptionEdd,
+                          selectedClientId === client.client_id && styles.clientOptionTextSelected
+                        ]}>
+                          EDD: {client.edd}
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
 
               <Text style={styles.fieldLabel}>Description *</Text>
               <TextInput
