@@ -351,6 +351,10 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] Midwife onboarding with zip code lookup (auto-fills city/state)
 - [x] Birth location icons in Birth Plan form (Hospital, Birth Center, Home Birth, Not sure yet)
 - [x] Email notifications sender domain configured (contact.truejoybirthing.com verified)
+- [x] **3 User-Requested Fixes** (COMPLETED 2026-02-18):
+  - **Contact Provider**: Fixed marketplace flow - opens messages with pre-filled intro message for connected providers, shows helpful alert for unconnected providers
+  - **Auto-share Birth Plan**: UI notice added to birth plan page informing moms that their plan is automatically shared with team members on save
+  - **Invoices in Messages**: Fixed invoice rendering on Mom's Messages page - now shows pending invoices with amount, description, status, due date, provider name, and payment disclaimer
 
 ### 📊 Test Reports
 - `/app/test_reports/iteration_33.json` - **3 User-Requested Fixes VERIFIED** (100% pass - Contact Provider, Auto-share Birth Plan, Invoices in Messages)
