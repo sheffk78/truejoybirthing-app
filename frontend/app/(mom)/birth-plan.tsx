@@ -405,7 +405,7 @@ export default function BirthPlanScreen() {
               </View>
               
               {/* Large spacer for keyboard and button */}
-              <View style={{ height: 280 }} />
+              <View style={{ height: 350 }} />
             </ScrollView>
             
             <View style={styles.modalFooter}>
@@ -415,6 +415,7 @@ export default function BirthPlanScreen() {
                 loading={saving}
                 fullWidth
                 icon={!saving ? <Icon name="checkmark" size={20} color={COLORS.white} /> : undefined}
+                data-testid="save-section-btn"
               />
             </View>
           </KeyboardAvoidingView>
