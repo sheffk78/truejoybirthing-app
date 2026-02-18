@@ -2172,6 +2172,20 @@ async def update_birth_plan_section(section_id: str, request: Request, user: Use
         }}
     )
     
+    # Sync Due Date and Birth Setting from birth plan to mom profile
+    if section_id == "about_me" and data:
+        profile_updates = {}
+        if data.get("due_date"):
+            profile_updates["due_date"] = data["due_date"]
+        if data.get("planned_birth_location"):
+            profile_updates["planned_birth_setting"] = data["planned_birth_location"]
+        if profile_updates:
+            await db.mom_profiles.update_one(
+                {"user_id": user.user_id},
+                {"$set": profile_updates},
+                upsert=True
+            )
+    
     # Notify providers when birth plan is marked complete for the first time
     if new_status == "complete" and previous_status != "complete":
         await notify_providers_birth_plan_complete(user.user_id, user.full_name)
