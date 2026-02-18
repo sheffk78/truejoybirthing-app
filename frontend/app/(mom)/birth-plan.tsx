@@ -255,24 +255,23 @@ export default function BirthPlanScreen() {
         {/* Action Buttons */}
         <View style={styles.actionSection}>
           <Button
-            title="Share with Provider"
-            onPress={() => router.push('/share-birth-plan')}
-            fullWidth
-            icon={<Icon name="share-social" size={20} color={COLORS.white} />}
-            style={styles.shareButton}
-            data-testid="share-birth-plan-btn"
-          />
-          <Button
             title="Preview & Print"
             onPress={handleExport}
-            variant="outline"
             fullWidth
-            icon={<Icon name="print" size={20} color={COLORS.primary} />}
-            style={styles.exportButton}
+            icon={<Icon name="print" size={20} color={COLORS.white} />}
+            style={styles.shareButton}
           />
           <Text style={styles.exportHint}>
             Preview your birth plan and print or save as PDF
           </Text>
+          
+          {/* Auto-share notice */}
+          <View style={styles.autoShareNotice}>
+            <Icon name="information-circle" size={18} color={COLORS.primary} />
+            <Text style={styles.autoShareText}>
+              Your birth plan is automatically shared with providers on your team when you save changes.
+            </Text>
+          </View>
         </View>
       </ScrollView>
       
