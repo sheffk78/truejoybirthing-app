@@ -35,8 +35,10 @@ export default function MomProfileScreen() {
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [lookingUpZip, setLookingUpZip] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   
   const [dueDate, setDueDate] = useState('');
+  const [dueDateObj, setDueDateObj] = useState<Date | null>(null);
   const [zipCode, setZipCode] = useState('');
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
@@ -53,7 +55,11 @@ export default function MomProfileScreen() {
       setBirthPlan(birthPlanData);
       
       // Set form values
-      setDueDate(profileData.due_date || '');
+      const dueDateStr = profileData.due_date || '';
+      setDueDate(dueDateStr);
+      if (dueDateStr) {
+        setDueDateObj(new Date(dueDateStr));
+      }
       setZipCode(profileData.zip_code || '');
       setLocationCity(profileData.location_city || '');
       setLocationState(profileData.location_state || '');
