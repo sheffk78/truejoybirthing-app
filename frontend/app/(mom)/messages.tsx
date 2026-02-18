@@ -817,4 +817,106 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
   },
+  // Invoice section styles
+  invoicesSection: {
+    marginBottom: SIZES.lg,
+  },
+  invoicesSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SIZES.md,
+  },
+  invoicesSectionTitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.subheading,
+    color: COLORS.textPrimary,
+    marginLeft: SIZES.sm,
+    flex: 1,
+  },
+  invoicesBadge: {
+    backgroundColor: COLORS.warning,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  invoicesBadgeText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.white,
+  },
+  invoiceCard: {
+    marginBottom: SIZES.sm,
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.warning,
+  },
+  invoiceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  invoiceInfo: {
+    flex: 1,
+  },
+  invoiceAmount: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.heading,
+    color: COLORS.textPrimary,
+  },
+  invoiceDescription: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  invoiceFrom: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    marginTop: 4,
+  },
+  invoiceMeta: {
+    alignItems: 'flex-end',
+  },
+  invoiceStatusBadge: {
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: SIZES.xs,
+    borderRadius: SIZES.radiusSm,
+  },
+  invoiceStatusText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+  },
+  invoiceDueDate: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    marginTop: 4,
+  },
+  paymentInstructions: {
+    marginTop: SIZES.sm,
+    paddingTop: SIZES.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  paymentInstructionsLabel: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textSecondary,
+    marginBottom: 4,
+  },
+  paymentInstructionsText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textPrimary,
+    lineHeight: 18,
+  },
+  invoiceDisclaimer: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    textAlign: 'center',
+    marginTop: SIZES.sm,
+    fontStyle: 'italic',
+  },
 });
