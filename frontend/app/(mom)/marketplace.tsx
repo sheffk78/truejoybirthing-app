@@ -377,6 +377,44 @@ export default function MarketplaceScreen() {
                   )}
                 </View>
                 
+                {/* Quick Action Buttons */}
+                <View style={styles.cardActions}>
+                  <TouchableOpacity
+                    style={[styles.cardActionBtn, styles.cardContactBtn]}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      handleContactProvider(provider);
+                    }}
+                    data-testid={`contact-btn-${provider.user_id}`}
+                  >
+                    <Icon name="chatbubble-outline" size={16} color={COLORS.white} />
+                    <Text style={styles.cardActionBtnText}>Contact</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity
+                    style={[
+                      styles.cardActionBtn, 
+                      styles.cardAddBtn,
+                      getTeamButtonDisabled(provider.user_id) && styles.cardDisabledBtn
+                    ]}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      handleAddToTeam(provider);
+                    }}
+                    disabled={getTeamButtonDisabled(provider.user_id)}
+                    data-testid={`add-btn-${provider.user_id}`}
+                  >
+                    <Icon 
+                      name={teamStatus[provider.user_id] === 'accepted' ? 'checkmark-circle' : 'person-add-outline'} 
+                      size={16} 
+                      color={COLORS.white} 
+                    />
+                    <Text style={styles.cardActionBtnText}>
+                      {getTeamButtonText(provider.user_id)}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                
                 <View style={styles.viewProfile}>
                   <Text style={styles.viewProfileText}>View Profile</Text>
                   <Icon name="chevron-forward" size={16} color={COLORS.primary} />
