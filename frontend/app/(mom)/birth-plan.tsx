@@ -263,15 +263,15 @@ export default function BirthPlanScreen() {
             data-testid="share-birth-plan-btn"
           />
           <Button
-            title="Export Birth Plan"
+            title="Preview & Print"
             onPress={handleExport}
             variant="outline"
             fullWidth
-            icon={<Icon name="download" size={20} color={COLORS.primary} />}
+            icon={<Icon name="print" size={20} color={COLORS.primary} />}
             style={styles.exportButton}
           />
           <Text style={styles.exportHint}>
-            Share your birth plan with your doula or midwife
+            Preview your birth plan and print or save as PDF
           </Text>
         </View>
       </ScrollView>
