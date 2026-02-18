@@ -51,7 +51,8 @@ class WebSocketClient {
       };
 
       this.ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        // Silently log WebSocket errors - they're expected when WS is unavailable
+        console.log('WebSocket connection unavailable');
       };
     } catch (error) {
       console.error('Failed to create WebSocket:', error);
