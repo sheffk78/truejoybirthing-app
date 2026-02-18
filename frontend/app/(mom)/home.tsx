@@ -77,8 +77,16 @@ export default function MomHomeScreen() {
               <Text style={styles.weekText}>Week {timeline.current_week} of pregnancy</Text>
             )}
           </View>
-          <TouchableOpacity style={styles.avatarContainer}>
-            <Icon name="person-circle-outline" size={44} color={COLORS.primary} />
+          <TouchableOpacity 
+            style={styles.avatarContainer} 
+            onPress={() => router.push('/(mom)/profile')}
+            data-testid="profile-avatar-btn"
+          >
+            {user?.picture ? (
+              <Image source={{ uri: user.picture }} style={styles.avatarImage} />
+            ) : (
+              <Icon name="person-circle-outline" size={44} color={COLORS.primary} />
+            )}
           </TouchableOpacity>
         </View>
         
