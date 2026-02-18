@@ -192,9 +192,9 @@ export default function DoulaDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.roleDoula + '30' }]}>
-              <Icon name="person-add" size={24} color={COLORS.roleDoula} />
+              <Icon name="people" size={24} color={COLORS.roleDoula} />
             </View>
-            <Text style={styles.actionTitle}>Add Client</Text>
+            <Text style={styles.actionTitle}>See Clients</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
