@@ -359,4 +359,74 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     lineHeight: 20,
   },
+  // Share Request Styles
+  requestCard: {
+    marginBottom: SIZES.md,
+    padding: SIZES.md,
+  },
+  requestHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SIZES.md,
+  },
+  requestAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: COLORS.primary + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  requestInfo: {
+    flex: 1,
+    marginLeft: SIZES.md,
+  },
+  requestName: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textPrimary,
+  },
+  requestSubtext: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  requestDate: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    marginTop: 4,
+  },
+  requestActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: SIZES.sm,
+  },
+  declineButton: {
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
+    borderRadius: SIZES.radiusSm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  declineButtonText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textSecondary,
+  },
+  acceptButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
+    borderRadius: SIZES.radiusSm,
+    backgroundColor: COLORS.roleMidwife,
+    gap: 4,
+  },
+  acceptButtonText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.white,
+  },
 });
