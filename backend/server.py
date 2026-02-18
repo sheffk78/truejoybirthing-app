@@ -5738,22 +5738,38 @@ async def search_providers(
     location_city: Optional[str] = None,
     location_state: Optional[str] = None,
     birth_setting: Optional[str] = None,
-    virtual_available: Optional[bool] = None
+    virtual_available: Optional[bool] = None,
+    search: Optional[str] = None
 ):
-    """Search for providers in marketplace"""
-    # Search doulas
-    doula_query = {"in_marketplace": True, "accepting_new_clients": True}
-    if location_city:
-        doula_query["location_city"] = {"$regex": location_city, "$options": "i"}
-    if location_state:
-        doula_query["location_state"] = {"$regex": location_state, "$options": "i"}
-    
+    """Search for providers in marketplace - supports multi-field search"""
     doulas = []
+    midwives = []
+    
+    # Search doulas
     if not provider_type or provider_type == "DOULA":
-        doula_profiles = await db.doula_profiles.find(doula_query, {"_id": 0}).to_list(50)
+        doula_query = {"in_marketplace": True, "accepting_new_clients": True}
+        
+        doula_profiles = await db.doula_profiles.find(doula_query, {"_id": 0}).to_list(100)
         for profile in doula_profiles:
             user = await db.users.find_one({"user_id": profile["user_id"]}, {"_id": 0, "password_hash": 0})
             if user:
+                # Apply search filter
+                if search:
+                    search_lower = search.lower()
+                    name_match = user.get("full_name", "").lower().find(search_lower) >= 0
+                    city_match = profile.get("location_city", "").lower().find(search_lower) >= 0
+                    state_match = profile.get("location_state", "").lower().find(search_lower) >= 0
+                    zip_match = profile.get("zip_code", "").find(search) >= 0 if profile.get("zip_code") else False
+                    
+                    if not (name_match or city_match or state_match or zip_match):
+                        continue
+                
+                # Apply individual filters
+                if location_city and profile.get("location_city", "").lower().find(location_city.lower()) < 0:
+                    continue
+                if location_state and profile.get("location_state", "").lower().find(location_state.lower()) < 0:
+                    continue
+                
                 doulas.append({
                     "provider_type": "DOULA",
                     "user": user,
@@ -5761,20 +5777,32 @@ async def search_providers(
                 })
     
     # Search midwives
-    midwife_query = {"in_marketplace": True, "accepting_new_clients": True}
-    if location_city:
-        midwife_query["location_city"] = {"$regex": location_city, "$options": "i"}
-    if location_state:
-        midwife_query["location_state"] = {"$regex": location_state, "$options": "i"}
-    if birth_setting:
-        midwife_query["birth_settings_served"] = birth_setting
-    
-    midwives = []
     if not provider_type or provider_type == "MIDWIFE":
-        midwife_profiles = await db.midwife_profiles.find(midwife_query, {"_id": 0}).to_list(50)
+        midwife_query = {"in_marketplace": True, "accepting_new_clients": True}
+        
+        midwife_profiles = await db.midwife_profiles.find(midwife_query, {"_id": 0}).to_list(100)
         for profile in midwife_profiles:
             user = await db.users.find_one({"user_id": profile["user_id"]}, {"_id": 0, "password_hash": 0})
             if user:
+                # Apply search filter
+                if search:
+                    search_lower = search.lower()
+                    name_match = user.get("full_name", "").lower().find(search_lower) >= 0
+                    city_match = profile.get("location_city", "").lower().find(search_lower) >= 0
+                    state_match = profile.get("location_state", "").lower().find(search_lower) >= 0
+                    zip_match = profile.get("zip_code", "").find(search) >= 0 if profile.get("zip_code") else False
+                    
+                    if not (name_match or city_match or state_match or zip_match):
+                        continue
+                
+                # Apply individual filters
+                if location_city and profile.get("location_city", "").lower().find(location_city.lower()) < 0:
+                    continue
+                if location_state and profile.get("location_state", "").lower().find(location_state.lower()) < 0:
+                    continue
+                if birth_setting and birth_setting not in profile.get("birth_settings_served", []):
+                    continue
+                
                 midwives.append({
                     "provider_type": "MIDWIFE",
                     "user": user,
