@@ -160,6 +160,69 @@ export default function MarketplaceScreen() {
     }
   };
   
+  const handleAddToTeam = async (provider: any) => {
+    if (!provider?.user_id || addingToTeam) return;
+    
+    setAddingToTeam(true);
+    
+    try {
+      // Check current status
+      const currentStatus = teamStatus[provider.user_id];
+      
+      if (currentStatus === 'accepted') {
+        Alert.alert('Already on Team', `${provider.full_name} is already on your team!`);
+        return;
+      }
+      
+      if (currentStatus === 'pending') {
+        Alert.alert('Request Pending', `You've already sent a request to ${provider.full_name}. They'll be notified to accept.`);
+        return;
+      }
+      
+      // Send share request
+      await apiRequest('/birth-plan/share', {
+        method: 'POST',
+        body: {
+          provider_id: provider.user_id,
+        },
+      });
+      
+      // Update local status
+      setTeamStatus(prev => ({
+        ...prev,
+        [provider.user_id]: 'pending'
+      }));
+      
+      Alert.alert(
+        'Request Sent!',
+        `Your birth plan has been shared with ${provider.full_name}. They'll be notified and can accept your request to join your team.`,
+        [{ text: 'OK' }]
+      );
+    } catch (error: any) {
+      console.error('Error adding to team:', error);
+      
+      if (error.message?.includes('already')) {
+        Alert.alert('Already Shared', `You've already shared your birth plan with ${provider.full_name}.`);
+      } else {
+        Alert.alert('Error', 'Failed to send request. Please try again.');
+      }
+    } finally {
+      setAddingToTeam(false);
+    }
+  };
+  
+  const getTeamButtonText = (providerId: string) => {
+    const status = teamStatus[providerId];
+    if (status === 'accepted') return 'On Team';
+    if (status === 'pending') return 'Pending';
+    return 'Add to Team';
+  };
+  
+  const getTeamButtonDisabled = (providerId: string) => {
+    const status = teamStatus[providerId];
+    return status === 'accepted' || status === 'pending';
+  };
+  
   const getRoleColor = (role: string) => {
     return role === 'DOULA' ? COLORS.roleDoula : COLORS.roleMidwife;
   };
