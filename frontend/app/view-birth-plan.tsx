@@ -184,6 +184,23 @@ export default function ViewBirthPlanScreen() {
               </Text>
             </View>
           )}
+          
+          {/* Download PDF Button */}
+          <TouchableOpacity
+            style={styles.downloadButton}
+            onPress={handleDownloadPdf}
+            disabled={downloadingPdf}
+            data-testid="download-birth-plan-pdf"
+          >
+            {downloadingPdf ? (
+              <ActivityIndicator size="small" color={COLORS.white} />
+            ) : (
+              <>
+                <Icon name="download-outline" size={18} color={COLORS.white} />
+                <Text style={styles.downloadButtonText}>Download PDF</Text>
+              </>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Sections */}
