@@ -30,6 +30,8 @@ export default function MarketplaceScreen() {
   const [searchCity, setSearchCity] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
   const [contactingProvider, setContactingProvider] = useState(false);
+  const [addingToTeam, setAddingToTeam] = useState(false);
+  const [teamStatus, setTeamStatus] = useState<Record<string, string>>({}); // Track share status per provider
   
   const fetchProviders = async () => {
     try {
