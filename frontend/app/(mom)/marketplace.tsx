@@ -853,6 +853,34 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.border,
     backgroundColor: COLORS.white,
   },
+  footerButtonsRow: {
+    flexDirection: 'row',
+    gap: SIZES.sm,
+  },
+  footerButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SIZES.md,
+    borderRadius: SIZES.radiusMd,
+    gap: SIZES.xs,
+  },
+  contactButton: {
+    backgroundColor: COLORS.primary,
+  },
+  addButton: {
+    backgroundColor: COLORS.success,
+  },
+  disabledButton: {
+    backgroundColor: COLORS.textLight,
+    opacity: 0.7,
+  },
+  footerButtonText: {
+    color: COLORS.white,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+  },
   messageModalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
