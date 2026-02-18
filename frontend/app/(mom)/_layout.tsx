@@ -72,10 +72,7 @@ export default function MomLayout() {
       <Tabs.Screen
         name="invoices"
         options={{
-          title: 'Invoices',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="receipt-outline" size={size} color={color} />
-          ),
+          href: null,  // Hidden - invoices accessed via messages
         }}
       />
       <Tabs.Screen
