@@ -457,6 +457,25 @@ const styles = StyleSheet.create({
   clientSelector: {
     marginBottom: SIZES.md,
   },
+  clientGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: SIZES.md,
+  },
+  noClientsMessage: {
+    backgroundColor: COLORS.warning + '10',
+    padding: SIZES.md,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: SIZES.md,
+  },
+  noClientsText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    marginTop: 8,
+  },
   clientOption: {
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
