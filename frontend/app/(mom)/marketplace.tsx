@@ -159,12 +159,12 @@ export default function MarketplaceScreen() {
         <Card style={styles.searchCard}>
           <View style={styles.searchRow}>
             <View style={styles.searchInputWrapper}>
-              <Icon name="location-outline" size={20} color={COLORS.textSecondary} />
+              <Icon name="search-outline" size={20} color={COLORS.textSecondary} />
               <TextInput
                 style={styles.searchInput}
                 value={searchCity}
                 onChangeText={setSearchCity}
-                placeholder="Enter city..."
+                placeholder="Search by name, city, state, or zip..."
                 placeholderTextColor={COLORS.textLight}
                 onSubmitEditing={handleSearch}
                 data-testid="search-city-input"
