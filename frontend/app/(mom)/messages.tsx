@@ -648,4 +648,76 @@ const styles = StyleSheet.create({
   sendButtonDisabled: {
     backgroundColor: COLORS.textLight,
   },
+  // Team selection modal styles
+  teamSelectionContent: {
+    flex: 1,
+    padding: SIZES.md,
+  },
+  teamSelectionTitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginBottom: SIZES.md,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noTeamContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: SIZES.lg,
+  },
+  noTeamText: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.subheading,
+    color: COLORS.textPrimary,
+    marginTop: SIZES.md,
+  },
+  noTeamSubtext: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginTop: SIZES.xs,
+    textAlign: 'center',
+  },
+  teamMemberCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    padding: SIZES.md,
+    borderRadius: SIZES.radiusMd,
+    marginBottom: SIZES.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  memberAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  memberInfo: {
+    flex: 1,
+    marginLeft: SIZES.md,
+  },
+  memberName: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textPrimary,
+  },
+  memberRoleBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 4,
+  },
+  memberRoleText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+  },
 });
