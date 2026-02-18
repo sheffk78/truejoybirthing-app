@@ -85,7 +85,7 @@ export default function MessagesScreen() {
   const fetchInvoices = async () => {
     try {
       const data = await apiRequest(API_ENDPOINTS.MOM_INVOICES);
-      // Filter to pending/unpaid invoices (case-insensitive check)
+      // Filter to pending/unpaid invoices only (exclude Paid and Cancelled)
       const pending = (data || []).filter((inv: any) => {
         const status = (inv.status || '').toLowerCase();
         return status === 'pending' || status === 'sent';
