@@ -334,6 +334,8 @@ export default function MomProfileScreen() {
                   <Text style={styles.infoValue}>
                     {profile?.location_city && profile?.location_state
                       ? `${profile.location_city}, ${profile.location_state}`
+                      : profile?.zip_code 
+                      ? `Zip: ${profile.zip_code}`
                       : 'Not set'}
                   </Text>
                 </View>
@@ -342,7 +344,7 @@ export default function MomProfileScreen() {
                 <Icon name="medical-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Birth Setting</Text>
-                  <Text style={styles.infoValue}>{profile?.planned_birth_setting || 'Not set'}</Text>
+                  <Text style={styles.infoValue}>{getBirthSetting()}</Text>
                 </View>
               </View>
             </View>
