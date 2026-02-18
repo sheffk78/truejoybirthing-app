@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -15,6 +15,7 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 import httpx
 import resend
+import json
 
 # Import weekly content
 from weekly_content import (
