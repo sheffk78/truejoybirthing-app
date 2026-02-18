@@ -375,8 +375,17 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - **Contact Provider**: Fixed marketplace flow - opens messages with pre-filled intro message for connected providers, shows helpful alert for unconnected providers
   - **Auto-share Birth Plan**: UI notice added to birth plan page informing moms that their plan is automatically shared with team members on save
   - **Invoices in Messages**: Fixed invoice rendering on Mom's Messages page - now shows pending invoices with amount, description, status, due date, provider name, and payment disclaimer
+- [x] **7 Dashboard & UX Improvements** (COMPLETED 2026-02-18):
+  - **Fix 1: Doula Dashboard Upcoming Appts** - Dashboard shows "Upcoming Appts" counter instead of "Total Clients"
+  - **Fix 2: Midwife Dashboard Upcoming Appts** - Dashboard shows "Upcoming Appts" counter instead of "Total Clients"
+  - **Fix 3: Birth Plan PDF Download** - Providers can download client's birth plan as PDF from View Birth Plan page
+  - **Fix 4: Midwife Appointment Tabs** - Appointments page has "All", "Prenatal", "Postpartum" filter tabs
+  - **Fix 5: Doula Zip Code Profile** - Profile edit form uses zip code lookup to auto-fill city/state
+  - **Fix 6: Keyboard Overlap Fix** - KeyboardAvoidingView added to modal forms (Client Notes)
+  - **Fix 7: Client Notes Grid Layout** - Client selector uses grid layout instead of horizontal scroll
 
 ### 📊 Test Reports
+- `/app/test_reports/iteration_68.json` - **7 Dashboard & UX Improvements VERIFIED** (100% pass - appointments, dashboard counters, PDF, zip code, keyboard)
 - `/app/test_reports/iteration_35.json` - **9 Doula/Messaging Fixes VERIFIED** (100% pass - client acceptance, invoices, contracts, clients list, WebSocket)
 - `/app/test_reports/iteration_34.json` - **7 UI/UX Fixes from Doc** (Backend 100%, Frontend 71% verified - some caching issues during testing)
 - `/app/test_reports/iteration_33.json` - **3 User-Requested Fixes VERIFIED** (100% pass - Contact Provider, Auto-share Birth Plan, Invoices in Messages)
