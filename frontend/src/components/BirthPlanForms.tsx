@@ -936,6 +936,16 @@ export const renderField = (
           numberOfLines={4}
         />
       );
+    case 'date':
+      return (
+        <DateInputField
+          key={key}
+          label={label}
+          value={value}
+          onChange={(v) => onChange(key, v)}
+          placeholder={placeholder}
+        />
+      );
     case 'multiselect':
       return (
         <MultiSelectField
