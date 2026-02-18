@@ -214,7 +214,7 @@ export default function DoulaDashboardScreen() {
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.success + '30' }]}>
-              <Icon name="receipt" size={24} color={COLORS.success} />
+              <Icon name="cash-outline" size={24} color={COLORS.success} />
             </View>
             <Text style={styles.actionTitle}>New Invoice</Text>
           </TouchableOpacity>
@@ -226,7 +226,7 @@ export default function DoulaDashboardScreen() {
             data-testid="appointments-action"
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '30' }]}>
-              <Icon name="calendar-number" size={24} color={COLORS.warning} />
+              <Icon name="calendar-outline" size={24} color={COLORS.warning} />
             </View>
             <Text style={styles.actionTitle}>Appointments</Text>
           </TouchableOpacity>
