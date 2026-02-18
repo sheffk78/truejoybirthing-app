@@ -141,13 +141,20 @@ export default function MyTeamScreen() {
             {acceptedProviders.map((request) => (
               <Card key={request.request_id} style={styles.teamCard}>
                 <View style={styles.teamRow}>
-                  <View style={styles.avatar}>
-                    <Icon 
-                      name={getProviderIcon(request.provider_role)} 
-                      size={24} 
-                      color={COLORS.white} 
+                  {request.provider_picture ? (
+                    <Image 
+                      source={{ uri: request.provider_picture }} 
+                      style={styles.avatarImage}
                     />
-                  </View>
+                  ) : (
+                    <View style={styles.avatar}>
+                      <Icon 
+                        name={getProviderIcon(request.provider_role)} 
+                        size={24} 
+                        color={COLORS.white} 
+                      />
+                    </View>
+                  )}
                   <View style={styles.teamInfo}>
                     <Text style={styles.teamName}>{request.provider_name}</Text>
                     <View style={styles.roleRow}>
