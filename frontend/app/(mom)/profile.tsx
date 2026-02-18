@@ -6,9 +6,12 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
@@ -20,12 +23,13 @@ import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
 
 export default function MomProfileScreen() {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, logout, updateUser } = useAuthStore();
   
   const [profile, setProfile] = useState<any>(null);
   const [team, setTeam] = useState<any>({ doula: null, midwife: null });
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   
   const [dueDate, setDueDate] = useState('');
   const [locationCity, setLocationCity] = useState('');
