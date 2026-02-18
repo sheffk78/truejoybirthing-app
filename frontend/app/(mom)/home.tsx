@@ -313,6 +313,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryLight + '30',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
   },
   mainCard: {
     marginBottom: SIZES.lg,
