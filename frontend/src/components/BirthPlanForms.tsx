@@ -35,7 +35,7 @@ const TextInputField = ({
   </View>
 );
 
-// Component for date input fields
+// Component for date input fields with calendar picker
 const DateInputField = ({
   label,
   value,
@@ -46,41 +46,110 @@ const DateInputField = ({
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-}) => (
-  <View style={styles.fieldContainer}>
-    <Text style={styles.fieldLabel}>{label}</Text>
-    {Platform.OS === 'web' ? (
-      <View style={styles.dateInputWrapper}>
-        <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} />
-        <input
-          type="date"
-          value={value || ''}
-          onChange={(e: any) => onChange(e.target.value)}
-          placeholder={placeholder}
-          style={{
-            flex: 1,
-            border: 'none',
-            outline: 'none',
-            fontSize: 16,
-            fontFamily: 'inherit',
-            color: COLORS.textPrimary,
-            backgroundColor: 'transparent',
-            marginLeft: 8,
-            padding: 0,
-          }}
-        />
-      </View>
-    ) : (
-      <TextInput
-        style={styles.textInput}
-        value={value || ''}
-        onChangeText={onChange}
-        placeholder={placeholder || 'YYYY-MM-DD'}
-        placeholderTextColor={COLORS.textLight}
-      />
-    )}
-  </View>
-);
+}) => {
+  const [showPicker, setShowPicker] = useState(false);
+  const dateValue = value ? new Date(value) : new Date();
+
+  const formatDisplayDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowPicker(false);
+    }
+    if (selectedDate) {
+      const formatted = selectedDate.toISOString().split('T')[0];
+      onChange(formatted);
+    }
+  };
+
+  return (
+    <View style={styles.fieldContainer}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <TouchableOpacity 
+        style={styles.datePickerButton}
+        onPress={() => setShowPicker(true)}
+      >
+        <Icon name="calendar" size={20} color={COLORS.primary} />
+        <Text style={[styles.datePickerText, !value && styles.datePickerPlaceholder]}>
+          {value ? formatDisplayDate(value) : (placeholder || 'Select a date')}
+        </Text>
+        <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
+      </TouchableOpacity>
+
+      {showPicker && (
+        Platform.OS === 'web' ? (
+          <Modal
+            visible={showPicker}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowPicker(false)}
+          >
+            <View style={styles.dateModalOverlay}>
+              <View style={styles.dateModalContent}>
+                <View style={styles.dateModalHeader}>
+                  <Text style={styles.dateModalTitle}>Select {label}</Text>
+                  <TouchableOpacity onPress={() => setShowPicker(false)}>
+                    <Icon name="close" size={24} color={COLORS.textPrimary} />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.webCalendarWrapper}>
+                  <input
+                    type="date"
+                    value={value || ''}
+                    onChange={(e: any) => {
+                      onChange(e.target.value);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: 16,
+                      fontSize: 18,
+                      border: `2px solid ${COLORS.primary}`,
+                      borderRadius: 12,
+                      outline: 'none',
+                      cursor: 'pointer',
+                    }}
+                  />
+                </View>
+                <Button
+                  title="Done"
+                  onPress={() => setShowPicker(false)}
+                  fullWidth
+                  style={{ marginTop: 16 }}
+                />
+              </View>
+            </View>
+          </Modal>
+        ) : (
+          <View style={styles.nativeDatePickerContainer}>
+            <DateTimePicker
+              value={dateValue}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={handleDateChange}
+            />
+            {Platform.OS === 'ios' && (
+              <Button
+                title="Done"
+                onPress={() => setShowPicker(false)}
+                size="sm"
+                style={{ marginTop: 8 }}
+              />
+            )}
+          </View>
+        )
+      )}
+    </View>
+  );
+};
 
 // Component for multi-select checkboxes
 const MultiSelectField = ({
