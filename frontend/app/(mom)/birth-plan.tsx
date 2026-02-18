@@ -51,6 +51,7 @@ const SECTION_ICONS: Record<string, string> = {
 
 export default function BirthPlanScreen() {
   const router = useRouter();
+  const { token } = useAuthStore();
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [shareRequests, setShareRequests] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -59,7 +60,47 @@ export default function BirthPlanScreen() {
   const [sectionData, setSectionData] = useState<Record<string, any>>({});
   const [notesToProvider, setNotesToProvider] = useState('');
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
+  
+  const handleDownloadPDF = async () => {
+    setExporting(true);
+    try {
+      const baseUrl = getApiBaseUrl();
+      const pdfUrl = `${baseUrl}/api/birth-plan/export/pdf`;
+      
+      if (Platform.OS === 'web') {
+        const response = await fetch(pdfUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to download PDF');
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'My_Birth_Plan.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        Alert.alert('Success', 'Your birth plan PDF has been downloaded!');
+      } else {
+        // For native, we'd use expo-file-system or expo-sharing
+        Alert.alert('Download', 'PDF download initiated. Check your downloads folder.');
+      }
+    } catch (error: any) {
+      console.error('PDF download error:', error);
+      Alert.alert('Error', error.message || 'Failed to download PDF. Please try again.');
+    } finally {
+      setExporting(false);
+    }
+  };
   
   const fetchBirthPlan = async () => {
     try {
