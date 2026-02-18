@@ -60,16 +60,13 @@ export default function BirthPlanPreviewScreen() {
         }
       } catch (error) {
         console.error('Print error:', error);
-        Alert.alert('Print Error', 'Unable to print. Please try using the Download PDF option instead.');
+        Alert.alert('Print Error', 'Unable to print. Please try downloading the PDF first.');
       } finally {
         setPrinting(false);
       }
     } else {
-      Alert.alert(
-        'Print',
-        'To print your birth plan, please use the "Download PDF" option and print from your device\'s file viewer.',
-        [{ text: 'OK' }]
-      );
+      // For native, download PDF first then suggest printing
+      handleDownloadPDF();
     }
   };
 
