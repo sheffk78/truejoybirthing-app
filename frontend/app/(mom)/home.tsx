@@ -208,14 +208,14 @@ export default function MomHomeScreen() {
         <View style={styles.actionsGrid}>
           <TouchableOpacity
             style={styles.actionCard}
-            onPress={() => router.push('/(mom)/postpartum')}
+            onPress={() => router.push('/(mom)/birth-plan')}
             activeOpacity={0.8}
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '30' }]}>
-              <Icon name="happy" size={24} color={COLORS.warning} />
+              <Icon name="document-text" size={24} color={COLORS.warning} />
             </View>
-            <Text style={styles.actionTitle}>Postpartum</Text>
-            <Text style={styles.actionSubtitle}>Fourth trimester plan</Text>
+            <Text style={styles.actionTitle}>Birth Plan</Text>
+            <Text style={styles.actionSubtitle}>Your preferences</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
@@ -225,7 +225,7 @@ export default function MomHomeScreen() {
             data-testid="appointments-quick-action"
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.roleDoula + '30' }]}>
-              <Icon name="calendar-number" size={24} color={COLORS.roleDoula} />
+              <Icon name="calendar" size={24} color={COLORS.roleDoula} />
             </View>
             <Text style={styles.actionTitle}>Appointments</Text>
             <Text style={styles.actionSubtitle}>Upcoming visits</Text>
