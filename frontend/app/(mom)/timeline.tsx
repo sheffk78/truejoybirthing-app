@@ -134,7 +134,7 @@ export default function TimelineScreen() {
         {/* Add Event Button */}
         <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)} data-testid="add-event-btn">
           <Icon name="add-circle" size={20} color={COLORS.white} />
-          <Text style={styles.addButtonText}>Add Appointment/Event</Text>
+          <Text style={styles.addButtonText}>Add Appointment</Text>
         </TouchableOpacity>
 
         {/* Custom Events */}
