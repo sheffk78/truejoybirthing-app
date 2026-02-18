@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -28,9 +29,7 @@ export default function MarketplaceScreen() {
   const [selectedType, setSelectedType] = useState('All');
   const [searchCity, setSearchCity] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [messageText, setMessageText] = useState('');
-  const [sendingMessage, setSendingMessage] = useState(false);
+  const [contactingProvider, setContactingProvider] = useState(false);
   
   const fetchProviders = async () => {
     try {
