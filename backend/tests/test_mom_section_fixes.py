@@ -150,7 +150,7 @@ class TestMomProfileEndpoints:
     
     def test_timeline_get(self):
         """Test getting timeline"""
-        response = self.session.get(f"{BASE_URL}/api/mom/timeline")
+        response = self.session.get(f"{BASE_URL}/api/timeline")
         # Timeline might return 200 or 404 if not set up
         assert response.status_code in [200, 404]
         print(f"SUCCESS: Timeline endpoint returns status {response.status_code}")
