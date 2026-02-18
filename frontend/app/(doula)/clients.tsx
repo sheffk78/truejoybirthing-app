@@ -119,15 +119,16 @@ export default function DoulaClientsScreen() {
           </TouchableOpacity>
         </View>
         
-        {/* Client List */}
-        {clients.length === 0 ? (
+        {/* Active Clients Section */}
+        <Text style={styles.sectionTitle}>Active Clients</Text>
+        {clients.filter((c) => c.status !== 'Completed').length === 0 ? (
           <Card>
             <Text style={styles.emptyText}>
-              No clients yet. Add your first client to get started.
+              No active clients yet. Add your first client or accept connection requests.
             </Text>
           </Card>
         ) : (
-          clients.map((client) => (
+          clients.filter((c) => c.status !== 'Completed').map((client) => (
             <TouchableOpacity key={client.client_id} activeOpacity={0.8}>
               <Card style={styles.clientCard}>
                 <View style={styles.clientHeader}>
