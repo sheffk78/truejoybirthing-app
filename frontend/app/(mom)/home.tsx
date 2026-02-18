@@ -258,23 +258,6 @@ export default function MomHomeScreen() {
             <Text style={styles.actionSubtitle}>Browse marketplace</Text>
           </TouchableOpacity>
         </View>
-        
-        {/* Share Your Plan */}
-        <Card style={styles.teamCard}>
-          <View style={styles.teamHeader}>
-            <Icon name="share-social" size={20} color={COLORS.primary} />
-            <Text style={styles.teamTitle}>Share Your Birth Plan</Text>
-          </View>
-          <Text style={styles.teamText}>
-            Share your birth plan with your doula or midwife so they can review it and add their professional notes.
-          </Text>
-          <Button
-            title="Share with Provider"
-            onPress={() => router.push('/(mom)/share-birth-plan')}
-            variant="outline"
-            size="sm"
-          />
-        </Card>
       </ScrollView>
     </SafeAreaView>
   );
