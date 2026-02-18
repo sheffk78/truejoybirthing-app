@@ -44,6 +44,30 @@ export default function TimelineScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: '', description: '', event_date: '', event_type: 'appointment' });
   const [saving, setSaving] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const formatDisplayDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const handleDateChange = (event: any, date?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    if (date) {
+      setSelectedDate(date);
+      const formatted = date.toISOString().split('T')[0];
+      setNewEvent({ ...newEvent, event_date: formatted });
+    }
+  };
 
   const fetchTimeline = async () => {
     try {
