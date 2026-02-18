@@ -258,6 +258,67 @@ export default function MessagesScreen() {
           </TouchableOpacity>
         </View>
         
+        {/* Pending Invoices Section */}
+        {pendingInvoices.length > 0 && (
+          <View style={styles.invoicesSection} data-testid="pending-invoices-section">
+            <View style={styles.invoicesSectionHeader}>
+              <Icon name="receipt-outline" size={20} color={COLORS.warning} />
+              <Text style={styles.invoicesSectionTitle}>Pending Invoices</Text>
+              <View style={styles.invoicesBadge}>
+                <Text style={styles.invoicesBadgeText}>{pendingInvoices.length}</Text>
+              </View>
+            </View>
+            {pendingInvoices.map((invoice: any) => (
+              <Card 
+                key={invoice.invoice_id} 
+                style={styles.invoiceCard}
+                data-testid={`invoice-${invoice.invoice_id}`}
+              >
+                <View style={styles.invoiceRow}>
+                  <View style={styles.invoiceInfo}>
+                    <Text style={styles.invoiceAmount}>
+                      ${invoice.amount?.toFixed(2) || '0.00'}
+                    </Text>
+                    <Text style={styles.invoiceDescription} numberOfLines={1}>
+                      {invoice.description || 'Invoice'}
+                    </Text>
+                    <Text style={styles.invoiceFrom}>
+                      From: {invoice.provider_name || 'Your Provider'}
+                    </Text>
+                  </View>
+                  <View style={styles.invoiceMeta}>
+                    <View style={[
+                      styles.invoiceStatusBadge,
+                      { backgroundColor: invoice.status === 'sent' ? COLORS.warning + '20' : COLORS.primary + '20' }
+                    ]}>
+                      <Text style={[
+                        styles.invoiceStatusText,
+                        { color: invoice.status === 'sent' ? COLORS.warning : COLORS.primary }
+                      ]}>
+                        {invoice.status === 'sent' ? 'Awaiting Payment' : 'Pending'}
+                      </Text>
+                    </View>
+                    {invoice.due_date && (
+                      <Text style={styles.invoiceDueDate}>
+                        Due: {new Date(invoice.due_date).toLocaleDateString()}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                {invoice.payment_instructions && (
+                  <View style={styles.paymentInstructions}>
+                    <Text style={styles.paymentInstructionsLabel}>Payment Instructions:</Text>
+                    <Text style={styles.paymentInstructionsText}>{invoice.payment_instructions}</Text>
+                  </View>
+                )}
+              </Card>
+            ))}
+            <Text style={styles.invoiceDisclaimer}>
+              Payments are made directly to your provider. True Joy Birthing does not process payments.
+            </Text>
+          </View>
+        )}
+        
         {/* Conversations List */}
         {conversations.length === 0 ? (
           <Card style={styles.emptyCard}>
