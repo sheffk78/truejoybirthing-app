@@ -273,9 +273,23 @@ export default function BirthPlanScreen() {
           {/* Auto-share notice */}
           <View style={styles.autoShareNotice}>
             <Icon name="information-circle" size={18} color={COLORS.primary} />
-            <Text style={styles.autoShareText}>
-              Your birth plan is automatically shared with providers on your team when you save changes.
-            </Text>
+            <View style={styles.autoShareTextContainer}>
+              <Text style={styles.autoShareText}>
+                Your birth plan is automatically shared with team members.
+              </Text>
+              {shareRequests.filter(r => r.status === 'accepted').length > 0 ? (
+                <Text style={styles.sharedWithText}>
+                  Shared with: {shareRequests
+                    .filter(r => r.status === 'accepted')
+                    .map(r => r.provider_name)
+                    .join(', ')}
+                </Text>
+              ) : (
+                <Text style={styles.notSharedText}>
+                  Not yet shared with any providers
+                </Text>
+              )}
+            </View>
           </View>
         </View>
       </ScrollView>
