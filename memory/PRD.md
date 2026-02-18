@@ -366,6 +366,7 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - **Invoices in Messages**: Fixed invoice rendering on Mom's Messages page - now shows pending invoices with amount, description, status, due date, provider name, and payment disclaimer
 
 ### 📊 Test Reports
+- `/app/test_reports/iteration_35.json` - **9 Doula/Messaging Fixes VERIFIED** (100% pass - client acceptance, invoices, contracts, clients list, WebSocket)
 - `/app/test_reports/iteration_34.json` - **7 UI/UX Fixes from Doc** (Backend 100%, Frontend 71% verified - some caching issues during testing)
 - `/app/test_reports/iteration_33.json` - **3 User-Requested Fixes VERIFIED** (100% pass - Contact Provider, Auto-share Birth Plan, Invoices in Messages)
 - `/app/test_reports/iteration_32.json` - **Initial testing of 3 fixes** (identified invoice rendering bug)
