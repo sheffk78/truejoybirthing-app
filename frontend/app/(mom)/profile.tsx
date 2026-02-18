@@ -283,13 +283,37 @@ export default function MomProfileScreen() {
           
           {isEditing ? (
             <View>
-              <Input
-                label="Due Date"
-                placeholder="YYYY-MM-DD"
-                value={dueDate}
-                onChangeText={setDueDate}
-                leftIcon="calendar-outline"
-              />
+              {/* Due Date with native date picker */}
+              <View style={styles.dateInputContainer}>
+                <Text style={styles.inputLabel}>Due Date</Text>
+                {Platform.OS === 'web' ? (
+                  <View style={styles.datePickerWrapper}>
+                    <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} style={{ marginRight: 8 }} />
+                    <input
+                      type="date"
+                      value={dueDate || ''}
+                      onChange={(e: any) => setDueDate(e.target.value)}
+                      style={{
+                        flex: 1,
+                        border: 'none',
+                        outline: 'none',
+                        fontSize: 16,
+                        fontFamily: 'inherit',
+                        color: COLORS.textPrimary,
+                        backgroundColor: 'transparent',
+                      }}
+                    />
+                  </View>
+                ) : (
+                  <Input
+                    placeholder="YYYY-MM-DD"
+                    value={dueDate}
+                    onChangeText={setDueDate}
+                    leftIcon="calendar-outline"
+                  />
+                )}
+              </View>
+              
               <Input
                 label="Zip Code"
                 placeholder="Enter 5-digit zip code"
