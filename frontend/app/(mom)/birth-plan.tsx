@@ -70,33 +70,45 @@ export default function BirthPlanScreen() {
       const pdfUrl = `${getApiBaseUrl()}/birth-plan/export/pdf`;
       
       if (Platform.OS === 'web') {
+        // For web: Open in new window to trigger browser's native download
         const response = await fetch(pdfUrl, {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
         
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error('PDF fetch failed:', response.status, errorText);
           throw new Error('Failed to download PDF');
         }
         
         const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'My_Birth_Plan.pdf';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        a.remove();
-        Alert.alert('Success', 'Your birth plan PDF has been downloaded!');
+        
+        // Create object URL and trigger download
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = 'My_Birth_Plan.pdf';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        
+        // Cleanup
+        setTimeout(() => {
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        }, 100);
+        
+        Alert.alert('Success', 'Your birth plan PDF has been downloaded! Check your Downloads folder.');
       } else {
-        // For native, we'd use expo-file-system or expo-sharing
-        Alert.alert('Download', 'PDF download initiated. Check your downloads folder.');
+        // For native mobile, we would use expo-file-system and expo-sharing
+        Alert.alert('Download', 'PDF download is available on the web version.');
       }
     } catch (error: any) {
       console.error('PDF download error:', error);
-      Alert.alert('Error', error.message || 'Failed to download PDF. Please try again.');
+      Alert.alert('Error', 'Failed to download PDF. Please try again.');
     } finally {
       setExporting(false);
     }
