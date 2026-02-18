@@ -193,15 +193,25 @@ export default function MomProfileScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.avatarContainer}>
-            {user?.picture ? (
-              <Icon name="person-circle" size={80} color={COLORS.primary} />
+          <TouchableOpacity style={styles.avatarContainer} onPress={pickImage} data-testid="avatar-button">
+            {uploadingPhoto ? (
+              <View style={styles.avatarPlaceholder}>
+                <ActivityIndicator size="large" color={COLORS.primary} />
+              </View>
+            ) : user?.picture ? (
+              <Image source={{ uri: user.picture }} style={styles.avatarImage} />
             ) : (
-              <Icon name="person-circle-outline" size={80} color={COLORS.primary} />
+              <View style={styles.avatarPlaceholder}>
+                <Icon name="person" size={40} color={COLORS.primary} />
+              </View>
             )}
-          </View>
+            <View style={styles.editAvatarBadge}>
+              <Icon name="camera" size={14} color={COLORS.white} />
+            </View>
+          </TouchableOpacity>
           <Text style={styles.userName}>{user?.full_name}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
+          <Text style={styles.tapToEdit}>Tap photo to update</Text>
         </View>
         
         {/* Profile Info */}
