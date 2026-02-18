@@ -7,6 +7,10 @@ export interface ApiOptions {
   headers?: Record<string, string>;
 }
 
+export function getApiBaseUrl(): string {
+  return API_BASE;
+}
+
 export async function apiRequest<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   const { method = 'GET', body, headers = {} } = options;
   
