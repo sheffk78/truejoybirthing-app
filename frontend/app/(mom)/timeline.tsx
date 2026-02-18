@@ -291,6 +291,63 @@ export default function TimelineScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
+
+      {/* Date Picker Modal */}
+      {showDatePicker && (
+        Platform.OS === 'web' ? (
+          <Modal
+            visible={showDatePicker}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowDatePicker(false)}
+          >
+            <View style={styles.dateModalOverlay}>
+              <View style={styles.dateModalContent}>
+                <View style={styles.dateModalHeader}>
+                  <Text style={styles.dateModalTitle}>Select Date</Text>
+                  <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                    <Icon name="close" size={24} color={COLORS.textPrimary} />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.webCalendarWrapper}>
+                  <input
+                    type="date"
+                    value={newEvent.event_date || ''}
+                    onChange={(e: any) => {
+                      setNewEvent({ ...newEvent, event_date: e.target.value });
+                      if (e.target.value) {
+                        setSelectedDate(new Date(e.target.value));
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: 16,
+                      fontSize: 18,
+                      border: `2px solid ${COLORS.primary}`,
+                      borderRadius: 12,
+                      outline: 'none',
+                      cursor: 'pointer',
+                    }}
+                  />
+                </View>
+                <Button
+                  title="Done"
+                  onPress={() => setShowDatePicker(false)}
+                  fullWidth
+                  style={{ marginTop: 16 }}
+                />
+              </View>
+            </View>
+          </Modal>
+        ) : (
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={handleDateChange}
+          />
+        )
+      )}
     </SafeAreaView>
   );
 }
