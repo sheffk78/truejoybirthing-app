@@ -209,8 +209,17 @@ export default function MessagesScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Messages</Text>
-          <Text style={styles.subtitle}>Stay in touch with your care team</Text>
+          <View>
+            <Text style={styles.title}>Messages</Text>
+            <Text style={styles.subtitle}>Stay in touch with your care team</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.newMessageButton} 
+            onPress={openNewMessageModal}
+            data-testid="new-message-btn"
+          >
+            <Icon name="create-outline" size={20} color={COLORS.white} />
+          </TouchableOpacity>
         </View>
         
         {/* Conversations List */}
@@ -219,8 +228,14 @@ export default function MessagesScreen() {
             <Icon name="chatbubbles-outline" size={48} color={COLORS.textLight} />
             <Text style={styles.emptyText}>No messages yet</Text>
             <Text style={styles.emptySubtext}>
-              Contact a provider from the Marketplace to start a conversation
+              Tap the button above to message someone on your team
             </Text>
+            <Button
+              title="Start a Conversation"
+              onPress={openNewMessageModal}
+              style={{ marginTop: SIZES.md }}
+              icon={<Icon name="add" size={18} color={COLORS.white} />}
+            />
           </Card>
         ) : (
           conversations.map((conv) => (
