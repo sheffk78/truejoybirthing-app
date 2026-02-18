@@ -256,9 +256,9 @@ export const SECTION_FORMS: Record<string, {
       },
       {
         key: 'dueDate',
-        type: 'text',
+        type: 'date',
         label: 'Due Date',
-        placeholder: 'MM-DD-YYYY',
+        placeholder: 'Select your due date',
       },
       {
         key: 'birthSupport',
