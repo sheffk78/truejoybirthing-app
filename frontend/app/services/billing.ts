@@ -1,9 +1,8 @@
 /**
  * Billing Service Module for True Joy Birthing
  * 
- * This module provides placeholder functions for handling in-app purchases
- * through Apple StoreKit and Google Play Billing. It's designed to be
- * swapped out with actual IAP implementations when ready for production.
+ * This module provides in-app purchase functionality using react-native-iap
+ * for Apple StoreKit (iOS) and Google Play Billing (Android).
  * 
  * Product IDs:
  * - Apple: truejoy.pro.monthly, truejoy.pro.annual
@@ -11,6 +10,7 @@
  */
 
 import { Platform } from 'react-native';
+import * as RNIap from 'react-native-iap';
 import { SUBSCRIPTION_CONFIG, ProductId, PlatformProducts } from '../config/subscriptionConfig';
 
 // Types for billing
@@ -23,6 +23,7 @@ export interface Product {
   priceCurrencyCode: string;
   subscriptionPeriod?: string;
   freeTrialPeriod?: string;
+  localizedPrice?: string;
 }
 
 export interface Purchase {
@@ -31,6 +32,7 @@ export interface Purchase {
   transactionDate: string;
   transactionReceipt: string;
   purchaseState: 'purchased' | 'pending' | 'refunded';
+  originalTransactionId?: string;
 }
 
 export interface SubscriptionInfo {
@@ -42,6 +44,11 @@ export interface SubscriptionInfo {
 }
 
 export type BillingPlatform = 'ios' | 'android' | 'web';
+
+// Module state
+let isInitialized = false;
+let purchaseUpdateSubscription: RNIap.PurchaseStateAndroid | null = null;
+let purchaseErrorSubscription: RNIap.SubscriptionIOS | null = null;
 
 // Get current platform
 export function getCurrentPlatform(): BillingPlatform {
@@ -64,11 +71,15 @@ export function getPlatformProductIds(): PlatformProducts {
   return SUBSCRIPTION_CONFIG.productIds[platform];
 }
 
+// Get all product SKUs as array
+export function getProductSkus(): string[] {
+  const productIds = getPlatformProductIds();
+  return [productIds.monthly, productIds.annual];
+}
+
 /**
  * Initialize the billing client
  * This should be called when the app starts
- * 
- * @placeholder - Will integrate with react-native-iap or expo-in-app-purchases
  */
 export async function initializeBilling(): Promise<boolean> {
   const platform = getCurrentPlatform();
@@ -80,44 +91,134 @@ export async function initializeBilling(): Promise<boolean> {
     return false;
   }
   
-  // TODO: Implement actual initialization
-  // iOS: import { initConnection } from 'react-native-iap';
-  // Android: Similar initialization
+  if (isInitialized) {
+    console.log('[Billing] Already initialized');
+    return true;
+  }
   
-  console.log('[Billing] MOCK: Billing initialized successfully');
-  return true;
+  try {
+    // Initialize connection to the store
+    const result = await RNIap.initConnection();
+    console.log('[Billing] Connection initialized:', result);
+    
+    // Flush failed purchases (Android only - important for reliability)
+    if (platform === 'android') {
+      try {
+        await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
+        console.log('[Billing] Flushed failed Android purchases');
+      } catch (e) {
+        console.warn('[Billing] Error flushing failed purchases:', e);
+      }
+    }
+    
+    isInitialized = true;
+    return true;
+  } catch (error) {
+    console.error('[Billing] Failed to initialize:', error);
+    return false;
+  }
 }
 
 /**
- * Fetch available products from the store
- * 
- * @placeholder - Will fetch actual products from App Store / Play Store
+ * Set up purchase listeners for handling transactions
+ * @param onPurchaseSuccess - Called when a purchase is successful
+ * @param onPurchaseError - Called when a purchase fails
+ */
+export function setupPurchaseListeners(
+  onPurchaseSuccess: (purchase: RNIap.Purchase) => void,
+  onPurchaseError: (error: RNIap.PurchaseError) => void
+): () => void {
+  // Purchase update listener
+  purchaseUpdateSubscription = RNIap.purchaseUpdatedListener(async (purchase) => {
+    console.log('[Billing] Purchase updated:', purchase.productId);
+    
+    const receipt = purchase.transactionReceipt;
+    if (receipt) {
+      try {
+        // Acknowledge the purchase (required for Google Play)
+        if (Platform.OS === 'android' && !purchase.isAcknowledgedAndroid) {
+          await RNIap.acknowledgePurchaseAndroid({ token: purchase.purchaseToken! });
+          console.log('[Billing] Purchase acknowledged on Android');
+        }
+        
+        // For iOS, finish the transaction
+        if (Platform.OS === 'ios') {
+          await RNIap.finishTransaction({ purchase, isConsumable: false });
+          console.log('[Billing] Transaction finished on iOS');
+        }
+        
+        onPurchaseSuccess(purchase);
+      } catch (e) {
+        console.error('[Billing] Error processing purchase:', e);
+      }
+    }
+  }) as any;
+  
+  // Purchase error listener
+  purchaseErrorSubscription = RNIap.purchaseErrorListener((error) => {
+    console.error('[Billing] Purchase error:', error);
+    onPurchaseError(error);
+  }) as any;
+  
+  // Return cleanup function
+  return () => {
+    if (purchaseUpdateSubscription) {
+      purchaseUpdateSubscription.remove?.();
+    }
+    if (purchaseErrorSubscription) {
+      purchaseErrorSubscription.remove?.();
+    }
+  };
+}
+
+/**
+ * Fetch available subscription products from the store
  */
 export async function fetchProducts(): Promise<Product[]> {
   const platform = getCurrentPlatform();
-  const productIds = getPlatformProductIds();
-  
-  console.log(`[Billing] Fetching products for platform: ${platform}`);
-  console.log(`[Billing] Product IDs:`, productIds);
   
   if (platform === 'web') {
-    // Return mock products for web testing
+    console.log('[Billing] Web platform - returning mock products');
     return getMockProducts();
   }
   
-  // TODO: Implement actual product fetching
-  // iOS: import { getProducts } from 'react-native-iap';
-  // await getProducts({ skus: [productIds.monthly, productIds.annual] });
+  if (!isInitialized) {
+    console.warn('[Billing] Not initialized, initializing now...');
+    await initializeBilling();
+  }
   
-  console.log('[Billing] MOCK: Returning mock products');
-  return getMockProducts();
+  const skus = getProductSkus();
+  console.log(`[Billing] Fetching products for SKUs:`, skus);
+  
+  try {
+    // Fetch subscriptions (not one-time products)
+    const subscriptions = await RNIap.getSubscriptions({ skus });
+    console.log('[Billing] Fetched subscriptions:', subscriptions.length);
+    
+    // Map to our Product interface
+    const products: Product[] = subscriptions.map((sub) => ({
+      productId: sub.productId,
+      title: sub.title || sub.name || 'True Joy Pro',
+      description: sub.description || '',
+      price: sub.localizedPrice || `$${SUBSCRIPTION_CONFIG.plans.monthly.price}`,
+      priceAmountMicros: parseInt(sub.price || '0') * 1000000,
+      priceCurrencyCode: sub.currency || 'USD',
+      localizedPrice: sub.localizedPrice,
+      subscriptionPeriod: getSubscriptionPeriod(sub),
+      freeTrialPeriod: getTrialPeriod(sub),
+    }));
+    
+    return products;
+  } catch (error) {
+    console.error('[Billing] Error fetching products:', error);
+    // Return mock products as fallback for development
+    return getMockProducts();
+  }
 }
 
 /**
- * Initiate a purchase for a specific product
- * 
- * @param productId - The product ID to purchase (monthly or annual)
- * @placeholder - Will trigger actual IAP purchase flow
+ * Initiate a subscription purchase
+ * @param productId - 'monthly' or 'annual'
  */
 export async function purchaseProduct(productId: ProductId): Promise<Purchase | null> {
   const platform = getCurrentPlatform();
@@ -134,26 +235,51 @@ export async function purchaseProduct(productId: ProductId): Promise<Purchase | 
     return null;
   }
   
-  // TODO: Implement actual purchase flow
-  // iOS: import { requestPurchase } from 'react-native-iap';
-  // const purchase = await requestPurchase({ sku: storeProductId });
+  if (!isInitialized) {
+    await initializeBilling();
+  }
   
-  // Return mock purchase for testing
-  console.log('[Billing] MOCK: Returning mock purchase');
-  return {
-    productId: storeProductId,
-    transactionId: `mock_txn_${Date.now()}`,
-    transactionDate: new Date().toISOString(),
-    transactionReceipt: `mock_receipt_${Date.now()}`,
-    purchaseState: 'purchased',
-  };
+  try {
+    // Request subscription purchase
+    if (Platform.OS === 'ios') {
+      await RNIap.requestSubscription({ sku: storeProductId });
+    } else {
+      // Android requires subscriptionOffers for v5+ billing
+      const subscriptions = await RNIap.getSubscriptions({ skus: [storeProductId] });
+      if (subscriptions.length > 0) {
+        const subscription = subscriptions[0];
+        const offerToken = (subscription as any).subscriptionOfferDetails?.[0]?.offerToken;
+        
+        await RNIap.requestSubscription({
+          sku: storeProductId,
+          ...(offerToken && { subscriptionOffers: [{ sku: storeProductId, offerToken }] }),
+        });
+      }
+    }
+    
+    // The actual purchase result will come through the purchaseUpdatedListener
+    // Return null here as the listener will handle the result
+    console.log('[Billing] Purchase request sent, waiting for store response...');
+    return null;
+  } catch (error: any) {
+    console.error('[Billing] Purchase error:', error);
+    
+    // Handle specific error codes
+    if (error.code === 'E_USER_CANCELLED') {
+      console.log('[Billing] User cancelled purchase');
+    } else if (error.code === 'E_ITEM_UNAVAILABLE') {
+      console.error('[Billing] Product not available');
+    } else if (error.code === 'E_ALREADY_OWNED') {
+      console.log('[Billing] User already owns this subscription');
+    }
+    
+    throw error;
+  }
 }
 
 /**
  * Restore previous purchases
  * Required for App Store / Play Store compliance
- * 
- * @placeholder - Will restore actual purchases from stores
  */
 export async function restorePurchases(): Promise<Purchase[]> {
   const platform = getCurrentPlatform();
@@ -165,52 +291,76 @@ export async function restorePurchases(): Promise<Purchase[]> {
     return [];
   }
   
-  // TODO: Implement actual restore
-  // iOS: import { getAvailablePurchases } from 'react-native-iap';
-  // const purchases = await getAvailablePurchases();
+  if (!isInitialized) {
+    await initializeBilling();
+  }
   
-  console.log('[Billing] MOCK: No purchases to restore');
-  return [];
+  try {
+    const availablePurchases = await RNIap.getAvailablePurchases();
+    console.log('[Billing] Available purchases:', availablePurchases.length);
+    
+    // Map to our Purchase interface
+    const purchases: Purchase[] = availablePurchases.map((p) => ({
+      productId: p.productId,
+      transactionId: p.transactionId || '',
+      transactionDate: p.transactionDate ? new Date(parseInt(p.transactionDate)).toISOString() : '',
+      transactionReceipt: p.transactionReceipt || '',
+      purchaseState: 'purchased',
+      originalTransactionId: (p as any).originalTransactionIdentifierIOS || undefined,
+    }));
+    
+    return purchases;
+  } catch (error) {
+    console.error('[Billing] Error restoring purchases:', error);
+    return [];
+  }
 }
 
 /**
  * Validate a receipt with the backend
  * This should be called after a successful purchase to update user subscription
- * 
- * @param receipt - The purchase receipt from the store
- * @param provider - The subscription provider (APPLE or GOOGLE)
  */
 export async function validateReceipt(
   receipt: string,
   provider: 'APPLE' | 'GOOGLE',
-  sessionToken: string
+  productId: string,
+  sessionToken: string,
+  apiBaseUrl: string
 ): Promise<boolean> {
   console.log(`[Billing] Validating receipt with backend`);
   console.log(`[Billing] Provider: ${provider}`);
   
   try {
-    // TODO: Implement actual backend validation
-    // The backend should:
-    // 1. Verify the receipt with Apple/Google servers
-    // 2. Update the user's subscription status in the database
-    // 3. Return success/failure
+    const response = await fetch(`${apiBaseUrl}/api/subscription/validate-receipt`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionToken}`,
+      },
+      body: JSON.stringify({
+        receipt,
+        subscription_provider: provider,
+        product_id: productId,
+      }),
+    });
     
-    // For now, this is a placeholder that would call:
-    // POST /api/subscription/validate-receipt
-    // { receipt, provider }
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('[Billing] Receipt validation failed:', error);
+      return false;
+    }
     
-    console.log('[Billing] MOCK: Receipt validated successfully');
-    return true;
+    const result = await response.json();
+    console.log('[Billing] Receipt validated successfully:', result);
+    return result.success === true;
   } catch (error) {
-    console.error('[Billing] Receipt validation failed:', error);
+    console.error('[Billing] Receipt validation error:', error);
     return false;
   }
 }
 
 /**
- * Get current subscription status from the store
- * 
- * @placeholder - Will check actual subscription status
+ * Get current subscription status from available purchases
  */
 export async function getSubscriptionStatus(): Promise<SubscriptionInfo> {
   const platform = getCurrentPlatform();
@@ -218,41 +368,74 @@ export async function getSubscriptionStatus(): Promise<SubscriptionInfo> {
   
   console.log(`[Billing] Getting subscription status for platform: ${platform}`);
   
-  // TODO: Implement actual status check
-  // This would involve checking with the respective store
+  if (platform === 'web') {
+    return {
+      isActive: false,
+      productId: null,
+      expiryDate: null,
+      provider: null,
+      autoRenewing: false,
+    };
+  }
   
-  console.log('[Billing] MOCK: Returning inactive subscription');
-  return {
-    isActive: false,
-    productId: null,
-    expiryDate: null,
-    provider: platform === 'web' ? null : (provider as 'APPLE' | 'GOOGLE'),
-    autoRenewing: false,
-  };
+  try {
+    const purchases = await restorePurchases();
+    const validSkus = getProductSkus();
+    
+    // Find active subscription
+    const activeSubscription = purchases.find(p => validSkus.includes(p.productId));
+    
+    if (activeSubscription) {
+      return {
+        isActive: true,
+        productId: activeSubscription.productId,
+        expiryDate: null, // Would need backend validation for actual expiry
+        provider: provider as 'APPLE' | 'GOOGLE',
+        autoRenewing: true, // Assume auto-renewing unless cancelled
+      };
+    }
+    
+    return {
+      isActive: false,
+      productId: null,
+      expiryDate: null,
+      provider: platform === 'web' ? null : (provider as 'APPLE' | 'GOOGLE'),
+      autoRenewing: false,
+    };
+  } catch (error) {
+    console.error('[Billing] Error getting subscription status:', error);
+    return {
+      isActive: false,
+      productId: null,
+      expiryDate: null,
+      provider: null,
+      autoRenewing: false,
+    };
+  }
 }
 
 /**
- * Open subscription management
- * Directs users to App Store / Play Store to manage their subscription
+ * Open subscription management in the respective app store
  */
 export async function openSubscriptionManagement(): Promise<void> {
   const platform = getCurrentPlatform();
   
   console.log(`[Billing] Opening subscription management for platform: ${platform}`);
   
-  // TODO: Implement platform-specific subscription management
-  // iOS: Opens App Store subscription settings
-  // Android: Opens Play Store subscription settings
-  // Web: Show message to manage via mobile app
-  
-  if (platform === 'ios') {
-    // Linking.openURL('https://apps.apple.com/account/subscriptions');
-    console.log('[Billing] Would open App Store subscriptions');
-  } else if (platform === 'android') {
-    // Linking.openURL('https://play.google.com/store/account/subscriptions');
-    console.log('[Billing] Would open Play Store subscriptions');
-  } else {
-    console.log('[Billing] Web users must manage subscriptions via mobile app');
+  try {
+    if (platform === 'ios') {
+      // iOS: Deep link to App Store subscription settings
+      await RNIap.deepLinkToSubscriptions();
+      // Fallback: Linking.openURL('https://apps.apple.com/account/subscriptions');
+    } else if (platform === 'android') {
+      // Android: Deep link to Play Store subscription settings
+      await RNIap.deepLinkToSubscriptions();
+      // Fallback: Linking.openURL('https://play.google.com/store/account/subscriptions');
+    } else {
+      console.log('[Billing] Web users must manage subscriptions via mobile app');
+    }
+  } catch (error) {
+    console.error('[Billing] Error opening subscription management:', error);
   }
 }
 
@@ -263,8 +446,24 @@ export async function openSubscriptionManagement(): Promise<void> {
 export async function cleanupBilling(): Promise<void> {
   console.log('[Billing] Cleaning up billing resources');
   
-  // TODO: Implement cleanup
-  // iOS/Android: endConnection() from react-native-iap
+  try {
+    // Remove listeners
+    if (purchaseUpdateSubscription) {
+      purchaseUpdateSubscription.remove?.();
+      purchaseUpdateSubscription = null;
+    }
+    if (purchaseErrorSubscription) {
+      purchaseErrorSubscription.remove?.();
+      purchaseErrorSubscription = null;
+    }
+    
+    // End store connection
+    await RNIap.endConnection();
+    isInitialized = false;
+    console.log('[Billing] Cleanup complete');
+  } catch (error) {
+    console.error('[Billing] Error during cleanup:', error);
+  }
 }
 
 /**
@@ -291,7 +490,51 @@ export function getSubscriptionManagementInstructions(provider: 'APPLE' | 'GOOGL
   }
 }
 
-// Helper: Get mock products for testing
+// Helper: Extract subscription period from product
+function getSubscriptionPeriod(subscription: any): string {
+  // iOS
+  if (subscription.subscriptionPeriodNumberIOS && subscription.subscriptionPeriodUnitIOS) {
+    const unit = subscription.subscriptionPeriodUnitIOS;
+    const num = subscription.subscriptionPeriodNumberIOS;
+    if (unit === 'MONTH') return `P${num}M`;
+    if (unit === 'YEAR') return `P${num}Y`;
+    if (unit === 'WEEK') return `P${num}W`;
+    if (unit === 'DAY') return `P${num}D`;
+  }
+  // Android
+  if (subscription.subscriptionOfferDetails) {
+    const offer = subscription.subscriptionOfferDetails[0];
+    if (offer?.pricingPhases?.pricingPhaseList?.[0]?.billingPeriod) {
+      return offer.pricingPhases.pricingPhaseList[0].billingPeriod;
+    }
+  }
+  return 'P1M'; // Default to monthly
+}
+
+// Helper: Extract trial period from product
+function getTrialPeriod(subscription: any): string {
+  // iOS
+  if (subscription.introductoryPriceNumberOfPeriodsIOS) {
+    const unit = subscription.introductoryPriceSubscriptionPeriodIOS;
+    const num = subscription.introductoryPriceNumberOfPeriodsIOS;
+    if (unit === 'DAY') return `P${num}D`;
+    if (unit === 'WEEK') return `P${num * 7}D`;
+    if (unit === 'MONTH') return `P${num * 30}D`;
+  }
+  // Android - check for free trial in pricing phases
+  if (subscription.subscriptionOfferDetails) {
+    const offer = subscription.subscriptionOfferDetails[0];
+    const trialPhase = offer?.pricingPhases?.pricingPhaseList?.find(
+      (p: any) => p.priceAmountMicros === '0' || p.priceAmountMicros === 0
+    );
+    if (trialPhase?.billingPeriod) {
+      return trialPhase.billingPeriod;
+    }
+  }
+  return `P${SUBSCRIPTION_CONFIG.trialDays}D`; // Default from config
+}
+
+// Helper: Get mock products for web/testing
 function getMockProducts(): Product[] {
   return [
     {
@@ -301,6 +544,7 @@ function getMockProducts(): Product[] {
       price: `$${SUBSCRIPTION_CONFIG.plans.monthly.price}`,
       priceAmountMicros: SUBSCRIPTION_CONFIG.plans.monthly.price * 1000000,
       priceCurrencyCode: 'USD',
+      localizedPrice: `$${SUBSCRIPTION_CONFIG.plans.monthly.price}/month`,
       subscriptionPeriod: 'P1M',
       freeTrialPeriod: `P${SUBSCRIPTION_CONFIG.trialDays}D`,
     },
@@ -311,6 +555,7 @@ function getMockProducts(): Product[] {
       price: `$${SUBSCRIPTION_CONFIG.plans.annual.price}`,
       priceAmountMicros: SUBSCRIPTION_CONFIG.plans.annual.price * 1000000,
       priceCurrencyCode: 'USD',
+      localizedPrice: `$${SUBSCRIPTION_CONFIG.plans.annual.price}/year`,
       subscriptionPeriod: 'P1Y',
       freeTrialPeriod: `P${SUBSCRIPTION_CONFIG.trialDays}D`,
     },
@@ -319,6 +564,7 @@ function getMockProducts(): Product[] {
 
 export default {
   initializeBilling,
+  setupPurchaseListeners,
   fetchProducts,
   purchaseProduct,
   restorePurchases,
@@ -330,5 +576,6 @@ export default {
   getCurrentPlatform,
   getSubscriptionProvider,
   getPlatformProductIds,
+  getProductSkus,
   getSubscriptionManagementInstructions,
 };
