@@ -388,7 +388,7 @@ export default function DoulaInvoicesScreen() {
             <TouchableOpacity
               style={styles.addButton}
               onPress={openCreateInvoice}
-              data-testid="new-invoice-btn"
+              testID="new-invoice-btn"
             >
               <Ionicons name="add" size={24} color="#fff" />
             </TouchableOpacity>
