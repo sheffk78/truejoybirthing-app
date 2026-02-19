@@ -130,16 +130,16 @@ export const DOULA_CONTRACTS_CONFIG: ContractsConfig = {
   sections: DOULA_CONTRACT_SECTIONS,
   defaultValues: DOULA_CONTRACT_DEFAULTS,
   endpoints: {
-    list: '/doula-contracts',
-    create: '/doula-contracts',
-    update: (id) => `/doula-contracts/${id}`,
-    delete: (id) => `/doula-contracts/${id}`,
-    send: (id) => `/doula-contracts/${id}/send`,
-    duplicate: (id) => `/doula-contracts/${id}/duplicate`,
-    pdf: (id, backendUrl) => `${backendUrl}/api/doula-contracts/${id}/pdf`,
+    list: '/doula/contracts',
+    create: '/doula/contracts',
+    update: (id) => `/doula/contracts/${id}`,
+    delete: (id) => `/doula/contracts/${id}`,
+    send: (id) => `/doula/contracts/${id}/send`,
+    duplicate: (id) => `/doula/contracts/${id}/duplicate`,
+    pdf: (id, backendUrl) => `${backendUrl}/api/contracts/${id}/pdf`,
     defaults: '/doula/contract-defaults',
   },
-  clientsEndpoint: '/doula-clients',
+  clientsEndpoint: '/doula/clients',
 };
 
 // ============ MIDWIFE CONTRACT CONFIG ============
@@ -240,16 +240,16 @@ export const MIDWIFE_CONTRACTS_CONFIG: ContractsConfig = {
   sections: MIDWIFE_CONTRACT_SECTIONS,
   defaultValues: MIDWIFE_CONTRACT_DEFAULTS,
   endpoints: {
-    list: '/midwife-contracts',
-    create: '/midwife-contracts',
-    update: (id) => `/midwife-contracts/${id}`,
-    delete: (id) => `/midwife-contracts/${id}`,
-    send: (id) => `/midwife-contracts/${id}/send`,
-    duplicate: (id) => `/midwife-contracts/${id}/duplicate`,
+    list: '/midwife/contracts',
+    create: '/midwife/contracts',
+    update: (id) => `/midwife/contracts/${id}`,
+    delete: (id) => `/midwife/contracts/${id}`,
+    send: (id) => `/midwife/contracts/${id}/send`,
+    duplicate: (id) => `/midwife/contracts/${id}/duplicate`,
     pdf: (id, backendUrl) => `${backendUrl}/api/midwife-contracts/${id}/pdf`,
     defaults: '/midwife/contract-defaults',
   },
-  clientsEndpoint: '/midwife-clients',
+  clientsEndpoint: '/midwife/clients',
 };
 
 // Helper to get config by role
