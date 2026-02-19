@@ -147,8 +147,22 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 ### 🟡 BLOCKED
 - None (previously: Email notifications domain verification - now resolved)
 
-### ✅ RECENTLY COMPLETED (2026-02-19)
-- [x] **Doula Contracts Header Fix** - Fixed header so '+' button is accessible, removed "New Contract" text leaving just '+' icon
+### ✅ RECENTLY COMPLETED (2026-02-19) - Code Refactoring
+
+#### Shared Provider Component Architecture (COMPLETED - 2026-02-19)
+- [x] Created unified `ProviderMessages` component used by both Doula and Midwife
+- [x] Created unified `ProviderInvoices` component used by both Doula and Midwife
+- [x] Implemented `ProviderConfig` system for role-specific configuration
+- [x] Thin wrapper pattern: role screens pass config to shared components
+- [x] **Line reduction**: ~40% (2,686 → 1,606 lines) for Messages + Invoices
+- [x] Architecture documentation in `/app/frontend/src/components/provider/ARCHITECTURE.md`
+
+#### Midwife Client Navigation Bug Fix (COMPLETED - 2026-02-19)
+- [x] Fixed navigation from Midwife client list to client-detail page
+- [x] Root cause: Backend queries using `provider_id` instead of `pro_user_id`
+- [x] Fixed in server.py lines 5638, 5665, 5669
+
+### ✅ RECENTLY COMPLETED (2026-02-19) - Features
 - [x] **Doula Clients Rework** - Removed manual "Add Client" button, now shows only Moms who connected via Marketplace
   - Pending Requests section with Accept/Decline buttons
   - Shows Mom's name, due date, and birth plan availability
