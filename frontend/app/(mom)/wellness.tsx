@@ -314,15 +314,16 @@ export default function WellnessScreen() {
             </View>
           </ScrollView>
 
-          <View style={styles.modalFooter}>
-            <Button
-              title={saving ? 'Saving...' : 'Save Check-in'}
-              onPress={saveEntry}
-              disabled={saving}
-              fullWidth
-              data-testid="save-checkin-btn"
-            />
-          </View>
+            <View style={styles.modalFooter}>
+              <Button
+                title={saving ? 'Saving...' : 'Save Check-in'}
+                onPress={saveEntry}
+                disabled={saving}
+                fullWidth
+                data-testid="save-checkin-btn"
+              />
+            </View>
+          </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
