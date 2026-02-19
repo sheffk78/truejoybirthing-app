@@ -4,10 +4,10 @@ Admin Routes Module
 Handles admin-only user management and content management.
 """
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 from typing import Optional
 
-from .dependencies import db, get_now
+from .dependencies import db, get_now, get_current_user, check_role, User
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 # ============== ROUTES ==============
 
 @router.get("/users")
-async def get_all_users():
+async def get_all_users(user: User = Depends(check_role(["ADMIN"]))):
     """Get all users (admin only)"""
     users = await db.users.find(
         {},
@@ -26,7 +26,7 @@ async def get_all_users():
 
 
 @router.put("/users/{user_id}/role")
-async def update_user_role(user_id: str, request: Request):
+async def update_user_role(user_id: str, request: Request, admin: User = Depends(check_role(["ADMIN"]))):
     """Update a user's role (admin only)"""
     body = await request.json()
     new_role = body.get("role")
@@ -46,7 +46,7 @@ async def update_user_role(user_id: str, request: Request):
 
 
 @router.get("/content")
-async def get_admin_content():
+async def get_admin_content(user: User = Depends(check_role(["ADMIN"]))):
     """Get all admin-managed content"""
     content = await db.admin_content.find(
         {},
@@ -67,7 +67,7 @@ async def get_admin_content():
 
 
 @router.put("/content/{section_id}")
-async def update_admin_content(section_id: str, request: Request):
+async def update_admin_content(section_id: str, request: Request, user: User = Depends(check_role(["ADMIN"]))):
     """Update a content section"""
     body = await request.json()
     now = get_now()
