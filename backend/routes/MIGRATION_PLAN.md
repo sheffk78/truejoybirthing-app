@@ -95,6 +95,18 @@ This document outlines the phased migration plan for breaking down the monolithi
 - `routes/auth.py` - 7 endpoints migrated (register, login, google-session, me, logout, set-role, update-profile)
 - Server.py reduced from 7,463 → 7,190 lines
 
+### Phase 5: Subscription Routes (COMPLETED)
+- [x] Create `routes/subscription.py` with feature parity
+- [x] Fix datetime timezone bug (offset-naive vs offset-aware)
+- [x] Include router in server.py
+- [x] Remove duplicated code from server.py
+- [x] Test all routes (29/29 tests passed)
+
+**Completed**: Subscription routes now served from modular router.
+- `routes/subscription.py` - 6 endpoints migrated (status, pricing, start-trial, activate, cancel, validate-receipt)
+- Server.py reduced from 7,190 → 6,893 lines
+- Note: IAP endpoints are MOCKED (not connected to real Apple/Google)
+
 ### Phase 3: Role-Specific Routes
 - [ ] Create `routes/mom.py` - mom onboarding, profile, birth plan
 - [ ] Create `routes/doula.py` - doula onboarding, profile, dashboard
