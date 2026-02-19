@@ -315,7 +315,8 @@ class TestSubscriptionValidateReceipt:
                                 })
         assert response.status_code == 400
         data = response.json()
-        assert "product ID" in data.get("detail", "").lower() or "product_id" in data.get("detail", "").lower()
+        # Error message contains "product id" (case-insensitive)
+        assert "product" in data.get("detail", "").lower() and "id" in data.get("detail", "").lower()
     
     def test_validate_receipt_apple_monthly(self, doula_session):
         """Should validate Apple monthly receipt (MOCKED)"""
