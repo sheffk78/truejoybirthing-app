@@ -312,7 +312,7 @@ export default function WellnessScreen() {
                 data-testid="journal-input"
               />
             </View>
-          </ScrollView>
+            </ScrollView>
 
             <View style={styles.modalFooter}>
               <Button
