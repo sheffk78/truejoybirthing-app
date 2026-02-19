@@ -985,13 +985,29 @@ export default function DoulaContracts() {
                     </View>
                     <View style={styles.fieldContainer}>
                       <Text style={styles.fieldLabel}>Due Date</Text>
-                      <TextInput
-                        style={styles.input}
-                        value={quickEditData.estimated_due_date}
-                        onChangeText={(text) => updateQuickEditField('estimated_due_date', text)}
-                        placeholder="YYYY-MM-DD"
-                        placeholderTextColor={COLORS.textSecondary}
-                      />
+                      {Platform.OS === 'web' ? (
+                        <input
+                          type="date"
+                          value={quickEditData.estimated_due_date || ''}
+                          onChange={(e) => updateQuickEditField('estimated_due_date', e.target.value)}
+                          style={{
+                            padding: 12,
+                            borderWidth: 1,
+                            borderColor: COLORS.border,
+                            borderRadius: 8,
+                            fontSize: 16,
+                            width: '100%',
+                          }}
+                        />
+                      ) : (
+                        <TextInput
+                          style={styles.input}
+                          value={quickEditData.estimated_due_date}
+                          onChangeText={(text) => updateQuickEditField('estimated_due_date', text)}
+                          placeholder="YYYY-MM-DD"
+                          placeholderTextColor={COLORS.textSecondary}
+                        />
+                      )}
                     </View>
                   </View>
 
