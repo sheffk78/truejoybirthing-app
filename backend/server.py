@@ -5527,8 +5527,8 @@ async def create_midwife_client(client_data: ClientCreate, user: User = Depends(
     
     client = {
         "client_id": f"client_{uuid.uuid4().hex[:12]}",
-        "provider_id": user.user_id,
-        "provider_type": "MIDWIFE",
+        "pro_user_id": user.user_id,
+        "pro_type": "MIDWIFE",
         "name": client_data.name,
         "email": client_data.email,
         "phone": client_data.phone,
