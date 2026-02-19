@@ -278,7 +278,7 @@ export default function DoulaContracts() {
       // Save the current form data as "last used" preferences
       await saveLastUsedDefaults(payload);
 
-      Alert.alert('Success', 'Contract created successfully!');
+      Alert.alert('Success', 'Contract created successfully! Your text and settings have been saved as defaults for future contracts.');
       setShowCreateModal(false);
       loadData();
     } catch (error: any) {
