@@ -111,6 +111,18 @@ export default function MidwifeLayout() {
           href: null,  // Hide from tab bar, accessible from dashboard
         }}
       />
+      <Tabs.Screen
+        name="client-detail"
+        options={{
+          href: null,  // Hide from tab bar, accessible from clients page
+        }}
+      />
+      <Tabs.Screen
+        name="contract-templates"
+        options={{
+          href: null,  // Hide from tab bar
+        }}
+      />
     </Tabs>
   );
 }
