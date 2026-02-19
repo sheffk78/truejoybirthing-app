@@ -4,6 +4,18 @@ import { Icon } from '../../src/components/Icon';
 import { COLORS, SIZES } from '../../src/constants/theme';
 import { Platform } from 'react-native';
 
+/**
+ * Doula Navigation Layout
+ * 
+ * Simplified client-first navigation:
+ * - Home: Dashboard with quick stats and client overview
+ * - Clients: Primary entry point for all client work
+ * - Messages: Quick access to conversations
+ * - Profile: Settings and profile management
+ * 
+ * All client-specific tools (Notes, Contracts, Invoices, Appointments)
+ * are accessed through Clients → Client Detail → Tool
+ */
 export default function DoulaLayout() {
   return (
     <Tabs
@@ -24,6 +36,7 @@ export default function DoulaLayout() {
         },
       }}
     >
+      {/* Primary Navigation - 4 tabs */}
       <Tabs.Screen
         name="dashboard"
         options={{
@@ -43,38 +56,11 @@ export default function DoulaLayout() {
         }}
       />
       <Tabs.Screen
-        name="contracts"
-        options={{
-          title: 'Contracts',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="document-text-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="invoices"
-        options={{
-          title: 'Invoices',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="cash-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="notes"
-        options={{
-          title: 'Notes',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="create-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="messages"
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="mail-outline" size={size} color={color} />
+            <Icon name="chatbubbles-outline" size={size} color={color} />
           ),
         }}
       />
@@ -87,17 +73,31 @@ export default function DoulaLayout() {
           ),
         }}
       />
+
+      {/* Hidden screens - accessed via navigation, not tab bar */}
+      <Tabs.Screen
+        name="client-detail"
+        options={{ href: null }}
+      />
       <Tabs.Screen
         name="appointments"
-        options={{
-          href: null,  // Hide from tab bar, accessible from dashboard
-        }}
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="notes"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="contracts"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="invoices"
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="contract-templates"
-        options={{
-          href: null,  // Hide from tab bar, accessible from contracts page
-        }}
+        options={{ href: null }}
       />
     </Tabs>
   );
