@@ -15,9 +15,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { apiRequest } from '../../../utils/api';
-import { API_ENDPOINTS } from '../../../constants/api';
-import { COLORS, SIZES } from '../../../constants/theme';
+import { apiRequest } from '../../utils/api';
+import { API_ENDPOINTS } from '../../constants/api';
+import { COLORS, SIZES } from '../../constants/theme';
 import { ProviderConfig } from '../config/providerConfig';
 
 const STATUS_COLORS: Record<string, string> = {
