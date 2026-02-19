@@ -1,9 +1,9 @@
 /**
  * Billing Service Module for True Joy Birthing
  * 
- * This module provides in-app purchase functionality.
- * On native platforms (iOS/Android), it uses react-native-iap.
- * On web, it provides mock implementations for testing.
+ * This module provides in-app purchase functionality placeholders.
+ * For web, it provides mock implementations.
+ * For native (iOS/Android), use the native-specific billing module.
  * 
  * Product IDs:
  * - Apple: truejoy.pro.monthly, truejoy.pro.annual
@@ -45,9 +45,6 @@ export interface SubscriptionInfo {
 
 export type BillingPlatform = 'ios' | 'android' | 'web';
 
-// Module state
-let isInitialized = false;
-
 // Get current platform
 export function getCurrentPlatform(): BillingPlatform {
   if (Platform.OS === 'ios') return 'ios';
@@ -77,150 +74,39 @@ export function getProductSkus(): string[] {
 
 /**
  * Initialize the billing client
- * On web, this is a no-op. On native, it will connect to the store.
  */
 export async function initializeBilling(): Promise<boolean> {
   const platform = getCurrentPlatform();
-  
   console.log(`[Billing] Initializing billing for platform: ${platform}`);
   
-  if (platform === 'web') {
-    console.log('[Billing] Web platform - using mock billing');
-    isInitialized = true;
-    return true;
-  }
-  
-  // For native platforms, react-native-iap would be initialized here
-  // This code path is only reached when running on iOS/Android
-  try {
-    // Dynamic import to avoid bundling issues on web
-    const RNIap = require('react-native-iap');
-    const result = await RNIap.initConnection();
-    console.log('[Billing] Native connection initialized:', result);
-    
-    if (platform === 'android') {
-      try {
-        await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
-      } catch (e) {
-        console.warn('[Billing] Error flushing failed purchases:', e);
-      }
-    }
-    
-    isInitialized = true;
-    return true;
-  } catch (error) {
-    console.error('[Billing] Failed to initialize:', error);
-    return false;
-  }
+  // On web, always return true (mock mode)
+  // Native implementations should use platform-specific modules
+  return true;
 }
 
 /**
  * Fetch available subscription products
  */
 export async function fetchProducts(): Promise<Product[]> {
-  const platform = getCurrentPlatform();
-  
-  if (platform === 'web') {
-    return getMockProducts();
-  }
-  
-  if (!isInitialized) {
-    await initializeBilling();
-  }
-  
-  try {
-    const RNIap = require('react-native-iap');
-    const skus = getProductSkus();
-    const subscriptions = await RNIap.getSubscriptions({ skus });
-    
-    return subscriptions.map((sub: any) => ({
-      productId: sub.productId,
-      title: sub.title || sub.name || 'True Joy Pro',
-      description: sub.description || '',
-      price: sub.localizedPrice || `$${SUBSCRIPTION_CONFIG.plans.monthly.price}`,
-      priceAmountMicros: parseInt(sub.price || '0') * 1000000,
-      priceCurrencyCode: sub.currency || 'USD',
-      localizedPrice: sub.localizedPrice,
-      subscriptionPeriod: 'P1M',
-      freeTrialPeriod: `P${SUBSCRIPTION_CONFIG.trialDays}D`,
-    }));
-  } catch (error) {
-    console.error('[Billing] Error fetching products:', error);
-    return getMockProducts();
-  }
+  // Return mock products (native apps should use platform-specific modules)
+  return getMockProducts();
 }
 
 /**
  * Initiate a subscription purchase
  */
 export async function purchaseProduct(productId: ProductId): Promise<Purchase | null> {
-  const platform = getCurrentPlatform();
-  const productIds = getPlatformProductIds();
-  const storeProductId = productId === 'monthly' ? productIds.monthly : productIds.annual;
-  
-  console.log(`[Billing] Initiating purchase for: ${storeProductId}`);
-  
-  if (platform === 'web') {
-    console.log('[Billing] Web platform - cannot process real IAP');
-    return null;
-  }
-  
-  if (!isInitialized) {
-    await initializeBilling();
-  }
-  
-  try {
-    const RNIap = require('react-native-iap');
-    
-    if (Platform.OS === 'ios') {
-      await RNIap.requestSubscription({ sku: storeProductId });
-    } else {
-      const subscriptions = await RNIap.getSubscriptions({ skus: [storeProductId] });
-      if (subscriptions.length > 0) {
-        const offerToken = subscriptions[0]?.subscriptionOfferDetails?.[0]?.offerToken;
-        await RNIap.requestSubscription({
-          sku: storeProductId,
-          ...(offerToken && { subscriptionOffers: [{ sku: storeProductId, offerToken }] }),
-        });
-      }
-    }
-    
-    return null; // Purchase result comes through listener
-  } catch (error: any) {
-    console.error('[Billing] Purchase error:', error);
-    throw error;
-  }
+  console.log(`[Billing] Purchase requested for: ${productId}`);
+  console.log('[Billing] Web platform - use mock trial or native app for real IAP');
+  return null;
 }
 
 /**
  * Restore previous purchases
  */
 export async function restorePurchases(): Promise<Purchase[]> {
-  const platform = getCurrentPlatform();
-  
-  if (platform === 'web') {
-    return [];
-  }
-  
-  if (!isInitialized) {
-    await initializeBilling();
-  }
-  
-  try {
-    const RNIap = require('react-native-iap');
-    const availablePurchases = await RNIap.getAvailablePurchases();
-    
-    return availablePurchases.map((p: any) => ({
-      productId: p.productId,
-      transactionId: p.transactionId || '',
-      transactionDate: p.transactionDate ? new Date(parseInt(p.transactionDate)).toISOString() : '',
-      transactionReceipt: p.transactionReceipt || '',
-      purchaseState: 'purchased',
-    }));
-  } catch (error) {
-    console.error('[Billing] Error restoring purchases:', error);
-    return [];
-  }
+  console.log('[Billing] Restore purchases - not available on web');
+  return [];
 }
 
 /**
@@ -247,10 +133,7 @@ export async function validateReceipt(
       }),
     });
     
-    if (!response.ok) {
-      return false;
-    }
-    
+    if (!response.ok) return false;
     const result = await response.json();
     return result.success === true;
   } catch (error) {
@@ -263,14 +146,11 @@ export async function validateReceipt(
  * Get subscription status
  */
 export async function getSubscriptionStatus(): Promise<SubscriptionInfo> {
-  const platform = getCurrentPlatform();
-  const provider = getSubscriptionProvider();
-  
   return {
     isActive: false,
     productId: null,
     expiryDate: null,
-    provider: platform === 'web' ? null : (provider as 'APPLE' | 'GOOGLE'),
+    provider: null,
     autoRenewing: false,
   };
 }
@@ -279,45 +159,22 @@ export async function getSubscriptionStatus(): Promise<SubscriptionInfo> {
  * Open subscription management
  */
 export async function openSubscriptionManagement(): Promise<void> {
-  const platform = getCurrentPlatform();
-  
-  if (platform === 'web') {
-    console.log('[Billing] Web users must manage subscriptions via mobile app');
-    return;
-  }
-  
-  try {
-    const RNIap = require('react-native-iap');
-    await RNIap.deepLinkToSubscriptions();
-  } catch (error) {
-    console.error('[Billing] Error opening subscription management:', error);
-  }
+  console.log('[Billing] Subscription management - redirect to app store on native');
 }
 
 /**
  * Cleanup billing resources
  */
 export async function cleanupBilling(): Promise<void> {
-  if (getCurrentPlatform() === 'web') {
-    isInitialized = false;
-    return;
-  }
-  
-  try {
-    const RNIap = require('react-native-iap');
-    await RNIap.endConnection();
-    isInitialized = false;
-  } catch (error) {
-    console.error('[Billing] Error during cleanup:', error);
-  }
+  console.log('[Billing] Cleanup complete');
 }
 
 /**
  * Check if IAP is available
  */
 export function isIAPAvailable(): boolean {
-  const platform = getCurrentPlatform();
-  return platform === 'ios' || platform === 'android';
+  // Only available on native platforms
+  return Platform.OS === 'ios' || Platform.OS === 'android';
 }
 
 /**
