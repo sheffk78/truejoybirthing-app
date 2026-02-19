@@ -187,13 +187,20 @@ export default function MyTeamScreen() {
             {pendingProviders.map((request) => (
               <Card key={request.request_id} style={[styles.teamCard, styles.pendingCard]}>
                 <View style={styles.teamRow}>
-                  <View style={[styles.avatar, styles.pendingAvatar]}>
-                    <Icon 
-                      name={getProviderIcon(request.provider_role)} 
-                      size={24} 
-                      color={COLORS.warning} 
+                  {request.provider_picture ? (
+                    <Image 
+                      source={{ uri: request.provider_picture }} 
+                      style={[styles.avatarImage, { opacity: 0.7 }]}
                     />
-                  </View>
+                  ) : (
+                    <View style={[styles.avatar, styles.pendingAvatar]}>
+                      <Icon 
+                        name={getProviderIcon(request.provider_role)} 
+                        size={24} 
+                        color={COLORS.warning} 
+                      />
+                    </View>
+                  )}
                   <View style={styles.teamInfo}>
                     <Text style={styles.teamName}>{request.provider_name}</Text>
                     <View style={styles.roleRow}>
