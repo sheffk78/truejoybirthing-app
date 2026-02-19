@@ -954,6 +954,62 @@ class Visit(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
+# --- Prenatal Visit Assessment Models (Midwife) ---
+class WellBeingEntry(BaseModel):
+    score: Optional[int] = None  # 1-5 scale
+    note: Optional[str] = None
+
+class PrenatalVisitAssessmentCreate(BaseModel):
+    client_id: str
+    visit_date: str  # ISO date string
+    # Vitals & Measurements
+    urinalysis: Optional[str] = None  # Normal, Protein +, Glucose +, etc.
+    urinalysis_note: Optional[str] = None
+    blood_pressure: Optional[str] = None  # e.g., "120/70"
+    fetal_heart_rate: Optional[int] = None  # bpm
+    fundal_height: Optional[float] = None  # cm
+    weight: Optional[float] = None
+    weight_unit: Optional[str] = "lbs"  # lbs or kg
+    # Well-being check-in (1-5 scale with optional notes)
+    eating_score: Optional[int] = None
+    eating_note: Optional[str] = None
+    water_score: Optional[int] = None
+    water_note: Optional[str] = None
+    emotional_score: Optional[int] = None
+    emotional_note: Optional[str] = None
+    physical_score: Optional[int] = None
+    physical_note: Optional[str] = None
+    mental_score: Optional[int] = None
+    mental_note: Optional[str] = None
+    spiritual_score: Optional[int] = None
+    spiritual_note: Optional[str] = None
+    # General notes
+    general_notes: Optional[str] = None
+
+class PrenatalVisitAssessmentUpdate(BaseModel):
+    visit_date: Optional[str] = None
+    urinalysis: Optional[str] = None
+    urinalysis_note: Optional[str] = None
+    blood_pressure: Optional[str] = None
+    fetal_heart_rate: Optional[int] = None
+    fundal_height: Optional[float] = None
+    weight: Optional[float] = None
+    weight_unit: Optional[str] = None
+    eating_score: Optional[int] = None
+    eating_note: Optional[str] = None
+    water_score: Optional[int] = None
+    water_note: Optional[str] = None
+    emotional_score: Optional[int] = None
+    emotional_note: Optional[str] = None
+    physical_score: Optional[int] = None
+    physical_note: Optional[str] = None
+    mental_score: Optional[int] = None
+    mental_note: Optional[str] = None
+    spiritual_score: Optional[int] = None
+    spiritual_note: Optional[str] = None
+    general_notes: Optional[str] = None
+
+
 # --- Birth Summary Models (Midwife) ---
 class BirthSummaryCreate(BaseModel):
     client_id: str
