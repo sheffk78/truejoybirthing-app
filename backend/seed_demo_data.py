@@ -727,7 +727,9 @@ async def seed_demo_data(reset: bool = False):
         client_doc = {
             "client_id": f"demo_client_{uuid.uuid4().hex[:8]}",
             "pro_user_id": primary_doula_id,
+            "provider_id": primary_doula_id,  # API uses provider_id
             "provider_type": "DOULA",
+            "pro_type": "DOULA",  # API uses pro_type
             "name": c["name"],
             "email": c["email"],
             "edd": (datetime.now() + timedelta(days=c["edd_days"])).strftime("%Y-%m-%d"),
@@ -757,7 +759,9 @@ async def seed_demo_data(reset: bool = False):
         client_doc = {
             "client_id": f"demo_client_{uuid.uuid4().hex[:8]}",
             "pro_user_id": primary_midwife_id,
+            "provider_id": primary_midwife_id,  # API uses provider_id
             "provider_type": "MIDWIFE",
+            "pro_type": "MIDWIFE",  # API uses pro_type
             "name": c["name"],
             "email": c["email"],
             "edd": (datetime.now() + timedelta(days=c["edd_days"])).strftime("%Y-%m-%d"),
