@@ -71,15 +71,19 @@ export default function MarketplaceScreen() {
       const allProviders = [
         ...(data.doulas || []),
         ...(data.midwives || [])
-      ].map(p => ({
-        user_id: p.user?.user_id,
-        full_name: p.user?.full_name,
-        email: p.user?.email,
-        picture: p.user?.picture,
-        role: p.user?.role || p.provider_type,
-        provider_type: p.provider_type,
-        profile: p.profile
-      }));
+      ].map(p => {
+        console.log('DEBUG Provider mapping:', p.user?.full_name, 'picture:', p.user?.picture);
+        return {
+          user_id: p.user?.user_id,
+          full_name: p.user?.full_name,
+          email: p.user?.email,
+          picture: p.user?.picture,
+          role: p.user?.role || p.provider_type,
+          provider_type: p.provider_type,
+          profile: p.profile
+        };
+      });
+      console.log('DEBUG All providers mapped:', allProviders.map(p => ({ name: p.full_name, picture: p.picture })));
       setProviders(allProviders);
       
       // Fetch team status for each provider
