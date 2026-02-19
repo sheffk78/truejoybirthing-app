@@ -142,12 +142,10 @@ export const DOULA_CONFIG: ProviderConfig = {
     ],
     quickActions: [
       { label: 'See Clients', icon: 'people', route: '/(doula)/clients', colorKey: 'primary' },
-      { label: 'New Contract', icon: 'document-text', route: '/(doula)/contracts', colorKey: 'accent' },
-      { label: 'New Invoice', icon: 'cash-outline', route: '/(doula)/invoices', colorKey: 'success' },
-      { label: 'Appointments', icon: 'calendar-outline', route: '/(doula)/appointments', colorKey: 'warning' },
+      { label: 'Appointments', icon: 'calendar-outline', route: '/(doula)/appointments', colorKey: 'accent' },
     ],
     tipTitle: 'Doula Tip',
-    tipText: 'Keep your client records updated regularly. This helps you provide better care and maintain professional documentation.',
+    tipText: 'Go to Clients to manage contracts, invoices, notes and appointments for each client. The client-first workflow keeps everything organized.',
   },
   
   clientDetailTabs: [
