@@ -251,7 +251,7 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Navigation Restructuring
 
-#### Client-First Navigation Pattern (COMPLETED - 2026-02-19)
+#### Client-First Navigation Pattern (COMPLETED & VERIFIED - 2026-02-19)
 - [x] **Simplified Bottom Navigation**: Reduced to 4 tabs for both Doula and Midwife
   - Home, Clients, Messages, Profile
   - Tools (Notes, Contracts, Invoices, Appointments) hidden via `href: null`
@@ -262,7 +262,9 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - Clients → Client Detail → Notes/Contracts/Invoices/Appointments
   - Back navigation returns to Client Detail, not Home
 - [x] **ProviderNotes Back Navigation**: Shows back button when accessed with `clientId` parameter
-- [x] **Testing**: Frontend testing confirmed 7/7 features working (iteration_96)
+- [x] **ProviderContracts Client-Scoped**: Shows back button, client name in header, filtered contracts when accessed with `clientId` parameter
+- [x] **ProviderInvoices Client-Scoped**: Shows back button, client name in header, filtered invoices when accessed with `clientId` parameter
+- [x] **Testing**: Frontend testing confirmed all navigation flows working (iteration_97 - 100% pass)
 
 #### Navigation Structure:
 ```
