@@ -540,23 +540,29 @@ export default function DoulaInvoicesScreen() {
 
             <ScrollView style={styles.modalBody}>
               <Text style={styles.fieldLabel}>Select Client *</Text>
-              {clients.length === 0 ? (
+              {clients.filter(c => c.linked_mom_id).length === 0 ? (
                 <View style={styles.noClientsMessage}>
                   <Ionicons name="alert-circle-outline" size={24} color={COLORS.textLight} />
                   <Text style={styles.noClientsText}>
-                    You don't have any active clients yet. Add a client first to create an invoice.
+                    No active clients. Clients will appear here when Moms connect with you from the Marketplace.
                   </Text>
                 </View>
               ) : (
                 <View style={styles.clientGrid}>
-                  {clients.map((client) => (
+                  {clients.filter(c => c.linked_mom_id).map((client) => (
                     <TouchableOpacity
                       key={client.client_id}
                       style={[
                         styles.clientOption, 
                         selectedClientId === client.client_id && styles.clientOptionSelected
                       ]}
-                      onPress={() => setSelectedClientId(client.client_id)}
+                      onPress={() => {
+                        setSelectedClientId(client.client_id);
+                        // Auto-fill due date based on client's EDD if available
+                        if (client.edd && !dueDate) {
+                          setDueDate(client.edd);
+                        }
+                      }}
                       activeOpacity={0.7}
                       data-testid={`client-option-${client.client_id}`}
                     >
@@ -603,23 +609,57 @@ export default function DoulaInvoicesScreen() {
               <View style={styles.dateRow}>
                 <View style={styles.dateField}>
                   <Text style={styles.fieldLabel}>Issue Date</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="YYYY-MM-DD"
-                    placeholderTextColor={COLORS.textSecondary}
-                    value={issueDate}
-                    onChangeText={setIssueDate}
-                  />
+                  {Platform.OS === 'web' ? (
+                    <input
+                      type="date"
+                      value={issueDate}
+                      onChange={(e) => setIssueDate(e.target.value)}
+                      style={{
+                        padding: 12,
+                        borderWidth: 1,
+                        borderColor: COLORS.border,
+                        borderRadius: 8,
+                        fontSize: 16,
+                        width: '100%',
+                        backgroundColor: COLORS.background,
+                      }}
+                    />
+                  ) : (
+                    <TextInput
+                      style={styles.input}
+                      placeholder="YYYY-MM-DD"
+                      placeholderTextColor={COLORS.textSecondary}
+                      value={issueDate}
+                      onChangeText={setIssueDate}
+                    />
+                  )}
                 </View>
                 <View style={styles.dateField}>
                   <Text style={styles.fieldLabel}>Due Date</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="YYYY-MM-DD"
-                    placeholderTextColor={COLORS.textSecondary}
-                    value={dueDate}
-                    onChangeText={setDueDate}
-                  />
+                  {Platform.OS === 'web' ? (
+                    <input
+                      type="date"
+                      value={dueDate}
+                      onChange={(e) => setDueDate(e.target.value)}
+                      style={{
+                        padding: 12,
+                        borderWidth: 1,
+                        borderColor: COLORS.border,
+                        borderRadius: 8,
+                        fontSize: 16,
+                        width: '100%',
+                        backgroundColor: COLORS.background,
+                      }}
+                    />
+                  ) : (
+                    <TextInput
+                      style={styles.input}
+                      placeholder="YYYY-MM-DD"
+                      placeholderTextColor={COLORS.textSecondary}
+                      value={dueDate}
+                      onChangeText={setDueDate}
+                    />
+                  )}
                 </View>
               </View>
 
