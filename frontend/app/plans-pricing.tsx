@@ -479,4 +479,39 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   momNoteText: { flex: 1, color: COLORS.textSecondary, fontSize: 13, lineHeight: 18 },
+  
+  // Subscription Management Card
+  manageSubscriptionCard: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#f0fdf4',
+    padding: 14,
+    borderRadius: 10,
+    gap: 10,
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+  },
+  manageTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  manageDescription: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    lineHeight: 18,
+  },
+  manageLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+  },
+  manageLinkText: {
+    color: COLORS.primary,
+    fontSize: 13,
+    fontWeight: '500',
+  },
 });
