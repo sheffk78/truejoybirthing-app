@@ -237,15 +237,20 @@ export default function WellnessScreen() {
       {/* Check-in Modal */}
       <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setModalVisible(false)}>
         <SafeAreaView style={styles.modalContainer} edges={['top']}>
-          <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Daily Check-in</Text>
-            <View style={{ width: 24 }} />
-          </View>
-          
-          <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
+          <KeyboardAvoidingView 
+            style={styles.keyboardAvoidingContainer}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+          >
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={() => setModalVisible(false)} data-testid="close-checkin-modal-btn">
+                <Icon name="close" size={24} color={COLORS.textPrimary} />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>Daily Check-in</Text>
+              <View style={{ width: 24 }} />
+            </View>
+            
+            <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
             {/* Mood Selection */}
             <View style={styles.moodSection}>
               <Text style={styles.moodLabel}>How are you feeling today?</Text>
