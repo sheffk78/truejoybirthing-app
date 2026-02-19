@@ -5729,6 +5729,154 @@ async def update_visit(visit_id: str, request: Request, user: User = Depends(che
     
     return {"message": "Visit updated"}
 
+
+# ============== PRENATAL VISIT ASSESSMENT ROUTES (MIDWIFE) ==============
+
+@api_router.get("/midwife/clients/{client_id}/prenatal-visits")
+async def get_prenatal_visits(client_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get all prenatal visit assessments for a client"""
+    # Verify client belongs to this midwife
+    client = await db.clients.find_one({"client_id": client_id, "pro_user_id": user.user_id})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    visits = await db.prenatal_visits.find(
+        {"client_id": client_id, "midwife_id": user.user_id},
+        {"_id": 0}
+    ).sort("visit_date", -1).to_list(100)
+    return visits
+
+@api_router.post("/midwife/clients/{client_id}/prenatal-visits")
+async def create_prenatal_visit(client_id: str, visit_data: PrenatalVisitAssessmentCreate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Create a new prenatal visit assessment"""
+    # Verify client belongs to this midwife
+    client = await db.clients.find_one({"client_id": client_id, "pro_user_id": user.user_id})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Generate summary line for list view
+    summary_parts = []
+    if visit_data.blood_pressure:
+        summary_parts.append(f"BP {visit_data.blood_pressure}")
+    if visit_data.fetal_heart_rate:
+        summary_parts.append(f"FHR {visit_data.fetal_heart_rate}")
+    if visit_data.fundal_height:
+        summary_parts.append(f"FH {visit_data.fundal_height} cm")
+    if visit_data.weight:
+        unit = visit_data.weight_unit or "lbs"
+        summary_parts.append(f"Wt {visit_data.weight} {unit}")
+    
+    summary = ", ".join(summary_parts) if summary_parts else "Visit recorded"
+    
+    visit = {
+        "prenatal_visit_id": f"pv_{uuid.uuid4().hex[:12]}",
+        "midwife_id": user.user_id,
+        "client_id": client_id,
+        "visit_date": visit_data.visit_date,
+        "summary": summary,
+        # Vitals & Measurements
+        "urinalysis": visit_data.urinalysis,
+        "urinalysis_note": visit_data.urinalysis_note,
+        "blood_pressure": visit_data.blood_pressure,
+        "fetal_heart_rate": visit_data.fetal_heart_rate,
+        "fundal_height": visit_data.fundal_height,
+        "weight": visit_data.weight,
+        "weight_unit": visit_data.weight_unit or "lbs",
+        # Well-being scores
+        "eating_score": visit_data.eating_score,
+        "eating_note": visit_data.eating_note,
+        "water_score": visit_data.water_score,
+        "water_note": visit_data.water_note,
+        "emotional_score": visit_data.emotional_score,
+        "emotional_note": visit_data.emotional_note,
+        "physical_score": visit_data.physical_score,
+        "physical_note": visit_data.physical_note,
+        "mental_score": visit_data.mental_score,
+        "mental_note": visit_data.mental_note,
+        "spiritual_score": visit_data.spiritual_score,
+        "spiritual_note": visit_data.spiritual_note,
+        # General
+        "general_notes": visit_data.general_notes,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.prenatal_visits.insert_one(visit)
+    visit.pop('_id', None)
+    return visit
+
+@api_router.get("/midwife/clients/{client_id}/prenatal-visits/{visit_id}")
+async def get_prenatal_visit(client_id: str, visit_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get a single prenatal visit assessment"""
+    visit = await db.prenatal_visits.find_one(
+        {"prenatal_visit_id": visit_id, "client_id": client_id, "midwife_id": user.user_id},
+        {"_id": 0}
+    )
+    if not visit:
+        raise HTTPException(status_code=404, detail="Prenatal visit not found")
+    return visit
+
+@api_router.put("/midwife/clients/{client_id}/prenatal-visits/{visit_id}")
+async def update_prenatal_visit(client_id: str, visit_id: str, visit_data: PrenatalVisitAssessmentUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Update a prenatal visit assessment"""
+    # Build update dict only with provided fields
+    update_data = {}
+    for field, value in visit_data.dict(exclude_unset=True).items():
+        update_data[field] = value
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    # Regenerate summary if vitals changed
+    existing = await db.prenatal_visits.find_one(
+        {"prenatal_visit_id": visit_id, "midwife_id": user.user_id},
+        {"_id": 0}
+    )
+    if existing:
+        bp = update_data.get("blood_pressure", existing.get("blood_pressure"))
+        fhr = update_data.get("fetal_heart_rate", existing.get("fetal_heart_rate"))
+        fh = update_data.get("fundal_height", existing.get("fundal_height"))
+        wt = update_data.get("weight", existing.get("weight"))
+        wt_unit = update_data.get("weight_unit", existing.get("weight_unit", "lbs"))
+        
+        summary_parts = []
+        if bp:
+            summary_parts.append(f"BP {bp}")
+        if fhr:
+            summary_parts.append(f"FHR {fhr}")
+        if fh:
+            summary_parts.append(f"FH {fh} cm")
+        if wt:
+            summary_parts.append(f"Wt {wt} {wt_unit}")
+        
+        update_data["summary"] = ", ".join(summary_parts) if summary_parts else "Visit recorded"
+    
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.prenatal_visits.update_one(
+        {"prenatal_visit_id": visit_id, "client_id": client_id, "midwife_id": user.user_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Prenatal visit not found")
+    
+    return {"message": "Prenatal visit updated"}
+
+@api_router.delete("/midwife/clients/{client_id}/prenatal-visits/{visit_id}")
+async def delete_prenatal_visit(client_id: str, visit_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Delete a prenatal visit assessment"""
+    result = await db.prenatal_visits.delete_one(
+        {"prenatal_visit_id": visit_id, "client_id": client_id, "midwife_id": user.user_id}
+    )
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Prenatal visit not found")
+    
+    return {"message": "Prenatal visit deleted"}
+
 # ============== BIRTH SUMMARY ROUTES (MIDWIFE) ==============
 
 @api_router.get("/midwife/birth-summaries")
