@@ -2003,18 +2003,130 @@ async def activate_subscription(request: StartTrialRequest, user: User = Depends
 
 @api_router.post("/subscription/cancel")
 async def cancel_subscription(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
-    """Cancel subscription (mock implementation)"""
+    """Cancel subscription (mock implementation)
+    
+    Note: For real IAP, cancellation is managed through the respective app stores.
+    This endpoint updates our records to reflect that auto-renewal has been turned off.
+    """
     now = datetime.now(timezone.utc)
     
     result = await db.subscriptions.update_one(
         {"user_id": user.user_id},
-        {"$set": {"subscription_status": "cancelled", "updated_at": now}}
+        {"$set": {
+            "subscription_status": "cancelled",
+            "auto_renewing": False,
+            "updated_at": now
+        }}
     )
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="No subscription found")
     
-    return {"message": "Subscription cancelled. You will retain access until the end of your current period."}
+    # Get the current subscription to return provider-specific info
+    subscription = await db.subscriptions.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0, "subscription_provider": 1, "subscription_end_date": 1}
+    )
+    
+    provider = subscription.get("subscription_provider", "MOCK") if subscription else "MOCK"
+    end_date = subscription.get("subscription_end_date") if subscription else None
+    
+    # Provide provider-specific cancellation instructions
+    if provider == "APPLE":
+        manage_url = "https://apps.apple.com/account/subscriptions"
+        manage_instructions = "To manage your subscription, go to Settings > [Your Name] > Subscriptions on your iPhone."
+    elif provider == "GOOGLE":
+        manage_url = "https://play.google.com/store/account/subscriptions"
+        manage_instructions = "To manage your subscription, open Google Play Store > Menu > Subscriptions."
+    else:
+        manage_url = None
+        manage_instructions = "Your subscription has been cancelled."
+    
+    return {
+        "message": "Subscription cancelled. You will retain access until the end of your current period.",
+        "subscription_provider": provider,
+        "subscription_end_date": end_date.isoformat() if end_date else None,
+        "manage_url": manage_url,
+        "manage_instructions": manage_instructions
+    }
+
+@api_router.post("/subscription/validate-receipt")
+async def validate_receipt(request: ValidateReceiptRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Validate a store receipt and update subscription status
+    
+    PLACEHOLDER: This endpoint is ready for integration with Apple App Store
+    and Google Play Store receipt validation servers.
+    
+    For production, this should:
+    1. Send the receipt to Apple/Google for validation
+    2. Verify the product_id matches our subscription products
+    3. Check the receipt hasn't been used before
+    4. Update the subscription record in our database
+    5. Return the updated subscription status
+    """
+    now = datetime.now(timezone.utc)
+    
+    # Validate provider
+    provider = request.subscription_provider.upper()
+    if provider not in ["APPLE", "GOOGLE"]:
+        raise HTTPException(status_code=400, detail="Invalid subscription provider. Must be 'APPLE' or 'GOOGLE'")
+    
+    # Validate product_id format
+    valid_products_apple = ["truejoy.pro.monthly", "truejoy.pro.annual"]
+    valid_products_google = ["truejoy_pro_monthly", "truejoy_pro_annual"]
+    
+    if provider == "APPLE" and request.product_id not in valid_products_apple:
+        raise HTTPException(status_code=400, detail=f"Invalid Apple product ID. Must be one of: {valid_products_apple}")
+    elif provider == "GOOGLE" and request.product_id not in valid_products_google:
+        raise HTTPException(status_code=400, detail=f"Invalid Google product ID. Must be one of: {valid_products_google}")
+    
+    # Determine plan type from product_id
+    if "monthly" in request.product_id:
+        plan_type = "monthly"
+        sub_end = now + timedelta(days=30)
+    else:
+        plan_type = "annual"
+        sub_end = now + timedelta(days=365)
+    
+    # TODO: Implement actual receipt validation with Apple/Google servers
+    # For Apple: https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/validating_receipts_with_the_app_store
+    # For Google: https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.subscriptions
+    
+    # For now, create a mock subscription (in production, only do this after successful validation)
+    subscription = {
+        "subscription_id": f"sub_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "subscription_status": "active",
+        "plan_type": plan_type,
+        "subscription_provider": provider,
+        "trial_start_date": None,
+        "trial_end_date": None,
+        "subscription_start_date": now,
+        "subscription_end_date": sub_end,
+        "store_transaction_id": f"validated_{uuid.uuid4().hex[:12]}",
+        "store_type": provider.lower(),
+        "original_transaction_id": f"orig_{uuid.uuid4().hex[:12]}",
+        "auto_renewing": True,
+        "receipt_data": request.receipt[:100] + "...",  # Store truncated receipt for reference
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.subscriptions.update_one(
+        {"user_id": user.user_id},
+        {"$set": subscription},
+        upsert=True
+    )
+    
+    return {
+        "success": True,
+        "message": "Receipt validated successfully (MOCK - implement real validation for production)",
+        "subscription_status": "active",
+        "plan_type": plan_type,
+        "subscription_provider": provider,
+        "subscription_end_date": sub_end.isoformat(),
+        "auto_renewing": True
+    }
 
 # Helper function to check Pro access (used by other routes)
 async def check_pro_access(user: User) -> bool:
