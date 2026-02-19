@@ -197,6 +197,33 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Updated app.json** with iOS/Android bundle IDs and IAP plugin
 - [x] **Created IAP Setup Guide** (`/app/frontend/IAP_SETUP_GUIDE.md`)
 
+### ✅ RECENTLY COMPLETED (2026-02-19) - Demo Data & Screenshot System
+
+#### Demo Data Seed System (COMPLETED - 2026-02-19)
+- [x] **Created `/app/backend/seed_demo_data.py`** - Comprehensive demo data seeding script
+- [x] **Demo Accounts Created**:
+  - Demo Doula: `demo.doula@truejoybirthing.com` / `DemoScreenshot2024!` (Sarah Mitchell)
+  - Demo Midwife: `demo.midwife@truejoybirthing.com` / `DemoScreenshot2024!` (Emily Thompson)
+  - Demo Mom: `demo.mom@truejoybirthing.com` / `DemoScreenshot2024!` (Emma Johnson)
+- [x] **Demo Data Includes**:
+  - 4 Doulas + 3 Midwives with full profiles
+  - 8 Moms with varied due dates and birth settings
+  - Client relationships (Doula has 4 clients, Midwife has 3)
+  - Message conversations between providers and clients
+  - Invoices (Paid, Sent, Draft statuses)
+  - Signed service agreement/contract
+  - Complete birth plan (100% for Emma Johnson)
+  - Prenatal visit notes
+- [x] **DiceBear Avatars** - CC0 licensed, legally safe for App Store screenshots
+- [x] **Created `/app/SCREENSHOT_GUIDE.md`** - Comprehensive guide including:
+  - Device resolution specifications for iOS and Android
+  - 12 screenshot checklist with navigation instructions
+  - Step-by-step capture process for simulators and devices
+  - Asset organization structure
+  - Re-capture instructions for future updates
+
+**Usage**: `cd /app/backend && source .env && python seed_demo_data.py --reset`
+
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Code Refactoring
 
 #### Shared Provider Component Architecture (COMPLETED - 2026-02-19)
