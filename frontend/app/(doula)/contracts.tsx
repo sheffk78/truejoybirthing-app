@@ -252,7 +252,7 @@ export default function DoulaContracts() {
         total_fee: parseFloat(formData.total_fee) || 0,
         retainer_amount: parseFloat(formData.retainer_amount) || 0,
         remaining_balance: parseFloat(calculateRemainingBalance()),
-        final_payment_due_detail: formData.final_payment_due_detail || DEFAULT_VALUES.final_payment_due_detail,
+        final_payment_due_description: formData.final_payment_due_detail || DEFAULT_VALUES.final_payment_due_detail,
         prenatal_visit_description: formData.prenatal_visit_description || DEFAULT_VALUES.prenatal_visit_description,
         on_call_window_description: formData.on_call_window_description || DEFAULT_VALUES.on_call_window_description,
         on_call_response_description: formData.on_call_response_description || DEFAULT_VALUES.on_call_response_description,
@@ -261,6 +261,7 @@ export default function DoulaContracts() {
         speak_for_client_exception: formData.speak_for_client_exception || DEFAULT_VALUES.speak_for_client_exception,
         retainer_non_refundable_after_weeks: parseInt(formData.retainer_non_refundable_after_weeks) || DEFAULT_VALUES.retainer_non_refundable_after_weeks,
         cancellation_weeks_threshold: parseInt(formData.cancellation_weeks_threshold) || DEFAULT_VALUES.cancellation_weeks_threshold,
+        final_payment_due_detail: formData.final_payment_due_detail || DEFAULT_VALUES.final_payment_due_detail,
         cesarean_alternative_support_description: formData.cesarean_alternative_support_description || DEFAULT_VALUES.cesarean_alternative_support_description,
         unreachable_timeframe_description: formData.unreachable_timeframe_description || DEFAULT_VALUES.unreachable_timeframe_description,
         unreachable_remedy_description: formData.unreachable_remedy_description || DEFAULT_VALUES.unreachable_remedy_description,
@@ -272,17 +273,44 @@ export default function DoulaContracts() {
 
       await apiRequest(API_ENDPOINTS.DOULA_CONTRACTS, {
         method: 'POST',
-        body: JSON.stringify(payload),
+        body: payload,  // Don't stringify - apiRequest handles it
       });
+      
+      // Save the current form data as "last used" preferences
+      await saveLastUsedDefaults(payload);
 
       Alert.alert('Success', 'Contract created successfully!');
       setShowCreateModal(false);
       loadData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating contract:', error);
-      Alert.alert('Error', 'Failed to create contract');
+      Alert.alert('Error', error.message || 'Failed to create contract');
     } finally {
       setSubmitting(false);
+    }
+  };
+  
+  // Save the last used contract values as user preferences
+  const saveLastUsedDefaults = async (data: any) => {
+    try {
+      await apiRequest('/doula/contract-defaults', {
+        method: 'PUT',
+        body: {
+          total_fee: data.total_fee,
+          retainer_amount: data.retainer_amount,
+          prenatal_visit_description: data.prenatal_visit_description,
+          on_call_window_description: data.on_call_window_description,
+          on_call_response_description: data.on_call_response_description,
+          backup_doula_preferences: data.backup_doula_preferences,
+          postpartum_visit_description: data.postpartum_visit_description,
+          retainer_non_refundable_after_weeks: data.retainer_non_refundable_after_weeks,
+          cancellation_weeks_threshold: data.cancellation_weeks_threshold,
+          cesarean_alternative_support_description: data.cesarean_alternative_support_description,
+          final_payment_due_description: data.final_payment_due_description,
+        },
+      });
+    } catch (error) {
+      console.log('Could not save contract defaults:', error);
     }
   };
 
