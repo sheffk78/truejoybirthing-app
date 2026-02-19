@@ -5635,7 +5635,7 @@ async def create_midwife_client(client_data: ClientCreate, user: User = Depends(
 async def get_midwife_client(client_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
     """Get a specific client with visits and birth summary"""
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id},
+        {"client_id": client_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     if not client:
