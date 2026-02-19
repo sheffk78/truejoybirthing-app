@@ -7238,9 +7238,9 @@ async def create_unified_visit(data: dict, user: User = Depends(check_role(["MID
         "client_id": client_id,
         "provider_id": user.user_id,
         "midwife_id": user.user_id,  # For backwards compatibility
-        "appointment_id": data.get("appointment_id"),
+        "appointment_id": appointment_id,  # Always set (either provided or auto-generated)
         "client_name": client.get("name", ""),
-        "visit_date": data.get("visit_date", now.strftime("%Y-%m-%d")),
+        "visit_date": visit_date,
         "visit_type": data.get("visit_type", "Prenatal"),
         "summary": summary,
         # Vitals
@@ -7273,11 +7273,10 @@ async def create_unified_visit(data: dict, user: User = Depends(check_role(["MID
     await db.visits.insert_one(visit)
     visit.pop("_id", None)
     
-    # If linked to appointment, update appointment status
-    if data.get("appointment_id"):
-        await db.appointments.update_one(
-            {"appointment_id": data["appointment_id"]},
-            {"$set": {"status": "completed", "visit_id": visit_id}}
+    # Update linked appointment status to completed
+    await db.appointments.update_one(
+        {"appointment_id": appointment_id},
+        {"$set": {"status": "completed", "visit_id": visit_id}}
         )
     
     return visit
