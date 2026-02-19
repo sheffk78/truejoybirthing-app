@@ -295,17 +295,29 @@ export default function DoulaContracts() {
       await apiRequest('/doula/contract-defaults', {
         method: 'PUT',
         body: {
+          // Payment fields
           total_fee: data.total_fee,
           retainer_amount: data.retainer_amount,
+          retainer_non_refundable_after_weeks: data.retainer_non_refundable_after_weeks,
+          cancellation_weeks_threshold: data.cancellation_weeks_threshold,
+          final_payment_due_description: data.final_payment_due_description,
+          // Services & Scope
           prenatal_visit_description: data.prenatal_visit_description,
           on_call_window_description: data.on_call_window_description,
           on_call_response_description: data.on_call_response_description,
           backup_doula_preferences: data.backup_doula_preferences,
           postpartum_visit_description: data.postpartum_visit_description,
-          retainer_non_refundable_after_weeks: data.retainer_non_refundable_after_weeks,
-          cancellation_weeks_threshold: data.cancellation_weeks_threshold,
           cesarean_alternative_support_description: data.cesarean_alternative_support_description,
-          final_payment_due_description: data.final_payment_due_description,
+          // Boundaries & Communication
+          speak_for_client_exception: data.speak_for_client_exception,
+          // Unavailability & Special Circumstances
+          unreachable_timeframe_description: data.unreachable_timeframe_description,
+          unreachable_remedy_description: data.unreachable_remedy_description,
+          precipitous_labor_definition: data.precipitous_labor_definition,
+          precipitous_labor_compensation_description: data.precipitous_labor_compensation_description,
+          other_absence_policy: data.other_absence_policy,
+          // Addendum
+          special_arrangements: data.special_arrangements,
         },
       });
     } catch (error) {
