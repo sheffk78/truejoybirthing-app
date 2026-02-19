@@ -11,22 +11,25 @@ import {
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { apiRequest } from '../../src/utils/api';
-import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
 
 export default function MidwifeVisitsScreen() {
+  const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
   const [visits, setVisits] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [clientFilter, setClientFilter] = useState<string | null>(params.clientId || null);
+  const [showInactive, setShowInactive] = useState(false);
   
-  const [selectedClientId, setSelectedClientId] = useState('');
+  const [selectedClientId, setSelectedClientId] = useState(params.clientId || '');
   const [visitDate, setVisitDate] = useState('');
   const [visitType, setVisitType] = useState('Prenatal');
   const [gestationalAge, setGestationalAge] = useState('');
@@ -37,12 +40,18 @@ export default function MidwifeVisitsScreen() {
   
   const fetchData = async () => {
     try {
+      // Use unified endpoints with active client filtering
+      const clientsEndpoint = `/provider/clients?include_inactive=${showInactive}`;
+      const visitsEndpoint = clientFilter 
+        ? `/provider/visits?client_id=${clientFilter}&include_inactive_clients=${showInactive}`
+        : `/provider/visits?include_inactive_clients=${showInactive}`;
+      
       const [visitsData, clientsData] = await Promise.all([
-        apiRequest(API_ENDPOINTS.MIDWIFE_VISITS),
-        apiRequest(API_ENDPOINTS.MIDWIFE_CLIENTS),
+        apiRequest(visitsEndpoint),
+        apiRequest(clientsEndpoint),
       ]);
-      setVisits(visitsData);
-      setClients(clientsData);
+      setVisits(visitsData || []);
+      setClients(clientsData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -50,7 +59,7 @@ export default function MidwifeVisitsScreen() {
   
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [clientFilter, showInactive]);
   
   const onRefresh = async () => {
     setRefreshing(true);
