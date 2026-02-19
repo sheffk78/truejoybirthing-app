@@ -302,7 +302,18 @@ const styles = StyleSheet.create({
     paddingBottom: SIZES.xxl,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: SIZES.lg,
+  },
+  newMessageButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: COLORS.roleMidwife,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: SIZES.fontXxl,
