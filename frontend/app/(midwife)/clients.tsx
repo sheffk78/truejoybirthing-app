@@ -68,11 +68,9 @@ export default function MidwifeClientsScreen() {
       const pending = (requestsData.requests || []).filter((r: ShareRequest) => r.status === 'pending');
       setPendingRequests(pending);
       
-      // Fetch connected clients (accepted share requests become clients)
+      // Fetch all clients (both manually added and from share requests)
       const clientsData = await apiRequest(API_ENDPOINTS.MIDWIFE_CLIENTS);
-      // Filter to show only linked clients (from share requests)
-      const linkedClients = (clientsData || []).filter((c: any) => c.linked_mom_id);
-      setConnectedClients(linkedClients);
+      setConnectedClients(clientsData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
