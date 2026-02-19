@@ -285,10 +285,10 @@ export default function DoulaClientsScreen() {
                 </View>
                 
                 <View style={styles.clientDetails}>
-                  {client.due_date && (
+                  {client.edd && (
                     <View style={styles.detailItem}>
                       <Icon name="calendar-outline" size={14} color={COLORS.textSecondary} />
-                      <Text style={styles.detailText}>Due: {formatDate(client.due_date)}</Text>
+                      <Text style={styles.detailText}>Due: {formatDate(client.edd)}</Text>
                     </View>
                   )}
                   <View style={styles.detailItem}>
