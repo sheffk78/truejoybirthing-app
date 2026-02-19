@@ -921,7 +921,11 @@ class MidwifeProfileUpdate(BaseModel):
     years_in_practice: Optional[int] = None
     birth_settings_served: Optional[List[str]] = None
     accepting_new_clients: Optional[bool] = None
+    accepting_clients: Optional[bool] = None  # Alias for accepting_new_clients
     bio: Optional[str] = None
+    picture: Optional[str] = None
+    video_intro_url: Optional[str] = None
+    more_about_me: Optional[str] = None
 
 # --- Visit Models (Midwife) ---
 class VisitCreate(BaseModel):
