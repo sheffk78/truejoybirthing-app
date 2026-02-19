@@ -21,8 +21,17 @@ import {
   getStatusDisplayText,
   getProviderDisplayName 
 } from './config/subscriptionConfig';
-import { isIAPAvailable, getCurrentPlatform } from './services/billing';
-import { useIAPSubscription } from './hooks/useIAPSubscription';
+
+// Platform detection helpers
+const getCurrentPlatform = () => {
+  if (Platform.OS === 'ios') return 'ios';
+  if (Platform.OS === 'android') return 'android';
+  return 'web';
+};
+
+const isIAPAvailable = () => {
+  return Platform.OS === 'ios' || Platform.OS === 'android';
+};
 
 const COLORS = {
   primary: '#7c3aed',
