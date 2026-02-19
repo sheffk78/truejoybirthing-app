@@ -172,12 +172,17 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   };
 
   const handleClientPress = (client: ConnectedClient) => {
-    if (isMidwife) {
-      // Navigate to client detail page for prenatal visits
-      router.push(`/(midwife)/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
-    }
-    // Doula: Currently no client detail view, could expand in future
+    // Navigate to unified client detail page for both roles
+    const baseRoute = isMidwife ? '/(midwife)' : '/(doula)';
+    router.push(`${baseRoute}/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
   };
+  
+  const filteredClients = connectedClients.filter(client => {
+    if (clientFilter === 'all') return true;
+    if (clientFilter === 'active') return client.is_active !== false;
+    if (clientFilter === 'inactive') return client.is_active === false;
+    return true;
+  });
   
   const formatDate = (dateStr: string) => {
     if (!dateStr) return 'Not set';
