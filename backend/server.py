@@ -2685,38 +2685,8 @@ async def update_postpartum_plan(request: Request, user: User = Depends(check_ro
     return {"message": "Postpartum plan updated"}
 
 # ============== MY TEAM ROUTES (MOM) ==============
-
-@api_router.get("/mom/team")
-async def get_mom_team(user: User = Depends(check_role(["MOM"]))):
-    """Get mom's connected team (doula and midwife)"""
-    profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
-    
-    team = {"doula": None, "midwife": None}
-    
-    if profile:
-        if profile.get("connected_doula_id"):
-            doula_user = await db.users.find_one({"user_id": profile["connected_doula_id"]}, {"_id": 0})
-            doula_profile = await db.doula_profiles.find_one({"user_id": profile["connected_doula_id"]}, {"_id": 0})
-            if doula_user:
-                team["doula"] = {
-                    "user_id": doula_user["user_id"],
-                    "name": doula_user["full_name"],
-                    "picture": doula_user.get("picture"),
-                    "profile": doula_profile
-                }
-        
-        if profile.get("connected_midwife_id"):
-            midwife_user = await db.users.find_one({"user_id": profile["connected_midwife_id"]}, {"_id": 0})
-            midwife_profile = await db.midwife_profiles.find_one({"user_id": profile["connected_midwife_id"]}, {"_id": 0})
-            if midwife_user:
-                team["midwife"] = {
-                    "user_id": midwife_user["user_id"],
-                    "name": midwife_user["full_name"],
-                    "picture": midwife_user.get("picture"),
-                    "profile": midwife_profile
-                }
-    
-    return team
+# MIGRATED TO: routes/mom.py
+# Routes: /mom/team
 
 # ============== TIMELINE ROUTES ==============
 
