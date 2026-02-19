@@ -75,7 +75,7 @@ export const DOULA_CONFIG: ProviderConfig = {
     clients: API_ENDPOINTS.DOULA_CLIENTS,
     invoices: API_ENDPOINTS.DOULA_INVOICES,
     contracts: API_ENDPOINTS.DOULA_CONTRACTS,
-    notes: '/api/doula/notes',
+    notes: '/doula/notes',
   },
   
   routes: {
