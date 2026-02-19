@@ -3417,7 +3417,7 @@ async def get_doula_dashboard(user: User = Depends(check_role(["DOULA"]))):
 async def get_doula_clients(user: User = Depends(check_role(["DOULA"]))):
     """Get doula's clients"""
     clients = await db.clients.find(
-        {"provider_id": user.user_id, "provider_type": "DOULA"},
+        {"pro_user_id": user.user_id, "pro_type": "DOULA"},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     return clients
