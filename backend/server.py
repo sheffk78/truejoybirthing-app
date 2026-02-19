@@ -1221,6 +1221,7 @@ class PostpartumPlanCreate(BaseModel):
 class MessageCreate(BaseModel):
     receiver_id: str
     content: str
+    client_id: Optional[str] = None  # Optional: links message to a specific client relationship
 
 class Message(BaseModel):
     message_id: str
@@ -1232,6 +1233,7 @@ class Message(BaseModel):
     receiver_role: str
     content: str
     read: bool = False
+    client_id: Optional[str] = None  # Links message to a specific client context
     created_at: datetime
 
 # --- Contract Signature Models ---
