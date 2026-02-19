@@ -1405,6 +1405,31 @@ def check_role(required_roles: List[str]):
         return user
     return role_checker
 
+# ============== INITIALIZE MODULAR ROUTE DEPENDENCIES ==============
+# This initializes shared state for modular routers
+# MUST be done after get_current_user and check_role are defined
+route_deps.init_dependencies(
+    database=db,
+    password_context=pwd_context,
+    secret_key=SECRET_KEY,
+    algorithm=ALGORITHM,
+    expire_days=ACCESS_TOKEN_EXPIRE_DAYS,
+    notification_func=create_notification,
+    email_func=None,  # Will be set when email routes are modularized
+    websocket_manager=ws_manager,
+    sender_email=SENDER_EMAIL,
+    get_current_user_func=get_current_user,
+    check_role_func=check_role
+)
+
+# Import and register modular routers AFTER dependencies are initialized
+from routes import admin as admin_routes
+from routes import marketplace as marketplace_routes
+
+# Include modular routers in the api_router
+api_router.include_router(admin_routes.router)
+api_router.include_router(marketplace_routes.router)
+
 # ============== AUTH ROUTES ==============
 
 @api_router.post("/auth/register")
