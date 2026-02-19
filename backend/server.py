@@ -7790,14 +7790,24 @@ async def check_provider_can_view_birth_plan(provider_id: str, mom_user_id: str)
 
 async def check_provider_can_message(provider_id: str, mom_user_id: str) -> bool:
     """Check if provider has permission to message Mom"""
+    # Check share_requests first (primary permission source)
     connection = await db.share_requests.find_one({
         "provider_id": provider_id,
         "mom_user_id": mom_user_id,
         "status": "accepted"
     })
-    if not connection:
-        return False
-    return connection.get("can_message", True)
+    if connection:
+        return connection.get("can_message", True)
+    
+    # Also check clients collection for linked relationships
+    client = await db.clients.find_one({
+        "pro_user_id": provider_id,
+        "linked_mom_id": mom_user_id
+    })
+    if client:
+        return True  # Linked clients can always message
+    
+    return False
 
 async def notify_providers_birth_plan_complete(mom_user_id: str, mom_name: str):
     """Notify all connected providers when Mom completes her birth plan"""
