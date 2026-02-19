@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Get base URL from environment
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://joy-birthing-preview.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://cleanup-refactor.preview.emergentagent.com')
 
 class TestWeeklyContentAll:
     """Test GET /api/weekly-content/all endpoint (returns all 42 pregnancy + 6 postpartum weeks)"""

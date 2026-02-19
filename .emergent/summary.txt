@@ -1,130 +1,154 @@
-<analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing for web, iOS, and Android. The app will serve three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
+<analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing. The core of the recent work was a major architectural refactoring to make the application client-centered.
 
 **PRODUCT REQUIREMENTS**:
-- **Authentication**: Role-based signup and login. Google Social Login.
-- **Provider Unification**: The Doula and Midwife experiences for common features (Dashboard, Profile, Messages, Clients, Invoices) should be unified into a single, reusable codebase to follow DRY principles and improve maintainability.
-- **Subscription Readiness**: The application must be prepared for integration with Apple's StoreKit (In-App Purchase) and Google's Play Billing. This involves ensuring the codebase has the necessary hooks, UI, and logic to handle a unified True Joy Pro subscription for both Doulas and Midwives, with monthly and annual plans and a 30-day free trial. All Pro features must be correctly gated.
-- **MOM Experience**: Comprehensive features including a Birth Plan, Timeline, and Wellness Check-ins.
-- **Provider Experience**: Dashboards, client management, contracts, invoicing, and client notes.
-- **PDF Export**: Ability for users to export contracts and birth plans.
-- **Messaging**: A real-time system for Moms to contact providers.
+- **Client-Centered Model**: Refactor the data model so that a  (Mom) is the central entity. All other data entities (Appointments, Visits, Notes, Messages, Contracts, Invoices, Birth Records) must link back to a  and a .
+- **Unified Provider Experience**: Consolidate the Doula and Midwife user experiences into a single, shared set of components and screens. Role-specific features (like midwife-only Visits) should be handled with configuration, not by duplicating code.
+- **Client-First Navigation**: The primary workflow for providers (Doulas/Midwives) should be to select a client first from a main client list, and then perform actions (schedule appointments, add notes, etc.) within that client's context.
+- **Active Client Logic**: Implement a concept of active vs. inactive clients. Clients are considered active until 6 weeks after their due date/birth date. Provider views should default to showing only active clients.
+- **Unified Appointments & Visits**:
+    - Moms should be able to create appointments and select a provider from their team.
+    - Providers should create appointments for a specific client.
+    - Appointments should appear on both the Mom's and the Provider's schedules.
+    - For Midwives, Visits (which contain clinical data) must be built on top of Appointments, meaning every Visit is linked to an Appointment.
+- **Dead Code Cleanup**: After the refactoring, systematically find and remove old, duplicated, and unused code, screens, and components to reduce technical debt.
+- **UI Updates**:
+    - Display user profile photos instead of generic icons in the Marketplace and Client lists.
+    - Fix keyboard overlap on the Mom's Daily Check-in screen.
+    - Update specific UI icons for sending messages and viewing the app tour.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack application with a React Native (Expo) frontend and a FastAPI backend. Role-based authentication is implemented for Mom, Doula, and Midwife users.
-
-A major refactoring task has been successfully completed, unifying the previously separate Doula and Midwife UIs for the Dashboard, Profile, Clients, Messages, and Invoices screens into a single, reusable, and configuration-driven provider architecture. This has reduced code duplication by over 40%.
-
-A critical bug preventing Midwives from navigating to their client detail page was also resolved. The agent has just begun analyzing the codebase for the Pre-Launch Subscription Readiness Check task.
+The application is a full-stack React Native (Expo) and FastAPI app. A major architectural refactoring has been successfully completed. The backend data models and API endpoints are now client-centered, with unified routes under  for both Doulas and Midwives. The concept of active clients (active until 6 weeks postpartum) is implemented and used to filter provider views. The frontend has been partially refactored with new shared components like  and an updated  list that includes an active/inactive filter. The UI fixes and profile photo display features have also been completed and verified. The agent is currently in the middle of cleaning up legacy code left over from before the refactor.
 
 **Last working item**:
-- **Last item agent was working**: The agent started the Pre-Launch Subscription Readiness Check. The work involved analyzing the existing subscription-related files (, ), backend subscription endpoints, and UI components to understand the current state before implementing the required changes for Apple and Google Play store readiness. No code modifications have been made for this task yet.
-- **Status**: NOT STARTED (Analysis complete, implementation pending)
+- **Last item agent was working**: The agent was executing a user-requested dead code cleanup. It started by addressing duplicated Notes screens. A new shared component, , was created, and the agent had just begun refactoring the legacy  page to use this new shared component.
+- **Status**: IN PROGRESS
 - **Agent Testing Done**: N
-- **Which testing method agent to use?**: Frontend testing agent to verify all subscription gates and UI prompts for both Mom and Pro (Doula/Midwife) roles after the implementation is complete.
+- **Which testing method agent to use?**: Frontend testing agent. The agent should verify that after the refactoring, the Notes feature works correctly for both Doula and Midwife roles, ensuring data is fetched and created using the new shared component and unified backend endpoints.
 - **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-There are no active bugs or issues. The focus is on the next feature development task.
+- **Issue 1: Legacy Code Cleanup & Refactoring (P0)**
+  - **Description**: The user requested a systematic cleanup of old code patterns, duplicated screens, and unused components left over from before the major client-centric refactoring. This is the current active task.
+  - **Attempted fixes**: The agent identified several legacy patterns (e.g., duplicate Notes and Appointment screens). It created a shared  component and began replacing the code in .
+  - **Next debug checklist**:
+      1.  Complete the refactoring of  to be a thin wrapper around the new  component.
+      2.  Do the same for .
+      3.  Proceed to the next identified legacy pattern: the duplicated  screens. Update the shared  component to use the unified backend endpoint and ensure both Doula and Midwife roles use this shared component.
+      4.  Move  from  to the more appropriate  directory.
+      5.  Continue scanning for and removing any other unused components, routes, or legacy API endpoint configurations.
+  - **Why fix this issue and what will be achieved with the fix?**: To reduce technical debt, improve code maintainability, eliminate bugs from outdated logic, and fully align the codebase with the new client-centered architecture.
+  - **Status**: IN PROGRESS
+  - **Is recurring issue?**: N
+  - **Should Test frontend/backend/both after fix?**: Both. Frontend to verify UI and navigation; Backend to confirm only unified endpoints are being used.
+  - **Blocked on other issue**: No
 
 **In progress Task List**:
-- **Task 1: Pre-Launch Subscription Readiness Check for Apple & Google Play (P0)**
-    - **Description**: Implement the architecture required to support in-app subscriptions through Apple StoreKit and Google Play Billing. This includes creating a unified True Joy Pro plan for both Doulas and Midwives, with monthly/annual options and a 30-day free trial.
-    - **Where to resume**:
-        1.  Create a dedicated billing service module () with placeholder functions for fetching products, initiating purchases, and handling transaction updates for both iOS and Android.
-        2.  Define product IDs for Apple (, ) and Google (, ) in a central configuration file.
-        3.  Update the backend () to store subscription details like  (APPLE/GOOGLE), , , and .
-        4.  Ensure all Pro-only features are gated behind a single, reliable helper () that correctly checks the subscription status from the user's record.
-        5.  Update all UI/copy related to subscriptions to reflect the unified True Joy Pro plan, the 30-day trial, and direct users to manage subscriptions through their respective app stores.
-    - **What will be achieved with this?**: The app will be architecturally ready for the final implementation of native in-app purchases on iOS and Android, ensuring compliance and a smooth launch.
-    - **Status**: NOT STARTED
-    - **Should Test frontend/backend/both after fix?**: Both
-    - **Blocked on something**: No.
+- **Task 1: Complete the Refactoring and Dead Code Cleanup (P0)**
+  - **Where to resume**: The file  has been opened for editing. The next step is to replace its content with the code that utilizes the new shared  component. After that, the same must be done for the midwife's notes page.
+  - **What will be achieved with this?**: A cleaner, more maintainable codebase free of duplicated logic for the Notes feature, fully relying on the new shared components and unified API endpoints.
+  - **Status**: IN PROGRESS
+  - **Should Test frontend/backend/both after fix?**: Both
+  - **Blocked on something**: No
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks**:
-    - **P1: Stripe Integration**: Implement real payment processing for providers to invoice their clients (distinct from the app's Pro subscription).
-    - **P2: Push Notifications**: Implement for new messages and client requests.
+    - **P1: Stripe Integration**: Implement payment processing for provider invoices.
+    - **P2: Push Notifications**: For new messages and client requests.
 - **Future Tasks**:
-    - **P0: Refactor Monolithic Backend**: Break down  into a modular structure using FastAPI's . This is a critical technical debt item.
+    - **P0: Refactor Monolithic Backend**: The  file is still a large monolith. It needs to be broken down into a modular structure using FastAPI's .
+    - **P1: Message Model Refactor**: The  model is still based on / and lacks a direct  link. This was identified as a gap and should be addressed to make messaging fully client-centric.
     - **Admin Panel**: Build the full Admin experience for content and user management.
-    - **Automated Emails**: Implement logic to automatically email signed contracts to all parties.
+    - **Automated Emails**: Implement logic to automatically email signed contracts.
 
 **Completed work in this session**
-- **Midwife Bug Fix**: Resolved a critical bug where the Midwife client detail page was inaccessible. The root cause was a backend query using the wrong field ( instead of ), which was fixed in .
-- **Provider UI Refactoring**: Successfully unified the Doula and Midwife UIs into a shared, configuration-driven architecture. This eliminated ~40% of redundant code across five key sections.
-    - **Created Shared Components**: , , , , and  in .
-    - **Centralized Configuration**: Created  to manage role-specific settings (API endpoints, labels, colors).
-    - **Refactored Screens**: Replaced old Doula and Midwife screens with thin wrappers that use the new shared components.
-- **Full Feature Verification**: Conducted a comprehensive test of all Doula and Midwife features using the testing agent to confirm the refactoring did not introduce regressions.
+- **Major Architectural Refactoring**:
+  - **Backend**: Implemented a client-centered data model with unified provider API routes (), active client logic, and linked  and  models. A new endpoint for Mom-initiated appointments () was also added. Multiple  serialization bugs were fixed.
+  - **Frontend**: Created a shared  hub, refactored the  list with an active/inactive filter, and implemented the Mom appointment creation UI. A full verification pass was completed to confirm alignment with requirements.
+- **Profile Photo Display**: Updated the Marketplace, Clients list, and My Team pages to show user-uploaded profile photos.
+- **UI Fixes**:
+  - Fixed keyboard overlap in the daily check-in modal ().
+  - Corrected the View App Tour icon on the profile page ().
 
 **Earlier issues found/mentioned but not fixed**
-- **Inconsistent Backend Fields**: The agent noted while fixing the Midwife bug that the Doula section in  might still have some inconsistencies with  vs. . While current tests pass, this is a potential source of future bugs and should be reviewed during the backend refactor.
+- **Inconsistent Backend Fields**: The  vs.  inconsistency persists in some backend models like  and . This should be standardized during the  refactor.
+- **Message Model Lacks **: Identified during the verification phase, the message data model is not yet client-centric. This was deferred but remains a known architectural gap.
 
 **Known issue recurrence from previous fork**
-- ** vs **: This field inconsistency has been a recurring source of bugs. The pattern was fixed for Midwives but may exist elsewhere.
-- **React Native Web Automation**: The  (using Playwright) has difficulty reliably clicking  elements, which can lead to failed login attempts in automated scripts. The testing agent seems to have a more robust method.
+- ** vs **: This naming inconsistency continues to be a source of potential confusion and should be refactored for consistency.
+- **React Native Web Automation**: The  remains unreliable for interactive UI elements. The agent successfully used the  as a more robust alternative for UI verification.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Backend**: Monolithic FastAPI ().
-- **Frontend**: React Native (Expo) with TypeScript.
-- **Code Architecture Pattern**: A new shared, configuration-driven component architecture for provider (Doula/Midwife) features.
-- **State Management**: Zustand (, ).
-- **Navigation**: Expo Router (File-based).
+- **Backend**: FastAPI, MongoDB, Pydantic for data modeling.
+- **Frontend**: React Native (Expo) with TypeScript, Zustand for state management.
+- **Architecture**: **Client-Centered Model**, **Shared Provider Components**, Role-based feature flagging.
 
 **key DB schema**
-- No new schemas were created in this session. Existing schemas for , , , , , and  were used.
+The new Pydantic models in  define the schema:
+- : Represents the Mom, serves as the central hub.
+- : Represents Doula or Midwife, with a  field.
+- : Linked to  and .
+- : Linked to , , and a required .
+- , , : All linked to  and a provider ID ( or ).
 
 **All files of reference**
-- **New Shared Components**:
+- **Current Task (Cleanup)**:
+    -  (new shared component)
+    -  (being refactored)
+    -  (next to be refactored)
+- **Key Refactored Files**:
     - 
     - 
     - 
     - 
     - 
-- **New Config/Types**:
-    - 
-    - 
-- **Updated Wrappers**: All screen files under  and .
-- **Bug Fix**: 
 
 **Areas that need refactoring**:
-- ****: High priority. The monolithic structure is a known source of bugs and technical debt. It needs to be broken into smaller  modules.
-- **Provider Components**: The  component is complex due to differing fields between roles. It works but could be simplified further with more granular sub-components if more role-specific fields are added in the future.
+- ****: High priority. The monolithic structure is technical debt and should be broken into  modules.
+- **Legacy Frontend Screens**: The cleanup task is in progress. After ,  screens are the next target for de-duplication.
+- **Midwife **: This screen still uses a custom, non-shared implementation. While kept for its advanced features, it should eventually be unified.
 
 **key api endpoints**
-- : Fixed to return the correct client data.
-- All Doula and Midwife endpoints were tested and confirmed to be working correctly after the major UI refactoring.
+- **Unified Provider Routes**:
+  - 
+  - 
+  - 
+  -  (Midwife only)
+  - 
+- **Mom-specific Route**:
+  - 
 
 **Critical Info for New Agent**
-- **Top Priority**: Begin implementation of the Pre-Launch Subscription Readiness Check. The analysis is complete; the next step is to create the new billing service and update the backend and frontend code according to the plan.
-- **Shared Architecture**: The Doula and Midwife UIs are now unified. Future changes to provider-facing screens (Dashboard, Profile, etc.) should be made in the shared components in  and configured in . Avoid re-introducing duplicated code in the  and  folders.
-- **Testing**: Use the testing agent for any significant changes to the provider flow or subscription logic to ensure full E2E coverage and avoid regressions.
+- **Top Priority**: Your immediate task is to continue the dead-code cleanup requested by the user. Resume by finishing the refactor of  to use the new shared  component.
+- **Follow the Plan**: After fixing the  screens, proceed to the next legacy pattern identified: the duplicated  screens.
+- **Trust But Verify**: The backend has been heavily refactored and tested. The frontend is catching up. Use the testing agent to verify frontend changes and ensure they correctly consume the new unified backend APIs.
+- **Tech Debt**: The  monolith and the / inconsistency are known technical debt. Prioritize the current cleanup task first, but keep these in mind for future work.
 
 **documents and test reports created in this job**
--  (Updated with refactoring details)
-- Multiple test reports in  created by the testing agent, confirming the success of the refactoring.
+- 
+- 
+- 
+-  (updated with refactoring details)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Pre‑Launch Subscription Readiness Check... (IN PROGRESS - User provided detailed requirements for preparing the app for Apple/Google subscriptions.)
-2.  **User**: Please do a full check of the doula and midwife features... (RESOLVED - Agent performed a full test using the testing agent, which passed.)
-3.  **User**: proceed with unifying the profile screens (RESOLVED - Agent unified the Profile screens.)
-4.  **User**: Yes please continue (RESOLVED - User approved continuing the UI unification to the Clients screen.)
-5.  **User**: Yes please. (RESOLVED - User approved continuing the UI unification to the Dashboard screen.)
-6.  **User**: Unify Doula and Midwife Code... (RESOLVED - User provided a detailed request to refactor and unify the provider codebases.)
-7.  **User**: yes (RESOLVED - User approved the agent's initial plan to fix the Midwife navigation bug.)
+- **User**: Requested to display user profile photos instead of generic icons. (Completed)
+- **User**: Initiated a major architectural refactoring to a client-centered model with shared provider tooling and active client logic. (Completed)
+- **User**: Provided clarification on the active/inactive client filter (a toggle is preferred). (Incorporated)
+- **User**: Confirmed that historical appointments should be migrated. (Done as part of backend refactoring)
+- **User**: Requested wiring up the frontend Clients screen and updating the Mom appointment creation flow. (Completed)
+- **User**: Initiated a systematic verification of the implemented refactoring, asking the agent to check the codebase against the original requirements. (Completed, gaps were identified and fixed)
+- **User**: Requested a systematic cleanup of all legacy code, duplicated screens, and unused components left over from before the refactoring. (In Progress)
 
 **Project Health Check:**
-- **Broken**: None.
-- **Mocked**:
-    - In-app subscriptions (Apple StoreKit / Google Play Billing). The next task is to build the architecture for this.
-    - Stripe integration for provider-to-client invoicing.
+- **Broken**: The  is unreliable for interactive UI testing on React Native Web.
+- **Mocked**: In-app purchase (IAP) functionality is mocked on the web to avoid crashes from the native library.
 
 **3rd Party Integrations**
+- 
 - 
 - Emergent-managed Google Auth
 - 
@@ -137,15 +161,16 @@ There are no active bugs or issues. The focus is on the next feature development
 - usage: websockets [--version | <uri>]
 
 **Testing status**
-- **Testing agent used after significant changes**: YES. Used multiple times to validate the major refactoring, with all tests passing.
+- **Testing agent used after significant changes**: YES. The testing agent was used successfully multiple times (, , ) to validate the massive backend refactoring and frontend wiring, proving crucial for verifying the complex changes.
 - **Troubleshoot agent used after agent stuck in loop**: NO
-- **Test files created**: None
-- **Known regressions**: None. The refactoring was successful without introducing new bugs.
+- **Test files created**: None.
+- **Known regressions**: None from the recent work.
 
 **Credentials to test flow:**
-- **MOM**: , password .
-- **DOULA**: , password .
-- **MIDWIFE**: , password .
+- All demo credentials are in .
+- **Doula**:  / 
+- **Midwife**:  / 
+- **Mom**:  / 
 
 **What agent forgot to execute**
-- The agent has not yet started the implementation for the Pre-Launch Subscription Readiness Check as requested by the user. The previous turn was dedicated to analysis.</analysis>
+The agent is in the middle of executing the user's latest request for code cleanup. It has not forgotten anything, but the task is large and incomplete. The next logical step is to complete the refactoring of the  files for both Doula and Midwife roles.</analysis>
