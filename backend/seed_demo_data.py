@@ -647,7 +647,7 @@ async def seed_demo_data(reset: bool = False):
             "email": mom["email"],
             "full_name": mom["full_name"],
             "role": "MOM",
-            "hashed_password": pwd_context.hash(DEMO_PASSWORD),
+            "password_hash": pwd_context.hash(DEMO_PASSWORD),
             "picture": get_avatar_url(mom["full_name"], "lorelei"),
             "onboarding_completed": True,
             "created_at": now - timedelta(days=random.randint(30, 180)),
