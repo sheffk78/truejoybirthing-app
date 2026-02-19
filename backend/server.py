@@ -3417,6 +3417,39 @@ async def get_doula_dashboard(user: User = Depends(check_role(["DOULA"]))):
         "upcoming_appointments": upcoming_appointments
     }
 
+# ============== DOULA CONTRACT DEFAULTS ==============
+
+@api_router.get("/doula/contract-defaults")
+async def get_doula_contract_defaults(user: User = Depends(check_role(["DOULA"]))):
+    """Get doula's saved contract default values"""
+    defaults = await db.contract_defaults.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    )
+    return defaults or {}
+
+@api_router.put("/doula/contract-defaults")
+async def save_doula_contract_defaults(
+    defaults: dict,
+    user: User = Depends(check_role(["DOULA"]))
+):
+    """Save doula's contract default values for future contracts"""
+    now = datetime.now(timezone.utc)
+    
+    await db.contract_defaults.update_one(
+        {"user_id": user.user_id},
+        {
+            "$set": {
+                **defaults,
+                "user_id": user.user_id,
+                "updated_at": now
+            },
+            "$setOnInsert": {"created_at": now}
+        },
+        upsert=True
+    )
+    return {"message": "Contract defaults saved"}
+
 # ============== DOULA CLIENT ROUTES ==============
 
 @api_router.get("/doula/clients")
