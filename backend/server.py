@@ -4824,64 +4824,8 @@ async def send_midwife_invoice_reminder(invoice_id: str, user: User = Depends(ch
     return {"message": "Reminder sent"}
 
 # ============== MOM INVOICE VIEW ROUTES ==============
-
-@api_router.get("/mom/invoices")
-async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
-    """Get all invoices for the mom from their providers (only Sent, Paid, Cancelled - not Draft)"""
-    # Find all clients linked to this mom (both doula and midwife clients are in the same 'clients' collection)
-    all_clients = await db.clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
-    
-    client_ids = [c["client_id"] for c in all_clients]
-    
-    if not client_ids:
-        return []
-    
-    # Get invoices for these clients (exclude Draft)
-    invoices = await db.invoices.find(
-        {"client_id": {"$in": client_ids}, "status": {"$ne": "Draft"}},
-        {"_id": 0}
-    ).sort("created_at", -1).to_list(100)
-    
-    # Add provider info to each invoice
-    for invoice in invoices:
-        provider = await db.users.find_one(
-            {"user_id": invoice["provider_id"]},
-            {"_id": 0, "full_name": 1, "email": 1, "role": 1}
-        )
-        if provider:
-            invoice["provider_name"] = provider.get("full_name", "")
-            invoice["provider_email"] = provider.get("email", "")
-            invoice["provider_type"] = provider.get("role", "")
-    
-    return invoices
-
-@api_router.get("/mom/invoices/{invoice_id}")
-async def get_mom_invoice_detail(invoice_id: str, user: User = Depends(check_role(["MOM"]))):
-    """Get a specific invoice detail for the mom"""
-    # Find all clients linked to this mom (both doula and midwife clients are in the same 'clients' collection)
-    all_clients = await db.clients.find({"linked_mom_id": user.user_id}, {"_id": 0, "client_id": 1}).to_list(100)
-    
-    client_ids = [c["client_id"] for c in all_clients]
-    
-    invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "client_id": {"$in": client_ids}, "status": {"$ne": "Draft"}},
-        {"_id": 0}
-    )
-    
-    if not invoice:
-        raise HTTPException(status_code=404, detail="Invoice not found")
-    
-    # Add provider info
-    provider = await db.users.find_one(
-        {"user_id": invoice["provider_id"]},
-        {"_id": 0, "full_name": 1, "email": 1, "role": 1}
-    )
-    if provider:
-        invoice["provider_name"] = provider.get("full_name", "")
-        invoice["provider_email"] = provider.get("email", "")
-        invoice["provider_type"] = provider.get("role", "")
-    
-    return invoice
+# MIGRATED TO: routes/mom.py
+# Routes: /mom/invoices, /mom/invoices/{invoice_id}
 
 # ============== DOULA NOTES ROUTES ==============
 
