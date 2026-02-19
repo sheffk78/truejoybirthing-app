@@ -6547,6 +6547,27 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
     
     now = datetime.now(timezone.utc)
     
+    # Try to determine client_id from the conversation context
+    # If message is between provider and mom, look up the client relationship
+    resolved_client_id = message_data.client_id
+    if not resolved_client_id:
+        if sender_role in ["DOULA", "MIDWIFE"] and receiver_role == "MOM":
+            # Provider -> Mom: find client by linked_mom_id
+            client = await db.clients.find_one({
+                "pro_user_id": user.user_id,
+                "linked_mom_id": message_data.receiver_id
+            })
+            if client:
+                resolved_client_id = client.get("client_id")
+        elif sender_role == "MOM" and receiver_role in ["DOULA", "MIDWIFE"]:
+            # Mom -> Provider: find client by linked_mom_id
+            client = await db.clients.find_one({
+                "pro_user_id": message_data.receiver_id,
+                "linked_mom_id": user.user_id
+            })
+            if client:
+                resolved_client_id = client.get("client_id")
+    
     message_doc = {
         "message_id": f"msg_{uuid.uuid4().hex[:12]}",
         "sender_id": user.user_id,
@@ -6557,6 +6578,7 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
         "receiver_role": receiver.get("role", ""),
         "content": message_data.content.strip(),
         "read": False,
+        "client_id": resolved_client_id,  # Link to client for client-centric queries
         "created_at": now
     }
     
