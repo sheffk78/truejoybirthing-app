@@ -65,7 +65,28 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - **BirthSummary**: {midwife_id, client_id, summary}
 - **Message**: {message_id, sender_id, receiver_id, content, read, created_at}
 
-## What's Been Implemented (Last Updated: 2026-02-16)
+## What's Been Implemented (Last Updated: 2026-02-19)
+
+### ✅ RECENTLY COMPLETED (2026-02-19) - Client-Centered Architecture Refactoring
+- [x] **Unified Provider Routes** - `/api/provider/*` endpoints work for both DOULA and MIDWIFE roles
+- [x] **Active/Inactive Client Logic** - Clients automatically marked inactive 6 weeks after due date
+- [x] **Active/Inactive Filter Toggle** - Clients screen has Active/Inactive/All filter buttons
+- [x] **Client Detail Hub** - Unified Client Detail screen with Timeline, Appointments, Visits (Midwife only), Notes, Messages, Contracts, Invoices, Birth Info tabs
+- [x] **Unified Appointments** - `/api/provider/appointments` with client_id and provider_id linkage
+- [x] **Unified Notes** - `/api/provider/notes` with client context
+- [x] **Unified Visits** - `/api/provider/visits` (Midwife only) linked to appointments
+- [x] **Client Timeline** - `/api/provider/clients/{client_id}/timeline` returns all activity for a client
+- [x] **Unified Dashboard** - `/api/provider/dashboard` returns role-appropriate stats
+
+### ✅ RECENTLY COMPLETED (2026-02-19) - Profile Photo Display
+- [x] **Marketplace Provider Photos** - Provider cards and modal now show profile photos when available
+- [x] **Provider Clients Photos** - Pending requests show mom photos, active clients show client photos
+- [x] **My Team Provider Photos** - Accepted and pending provider invitations show profile photos
+
+### ✅ RECENTLY COMPLETED (2026-02-19) - UI Fixes
+- [x] **Keyboard Overlap Fix** - Added KeyboardAvoidingView to Daily Check-in modal
+- [x] **Paper Airplane Send Icon** - Messages use paper-plane icon with mapping in Icon.tsx
+- [x] **Eye Icon for App Tour** - Changed from help-circle-outline to eye-outline in profile
 
 ### ✅ COMPLETED FEATURES
 
