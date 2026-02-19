@@ -772,6 +772,18 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
+  mainHeader: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    paddingHorizontal: SIZES.md, 
+    paddingVertical: SIZES.md, 
+    backgroundColor: COLORS.white, 
+    borderBottomWidth: 1, 
+    borderBottomColor: COLORS.border 
+  },
+  backButton: { padding: SIZES.xs, marginRight: SIZES.sm },
+  mainTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: COLORS.textPrimary },
+  mainSubtitle: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.md },
   title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: COLORS.textPrimary },
   headerButtons: { flexDirection: 'row', alignItems: 'center', gap: SIZES.sm },
