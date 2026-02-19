@@ -130,3 +130,36 @@ def format_date_for_db(date_string: str) -> str:
         return dt.strftime("%Y-%m-%d")
     except ValueError:
         return date_string
+
+
+def get_provider_id(doc: Dict[str, Any]) -> Optional[str]:
+    """
+    Get provider ID from a document, handling both field names.
+    
+    The codebase has two field naming patterns:
+    - provider_id: Used in newer models (appointments, visits, notes, share_requests)
+    - pro_user_id: Used in older models (clients, invoices, contracts)
+    
+    This helper gracefully handles both until full migration is complete.
+    """
+    return doc.get("provider_id") or doc.get("pro_user_id")
+
+
+def build_provider_query(provider_id: str, collection: str) -> Dict[str, Any]:
+    """
+    Build a MongoDB query for the provider ID field based on collection.
+    
+    Collections using provider_id:
+    - appointments, visits, notes, share_requests, provider_notes
+    
+    Collections using pro_user_id:
+    - clients, invoices, contracts
+    """
+    # Collections that use the older pro_user_id pattern
+    PRO_USER_ID_COLLECTIONS = {"clients", "invoices", "contracts"}
+    
+    if collection in PRO_USER_ID_COLLECTIONS:
+        return {"pro_user_id": provider_id}
+    else:
+        return {"provider_id": provider_id}
+
