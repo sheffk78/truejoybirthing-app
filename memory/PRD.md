@@ -184,6 +184,19 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 **Note**: In-App Purchase processing is MOCKED. The `validate-receipt` endpoint accepts any receipt without actual server validation. Ready for react-native-iap integration.
 
+#### react-native-iap Integration (COMPLETED - 2026-02-19)
+- [x] **Installed react-native-iap v14.7.12** for native in-app purchases
+- [x] **Updated billing.ts** with actual IAP functions using react-native-iap:
+  - `initConnection()` for store initialization
+  - `getSubscriptions()` for fetching product info
+  - `requestSubscription()` for purchase flow
+  - `getAvailablePurchases()` for restore purchases
+  - `purchaseUpdatedListener` and `purchaseErrorListener` for handling transactions
+- [x] **Created useIAPSubscription hook** (`/app/frontend/app/hooks/useIAPSubscription.ts`)
+- [x] **Updated plans-pricing.tsx** with IAP hook and "Restore Purchases" button
+- [x] **Updated app.json** with iOS/Android bundle IDs and IAP plugin
+- [x] **Created IAP Setup Guide** (`/app/frontend/IAP_SETUP_GUIDE.md`)
+
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Code Refactoring
 
 #### Shared Provider Component Architecture (COMPLETED - 2026-02-19)
