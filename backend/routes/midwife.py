@@ -1,0 +1,179 @@
+"""
+Midwife Routes Module
+
+Handles Midwife-specific functionality including onboarding, profile management,
+and dashboard.
+"""
+
+from fastapi import APIRouter, HTTPException, Depends, Query
+from pydantic import BaseModel
+from typing import Optional, List
+from datetime import datetime, timezone
+import uuid
+
+from .dependencies import db, get_now, get_current_user, check_role, User
+
+router = APIRouter(prefix="/midwife", tags=["Midwife"])
+
+
+# ============== REQUEST MODELS ==============
+
+class MidwifeProfileUpdate(BaseModel):
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    bio: Optional[str] = None
+    experience_years: Optional[int] = None
+    certifications: Optional[List[str]] = None
+    credentials: Optional[str] = None  # CNM, CPM, etc.
+    license_number: Optional[str] = None
+    license_state: Optional[str] = None
+    services_offered: Optional[List[str]] = None
+    birth_settings_served: Optional[List[str]] = None  # home, birth center, hospital
+    birth_philosophy: Optional[str] = None
+    location_city: Optional[str] = None
+    location_state: Optional[str] = None
+    zip_code: Optional[str] = None
+    service_radius_miles: Optional[int] = None
+    pricing_base: Optional[float] = None
+    pricing_notes: Optional[str] = None
+    insurance_accepted: Optional[List[str]] = None
+    video_intro_url: Optional[str] = None
+    more_about_me: Optional[str] = None
+    in_marketplace: Optional[bool] = None
+    accepting_new_clients: Optional[bool] = None
+
+
+# ============== ROUTES ==============
+
+@router.post("/onboarding")
+async def midwife_onboarding(profile_data: MidwifeProfileUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Complete midwife onboarding"""
+    now = get_now()
+    
+    # Create or update midwife profile
+    profile = {
+        "user_id": user.user_id,
+        "full_name": profile_data.full_name or user.full_name,
+        "phone": profile_data.phone,
+        "bio": profile_data.bio,
+        "experience_years": profile_data.experience_years,
+        "certifications": profile_data.certifications or [],
+        "credentials": profile_data.credentials,
+        "license_number": profile_data.license_number,
+        "license_state": profile_data.license_state,
+        "services_offered": profile_data.services_offered or [],
+        "birth_settings_served": profile_data.birth_settings_served or ["home", "birth_center"],
+        "birth_philosophy": profile_data.birth_philosophy,
+        "location_city": profile_data.location_city,
+        "location_state": profile_data.location_state,
+        "zip_code": profile_data.zip_code,
+        "service_radius_miles": profile_data.service_radius_miles or 30,
+        "pricing_base": profile_data.pricing_base,
+        "pricing_notes": profile_data.pricing_notes,
+        "insurance_accepted": profile_data.insurance_accepted or [],
+        "in_marketplace": profile_data.in_marketplace if profile_data.in_marketplace is not None else True,
+        "accepting_new_clients": profile_data.accepting_new_clients if profile_data.accepting_new_clients is not None else True,
+        "updated_at": now
+    }
+    
+    await db.midwife_profiles.update_one(
+        {"user_id": user.user_id},
+        {"$set": profile},
+        upsert=True
+    )
+    
+    # Mark onboarding complete
+    await db.users.update_one(
+        {"user_id": user.user_id},
+        {"$set": {"onboarding_completed": True, "updated_at": now}}
+    )
+    
+    return {"message": "Onboarding completed", "profile": profile}
+
+
+@router.get("/profile")
+async def get_midwife_profile(user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get midwife profile"""
+    profile = await db.midwife_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
+    if not profile:
+        return {"user_id": user.user_id}
+    return profile
+
+
+@router.put("/profile")
+async def update_midwife_profile(profile_data: MidwifeProfileUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Update midwife profile"""
+    update_data = {k: v for k, v in profile_data.dict().items() if v is not None}
+    update_data["updated_at"] = get_now()
+    
+    await db.midwife_profiles.update_one(
+        {"user_id": user.user_id},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    return {"message": "Profile updated"}
+
+
+@router.get("/dashboard")
+async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get midwife dashboard data"""
+    # Get counts
+    prenatal_clients = await db.clients.count_documents({
+        "provider_id": user.user_id,
+        "status": "Prenatal"
+    })
+    
+    active_clients = await db.clients.count_documents({
+        "provider_id": user.user_id,
+        "status": {"$in": ["Active", "Prenatal", "Labor"]}
+    })
+    
+    total_clients = await db.clients.count_documents({"provider_id": user.user_id})
+    
+    pending_contracts = await db.contracts.count_documents({
+        "provider_id": user.user_id,
+        "status": "Sent"
+    })
+    
+    unpaid_invoices = await db.invoices.count_documents({
+        "provider_id": user.user_id,
+        "status": "Sent"
+    })
+    
+    # Get upcoming visits
+    now = get_now()
+    upcoming_visits = await db.visits.find(
+        {
+            "midwife_id": user.user_id,
+            "visit_date": {"$gte": now.strftime("%Y-%m-%d")}
+        },
+        {"_id": 0}
+    ).sort("visit_date", 1).limit(5).to_list(5)
+    
+    # Get upcoming appointments
+    upcoming_appointments = await db.appointments.find(
+        {
+            "provider_id": user.user_id,
+            "status": {"$in": ["confirmed", "pending"]},
+            "start_datetime": {"$gte": now.isoformat()}
+        },
+        {"_id": 0}
+    ).sort("start_datetime", 1).limit(5).to_list(5)
+    
+    # Get recent messages count
+    unread_messages = await db.messages.count_documents({
+        "receiver_id": user.user_id,
+        "read": False
+    })
+    
+    return {
+        "prenatal_clients": prenatal_clients,
+        "active_clients": active_clients,
+        "total_clients": total_clients,
+        "pending_contracts": pending_contracts,
+        "unpaid_invoices": unpaid_invoices,
+        "upcoming_visits": upcoming_visits,
+        "upcoming_appointments": upcoming_appointments,
+        "unread_messages": unread_messages
+    }
