@@ -4,6 +4,18 @@ import { Icon } from '../../src/components/Icon';
 import { COLORS, SIZES } from '../../src/constants/theme';
 import { Platform } from 'react-native';
 
+/**
+ * Midwife Navigation Layout
+ * 
+ * Simplified client-first navigation:
+ * - Home: Dashboard with quick stats and client overview
+ * - Clients: Primary entry point for all client work
+ * - Messages: Quick access to conversations
+ * - Profile: Settings and profile management
+ * 
+ * All client-specific tools (Notes, Contracts, Invoices, Appointments, Visits, Birth Summaries)
+ * are accessed through Clients → Client Detail → Tool
+ */
 export default function MidwifeLayout() {
   return (
     <Tabs
@@ -24,12 +36,13 @@ export default function MidwifeLayout() {
         },
       }}
     >
+      {/* Primary Navigation - 4 tabs */}
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="grid-outline" size={size} color={color} />
+            <Icon name="home-outline" size={size} color={color} />
           ),
         }}
       />
@@ -39,51 +52,6 @@ export default function MidwifeLayout() {
           title: 'Clients',
           tabBarIcon: ({ color, size }) => (
             <Icon name="people-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="visits"
-        options={{
-          title: 'Visits',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="calendar-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="birth-summaries"
-        options={{
-          title: 'Births',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="heart-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="notes"
-        options={{
-          title: 'Notes',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="create-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="contracts"
-        options={{
-          title: 'Contracts',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="document-text-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="invoices"
-        options={{
-          title: 'Invoices',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="cash-outline" size={size} color={color} />
           ),
         }}
       />
@@ -105,23 +73,39 @@ export default function MidwifeLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="appointments"
-        options={{
-          href: null,  // Hide from tab bar, accessible from dashboard
-        }}
-      />
+
+      {/* Hidden screens - accessed via navigation, not tab bar */}
       <Tabs.Screen
         name="client-detail"
-        options={{
-          href: null,  // Hide from tab bar, accessible from clients page
-        }}
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="appointments"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="notes"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="visits"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="birth-summaries"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="contracts"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="invoices"
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="contract-templates"
-        options={{
-          href: null,  // Hide from tab bar
-        }}
+        options={{ href: null }}
       />
     </Tabs>
   );
