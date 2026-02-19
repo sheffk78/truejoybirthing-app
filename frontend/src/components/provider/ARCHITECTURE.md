@@ -12,30 +12,39 @@ frontend/src/components/provider/
 ├── ProviderDashboard.tsx         # Shared dashboard component (423 lines)
 ├── ProviderMessages.tsx          # Shared messages component (500 lines)
 ├── ProviderInvoices.tsx          # Shared invoices component (799 lines)
+├── ProviderClients.tsx           # Shared clients component (459 lines)
 ├── config/
 │   └── providerConfig.ts         # Role-specific configuration (191 lines)
 └── types/
     └── provider.ts               # Shared TypeScript interfaces (101 lines)
 ```
 
+### Line Savings Summary
+| Component | Old (Doula + Midwife) | New (Shared + Wrappers) | Savings |
+|-----------|----------------------|------------------------|---------|
+| Dashboard | 890 lines | 423 + 14 | 51% |
+| Messages | 1,028 lines | 500 + 14 | 50% |
+| Invoices | 1,658 lines | 799 + 14 | 51% |
+| Clients | 1,518 lines | 459 + 14 | 69% |
+| **Total** | **5,094 lines** | **2,529 lines** | **50%** |
+
 ### Configuration-Based Approach
 Instead of duplicating code, we use a configuration object (`ProviderConfig`) that defines:
 - Role name and labels
-- Primary color
+- Primary color (Doula: lavender #9F83B6, Midwife: green #8CAF8C)
 - API endpoints
 - Navigation routes
 - Dashboard stats and quick actions with color keys
-- Profile field configurations
 - Tip card content
 
 ### Thin Wrapper Pattern
-Each role's screen file is now a thin wrapper that passes the appropriate config:
+Each role's screen file is now a thin wrapper (7 lines) that passes the appropriate config:
 
 ```tsx
-// (doula)/dashboard.tsx - 7 lines
-import { ProviderDashboard, DOULA_CONFIG } from '../../src/components/provider';
-export default function DoulaDashboardScreen() {
-  return <ProviderDashboard config={DOULA_CONFIG} />;
+// (doula)/clients.tsx - 7 lines
+import { ProviderClients, DOULA_CONFIG } from '../../src/components/provider';
+export default function DoulaClientsScreen() {
+  return <ProviderClients config={DOULA_CONFIG} />;
 }
 ```
 
@@ -45,13 +54,13 @@ export default function DoulaDashboardScreen() {
 - Header with greeting and profile avatar
 - Stats grid (configurable via `statsCards` with `colorKey`)
 - Connection requests from Moms
-- Quick actions grid (configurable via `quickActions` with routes and icons)
-- Role-specific tip card (configurable via `tipTitle` and `tipText`)
+- Quick actions grid (configurable via `quickActions`)
+- Role-specific tip card
 
 ### ProviderMessages
 - Conversation list with real-time updates
 - Chat modal with message input
-- Role-based coloring (Doula: lavender, Midwife: green)
+- Role-based coloring
 - Unread message indicators
 - Empty state handling
 
@@ -59,8 +68,15 @@ export default function DoulaDashboardScreen() {
 - Invoice CRUD operations
 - Payment template management
 - Status filters (All, Draft, Sent, Paid, Cancelled)
-- Client selection with active client filtering
-- Modal forms with proper validation
+- Client selection
+- Modal forms with validation
+
+### ProviderClients
+- Pending connection requests section
+- Active clients list with status badges
+- Client action buttons (Message, Birth Plan)
+- Midwife-specific: Prenatal Visits button
+- Request detail modal
 
 ## Intentional Differences
 
@@ -70,24 +86,15 @@ export default function DoulaDashboardScreen() {
 | API Endpoints | /api/doula/* | /api/midwife/* |
 | Dashboard Stats | Active Clients, Appts, Pending Contracts, Pending Invoices | Prenatal Clients, Appts, Visits This Month, Births This Month |
 | Quick Actions | See Clients, New Contract, New Invoice, Appointments | Add Client, Add Visit, Birth Summary, Appointments |
-| Tip Title | "Doula Tip" | "Midwifery Tools" |
+| Client Display | Linked clients only | All clients |
+| Client Actions | Message, Birth Plan | + Prenatal Visits |
 
 ## Benefits
-1. **DRY Principle**: Single source of truth for shared functionality
-2. **Consistent UX**: Both roles have identical interactions
-3. **Easy Maintenance**: Bug fixes apply to both roles
+1. **DRY Principle**: Single source of truth
+2. **Consistent UX**: Identical interactions
+3. **Easy Maintenance**: Bug fixes apply to both
 4. **Type Safety**: Shared TypeScript interfaces
-5. **Line Reduction**: ~42% reduction (3,576 → 2,056 lines for Dashboard+Messages+Invoices)
-
-## Future Refactoring Candidates
-- Profile screens (shared form structure)
-- Clients screens (shared list components)
-- Contracts screens (90% similar)
+5. **50% Line Reduction**: ~2,565 lines saved
 
 ## Testing
-Verified via testing agent (iteration_81.json):
-- ✓ Doula Dashboard loads with lavender theme, 4 stats, 4 actions
-- ✓ Midwife Dashboard loads with green theme, 4 stats, 4 actions
-- ✓ Both Messages screens load with role-specific colors
-- ✓ Both Invoices screens load with status filters and actions
-- ✓ Profile navigation works via bottom tab
+Verified via testing agent (iteration_82.json) - 100% pass rate
