@@ -12,7 +12,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://pregnancy-timeline-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://birth-plan-hub-1.preview.emergentagent.com')
 
 # Test credentials
 DOULA_EMAIL = "doula2_1771213474@test.com"

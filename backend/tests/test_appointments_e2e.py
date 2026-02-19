@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 
 BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://pregnancy-timeline-1.preview.emergentagent.com"
+    BASE_URL = "https://birth-plan-hub-1.preview.emergentagent.com"
 
 class TestAppointmentsE2E:
     """End-to-End tests for appointment system"""

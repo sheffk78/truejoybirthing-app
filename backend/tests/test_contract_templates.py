@@ -8,7 +8,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://pregnancy-timeline-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://birth-plan-hub-1.preview.emergentagent.com')
 
 # Test credentials
 TEST_DOULA_EMAIL = "testdoula123@test.com"
