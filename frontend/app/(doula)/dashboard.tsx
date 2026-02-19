@@ -31,16 +31,19 @@ export default function DoulaDashboardScreen() {
   const { user } = useAuthStore();
   
   const [stats, setStats] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [shareRequests, setShareRequests] = useState<ShareRequest[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   
   const fetchData = async () => {
     try {
-      const [dashboardData, requestsData] = await Promise.all([
+      const [dashboardData, requestsData, profileData] = await Promise.all([
         apiRequest(API_ENDPOINTS.DOULA_DASHBOARD),
         apiRequest(API_ENDPOINTS.PROVIDER_SHARE_REQUESTS),
+        apiRequest(API_ENDPOINTS.DOULA_PROFILE),
       ]);
       setStats(dashboardData);
+      setProfile(profileData);
       setShareRequests(requestsData.requests?.filter((r: ShareRequest) => r.status === 'pending') || []);
     } catch (error) {
       console.error('Error fetching dashboard:', error);
