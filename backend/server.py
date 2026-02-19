@@ -1429,6 +1429,7 @@ from routes import notifications as notifications_routes
 from routes import messages as messages_routes
 from routes import auth as auth_routes
 from routes import subscription as subscription_routes
+from routes import mom as mom_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1437,6 +1438,7 @@ api_router.include_router(notifications_routes.router)
 api_router.include_router(messages_routes.router)
 api_router.include_router(auth_routes.router)
 api_router.include_router(subscription_routes.router)
+api_router.include_router(mom_routes.router)
 
 # ============== AUTH ROUTES ==============
 # MIGRATED TO: routes/auth.py
