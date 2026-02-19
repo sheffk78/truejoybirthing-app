@@ -779,6 +779,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.md,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
   },
   providerInfo: {
     flex: 1,
@@ -920,6 +926,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SIZES.md,
+    overflow: 'hidden',
+  },
+  profileAvatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
   profileName: {
     fontSize: SIZES.fontXl,
