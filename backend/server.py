@@ -5662,11 +5662,11 @@ async def get_midwife_client(client_id: str, user: User = Depends(check_role(["M
 async def update_midwife_client(client_id: str, request: Request, user: User = Depends(check_role(["MIDWIFE"]))):
     """Update a client"""
     body = await request.json()
-    update_data = {k: v for k, v in body.items() if k not in ["client_id", "provider_id", "provider_type", "created_at"]}
+    update_data = {k: v for k, v in body.items() if k not in ["client_id", "pro_user_id", "pro_type", "created_at"]}
     update_data["updated_at"] = datetime.now(timezone.utc)
     
     result = await db.clients.update_one(
-        {"client_id": client_id, "provider_id": user.user_id},
+        {"client_id": client_id, "pro_user_id": user.user_id},
         {"$set": update_data}
     )
     
