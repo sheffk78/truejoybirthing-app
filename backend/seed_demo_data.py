@@ -697,7 +697,9 @@ async def seed_demo_data(reset: bool = False):
     client_doc = {
         "client_id": f"demo_client_{uuid.uuid4().hex[:8]}",
         "pro_user_id": primary_doula_id,
+        "provider_id": primary_doula_id,  # API uses provider_id
         "provider_type": "DOULA",
+        "pro_type": "DOULA",  # API uses pro_type
         "name": "Emma Johnson",
         "email": "demo.mom@truejoybirthing.com",
         "edd": (datetime.now() + timedelta(days=75)).strftime("%Y-%m-%d"),
