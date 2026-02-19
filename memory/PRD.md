@@ -593,8 +593,9 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **My Team Provider Photos** - Accepted and pending provider invitations show profile photos
 
 ### 📊 Test Reports
+- `/app/test_reports/iteration_90.json` - **Frontend Wiring & Mom Appointments VERIFIED** (Backend: 100% - 10/10 tests passed)
 - `/app/test_reports/iteration_89.json` - **Client-Centered Architecture VERIFIED** (Backend: 100% - 17/17 tests passed)
-- `/app/test_reports/iteration_88.json` - **Profile Photo Display VERIFIED** (100% - Marketplace, ProviderClients, My Team)
+- `/app/test_reports/iteration_88.json` - **Profile Photo Display VERIFIED** (100%)
 - `/app/test_reports/iteration_87.json` - **UI Fixes VERIFIED** (eye-outline icon, KeyboardAvoidingView, paper-plane icon)
 - `/app/test_reports/iteration_79.json` - **Midwife Client Detail Navigation Bug FIXED** (Root cause: provider_id vs pro_user_id field mismatch in backend queries)
 - `/app/test_reports/iteration_78.json` - **Prenatal Visit Assessment VERIFIED** (100% - 20/20 pytest tests passed for all CRUD endpoints + summary generation + well-being scores)
