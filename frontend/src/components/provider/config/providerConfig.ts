@@ -16,13 +16,26 @@ export interface QuickAction {
   colorKey?: 'primary' | 'accent' | 'warning' | 'success';
 }
 
+export interface ClientDetailTab {
+  key: string;
+  label: string;
+  icon: string;
+}
+
 export interface ProviderConfig {
   role: ProviderRole;
   roleLabel: string;
   roleLabelPlural: string;
   primaryColor: string;
   
-  // API Endpoints
+  // Feature flags
+  features: {
+    showVisits: boolean;
+    showClinicalData: boolean;
+    showBirthSummaries: boolean;
+  };
+  
+  // API Endpoints (unified + legacy)
   endpoints: {
     dashboard: string;
     profile: string;
@@ -30,6 +43,14 @@ export interface ProviderConfig {
     invoices: string;
     contracts: string;
     notes: string;
+    appointments: string;
+    visits: string;
+    // Unified endpoints
+    unifiedClients: string;
+    unifiedAppointments: string;
+    unifiedNotes: string;
+    unifiedVisits: string;
+    unifiedDashboard: string;
   };
   
   // Navigation paths
@@ -37,10 +58,13 @@ export interface ProviderConfig {
     dashboard: string;
     profile: string;
     clients: string;
+    clientDetail: string;
     invoices: string;
     contracts: string;
     messages: string;
     notes: string;
+    appointments: string;
+    visits: string;
   };
   
   // Dashboard config
@@ -51,6 +75,9 @@ export interface ProviderConfig {
     tipTitle: string;
     tipText: string;
   };
+  
+  // Client Detail tabs
+  clientDetailTabs: ClientDetailTab[];
   
   // Client statuses available for this role
   clientStatuses: string[];
@@ -69,6 +96,12 @@ export const DOULA_CONFIG: ProviderConfig = {
   roleLabelPlural: 'Doulas',
   primaryColor: COLORS.roleDoula,
   
+  features: {
+    showVisits: false,
+    showClinicalData: false,
+    showBirthSummaries: false,
+  },
+  
   endpoints: {
     dashboard: API_ENDPOINTS.DOULA_DASHBOARD,
     profile: API_ENDPOINTS.DOULA_PROFILE,
@@ -76,16 +109,27 @@ export const DOULA_CONFIG: ProviderConfig = {
     invoices: API_ENDPOINTS.DOULA_INVOICES,
     contracts: API_ENDPOINTS.DOULA_CONTRACTS,
     notes: '/doula/notes',
+    appointments: '/appointments',
+    visits: '',
+    // Unified endpoints
+    unifiedClients: '/provider/clients',
+    unifiedAppointments: '/provider/appointments',
+    unifiedNotes: '/provider/notes',
+    unifiedVisits: '',
+    unifiedDashboard: '/provider/dashboard',
   },
   
   routes: {
     dashboard: '/(doula)/dashboard',
     profile: '/(doula)/profile',
     clients: '/(doula)/clients',
+    clientDetail: '/(doula)/client-detail',
     invoices: '/(doula)/invoices',
     contracts: '/(doula)/contracts',
     messages: '/(doula)/messages',
     notes: '/(doula)/notes',
+    appointments: '/(doula)/appointments',
+    visits: '',
   },
   
   dashboard: {
@@ -105,6 +149,16 @@ export const DOULA_CONFIG: ProviderConfig = {
     tipTitle: 'Doula Tip',
     tipText: 'Keep your client records updated regularly. This helps you provide better care and maintain professional documentation.',
   },
+  
+  clientDetailTabs: [
+    { key: 'timeline', label: 'Timeline', icon: 'time' },
+    { key: 'appointments', label: 'Appointments', icon: 'calendar' },
+    { key: 'notes', label: 'Notes', icon: 'document-text' },
+    { key: 'messages', label: 'Messages', icon: 'chatbubbles' },
+    { key: 'contracts', label: 'Contracts', icon: 'document' },
+    { key: 'invoices', label: 'Invoices', icon: 'cash' },
+    { key: 'birth', label: 'Birth Info', icon: 'heart' },
+  ],
   
   clientStatuses: ['Active', 'Prenatal', 'Contract Sent', 'Contract Signed', 'In Labor', 'Postpartum', 'Completed'],
   
@@ -132,6 +186,12 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
   roleLabelPlural: 'Midwives',
   primaryColor: COLORS.roleMidwife,
   
+  features: {
+    showVisits: true,
+    showClinicalData: true,
+    showBirthSummaries: true,
+  },
+  
   endpoints: {
     dashboard: API_ENDPOINTS.MIDWIFE_DASHBOARD,
     profile: API_ENDPOINTS.MIDWIFE_PROFILE,
@@ -139,16 +199,27 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
     invoices: API_ENDPOINTS.MIDWIFE_INVOICES,
     contracts: API_ENDPOINTS.MIDWIFE_CONTRACTS,
     notes: '/midwife/notes',
+    appointments: '/appointments',
+    visits: '/midwife/visits',
+    // Unified endpoints
+    unifiedClients: '/provider/clients',
+    unifiedAppointments: '/provider/appointments',
+    unifiedNotes: '/provider/notes',
+    unifiedVisits: '/provider/visits',
+    unifiedDashboard: '/provider/dashboard',
   },
   
   routes: {
     dashboard: '/(midwife)/dashboard',
     profile: '/(midwife)/profile',
     clients: '/(midwife)/clients',
+    clientDetail: '/(midwife)/client-detail',
     invoices: '/(midwife)/invoices',
     contracts: '/(midwife)/contracts',
     messages: '/(midwife)/messages',
     notes: '/(midwife)/notes',
+    appointments: '/(midwife)/appointments',
+    visits: '/(midwife)/visits',
   },
   
   dashboard: {
@@ -168,6 +239,17 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
     tipTitle: 'Midwifery Tools',
     tipText: 'This is a simplified client management system for home and birth center midwives. Track prenatal visits, birth summaries, and postpartum care.',
   },
+  
+  clientDetailTabs: [
+    { key: 'timeline', label: 'Timeline', icon: 'time' },
+    { key: 'appointments', label: 'Appointments', icon: 'calendar' },
+    { key: 'visits', label: 'Visits', icon: 'fitness' },
+    { key: 'notes', label: 'Notes', icon: 'document-text' },
+    { key: 'messages', label: 'Messages', icon: 'chatbubbles' },
+    { key: 'contracts', label: 'Contracts', icon: 'document' },
+    { key: 'invoices', label: 'Invoices', icon: 'cash' },
+    { key: 'birth', label: 'Birth Info', icon: 'heart' },
+  ],
   
   clientStatuses: ['Prenatal', 'Contract Sent', 'Contract Signed', 'In Labor', 'Postpartum', 'Completed'],
   
