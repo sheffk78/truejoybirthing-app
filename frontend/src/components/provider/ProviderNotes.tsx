@@ -32,6 +32,7 @@ interface ProviderNotesProps {
 }
 
 export default function ProviderNotes({ config }: ProviderNotesProps) {
+  const router = useRouter();
   const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
   const [notes, setNotes] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
@@ -40,6 +41,10 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [saving, setSaving] = useState(false);
   const [filterClientId, setFilterClientId] = useState<string | null>(params.clientId || null);
+  
+  // When accessed with clientId, show a contextual header with back navigation
+  const isClientScoped = !!params.clientId;
+  const clientName = params.clientName || '';
   
   // Form state
   const [selectedClientId, setSelectedClientId] = useState(params.clientId || '');
