@@ -328,10 +328,13 @@ export default function MidwifeContracts() {
 
       await apiRequest(API_ENDPOINTS.MIDWIFE_CONTRACTS, {
         method: 'POST',
-        body: JSON.stringify(payload),
+        body: payload,  // Don't stringify - apiRequest handles it
       });
+      
+      // Save the current form data as "last used" preferences
+      await saveLastUsedDefaults(payload);
 
-      Alert.alert('Success', 'Contract created successfully!');
+      Alert.alert('Success', 'Contract created successfully! Your text and settings have been saved as defaults for future contracts.');
       setShowCreateModal(false);
       loadData();
     } catch (error) {
