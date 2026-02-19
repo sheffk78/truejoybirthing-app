@@ -100,13 +100,13 @@ class TestProviderClientsEndpoint:
         
         print(f"include_inactive=true: {len(all_clients)} total ({active_count} active, {inactive_count} inactive)")
     
-    def test_provider_clients_unauthorized(self, session):
+    def test_provider_clients_unauthorized(self):
         """Test that unauthorized access returns 401"""
-        # Remove auth header
-        if "Authorization" in session.headers:
-            del session.headers["Authorization"]
+        # Use fresh session without auth
+        fresh_session = requests.Session()
+        fresh_session.headers.update({"Content-Type": "application/json"})
         
-        response = session.get(f"{BASE_URL}/api/provider/clients")
+        response = fresh_session.get(f"{BASE_URL}/api/provider/clients")
         assert response.status_code == 401
 
 
@@ -131,12 +131,12 @@ class TestMomTeamProviders:
             assert "role" in provider, "Provider should have role"
             print(f"  - {provider.get('full_name')} ({provider.get('role')})")
     
-    def test_mom_team_providers_unauthorized(self, session):
+    def test_mom_team_providers_unauthorized(self):
         """Test that unauthorized access returns 401"""
-        if "Authorization" in session.headers:
-            del session.headers["Authorization"]
+        fresh_session = requests.Session()
+        fresh_session.headers.update({"Content-Type": "application/json"})
         
-        response = session.get(f"{BASE_URL}/api/mom/team-providers")
+        response = fresh_session.get(f"{BASE_URL}/api/mom/team-providers")
         assert response.status_code == 401
 
 
@@ -212,12 +212,12 @@ class TestMomAppointmentCreation:
         
         return appointment.get("appointment_id")
     
-    def test_mom_create_appointment_unauthorized(self, session):
+    def test_mom_create_appointment_unauthorized(self):
         """Test that unauthorized access returns 401"""
-        if "Authorization" in session.headers:
-            del session.headers["Authorization"]
+        fresh_session = requests.Session()
+        fresh_session.headers.update({"Content-Type": "application/json"})
         
-        response = session.post(f"{BASE_URL}/api/mom/appointments", json={
+        response = fresh_session.post(f"{BASE_URL}/api/mom/appointments", json={
             "provider_id": "test",
             "appointment_date": "2026-02-15"
         })
