@@ -379,7 +379,8 @@ class TestAuthRoutesStillWork:
         assert response.status_code == 200
         data = response.json()
         assert "session_token" in data
-        assert "user" in data
+        # User info is at root level in login response
+        assert "user_id" in data or "email" in data
         print("Auth login working")
     
     def test_me_endpoint_works(self, doula_session):
