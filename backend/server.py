@@ -1419,7 +1419,8 @@ route_deps.init_dependencies(
     websocket_manager=ws_manager,
     sender_email=SENDER_EMAIL,
     get_current_user_func=get_current_user,
-    check_role_func=check_role
+    check_role_func=check_role,
+    resend_api_key=os.environ.get("RESEND_API_KEY", "")
 )
 
 # Import and register modular routers AFTER dependencies are initialized
@@ -1432,6 +1433,14 @@ from routes import subscription as subscription_routes
 from routes import mom as mom_routes
 from routes import doula as doula_routes
 from routes import midwife as midwife_routes
+from routes import contracts as contracts_routes
+
+# Initialize contracts dependencies (for email sending)
+contracts_routes.init_contracts_deps(
+    resend_key=os.environ.get("RESEND_API_KEY", ""),
+    sender_email=SENDER_EMAIL,
+    notification_func=create_notification
+)
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
