@@ -22,6 +22,7 @@ import {
   getProviderDisplayName 
 } from './config/subscriptionConfig';
 import { isIAPAvailable, getCurrentPlatform } from './services/billing';
+import { useIAPSubscription } from './hooks/useIAPSubscription';
 
 const COLORS = {
   primary: '#7c3aed',
@@ -40,11 +41,58 @@ export default function PlansPricingScreen() {
   const { status, pricing, isLoading, fetchStatus, fetchPricing, startTrial, activateSubscription } = useSubscriptionStore();
   const [selectedPlan, setSelectedPlan] = useState<string>('monthly');
   const [processingAction, setProcessingAction] = useState(false);
+  
+  // In-App Purchase hook for native platforms
+  const {
+    products: iapProducts,
+    isLoading: iapLoading,
+    isPurchasing,
+    isRestoring,
+    purchase: iapPurchase,
+    restore: iapRestore,
+    isAvailable: iapAvailable,
+  } = useIAPSubscription();
 
   useEffect(() => {
     fetchStatus();
     fetchPricing();
   }, []);
+  
+  // Handle real IAP purchase (for native apps)
+  const handleIAPPurchase = async () => {
+    if (!iapAvailable) {
+      // Fall back to mock trial for web
+      handleStartTrial();
+      return;
+    }
+    
+    try {
+      setProcessingAction(true);
+      const success = await iapPurchase(selectedPlan as 'monthly' | 'annual');
+      if (success) {
+        // Refresh subscription status after successful purchase
+        await fetchStatus();
+        router.back();
+      }
+    } catch (error: any) {
+      console.error('[PlansPricing] IAP purchase error:', error);
+    } finally {
+      setProcessingAction(false);
+    }
+  };
+  
+  // Handle restore purchases
+  const handleRestorePurchases = async () => {
+    if (!iapAvailable) {
+      Alert.alert('Not Available', 'Restore purchases is only available on iOS and Android.');
+      return;
+    }
+    
+    const success = await iapRestore();
+    if (success) {
+      await fetchStatus();
+    }
+  };
 
   const handleStartTrial = async () => {
     try {
