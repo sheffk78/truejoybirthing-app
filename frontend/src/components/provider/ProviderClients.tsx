@@ -260,7 +260,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                 <View style={styles.clientRow}>
                   <View style={[styles.clientAvatar, { backgroundColor: primaryColor + '20' }]}>
                     {client.picture ? (
-                      <Image source={{ uri: client.picture }} style={styles.avatarImage} />
+                      <Image source={{ uri: client.picture }} style={styles.clientAvatarImage} />
                     ) : (
                       <Icon name="person" size={28} color={primaryColor} />
                     )}
