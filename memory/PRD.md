@@ -770,7 +770,7 @@ Hidden but accessible via navigation:
 
 ### Remaining Technical Debt (P3 - Low Priority)
 
-1. **Backend Modularization Progress**: server.py reduced from 7,888 → 6,483 lines (1,405 lines migrated, ~17.8% reduction)
+1. **Backend Modularization Progress**: server.py reduced from 7,888 → ~6,200 lines (~21% reduction)
    - **Phase 1 COMPLETED**: Created modular router foundation
    - **Phase 2 COMPLETED**: Admin (4 endpoints) + Marketplace (2 endpoints) migrated
    - **Phase 3 COMPLETED**: Notifications (3 endpoints) + Messages (5 endpoints) migrated
@@ -778,7 +778,11 @@ Hidden but accessible via navigation:
    - **Phase 5 COMPLETED**: Subscription (6 endpoints) migrated
    - **Phase 6 COMPLETED**: Mom (9 endpoints) migrated
    - **Phase 7 COMPLETED**: Doula (6 endpoints) + Midwife (4 endpoints) migrated
-   - **Total Endpoints Migrated**: 46 endpoints across 9 modular routers
+   - **Phase 8 COMPLETED** (2026-02-19): Provider Clients & Notes routes migrated
+     - Doula: clients CRUD (4 endpoints), notes CRUD (4 endpoints)
+     - Midwife: clients CRUD (4 endpoints), notes CRUD (4 endpoints)
+     - 40/40 tests passed (iteration_104.json)
+   - **Total Endpoints Migrated**: 62 endpoints across 9 modular routers
    - **Active Modular Routers**:
      - `routes/auth.py` - Authentication
      - `routes/admin.py` - Admin user/content management
@@ -787,10 +791,15 @@ Hidden but accessible via navigation:
      - `routes/messages.py` - Real-time messaging
      - `routes/subscription.py` - Subscription management (MOCKED IAP)
      - `routes/mom.py` - Mom-specific routes
-     - `routes/doula.py` - Doula onboarding/profile/dashboard
-     - `routes/midwife.py` - Midwife onboarding/profile/dashboard
+     - `routes/doula.py` - Doula onboarding/profile/dashboard/clients/notes
+     - `routes/midwife.py` - Midwife onboarding/profile/dashboard/clients/notes
    - **Migration Plan**: `/app/backend/routes/MIGRATION_PLAN.md`
-   - **Remaining**: Doula/Midwife clients, contracts, invoices, visits (~5,500 lines)
+   - **Remaining Phases**:
+     - Phase 9: Contracts (high complexity - PDF generation)
+     - Phase 10: Invoices
+     - Phase 11: Midwife Visits
+     - Phase 12: Birth Plan, Wellness, Postpartum, Timeline
+     - Phase 13: Share Requests, Appointments, Final Cleanup
 
 2. **Large Shared Components**: Some shared components are still large but functional
    - ProviderAppointments.tsx: 950 lines
