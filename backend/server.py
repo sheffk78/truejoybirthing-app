@@ -1959,6 +1959,11 @@ async def activate_subscription(request: StartTrialRequest, user: User = Depends
     """Activate a full subscription after trial (mock implementation)"""
     now = datetime.now(timezone.utc)
     
+    # Normalize subscription provider
+    provider = request.subscription_provider.upper() if request.subscription_provider else "MOCK"
+    if provider not in ["APPLE", "GOOGLE", "MOCK", "WEB"]:
+        provider = "MOCK"
+    
     # Calculate subscription end based on plan
     if request.plan_type == "monthly":
         sub_end = now + timedelta(days=30)
@@ -1970,12 +1975,15 @@ async def activate_subscription(request: StartTrialRequest, user: User = Depends
         "user_id": user.user_id,
         "subscription_status": "active",
         "plan_type": request.plan_type,
+        "subscription_provider": provider,
         "trial_start_date": None,
         "trial_end_date": None,
         "subscription_start_date": now,
         "subscription_end_date": sub_end,
         "store_transaction_id": f"mock_purchase_{uuid.uuid4().hex[:8]}",
-        "store_type": "mock",
+        "store_type": provider.lower(),  # Keep for backward compatibility
+        "original_transaction_id": f"orig_{uuid.uuid4().hex[:12]}",
+        "auto_renewing": True,
         "created_at": now,
         "updated_at": now
     }
@@ -1989,7 +1997,8 @@ async def activate_subscription(request: StartTrialRequest, user: User = Depends
     return {
         "message": "Subscription activated successfully",
         "subscription_end_date": sub_end.isoformat(),
-        "plan_type": request.plan_type
+        "plan_type": request.plan_type,
+        "subscription_provider": provider
     }
 
 @api_router.post("/subscription/cancel")
