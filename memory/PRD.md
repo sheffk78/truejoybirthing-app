@@ -690,6 +690,22 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## Code Smell Analysis (2026-02-19)
 
+### Fixed Code Smells
+
+1. **Contracts Screen Duplication** ✅ FIXED
+   - Before: ~3037 lines duplicated between Doula and Midwife
+   - After: 1430 lines total (53% reduction)
+   - Solution: Created shared `ProviderContracts.tsx` with `contractsConfig.ts`
+
+2. **Message Model Not Client-Centric** ✅ FIXED
+   - Added `client_id` field to Message model
+   - Auto-populated when sending messages between provider and mom
+   - New endpoint: `GET /api/provider/clients/{client_id}/messages`
+
+3. **Provider Messaging Permissions** ✅ FIXED
+   - Updated `check_provider_can_message` to check both `share_requests` AND `clients` collections
+   - Linked clients can now message without requiring a share_request record
+
 ### Identified Code Smells (Prioritized)
 
 **P1 - High Impact Technical Debt:**
