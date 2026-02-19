@@ -474,10 +474,11 @@ export default function MomProfileScreen() {
         <TouchableOpacity 
           activeOpacity={0.8}
           onPress={() => router.push('/tutorial?role=MOM')}
+          data-testid="view-app-tour-btn"
         >
           <Card style={styles.menuCard}>
             <View style={styles.menuRow}>
-              <Icon name="help-circle-outline" size={24} color={COLORS.accent} />
+              <Icon name="eye-outline" size={24} color={COLORS.accent} />
               <Text style={styles.menuText}>View App Tour</Text>
               <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
             </View>
