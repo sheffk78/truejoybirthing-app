@@ -1,4 +1,5 @@
 // Shared Invoices Screen for Doula and Midwife
+// Supports client-scoped access when clientId param is provided
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -15,9 +16,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { COLORS, SIZES } from '../../constants/theme';
+import { COLORS, SIZES, FONTS } from '../../constants/theme';
 import { ProviderConfig } from '../config/providerConfig';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -34,6 +36,13 @@ interface ProviderInvoicesProps {
 }
 
 export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
+  
+  // Client-scoped mode
+  const isClientScoped = !!params.clientId;
+  const clientName = params.clientName || '';
+  
   const [invoices, setInvoices] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
   const [paymentTemplates, setPaymentTemplates] = useState<any[]>([]);
@@ -47,7 +56,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   const [saving, setSaving] = useState(false);
   
   // Invoice Form state
-  const [selectedClientId, setSelectedClientId] = useState('');
+  const [selectedClientId, setSelectedClientId] = useState(params.clientId || '');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [issueDate, setIssueDate] = useState('');
@@ -74,7 +83,14 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         apiRequest(clientsEndpoint),
         apiRequest(API_ENDPOINTS.PAYMENT_INSTRUCTIONS),
       ]);
-      setInvoices(invoicesData);
+      
+      // Filter invoices by client if client-scoped
+      let filteredInvoices = invoicesData || [];
+      if (isClientScoped && params.clientId) {
+        filteredInvoices = filteredInvoices.filter((inv: any) => inv.client_id === params.clientId);
+      }
+      
+      setInvoices(filteredInvoices);
       setClients(clientsData);
       setPaymentTemplates(templatesData);
     } catch (error) {
