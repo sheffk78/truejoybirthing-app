@@ -45,6 +45,35 @@ class ContractDefaultsUpdate(BaseModel):
     cancellation_policy: Optional[str] = None
 
 
+class ClientCreate(BaseModel):
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    edd: Optional[str] = None
+    planned_birth_setting: Optional[str] = None
+
+
+class ClientUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    edd: Optional[str] = None
+    planned_birth_setting: Optional[str] = None
+    status: Optional[str] = None
+    internal_notes: Optional[str] = None
+
+
+class NoteCreate(BaseModel):
+    client_id: str
+    content: str
+    note_type: Optional[str] = "general"
+
+
+class NoteUpdate(BaseModel):
+    content: Optional[str] = None
+    note_type: Optional[str] = None
+
+
 # ============== ROUTES ==============
 
 @router.post("/onboarding")
