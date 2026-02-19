@@ -646,19 +646,20 @@ export default function DoulaContracts() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Contracts</Text>
-        <View style={styles.headerButtons}>
-          <TouchableOpacity style={styles.templatesButton} onPress={() => router.push('/(doula)/contract-templates')}>
-            <Ionicons name="copy-outline" size={18} color={COLORS.roleDoula} />
-            <Text style={styles.templatesButtonText}>Templates</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.createButton} onPress={openCreateModal}>
-            <Ionicons name="add" size={24} color="#fff" />
-            <Text style={styles.createButtonText}>New Contract</Text>
-          </TouchableOpacity>
+      <SafeAreaView style={styles.safeHeader} edges={['top']}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Contracts</Text>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity style={styles.templatesButton} onPress={() => router.push('/(doula)/contract-templates')}>
+              <Ionicons name="copy-outline" size={18} color={COLORS.roleDoula} />
+              <Text style={styles.templatesButtonText}>Templates</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.createButton} onPress={openCreateModal} data-testid="new-contract-btn">
+              <Ionicons name="add" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </SafeAreaView>
 
       <ScrollView
         style={styles.content}
