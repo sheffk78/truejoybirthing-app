@@ -1717,9 +1717,12 @@ def calculate_subscription_status(subscription: dict) -> dict:
             "has_pro_access": False,
             "subscription_status": "none",
             "plan_type": None,
+            "subscription_provider": None,
             "trial_end_date": None,
+            "subscription_end_date": None,
             "days_remaining": None,
-            "is_trial": False
+            "is_trial": False,
+            "auto_renewing": False
         }
     
     status = subscription.get("subscription_status", "none")
