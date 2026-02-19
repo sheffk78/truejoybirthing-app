@@ -3151,13 +3151,13 @@ async def add_provider_note(
     
     return {"message": "Note added", "note": note_doc}
 
-@api_router.put("/provider/notes/{note_id}")
-async def update_provider_note(
+@api_router.put("/provider/birth-plan-notes/{note_id}")
+async def update_birth_plan_note(
     note_id: str,
     request: Request,
     user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
 ):
-    """Update a provider note"""
+    """Update a provider note on a birth plan section"""
     body = await request.json()
     note_content = body.get("note_content")
     
@@ -3174,12 +3174,12 @@ async def update_provider_note(
     
     return {"message": "Note updated"}
 
-@api_router.delete("/provider/notes/{note_id}")
-async def delete_provider_note(
+@api_router.delete("/provider/birth-plan-notes/{note_id}")
+async def delete_birth_plan_note(
     note_id: str,
     user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
 ):
-    """Delete a provider note"""
+    """Delete a provider note from a birth plan section"""
     result = await db.provider_notes.delete_one({
         "note_id": note_id,
         "provider_id": user.user_id
