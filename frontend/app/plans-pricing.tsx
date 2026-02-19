@@ -276,29 +276,49 @@ export default function PlansPricingScreen() {
           {!isMom && (
             <View style={styles.ctaContainer}>
               {!hasAccess && status?.subscription_status !== 'trial' && (
-                <TouchableOpacity
-                  style={styles.trialButton}
-                  onPress={handleStartTrial}
-                  disabled={processingAction}
-                >
-                  {processingAction ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <>
-                      <Ionicons name="gift" size={20} color="#fff" />
-                      <Text style={styles.trialButtonText}>Start 30-Day Free Trial</Text>
-                    </>
+                <>
+                  {/* Start Trial Button (uses mock for web, IAP for native) */}
+                  <TouchableOpacity
+                    style={styles.trialButton}
+                    onPress={iapAvailable ? handleIAPPurchase : handleStartTrial}
+                    disabled={processingAction || isPurchasing}
+                  >
+                    {(processingAction || isPurchasing) ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <>
+                        <Ionicons name="gift" size={20} color="#fff" />
+                        <Text style={styles.trialButtonText}>
+                          {iapAvailable ? 'Start 30-Day Free Trial' : 'Start 30-Day Free Trial'}
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                  
+                  {/* Restore Purchases Button (native only) */}
+                  {iapAvailable && (
+                    <TouchableOpacity
+                      style={styles.restoreButton}
+                      onPress={handleRestorePurchases}
+                      disabled={isRestoring}
+                    >
+                      {isRestoring ? (
+                        <ActivityIndicator color={COLORS.primary} size="small" />
+                      ) : (
+                        <Text style={styles.restoreButtonText}>Restore Purchases</Text>
+                      )}
+                    </TouchableOpacity>
                   )}
-                </TouchableOpacity>
+                </>
               )}
               
               {(status?.subscription_status === 'expired' || status?.subscription_status === 'trial') && (
                 <TouchableOpacity
                   style={styles.subscribeButton}
-                  onPress={handleSubscribe}
-                  disabled={processingAction}
+                  onPress={iapAvailable ? handleIAPPurchase : handleSubscribe}
+                  disabled={processingAction || isPurchasing}
                 >
-                  {processingAction ? (
+                  {(processingAction || isPurchasing) ? (
                     <ActivityIndicator color="#fff" />
                   ) : (
                     <>
@@ -313,7 +333,9 @@ export default function PlansPricingScreen() {
 
               <Text style={styles.disclaimer}>
                 {status?.subscription_status === 'none' 
-                  ? `No credit card required for trial. Cancel anytime.`
+                  ? iapAvailable 
+                    ? `${SUBSCRIPTION_CONFIG.trialDays}-day free trial. Cancel anytime in ${getCurrentPlatform() === 'ios' ? 'App Store' : 'Google Play'} settings.`
+                    : `No credit card required for trial. Cancel anytime.`
                   : isIAPAvailable() 
                     ? `Your subscription will be managed through the ${getCurrentPlatform() === 'ios' ? 'App Store' : 'Google Play Store'}.`
                     : 'Subscriptions are managed through the iOS App Store or Google Play Store on your mobile device.'
