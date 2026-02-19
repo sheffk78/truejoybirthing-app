@@ -116,8 +116,19 @@ export default function DoulaDashboardScreen() {
             <Text style={styles.greeting}>Hello, {firstName}</Text>
             <Text style={styles.subtitle}>Doula Dashboard</Text>
           </View>
-          <TouchableOpacity style={styles.avatarContainer}>
-            <Icon name="person-circle-outline" size={44} color={COLORS.roleDoula} />
+          <TouchableOpacity 
+            style={styles.avatarContainer}
+            onPress={() => router.push('/(doula)/profile')}
+            data-testid="profile-avatar-btn"
+          >
+            {profile?.picture || user?.picture ? (
+              <Image 
+                source={{ uri: profile?.picture || user?.picture }} 
+                style={styles.avatarImage} 
+              />
+            ) : (
+              <Icon name="person-circle-outline" size={44} color={COLORS.roleDoula} />
+            )}
           </TouchableOpacity>
         </View>
         
