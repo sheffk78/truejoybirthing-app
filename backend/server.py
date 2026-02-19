@@ -1389,7 +1389,10 @@ async def get_current_user(request: Request) -> User:
 def check_role(required_roles: List[str]):
     """Dependency to check user role"""
     async def role_checker(user: User = Depends(get_current_user)):
-        if user.role not in required_roles:
+        # Case-insensitive role check
+        user_role_upper = user.role.upper() if user.role else ""
+        required_roles_upper = [r.upper() for r in required_roles]
+        if user_role_upper not in required_roles_upper:
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         return user
     return role_checker
