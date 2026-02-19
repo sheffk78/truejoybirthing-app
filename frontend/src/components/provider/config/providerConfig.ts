@@ -3,6 +3,19 @@ import { COLORS } from '../../../constants/theme';
 import { API_ENDPOINTS } from '../../../constants/api';
 import { ProviderRole } from '../types/provider';
 
+export interface StatCard {
+  key: string;
+  label: string;
+  colorKey?: 'primary' | 'accent' | 'warning' | 'success';
+}
+
+export interface QuickAction {
+  label: string;
+  icon: string;
+  route: string;
+  colorKey?: 'primary' | 'accent' | 'warning' | 'success';
+}
+
 export interface ProviderConfig {
   role: ProviderRole;
   roleLabel: string;
@@ -33,16 +46,10 @@ export interface ProviderConfig {
   // Dashboard config
   dashboard: {
     title: string;
-    statsCards: Array<{
-      key: string;
-      label: string;
-      icon: string;
-    }>;
-    quickActions: Array<{
-      label: string;
-      icon: string;
-      route: string;
-    }>;
+    statsCards: StatCard[];
+    quickActions: QuickAction[];
+    tipTitle: string;
+    tipText: string;
   };
   
   // Client statuses available for this role
