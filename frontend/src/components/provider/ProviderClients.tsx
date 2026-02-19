@@ -215,6 +215,31 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
           <Text style={styles.subtitle}>Manage your client relationships</Text>
         </View>
         
+        {/* Active/Inactive Filter Toggle */}
+        <View style={styles.filterContainer}>
+          <TouchableOpacity
+            style={[styles.filterButton, clientFilter === 'active' && { backgroundColor: primaryColor }]}
+            onPress={() => setClientFilter('active')}
+            data-testid="filter-active"
+          >
+            <Text style={[styles.filterText, clientFilter === 'active' && { color: COLORS.white }]}>Active</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.filterButton, clientFilter === 'inactive' && { backgroundColor: primaryColor }]}
+            onPress={() => setClientFilter('inactive')}
+            data-testid="filter-inactive"
+          >
+            <Text style={[styles.filterText, clientFilter === 'inactive' && { color: COLORS.white }]}>Inactive</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.filterButton, clientFilter === 'all' && { backgroundColor: primaryColor }]}
+            onPress={() => setClientFilter('all')}
+            data-testid="filter-all"
+          >
+            <Text style={[styles.filterText, clientFilter === 'all' && { color: COLORS.white }]}>All</Text>
+          </TouchableOpacity>
+        </View>
+        
         {/* Pending Requests Section */}
         {pendingRequests.length > 0 && (
           <>
