@@ -727,27 +727,27 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ### Documented Architecture Decisions
 
-**P1 - High Impact Technical Debt:**
-1. **Field Naming Inconsistency**: `provider_id` (105 occurrences) vs `pro_user_id` (70 occurrences)
-   - `provider_id`: Used in share_requests, appointments, visits, notes (newer models)
-   - `pro_user_id`: Used in clients, invoices, contracts (older models)
-   - Risk: Causes confusion, potential bugs when querying across collections
-   - Fix: Standardize to `provider_id`, requires data migration
+1. **Midwife client-detail.tsx (1112 lines) - Kept Separate**
+   - This is a SPECIALIZED prenatal visit form with clinical data (vitals, urinalysis, wellness scores)
+   - Different purpose from the shared ProviderClientDetail hub component
+   - Documented with comment block explaining the architectural decision
+   - The shared ProviderClientDetail is for general client hub/overview, this is for clinical documentation
 
-2. **Monolithic server.py**: 7,888 lines - should be split into modular routers
+### Remaining Technical Debt (P3 - Low Priority)
+
+1. **Monolithic server.py**: 7,888 lines - should be split into modular routers
    - Suggested modules: auth, users, clients, appointments, contracts, invoices, messages, admin
 
-3. **Duplicated Contract Screens**: ~3,000 lines duplicated between Doula and Midwife contracts
-   - `contracts.tsx`: 1,514 (Doula) + 1,523 (Midwife) = 3,037 lines
-   - `contract-templates.tsx`: 569 + 556 = 1,125 lines
-   - Fix: Create shared ProviderContracts component (config already prepared in `contractsConfig.ts`)
-
-**P2 - Medium Impact:**
-4. **Midwife client-detail.tsx**: 1,112 lines - specialized prenatal visit form, different from shared component
-   - Decision: Keep separate (different purpose from shared ProviderClientDetail)
-
-5. **Large Shared Components**: Some shared components are still large
+2. **Large Shared Components**: Some shared components are still large but functional
    - ProviderAppointments.tsx: 950 lines
+   - ProviderInvoices.tsx: 799 lines
+   - ProviderContracts.tsx: 1156 lines
+   - Could be broken down further but not blocking
+
+3. **Midwife-specific screens** (not duplicates, unique features):
+   - visits.tsx: 584 lines (clinical visit tracking)
+   - birth-summaries.tsx: 693 lines (midwife-only feature)
+   - client-detail.tsx: 1127 lines (prenatal visit form)
    - ProviderInvoices.tsx: 799 lines
    - Could be broken down into smaller sub-components
 
