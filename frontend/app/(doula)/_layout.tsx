@@ -74,7 +74,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="chatbubbles-outline" size={size} color={color} />
+            <Icon name="mail-outline" size={size} color={color} />
           ),
         }}
       />
