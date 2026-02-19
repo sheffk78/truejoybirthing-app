@@ -212,3 +212,169 @@ async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
         "upcoming_appointments": upcoming_appointments,
         "unread_messages": unread_messages
     }
+
+
+# ============== CLIENT ROUTES ==============
+
+@router.get("/clients")
+async def get_midwife_clients(user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get midwife's clients"""
+    clients = await db.clients.find(
+        {"provider_id": user.user_id, "provider_type": "MIDWIFE"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return clients
+
+
+@router.post("/clients")
+async def create_midwife_client(client_data: ClientCreate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Create a new client"""
+    now = get_now()
+    
+    # Auto-link to mom user if email matches
+    linked_mom_id = None
+    if client_data.email:
+        existing_mom = await db.users.find_one(
+            {"email": client_data.email, "role": "MOM"},
+            {"_id": 0, "user_id": 1}
+        )
+        if existing_mom:
+            linked_mom_id = existing_mom["user_id"]
+    
+    client = {
+        "client_id": f"client_{uuid.uuid4().hex[:12]}",
+        "provider_id": user.user_id,
+        "provider_type": "MIDWIFE",
+        "name": client_data.name,
+        "email": client_data.email,
+        "phone": client_data.phone,
+        "edd": client_data.edd,
+        "planned_birth_setting": client_data.planned_birth_setting,
+        "lmp": client_data.lmp,
+        "gravida": client_data.gravida,
+        "para": client_data.para,
+        "status": "Prenatal",
+        "linked_mom_id": linked_mom_id,
+        "risk_flags": [],
+        "internal_notes": None,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.clients.insert_one(client)
+    client.pop('_id', None)
+    return client
+
+
+@router.get("/clients/{client_id}")
+async def get_midwife_client(client_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get a specific client with related data"""
+    client = await db.clients.find_one(
+        {"client_id": client_id, "provider_id": user.user_id},
+        {"_id": 0}
+    )
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    # Get related data
+    contracts = await db.contracts.find({"client_id": client_id}, {"_id": 0}).to_list(100)
+    invoices = await db.invoices.find({"client_id": client_id}, {"_id": 0}).to_list(100)
+    visits = await db.visits.find({"client_id": client_id}, {"_id": 0}).to_list(100)
+    notes = await db.notes.find({"client_id": client_id}, {"_id": 0}).to_list(100)
+    
+    return {
+        **client,
+        "contracts": contracts,
+        "invoices": invoices,
+        "visits": visits,
+        "notes": notes
+    }
+
+
+@router.put("/clients/{client_id}")
+async def update_midwife_client(client_id: str, client_data: ClientUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Update a client"""
+    update_data = {k: v for k, v in client_data.dict().items() if v is not None}
+    update_data["updated_at"] = get_now()
+    
+    result = await db.clients.update_one(
+        {"client_id": client_id, "provider_id": user.user_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    return {"message": "Client updated"}
+
+
+# ============== NOTES ROUTES ==============
+
+@router.get("/notes")
+async def get_midwife_notes(user: User = Depends(check_role(["MIDWIFE"])), client_id: Optional[str] = None):
+    """Get midwife's notes, optionally filtered by client"""
+    query = {"provider_id": user.user_id}
+    if client_id:
+        query["client_id"] = client_id
+    
+    notes = await db.notes.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return notes
+
+
+@router.post("/notes")
+async def create_midwife_note(note_data: NoteCreate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Create a new note"""
+    now = get_now()
+    
+    # Verify client belongs to this midwife
+    client = await db.clients.find_one(
+        {"client_id": note_data.client_id, "provider_id": user.user_id}
+    )
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    note = {
+        "note_id": f"note_{uuid.uuid4().hex[:12]}",
+        "provider_id": user.user_id,
+        "client_id": note_data.client_id,
+        "client_name": client.get("name", ""),
+        "content": note_data.content,
+        "note_type": note_data.note_type,
+        "date": now.strftime("%Y-%m-%d"),
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.notes.insert_one(note)
+    note.pop('_id', None)
+    return note
+
+
+@router.put("/notes/{note_id}")
+async def update_midwife_note(note_id: str, note_data: NoteUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Update a note"""
+    update_data = {k: v for k, v in note_data.dict().items() if v is not None}
+    update_data["updated_at"] = get_now()
+    
+    result = await db.notes.update_one(
+        {"note_id": note_id, "provider_id": user.user_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Note not found")
+    
+    return {"message": "Note updated"}
+
+
+@router.delete("/notes/{note_id}")
+async def delete_midwife_note(note_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Delete a note"""
+    result = await db.notes.delete_one(
+        {"note_id": note_id, "provider_id": user.user_id}
+    )
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Note not found")
+    
+    return {"message": "Note deleted"}
