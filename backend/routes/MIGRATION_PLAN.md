@@ -85,6 +85,16 @@ This document outlines the phased migration plan for breaking down the monolithi
 - Server.py reduced from 7,743 → 7,463 lines
 - Note: `/provider/clients/{client_id}/messages` moved to `/messages/client/{client_id}`
 
+### Phase 4: Auth Routes (COMPLETED)
+- [x] Update `routes/auth.py` for feature parity
+- [x] Include router in server.py
+- [x] Remove duplicated code from server.py
+- [x] Test all routes (28/28 tests passed)
+
+**Completed**: Auth routes now served from modular router.
+- `routes/auth.py` - 7 endpoints migrated (register, login, google-session, me, logout, set-role, update-profile)
+- Server.py reduced from 7,463 → 7,190 lines
+
 ### Phase 3: Role-Specific Routes
 - [ ] Create `routes/mom.py` - mom onboarding, profile, birth plan
 - [ ] Create `routes/doula.py` - doula onboarding, profile, dashboard
