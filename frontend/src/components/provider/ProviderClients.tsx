@@ -448,9 +448,15 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
-  header: { marginBottom: SIZES.lg },
+  header: { marginBottom: SIZES.sm },
   title: { fontSize: SIZES.fontXxl, fontFamily: FONTS.heading, color: COLORS.textPrimary },
   subtitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textSecondary, marginTop: 4 },
+  
+  // Filter toggle
+  filterContainer: { flexDirection: 'row', backgroundColor: COLORS.white, borderRadius: SIZES.radiusMd, padding: 4, marginBottom: SIZES.md },
+  filterButton: { flex: 1, paddingVertical: SIZES.sm, alignItems: 'center', borderRadius: SIZES.radiusSm },
+  filterText: { fontSize: SIZES.fontSm, fontWeight: '600', color: COLORS.textSecondary },
+  
   sectionTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.subheading, color: COLORS.textPrimary, marginBottom: SIZES.md, marginTop: SIZES.md },
   
   // Request cards
