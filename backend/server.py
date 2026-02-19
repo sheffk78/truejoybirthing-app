@@ -41,6 +41,9 @@ from midwife_contract_template import (
     DEFAULT_MIDWIFE_CONTRACT_FIELDS
 )
 
+# Import client utility functions
+from utils.client_utils import is_client_active, calculate_client_active_status
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
