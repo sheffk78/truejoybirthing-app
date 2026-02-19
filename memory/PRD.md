@@ -770,14 +770,15 @@ Hidden but accessible via navigation:
 
 ### Remaining Technical Debt (P3 - Low Priority)
 
-1. **Backend Modularization Progress**: server.py reduced from 7,888 → 6,599 lines (1,289 lines migrated, ~16.3% reduction)
+1. **Backend Modularization Progress**: server.py reduced from 7,888 → 6,483 lines (1,405 lines migrated, ~17.8% reduction)
    - **Phase 1 COMPLETED**: Created modular router foundation
    - **Phase 2 COMPLETED**: Admin (4 endpoints) + Marketplace (2 endpoints) migrated
    - **Phase 3 COMPLETED**: Notifications (3 endpoints) + Messages (5 endpoints) migrated
    - **Phase 4 COMPLETED**: Auth (7 endpoints) migrated
    - **Phase 5 COMPLETED**: Subscription (6 endpoints) migrated
    - **Phase 6 COMPLETED**: Mom (9 endpoints) migrated
-   - **Total Endpoints Migrated**: 36 endpoints across 7 modular routers
+   - **Phase 7 COMPLETED**: Doula (6 endpoints) + Midwife (4 endpoints) migrated
+   - **Total Endpoints Migrated**: 46 endpoints across 9 modular routers
    - **Active Modular Routers**:
      - `routes/auth.py` - Authentication
      - `routes/admin.py` - Admin user/content management
@@ -786,8 +787,10 @@ Hidden but accessible via navigation:
      - `routes/messages.py` - Real-time messaging
      - `routes/subscription.py` - Subscription management (MOCKED IAP)
      - `routes/mom.py` - Mom-specific routes
+     - `routes/doula.py` - Doula onboarding/profile/dashboard
+     - `routes/midwife.py` - Midwife onboarding/profile/dashboard
    - **Migration Plan**: `/app/backend/routes/MIGRATION_PLAN.md`
-   - **Remaining**: Doula routes, Midwife routes, contracts, invoices (~5,600 lines)
+   - **Remaining**: Doula/Midwife clients, contracts, invoices, visits (~5,500 lines)
 
 2. **Large Shared Components**: Some shared components are still large but functional
    - ProviderAppointments.tsx: 950 lines
