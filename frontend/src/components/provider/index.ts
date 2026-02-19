@@ -4,6 +4,9 @@ export { default as ProviderMessages } from './ProviderMessages';
 export { default as ProviderInvoices } from './ProviderInvoices';
 export { default as ProviderClients } from './ProviderClients';
 export { default as ProviderProfile } from './ProviderProfile';
+export { default as ProviderNotes } from './ProviderNotes';
+export { default as ProviderAppointments } from './ProviderAppointments';
+export { default as ProviderClientDetail } from './ProviderClientDetail';
 
 // Export config
 export { DOULA_CONFIG, MIDWIFE_CONFIG, getProviderConfig } from './config/providerConfig';
