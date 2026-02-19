@@ -68,8 +68,10 @@ def get_active_clients_query(provider_id: str, include_inactive: bool = False) -
     """
     Build MongoDB query for fetching clients.
     If include_inactive is False, only return clients that are still active.
+    
+    NOTE: Uses provider_id (standardized field name, 2026-02-19)
     """
-    base_query = {"pro_user_id": provider_id}
+    base_query = {"provider_id": provider_id}
     
     if include_inactive:
         return base_query
