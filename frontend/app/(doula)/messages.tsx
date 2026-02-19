@@ -302,6 +302,9 @@ const styles = StyleSheet.create({
     paddingBottom: SIZES.xxl,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: SIZES.lg,
   },
   title: {
@@ -313,6 +316,14 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     color: COLORS.textSecondary,
     marginTop: 4,
+  },
+  newMessageButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: COLORS.roleDoula,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyCard: {
     alignItems: 'center',
