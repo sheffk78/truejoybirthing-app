@@ -302,12 +302,12 @@ export default function MidwifeInvoicesScreen() {
       if (editingTemplate) {
         await apiRequest(`${API_ENDPOINTS.PAYMENT_INSTRUCTIONS}/${editingTemplate.template_id}`, {
           method: 'PUT',
-          body: JSON.stringify(templateData),
+          body: templateData,
         });
       } else {
         await apiRequest(API_ENDPOINTS.PAYMENT_INSTRUCTIONS, {
           method: 'POST',
-          body: JSON.stringify(templateData),
+          body: templateData,
         });
       }
 
