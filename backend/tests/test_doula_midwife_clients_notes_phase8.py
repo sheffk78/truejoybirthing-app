@@ -214,7 +214,7 @@ class TestDoulaNotes:
         })
         assert response.status_code == 200
         data = response.json()
-        self.token = data["access_token"]
+        self.token = data["session_token"]
         self.headers = {"Authorization": f"Bearer {self.token}"}
         
         # Create a test client for notes
@@ -496,7 +496,7 @@ class TestMidwifeNotes:
         })
         assert response.status_code == 200
         data = response.json()
-        self.token = data["access_token"]
+        self.token = data["session_token"]
         self.headers = {"Authorization": f"Bearer {self.token}"}
         
         # Create a test client for notes
@@ -644,7 +644,7 @@ class TestRoleBasedAccess:
             "email": DOULA_EMAIL,
             "password": DOULA_PASSWORD
         })
-        self.doula_token = doula_response.json()["access_token"]
+        self.doula_token = doula_response.json()["session_token"]
         self.doula_headers = {"Authorization": f"Bearer {self.doula_token}"}
         
         # Midwife token
@@ -652,7 +652,7 @@ class TestRoleBasedAccess:
             "email": MIDWIFE_EMAIL,
             "password": MIDWIFE_PASSWORD
         })
-        self.midwife_token = midwife_response.json()["access_token"]
+        self.midwife_token = midwife_response.json()["session_token"]
         self.midwife_headers = {"Authorization": f"Bearer {self.midwife_token}"}
     
     def test_doula_cannot_access_midwife_clients(self):
