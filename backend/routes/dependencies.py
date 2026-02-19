@@ -10,6 +10,8 @@ from typing import Optional, Callable, List
 from datetime import datetime, timezone, timedelta
 from passlib.context import CryptContext
 from jose import jwt
+from fastapi import Request, HTTPException, Depends
+from pydantic import BaseModel
 import uuid
 
 # Global references - initialized by init_dependencies()
@@ -27,6 +29,20 @@ ws_manager = None
 # Resend config
 SENDER_EMAIL: str = ""
 
+# Auth function references (set during init)
+_get_current_user: Optional[Callable] = None
+_check_role: Optional[Callable] = None
+
+
+class User(BaseModel):
+    """User model for auth - mirrors server.py User model"""
+    user_id: str
+    email: str
+    full_name: Optional[str] = None
+    role: Optional[str] = None
+    picture: Optional[str] = None
+    onboarding_completed: Optional[bool] = False
+
 
 def init_dependencies(
     database: AsyncIOMotorDatabase,
@@ -37,7 +53,9 @@ def init_dependencies(
     notification_func: Callable,
     email_func: Callable,
     websocket_manager,
-    sender_email: str
+    sender_email: str,
+    get_current_user_func: Callable = None,
+    check_role_func: Callable = None
 ):
     """
     Initialize shared dependencies from the main server module.
@@ -45,6 +63,7 @@ def init_dependencies(
     """
     global db, pwd_context, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_DAYS
     global create_notification, send_notification_email, ws_manager, SENDER_EMAIL
+    global _get_current_user, _check_role
     
     db = database
     pwd_context = password_context
@@ -55,6 +74,22 @@ def init_dependencies(
     send_notification_email = email_func
     ws_manager = websocket_manager
     SENDER_EMAIL = sender_email
+    _get_current_user = get_current_user_func
+    _check_role = check_role_func
+
+
+def get_current_user():
+    """Get the current user dependency - delegated to main server"""
+    if _get_current_user is None:
+        raise RuntimeError("Dependencies not initialized. Call init_dependencies first.")
+    return _get_current_user
+
+
+def check_role(required_roles: List[str]):
+    """Get role checker dependency - delegated to main server"""
+    if _check_role is None:
+        raise RuntimeError("Dependencies not initialized. Call init_dependencies first.")
+    return _check_role(required_roles)
 
 
 def generate_id(prefix: str = "id") -> str:
