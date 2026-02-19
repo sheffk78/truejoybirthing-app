@@ -2,18 +2,12 @@
  * useIAPSubscription Hook
  * 
  * A React hook that provides in-app purchase functionality for True Joy Birthing.
- * This hook manages the billing connection lifecycle and provides methods for
- * purchasing subscriptions and restoring purchases.
- * 
- * Note: On web, this hook returns mock/disabled functionality since IAP is native-only.
+ * On web, this returns mock/disabled functionality since IAP is native-only.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Only import react-native-iap on native platforms
-const RNIap = Platform.OS !== 'web' ? require('react-native-iap') : null;
 
 import {
   initializeBilling,
@@ -25,26 +19,20 @@ import {
   isIAPAvailable,
   getCurrentPlatform,
   getSubscriptionProvider,
-  getProductSkus,
   Product,
   ProductId,
 } from '../services/billing';
 import { API_BASE } from '../../src/constants/api';
 
 interface UseIAPSubscriptionReturn {
-  // State
   products: Product[];
   isLoading: boolean;
   error: string | null;
   isPurchasing: boolean;
   isRestoring: boolean;
-  
-  // Actions
   purchase: (productId: ProductId) => Promise<boolean>;
   restore: () => Promise<boolean>;
   refresh: () => Promise<void>;
-  
-  // Helpers
   isAvailable: boolean;
   platform: string;
   provider: string;
@@ -57,7 +45,6 @@ export function useIAPSubscription(): UseIAPSubscriptionReturn {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   
-  const purchaseListenerCleanup = useRef<(() => void) | null>(null);
   const pendingPurchaseResolve = useRef<((success: boolean) => void) | null>(null);
 
   // Initialize billing on mount
@@ -65,28 +52,19 @@ export function useIAPSubscription(): UseIAPSubscriptionReturn {
     let isMounted = true;
     
     const init = async () => {
-      if (!isIAPAvailable()) {
-        setIsLoading(false);
-        return;
-      }
-      
       try {
         setIsLoading(true);
         setError(null);
         
-        // Initialize the billing connection
         const initialized = await initializeBilling();
         
-        if (!initialized) {
+        if (!initialized && isIAPAvailable()) {
           if (isMounted) {
             setError('Failed to initialize billing');
             setIsLoading(false);
           }
           return;
         }
-        
-        // Set up purchase listeners
-        purchaseListenerCleanup.current = setupPurchaseListeners();
         
         // Fetch available products
         const availableProducts = await fetchProducts();
@@ -106,104 +84,16 @@ export function useIAPSubscription(): UseIAPSubscriptionReturn {
     
     init();
     
-    // Cleanup on unmount
     return () => {
       isMounted = false;
-      if (purchaseListenerCleanup.current) {
-        purchaseListenerCleanup.current();
-      }
       cleanupBilling();
-    };
-  }, []);
-
-  // Set up purchase listeners
-  const setupPurchaseListeners = useCallback(() => {
-    // Purchase success handler
-    const purchaseUpdateSubscription = RNIap.purchaseUpdatedListener(async (purchase) => {
-      console.log('[useIAPSubscription] Purchase updated:', purchase.productId);
-      
-      const receipt = purchase.transactionReceipt;
-      if (receipt) {
-        try {
-          // Acknowledge the purchase (Android)
-          if (Platform.OS === 'android' && !purchase.isAcknowledgedAndroid) {
-            await RNIap.acknowledgePurchaseAndroid({ token: purchase.purchaseToken! });
-          }
-          
-          // Finish the transaction (iOS)
-          if (Platform.OS === 'ios') {
-            await RNIap.finishTransaction({ purchase, isConsumable: false });
-          }
-          
-          // Validate receipt with backend
-          const token = await AsyncStorage.getItem('session_token');
-          if (token) {
-            const provider = getSubscriptionProvider();
-            if (provider !== 'WEB') {
-              await validateReceipt(
-                receipt,
-                provider as 'APPLE' | 'GOOGLE',
-                purchase.productId,
-                token,
-                API_BASE
-              );
-            }
-          }
-          
-          // Resolve pending purchase promise
-          if (pendingPurchaseResolve.current) {
-            pendingPurchaseResolve.current(true);
-            pendingPurchaseResolve.current = null;
-          }
-          
-          setIsPurchasing(false);
-          
-          Alert.alert(
-            'Purchase Successful!',
-            'Thank you for subscribing to True Joy Pro. Your subscription is now active.',
-            [{ text: 'OK' }]
-          );
-        } catch (e: any) {
-          console.error('[useIAPSubscription] Error processing purchase:', e);
-          setError(e.message);
-          setIsPurchasing(false);
-          
-          if (pendingPurchaseResolve.current) {
-            pendingPurchaseResolve.current(false);
-            pendingPurchaseResolve.current = null;
-          }
-        }
-      }
-    });
-    
-    // Purchase error handler
-    const purchaseErrorSubscription = RNIap.purchaseErrorListener((error) => {
-      console.error('[useIAPSubscription] Purchase error:', error);
-      
-      setIsPurchasing(false);
-      
-      if (error.code !== 'E_USER_CANCELLED') {
-        setError(error.message || 'Purchase failed');
-        Alert.alert('Purchase Failed', error.message || 'Something went wrong. Please try again.');
-      }
-      
-      if (pendingPurchaseResolve.current) {
-        pendingPurchaseResolve.current(false);
-        pendingPurchaseResolve.current = null;
-      }
-    });
-    
-    // Return cleanup function
-    return () => {
-      purchaseUpdateSubscription.remove?.();
-      purchaseErrorSubscription.remove?.();
     };
   }, []);
 
   // Purchase a subscription
   const purchase = useCallback(async (productId: ProductId): Promise<boolean> => {
     if (!isIAPAvailable()) {
-      Alert.alert('Not Available', 'In-app purchases are not available on this platform.');
+      Alert.alert('Not Available', 'In-app purchases are only available on iOS and Android.');
       return false;
     }
     
@@ -215,25 +105,12 @@ export function useIAPSubscription(): UseIAPSubscriptionReturn {
     setError(null);
     
     try {
-      // Create a promise that will be resolved by the purchase listener
-      const purchasePromise = new Promise<boolean>((resolve) => {
-        pendingPurchaseResolve.current = resolve;
-        
-        // Set a timeout for the purchase
-        setTimeout(() => {
-          if (pendingPurchaseResolve.current === resolve) {
-            pendingPurchaseResolve.current = null;
-            resolve(false);
-            setIsPurchasing(false);
-          }
-        }, 120000); // 2 minute timeout
-      });
-      
-      // Initiate the purchase
       await purchaseProduct(productId);
       
-      // Wait for the purchase to complete
-      return await purchasePromise;
+      // For native platforms, the result would come through listeners
+      // For now, just return after the call
+      setIsPurchasing(false);
+      return true;
     } catch (e: any) {
       console.error('[useIAPSubscription] Purchase error:', e);
       setError(e.message);
@@ -250,7 +127,7 @@ export function useIAPSubscription(): UseIAPSubscriptionReturn {
   // Restore purchases
   const restore = useCallback(async (): Promise<boolean> => {
     if (!isIAPAvailable()) {
-      Alert.alert('Not Available', 'In-app purchases are not available on this platform.');
+      Alert.alert('Not Available', 'Restore purchases is only available on iOS and Android.');
       return false;
     }
     
@@ -271,11 +148,11 @@ export function useIAPSubscription(): UseIAPSubscriptionReturn {
       if (token && purchases.length > 0) {
         const provider = getSubscriptionProvider();
         if (provider !== 'WEB') {
-          const purchase = purchases[0];
+          const p = purchases[0];
           await validateReceipt(
-            purchase.transactionReceipt,
+            p.transactionReceipt,
             provider as 'APPLE' | 'GOOGLE',
-            purchase.productId,
+            p.productId,
             token,
             API_BASE
           );
@@ -296,10 +173,6 @@ export function useIAPSubscription(): UseIAPSubscriptionReturn {
 
   // Refresh products
   const refresh = useCallback(async () => {
-    if (!isIAPAvailable()) {
-      return;
-    }
-    
     setIsLoading(true);
     setError(null);
     
