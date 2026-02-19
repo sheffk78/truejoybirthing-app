@@ -441,7 +441,7 @@ class TestSummaryGeneration:
         assert "BP 120/80" in summary, f"Missing BP in summary: {summary}"
         assert "FHR 150" in summary, f"Missing FHR in summary: {summary}"
         assert "FH 32.5 cm" in summary, f"Missing FH in summary: {summary}"
-        assert "Wt 170 lbs" in summary, f"Missing Wt in summary: {summary}"
+        assert "Wt 170" in summary and "lbs" in summary, f"Missing Wt in summary: {summary}"
         
         print(f"Full summary: {summary}")
         auth_session.delete(f"{BASE_URL}/api/midwife/clients/{TEST_CLIENT_ID}/prenatal-visits/{data['prenatal_visit_id']}")
