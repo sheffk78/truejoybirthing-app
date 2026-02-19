@@ -5458,6 +5458,34 @@ async def update_midwife_profile(profile_data: MidwifeProfileUpdate, user: User 
     
     return {"message": "Profile updated"}
 
+
+# ============== MIDWIFE CONTRACT DEFAULTS ==============
+@api_router.get("/midwife/contract-defaults")
+async def get_midwife_contract_defaults(user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get saved contract defaults for this midwife"""
+    defaults = await db.contract_defaults.find_one(
+        {"user_id": user.user_id, "provider_type": "MIDWIFE"},
+        {"_id": 0}
+    )
+    return defaults or {}
+
+@api_router.put("/midwife/contract-defaults")
+async def save_midwife_contract_defaults(data: dict, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Save contract text defaults for future contracts"""
+    now = datetime.now(timezone.utc)
+    await db.contract_defaults.update_one(
+        {"user_id": user.user_id, "provider_type": "MIDWIFE"},
+        {"$set": {
+            **data,
+            "user_id": user.user_id,
+            "provider_type": "MIDWIFE",
+            "updated_at": now
+        }},
+        upsert=True
+    )
+    return {"message": "Contract defaults saved"}
+
+
 @api_router.get("/midwife/dashboard")
 async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
     """Get midwife dashboard stats"""
