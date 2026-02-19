@@ -71,11 +71,10 @@ class TestAuthLogin:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "token" in data
-        assert "user" in data
-        assert data["user"]["email"] == mom_credentials["email"]
-        assert data["user"]["role"] == "MOM"
-        print(f"Mom login successful: {data['user']['full_name']}")
+        assert "session_token" in data
+        assert data["email"] == mom_credentials["email"]
+        assert data["role"] == "MOM"
+        print(f"Mom login successful: {data['full_name']}")
 
     def test_doula_login_success(self, doula_credentials):
         """Test doula can login successfully"""
@@ -85,11 +84,10 @@ class TestAuthLogin:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "token" in data
-        assert "user" in data
-        assert data["user"]["email"] == doula_credentials["email"]
-        assert data["user"]["role"] == "DOULA"
-        print(f"Doula login successful: {data['user']['full_name']}")
+        assert "session_token" in data
+        assert data["email"] == doula_credentials["email"]
+        assert data["role"] == "DOULA"
+        print(f"Doula login successful: {data['full_name']}")
 
 
 @pytest.fixture(scope="module")
@@ -104,10 +102,10 @@ def mom_session():
     )
     if response.status_code != 200:
         pytest.skip("Mom login failed")
-    token = response.json()["token"]
+    session_token = response.json()["session_token"]
     session = requests.Session()
     session.headers.update({
-        "Authorization": f"Bearer {token}",
+        "Authorization": f"Bearer {session_token}",
         "Content-Type": "application/json"
     })
     return session
@@ -125,10 +123,10 @@ def doula_session():
     )
     if response.status_code != 200:
         pytest.skip("Doula login failed")
-    token = response.json()["token"]
+    session_token = response.json()["session_token"]
     session = requests.Session()
     session.headers.update({
-        "Authorization": f"Bearer {token}",
+        "Authorization": f"Bearer {session_token}",
         "Content-Type": "application/json"
     })
     return session
@@ -409,8 +407,8 @@ class TestAuthRoutesRegression:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "token" in data
-        assert "user" in data
+        assert "session_token" in data
+        assert "user_id" in data
         print("Auth login endpoint works")
 
     def test_me_endpoint_works(self, mom_session):
