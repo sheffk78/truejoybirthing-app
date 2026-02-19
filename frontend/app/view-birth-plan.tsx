@@ -48,13 +48,14 @@ export default function ViewBirthPlanScreen() {
     setDownloadingPdf(true);
     try {
       const baseUrl = getApiBaseUrl();
-      const pdfUrl = `${baseUrl}/api/provider/client/${momId}/birth-plan/pdf`;
+      // baseUrl already includes /api, so don't add it again
+      const pdfUrl = `${baseUrl}/provider/client/${momId}/birth-plan/pdf`;
       
       if (Platform.OS === 'web') {
         // For web, open in new tab with auth header via fetch
         const response = await fetch(pdfUrl, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${sessionToken}`,
           },
         });
         
