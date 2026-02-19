@@ -1,5 +1,6 @@
 // Shared Notes Screen for Doula and Midwife
 // Uses unified /api/provider/notes endpoint
+// Supports client-scoped access when clientId param is provided
 
 import React, { useEffect, useState } from 'react';
 import {
@@ -16,7 +17,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
