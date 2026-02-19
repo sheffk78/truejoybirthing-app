@@ -1,0 +1,188 @@
+{
+  "summary": "Backend refactoring Phase 5 testing complete - All 6 subscription routes migrated from server.py to routes/subscription.py are working correctly. 29/29 tests passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_subscription_routes_phase5.py",
+    "/app/test_reports/pytest/pytest_subscription_routes_phase5.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Modular subscription router migration successful - routes/subscription.py properly integrated via dependencies.py pattern",
+    "All subscription routes correctly prefixed with /api/subscription through APIRouter(prefix='/subscription') and api_router inclusion",
+    "Datetime timezone bug fix verified - ensure_aware() helper in subscription.py correctly handles offset-naive vs offset-aware datetimes",
+    "Role-based access control working - Only DOULA/MIDWIFE can start-trial, activate, cancel, validate-receipt; MOM gets free access",
+    "MOCKED subscription system properly marked - start-trial, activate, validate-receipt return mock data (not connected to Apple/Google IAP)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_subscription_routes_phase5.py"
+  ],
+  "success_rate": {
+    "backend": "100% (29/29 tests passed)",
+    "frontend": "N/A (backend-only testing)"
+  },
+  "test_credentials": {
+    "doula": "demo.doula@truejoybirthing.com / DemoScreenshot2024!",
+    "mom": "demo.mom@truejoybirthing.com / DemoScreenshot2024!"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend refactoring Phase 5 complete. Subscription routes at /api/subscription/* now served from modular router (routes/subscription.py). All 6 subscription endpoints verified: status, pricing, start-trial, activate, cancel, validate-receipt. Server.py reduced from 7,190 to 6,893 lines. Auth routes (Phase 4) and provider routes continue to work correctly.",
+  "verified_features": {
+    "subscription_status": {
+      "status": "VERIFIED",
+      "endpoint": "GET /api/subscription/status",
+      "tests": [
+        "test_status_returns_subscription_info_for_doula: PASS",
+        "test_status_returns_free_access_for_mom: PASS",
+        "test_status_requires_authentication: PASS"
+      ],
+      "note": "Returns has_pro_access, subscription_status, plan_type; MOMs always get free access"
+    },
+    "subscription_pricing": {
+      "status": "VERIFIED",
+      "endpoint": "GET /api/subscription/pricing",
+      "tests": [
+        "test_pricing_returns_plan_info: PASS",
+        "test_pricing_is_public: PASS"
+      ],
+      "note": "Public endpoint - monthly $29, annual $276, 30-day trial"
+    },
+    "subscription_start_trial": {
+      "status": "VERIFIED (MOCKED)",
+      "endpoint": "POST /api/subscription/start-trial",
+      "tests": [
+        "test_start_trial_requires_provider_role: PASS",
+        "test_start_trial_validates_plan_type: PASS",
+        "test_start_trial_monthly_success: PASS",
+        "test_start_trial_requires_authentication: PASS"
+      ],
+      "note": "MOCKED - Only DOULA/MIDWIFE can start trial; MOM gets 403"
+    },
+    "subscription_activate": {
+      "status": "VERIFIED (MOCKED)",
+      "endpoint": "POST /api/subscription/activate",
+      "tests": [
+        "test_activate_requires_provider_role: PASS",
+        "test_activate_monthly_subscription: PASS",
+        "test_activate_annual_subscription: PASS",
+        "test_activate_requires_authentication: PASS"
+      ],
+      "note": "MOCKED - Activates subscription after trial"
+    },
+    "subscription_cancel": {
+      "status": "VERIFIED",
+      "endpoint": "POST /api/subscription/cancel",
+      "tests": [
+        "test_cancel_requires_provider_role: PASS",
+        "test_cancel_subscription_for_doula: PASS",
+        "test_cancel_requires_authentication: PASS"
+      ],
+      "note": "Only DOULA/MIDWIFE can cancel; returns provider-specific instructions"
+    },
+    "subscription_validate_receipt": {
+      "status": "VERIFIED (MOCKED)",
+      "endpoint": "POST /api/subscription/validate-receipt",
+      "tests": [
+        "test_validate_receipt_requires_provider_role: PASS",
+        "test_validate_receipt_rejects_invalid_provider: PASS",
+        "test_validate_receipt_rejects_invalid_product_id: PASS",
+        "test_validate_receipt_apple_monthly: PASS",
+        "test_validate_receipt_google_annual: PASS",
+        "test_validate_receipt_requires_authentication: PASS"
+      ],
+      "note": "MOCKED - Validates Apple/Google product IDs; ready for real IAP integration"
+    },
+    "auth_routes_regression": {
+      "status": "VERIFIED",
+      "endpoints": ["POST /api/auth/login", "GET /api/auth/me"],
+      "tests": [
+        "test_login_endpoint_works: PASS",
+        "test_me_endpoint_works: PASS"
+      ]
+    },
+    "provider_routes_regression": {
+      "status": "VERIFIED",
+      "endpoints": ["GET /api/provider/clients", "GET /api/provider/dashboard"],
+      "tests": [
+        "test_provider_clients_endpoint: PASS",
+        "test_provider_dashboard_endpoint: PASS"
+      ]
+    }
+  },
+  "backend_test_results": {
+    "TestSetup": [
+      "test_base_url_configured: PASS",
+      "test_health_check: PASS"
+    ],
+    "TestSubscriptionStatus": [
+      "test_status_returns_subscription_info_for_doula: PASS",
+      "test_status_returns_free_access_for_mom: PASS",
+      "test_status_requires_authentication: PASS"
+    ],
+    "TestSubscriptionPricing": [
+      "test_pricing_returns_plan_info: PASS",
+      "test_pricing_is_public: PASS"
+    ],
+    "TestSubscriptionStartTrial": [
+      "test_start_trial_requires_provider_role: PASS",
+      "test_start_trial_validates_plan_type: PASS",
+      "test_start_trial_monthly_success: PASS",
+      "test_start_trial_requires_authentication: PASS"
+    ],
+    "TestSubscriptionCancel": [
+      "test_cancel_requires_provider_role: PASS",
+      "test_cancel_subscription_for_doula: PASS",
+      "test_cancel_requires_authentication: PASS"
+    ],
+    "TestSubscriptionActivate": [
+      "test_activate_requires_provider_role: PASS",
+      "test_activate_monthly_subscription: PASS",
+      "test_activate_annual_subscription: PASS",
+      "test_activate_requires_authentication: PASS"
+    ],
+    "TestSubscriptionValidateReceipt": [
+      "test_validate_receipt_requires_provider_role: PASS",
+      "test_validate_receipt_rejects_invalid_provider: PASS",
+      "test_validate_receipt_rejects_invalid_product_id: PASS",
+      "test_validate_receipt_apple_monthly: PASS",
+      "test_validate_receipt_google_annual: PASS",
+      "test_validate_receipt_requires_authentication: PASS"
+    ],
+    "TestAuthRoutesStillWork": [
+      "test_login_endpoint_works: PASS",
+      "test_me_endpoint_works: PASS"
+    ],
+    "TestProviderRoutesStillWork": [
+      "test_provider_clients_endpoint: PASS",
+      "test_provider_dashboard_endpoint: PASS"
+    ],
+    "TestSubscriptionStatusAfterActivation": [
+      "test_status_shows_active_after_activation: PASS"
+    ]
+  },
+  "architecture_notes": {
+    "modular_routes": "Subscription routes migrated to /app/backend/routes/subscription.py with prefix='/subscription'",
+    "dependencies": "Shared dependencies via /app/backend/routes/dependencies.py - uses get_current_user(), check_role(), db, get_now()",
+    "integration": "Router included in server.py: api_router.include_router(subscription_routes.router)",
+    "datetime_fix": "ensure_aware() helper ensures all datetime comparisons use timezone-aware objects",
+    "mocked_apis": "start-trial, activate, validate-receipt are MOCKED implementations (not connected to real Apple/Google IAP)"
+  },
+  "mocked_apis": {
+    "has_mocked_apis": true,
+    "mocked_apis_list": [
+      "POST /api/subscription/start-trial - Returns mock trial subscription",
+      "POST /api/subscription/activate - Returns mock active subscription",
+      "POST /api/subscription/validate-receipt - Mock validation (no real Apple/Google server verification)"
+    ],
+    "note": "These endpoints return valid response formats but don't connect to real IAP systems"
+  }
+}
