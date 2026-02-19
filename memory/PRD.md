@@ -147,6 +147,43 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 ### 🟡 BLOCKED
 - None (previously: Email notifications domain verification - now resolved)
 
+### ✅ RECENTLY COMPLETED (2026-02-19) - Pre-Launch Subscription Readiness Check
+
+#### Apple StoreKit & Google Play Billing Architecture (COMPLETED - 2026-02-19)
+- [x] **Backend subscription_provider field**: All subscription records now store subscription_provider (APPLE/GOOGLE/MOCK/WEB)
+- [x] **Backend auto_renewing field**: Tracks auto-renewal status for subscriptions
+- [x] **Backend subscription_end_date field**: Tracks when subscriptions expire
+- [x] **Validate Receipt Endpoint**: `POST /api/subscription/validate-receipt` for validating store receipts
+  - Validates product IDs match provider (Apple vs Google format)
+  - Apple products: `truejoy.pro.monthly`, `truejoy.pro.annual` (dot notation)
+  - Google products: `truejoy_pro_monthly`, `truejoy_pro_annual` (underscore notation)
+  - Returns subscription status with provider info
+- [x] **Cancel Endpoint Enhanced**: Returns provider-specific management URLs
+  - Apple: `https://apps.apple.com/account/subscriptions`
+  - Google: `https://play.google.com/store/account/subscriptions`
+- [x] **Frontend Billing Service**: `/app/frontend/app/services/billing.ts`
+  - Placeholder functions for react-native-iap integration
+  - `initializeBilling()`, `fetchProducts()`, `purchaseProduct()`, `restorePurchases()`
+  - `validateReceipt()`, `getSubscriptionStatus()`, `openSubscriptionManagement()`
+  - Platform detection and provider mapping (iOS→APPLE, Android→GOOGLE)
+- [x] **Frontend Subscription Config**: `/app/frontend/app/config/subscriptionConfig.ts`
+  - Product IDs for both Apple and Google stores
+  - Plan details, pricing, features, trial duration (30 days)
+  - Helper functions: `getAnnualSavings()`, `getStatusDisplayText()`, `getProviderDisplayName()`
+- [x] **Updated subscriptionStore.ts**: Added `validateReceipt()` method and `getSubscriptionManageUrl()`
+- [x] **Updated ProGate.tsx**: Uses config for trial days, added SubscriptionInfoCard component
+- [x] **Updated plans-pricing.tsx**: Shows subscription management info for active subscribers
+- [x] **Case-insensitive role check**: Fixed `check_role()` to handle lowercase role values
+- [x] **All 28 backend tests passing** (iteration_85.json)
+
+**Product IDs for App Store Connect & Google Play Console:**
+| Platform | Monthly Product ID | Annual Product ID |
+|----------|-------------------|-------------------|
+| Apple    | truejoy.pro.monthly | truejoy.pro.annual |
+| Google   | truejoy_pro_monthly | truejoy_pro_annual |
+
+**Note**: In-App Purchase processing is MOCKED. The `validate-receipt` endpoint accepts any receipt without actual server validation. Ready for react-native-iap integration.
+
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Code Refactoring
 
 #### Shared Provider Component Architecture (COMPLETED - 2026-02-19)
