@@ -103,7 +103,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
     
     try {
       // Fetch client timeline (includes client details)
-      const data = await apiRequest(`/api/provider/clients/${clientId}/timeline`);
+      const data = await apiRequest(`/provider/clients/${clientId}/timeline`);
       setClient(data.client);
       setTimeline(data.timeline || []);
     } catch (error: any) {
