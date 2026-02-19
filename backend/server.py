@@ -44,12 +44,8 @@ from midwife_contract_template import (
 # Import client utility functions
 from utils.client_utils import is_client_active, calculate_client_active_status
 
-# Import modular routers
+# Import modular route dependencies ONLY (routers imported after auth is defined)
 from routes import dependencies as route_deps
-from routes import admin as admin_routes
-from routes import marketplace as marketplace_routes
-from routes import notifications as notifications_routes
-from routes import messages as messages_routes
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
