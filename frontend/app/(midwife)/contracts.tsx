@@ -186,9 +186,25 @@ export default function MidwifeContracts() {
     }
   };
 
-  const openCreateModal = () => {
+  const openCreateModal = async () => {
     // Initialize form with default values
     const initialData = { ...DEFAULT_VALUES };
+    
+    // Try to load user's saved defaults
+    try {
+      const savedDefaults = await apiRequest('/midwife/contract-defaults');
+      if (savedDefaults && Object.keys(savedDefaults).length > 1) {
+        // Merge saved defaults with initial values
+        Object.keys(savedDefaults).forEach(key => {
+          if (savedDefaults[key] !== null && savedDefaults[key] !== undefined) {
+            initialData[key] = savedDefaults[key];
+          }
+        });
+      }
+    } catch (error) {
+      console.log('No saved defaults found, using defaults');
+    }
+    
     setFormData(initialData);
     setSelectedClientId('');
     setSelectedTemplateId('');
