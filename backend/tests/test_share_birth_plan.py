@@ -21,7 +21,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cleanup-refactor.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://provider-consolidate.preview.emergentagent.com').rstrip('/')
 
 # Test credentials from main agent
 MOM_EMAIL = "sharemom2_1771213474@test.com"
