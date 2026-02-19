@@ -3385,15 +3385,21 @@ async def update_doula_profile(profile_data: DoulaProfileUpdate, user: User = De
 @api_router.get("/doula/dashboard")
 async def get_doula_dashboard(user: User = Depends(check_role(["DOULA"]))):
     """Get doula dashboard stats"""
-    # Count clients by status
-    total_clients = await db.clients.count_documents({"provider_id": user.user_id, "provider_type": "DOULA"})
-    active_clients = await db.clients.count_documents({"provider_id": user.user_id, "provider_type": "DOULA", "status": "Active"})
+    # Count clients by status - use correct field names
+    total_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "pro_type": "DOULA"})
+    active_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "pro_type": "DOULA", "status": "Active"})
+    
+    # Also count clients with linked_mom_id as active (connected Moms)
+    connected_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "pro_type": "DOULA", "linked_mom_id": {"$ne": None}})
+    
+    # Use the higher of the two counts (connected or Active status)
+    active_clients = max(active_clients, connected_clients)
     
     # Count pending invoices
-    pending_invoices = await db.invoices.count_documents({"doula_id": user.user_id, "status": {"$in": ["Sent", "Overdue"]}})
+    pending_invoices = await db.invoices.count_documents({"pro_user_id": user.user_id, "status": {"$in": ["Sent", "Overdue"]}})
     
-    # Count contracts this week
-    contracts_pending = await db.contracts.count_documents({"doula_id": user.user_id, "status": "Sent"})
+    # Count contracts pending signature
+    contracts_pending = await db.contracts.count_documents({"pro_user_id": user.user_id, "status": "Sent"})
     
     # Count upcoming appointments (accepted, future dates)
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
