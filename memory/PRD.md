@@ -251,6 +251,15 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Code Refactoring
 
+#### Contracts Screen Consolidation (COMPLETED - 2026-02-19)
+- [x] **ProviderContracts.tsx** - Created shared contracts component (1156 lines)
+- [x] **contractsConfig.ts** - Created contracts config with role-specific sections and defaults (258 lines)
+- [x] **Thin Wrappers** - Both contracts screens reduced to 8 lines each
+  - `(doula)/contracts.tsx` - 8 lines (was 1514)
+  - `(midwife)/contracts.tsx` - 8 lines (was 1523)
+- [x] **Line Reduction**: 3037 → 1430 lines (53% reduction)
+- [x] **Bug Fixed**: Testing agent fixed endpoint paths from hyphenated to slash format
+
 #### Client-Centric Messaging (COMPLETED - 2026-02-19)
 - [x] **Message Model** - Added optional `client_id` field to link messages to specific client relationships
 - [x] **Auto Client-ID Resolution** - When provider sends message to mom (or vice versa), `client_id` is auto-populated from clients collection
