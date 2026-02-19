@@ -247,6 +247,7 @@ export default function MidwifeClientsScreen() {
                 key={client.client_id}
                 activeOpacity={0.8}
                 data-testid={`client-card-${client.client_id}`}
+                onPress={() => router.push(`/(midwife)/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`)}
               >
                 <Card style={styles.clientCard}>
                   <View style={styles.clientHeader}>
