@@ -1726,76 +1726,9 @@ async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends
     return {"message": "Thank you. Your feedback was sent to the True Joy Birthing team."}
 
 # ============== MOM ROUTES ==============
-
-@api_router.post("/mom/onboarding")
-async def mom_onboarding(profile_data: MomProfileUpdate, user: User = Depends(check_role(["MOM"]))):
-    """Complete mom onboarding"""
-    now = datetime.now(timezone.utc)
-    
-    # Create or update mom profile
-    mom_profile = {
-        "user_id": user.user_id,
-        "due_date": profile_data.due_date,
-        "planned_birth_setting": profile_data.planned_birth_setting,
-        "zip_code": profile_data.zip_code,
-        "location_city": profile_data.location_city,
-        "location_state": profile_data.location_state,
-        "connected_doula_id": None,
-        "connected_midwife_id": None,
-        "updated_at": now
-    }
-    
-    await db.mom_profiles.update_one(
-        {"user_id": user.user_id},
-        {"$set": mom_profile},
-        upsert=True
-    )
-    
-    # Initialize birth plan
-    birth_plan_exists = await db.birth_plans.find_one({"user_id": user.user_id})
-    if not birth_plan_exists:
-        birth_plan = {
-            "plan_id": f"plan_{uuid.uuid4().hex[:12]}",
-            "user_id": user.user_id,
-            "sections": [
-                {"section_id": s["section_id"], "title": s["title"], "status": "Not started", "data": {}, "discussion_notes": []}
-                for s in BIRTH_PLAN_SECTIONS
-            ],
-            "completion_percentage": 0.0,
-            "created_at": now,
-            "updated_at": now
-        }
-        await db.birth_plans.insert_one(birth_plan)
-    
-    # Mark onboarding complete
-    await db.users.update_one(
-        {"user_id": user.user_id},
-        {"$set": {"onboarding_completed": True, "updated_at": now}}
-    )
-    
-    return {"message": "Onboarding completed", "profile": mom_profile}
-
-@api_router.get("/mom/profile")
-async def get_mom_profile(user: User = Depends(check_role(["MOM"]))):
-    """Get mom profile"""
-    profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
-    if not profile:
-        return {"user_id": user.user_id}
-    return profile
-
-@api_router.put("/mom/profile")
-async def update_mom_profile(profile_data: MomProfileUpdate, user: User = Depends(check_role(["MOM"]))):
-    """Update mom profile"""
-    update_data = {k: v for k, v in profile_data.dict().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc)
-    
-    await db.mom_profiles.update_one(
-        {"user_id": user.user_id},
-        {"$set": update_data},
-        upsert=True
-    )
-    
-    return {"message": "Profile updated"}
+# MIGRATED TO: routes/mom.py
+# Routes: /mom/onboarding, /mom/profile, /mom/midwife-visits, /mom/team, /mom/team-providers, 
+#         /mom/invoices, /mom/invoices/{id}, /mom/appointments
 
 # ============== BIRTH PLAN ROUTES ==============
 
