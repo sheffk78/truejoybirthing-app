@@ -1462,13 +1462,23 @@ async def login(login_data: UserLogin, response: Response):
     """Login with email/password"""
     user_doc = await db.users.find_one({"email": login_data.email}, {"_id": 0})
     
+    # Debug logging
+    import logging
+    logging.info(f"Login attempt for: {login_data.email}")
+    logging.info(f"User found: {bool(user_doc)}")
+    if user_doc:
+        logging.info(f"Has password_hash: {bool(user_doc.get('password_hash'))}")
+    
     if not user_doc:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     if not user_doc.get("password_hash"):
         raise HTTPException(status_code=401, detail="Please use Google login for this account")
     
-    if not verify_password(login_data.password, user_doc["password_hash"]):
+    password_valid = verify_password(login_data.password, user_doc["password_hash"])
+    logging.info(f"Password valid: {password_valid}")
+    
+    if not password_valid:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     now = datetime.now(timezone.utc)
