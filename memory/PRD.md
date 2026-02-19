@@ -697,16 +697,35 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
    - After: 1430 lines total (53% reduction)
    - Solution: Created shared `ProviderContracts.tsx` with `contractsConfig.ts`
 
-2. **Message Model Not Client-Centric** ✅ FIXED
+2. **Contract Templates Duplication** ✅ FIXED
+   - Before: ~1125 lines duplicated between Doula and Midwife
+   - After: ~740 lines total (35% reduction)
+   - Solution: Created shared `ProviderContractTemplates.tsx`
+
+3. **Message Model Not Client-Centric** ✅ FIXED
    - Added `client_id` field to Message model
    - Auto-populated when sending messages between provider and mom
    - New endpoint: `GET /api/provider/clients/{client_id}/messages`
 
-3. **Provider Messaging Permissions** ✅ FIXED
+4. **Provider Messaging Permissions** ✅ FIXED
    - Updated `check_provider_can_message` to check both `share_requests` AND `clients` collections
    - Linked clients can now message without requiring a share_request record
 
-### Identified Code Smells (Prioritized)
+5. **Field Naming Inconsistency** ✅ FIXED (2026-02-19)
+   - Standardized `pro_user_id` → `provider_id` (70 occurrences)
+   - Standardized `pro_type` → `provider_type` (33 occurrences)
+   - Migration script: `/app/backend/migrations/standardize_provider_id.py`
+   - All 15 backend tests passed after migration
+
+6. **Unused Components** ✅ FIXED
+   - Deleted `/app/frontend/src/components/ProGate.tsx` (was never used)
+
+7. **Dead Code in client_utils.py** ✅ FIXED
+   - Updated `get_active_clients_query()` to use `provider_id`
+   - Updated `build_provider_query()` to use `provider_id` consistently
+   - Updated helper function docstrings to reflect new standard
+
+### Documented Architecture Decisions
 
 **P1 - High Impact Technical Debt:**
 1. **Field Naming Inconsistency**: `provider_id` (105 occurrences) vs `pro_user_id` (70 occurrences)
