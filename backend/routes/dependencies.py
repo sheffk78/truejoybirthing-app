@@ -28,6 +28,7 @@ ws_manager = None
 
 # Resend config
 SENDER_EMAIL: str = ""
+RESEND_API_KEY: str = ""
 
 # Auth function references (set during init)
 _get_current_user: Optional[Callable] = None
@@ -55,14 +56,15 @@ def init_dependencies(
     websocket_manager,
     sender_email: str,
     get_current_user_func: Callable = None,
-    check_role_func: Callable = None
+    check_role_func: Callable = None,
+    resend_api_key: str = ""
 ):
     """
     Initialize shared dependencies from the main server module.
     Called once at application startup.
     """
     global db, pwd_context, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_DAYS
-    global create_notification, send_notification_email, ws_manager, SENDER_EMAIL
+    global create_notification, send_notification_email, ws_manager, SENDER_EMAIL, RESEND_API_KEY
     global _get_current_user, _check_role
     
     db = database
@@ -74,6 +76,7 @@ def init_dependencies(
     send_notification_email = email_func
     ws_manager = websocket_manager
     SENDER_EMAIL = sender_email
+    RESEND_API_KEY = resend_api_key
     _get_current_user = get_current_user_func
     _check_role = check_role_func
 
