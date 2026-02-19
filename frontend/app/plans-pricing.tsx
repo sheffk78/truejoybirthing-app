@@ -7,12 +7,21 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Linking,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSubscriptionStore } from '../src/store/subscriptionStore';
 import { useAuthStore } from '../src/store/authStore';
+import { 
+  SUBSCRIPTION_CONFIG, 
+  getAnnualSavings, 
+  getStatusDisplayText,
+  getProviderDisplayName 
+} from './config/subscriptionConfig';
+import { isIAPAvailable, getCurrentPlatform } from './services/billing';
 
 const COLORS = {
   primary: '#7c3aed',
