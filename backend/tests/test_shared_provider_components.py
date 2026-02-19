@@ -28,7 +28,8 @@ class TestAuthHelpers:
         )
         if response.status_code == 200:
             data = response.json()
-            return data.get("access_token") or data.get("token")
+            # API returns session_token
+            return data.get("session_token") or data.get("access_token") or data.get("token")
         return None
     
     @staticmethod
