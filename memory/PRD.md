@@ -77,6 +77,10 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Unified Visits** - `/api/provider/visits` (Midwife only) linked to appointments
 - [x] **Client Timeline** - `/api/provider/clients/{client_id}/timeline` returns all activity for a client
 - [x] **Unified Dashboard** - `/api/provider/dashboard` returns role-appropriate stats
+- [x] **Frontend Clients Wiring** - ProviderClients now uses `/api/provider/clients` with filter toggle
+- [x] **Mom Appointment Creation** - Moms can request appointments with providers from their team via modal UI
+- [x] **Mom Team Providers API** - `GET /api/mom/team-providers` returns accepted providers
+- [x] **Mom Appointment API** - `POST /api/mom/appointments` creates appointment request with validation
 
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Profile Photo Display
 - [x] **Marketplace Provider Photos** - Provider cards and modal now show profile photos when available
