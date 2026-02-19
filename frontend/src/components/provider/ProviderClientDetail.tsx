@@ -15,11 +15,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Icon } from '../../Icon';
-import Card from '../../Card';
-import Button from '../../Button';
-import { apiRequest } from '../../../utils/api';
-import { COLORS, SIZES, FONTS } from '../../../constants/theme';
+import { Icon } from '../Icon';
+import Card from '../Card';
+import Button from '../Button';
+import { apiRequest } from '../../utils/api';
+import { COLORS, SIZES, FONTS } from '../../constants/theme';
 import { ProviderConfig, getProviderConfig } from '../config/providerConfig';
 
 interface Client {
