@@ -110,6 +110,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       const token = await getAuthToken();
       if (!token) throw new Error('Not authenticated');
       
+      // Get the subscription provider based on current platform
+      const subscriptionProvider = getSubscriptionProvider();
+      
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.SUBSCRIPTION_START_TRIAL}`, {
         method: 'POST',
         headers: {
@@ -117,7 +120,10 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
           'Authorization': `Bearer ${token}`,
         },
         credentials: 'include',
-        body: JSON.stringify({ plan_type: planType }),
+        body: JSON.stringify({ 
+          plan_type: planType,
+          subscription_provider: subscriptionProvider
+        }),
       });
       
       if (!response.ok) {
@@ -139,6 +145,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       const token = await getAuthToken();
       if (!token) throw new Error('Not authenticated');
       
+      // Get the subscription provider based on current platform
+      const subscriptionProvider = getSubscriptionProvider();
+      
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.SUBSCRIPTION_ACTIVATE}`, {
         method: 'POST',
         headers: {
@@ -146,7 +155,10 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
           'Authorization': `Bearer ${token}`,
         },
         credentials: 'include',
-        body: JSON.stringify({ plan_type: planType }),
+        body: JSON.stringify({ 
+          plan_type: planType,
+          subscription_provider: subscriptionProvider
+        }),
       });
       
       if (!response.ok) {
@@ -187,6 +199,49 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     }
   },
   
+  validateReceipt: async (receipt: string, productId: string) => {
+    try {
+      set({ isLoading: true, error: null });
+      const token = await getAuthToken();
+      if (!token) throw new Error('Not authenticated');
+      
+      const subscriptionProvider = getSubscriptionProvider();
+      
+      // Only APPLE and GOOGLE can validate receipts
+      if (subscriptionProvider !== 'APPLE' && subscriptionProvider !== 'GOOGLE') {
+        console.log('[Subscription] Cannot validate receipt - not on mobile platform');
+        set({ isLoading: false });
+        return false;
+      }
+      
+      const response = await fetch(`${API_BASE}/api/subscription/validate-receipt`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          receipt,
+          subscription_provider: subscriptionProvider,
+          product_id: productId
+        }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to validate receipt');
+      }
+      
+      // Refresh status after validation
+      await get().fetchStatus();
+      return true;
+    } catch (error: any) {
+      set({ isLoading: false, error: error.message });
+      return false;
+    }
+  },
+  
   hasProAccess: () => {
     const status = get().status;
     if (!status) return false;
@@ -197,6 +252,20 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     const status = get().status;
     if (!status) return false;
     return status.is_mom;
+  },
+  
+  getSubscriptionManageUrl: () => {
+    const status = get().status;
+    if (!status || !status.subscription_provider) return null;
+    
+    switch (status.subscription_provider) {
+      case 'APPLE':
+        return 'https://apps.apple.com/account/subscriptions';
+      case 'GOOGLE':
+        return 'https://play.google.com/store/account/subscriptions';
+      default:
+        return null;
+    }
   },
 }));
 
