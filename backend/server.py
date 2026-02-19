@@ -6709,7 +6709,8 @@ async def get_client_timeline(client_id: str, user: User = Depends(check_role(["
     appointments, visits, notes, contracts, invoices
     """
     client = await db.clients.find_one(
-        {"client_id": client_id, "pro_user_id": user.user_id}
+        {"client_id": client_id, "pro_user_id": user.user_id},
+        {"_id": 0}
     )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
