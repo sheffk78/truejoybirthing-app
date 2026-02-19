@@ -1914,6 +1914,11 @@ async def start_trial(request: StartTrialRequest, user: User = Depends(check_rol
     if request.plan_type not in SUBSCRIPTION_PLANS:
         raise HTTPException(status_code=400, detail="Invalid plan type. Must be 'monthly' or 'annual'")
     
+    # Normalize subscription provider
+    provider = request.subscription_provider.upper() if request.subscription_provider else "MOCK"
+    if provider not in ["APPLE", "GOOGLE", "MOCK", "WEB"]:
+        provider = "MOCK"
+    
     trial_end = now + timedelta(days=TRIAL_DURATION_DAYS)
     
     subscription = {
@@ -1921,12 +1926,14 @@ async def start_trial(request: StartTrialRequest, user: User = Depends(check_rol
         "user_id": user.user_id,
         "subscription_status": "trial",
         "plan_type": request.plan_type,
+        "subscription_provider": provider,
         "trial_start_date": now,
         "trial_end_date": trial_end,
         "subscription_start_date": None,
         "subscription_end_date": None,
         "store_transaction_id": f"mock_trial_{uuid.uuid4().hex[:8]}",
-        "store_type": "mock",
+        "store_type": provider.lower(),  # Keep for backward compatibility
+        "auto_renewing": True,
         "created_at": now,
         "updated_at": now
     }
@@ -1943,6 +1950,7 @@ async def start_trial(request: StartTrialRequest, user: User = Depends(check_rol
         "message": "Trial started successfully",
         "trial_end_date": trial_end.isoformat(),
         "plan_type": request.plan_type,
+        "subscription_provider": provider,
         "days_remaining": TRIAL_DURATION_DAYS
     }
 
