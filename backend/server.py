@@ -437,23 +437,36 @@ class User(BaseModel):
 class SubscriptionInfo(BaseModel):
     subscription_status: str = "none"  # none, trial, active, expired, cancelled
     plan_type: Optional[str] = None  # monthly, annual
+    subscription_provider: Optional[str] = None  # APPLE, GOOGLE, MOCK, WEB
     trial_start_date: Optional[datetime] = None
     trial_end_date: Optional[datetime] = None
     subscription_start_date: Optional[datetime] = None
     subscription_end_date: Optional[datetime] = None
     store_transaction_id: Optional[str] = None  # For real IAP, store the transaction ID
-    store_type: Optional[str] = None  # ios, android, mock
+    store_type: Optional[str] = None  # ios, android, mock (deprecated - use subscription_provider)
+    original_transaction_id: Optional[str] = None  # For subscription management tracking
+    auto_renewing: bool = True  # Whether subscription auto-renews
 
 class StartTrialRequest(BaseModel):
     plan_type: str  # monthly or annual
+    subscription_provider: Optional[str] = "MOCK"  # APPLE, GOOGLE, MOCK, WEB
 
 class SubscriptionResponse(BaseModel):
     has_pro_access: bool
     subscription_status: str
     plan_type: Optional[str] = None
+    subscription_provider: Optional[str] = None  # APPLE, GOOGLE, MOCK, WEB
     trial_end_date: Optional[str] = None
+    subscription_end_date: Optional[str] = None
     days_remaining: Optional[int] = None
     is_trial: bool = False
+    auto_renewing: bool = True
+
+# Request model for validating store receipts (for future IAP implementation)
+class ValidateReceiptRequest(BaseModel):
+    receipt: str  # Base64 encoded receipt from store
+    subscription_provider: str  # APPLE or GOOGLE
+    product_id: str  # The purchased product ID
 
 # --- Mom Models ---
 class MomProfile(BaseModel):
