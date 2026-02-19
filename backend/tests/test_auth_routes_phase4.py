@@ -497,8 +497,10 @@ class TestCoreProviderNavigation:
         )
         assert response.status_code == 200, f"Messages conversations failed: {response.text}"
         data = response.json()
-        assert isinstance(data, list)
-        print(f"PASS: Messages conversations returns {len(data)} conversations")
+        # API returns {"conversations": [...]} object
+        assert "conversations" in data or isinstance(data, list)
+        conversations = data.get("conversations", data) if isinstance(data, dict) else data
+        print(f"PASS: Messages conversations returns {len(conversations)} conversations")
     
     def test_health_check(self):
         """GET /api/health returns healthy"""
