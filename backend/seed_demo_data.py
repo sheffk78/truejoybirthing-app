@@ -932,7 +932,7 @@ async def seed_demo_data(reset: bool = False):
     print(f"Password:     {DEMO_PASSWORD}")
     print("-" * 40)
     
-    await client.close()
+    mongo_client.close()
 
 
 async def clear_demo_data():
