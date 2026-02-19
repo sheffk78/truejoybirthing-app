@@ -420,6 +420,12 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - **Fix 10: Date Pickers** - Due Date in Profile and Birth Plan now use native date pickers
   - **Fix 11: Profile Zip Code** - Fixed to clear city/state when changing zip code
 
+### ✅ RECENTLY COMPLETED (2026-02-19) - Form Usability Improvements
+- [x] **Calendar Date Pickers** - Invoice form now has HTML5 date pickers for Issue Date and Due Date
+- [x] **Contract Quick Edit Date Picker** - Quick Edit modal has calendar picker for Due Date
+- [x] **Active Clients Only Dropdown** - Invoice client dropdown filters to show only active clients (with linked_mom_id)
+- [x] **Auto-fill Due Date** - When client is selected, due date auto-fills from client's EDD if available
+
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Bug Fixes
 - [x] **Double JSON.stringify Bug Fix** - Fixed contracts.tsx (saveQuickEdit) and invoices.tsx (handleSaveInvoice, handleSaveTemplate) where body was being double-stringified. The apiRequest utility already does JSON.stringify, so passing pre-stringified body was causing 422 errors.
 - [x] **Contract Creation Fix** - Contracts can now be created without 422 errors
