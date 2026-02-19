@@ -1,3 +1,17 @@
+/**
+ * Midwife Client Detail Screen - Prenatal Visit Management
+ * 
+ * This is a SPECIALIZED screen for midwife workflow, distinct from the shared
+ * ProviderClientDetail hub component. Key differences:
+ * 
+ * - Purpose: Clinical prenatal visit tracking with vitals, urinalysis, wellness scores
+ * - Workflow: Direct data entry for each visit
+ * - Not a "hub" but a focused clinical documentation tool
+ * 
+ * The shared ProviderClientDetail.tsx serves as a general client hub with
+ * timeline, counts, and quick actions - a different use case.
+ */
+
 import React, { useEffect, useState } from 'react';
 import {
   View,
