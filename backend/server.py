@@ -1422,13 +1422,14 @@ route_deps.init_dependencies(
     check_role_func=check_role
 )
 
-# Import and register modular routers AFTER dependencies are initialized
-from routes import admin as admin_routes
-from routes import marketplace as marketplace_routes
-
-# Include modular routers in the api_router
-api_router.include_router(admin_routes.router)
-api_router.include_router(marketplace_routes.router)
+# NOTE: Modular routers are created but NOT yet included to avoid route conflicts.
+# The existing routes in server.py have slightly different functionality.
+# Full migration will happen in Phase 3 with feature parity verification.
+# Available modular routers: admin, marketplace, notifications, messages
+# from routes import admin as admin_routes
+# from routes import marketplace as marketplace_routes
+# api_router.include_router(admin_routes.router)
+# api_router.include_router(marketplace_routes.router)
 
 # ============== AUTH ROUTES ==============
 
