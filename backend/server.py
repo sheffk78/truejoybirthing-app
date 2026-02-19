@@ -5461,8 +5461,12 @@ async def update_midwife_profile(profile_data: MidwifeProfileUpdate, user: User 
 @api_router.get("/midwife/dashboard")
 async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
     """Get midwife dashboard stats"""
-    total_clients = await db.clients.count_documents({"provider_id": user.user_id, "provider_type": "MIDWIFE"})
-    prenatal_clients = await db.clients.count_documents({"provider_id": user.user_id, "provider_type": "MIDWIFE", "status": "Prenatal"})
+    # Use pro_user_id to match how clients are stored (consistent with Doula)
+    total_clients = await db.clients.count_documents({"pro_user_id": user.user_id})
+    prenatal_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "status": "Prenatal"})
+    
+    # Count active clients (those with linked_mom_id)
+    active_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "linked_mom_id": {"$ne": None}})
     
     # Count visits this month
     now = datetime.now(timezone.utc)
@@ -5488,6 +5492,7 @@ async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
     
     return {
         "total_clients": total_clients,
+        "active_clients": active_clients,
         "prenatal_clients": prenatal_clients,
         "visits_this_month": visits_this_month,
         "births_this_month": births_this_month,
