@@ -265,10 +265,44 @@ export default function PlansPricingScreen() {
 
               <Text style={styles.disclaimer}>
                 {status?.subscription_status === 'none' 
-                  ? 'No credit card required for trial. Cancel anytime.'
-                  : 'Your subscription will be billed through your app store account.'
+                  ? `No credit card required for trial. Cancel anytime.`
+                  : isIAPAvailable() 
+                    ? `Your subscription will be managed through the ${getCurrentPlatform() === 'ios' ? 'App Store' : 'Google Play Store'}.`
+                    : 'Subscriptions are managed through the iOS App Store or Google Play Store on your mobile device.'
                 }
               </Text>
+            </View>
+          )}
+
+          {/* Subscription Management Info for Active Subscribers */}
+          {status?.has_pro_access && status?.subscription_provider && (
+            <View style={styles.manageSubscriptionCard}>
+              <Ionicons name="settings-outline" size={20} color={COLORS.textSecondary} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.manageTitle}>Manage Subscription</Text>
+                <Text style={styles.manageDescription}>
+                  {status.subscription_provider === 'APPLE' 
+                    ? 'Your subscription is managed through the App Store. Go to Settings > [Your Name] > Subscriptions to make changes.'
+                    : status.subscription_provider === 'GOOGLE'
+                      ? 'Your subscription is managed through Google Play. Open the Play Store > Menu > Subscriptions to make changes.'
+                      : 'Your subscription is in test mode.'
+                  }
+                </Text>
+                {(status.subscription_provider === 'APPLE' || status.subscription_provider === 'GOOGLE') && (
+                  <TouchableOpacity 
+                    style={styles.manageLink}
+                    onPress={() => {
+                      const url = status.subscription_provider === 'APPLE' 
+                        ? 'https://apps.apple.com/account/subscriptions'
+                        : 'https://play.google.com/store/account/subscriptions';
+                      Linking.openURL(url);
+                    }}
+                  >
+                    <Text style={styles.manageLinkText}>Open {getProviderDisplayName(status.subscription_provider)}</Text>
+                    <Ionicons name="open-outline" size={14} color={COLORS.primary} />
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           )}
 
