@@ -34,7 +34,7 @@ export default function ViewBirthPlanScreen() {
   const fetchBirthPlan = async () => {
     try {
       setLoading(true);
-      const data = await apiRequest(`/api/provider/client/${momId}/birth-plan`);
+      const data = await apiRequest(`/provider/client/${momId}/birth-plan`);
       setBirthPlan(data);
     } catch (err: any) {
       console.error('Error fetching birth plan:', err);
