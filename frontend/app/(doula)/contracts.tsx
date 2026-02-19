@@ -1086,6 +1086,9 @@ export default function DoulaContracts() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  safeHeader: {
+    backgroundColor: COLORS.white,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
