@@ -94,7 +94,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
       
       // Use unified endpoint with include_inactive param
       const includeInactive = clientFilter !== 'active';
-      const clientsData = await apiRequest(`/api${config.endpoints.unifiedClients}?include_inactive=${includeInactive}`);
+      const clientsData = await apiRequest(`${config.endpoints.unifiedClients}?include_inactive=${includeInactive}`);
       setConnectedClients(clientsData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
