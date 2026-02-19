@@ -31,7 +31,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # MongoDB connection
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.environ.get("DB_NAME", "truejoy")
+DB_NAME = os.environ.get("DB_NAME", "test_database")
 
 # Demo account passwords
 DEMO_PASSWORD = "DemoScreenshot2024!"
