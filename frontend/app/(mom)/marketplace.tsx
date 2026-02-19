@@ -543,6 +543,44 @@ export default function MarketplaceScreen() {
                 </View>
               )}
               
+              {/* Video Introduction */}
+              {selectedProvider.profile?.video_intro_url && (
+                <View style={styles.profileSection}>
+                  <Text style={styles.sectionTitle}>Video Introduction</Text>
+                  {(() => {
+                    const videoId = getYouTubeVideoId(selectedProvider.profile.video_intro_url);
+                    return videoId ? (
+                      <TouchableOpacity 
+                        style={styles.videoThumbnailContainer}
+                        onPress={() => {
+                          // Open YouTube video in browser
+                          const url = `https://www.youtube.com/watch?v=${videoId}`;
+                          if (Platform.OS === 'web') {
+                            window.open(url, '_blank');
+                          }
+                        }}
+                      >
+                        <Image 
+                          source={{ uri: getYouTubeThumbnail(videoId) }} 
+                          style={styles.videoThumbnail}
+                        />
+                        <View style={styles.playIconOverlay}>
+                          <Icon name="play-circle" size={48} color={COLORS.white} />
+                        </View>
+                      </TouchableOpacity>
+                    ) : null;
+                  })()}
+                </View>
+              )}
+              
+              {/* More About Me */}
+              {selectedProvider.profile?.more_about_me && (
+                <View style={styles.profileSection}>
+                  <Text style={styles.sectionTitle}>More About Me</Text>
+                  <Text style={styles.bioText}>{selectedProvider.profile.more_about_me}</Text>
+                </View>
+              )}
+              
               {/* Status */}
               <View style={styles.profileSection}>
                 <Text style={styles.sectionTitle}>Availability</Text>
