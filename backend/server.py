@@ -545,6 +545,9 @@ class DoulaProfileUpdate(BaseModel):
     years_in_practice: Optional[int] = None
     accepting_new_clients: Optional[bool] = None
     bio: Optional[str] = None
+    picture: Optional[str] = None  # Profile photo URL
+    video_intro_url: Optional[str] = None  # YouTube video URL
+    more_about_me: Optional[str] = None  # Extended bio (max ~800 chars)
 
 # --- Client Models (for Doula/Midwife) ---
 class ClientBase(BaseModel):
