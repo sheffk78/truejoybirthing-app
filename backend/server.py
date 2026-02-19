@@ -1430,6 +1430,8 @@ from routes import messages as messages_routes
 from routes import auth as auth_routes
 from routes import subscription as subscription_routes
 from routes import mom as mom_routes
+from routes import doula as doula_routes
+from routes import midwife as midwife_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1439,6 +1441,8 @@ api_router.include_router(messages_routes.router)
 api_router.include_router(auth_routes.router)
 api_router.include_router(subscription_routes.router)
 api_router.include_router(mom_routes.router)
+api_router.include_router(doula_routes.router)
+api_router.include_router(midwife_routes.router)
 
 # ============== AUTH ROUTES ==============
 # MIGRATED TO: routes/auth.py
