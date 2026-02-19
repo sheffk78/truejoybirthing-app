@@ -420,6 +420,13 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - **Fix 10: Date Pickers** - Due Date in Profile and Birth Plan now use native date pickers
   - **Fix 11: Profile Zip Code** - Fixed to clear city/state when changing zip code
 
+### ✅ RECENTLY COMPLETED (2026-02-19) - Contract "Save as Default" Feature
+- [x] **GET /api/doula/contract-defaults** - Returns saved contract text defaults
+- [x] **PUT /api/doula/contract-defaults** - Saves contract text as new defaults (upsert)
+- [x] **Auto-load defaults** - When opening "New Contract" modal, form pre-fills with saved defaults
+- [x] **Auto-save on contract creation** - After creating a contract, all text fields are saved as new defaults
+- [x] **Success message updated** - User sees "Your text and settings have been saved as defaults for future contracts"
+
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Form Usability Improvements
 - [x] **Calendar Date Pickers** - Invoice form now has HTML5 date pickers for Issue Date and Due Date
 - [x] **Contract Quick Edit Date Picker** - Quick Edit modal has calendar picker for Due Date
