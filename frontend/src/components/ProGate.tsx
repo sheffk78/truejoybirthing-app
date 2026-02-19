@@ -346,6 +346,69 @@ const styles = StyleSheet.create({
   trialBannerTextUrgent: {
     color: '#92400e',
   },
+  
+  // Subscription Info Card
+  infoCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  infoTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  infoStatus: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    marginBottom: 4,
+  },
+  infoProvider: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginBottom: 4,
+  },
+  infoExpiry: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginBottom: 8,
+  },
+  infoActions: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 8,
+  },
+  upgradeSmallButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+  },
+  upgradeSmallButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 13,
+  },
+  manageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 8,
+  },
+  manageButtonText: {
+    color: COLORS.primary,
+    fontSize: 13,
+    fontWeight: '500',
+  },
 });
 
+export { SubscriptionInfoCard };
 export default ProGate;
