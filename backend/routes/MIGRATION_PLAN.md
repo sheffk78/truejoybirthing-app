@@ -129,22 +129,52 @@ This document outlines the phased migration plan for breaking down the monolithi
 - `routes/midwife.py` - 4 endpoints migrated (onboarding, profile GET/PUT, dashboard)
 - Server.py reduced from 6,599 → 6,483 lines
 
-### Phase 3: Role-Specific Routes
-- [ ] Create `routes/mom.py` - mom onboarding, profile, birth plan
-- [ ] Create `routes/doula.py` - doula onboarding, profile, dashboard
-- [ ] Create `routes/midwife.py` - midwife onboarding, profile, dashboard
-- [ ] Migrate routes from server.py
-- [ ] Test thoroughly
+### Phase 8: Provider Clients & Notes (COMPLETED)
+- [x] Add client routes to `routes/doula.py` (GET/POST /clients, GET/PUT /clients/{client_id})
+- [x] Add notes routes to `routes/doula.py` (GET/POST /notes, PUT/DELETE /notes/{note_id})
+- [x] Add client routes to `routes/midwife.py` (GET/POST /clients, GET/PUT /clients/{client_id})
+- [x] Add notes routes to `routes/midwife.py` (GET/POST /notes, PUT/DELETE /notes/{note_id})
+- [x] Remove duplicated client/notes routes from server.py
+- [x] Test all routes (40/40 tests passed)
 
-### Phase 4: Feature Routes
-- [ ] Create `routes/contracts.py` - contract CRUD, templates, PDF generation
-- [ ] Create `routes/invoices.py` - invoice CRUD, payment instructions
-- [ ] Create `routes/subscription.py` - subscription management
-- [ ] Create `routes/appointments.py` - appointment routes
-- [ ] Migrate remaining routes from server.py
+**Completed**: Provider client and notes routes now served from modular routers.
+- `routes/doula.py` - 8 additional endpoints (clients CRUD, notes CRUD)
+- `routes/midwife.py` - 8 additional endpoints (clients CRUD, notes CRUD)
+- Role-based access control verified (403 for cross-role access)
+- No ObjectId serialization errors
 
-### Phase 5: Cleanup
-- [ ] Remove all migrated code from server.py
+### Phase 9: Contracts (NEXT)
+- [ ] Create `routes/contracts.py` with feature parity
+- [ ] Include Doula contract templates
+- [ ] Include Midwife contract templates
+- [ ] Handle PDF generation (WeasyPrint)
+- [ ] Include router in server.py
+- [ ] Remove duplicated contract routes from server.py
+- [ ] Test all routes
+
+### Phase 10: Invoices
+- [ ] Create `routes/invoices.py` with feature parity
+- [ ] Invoice CRUD for both provider types
+- [ ] Include router in server.py
+- [ ] Remove duplicated invoice routes from server.py
+- [ ] Test all routes
+
+### Phase 11: Midwife Visits
+- [ ] Create `routes/visits.py` or add to midwife.py
+- [ ] Visit scheduling and management
+- [ ] Test all routes
+
+### Phase 12: Birth Plan, Wellness, Postpartum, Timeline
+- [ ] Birth plan routes
+- [ ] Wellness check routes
+- [ ] Postpartum plan routes
+- [ ] Timeline routes
+- [ ] Test all routes
+
+### Phase 13: Final Cleanup
+- [ ] Share requests routes
+- [ ] Appointments routes
+- [ ] Remove all remaining migrated code from server.py
 - [ ] server.py should be ~200 lines (setup, middleware, router registration)
 - [ ] Full regression testing
 - [ ] Update documentation
