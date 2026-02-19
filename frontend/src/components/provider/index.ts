@@ -1,4 +1,5 @@
 // Export all shared provider components
+export { default as ProviderDashboard } from './ProviderDashboard';
 export { default as ProviderMessages } from './ProviderMessages';
 export { default as ProviderInvoices } from './ProviderInvoices';
 
