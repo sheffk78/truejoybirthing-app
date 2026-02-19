@@ -297,6 +297,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.roleDoula + '20',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
   },
   statsGrid: {
     flexDirection: 'row',
