@@ -207,7 +207,7 @@ export function SubscriptionInfoCard() {
     <View style={styles.infoCard}>
       <View style={styles.infoHeader}>
         <Ionicons 
-          name={status.has_pro_access ? 'checkmark-shield' : 'shield-outline'} 
+          name={status.has_pro_access ? 'checkmark-circle' : 'shield-outline'} 
           size={24} 
           color={status.has_pro_access ? '#10b981' : COLORS.textSecondary} 
         />
