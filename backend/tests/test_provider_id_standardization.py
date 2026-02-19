@@ -131,11 +131,7 @@ class TestDoulaEndpointsAfterStandardization:
         
         client_id = data["client_id"]
         print(f"Created test client {client_id} with provider_id: {data['provider_id']}")
-        
-        # Clean up - delete the test client
-        delete_response = session.delete(f"{BASE_URL}/api/doula/clients/{client_id}")
-        assert delete_response.status_code in [200, 204], f"Delete failed: {delete_response.text}"
-        print(f"Cleaned up test client {client_id}")
+        # Note: No cleanup endpoint for clients exists, test clients will persist
 
 
 class TestMidwifeEndpointsAfterStandardization:
@@ -197,11 +193,7 @@ class TestMidwifeEndpointsAfterStandardization:
         
         client_id = data["client_id"]
         print(f"Created midwife test client {client_id} with provider_id: {data['provider_id']}")
-        
-        # Clean up
-        delete_response = session.delete(f"{BASE_URL}/api/midwife/clients/{client_id}")
-        assert delete_response.status_code in [200, 204], f"Delete failed: {delete_response.text}"
-        print(f"Cleaned up test client {client_id}")
+        # Note: No cleanup endpoint for clients exists, test clients will persist
 
 
 class TestInvoicesWithProviderIdStandardization:
