@@ -58,18 +58,19 @@ This document outlines the phased migration plan for breaking down the monolithi
 - [x] Created `routes/admin.py` - admin routes
 - [x] Updated `routes/__init__.py` - module exports
 
-### Phase 2: Integration (IN PROGRESS)
+### Phase 2: Integration (COMPLETED)
 - [x] Update `server.py` to import route_deps
 - [x] Initialize dependencies after auth functions are defined
 - [x] Verify server starts correctly with modular structure
-- [ ] Replace admin routes in server.py with modular router (requires feature parity)
-- [ ] Replace marketplace routes in server.py with modular router (requires feature parity)
-- [ ] Test all routes still work
-- [ ] Remove duplicated code from server.py
+- [x] Replace admin routes in server.py with modular router
+- [x] Replace marketplace routes in server.py with modular router
+- [x] Test all routes still work
+- [x] Remove duplicated code from server.py (145 lines removed)
 
-**Current Status**: Dependencies initialized. Modular routers are created and tested but NOT yet included because:
-1. Original server.py routes have additional query parameters (e.g., admin/users has role filter)
-2. Full feature parity must be verified before switching
+**Completed**: Admin and Marketplace routes now served from modular routers.
+- `routes/admin.py` - 4 endpoints migrated
+- `routes/marketplace.py` - 2 endpoints migrated
+- Server.py reduced from 7,888 → 7,743 lines
 
 ### Phase 3: Role-Specific Routes
 - [ ] Create `routes/mom.py` - mom onboarding, profile, birth plan
