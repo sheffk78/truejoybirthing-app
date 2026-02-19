@@ -770,20 +770,22 @@ Hidden but accessible via navigation:
 
 ### Remaining Technical Debt (P3 - Low Priority)
 
-1. **Backend Modularization Progress**: server.py reduced from 7,888 → 7,190 lines (698 lines migrated, ~8.9% reduction)
+1. **Backend Modularization Progress**: server.py reduced from 7,888 → 6,893 lines (995 lines migrated, ~12.6% reduction)
    - **Phase 1 COMPLETED**: Created modular router foundation
    - **Phase 2 COMPLETED**: Admin (4 endpoints) + Marketplace (2 endpoints) migrated
    - **Phase 3 COMPLETED**: Notifications (3 endpoints) + Messages (5 endpoints) migrated
    - **Phase 4 COMPLETED**: Auth (7 endpoints) migrated
-   - **Total Endpoints Migrated**: 21 endpoints across 5 modular routers
+   - **Phase 5 COMPLETED**: Subscription (6 endpoints) migrated
+   - **Total Endpoints Migrated**: 27 endpoints across 6 modular routers
    - **Active Modular Routers**:
      - `routes/auth.py` - Authentication (login, register, google-session, me, logout, set-role, update-profile)
      - `routes/admin.py` - Admin user/content management
      - `routes/marketplace.py` - Provider search/discovery
      - `routes/notifications.py` - User notifications
      - `routes/messages.py` - Real-time messaging
+     - `routes/subscription.py` - Subscription management (MOCKED IAP)
    - **Migration Plan**: `/app/backend/routes/MIGRATION_PLAN.md`
-   - **Remaining**: Role-specific routes (mom, doula, midwife), contracts, invoices, subscriptions
+   - **Remaining**: Role-specific routes (mom, doula, midwife), contracts, invoices (~5,900 lines)
 
 2. **Large Shared Components**: Some shared components are still large but functional
    - ProviderAppointments.tsx: 950 lines
