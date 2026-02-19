@@ -420,6 +420,13 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - **Fix 10: Date Pickers** - Due Date in Profile and Birth Plan now use native date pickers
   - **Fix 11: Profile Zip Code** - Fixed to clear city/state when changing zip code
 
+### ✅ RECENTLY COMPLETED (2026-02-19) - Midwife Contract Functionality
+- [x] **Midwife Contract Defaults** - GET/PUT endpoints for saving contract text defaults
+- [x] **Save as Default Feature** - Contracts auto-save text settings as defaults for future contracts  
+- [x] **Double JSON.stringify Bug Fix** - Fixed in contracts.tsx and invoices.tsx
+- [x] **Backend Query Fixes** - Fixed provider_id/provider_type to use pro_user_id/pro_type consistently
+- [x] **Midwifery-specific Fields** - 16 contract fields: scope_description, transfer_indications, backup_midwife_policy, etc.
+
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Midwife Section Parity with Doula
 - [x] **Midwife Profile** - Added photo upload, video intro URL, more about me, accepting clients toggle
 - [x] **Midwife Clients Page** - Reworked to show pending requests + active clients (same as Doula)
