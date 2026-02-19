@@ -1425,10 +1425,14 @@ route_deps.init_dependencies(
 # Import and register modular routers AFTER dependencies are initialized
 from routes import admin as admin_routes
 from routes import marketplace as marketplace_routes
+from routes import notifications as notifications_routes
+from routes import messages as messages_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
 api_router.include_router(marketplace_routes.router)
+api_router.include_router(notifications_routes.router)
+api_router.include_router(messages_routes.router)
 
 # ============== AUTH ROUTES ==============
 
