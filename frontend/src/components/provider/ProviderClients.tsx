@@ -278,26 +278,31 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
         
         {/* Connected Clients Section */}
         <Text style={styles.sectionTitle}>
-          <Icon name="people" size={18} color={primaryColor} /> Active Clients ({connectedClients.length})
+          <Icon name="people" size={18} color={primaryColor} /> {clientFilter === 'active' ? 'Active' : clientFilter === 'inactive' ? 'Inactive' : 'All'} Clients ({filteredClients.length})
         </Text>
         
-        {connectedClients.length === 0 ? (
+        {filteredClients.length === 0 ? (
           <Card style={styles.emptyCard}>
             <Icon name="people-outline" size={48} color={COLORS.textLight} />
-            <Text style={styles.emptyText}>No clients yet</Text>
+            <Text style={styles.emptyText}>
+              {clientFilter === 'inactive' ? 'No inactive clients' : 'No clients yet'}
+            </Text>
             <Text style={styles.emptySubtext}>
-              When moms share their birth plan with you, they'll appear here.
+              {clientFilter === 'active' 
+                ? 'When moms share their birth plan with you, they\'ll appear here.'
+                : clientFilter === 'inactive'
+                ? 'Clients become inactive 6 weeks after their due date.'
+                : 'Use the filters above to view active or inactive clients.'}
             </Text>
           </Card>
         ) : (
-          connectedClients.map((client) => (
+          filteredClients.map((client) => (
             <TouchableOpacity
               key={client.client_id}
               onPress={() => handleClientPress(client)}
-              disabled={!isMidwife}
               data-testid={`client-${client.client_id}`}
             >
-              <Card style={styles.clientCard}>
+              <Card style={[styles.clientCard, !client.is_active && { opacity: 0.7 }]}>
                 <View style={styles.clientRow}>
                   <View style={[styles.clientAvatar, { backgroundColor: primaryColor + '20' }]}>
                     {client.picture ? (
