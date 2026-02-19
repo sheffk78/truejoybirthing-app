@@ -6615,6 +6615,39 @@ async def get_unread_count(user: User = Depends(get_current_user)):
     count = await db.messages.count_documents({"receiver_id": user.user_id, "read": False})
     return {"unread_count": count}
 
+@api_router.get("/provider/clients/{client_id}/messages")
+async def get_client_messages(
+    client_id: str,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+):
+    """Get all messages associated with a specific client (client-centric view)"""
+    # Verify the provider has access to this client
+    client = await db.clients.find_one({"client_id": client_id, "pro_user_id": user.user_id}, {"_id": 0})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    # Get messages that are tagged with this client_id
+    # OR messages between the provider and the linked mom
+    query = {"$or": [{"client_id": client_id}]}
+    
+    if client.get("linked_mom_id"):
+        mom_id = client["linked_mom_id"]
+        query["$or"].append({
+            "$and": [
+                {"$or": [{"sender_id": user.user_id}, {"receiver_id": user.user_id}]},
+                {"$or": [{"sender_id": mom_id}, {"receiver_id": mom_id}]}
+            ]
+        })
+    
+    messages = await db.messages.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    
+    # Ensure datetime is serializable
+    for msg in messages:
+        if isinstance(msg.get("created_at"), datetime):
+            msg["created_at"] = msg["created_at"].isoformat()
+    
+    return messages
+
 # ============== UNIFIED PROVIDER ROUTES ==============
 # These routes work for both DOULA and MIDWIFE using client_id as the central entity
 
