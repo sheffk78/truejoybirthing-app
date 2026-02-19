@@ -138,7 +138,7 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
     clients: API_ENDPOINTS.MIDWIFE_CLIENTS,
     invoices: API_ENDPOINTS.MIDWIFE_INVOICES,
     contracts: API_ENDPOINTS.MIDWIFE_CONTRACTS,
-    notes: '/api/midwife/notes',
+    notes: '/midwife/notes',
   },
   
   routes: {
