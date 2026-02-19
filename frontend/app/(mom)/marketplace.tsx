@@ -338,7 +338,11 @@ export default function MarketplaceScreen() {
               <Card style={styles.providerCard}>
                 <View style={styles.providerHeader}>
                   <View style={[styles.providerAvatar, { backgroundColor: getRoleColor(provider.role) + '20' }]}>
-                    <Icon name={getRoleIcon(provider.role)} size={24} color={getRoleColor(provider.role)} />
+                    {provider.picture ? (
+                      <Image source={{ uri: provider.picture }} style={styles.avatarImage} />
+                    ) : (
+                      <Icon name={getRoleIcon(provider.role)} size={24} color={getRoleColor(provider.role)} />
+                    )}
                   </View>
                   <View style={styles.providerInfo}>
                     <Text style={styles.providerName}>{provider.full_name}</Text>
@@ -467,7 +471,11 @@ export default function MarketplaceScreen() {
               {/* Provider Header */}
               <View style={styles.profileHeader}>
                 <View style={[styles.profileAvatar, { backgroundColor: getRoleColor(selectedProvider.role) + '20' }]}>
-                  <Icon name={getRoleIcon(selectedProvider.role)} size={40} color={getRoleColor(selectedProvider.role)} />
+                  {selectedProvider.picture ? (
+                    <Image source={{ uri: selectedProvider.picture }} style={styles.profileAvatarImage} />
+                  ) : (
+                    <Icon name={getRoleIcon(selectedProvider.role)} size={40} color={getRoleColor(selectedProvider.role)} />
+                  )}
                 </View>
                 <Text style={styles.profileName}>{selectedProvider.full_name}</Text>
                 <View style={[styles.profileRoleBadge, { backgroundColor: getRoleColor(selectedProvider.role) }]}>
