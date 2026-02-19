@@ -562,7 +562,13 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Paper Airplane Send Icon** - Messages already used `paper-plane` icon; added missing mapping in Icon.tsx (maps to Lucide `Send` icon)
 - [x] **Eye Icon for App Tour** - Changed "View App Tour" menu item icon from `help-circle-outline` to `eye-outline` in profile.tsx
 
+### ✅ RECENTLY COMPLETED (2026-02-19) - Profile Photo Display
+- [x] **Marketplace Provider Photos** - Provider cards and modal now show profile photos when available, with icon fallback
+- [x] **Provider Clients Photos** - Pending requests show mom photos, active clients show client photos
+- [x] **My Team Provider Photos** - Accepted and pending provider invitations show profile photos
+
 ### 📊 Test Reports
+- `/app/test_reports/iteration_88.json` - **Profile Photo Display VERIFIED** (100% - Marketplace, ProviderClients, My Team all show photos correctly)
 - `/app/test_reports/iteration_87.json` - **UI Fixes VERIFIED** (100% - eye-outline icon, KeyboardAvoidingView, paper-plane icon mapping)
 - `/app/test_reports/iteration_79.json` - **Midwife Client Detail Navigation Bug FIXED** (Root cause: provider_id vs pro_user_id field mismatch in backend queries)
 - `/app/test_reports/iteration_78.json` - **Prenatal Visit Assessment VERIFIED** (100% - 20/20 pytest tests passed for all CRUD endpoints + summary generation + well-being scores)
