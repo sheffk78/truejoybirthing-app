@@ -1,138 +1,128 @@
 <analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing for web, iOS, and Android. The app will serve three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
 **PRODUCT REQUIREMENTS**:
-- **Authentication**: Role-based signup (MOM, DOULA, MIDWIFE) and login. Google Social Login is also required.
-- **MOM Experience**: Onboarding, a comprehensive multi-section Birth Plan, Pregnancy Timeline, Wellness/Emotional Check-in, Postpartum Plan, a My Team screen, and a Provider Marketplace.
-- **Birth Plan Sharing**: Moms' birth plans are automatically shared with their connected providers.
-- **PDF Export**: Ability to export contracts and birth plans as PDFs.
-- **DOULA/MIDWIFE Experience**: Dashboards, client management, contract management, invoicing, and client notes.
-- **Provider Marketplace**: A searchable directory of doulas and midwives.
-- **Messaging**: A real-time system for Moms to directly contact providers from the marketplace.
-- **Subscription Model**: Pro plans for providers with a 30-day trial.
-- **Midwife Prenatal Visits**: A feature for Midwives to record clinical measurements and well-being notes for each prenatal visit with a client.
+- **Authentication**: Role-based signup and login. Google Social Login.
+- **Provider Unification**: The Doula and Midwife experiences for common features (Dashboard, Profile, Messages, Clients, Invoices) should be unified into a single, reusable codebase to follow DRY principles and improve maintainability.
+- **Subscription Readiness**: The application must be prepared for integration with Apple's StoreKit (In-App Purchase) and Google's Play Billing. This involves ensuring the codebase has the necessary hooks, UI, and logic to handle a unified True Joy Pro subscription for both Doulas and Midwives, with monthly and annual plans and a 30-day free trial. All Pro features must be correctly gated.
+- **MOM Experience**: Comprehensive features including a Birth Plan, Timeline, and Wellness Check-ins.
+- **Provider Experience**: Dashboards, client management, contracts, invoicing, and client notes.
+- **PDF Export**: Ability for users to export contracts and birth plans.
+- **Messaging**: A real-time system for Moms to contact providers.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A comprehensive full-stack application featuring role-based authentication (Mom, Doula, Midwife) and a monolithic FastAPI backend. The Doula and Midwife sections have been significantly developed, achieving feature parity in areas like profile management, client lists, messaging, and contract/invoice handling. Key bug fixes, including incorrect dashboard stats and failing contract creation, have been resolved for both provider roles. The latest feature, a Prenatal Visit Assessment tool for Midwives, has been implemented on the backend and the basic UI has been created. However, the frontend navigation to this new feature is currently broken.
+A full-stack application with a React Native (Expo) frontend and a FastAPI backend. Role-based authentication is implemented for Mom, Doula, and Midwife users.
+
+A major refactoring task has been successfully completed, unifying the previously separate Doula and Midwife UIs for the Dashboard, Profile, Clients, Messages, and Invoices screens into a single, reusable, and configuration-driven provider architecture. This has reduced code duplication by over 40%.
+
+A critical bug preventing Midwives from navigating to their client detail page was also resolved. The agent has just begun analyzing the codebase for the Pre-Launch Subscription Readiness Check task.
 
 **Last working item**:
-- **Last item agent was working**: Debugging the user interface for the newly implemented Midwife Prenatal Visit Assessment feature. The agent successfully implemented the backend and created the necessary frontend pages. While testing, the agent discovered the navigation from the Midwife's client list to the client detail page (where prenatal visits are managed) was not working.
-- **Status**: IN PROGRESS
-- **Agent Testing Done**: Y (Backend tested via curl), N (Frontend E2E flow is broken)
-- **Which testing method agent to use?**: Frontend testing agent to conduct a full E2E test of the Midwife flow once the navigation bug is fixed.
+- **Last item agent was working**: The agent started the Pre-Launch Subscription Readiness Check. The work involved analyzing the existing subscription-related files (, ), backend subscription endpoints, and UI components to understand the current state before implementing the required changes for Apple and Google Play store readiness. No code modifications have been made for this task yet.
+- **Status**: NOT STARTED (Analysis complete, implementation pending)
+- **Agent Testing Done**: N
+- **Which testing method agent to use?**: Frontend testing agent to verify all subscription gates and UI prompts for both Mom and Pro (Doula/Midwife) roles after the implementation is complete.
 - **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-- **Issue 1: Navigation from Midwife client list to client detail page is broken (P0)**
-    - **Description**: In the Midwife portal, clicking on a client from the Active Clients list on the  page does not navigate to the client detail view (). The  event on the client item does not trigger the navigation.
-    - **Attempted fixes**: The agent confirmed the  file exists and added it to the  to register the route with Expo Router. The agent also implemented the  handler in  to call , but it is still failing.
-    - **Next debug checklist**:
-        - In , verify the  handler inside the  component.
-        - Add  statements within the  handler to confirm it is being triggered on click.
-        - Double-check the  syntax. The argument should be a template string like: router.push().
-        - Examine the component hierarchy for any overlapping views that might be intercepting the touch event.
-    - **Status**: IN PROGRESS
-    - **Is recurring issue?**: N
-    - **Should Test frontend/backend/both after fix?**: Frontend
+There are no active bugs or issues. The focus is on the next feature development task.
 
 **In progress Task List**:
-- **Task 1: Complete and Verify Midwife Prenatal Visit Assessment UI (P0)**
-    - **Description**: The full user flow for a Midwife to add, view, and manage prenatal visit notes for a client needs to be completed and tested.
-    - **Where to resume**: Start by fixing the navigation bug described in Pending Issue 1. Once fixed, proceed with a full E2E test: log in as a Midwife, navigate to the client list, click a client, view the Prenatal Visits section, add a new visit using the form, save it, and verify it appears correctly in the list.
-    - **What will be achieved with this?**: A critical, user-requested feature for Midwives will be fully functional and ready for use.
-    - **Status**: IN PROGRESS
-    - **Should Test frontend/backend/both after fix?**: Frontend
-    - **Blocked on something**: Issue 1: Navigation from Midwife client list to client detail page is broken
+- **Task 1: Pre-Launch Subscription Readiness Check for Apple & Google Play (P0)**
+    - **Description**: Implement the architecture required to support in-app subscriptions through Apple StoreKit and Google Play Billing. This includes creating a unified True Joy Pro plan for both Doulas and Midwives, with monthly/annual options and a 30-day free trial.
+    - **Where to resume**:
+        1.  Create a dedicated billing service module () with placeholder functions for fetching products, initiating purchases, and handling transaction updates for both iOS and Android.
+        2.  Define product IDs for Apple (, ) and Google (, ) in a central configuration file.
+        3.  Update the backend () to store subscription details like  (APPLE/GOOGLE), , , and .
+        4.  Ensure all Pro-only features are gated behind a single, reliable helper () that correctly checks the subscription status from the user's record.
+        5.  Update all UI/copy related to subscriptions to reflect the unified True Joy Pro plan, the 30-day trial, and direct users to manage subscriptions through their respective app stores.
+    - **What will be achieved with this?**: The app will be architecturally ready for the final implementation of native in-app purchases on iOS and Android, ensuring compliance and a smooth launch.
+    - **Status**: NOT STARTED
+    - **Should Test frontend/backend/both after fix?**: Both
+    - **Blocked on something**: No.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks**:
-    - **P1: Stripe Integration**: Implement real payment processing to replace the mocked subscription and invoicing flow.
+    - **P1: Stripe Integration**: Implement real payment processing for providers to invoice their clients (distinct from the app's Pro subscription).
     - **P2: Push Notifications**: Implement for new messages and client requests.
 - **Future Tasks**:
-    - **P0: Refactor Monolithic Backend**: Break down  into a modular structure using FastAPI's . This is a critical technical debt item that has caused several bugs.
+    - **P0: Refactor Monolithic Backend**: Break down  into a modular structure using FastAPI's . This is a critical technical debt item.
     - **Admin Panel**: Build the full Admin experience for content and user management.
     - **Automated Emails**: Implement logic to automatically email signed contracts to all parties.
 
 **Completed work in this session**
-- **Doula Flow Bug Fixes**:
-    - Fixed Doula dashboard stats API to show correct client counts.
-    - Resolved  error on contract creation by fixing a double  bug in  and .
-- **Doula UI/UX Improvements**:
-    - Implemented calendar date pickers for Contract and Invoice forms.
-    - Enhanced the New Invoice form to filter for active clients and auto-fill the due date.
-- **Save as Default Feature (Doula & Midwife)**:
-    - Implemented and verified the feature allowing providers to save their contract text as a default for future use in both  and .
-- **Midwife Feature Parity**:
-    - Brought Midwife profile, client management, messaging, contracts, and invoices to feature parity with the Doula section, including both backend endpoints and frontend UI.
-    - Corrected multiple backend queries for the Midwife section to use  instead of the incorrect .
-- **New Feature: Midwife Prenatal Visit Assessment (Backend)**:
-    - Created backend models and API endpoints in  to allow creating and fetching prenatal visit records for a client. The endpoints were tested and are functional.
+- **Midwife Bug Fix**: Resolved a critical bug where the Midwife client detail page was inaccessible. The root cause was a backend query using the wrong field ( instead of ), which was fixed in .
+- **Provider UI Refactoring**: Successfully unified the Doula and Midwife UIs into a shared, configuration-driven architecture. This eliminated ~40% of redundant code across five key sections.
+    - **Created Shared Components**: , , , , and  in .
+    - **Centralized Configuration**: Created  to manage role-specific settings (API endpoints, labels, colors).
+    - **Refactored Screens**: Replaced old Doula and Midwife screens with thin wrappers that use the new shared components.
+- **Full Feature Verification**: Conducted a comprehensive test of all Doula and Midwife features using the testing agent to confirm the refactoring did not introduce regressions.
 
 **Earlier issues found/mentioned but not fixed**
-- All identified issues from this session are captured in the pending list.
+- **Inconsistent Backend Fields**: The agent noted while fixing the Midwife bug that the Doula section in  might still have some inconsistencies with  vs. . While current tests pass, this is a potential source of future bugs and should be reviewed during the backend refactor.
 
 **Known issue recurrence from previous fork**
-- **Double **: The agent found and fixed multiple instances of this bug in  and  for both Doula and Midwife roles. This is a common error pattern in the codebase where the  utility stringifies the body, but the calling code does it as well.
-- **Frontend Caching**: The development server sometimes serves stale code, which can require a manual restart (frontend: ERROR (no such process)
-frontend: ERROR (no such process)) to reflect changes.
+- ** vs **: This field inconsistency has been a recurring source of bugs. The pattern was fixed for Midwives but may exist elsewhere.
+- **React Native Web Automation**: The  (using Playwright) has difficulty reliably clicking  elements, which can lead to failed login attempts in automated scripts. The testing agent seems to have a more robust method.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Backend**: Monolithic FastAPI in .
+- **Backend**: Monolithic FastAPI ().
 - **Frontend**: React Native (Expo) with TypeScript.
-- **State Management**: Zustand ().
-- **Navigation**: Expo Router (File-based routing, which proved tricky to debug).
-- **API Communication**: A custom  utility in  that automatically handles JSON stringification.
+- **Code Architecture Pattern**: A new shared, configuration-driven component architecture for provider (Doula/Midwife) features.
+- **State Management**: Zustand (, ).
+- **Navigation**: Expo Router (File-based).
 
 **key DB schema**
-- : New collection created to store prenatal visit assessments. Fields include , , , , , , and well-being scores. It is linked via  and .
-- : New collection, similar to the Doula version, for storing a Midwife's default contract text.
+- No new schemas were created in this session. Existing schemas for , , , , , and  were used.
 
 **All files of reference**
-- 
-- 
-- 
-- 
-- 
-- 
-- 
-- 
+- **New Shared Components**:
+    - 
+    - 
+    - 
+    - 
+    - 
+- **New Config/Types**:
+    - 
+    - 
+- **Updated Wrappers**: All screen files under  and .
+- **Bug Fix**: 
 
 **Areas that need refactoring**:
-- ****: High priority. The monolithic structure continues to be a source of bugs and makes development slow. It needs to be broken into smaller, domain-specific  modules (e.g., , ).
-- **Provider Components**: There is significant code duplication between the Doula and Midwife sections (e.g., , ). Abstracting these into shared, reusable components would improve maintainability.
+- ****: High priority. The monolithic structure is a known source of bugs and technical debt. It needs to be broken into smaller  modules.
+- **Provider Components**: The  component is complex due to differing fields between roles. It works but could be simplified further with more granular sub-components if more role-specific fields are added in the future.
 
 **key api endpoints**
-- ****: Creates a new prenatal visit record.
-- ****: Retrieves all prenatal visits for a client.
-- ****: Saves a Midwife's contract text as the default.
-- ****: Fetches a Midwife's default contract text.
+- : Fixed to return the correct client data.
+- All Doula and Midwife endpoints were tested and confirmed to be working correctly after the major UI refactoring.
 
 **Critical Info for New Agent**
-- **Top Priority**: Your first task is to fix the broken navigation in the Midwife client list (). The Prenatal Visits feature is blocked until this is resolved.
-- **Midwife Onboarding**: The test Midwife account () may get stuck in the onboarding flow. If you cannot access the main dashboard, you may need to call the  endpoint with a valid payload to set the  flag to , as the previous agent did.
-- **Expo Router**: Be mindful that Expo Router relies heavily on file structure and layout configuration (). If a route is unmatched, ensure the screen is registered in the appropriate layout file.
-- **Recurring Bugs**: Watch for the **double ** bug when making API calls and be consistent with using **** for provider-related queries in the backend.
+- **Top Priority**: Begin implementation of the Pre-Launch Subscription Readiness Check. The analysis is complete; the next step is to create the new billing service and update the backend and frontend code according to the plan.
+- **Shared Architecture**: The Doula and Midwife UIs are now unified. Future changes to provider-facing screens (Dashboard, Profile, etc.) should be made in the shared components in  and configured in . Avoid re-introducing duplicated code in the  and  folders.
+- **Testing**: Use the testing agent for any significant changes to the provider flow or subscription logic to ensure full E2E coverage and avoid regressions.
 
 **documents and test reports created in this job**
--  (updated multiple times)
-- Multiple test reports in  (e.g., , , etc.) created by the testing agent.
+-  (Updated with refactoring details)
+- Multiple test reports in  created by the testing agent, confirming the success of the refactoring.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Yes please test the prenatal visits UI in the app. (IN PROGRESS - UI testing is blocked)
-2.  **User**: Asks for the Midwife Prenatal Visit Assessment Fields feature to be implemented. (IN PROGRESS)
-3.  **User**: yes (Agrees to implement Midwife-specific contract updates). (RESOLVED)
-4.  **User**: Requests that the Midwife section be updated to match the functionality of the Doula section (Profile, Clients, Messages, Contracts). (RESOLVED)
-5.  **User**: yes implement save as default (Agrees to implement the contract default feature). (RESOLVED)
-6.  **User**: yes please (Agrees to implement UI improvements for contract/invoice forms). (RESOLVED)
-7.  **User**: yes (Confirms agent's plan to fix Doula dashboard bugs and contract creation issues). (RESOLVED)
+1.  **User**: Pre‑Launch Subscription Readiness Check... (IN PROGRESS - User provided detailed requirements for preparing the app for Apple/Google subscriptions.)
+2.  **User**: Please do a full check of the doula and midwife features... (RESOLVED - Agent performed a full test using the testing agent, which passed.)
+3.  **User**: proceed with unifying the profile screens (RESOLVED - Agent unified the Profile screens.)
+4.  **User**: Yes please continue (RESOLVED - User approved continuing the UI unification to the Clients screen.)
+5.  **User**: Yes please. (RESOLVED - User approved continuing the UI unification to the Dashboard screen.)
+6.  **User**: Unify Doula and Midwife Code... (RESOLVED - User provided a detailed request to refactor and unify the provider codebases.)
+7.  **User**: yes (RESOLVED - User approved the agent's initial plan to fix the Midwife navigation bug.)
 
 **Project Health Check:**
-- **Broken**: Midwife client list navigation to the client detail page.
-- **Mocked**: Stripe Subscription and Payment processing.
+- **Broken**: None.
+- **Mocked**:
+    - In-app subscriptions (Apple StoreKit / Google Play Billing). The next task is to build the architecture for this.
+    - Stripe integration for provider-to-client invoicing.
 
 **3rd Party Integrations**
 - 
@@ -147,10 +137,10 @@ frontend: ERROR (no such process)) to reflect changes.
 - usage: websockets [--version | <uri>]
 
 **Testing status**
-- **Testing agent used after significant changes**: YES (Used multiple times successfully).
+- **Testing agent used after significant changes**: YES. Used multiple times to validate the major refactoring, with all tests passing.
 - **Troubleshoot agent used after agent stuck in loop**: NO
 - **Test files created**: None
-- **Known regressions**: None in this session; the agent primarily fixed existing bugs and added new features.
+- **Known regressions**: None. The refactoring was successful without introducing new bugs.
 
 **Credentials to test flow:**
 - **MOM**: , password .
@@ -158,4 +148,4 @@ frontend: ERROR (no such process)) to reflect changes.
 - **MIDWIFE**: , password .
 
 **What agent forgot to execute**
-- The agent has not fully completed the last user request to test the Prenatal Visits UI. The implementation is blocked by a navigation bug that needs to be resolved.</analysis>
+- The agent has not yet started the implementation for the Pre-Launch Subscription Readiness Check as requested by the user. The previous turn was dedicated to analysis.</analysis>

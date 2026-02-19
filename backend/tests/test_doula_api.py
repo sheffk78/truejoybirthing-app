@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://mama-care-platform.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://provider-subs.preview.emergentagent.com')
 
 # Test credentials
 MOM_EMAIL = "sharemom2_1771213474@test.com"

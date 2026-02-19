@@ -3849,7 +3849,7 @@ async def send_contract(contract_id: str, user: User = Depends(check_role(["DOUL
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
-                signing_url = f"https://mama-care-platform.preview.emergentagent.com/contract/{contract_id}"
+                signing_url = f"https://provider-subs.preview.emergentagent.com/contract/{contract_id}"
                 params = {
                     "from": SENDER_EMAIL,
                     "to": mom["email"],
@@ -4386,7 +4386,7 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
-                signing_url = f"https://mama-care-platform.preview.emergentagent.com/sign-midwife-contract?contractId={contract_id}"
+                signing_url = f"https://provider-subs.preview.emergentagent.com/sign-midwife-contract?contractId={contract_id}"
                 params = {
                     "from": SENDER_EMAIL,
                     "to": mom["email"],
