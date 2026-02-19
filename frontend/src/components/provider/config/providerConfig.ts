@@ -229,13 +229,11 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
       { key: 'births_this_month', label: 'Births This Month', colorKey: 'success' },
     ],
     quickActions: [
-      { label: 'Add Client', icon: 'person-add', route: '/(midwife)/clients', colorKey: 'primary' },
-      { label: 'Add Visit', icon: 'create', route: '/(midwife)/visits', colorKey: 'accent' },
-      { label: 'Birth Summary', icon: 'document-text', route: '/(midwife)/birth-summaries', colorKey: 'success' },
+      { label: 'See Clients', icon: 'people', route: '/(midwife)/clients', colorKey: 'primary' },
       { label: 'Appointments', icon: 'calendar-number', route: '/(midwife)/appointments', colorKey: 'warning' },
     ],
     tipTitle: 'Midwifery Tools',
-    tipText: 'This is a simplified client management system for home and birth center midwives. Track prenatal visits, birth summaries, and postpartum care.',
+    tipText: 'Go to Clients to manage visits, birth summaries, contracts, and invoices for each client. The client-first workflow keeps everything organized.',
   },
   
   clientDetailTabs: [
