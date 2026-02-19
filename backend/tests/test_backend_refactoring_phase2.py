@@ -237,9 +237,9 @@ class TestProviderEndpoints:
         print(f"Provider has {len(data)} clients")
     
     def test_get_contracts(self, auth_session):
-        """GET /api/provider/contracts should return provider's contracts"""
+        """GET /api/doula/contracts should return provider's contracts"""
         response = requests.get(
-            f"{BASE_URL}/api/provider/contracts",
+            f"{BASE_URL}/api/doula/contracts",
             headers=auth_session
         )
         
@@ -250,9 +250,9 @@ class TestProviderEndpoints:
         print(f"Provider has {len(data)} contracts")
     
     def test_get_invoices(self, auth_session):
-        """GET /api/provider/invoices should return provider's invoices"""
+        """GET /api/doula/invoices should return provider's invoices"""
         response = requests.get(
-            f"{BASE_URL}/api/provider/invoices",
+            f"{BASE_URL}/api/doula/invoices",
             headers=auth_session
         )
         
