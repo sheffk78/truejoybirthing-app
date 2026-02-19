@@ -656,6 +656,7 @@ Hidden but accessible via navigation:
 - [x] **My Team Provider Photos** - Accepted and pending provider invitations show profile photos
 
 ### 📊 Test Reports
+- `/app/test_reports/iteration_104.json` - **Phase 8 Backend Refactoring VERIFIED** (40/40 tests - Doula & Midwife Clients/Notes CRUD, role-based access control)
 - `/app/test_reports/iteration_97.json` - **Client-Scoped Contracts & Invoices Navigation VERIFIED** (Frontend: 100% - all navigation flows working)
 - `/app/test_reports/iteration_91.json` - **Visit Auto-Appointment & Filtering VERIFIED** (Backend: 100% - 15/15 tests)
 - `/app/test_reports/iteration_90.json` - **Frontend Wiring & Mom Appointments VERIFIED** (Backend: 100% - 10/10 tests)
