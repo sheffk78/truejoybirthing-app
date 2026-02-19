@@ -535,7 +535,7 @@ async def seed_demo_data(reset: bool = False):
             "email": doula["email"],
             "full_name": doula["full_name"],
             "role": "DOULA",
-            "hashed_password": pwd_context.hash(DEMO_PASSWORD),
+            "password_hash": pwd_context.hash(DEMO_PASSWORD),
             "picture": get_avatar_url(doula["full_name"], "lorelei"),
             "onboarding_completed": True,
             "created_at": now - timedelta(days=random.randint(30, 365)),
