@@ -881,8 +881,8 @@ class InvoiceUpdate(BaseModel):
 
 class Invoice(BaseModel):
     invoice_id: str
-    provider_id: str  # Can be doula_id or midwife_id
-    provider_type: str  # "DOULA" or "MIDWIFE"
+    pro_user_id: str  # Can be doula_id or midwife_id
+    pro_type: str  # "DOULA" or "MIDWIFE"
     client_id: str
     client_name: str
     invoice_number: str
@@ -2960,14 +2960,14 @@ async def respond_to_share_request(
                 )
                 # Create/update client entry in doula's clients list
                 existing_client = await db.clients.find_one({
-                    "provider_id": user.user_id, 
+                    "pro_user_id": user.user_id, 
                     "linked_mom_id": mom_user_id
                 })
                 if not existing_client:
                     await db.clients.insert_one({
                         "client_id": "client_" + str(uuid.uuid4().hex)[:12],
-                        "provider_id": user.user_id,
-                        "provider_type": "DOULA",
+                        "pro_user_id": user.user_id,
+                        "pro_type": "DOULA",
                         "name": mom_name,
                         "email": mom_user.get("email") if mom_user else None,
                         "phone": "",
@@ -2986,14 +2986,14 @@ async def respond_to_share_request(
                 )
                 # Create/update client entry in midwife's clients list
                 existing_client = await db.clients.find_one({
-                    "provider_id": user.user_id, 
+                    "pro_user_id": user.user_id, 
                     "linked_mom_id": mom_user_id
                 })
                 if not existing_client:
                     await db.clients.insert_one({
                         "client_id": "client_" + str(uuid.uuid4().hex)[:12],
-                        "provider_id": user.user_id,
-                        "provider_type": "MIDWIFE",
+                        "pro_user_id": user.user_id,
+                        "pro_type": "MIDWIFE",
                         "name": mom_name,
                         "email": mom_user.get("email") if mom_user else None,
                         "phone": "",
@@ -3103,7 +3103,7 @@ async def get_client_birth_plan(
     
     # Also check if they have a client with this linked_mom_id
     client = await db.clients.find_one({
-        "provider_id": user.user_id,
+        "pro_user_id": user.user_id,
         "linked_mom_id": mom_user_id
     })
     
@@ -3627,20 +3627,20 @@ async def update_doula_profile(profile_data: DoulaProfileUpdate, user: User = De
 async def get_doula_dashboard(user: User = Depends(check_role(["DOULA"]))):
     """Get doula dashboard stats"""
     # Count clients by status - use correct field names
-    total_clients = await db.clients.count_documents({"provider_id": user.user_id, "provider_type": "DOULA"})
-    active_clients = await db.clients.count_documents({"provider_id": user.user_id, "provider_type": "DOULA", "status": "Active"})
+    total_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "pro_type": "DOULA"})
+    active_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "pro_type": "DOULA", "status": "Active"})
     
     # Also count clients with linked_mom_id as active (connected Moms)
-    connected_clients = await db.clients.count_documents({"provider_id": user.user_id, "provider_type": "DOULA", "linked_mom_id": {"$ne": None}})
+    connected_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "pro_type": "DOULA", "linked_mom_id": {"$ne": None}})
     
     # Use the higher of the two counts (connected or Active status)
     active_clients = max(active_clients, connected_clients)
     
     # Count pending invoices
-    pending_invoices = await db.invoices.count_documents({"provider_id": user.user_id, "status": {"$in": ["Sent", "Overdue"]}})
+    pending_invoices = await db.invoices.count_documents({"pro_user_id": user.user_id, "status": {"$in": ["Sent", "Overdue"]}})
     
     # Count contracts pending signature
-    contracts_pending = await db.contracts.count_documents({"provider_id": user.user_id, "status": "Sent"})
+    contracts_pending = await db.contracts.count_documents({"pro_user_id": user.user_id, "status": "Sent"})
     
     # Count upcoming appointments (accepted, future dates)
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -3697,7 +3697,7 @@ async def save_doula_contract_defaults(
 async def get_doula_clients(user: User = Depends(check_role(["DOULA"]))):
     """Get doula's clients"""
     clients = await db.clients.find(
-        {"provider_id": user.user_id, "provider_type": "DOULA"},
+        {"pro_user_id": user.user_id, "pro_type": "DOULA"},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     return clients
@@ -4247,9 +4247,9 @@ async def get_midwife_contract_template_route(user: User = Depends(check_role(["
 async def create_midwife_contract(contract_data: MidwifeContractCreate, user: User = Depends(check_role(["MIDWIFE"]))):
     """Create a new Midwifery Services Agreement"""
     # Get client info
-    # Note: Midwife clients use provider_id and provider_type fields
+    # Note: Midwife clients use pro_user_id and pro_type fields
     client = await db.clients.find_one(
-        {"client_id": contract_data.client_id, "provider_id": user.user_id, "provider_type": "MIDWIFE"},
+        {"client_id": contract_data.client_id, "pro_user_id": user.user_id, "pro_type": "MIDWIFE"},
         {"_id": 0}
     )
     if not client:
@@ -4853,7 +4853,7 @@ async def set_default_template(template_id: str, user: User = Depends(check_role
 async def generate_invoice_number(user_id: str) -> str:
     """Generate a unique invoice number like TJ-2026-001"""
     year = datetime.now().year
-    count = await db.invoices.count_documents({"provider_id": user_id})
+    count = await db.invoices.count_documents({"pro_user_id": user_id})
     return f"TJ-{year}-{str(count + 1).zfill(3)}"
 
 # ============== PAYMENT INSTRUCTIONS TEMPLATE ROUTES ==============
@@ -4937,7 +4937,7 @@ async def delete_payment_instructions(template_id: str, user: User = Depends(che
 @api_router.get("/doula/invoices")
 async def get_doula_invoices(user: User = Depends(check_role(["DOULA"])), status: Optional[str] = None):
     """Get all invoices, optionally filtered by status"""
-    query = {"provider_id": user.user_id, "provider_type": "DOULA"}
+    query = {"pro_user_id": user.user_id, "pro_type": "DOULA"}
     if status:
         query["status"] = status
     
@@ -4969,8 +4969,8 @@ async def create_doula_invoice(invoice_data: InvoiceCreate, user: User = Depends
     
     invoice = {
         "invoice_id": f"inv_{uuid.uuid4().hex[:12]}",
-        "provider_id": user.user_id,
-        "provider_type": "DOULA",
+        "pro_user_id": user.user_id,
+        "pro_type": "DOULA",
         "client_id": invoice_data.client_id,
         "client_name": client["name"],
         "invoice_number": invoice_number,
@@ -4995,7 +4995,7 @@ async def create_doula_invoice(invoice_data: InvoiceCreate, user: User = Depends
 async def get_doula_invoice(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
     """Get a specific invoice"""
     invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     if not invoice:
@@ -5012,7 +5012,7 @@ async def update_doula_invoice(invoice_id: str, update_data: InvoiceUpdate, user
     updates["updated_at"] = now
     
     result = await db.invoices.update_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"$set": updates}
     )
     
@@ -5025,7 +5025,7 @@ async def update_doula_invoice(invoice_id: str, update_data: InvoiceUpdate, user
 async def delete_doula_invoice(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
     """Delete an invoice (only Draft invoices)"""
     invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     
@@ -5044,7 +5044,7 @@ async def send_doula_invoice(invoice_id: str, user: User = Depends(check_role(["
     now = datetime.now(timezone.utc)
     
     invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     
@@ -5109,7 +5109,7 @@ async def mark_doula_invoice_paid(invoice_id: str, user: User = Depends(check_ro
     
     # Get the invoice first to find the client
     invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     
@@ -5118,7 +5118,7 @@ async def mark_doula_invoice_paid(invoice_id: str, user: User = Depends(check_ro
     
     # Update invoice status
     result = await db.invoices.update_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"$set": {"status": "Paid", "paid_at": now, "updated_at": now}}
     )
     
@@ -5159,7 +5159,7 @@ async def cancel_doula_invoice(invoice_id: str, user: User = Depends(check_role(
     now = datetime.now(timezone.utc)
     
     result = await db.invoices.update_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"$set": {"status": "Cancelled", "updated_at": now}}
     )
     
@@ -5174,7 +5174,7 @@ async def send_doula_invoice_reminder(invoice_id: str, user: User = Depends(chec
     now = datetime.now(timezone.utc)
     
     invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     
@@ -5254,7 +5254,7 @@ async def send_doula_invoice_reminder(invoice_id: str, user: User = Depends(chec
 @api_router.get("/midwife/invoices")
 async def get_midwife_invoices(user: User = Depends(check_role(["MIDWIFE"])), status: Optional[str] = None):
     """Get all invoices, optionally filtered by status"""
-    query = {"provider_id": user.user_id, "provider_type": "MIDWIFE"}
+    query = {"pro_user_id": user.user_id, "pro_type": "MIDWIFE"}
     if status:
         query["status"] = status
     
@@ -5264,8 +5264,8 @@ async def get_midwife_invoices(user: User = Depends(check_role(["MIDWIFE"])), st
 @api_router.post("/midwife/invoices")
 async def create_midwife_invoice(invoice_data: InvoiceCreate, user: User = Depends(check_role(["MIDWIFE"]))):
     """Create a new invoice"""
-    # Get client name from clients collection (midwife clients use provider_id and provider_type fields)
-    client = await db.clients.find_one({"client_id": invoice_data.client_id, "provider_id": user.user_id, "provider_type": "MIDWIFE"}, {"_id": 0})
+    # Get client name from clients collection (midwife clients use pro_user_id and pro_type fields)
+    client = await db.clients.find_one({"client_id": invoice_data.client_id, "pro_user_id": user.user_id, "pro_type": "MIDWIFE"}, {"_id": 0})
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
@@ -5286,8 +5286,8 @@ async def create_midwife_invoice(invoice_data: InvoiceCreate, user: User = Depen
     
     invoice = {
         "invoice_id": f"inv_{uuid.uuid4().hex[:12]}",
-        "provider_id": user.user_id,
-        "provider_type": "MIDWIFE",
+        "pro_user_id": user.user_id,
+        "pro_type": "MIDWIFE",
         "client_id": invoice_data.client_id,
         "client_name": client["name"],
         "invoice_number": invoice_number,
@@ -5312,7 +5312,7 @@ async def create_midwife_invoice(invoice_data: InvoiceCreate, user: User = Depen
 async def get_midwife_invoice(invoice_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
     """Get a specific invoice"""
     invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     if not invoice:
@@ -5329,7 +5329,7 @@ async def update_midwife_invoice(invoice_id: str, update_data: InvoiceUpdate, us
     updates["updated_at"] = now
     
     result = await db.invoices.update_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"$set": updates}
     )
     
@@ -5342,7 +5342,7 @@ async def update_midwife_invoice(invoice_id: str, update_data: InvoiceUpdate, us
 async def delete_midwife_invoice(invoice_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
     """Delete an invoice (only Draft invoices)"""
     invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     
@@ -5361,7 +5361,7 @@ async def send_midwife_invoice(invoice_id: str, user: User = Depends(check_role(
     now = datetime.now(timezone.utc)
     
     invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     
@@ -5374,8 +5374,8 @@ async def send_midwife_invoice(invoice_id: str, user: User = Depends(check_role(
         {"$set": {"status": "Sent", "sent_at": now, "updated_at": now}}
     )
     
-    # Get client and send notification (midwife clients use provider_type=MIDWIFE)
-    client = await db.clients.find_one({"client_id": invoice["client_id"], "provider_type": "MIDWIFE"}, {"_id": 0})
+    # Get client and send notification (midwife clients use pro_type=MIDWIFE)
+    client = await db.clients.find_one({"client_id": invoice["client_id"], "pro_type": "MIDWIFE"}, {"_id": 0})
     if client and client.get("linked_mom_id"):
         # Create in-app notification for the mom
         notification = {
@@ -5425,7 +5425,7 @@ async def mark_midwife_invoice_paid(invoice_id: str, user: User = Depends(check_
     now = datetime.now(timezone.utc)
     
     result = await db.invoices.update_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"$set": {"status": "Paid", "paid_at": now, "updated_at": now}}
     )
     
@@ -5440,7 +5440,7 @@ async def cancel_midwife_invoice(invoice_id: str, user: User = Depends(check_rol
     now = datetime.now(timezone.utc)
     
     result = await db.invoices.update_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"$set": {"status": "Cancelled", "updated_at": now}}
     )
     
@@ -5455,7 +5455,7 @@ async def send_midwife_invoice_reminder(invoice_id: str, user: User = Depends(ch
     now = datetime.now(timezone.utc)
     
     invoice = await db.invoices.find_one(
-        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     
@@ -5552,7 +5552,7 @@ async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
     # Add provider info to each invoice
     for invoice in invoices:
         provider = await db.users.find_one(
-            {"user_id": invoice["provider_id"]},
+            {"user_id": invoice["pro_user_id"]},
             {"_id": 0, "full_name": 1, "email": 1, "role": 1}
         )
         if provider:
@@ -5580,7 +5580,7 @@ async def get_mom_invoice_detail(invoice_id: str, user: User = Depends(check_rol
     
     # Add provider info
     provider = await db.users.find_one(
-        {"user_id": invoice["provider_id"]},
+        {"user_id": invoice["pro_user_id"]},
         {"_id": 0, "full_name": 1, "email": 1, "role": 1}
     )
     if provider:
@@ -5727,12 +5727,12 @@ async def save_midwife_contract_defaults(data: dict, user: User = Depends(check_
 @api_router.get("/midwife/dashboard")
 async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
     """Get midwife dashboard stats"""
-    # Use provider_id to match how clients are stored (consistent with Doula)
-    total_clients = await db.clients.count_documents({"provider_id": user.user_id})
-    prenatal_clients = await db.clients.count_documents({"provider_id": user.user_id, "status": "Prenatal"})
+    # Use pro_user_id to match how clients are stored (consistent with Doula)
+    total_clients = await db.clients.count_documents({"pro_user_id": user.user_id})
+    prenatal_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "status": "Prenatal"})
     
     # Count active clients (those with linked_mom_id)
-    active_clients = await db.clients.count_documents({"provider_id": user.user_id, "linked_mom_id": {"$ne": None}})
+    active_clients = await db.clients.count_documents({"pro_user_id": user.user_id, "linked_mom_id": {"$ne": None}})
     
     # Count visits this month
     now = datetime.now(timezone.utc)
@@ -5771,7 +5771,7 @@ async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
 async def get_midwife_clients(user: User = Depends(check_role(["MIDWIFE"]))):
     """Get midwife's clients"""
     clients = await db.clients.find(
-        {"provider_id": user.user_id},
+        {"pro_user_id": user.user_id},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     return clients
@@ -5793,8 +5793,8 @@ async def create_midwife_client(client_data: ClientCreate, user: User = Depends(
     
     client = {
         "client_id": f"client_{uuid.uuid4().hex[:12]}",
-        "provider_id": user.user_id,
-        "provider_type": "MIDWIFE",
+        "pro_user_id": user.user_id,
+        "pro_type": "MIDWIFE",
         "name": client_data.name,
         "email": client_data.email,
         "phone": client_data.phone,
@@ -5816,7 +5816,7 @@ async def create_midwife_client(client_data: ClientCreate, user: User = Depends(
 async def get_midwife_client(client_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
     """Get a specific client with visits and birth summary"""
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id},
+        {"client_id": client_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     if not client:
@@ -5843,11 +5843,11 @@ async def get_midwife_client(client_id: str, user: User = Depends(check_role(["M
 async def update_midwife_client(client_id: str, request: Request, user: User = Depends(check_role(["MIDWIFE"]))):
     """Update a client"""
     body = await request.json()
-    update_data = {k: v for k, v in body.items() if k not in ["client_id", "provider_id", "provider_type", "created_at"]}
+    update_data = {k: v for k, v in body.items() if k not in ["client_id", "pro_user_id", "pro_type", "created_at"]}
     update_data["updated_at"] = datetime.now(timezone.utc)
     
     result = await db.clients.update_one(
-        {"client_id": client_id, "provider_id": user.user_id},
+        {"client_id": client_id, "pro_user_id": user.user_id},
         {"$set": update_data}
     )
     
@@ -5917,7 +5917,7 @@ async def update_visit(visit_id: str, request: Request, user: User = Depends(che
 async def get_prenatal_visits(client_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
     """Get all prenatal visit assessments for a client"""
     # Verify client belongs to this midwife
-    client = await db.clients.find_one({"client_id": client_id, "provider_id": user.user_id})
+    client = await db.clients.find_one({"client_id": client_id, "pro_user_id": user.user_id})
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
@@ -5931,7 +5931,7 @@ async def get_prenatal_visits(client_id: str, user: User = Depends(check_role(["
 async def create_prenatal_visit(client_id: str, visit_data: PrenatalVisitAssessmentCreate, user: User = Depends(check_role(["MIDWIFE"]))):
     """Create a new prenatal visit assessment"""
     # Verify client belongs to this midwife
-    client = await db.clients.find_one({"client_id": client_id, "provider_id": user.user_id})
+    client = await db.clients.find_one({"client_id": client_id, "pro_user_id": user.user_id})
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
@@ -6554,7 +6554,7 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
         if sender_role in ["DOULA", "MIDWIFE"] and receiver_role == "MOM":
             # Provider -> Mom: find client by linked_mom_id
             client = await db.clients.find_one({
-                "provider_id": user.user_id,
+                "pro_user_id": user.user_id,
                 "linked_mom_id": message_data.receiver_id
             })
             if client:
@@ -6562,7 +6562,7 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
         elif sender_role == "MOM" and receiver_role in ["DOULA", "MIDWIFE"]:
             # Mom -> Provider: find client by linked_mom_id
             client = await db.clients.find_one({
-                "provider_id": message_data.receiver_id,
+                "pro_user_id": message_data.receiver_id,
                 "linked_mom_id": user.user_id
             })
             if client:
@@ -6622,7 +6622,7 @@ async def get_client_messages(
 ):
     """Get all messages associated with a specific client (client-centric view)"""
     # Verify the provider has access to this client
-    client = await db.clients.find_one({"client_id": client_id, "provider_id": user.user_id}, {"_id": 0})
+    client = await db.clients.find_one({"client_id": client_id, "pro_user_id": user.user_id}, {"_id": 0})
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
@@ -6661,7 +6661,7 @@ async def get_unified_provider_clients(
     Get all clients for the logged-in provider (DOULA or MIDWIFE).
     By default, only returns active clients (within 6 weeks of due date).
     """
-    query = {"provider_id": user.user_id}
+    query = {"pro_user_id": user.user_id}
     
     if status_filter:
         query["status"] = status_filter
@@ -6682,7 +6682,7 @@ async def get_unified_provider_clients(
 async def get_unified_client_detail(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Get detailed info for a single client, including related data counts"""
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id},
+        {"client_id": client_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     
@@ -6707,12 +6707,12 @@ async def get_unified_client_detail(client_id: str, user: User = Depends(check_r
     
     contracts_count = await db.contracts.count_documents({
         "client_id": client_id,
-        "provider_id": user.user_id
+        "pro_user_id": user.user_id
     })
     
     invoices_count = await db.invoices.count_documents({
         "client_id": client_id,
-        "provider_id": user.user_id
+        "pro_user_id": user.user_id
     })
     
     # Midwife-specific: visits count
@@ -6738,7 +6738,7 @@ async def get_unified_client_detail(client_id: str, user: User = Depends(check_r
 async def update_unified_client(client_id: str, update_data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Update a client's information"""
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id}
+        {"client_id": client_id, "pro_user_id": user.user_id}
     )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
@@ -6766,7 +6766,7 @@ async def get_client_timeline(client_id: str, user: User = Depends(check_role(["
     appointments, visits, notes, contracts, invoices
     """
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id},
+        {"client_id": client_id, "pro_user_id": user.user_id},
         {"_id": 0}
     )
     if not client:
@@ -6846,7 +6846,7 @@ async def get_client_timeline(client_id: str, user: User = Depends(check_role(["
     
     # Get contracts
     contracts = await db.contracts.find(
-        {"client_id": client_id, "provider_id": user.user_id},
+        {"client_id": client_id, "pro_user_id": user.user_id},
         {"_id": 0}
     ).to_list(100)
     
@@ -6863,7 +6863,7 @@ async def get_client_timeline(client_id: str, user: User = Depends(check_role(["
     
     # Get invoices
     invoices = await db.invoices.find(
-        {"client_id": client_id, "provider_id": user.user_id},
+        {"client_id": client_id, "pro_user_id": user.user_id},
         {"_id": 0}
     ).to_list(100)
     
@@ -6943,7 +6943,7 @@ async def get_unified_appointments(
         if appt.get("client_id"):
             client = await db.clients.find_one({"client_id": appt["client_id"]}, {"_id": 0})
         elif appt.get("mom_user_id"):
-            client = await db.clients.find_one({"linked_mom_id": appt["mom_user_id"], "provider_id": user.user_id}, {"_id": 0})
+            client = await db.clients.find_one({"linked_mom_id": appt["mom_user_id"], "pro_user_id": user.user_id}, {"_id": 0})
         
         if client:
             appt["client_name"] = client.get("name", "")
@@ -6970,7 +6970,7 @@ async def create_unified_appointment(data: dict, user: User = Depends(check_role
     
     # Verify client belongs to provider
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id}
+        {"client_id": client_id, "pro_user_id": user.user_id}
     )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
@@ -7108,7 +7108,7 @@ async def create_unified_note(data: dict, user: User = Depends(check_role(["DOUL
     
     # Verify client belongs to provider
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id}
+        {"client_id": client_id, "pro_user_id": user.user_id}
     )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
@@ -7203,7 +7203,7 @@ async def get_unified_visits(
     # Filter out inactive client visits if needed
     if not include_inactive_clients and not client_id:
         clients = await db.clients.find(
-            {"provider_id": user.user_id},
+            {"pro_user_id": user.user_id},
             {"_id": 0, "client_id": 1, "due_date": 1, "birth_date": 1, "edd": 1}
         ).to_list(500)
         
@@ -7240,7 +7240,7 @@ async def create_unified_visit(data: dict, user: User = Depends(check_role(["MID
     
     # Verify client belongs to provider
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id}
+        {"client_id": client_id, "pro_user_id": user.user_id}
     )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
@@ -7410,7 +7410,7 @@ async def delete_unified_visit(visit_id: str, user: User = Depends(check_role(["
 async def get_client_birth_record(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Get birth record for a client"""
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id}
+        {"client_id": client_id, "pro_user_id": user.user_id}
     )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
@@ -7427,7 +7427,7 @@ async def get_client_birth_record(client_id: str, user: User = Depends(check_rol
 async def create_or_update_birth_record(client_id: str, data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Create or update birth record for a client"""
     client = await db.clients.find_one(
-        {"client_id": client_id, "provider_id": user.user_id}
+        {"client_id": client_id, "pro_user_id": user.user_id}
     )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
@@ -7481,7 +7481,7 @@ async def get_unified_dashboard(user: User = Depends(check_role(["DOULA", "MIDWI
     
     # Get all clients and count active
     all_clients = await db.clients.find(
-        {"provider_id": user.user_id},
+        {"pro_user_id": user.user_id},
         {"_id": 0, "client_id": 1, "due_date": 1, "birth_date": 1, "edd": 1, "status": 1}
     ).to_list(500)
     
@@ -7650,7 +7650,7 @@ async def create_mom_appointment(data: dict, user: User = Depends(check_role(["M
     # Find or create client record linking this mom to the provider
     client = await db.clients.find_one({
         "linked_mom_id": user.user_id,
-        "provider_id": provider_id
+        "pro_user_id": provider_id
     })
     client_id = client["client_id"] if client else None
     
@@ -7801,7 +7801,7 @@ async def check_provider_can_message(provider_id: str, mom_user_id: str) -> bool
     
     # Also check clients collection for linked relationships
     client = await db.clients.find_one({
-        "provider_id": provider_id,
+        "pro_user_id": provider_id,
         "linked_mom_id": mom_user_id
     })
     if client:
