@@ -390,6 +390,37 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Header with back navigation when client-scoped */}
+      <View style={styles.mainHeader}>
+        {isClientScoped && (
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
+          </TouchableOpacity>
+        )}
+        <View style={{ flex: 1 }}>
+          <Text style={styles.mainTitle}>
+            {isClientScoped ? `${clientName}'s Invoices` : 'Invoices'}
+          </Text>
+          {isClientScoped && (
+            <Text style={styles.mainSubtitle}>Client Invoices</Text>
+          )}
+        </View>
+        <View style={styles.headerButtons}>
+          {!isClientScoped && (
+            <TouchableOpacity style={styles.settingsButton} onPress={openCreateTemplate}>
+              <Ionicons name="settings-outline" size={22} color={primaryColor} />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            style={[styles.addButton, { backgroundColor: primaryColor }]}
+            onPress={openCreateInvoice}
+            testID="new-invoice-btn"
+          >
+            <Ionicons name="add" size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -397,25 +428,8 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Invoices</Text>
-          <View style={styles.headerButtons}>
-            <TouchableOpacity style={styles.settingsButton} onPress={openCreateTemplate}>
-              <Ionicons name="settings-outline" size={22} color={primaryColor} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.addButton, { backgroundColor: primaryColor }]}
-              onPress={openCreateInvoice}
-              testID="new-invoice-btn"
-            >
-              <Ionicons name="add" size={24} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Payment Templates Section */}
-        {paymentTemplates.length > 0 && (
+        {/* Payment Templates Section - only show when not client-scoped */}
+        {!isClientScoped && paymentTemplates.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Payment Instructions Templates</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
