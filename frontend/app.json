@@ -13,14 +13,22 @@
       "./assets/fonts/*.ttf"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.truejoybirthing.app",
+      "infoPlist": {
+        "SKAdNetworkItems": []
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#9B6B9E"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.truejoybirthing.app",
+      "permissions": [
+        "com.android.vending.BILLING"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +44,12 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#F8F4F9"
+        }
+      ],
+      [
+        "react-native-iap",
+        {
+          "paymentProvider": "both"
         }
       ]
     ],
