@@ -152,8 +152,17 @@ export default function MidwifeMessagesScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Messages</Text>
-          <Text style={styles.subtitle}>Connect with your clients</Text>
+          <View>
+            <Text style={styles.title}>Messages</Text>
+            <Text style={styles.subtitle}>Connect with your clients</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.newMessageButton}
+            onPress={() => {/* TODO: Open new message modal */}}
+            data-testid="new-message-btn"
+          >
+            <Icon name="add" size={24} color={COLORS.white} />
+          </TouchableOpacity>
         </View>
         
         {conversations.length === 0 ? (
