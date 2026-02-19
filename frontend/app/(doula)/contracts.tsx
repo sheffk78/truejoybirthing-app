@@ -803,7 +803,7 @@ export default function DoulaContracts() {
                 <View style={styles.fieldContainer}>
                   <Text style={styles.fieldLabel}>Select Client *</Text>
                   <View style={styles.clientGrid}>
-                    {clients.map((client) => (
+                    {clients.filter(c => c.linked_mom_id).map((client) => (
                       <TouchableOpacity
                         key={client.client_id}
                         style={[
@@ -813,6 +813,10 @@ export default function DoulaContracts() {
                         onPress={() => {
                           setSelectedClientId(client.client_id);
                           updateFormField('client_name', client.name);
+                          // Auto-fill due date if available
+                          if (client.edd) {
+                            updateFormField('estimated_due_date', client.edd);
+                          }
                         }}
                         data-testid={`client-option-${client.client_id}`}
                       >
@@ -820,12 +824,15 @@ export default function DoulaContracts() {
                           styles.clientOptionText,
                           selectedClientId === client.client_id && styles.clientOptionTextSelected
                         ]}>{client.name}</Text>
+                        {client.edd && (
+                          <Text style={styles.clientDueDate}>Due: {client.edd}</Text>
+                        )}
                       </TouchableOpacity>
                     ))}
                   </View>
-                  {clients.length === 0 && (
+                  {clients.filter(c => c.linked_mom_id).length === 0 && (
                     <Text style={styles.noClientsText}>
-                      No clients found. Add a client first.
+                      No active clients. Clients will appear here when Moms connect with you from the Marketplace.
                     </Text>
                   )}
                 </View>
