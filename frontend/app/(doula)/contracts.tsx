@@ -182,20 +182,19 @@ export default function DoulaContracts() {
     }
   };
 
-  const openCreateModal = () => {
-    // Initialize form with default values
-    const initialData = { ...DEFAULT_VALUES };
-    setFormData(initialData);
+  const openCreateModal = async () => {
+    // Load saved defaults first
+    try {
+      const savedDefaults = await apiRequest('/doula/contract-defaults');
+      const initialData = { ...DEFAULT_VALUES, ...savedDefaults };
+      setFormData(initialData);
+    } catch (error) {
+      setFormData({ ...DEFAULT_VALUES });
+    }
+    
     setSelectedClientId('');
     setSelectedTemplateId('');
     setCurrentSection(0);
-    
-    // Check if there's a default template
-    const defaultTemplate = templates.find(t => t.is_default);
-    if (defaultTemplate) {
-      setSelectedTemplateId(defaultTemplate.template_id);
-      applyTemplate(defaultTemplate.template_id);
-    }
     
     setShowCreateModal(true);
   };
