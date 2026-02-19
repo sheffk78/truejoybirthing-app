@@ -461,6 +461,7 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Invoice Creation Fix** - Invoices can now be created and updated without errors
 - [x] **Contract Quick Edit Fix** - Quick edit mode now correctly saves contract updates
 - [x] **Dashboard Stats Verification** - Confirmed backend correctly returns active client counts using `pro_user_id` field
+- [x] **Midwife Client Detail Navigation Fix** (2026-02-19) - Fixed critical bug where clicking a client in Midwife's client list was returning 404 "Client not found". Root cause: Backend queries in GET/PUT `/api/midwife/clients/{client_id}` were using `provider_id` instead of `pro_user_id`. Fixed in server.py lines 5638, 5665, 5669.
 
 ### 📊 Test Reports
 - `/app/test_reports/iteration_78.json` - **Prenatal Visit Assessment VERIFIED** (100% - 20/20 pytest tests passed for all CRUD endpoints + summary generation + well-being scores)
