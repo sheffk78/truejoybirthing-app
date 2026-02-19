@@ -13,7 +13,7 @@ import requests
 import os
 
 # Use the public API URL
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://birth-plan-hub-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://mama-care-platform.preview.emergentagent.com')
 
 # Test credentials
 DOULA_EMAIL = "testdoula123@test.com"

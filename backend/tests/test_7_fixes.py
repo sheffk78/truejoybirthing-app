@@ -14,7 +14,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://birth-plan-hub-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://mama-care-platform.preview.emergentagent.com')
 
 # Test credentials
 MOM_EMAIL = "testmom_msg@test.com"
