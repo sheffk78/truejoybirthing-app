@@ -249,7 +249,39 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 **Usage**: `cd /app/backend && source .env && python seed_demo_data.py --reset`
 
-### ✅ RECENTLY COMPLETED (2026-02-19) - Code Refactoring
+### ✅ RECENTLY COMPLETED (2026-02-19) - Navigation Restructuring
+
+#### Client-First Navigation Pattern (COMPLETED - 2026-02-19)
+- [x] **Simplified Bottom Navigation**: Reduced to 4 tabs for both Doula and Midwife
+  - Home, Clients, Messages, Profile
+  - Tools (Notes, Contracts, Invoices, Appointments) hidden via `href: null`
+- [x] **Dashboard Quick Actions**: Simplified to 2 items
+  - "See Clients" and "Appointments" only
+  - Removed direct links to Contracts, Invoices, Notes
+- [x] **Client-Scoped Tool Access**:
+  - Clients → Client Detail → Notes/Contracts/Invoices/Appointments
+  - Back navigation returns to Client Detail, not Home
+- [x] **ProviderNotes Back Navigation**: Shows back button when accessed with `clientId` parameter
+- [x] **Testing**: Frontend testing confirmed 7/7 features working (iteration_96)
+
+#### Navigation Structure:
+```
+Bottom Tabs (visible):
+  - Home (dashboard)
+  - Clients (client list → client detail hub)
+  - Messages (conversations)
+  - Profile (settings)
+
+Hidden but accessible via navigation:
+  - client-detail?clientId=...&clientName=...
+  - notes?clientId=...&clientName=...
+  - contracts?clientId=...&clientName=...
+  - invoices?clientId=...&clientName=...
+  - appointments
+  - visits (midwife only)
+  - birth-summaries (midwife only)
+  - contract-templates
+```
 
 #### Contracts Screen Consolidation (COMPLETED - 2026-02-19)
 - [x] **ProviderContracts.tsx** - Created shared contracts component (1156 lines)
