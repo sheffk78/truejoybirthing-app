@@ -1345,6 +1345,11 @@ const styles = StyleSheet.create({
   },
   clientOptionText: { fontSize: 14, color: COLORS.text },
   clientOptionTextSelected: { color: COLORS.primary, fontWeight: '600' },
+  clientDueDate: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
   noClientsText: {
     fontSize: 14,
     color: COLORS.textSecondary,
