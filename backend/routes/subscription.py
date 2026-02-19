@@ -85,11 +85,8 @@ def calculate_subscription_status(subscription: dict) -> dict:
     
     # Check active subscription
     if status == "active":
-        sub_end = subscription.get("subscription_end_date")
-        if sub_end:
-            if isinstance(sub_end, str):
-                sub_end = datetime.fromisoformat(sub_end.replace("Z", "+00:00"))
-            if sub_end > now:
+        sub_end = ensure_aware(subscription.get("subscription_end_date"))
+        if sub_end and sub_end > now:
                 days_remaining = (sub_end - now).days
                 return {
                     "has_pro_access": True,
