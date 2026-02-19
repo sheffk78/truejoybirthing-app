@@ -170,10 +170,10 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
         }
         break;
       case 'contract':
-        router.push(`${config.routes.contracts}?clientId=${client.client_id}`);
+        router.push(`${config.routes.contracts}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
         break;
       case 'invoice':
-        router.push(`${config.routes.invoices}?clientId=${client.client_id}`);
+        router.push(`${config.routes.invoices}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
         break;
       case 'visit':
         if (config.features.showVisits) {
