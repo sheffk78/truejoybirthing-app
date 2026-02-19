@@ -154,17 +154,19 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
   dashboard: {
     title: 'Midwife Dashboard',
     statsCards: [
-      { key: 'prenatal_clients', label: 'Prenatal Clients', icon: 'people-outline' },
-      { key: 'upcoming_appointments', label: 'Upcoming Appts', icon: 'calendar-outline' },
-      { key: 'visits_this_month', label: 'Visits This Month', icon: 'clipboard-outline' },
-      { key: 'births_this_month', label: 'Births This Month', icon: 'heart-outline' },
+      { key: 'prenatal_clients', label: 'Prenatal Clients', colorKey: 'primary' },
+      { key: 'upcoming_appointments', label: 'Upcoming Appts', colorKey: 'warning' },
+      { key: 'visits_this_month', label: 'Visits This Month', colorKey: 'accent' },
+      { key: 'births_this_month', label: 'Births This Month', colorKey: 'success' },
     ],
     quickActions: [
-      { label: 'Add Client', icon: 'person-add-outline', route: '/(midwife)/clients' },
-      { label: 'Add Visit', icon: 'create-outline', route: '/(midwife)/visits' },
-      { label: 'Birth Summary', icon: 'document-text-outline', route: '/(midwife)/birth-summaries' },
-      { label: 'Appointments', icon: 'calendar-outline', route: '/(midwife)/appointments' },
+      { label: 'Add Client', icon: 'person-add', route: '/(midwife)/clients', colorKey: 'primary' },
+      { label: 'Add Visit', icon: 'create', route: '/(midwife)/visits', colorKey: 'accent' },
+      { label: 'Birth Summary', icon: 'document-text', route: '/(midwife)/birth-summaries', colorKey: 'success' },
+      { label: 'Appointments', icon: 'calendar-number', route: '/(midwife)/appointments', colorKey: 'warning' },
     ],
+    tipTitle: 'Midwifery Tools',
+    tipText: 'This is a simplified client management system for home and birth center midwives. Track prenatal visits, birth summaries, and postpartum care.',
   },
   
   clientStatuses: ['Prenatal', 'Contract Sent', 'Contract Signed', 'In Labor', 'Postpartum', 'Completed'],
