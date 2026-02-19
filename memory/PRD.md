@@ -420,6 +420,14 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - **Fix 10: Date Pickers** - Due Date in Profile and Birth Plan now use native date pickers
   - **Fix 11: Profile Zip Code** - Fixed to clear city/state when changing zip code
 
+### ✅ RECENTLY COMPLETED (2026-02-19) - Midwife Prenatal Visit Assessment
+- [x] **Backend CRUD API** - GET/POST/PUT/DELETE endpoints for prenatal visits attached to clients
+- [x] **Vitals & Measurements** - Urinalysis, Blood Pressure, FHR, Fundal Height, Weight (lbs/kg)
+- [x] **Well-being Check-in** - 6 categories (eating, water, emotional, physical, mental, spiritual) with 1-5 scale + notes
+- [x] **Auto-generated Summary** - "BP 118/72, FHR 145, FH 28 cm, Wt 152 lbs" format for list view
+- [x] **Client Detail Page** - New page with prenatal visits section, add/edit/view/delete modals
+- [x] **Date Picker** - HTML5 date picker on web, default to today
+
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Midwife Contract Functionality
 - [x] **Midwife Contract Defaults** - GET/PUT endpoints for saving contract text defaults
 - [x] **Save as Default Feature** - Contracts auto-save text settings as defaults for future contracts  
