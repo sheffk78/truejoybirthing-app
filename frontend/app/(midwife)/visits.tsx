@@ -556,4 +556,29 @@ const styles = StyleSheet.create({
     borderTopColor: COLORS.border,
     backgroundColor: COLORS.white,
   },
+  filterContainer: {
+    marginBottom: SIZES.md,
+  },
+  filterChip: {
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
+    backgroundColor: COLORS.white,
+    borderRadius: SIZES.radiusMd,
+    marginRight: SIZES.sm,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  filterChipActive: {
+    backgroundColor: COLORS.roleMidwife,
+    borderColor: COLORS.roleMidwife,
+  },
+  filterChipText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  filterChipTextActive: {
+    color: COLORS.white,
+    fontFamily: FONTS.bodyBold,
+  },
 });
