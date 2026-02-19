@@ -655,11 +655,12 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - POST `/api/auth/login`
 - GET `/api/auth/me`
 
-### Messages (NEW)
+### Messages (UPDATED - Client-Centric)
 - GET `/api/messages/conversations` - Get all conversations
 - GET `/api/messages/{user_id}` - Get messages with a user
-- POST `/api/messages` - Send a message
+- POST `/api/messages` - Send a message (now auto-populates `client_id`)
 - GET `/api/messages/unread/count` - Get unread count
+- GET `/api/provider/clients/{client_id}/messages` - **NEW**: Get messages for a specific client (client-scoped)
 
 ### Contracts
 - GET `/api/contracts/{contract_id}` - Public endpoint for viewing
