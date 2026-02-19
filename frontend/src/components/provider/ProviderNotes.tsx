@@ -162,6 +162,34 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Header with back navigation when client-scoped */}
+      <View style={styles.header}>
+        {isClientScoped && (
+          <TouchableOpacity 
+            onPress={() => router.back()} 
+            style={styles.backButton}
+            data-testid="back-button"
+          >
+            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+          </TouchableOpacity>
+        )}
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title}>
+            {isClientScoped ? `${clientName}'s Notes` : 'Notes'}
+          </Text>
+          {isClientScoped && (
+            <Text style={styles.subtitle}>Client Notes</Text>
+          )}
+        </View>
+        <TouchableOpacity
+          style={[styles.addButton, { backgroundColor: primaryColor }]}
+          onPress={() => setModalVisible(true)}
+          data-testid="add-note-btn"
+        >
+          <Icon name="add" size={24} color={COLORS.white} />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -169,39 +197,30 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
         }
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Notes</Text>
-          <TouchableOpacity
-            style={[styles.addButton, { backgroundColor: primaryColor }]}
-            onPress={() => setModalVisible(true)}
-            data-testid="add-note-btn"
-          >
-            <Icon name="add" size={24} color={COLORS.white} />
-          </TouchableOpacity>
-        </View>
-        
-        {/* Client Filter */}
-        <View style={styles.filterContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <TouchableOpacity
-              style={[styles.filterChip, !filterClientId && { backgroundColor: primaryColor }]}
-              onPress={() => setFilterClientId(null)}
-            >
-              <Text style={[styles.filterChipText, !filterClientId && { color: COLORS.white }]}>All Clients</Text>
-            </TouchableOpacity>
-            {clients.filter(c => c.is_active !== false).map((client) => (
+        {/* Client Filter - Only show when NOT client-scoped */}
+        {!isClientScoped && (
+          <View style={styles.filterContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <TouchableOpacity
-                key={client.client_id}
-                style={[styles.filterChip, filterClientId === client.client_id && { backgroundColor: primaryColor }]}
-                onPress={() => setFilterClientId(client.client_id)}
+                style={[styles.filterChip, !filterClientId && { backgroundColor: primaryColor }]}
+                onPress={() => setFilterClientId(null)}
               >
-                <Text style={[styles.filterChipText, filterClientId === client.client_id && { color: COLORS.white }]}>
-                  {client.name}
-                </Text>
+                <Text style={[styles.filterChipText, !filterClientId && { color: COLORS.white }]}>All Clients</Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+              {clients.filter(c => c.is_active !== false).map((client) => (
+                <TouchableOpacity
+                  key={client.client_id}
+                  style={[styles.filterChip, filterClientId === client.client_id && { backgroundColor: primaryColor }]}
+                  onPress={() => setFilterClientId(client.client_id)}
+                >
+                  <Text style={[styles.filterChipText, filterClientId === client.client_id && { color: COLORS.white }]}>
+                    {client.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
         
         {filteredNotes.length === 0 ? (
           <Card style={styles.emptyCard}>
