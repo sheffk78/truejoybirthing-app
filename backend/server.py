@@ -4010,8 +4010,9 @@ async def get_midwife_contract_template_route(user: User = Depends(check_role(["
 async def create_midwife_contract(contract_data: MidwifeContractCreate, user: User = Depends(check_role(["MIDWIFE"]))):
     """Create a new Midwifery Services Agreement"""
     # Get client info
+    # Note: Midwife clients use pro_user_id and pro_type fields
     client = await db.clients.find_one(
-        {"client_id": contract_data.client_id, "provider_id": user.user_id, "provider_type": "MIDWIFE"},
+        {"client_id": contract_data.client_id, "pro_user_id": user.user_id, "pro_type": "MIDWIFE"},
         {"_id": 0}
     )
     if not client:
@@ -5026,8 +5027,8 @@ async def get_midwife_invoices(user: User = Depends(check_role(["MIDWIFE"])), st
 @api_router.post("/midwife/invoices")
 async def create_midwife_invoice(invoice_data: InvoiceCreate, user: User = Depends(check_role(["MIDWIFE"]))):
     """Create a new invoice"""
-    # Get client name from clients collection (midwife clients are stored in clients with provider_type=MIDWIFE)
-    client = await db.clients.find_one({"client_id": invoice_data.client_id, "provider_id": user.user_id, "provider_type": "MIDWIFE"}, {"_id": 0})
+    # Get client name from clients collection (midwife clients use pro_user_id and pro_type fields)
+    client = await db.clients.find_one({"client_id": invoice_data.client_id, "pro_user_id": user.user_id, "pro_type": "MIDWIFE"}, {"_id": 0})
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
