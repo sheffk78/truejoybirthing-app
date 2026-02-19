@@ -835,6 +835,11 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
   },
+  headerSubtitle: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
   addButton: {
     width: 40,
     height: 40,
