@@ -1833,10 +1833,13 @@ async def get_subscription_status(user: User = Depends(get_current_user)):
             "has_pro_access": True,  # Moms have full access to mom features
             "subscription_status": "free",
             "plan_type": "mom_free",
+            "subscription_provider": None,
             "trial_end_date": None,
+            "subscription_end_date": None,
             "days_remaining": None,
             "is_trial": False,
-            "is_mom": True
+            "is_mom": True,
+            "auto_renewing": False
         }
     
     # Get subscription info for PRO users
