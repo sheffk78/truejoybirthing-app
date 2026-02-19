@@ -1,0 +1,74 @@
+{
+  "summary": "Fixed critical backend bug in midwife client detail API. Navigation from client list to client-detail page now works correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [],
+    "fixed": [
+      {
+        "endpoint": "GET /api/midwife/clients/{client_id}",
+        "issue": "Field name mismatch - query used 'provider_id' but document has 'pro_user_id'",
+        "fix_applied": "Changed query from {'provider_id': user.user_id} to {'pro_user_id': user.user_id}",
+        "priority": "CRITICAL"
+      },
+      {
+        "endpoint": "PUT /api/midwife/clients/{client_id}",
+        "issue": "Same field name mismatch as GET endpoint",
+        "fix_applied": "Changed query to use 'pro_user_id' instead of 'provider_id'",
+        "priority": "HIGH"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "notes": "Frontend navigation code was correct. Issue was in backend API returning 404 due to field mismatch."
+  },
+  "test_report_links": [
+    "/app/backend/server.py - Lines 5637-5642 and 5668-5671"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "ROOT CAUSE: The clients collection uses field names 'pro_user_id' and 'pro_type' instead of 'provider_id' and 'provider_type' as the API endpoints were expecting",
+    "VERIFIED: After fix, GET /api/midwife/clients/{client_id} returns correct client data with visits, birth_summary, notes",
+    "VERIFIED: Navigation from clients.tsx → client-detail.tsx works correctly with URL query params: clientId and clientName",
+    "VERIFIED: Client detail page loads and displays prenatal visits with summary (BP, FHR, FH, Wt)",
+    "The client_detail.tsx UI correctly uses router.push with query params and useLocalSearchParams to receive clientId/clientName"
+  ],
+  "updated_files": [
+    "/app/backend/server.py"
+  ],
+  "success_rate": {
+    "backend": "100% - Fixed critical bug",
+    "frontend": "100% - Navigation working correctly"
+  },
+  "test_credentials": {
+    "midwife_email": "testmidwife@test.com",
+    "midwife_password": "password123"
+  },
+  "seed_data_creation": "Existing test client: client_418b912073a5 (Jane Test Mom) with prenatal visit from Jan 15, 2025",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "The midwife client detail navigation bug has been fixed. The issue was a field name mismatch in server.py between 'provider_id' (used in queries) and 'pro_user_id' (actual field in MongoDB documents). Test the complete flow: Login as midwife → Clients tab → Click client card → Client detail page loads with prenatal visits.",
+  "rca_of_the_issue": {
+    "symptom": "Clicking on a client card in the clients list navigated to /client-detail but showed 'Client not found' error",
+    "root_cause": "Backend API endpoint GET /api/midwife/clients/{client_id} was querying MongoDB with {'provider_id': user.user_id} but the actual documents have 'pro_user_id' field",
+    "evidence": [
+      "List endpoint (/api/midwife/clients) returned clients successfully showing 'pro_user_id' field",
+      "Single client endpoint (/api/midwife/clients/{client_id}) returned 404 'Client not found'",
+      "MongoDB documents contain: client_id, pro_user_id, pro_type, name, email, etc.",
+      "Query was using wrong field name: provider_id instead of pro_user_id"
+    ],
+    "fix": "Changed server.py lines 5638 and 5669 from 'provider_id' to 'pro_user_id'",
+    "verification": "After fix, GET /api/midwife/clients/client_418b912073a5 returns full client data including visits array"
+  },
+  "flows_verified": [
+    "✓ Midwife login with testmidwife@test.com / password123",
+    "✓ Navigation to Clients tab from dashboard",
+    "✓ Client list shows 'Jane Test Mom' with status 'Prenatal', EDD, Home Birth",
+    "✓ Clicking client card navigates to /client-detail?clientId=xxx&clientName=xxx",
+    "✓ Client detail page loads showing email, Prenatal Visits section",
+    "✓ Existing prenatal visit displayed with summary (BP 120/70, FHR 140, FH 28.0 cm, Wt 145.0 lbs)",
+    "✓ Add button (+) visible for adding new prenatal visits"
+  ]
+}
