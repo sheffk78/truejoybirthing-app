@@ -499,8 +499,8 @@ def generate_plan_id():
 async def seed_demo_data(reset: bool = False):
     """Seed all demo data into the database"""
     
-    client = AsyncIOMotorClient(MONGO_URL)
-    db = client[DB_NAME]
+    mongo_client = AsyncIOMotorClient(MONGO_URL)
+    db = mongo_client[DB_NAME]
     
     print(f"Connected to MongoDB: {DB_NAME}")
     
