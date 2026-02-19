@@ -136,6 +136,29 @@ export default function MidwifeVisitsScreen() {
           </TouchableOpacity>
         </View>
         
+        {/* Client Filter */}
+        <View style={styles.filterContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <TouchableOpacity
+              style={[styles.filterChip, !clientFilter && styles.filterChipActive]}
+              onPress={() => setClientFilter(null)}
+            >
+              <Text style={[styles.filterChipText, !clientFilter && styles.filterChipTextActive]}>All Clients</Text>
+            </TouchableOpacity>
+            {clients.filter(c => c.is_active !== false).map((client) => (
+              <TouchableOpacity
+                key={client.client_id}
+                style={[styles.filterChip, clientFilter === client.client_id && styles.filterChipActive]}
+                onPress={() => setClientFilter(client.client_id)}
+              >
+                <Text style={[styles.filterChipText, clientFilter === client.client_id && styles.filterChipTextActive]}>
+                  {client.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        
         {visits.length === 0 ? (
           <Card>
             <Text style={styles.emptyText}>
