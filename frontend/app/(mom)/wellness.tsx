@@ -360,6 +360,7 @@ const styles = StyleSheet.create({
   symptomTagText: { fontSize: SIZES.fontXs, color: COLORS.warning },
   journalText: { fontSize: SIZES.fontSm, color: COLORS.textSecondary, marginTop: SIZES.sm, fontStyle: 'italic' },
   modalContainer: { flex: 1, backgroundColor: COLORS.background },
+  keyboardAvoidingContainer: { flex: 1 },
   modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.md, borderBottomWidth: 1, borderBottomColor: COLORS.border },
   modalTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary },
   modalScroll: { flex: 1, padding: SIZES.md },
