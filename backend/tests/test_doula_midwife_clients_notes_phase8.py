@@ -83,7 +83,7 @@ class TestDoulaClients:
         })
         assert response.status_code == 200
         data = response.json()
-        self.token = data["access_token"]
+        self.token = data["session_token"]
         self.headers = {"Authorization": f"Bearer {self.token}"}
     
     def test_get_doula_clients_list(self):
@@ -364,7 +364,7 @@ class TestMidwifeClients:
         })
         assert response.status_code == 200
         data = response.json()
-        self.token = data["access_token"]
+        self.token = data["session_token"]
         self.headers = {"Authorization": f"Bearer {self.token}"}
     
     def test_get_midwife_clients_list(self):
