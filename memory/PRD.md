@@ -147,6 +147,20 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 ### 🟡 BLOCKED
 - None (previously: Email notifications domain verification - now resolved)
 
+### ✅ RECENTLY COMPLETED (2026-02-19)
+- [x] **Doula Contracts Header Fix** - Fixed header so '+' button is accessible, removed "New Contract" text leaving just '+' icon
+- [x] **Doula Clients Rework** - Removed manual "Add Client" button, now shows only Moms who connected via Marketplace
+  - Pending Requests section with Accept/Decline buttons
+  - Shows Mom's name, due date, and birth plan availability
+- [x] **Doula Profile Enhancements**:
+  - Photo upload via camera/library (expo-image-picker)
+  - Video Introduction: YouTube URL field with thumbnail preview
+  - More About Me: Long text field with 800 character limit
+- [x] **Doula Messages '+' Icon** - Added '+' button in top right to start new conversation
+- [x] **Doula Dashboard Avatar** - Profile icon now shows actual profile photo, links to profile page
+- [x] **Invoice Mark as Paid** - Backend now marks invoice notifications as resolved for Mom and sends "Payment Received" confirmation
+- [x] **Marketplace Video/Bio Display** - Provider profiles in Marketplace now show Video Introduction and More About Me
+
 ### ✅ RECENTLY COMPLETED (2026-02-18)
 - [x] **Critical Bug Fix: PDF Download** - Fixed token variable being undefined (was using non-existent `token` property, now correctly uses `sessionToken` from authStore)
 - [x] **KeyboardAvoidingView Improvement** - Updated Birth Plan modal to use better keyboard offset settings for iOS
