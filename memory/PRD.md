@@ -251,6 +251,13 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Code Refactoring
 
+#### Client-Centric Messaging (COMPLETED - 2026-02-19)
+- [x] **Message Model** - Added optional `client_id` field to link messages to specific client relationships
+- [x] **Auto Client-ID Resolution** - When provider sends message to mom (or vice versa), `client_id` is auto-populated from clients collection
+- [x] **New Endpoint** - `GET /api/provider/clients/{client_id}/messages` returns all messages for a specific client
+- [x] **Permission Fix** - `check_provider_can_message` now checks both `share_requests` AND `clients` collection for linked relationships
+- [x] **Contracts Config** - Created `/app/frontend/src/components/provider/config/contractsConfig.ts` with role-specific contract sections and defaults (prep for future consolidation)
+
 #### Dead Code Cleanup & Provider Component Consolidation (COMPLETED - 2026-02-19)
 - [x] **ProviderNotes.tsx** - Shared notes component for both Doula and Midwife
 - [x] **ProviderAppointments.tsx** - Shared appointments component with config-based filter tabs
