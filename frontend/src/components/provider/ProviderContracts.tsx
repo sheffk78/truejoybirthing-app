@@ -460,12 +460,19 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']} data-testid="provider-contracts-screen">
-      {/* Header */}
+      {/* Header with back navigation when client-scoped */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{config.roleLabel} Contracts</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.headerTitle}>
+            {isClientScoped ? `${clientName}'s Contracts` : `${config.roleLabel} Contracts`}
+          </Text>
+          {isClientScoped && (
+            <Text style={styles.headerSubtitle}>Client Contracts</Text>
+          )}
+        </View>
         <TouchableOpacity
           style={[styles.addButton, { backgroundColor: primaryColor }]}
           onPress={openCreateModal}
@@ -482,9 +489,14 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
         {contracts.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="document-text-outline" size={64} color={COLORS.border} />
-            <Text style={styles.emptyTitle}>No Contracts Yet</Text>
+            <Text style={styles.emptyTitle}>
+              {isClientScoped ? 'No Contracts for This Client' : 'No Contracts Yet'}
+            </Text>
             <Text style={styles.emptyText}>
-              Create your first {config.roleLabel} Service Agreement to get started
+              {isClientScoped 
+                ? `Create a ${config.roleLabel} Service Agreement for ${clientName}`
+                : `Create your first ${config.roleLabel} Service Agreement to get started`
+              }
             </Text>
           </View>
         ) : (
