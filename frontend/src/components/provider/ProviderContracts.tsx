@@ -1,5 +1,6 @@
 // Shared Contracts Screen for Doula and Midwife
 // Uses config-based customization for role-specific sections and defaults
+// Supports client-scoped access when clientId param is provided
 
 import React, { useEffect, useState } from 'react';
 import {
@@ -20,7 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { apiRequest } from '../../utils/api';
 import useAuthStore from '../../store/authStore';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
 import { ContractsConfig, ContractSection } from './config/contractsConfig';
 
@@ -56,6 +57,11 @@ interface ProviderContractsProps {
 export default function ProviderContracts({ config }: ProviderContractsProps) {
   const { user, backendUrl } = useAuthStore();
   const router = useRouter();
+  const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
+  
+  // Client-scoped mode
+  const isClientScoped = !!params.clientId;
+  const clientName = params.clientName || '';
   
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
