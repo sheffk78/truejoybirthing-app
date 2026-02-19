@@ -85,7 +85,11 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
 
   useEffect(() => {
     loadData();
-  }, []);
+    // If client-scoped, pre-select the client
+    if (params.clientId) {
+      setSelectedClientId(params.clientId);
+    }
+  }, [params.clientId]);
 
   const loadData = async () => {
     try {
@@ -93,7 +97,14 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
         apiRequest(config.endpoints.list),
         apiRequest(config.clientsEndpoint),
       ]);
-      setContracts(contractsRes || []);
+      
+      // Filter contracts by client if client-scoped
+      let filteredContracts = contractsRes || [];
+      if (isClientScoped && params.clientId) {
+        filteredContracts = filteredContracts.filter((c: Contract) => c.client_id === params.clientId);
+      }
+      
+      setContracts(filteredContracts);
       setClients(clientsRes || []);
       
       // Load templates separately
