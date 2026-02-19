@@ -7172,10 +7172,14 @@ async def get_unified_visits(
 
 @api_router.post("/provider/visits")
 async def create_unified_visit(data: dict, user: User = Depends(check_role(["MIDWIFE"]))):
-    """Create a visit record (MIDWIFE only)"""
+    """Create a visit record (MIDWIFE only). Visits must be linked to an appointment."""
     client_id = data.get("client_id")
     if not client_id:
         raise HTTPException(status_code=400, detail="client_id is required")
+    
+    appointment_id = data.get("appointment_id")
+    # appointment_id is highly recommended but not strictly required for backwards compatibility
+    # If not provided, we'll create a placeholder appointment
     
     # Verify client belongs to provider
     client = await db.clients.find_one(
@@ -7186,6 +7190,34 @@ async def create_unified_visit(data: dict, user: User = Depends(check_role(["MID
     
     now = datetime.now(timezone.utc)
     visit_id = f"visit_{uuid.uuid4().hex[:12]}"
+    visit_date = data.get("visit_date", now.strftime("%Y-%m-%d"))
+    
+    # If no appointment_id provided, create a linked appointment automatically
+    if not appointment_id:
+        appointment_id = f"appt_{uuid.uuid4().hex[:12]}"
+        visit_type = data.get("visit_type", "Prenatal")
+        appt_type = "prenatal_visit" if visit_type == "Prenatal" else "postpartum_visit"
+        
+        appointment = {
+            "appointment_id": appointment_id,
+            "client_id": client_id,
+            "provider_id": user.user_id,
+            "provider_name": user.full_name,
+            "provider_role": user.role,
+            "client_name": client.get("name", ""),
+            "start_datetime": f"{visit_date}T09:00:00",
+            "appointment_date": visit_date,
+            "appointment_time": "09:00",
+            "appointment_type": appt_type,
+            "status": "completed",  # Already completed since visit is being recorded
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        if client.get("linked_mom_id"):
+            appointment["mom_user_id"] = client["linked_mom_id"]
+        
+        await db.appointments.insert_one(appointment)
     
     # Build summary from vitals
     summary_parts = []
