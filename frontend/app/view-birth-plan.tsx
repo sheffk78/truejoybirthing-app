@@ -25,7 +25,7 @@ export default function ViewBirthPlanScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
-  const { token } = useAuthStore();
+  const { sessionToken } = useAuthStore();
 
   useEffect(() => {
     fetchBirthPlan();
