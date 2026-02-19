@@ -8,6 +8,7 @@ export { default as ProviderNotes } from './ProviderNotes';
 export { default as ProviderAppointments } from './ProviderAppointments';
 export { default as ProviderClientDetail } from './ProviderClientDetail';
 export { default as ProviderContracts } from './ProviderContracts';
+export { default as ProviderContractTemplates } from './ProviderContractTemplates';
 
 // Export config
 export { DOULA_CONFIG, MIDWIFE_CONFIG, getProviderConfig } from './config/providerConfig';
