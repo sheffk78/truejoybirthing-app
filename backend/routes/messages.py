@@ -3,257 +3,307 @@ Messaging Routes Module
 
 Handles real-time messaging between users (Mom <-> Provider, Provider <-> Provider).
 All messages are now client-centric with auto-populated client_id.
+Feature parity with original server.py messaging routes.
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime, timezone
+import uuid
 
-from .dependencies import db, generate_id, get_now, create_notification, ws_manager
+from .dependencies import db, generate_id, get_now, create_notification, ws_manager, get_current_user, check_role, User
 
 router = APIRouter(prefix="/messages", tags=["Messages"])
 
 
 # ============== REQUEST MODELS ==============
 
-class SendMessageRequest(BaseModel):
+class MessageCreate(BaseModel):
     receiver_id: str
     content: str
-    client_id: Optional[str] = None  # Optional, auto-populated if not provided
+    client_id: Optional[str] = None
 
 
 # ============== HELPER FUNCTIONS ==============
 
-async def check_can_message(sender_id: str, receiver_id: str) -> tuple:
-    """
-    Check if sender can message receiver.
-    Returns (can_message: bool, client_id: Optional[str])
-    """
-    # Check for share_request connection
+async def check_provider_can_message(provider_id: str, mom_id: str) -> bool:
+    """Check if a provider has messaging permission with a mom"""
+    # Check for accepted share request with can_message permission
     share_request = await db.share_requests.find_one({
-        "$or": [
-            {"mom_id": sender_id, "provider_id": receiver_id, "status": "accepted"},
-            {"mom_id": receiver_id, "provider_id": sender_id, "status": "accepted"}
-        ]
+        "provider_id": provider_id,
+        "mom_user_id": mom_id,
+        "status": "accepted"
     })
     
     if share_request:
-        # Get client_id from the share request context
-        if share_request.get("mom_id") == sender_id:
-            # Sender is mom, receiver is provider - find client record
-            client = await db.clients.find_one({
-                "linked_mom_id": sender_id,
-                "provider_id": receiver_id
-            })
-        else:
-            # Sender is provider, receiver is mom - find client record  
-            client = await db.clients.find_one({
-                "linked_mom_id": receiver_id,
-                "provider_id": sender_id
-            })
-        
-        client_id = client.get("client_id") if client else None
-        return True, client_id
+        # Check if can_message permission is granted (defaults to True if not specified)
+        return share_request.get("can_message", True)
     
-    # Check for client link (provider messaging linked mom)
+    # Also check for linked clients
     client = await db.clients.find_one({
-        "$or": [
-            {"linked_mom_id": sender_id, "provider_id": receiver_id},
-            {"linked_mom_id": receiver_id, "provider_id": sender_id}
-        ]
+        "provider_id": provider_id,
+        "linked_mom_id": mom_id
     })
     
-    if client:
-        return True, client.get("client_id")
-    
-    # Check for provider-to-provider (shared client)
-    sender = await db.users.find_one({"user_id": sender_id})
-    receiver = await db.users.find_one({"user_id": receiver_id})
-    
-    if sender and receiver:
-        sender_role = sender.get("role", "").upper()
-        receiver_role = receiver.get("role", "").upper()
-        
-        if sender_role in ["DOULA", "MIDWIFE"] and receiver_role in ["DOULA", "MIDWIFE"]:
-            # Check if they share a client (both have the same linked_mom_id)
-            sender_clients = await db.clients.find(
-                {"provider_id": sender_id, "linked_mom_id": {"$ne": None}},
-                {"linked_mom_id": 1}
-            ).to_list(100)
-            sender_moms = {c["linked_mom_id"] for c in sender_clients}
-            
-            shared_client = await db.clients.find_one({
-                "provider_id": receiver_id,
-                "linked_mom_id": {"$in": list(sender_moms)}
-            })
-            
-            if shared_client:
-                return True, shared_client.get("client_id")
-    
-    return False, None
+    return client is not None
 
 
 # ============== ROUTES ==============
 
 @router.get("/conversations")
-async def get_conversations(user_id: str):
-    """Get all message conversations for a user"""
-    # Find all unique conversation partners
-    sent = await db.messages.find(
-        {"sender_id": user_id},
-        {"_id": 0}
-    ).to_list(1000)
-    
-    received = await db.messages.find(
-        {"receiver_id": user_id},
-        {"_id": 0}
-    ).to_list(1000)
-    
-    all_messages = sent + received
-    
-    # Group by conversation partner
-    conversations = {}
-    for msg in all_messages:
-        partner_id = msg["receiver_id"] if msg["sender_id"] == user_id else msg["sender_id"]
-        
-        if partner_id not in conversations:
-            conversations[partner_id] = {
-                "partner_id": partner_id,
-                "messages": [],
-                "unread_count": 0,
-                "last_message": None,
-                "last_message_time": None,
-                "client_id": msg.get("client_id")
+async def get_conversations(user: User = Depends(get_current_user())):
+    """Get all conversations for the current user"""
+    # Find all unique conversations where user is sender or receiver
+    pipeline = [
+        {
+            "$match": {
+                "$or": [
+                    {"sender_id": user.user_id},
+                    {"receiver_id": user.user_id}
+                ]
             }
-        
-        conversations[partner_id]["messages"].append(msg)
-        
-        # Count unread (messages TO this user that are not read)
-        if msg["receiver_id"] == user_id and not msg.get("read", False):
-            conversations[partner_id]["unread_count"] += 1
-        
-        # Track last message
-        msg_time = msg.get("created_at")
-        if msg_time:
-            if not conversations[partner_id]["last_message_time"] or msg_time > conversations[partner_id]["last_message_time"]:
-                conversations[partner_id]["last_message_time"] = msg_time
-                conversations[partner_id]["last_message"] = msg
-                # Update client_id if present
-                if msg.get("client_id"):
-                    conversations[partner_id]["client_id"] = msg["client_id"]
+        },
+        {
+            "$sort": {"created_at": -1}
+        },
+        {
+            "$group": {
+                "_id": {
+                    "$cond": [
+                        {"$eq": ["$sender_id", user.user_id]},
+                        "$receiver_id",
+                        "$sender_id"
+                    ]
+                },
+                "last_message": {"$first": "$$ROOT"},
+                "unread_count": {
+                    "$sum": {
+                        "$cond": [
+                            {"$and": [
+                                {"$eq": ["$receiver_id", user.user_id]},
+                                {"$eq": ["$read", False]}
+                            ]},
+                            1,
+                            0
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "$sort": {"last_message.created_at": -1}
+        }
+    ]
     
-    # Enrich with partner info
+    conversations_cursor = db.messages.aggregate(pipeline)
+    conversations = await conversations_cursor.to_list(100)
+    
+    # Enhance with user info
     result = []
-    for partner_id, conv in conversations.items():
-        partner = await db.users.find_one({"user_id": partner_id}, {"_id": 0})
-        if partner:
-            conv["partner_name"] = partner.get("full_name", "Unknown")
-            conv["partner_email"] = partner.get("email", "")
-            conv["partner_role"] = partner.get("role", "")
-            conv["partner_picture"] = partner.get("picture")
+    for conv in conversations:
+        other_user_id = conv["_id"]
+        other_user = await db.users.find_one({"user_id": other_user_id}, {"_id": 0, "password_hash": 0})
         
-        # Get client name if client_id exists
-        if conv.get("client_id"):
-            client = await db.clients.find_one(
-                {"client_id": conv["client_id"]},
-                {"_id": 0, "name": 1}
-            )
-            if client:
-                conv["client_name"] = client.get("name")
-        
-        conv["messages"] = len(conv["messages"])  # Just return count
-        result.append(conv)
+        if other_user:
+            last_msg = conv["last_message"]
+            result.append({
+                "other_user_id": other_user_id,
+                "other_user_name": other_user.get("full_name", "Unknown"),
+                "other_user_role": other_user.get("role", ""),
+                "other_user_picture": other_user.get("picture"),
+                "last_message_content": last_msg.get("content", "")[:50] + ("..." if len(last_msg.get("content", "")) > 50 else ""),
+                "last_message_time": last_msg.get("created_at"),
+                "unread_count": conv["unread_count"],
+                "is_sender": last_msg.get("sender_id") == user.user_id
+            })
     
-    # Sort by last message time
-    result.sort(key=lambda x: x.get("last_message_time") or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
-    
-    return result
-
-
-@router.get("/{other_user_id}")
-async def get_messages(other_user_id: str, user_id: str, limit: int = 100):
-    """Get messages between current user and another user"""
-    messages = await db.messages.find(
-        {"$or": [
-            {"sender_id": user_id, "receiver_id": other_user_id},
-            {"sender_id": other_user_id, "receiver_id": user_id}
-        ]},
-        {"_id": 0}
-    ).sort("created_at", 1).to_list(limit)
-    
-    # Mark messages as read
-    await db.messages.update_many(
-        {"sender_id": other_user_id, "receiver_id": user_id, "read": False},
-        {"$set": {"read": True, "read_at": get_now()}}
-    )
-    
-    return messages
-
-
-@router.post("")
-async def send_message(msg_data: SendMessageRequest, user_id: str):
-    """Send a message to another user"""
-    # Check permission
-    can_message, auto_client_id = await check_can_message(user_id, msg_data.receiver_id)
-    
-    if not can_message:
-        raise HTTPException(
-            status_code=403, 
-            detail="You can only message providers you're connected with"
-        )
-    
-    now = get_now()
-    message_id = generate_id("msg")
-    
-    # Use provided client_id or auto-detected one
-    client_id = msg_data.client_id or auto_client_id
-    
-    message = {
-        "message_id": message_id,
-        "sender_id": user_id,
-        "receiver_id": msg_data.receiver_id,
-        "content": msg_data.content,
-        "client_id": client_id,
-        "read": False,
-        "created_at": now
-    }
-    
-    await db.messages.insert_one(message)
-    message.pop("_id", None)
-    
-    # Get sender info for notification
-    sender = await db.users.find_one({"user_id": user_id})
-    sender_name = sender.get("full_name", "Someone") if sender else "Someone"
-    
-    # Create notification
-    await create_notification(
-        msg_data.receiver_id,
-        "new_message",
-        f"New message from {sender_name}",
-        msg_data.content[:100] + "..." if len(msg_data.content) > 100 else msg_data.content,
-        {"sender_id": user_id, "message_id": message_id, "client_id": client_id}
-    )
-    
-    # Send via WebSocket if receiver is connected
-    if ws_manager:
-        await ws_manager.send_personal_message(
-            {
-                "type": "new_message",
-                "message": message,
-                "sender_name": sender_name
-            },
-            msg_data.receiver_id
-        )
-    
-    return message
+    return {"conversations": result}
 
 
 @router.get("/unread/count")
-async def get_unread_count(user_id: str):
-    """Get count of unread messages for the user"""
-    count = await db.messages.count_documents({
-        "receiver_id": user_id,
-        "read": False
-    })
+async def get_unread_count(user: User = Depends(get_current_user())):
+    """Get count of unread messages"""
+    count = await db.messages.count_documents({"receiver_id": user.user_id, "read": False})
     return {"unread_count": count}
+
+
+@router.get("/{other_user_id}")
+async def get_messages(
+    other_user_id: str,
+    user: User = Depends(get_current_user()),
+    limit: int = Query(50, le=200)
+):
+    """Get messages between current user and another user"""
+    # Verify the other user exists
+    other_user = await db.users.find_one({"user_id": other_user_id}, {"_id": 0})
+    if not other_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get messages in conversation (both directions)
+    messages = await db.messages.find(
+        {
+            "$or": [
+                {"sender_id": user.user_id, "receiver_id": other_user_id},
+                {"sender_id": other_user_id, "receiver_id": user.user_id}
+            ]
+        },
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Mark received messages as read
+    await db.messages.update_many(
+        {"sender_id": other_user_id, "receiver_id": user.user_id, "read": False},
+        {"$set": {"read": True}}
+    )
+    
+    # Reverse to show oldest first
+    messages.reverse()
+    
+    return {
+        "messages": messages,
+        "other_user": {
+            "user_id": other_user_id,
+            "full_name": other_user.get("full_name"),
+            "role": other_user.get("role"),
+            "picture": other_user.get("picture")
+        }
+    }
+
+
+@router.post("")
+async def send_message(message_data: MessageCreate, user: User = Depends(get_current_user())):
+    """Send a message to another user"""
+    # Verify receiver exists
+    receiver = await db.users.find_one({"user_id": message_data.receiver_id}, {"_id": 0})
+    if not receiver:
+        raise HTTPException(status_code=404, detail="Recipient not found")
+    
+    if message_data.receiver_id == user.user_id:
+        raise HTTPException(status_code=400, detail="Cannot send message to yourself")
+    
+    if not message_data.content.strip():
+        raise HTTPException(status_code=400, detail="Message content cannot be empty")
+    
+    # Check messaging permissions based on roles
+    sender_role = user.role
+    receiver_role = receiver.get("role")
+    
+    # Mom <-> Provider messaging requires an active connection with can_message permission
+    if sender_role == "MOM" and receiver_role in ["DOULA", "MIDWIFE"]:
+        can_msg = await check_provider_can_message(message_data.receiver_id, user.user_id)
+        if not can_msg:
+            raise HTTPException(status_code=403, detail="You don't have an active connection with this provider")
+    elif sender_role in ["DOULA", "MIDWIFE"] and receiver_role == "MOM":
+        can_msg = await check_provider_can_message(user.user_id, message_data.receiver_id)
+        if not can_msg:
+            raise HTTPException(status_code=403, detail="You don't have an active connection with this client")
+    # Doula <-> Midwife messaging only allowed if they share a common client
+    elif sender_role in ["DOULA", "MIDWIFE"] and receiver_role in ["DOULA", "MIDWIFE"]:
+        sender_clients = await db.share_requests.find({"provider_id": user.user_id, "status": "accepted"}).to_list(1000)
+        receiver_clients = await db.share_requests.find({"provider_id": message_data.receiver_id, "status": "accepted"}).to_list(1000)
+        sender_mom_ids = {c["mom_user_id"] for c in sender_clients}
+        receiver_mom_ids = {c["mom_user_id"] for c in receiver_clients}
+        shared_clients = sender_mom_ids & receiver_mom_ids
+        if not shared_clients:
+            raise HTTPException(status_code=403, detail="You can only message providers who share a common client with you")
+    
+    now = get_now()
+    
+    # Try to determine client_id from the conversation context
+    resolved_client_id = message_data.client_id
+    if not resolved_client_id:
+        if sender_role in ["DOULA", "MIDWIFE"] and receiver_role == "MOM":
+            # Provider -> Mom: find client by linked_mom_id
+            client = await db.clients.find_one({
+                "provider_id": user.user_id,
+                "linked_mom_id": message_data.receiver_id
+            })
+            if client:
+                resolved_client_id = client.get("client_id")
+        elif sender_role == "MOM" and receiver_role in ["DOULA", "MIDWIFE"]:
+            # Mom -> Provider: find client by linked_mom_id
+            client = await db.clients.find_one({
+                "provider_id": message_data.receiver_id,
+                "linked_mom_id": user.user_id
+            })
+            if client:
+                resolved_client_id = client.get("client_id")
+    
+    message_doc = {
+        "message_id": f"msg_{uuid.uuid4().hex[:12]}",
+        "sender_id": user.user_id,
+        "sender_name": user.full_name,
+        "sender_role": user.role,
+        "receiver_id": message_data.receiver_id,
+        "receiver_name": receiver.get("full_name", "Unknown"),
+        "receiver_role": receiver.get("role", ""),
+        "content": message_data.content.strip(),
+        "read": False,
+        "client_id": resolved_client_id,
+        "created_at": now
+    }
+    
+    await db.messages.insert_one(message_doc)
+    message_doc.pop('_id', None)
+    
+    # Create notification for receiver
+    await create_notification(
+        user_id=message_data.receiver_id,
+        notif_type="new_message",
+        title="New Message",
+        message=f"{user.full_name} sent you a message",
+        data={"sender_id": user.user_id, "message_id": message_doc["message_id"]}
+    )
+    
+    # Send real-time WebSocket notification to receiver
+    if ws_manager:
+        await ws_manager.send_personal_message({
+            "type": "new_message",
+            "message": {
+                "message_id": message_doc["message_id"],
+                "sender_id": user.user_id,
+                "sender_name": user.full_name,
+                "sender_role": user.role,
+                "content": message_doc["content"],
+                "created_at": message_doc["created_at"].isoformat() if isinstance(message_doc["created_at"], datetime) else message_doc["created_at"]
+            }
+        }, message_data.receiver_id)
+    
+    return {"message": "Message sent", "data": message_doc}
+
+
+# ============== PROVIDER CLIENT MESSAGES ==============
+
+@router.get("/client/{client_id}")
+async def get_client_messages(
+    client_id: str,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+):
+    """Get all messages associated with a specific client (client-centric view)"""
+    # Verify the provider has access to this client
+    client = await db.clients.find_one({"client_id": client_id, "provider_id": user.user_id}, {"_id": 0})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    # Get messages that are tagged with this client_id
+    # OR messages between the provider and the linked mom
+    query = {"$or": [{"client_id": client_id}]}
+    
+    if client.get("linked_mom_id"):
+        mom_id = client["linked_mom_id"]
+        query["$or"].append({
+            "$and": [
+                {"$or": [{"sender_id": user.user_id}, {"receiver_id": user.user_id}]},
+                {"$or": [{"sender_id": mom_id}, {"receiver_id": mom_id}]}
+            ]
+        })
+    
+    messages = await db.messages.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    
+    # Ensure datetime is serializable
+    for msg in messages:
+        if isinstance(msg.get("created_at"), datetime):
+            msg["created_at"] = msg["created_at"].isoformat()
+    
+    return messages
