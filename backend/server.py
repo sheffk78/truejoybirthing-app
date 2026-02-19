@@ -1345,7 +1345,9 @@ route_deps.init_dependencies(
     notification_func=create_notification,
     email_func=None,  # Will be set when email routes are modularized
     websocket_manager=ws_manager,
-    sender_email=SENDER_EMAIL
+    sender_email=SENDER_EMAIL,
+    get_current_user_func=get_current_user,
+    check_role_func=check_role
 )
 
 # ============== AUTH HELPERS ==============
