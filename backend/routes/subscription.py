@@ -56,13 +56,20 @@ def calculate_subscription_status(subscription: dict) -> dict:
     now = datetime.now(timezone.utc)
     status = subscription.get("subscription_status", "none")
     
+    def ensure_aware(dt):
+        """Ensure datetime is timezone-aware"""
+        if dt is None:
+            return None
+        if isinstance(dt, str):
+            dt = datetime.fromisoformat(dt.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    
     # Check trial status
     if status == "trial":
-        trial_end = subscription.get("trial_end_date")
-        if trial_end:
-            if isinstance(trial_end, str):
-                trial_end = datetime.fromisoformat(trial_end.replace("Z", "+00:00"))
-            if trial_end > now:
+        trial_end = ensure_aware(subscription.get("trial_end_date"))
+        if trial_end and trial_end > now:
                 days_remaining = (trial_end - now).days
                 return {
                     "has_pro_access": True,
