@@ -33,14 +33,13 @@ interface ShareRequest {
 
 interface ConnectedClient {
   client_id: string;
-  mom_user_id: string;
+  linked_mom_id: string | null;
   name: string;
   email?: string;
   picture?: string;
-  due_date?: string;
+  edd?: string;
   status: string;
-  connected_at: string;
-  birth_plan_progress?: number;
+  created_at: string;
 }
 
 const STATUS_COLORS: Record<string, string> = {
