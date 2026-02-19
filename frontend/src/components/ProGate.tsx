@@ -410,5 +410,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { SubscriptionInfoCard };
 export default ProGate;
