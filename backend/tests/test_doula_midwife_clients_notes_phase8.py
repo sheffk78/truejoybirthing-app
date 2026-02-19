@@ -52,10 +52,9 @@ class TestAuthLogin:
         })
         assert response.status_code == 200, f"Doula login failed: {response.text}"
         data = response.json()
-        assert "access_token" in data
-        assert "user" in data
-        assert data["user"]["role"] == "DOULA"
-        print(f"Doula login successful: {data['user']['email']}")
+        assert "session_token" in data, f"Response keys: {data.keys()}"
+        assert data["role"] == "DOULA"
+        print(f"Doula login successful: {data['email']}")
     
     def test_midwife_login_success(self):
         """Test midwife login returns token"""
@@ -65,10 +64,9 @@ class TestAuthLogin:
         })
         assert response.status_code == 200, f"Midwife login failed: {response.text}"
         data = response.json()
-        assert "access_token" in data
-        assert "user" in data
-        assert data["user"]["role"] == "MIDWIFE"
-        print(f"Midwife login successful: {data['user']['email']}")
+        assert "session_token" in data, f"Response keys: {data.keys()}"
+        assert data["role"] == "MIDWIFE"
+        print(f"Midwife login successful: {data['email']}")
 
 
 # ============== DOULA CLIENT TESTS ==============
