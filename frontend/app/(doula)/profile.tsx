@@ -8,18 +8,42 @@ import {
   Alert,
   ActivityIndicator,
   Platform,
+  Image,
+  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { useAuthStore } from '../../src/store/authStore';
 import { useSubscriptionStore } from '../../src/store/subscriptionStore';
-import { apiRequest } from '../../src/utils/api';
+import { apiRequest, uploadImage } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+
+const MAX_BIO_LENGTH = 800; // ~2 paragraphs
+
+// Helper to extract YouTube video ID
+const getYouTubeVideoId = (url: string): string | null => {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+};
+
+// Get YouTube thumbnail URL
+const getYouTubeThumbnail = (videoId: string): string => {
+  return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+};
 
 export default function DoulaProfileScreen() {
   const router = useRouter();
@@ -29,6 +53,7 @@ export default function DoulaProfileScreen() {
   const [profile, setProfile] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   
   // Form state
   const [practiceName, setPracticeName] = useState('');
@@ -37,6 +62,12 @@ export default function DoulaProfileScreen() {
   const [locationState, setLocationState] = useState('');
   const [yearsInPractice, setYearsInPractice] = useState('');
   const [lookingUpZip, setLookingUpZip] = useState(false);
+  
+  // New fields
+  const [videoIntroUrl, setVideoIntroUrl] = useState('');
+  const [moreAboutMe, setMoreAboutMe] = useState('');
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [videoError, setVideoError] = useState(false);
   
   const handleZipChange = async (zip: string) => {
     setZipCode(zip);
@@ -64,6 +95,9 @@ export default function DoulaProfileScreen() {
       setLocationCity(data.location_city || '');
       setLocationState(data.location_state || '');
       setYearsInPractice(data.years_in_practice?.toString() || '');
+      setVideoIntroUrl(data.video_intro_url || '');
+      setMoreAboutMe(data.more_about_me || '');
+      setProfilePicture(data.picture || null);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -73,6 +107,97 @@ export default function DoulaProfileScreen() {
     fetchProfile();
     fetchSubscriptionStatus();
   }, []);
+
+  // Validate YouTube URL when it changes
+  useEffect(() => {
+    if (videoIntroUrl) {
+      const videoId = getYouTubeVideoId(videoIntroUrl);
+      setVideoError(!videoId);
+    } else {
+      setVideoError(false);
+    }
+  }, [videoIntroUrl]);
+
+  const handlePickImage = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Required', 'Please allow access to your photo library to upload a profile photo.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        await uploadProfilePhoto(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image. Please try again.');
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Required', 'Please allow access to your camera to take a photo.');
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        await uploadProfilePhoto(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error taking photo:', error);
+      Alert.alert('Error', 'Failed to take photo. Please try again.');
+    }
+  };
+
+  const uploadProfilePhoto = async (uri: string) => {
+    setUploadingPhoto(true);
+    try {
+      const imageUrl = await uploadImage(uri, 'profile');
+      setProfilePicture(imageUrl);
+      
+      // Save to backend
+      await apiRequest(API_ENDPOINTS.DOULA_PROFILE, {
+        method: 'PUT',
+        body: { picture: imageUrl },
+      });
+      
+      Alert.alert('Success', 'Profile photo updated!');
+    } catch (error: any) {
+      console.error('Error uploading photo:', error);
+      Alert.alert('Error', error.message || 'Failed to upload photo. Please try again.');
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const showPhotoOptions = () => {
+    Alert.alert(
+      'Update Profile Photo',
+      'Choose an option',
+      [
+        { text: 'Take Photo', onPress: handleTakePhoto },
+        { text: 'Choose from Library', onPress: handlePickImage },
+        { text: 'Cancel', style: 'cancel' },
+      ]
+    );
+  };
   
   const handleSave = async () => {
     setSaving(true);
@@ -84,6 +209,8 @@ export default function DoulaProfileScreen() {
           location_city: locationCity,
           location_state: locationState,
           years_in_practice: yearsInPractice ? parseInt(yearsInPractice) : null,
+          video_intro_url: videoIntroUrl || null,
+          more_about_me: moreAboutMe || null,
         },
       });
       
@@ -114,6 +241,8 @@ export default function DoulaProfileScreen() {
       ]
     );
   };
+
+  const videoId = getYouTubeVideoId(videoIntroUrl);
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -121,11 +250,30 @@ export default function DoulaProfileScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Header with Profile Photo */}
         <View style={styles.header}>
-          <View style={styles.avatarContainer}>
-            <Icon name="person-circle-outline" size={80} color={COLORS.roleDoula} />
-          </View>
+          <TouchableOpacity 
+            style={styles.avatarContainer} 
+            onPress={showPhotoOptions}
+            disabled={uploadingPhoto}
+            data-testid="profile-photo-btn"
+          >
+            {uploadingPhoto ? (
+              <View style={styles.avatarPlaceholder}>
+                <ActivityIndicator size="large" color={COLORS.white} />
+              </View>
+            ) : profilePicture ? (
+              <Image source={{ uri: profilePicture }} style={styles.avatarImage} />
+            ) : (
+              <View style={styles.avatarPlaceholder}>
+                <Icon name="person" size={40} color={COLORS.white} />
+              </View>
+            )}
+            <View style={styles.cameraIconOverlay}>
+              <Icon name="camera" size={16} color={COLORS.white} />
+            </View>
+          </TouchableOpacity>
+          <Text style={styles.photoHint}>Tap to change photo</Text>
           <Text style={styles.userName}>{user?.full_name}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <View style={styles.roleBadge}>
@@ -238,6 +386,88 @@ export default function DoulaProfileScreen() {
             </View>
           )}
         </Card>
+
+        {/* Video Introduction */}
+        <Card style={styles.profileCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Video Introduction</Text>
+          </View>
+          <Text style={styles.fieldDescription}>
+            Add a YouTube video to introduce yourself to potential clients
+          </Text>
+          <Input
+            label=""
+            placeholder="Paste YouTube URL (e.g., https://youtube.com/watch?v=...)"
+            value={videoIntroUrl}
+            onChangeText={setVideoIntroUrl}
+            autoCapitalize="none"
+          />
+          {videoIntroUrl && (
+            <View style={styles.videoPreview}>
+              {videoId ? (
+                <TouchableOpacity 
+                  style={styles.thumbnailContainer}
+                  onPress={() => {/* Could open video player */}}
+                >
+                  <Image 
+                    source={{ uri: getYouTubeThumbnail(videoId) }} 
+                    style={styles.videoThumbnail}
+                  />
+                  <View style={styles.playIconOverlay}>
+                    <Icon name="play-circle" size={48} color={COLORS.white} />
+                  </View>
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.videoErrorContainer}>
+                  <Icon name="close-circle" size={32} color={COLORS.error} />
+                  <Text style={styles.videoErrorText}>Invalid YouTube URL</Text>
+                </View>
+              )}
+            </View>
+          )}
+          {videoIntroUrl !== profile?.video_intro_url && (
+            <Button
+              title="Save Video"
+              onPress={handleSave}
+              loading={saving}
+              fullWidth
+              style={{ marginTop: SIZES.sm }}
+            />
+          )}
+        </Card>
+
+        {/* More About Me */}
+        <Card style={styles.profileCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>More About Me</Text>
+          </View>
+          <Text style={styles.fieldDescription}>
+            Tell potential clients more about yourself and your approach
+          </Text>
+          <TextInput
+            style={styles.bioInput}
+            placeholder="Share your story, philosophy, and what makes you unique as a doula..."
+            placeholderTextColor={COLORS.textLight}
+            value={moreAboutMe}
+            onChangeText={(text) => setMoreAboutMe(text.slice(0, MAX_BIO_LENGTH))}
+            multiline
+            numberOfLines={6}
+            textAlignVertical="top"
+            data-testid="more-about-me-input"
+          />
+          <Text style={styles.charCount}>
+            {moreAboutMe.length}/{MAX_BIO_LENGTH} characters
+          </Text>
+          {moreAboutMe !== profile?.more_about_me && (
+            <Button
+              title="Save Bio"
+              onPress={handleSave}
+              loading={saving}
+              fullWidth
+              style={{ marginTop: SIZES.sm }}
+            />
+          )}
+        </Card>
         
         {/* Services */}
         {profile?.services_offered?.length > 0 && (
@@ -253,79 +483,44 @@ export default function DoulaProfileScreen() {
           </Card>
         )}
         
-        {/* Subscription */}
-        <TouchableOpacity 
-          activeOpacity={0.8}
-          onPress={() => router.push('/plans-pricing')}
-        >
-          <Card style={[styles.menuCard, subscriptionStatus?.has_pro_access && styles.proActiveCard]}>
-            <View style={styles.menuRow}>
-              <Icon 
-                name={subscriptionStatus?.has_pro_access ? 'star' : 'diamond-outline'} 
-                size={24} 
-                color={subscriptionStatus?.has_pro_access ? '#f59e0b' : COLORS.roleDoula} 
-              />
-              <View style={{ flex: 1, marginLeft: 12 }}>
-                <Text style={styles.menuText}>
-                  {subscriptionStatus?.has_pro_access 
-                    ? subscriptionStatus.is_trial 
-                      ? 'True Joy Pro (Trial)' 
-                      : 'True Joy Pro' 
-                    : 'Upgrade to Pro'
-                  }
-                </Text>
-                <Text style={styles.subscriptionSubtext}>
-                  {subscriptionStatus?.has_pro_access 
-                    ? subscriptionStatus.is_trial 
-                      ? `${subscriptionStatus.days_remaining} days remaining` 
-                      : `${subscriptionStatus.plan_type === 'annual' ? 'Annual' : 'Monthly'} plan`
-                    : 'Unlock all professional features'
-                  }
-                </Text>
-              </View>
-              <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+        {/* Subscription Status */}
+        <Card style={styles.subscriptionCard}>
+          <View style={styles.subscriptionHeader}>
+            <Icon 
+              name={subscriptionStatus?.is_active ? 'star' : 'star-outline'} 
+              size={24} 
+              color={subscriptionStatus?.is_active ? COLORS.accent : COLORS.textSecondary} 
+            />
+            <View style={styles.subscriptionInfo}>
+              <Text style={styles.subscriptionTitle}>
+                {subscriptionStatus?.is_active ? 'Pro Subscription' : 'Free Plan'}
+              </Text>
+              <Text style={styles.subscriptionSubtitle}>
+                {subscriptionStatus?.is_active 
+                  ? subscriptionStatus.is_trial 
+                    ? `Trial ends ${new Date(subscriptionStatus.trial_end).toLocaleDateString()}`
+                    : 'Full access to all features'
+                  : 'Limited features'}
+              </Text>
             </View>
-          </Card>
-        </TouchableOpacity>
+          </View>
+          {!subscriptionStatus?.is_active && (
+            <Button
+              title="Upgrade to Pro"
+              onPress={() => router.push('/(doula)/subscription')}
+              fullWidth
+              style={{ marginTop: SIZES.md }}
+            />
+          )}
+        </Card>
         
-        {/* Send Feedback - Only for Pro users */}
-        {subscriptionStatus?.has_pro_access && (
-          <TouchableOpacity 
-            activeOpacity={0.8}
-            onPress={() => router.push('/pro-feedback')}
-          >
-            <Card style={styles.menuCard}>
-              <View style={styles.menuRow}>
-                <Icon name="chatbubble-ellipses-outline" size={24} color={COLORS.roleDoula} />
-                <Text style={styles.menuText}>Send Feedback</Text>
-                <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
-              </View>
-            </Card>
+        {/* Actions */}
+        <View style={styles.actions}>
+          <TouchableOpacity style={styles.actionButton} onPress={handleLogout}>
+            <Icon name="log-out-outline" size={20} color={COLORS.error} />
+            <Text style={[styles.actionButtonText, { color: COLORS.error }]}>Logout</Text>
           </TouchableOpacity>
-        )}
-        
-        {/* App Tutorial */}
-        <TouchableOpacity 
-          activeOpacity={0.8}
-          onPress={() => router.push('/tutorial?role=DOULA')}
-        >
-          <Card style={styles.menuCard}>
-            <View style={styles.menuRow}>
-              <Icon name="help-circle-outline" size={24} color={COLORS.accent} />
-              <Text style={styles.menuText}>View App Tour</Text>
-              <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
-            </View>
-          </Card>
-        </TouchableOpacity>
-        
-        {/* Logout */}
-        <Button
-          title="Log Out"
-          onPress={handleLogout}
-          variant="outline"
-          fullWidth
-          style={styles.logoutButton}
-        />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -345,17 +540,58 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.lg,
   },
   avatarContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: COLORS.roleDoula,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.xs,
+    position: 'relative',
+  },
+  avatarPlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: COLORS.roleDoula,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  cameraIconOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: COLORS.textPrimary,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: COLORS.white,
+  },
+  photoHint: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
     marginBottom: SIZES.sm,
   },
   userName: {
     fontSize: SIZES.fontXl,
-    fontWeight: '700',
+    fontFamily: FONTS.heading,
     color: COLORS.textPrimary,
+    marginTop: SIZES.sm,
   },
   userEmail: {
-    fontSize: SIZES.fontMd,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
-    marginTop: 2,
+    marginTop: 4,
   },
   roleBadge: {
     flexDirection: 'row',
@@ -365,12 +601,12 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.xs,
     borderRadius: SIZES.radiusFull,
     marginTop: SIZES.sm,
+    gap: 6,
   },
   roleText: {
-    color: COLORS.white,
     fontSize: SIZES.fontSm,
-    fontWeight: '600',
-    marginLeft: SIZES.xs,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.white,
   },
   profileCard: {
     marginBottom: SIZES.md,
@@ -382,18 +618,45 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.md,
   },
   cardTitle: {
-    fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.subheading,
     color: COLORS.textPrimary,
   },
   editButton: {
-    fontSize: SIZES.fontMd,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.roleDoula,
-    fontWeight: '500',
+  },
+  fieldDescription: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginBottom: SIZES.sm,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    gap: SIZES.sm,
+  },
+  cityInput: {
+    flex: 2,
+  },
+  stateInput: {
+    flex: 1,
+  },
+  zipLookupStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SIZES.sm,
+    gap: SIZES.xs,
+  },
+  zipLookupText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
   },
   infoRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
@@ -404,33 +667,72 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   infoValue: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.textPrimary,
-    fontWeight: '500',
+    marginTop: 2,
   },
-  locationRow: {
-    flexDirection: 'row',
+  // Video Introduction styles
+  videoPreview: {
+    marginTop: SIZES.sm,
   },
-  cityInput: {
-    flex: 2,
-    marginRight: SIZES.sm,
+  thumbnailContainer: {
+    width: '100%',
+    aspectRatio: 16/9,
+    borderRadius: SIZES.radiusMd,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  stateInput: {
-    flex: 1,
+  videoThumbnail: {
+    width: '100%',
+    height: '100%',
   },
-  zipLookupStatus: {
+  playIconOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoErrorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SIZES.sm,
-    marginTop: -SIZES.xs,
+    justifyContent: 'center',
+    backgroundColor: COLORS.error + '10',
+    padding: SIZES.md,
+    borderRadius: SIZES.radiusMd,
+    gap: SIZES.sm,
   },
-  zipLookupText: {
-    marginLeft: SIZES.sm,
+  videoErrorText: {
     fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.error,
+  },
+  // More About Me styles
+  bioInput: {
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radiusMd,
+    padding: SIZES.md,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textPrimary,
+    minHeight: 120,
+  },
+  charCount: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
+    textAlign: 'right',
+    marginTop: SIZES.xs,
   },
   servicesCard: {
     marginBottom: SIZES.md,
@@ -438,45 +740,54 @@ const styles = StyleSheet.create({
   servicesTags: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    gap: SIZES.xs,
     marginTop: SIZES.sm,
   },
   serviceTag: {
     backgroundColor: COLORS.roleDoula + '20',
-    paddingHorizontal: SIZES.md,
+    paddingHorizontal: SIZES.sm,
     paddingVertical: SIZES.xs,
-    borderRadius: SIZES.radiusFull,
-    marginRight: SIZES.sm,
-    marginBottom: SIZES.sm,
+    borderRadius: SIZES.radiusSm,
   },
   serviceTagText: {
-    color: COLORS.roleDoula,
     fontSize: SIZES.fontSm,
-    fontWeight: '500',
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.roleDoula,
   },
-  logoutButton: {
-    marginTop: SIZES.lg,
-  },
-  menuCard: {
+  subscriptionCard: {
     marginBottom: SIZES.md,
   },
-  menuRow: {
+  subscriptionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  menuText: {
-    flex: 1,
-    fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+  subscriptionInfo: {
     marginLeft: SIZES.md,
+    flex: 1,
   },
-  proActiveCard: {
-    borderWidth: 1,
-    borderColor: '#f59e0b',
-    backgroundColor: '#fffbeb',
+  subscriptionTitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.subheading,
+    color: COLORS.textPrimary,
   },
-  subscriptionSubtext: {
-    fontSize: 12,
+  subscriptionSubtitle: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginTop: 2,
+  },
+  actions: {
+    marginTop: SIZES.md,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SIZES.md,
+    gap: SIZES.sm,
+  },
+  actionButtonText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
   },
 });
