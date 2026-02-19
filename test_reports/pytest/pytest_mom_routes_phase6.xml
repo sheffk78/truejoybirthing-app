@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="18" failures="3" skipped="0" tests="32" time="3.880" timestamp="2026-02-19T23:15:51.755626+00:00" hostname="agent-env-407be43c-5327-457e-9a99-dcc67cc72091"><testcase classname="backend.tests.test_mom_routes_phase6.TestSetup" name="test_base_url_configured" time="0.000" /><testcase classname="backend.tests.test_mom_routes_phase6.TestSetup" name="test_health_check" time="0.206" /><testcase classname="backend.tests.test_mom_routes_phase6.TestAuthLogin" name="test_mom_login_success" time="0.597"><failure message="AssertionError: assert 'token' in {'email': 'demo.mom@truejoybirthing.com', 'full_name': 'Emma Johnson', 'onboarding_completed': True, 'picture': 'https://api.dicebear.com/7.x/lorelei/png?seed=Emma Johnson&amp;size=200', ...}">backend/tests/test_mom_routes_phase6.py:74: in test_mom_login_success
+    assert "token" in data
+E   AssertionError: assert 'token' in {'email': 'demo.mom@truejoybirthing.com', 'full_name': 'Emma Johnson', 'onboarding_completed': True, 'picture': 'https://api.dicebear.com/7.x/lorelei/png?seed=Emma Johnson&amp;size=200', ...}</failure></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestAuthLogin" name="test_doula_login_success" time="0.375"><failure message="AssertionError: assert 'token' in {'email': 'demo.doula@truejoybirthing.com', 'full_name': 'Sarah Mitchell', 'onboarding_completed': True, 'picture': 'https://example.com/test-picture.jpg', ...}">backend/tests/test_mom_routes_phase6.py:88: in test_doula_login_success
+    assert "token" in data
+E   AssertionError: assert 'token' in {'email': 'demo.doula@truejoybirthing.com', 'full_name': 'Sarah Mitchell', 'onboarding_completed': True, 'picture': 'https://example.com/test-picture.jpg', ...}</failure></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomProfile" name="test_get_mom_profile_success" time="0.398"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomProfile" name="test_get_mom_profile_requires_auth" time="0.140" /><testcase classname="backend.tests.test_mom_routes_phase6.TestMomProfile" name="test_get_mom_profile_requires_mom_role" time="0.409"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:128: in doula_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomProfileUpdate" name="test_update_mom_profile_success" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomProfileUpdate" name="test_update_mom_profile_requires_auth" time="0.108" /><testcase classname="backend.tests.test_mom_routes_phase6.TestMomOnboarding" name="test_onboarding_success" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomOnboarding" name="test_onboarding_requires_auth" time="0.198" /><testcase classname="backend.tests.test_mom_routes_phase6.TestMomOnboarding" name="test_onboarding_requires_mom_role" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:128: in doula_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomTeam" name="test_get_team_success" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomTeam" name="test_get_team_requires_auth" time="0.195" /><testcase classname="backend.tests.test_mom_routes_phase6.TestMomTeam" name="test_get_team_requires_mom_role" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:128: in doula_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomTeamProviders" name="test_get_team_providers_success" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomTeamProviders" name="test_get_team_providers_requires_auth" time="0.131" /><testcase classname="backend.tests.test_mom_routes_phase6.TestMomMidwifeVisits" name="test_get_midwife_visits_success" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomMidwifeVisits" name="test_get_midwife_visits_requires_auth" time="0.124" /><testcase classname="backend.tests.test_mom_routes_phase6.TestMomMidwifeVisits" name="test_get_midwife_visits_requires_mom_role" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:128: in doula_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomInvoices" name="test_get_invoices_success" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomInvoices" name="test_get_invoices_requires_auth" time="0.127" /><testcase classname="backend.tests.test_mom_routes_phase6.TestMomInvoices" name="test_get_invoices_requires_mom_role" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:128: in doula_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomInvoiceById" name="test_get_invoice_not_found" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomInvoiceById" name="test_get_invoice_requires_auth" time="0.110" /><testcase classname="backend.tests.test_mom_routes_phase6.TestMomAppointments" name="test_create_appointment_requires_auth" time="0.190" /><testcase classname="backend.tests.test_mom_routes_phase6.TestMomAppointments" name="test_create_appointment_requires_provider_id" time="0.001"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestMomAppointments" name="test_create_appointment_requires_connection" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestAuthRoutesRegression" name="test_login_endpoint_works" time="0.377"><failure message="AssertionError: assert 'token' in {'email': 'demo.mom@truejoybirthing.com', 'full_name': 'Emma Johnson', 'onboarding_completed': True, 'picture': 'https://api.dicebear.com/7.x/lorelei/png?seed=Emma Johnson&amp;size=200', ...}">backend/tests/test_mom_routes_phase6.py:412: in test_login_endpoint_works
+    assert "token" in data
+E   AssertionError: assert 'token' in {'email': 'demo.mom@truejoybirthing.com', 'full_name': 'Emma Johnson', 'onboarding_completed': True, 'picture': 'https://api.dicebear.com/7.x/lorelei/png?seed=Emma Johnson&amp;size=200', ...}</failure></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestAuthRoutesRegression" name="test_me_endpoint_works" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:107: in mom_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestProviderRoutesRegression" name="test_provider_clients_endpoint" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:128: in doula_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase><testcase classname="backend.tests.test_mom_routes_phase6.TestProviderRoutesRegression" name="test_provider_dashboard_endpoint" time="0.000"><error message="failed on setup with &quot;KeyError: 'token'&quot;">backend/tests/test_mom_routes_phase6.py:128: in doula_session
+    token = response.json()["token"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'token'</error></testcase></testsuite></testsuites>
