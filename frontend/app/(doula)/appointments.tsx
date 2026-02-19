@@ -1,6 +1,8 @@
+// Doula Appointments Screen - Thin wrapper using shared ProviderAppointments component
 import React from 'react';
-import ProviderAppointmentsScreen from '../../src/components/ProviderAppointments';
+import ProviderAppointments from '../../src/components/provider/ProviderAppointments';
+import { DOULA_CONFIG } from '../../src/components/provider/config/providerConfig';
 
 export default function DoulaAppointmentsScreen() {
-  return <ProviderAppointmentsScreen />;
+  return <ProviderAppointments config={DOULA_CONFIG} />;
 }
