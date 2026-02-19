@@ -15,25 +15,24 @@ Structure:
 
 Usage:
     from routes.dependencies import init_dependencies
-    from routes import auth, messages, notifications, marketplace, admin
     
-    # Initialize dependencies
+    # Initialize dependencies FIRST
     init_dependencies(db, pwd_context, ...)
     
+    # THEN import routers (after init)
+    from routes import admin, messages, notifications, marketplace
+    
     # Include routers
-    app.include_router(auth.router, prefix="/api")
-    app.include_router(messages.router, prefix="/api")
+    app.include_router(admin.router, prefix="/api")
     ...
+    
+NOTE: Route modules must be imported AFTER init_dependencies() is called
+because they use Depends() with auth functions that require initialization.
 """
 
 from .dependencies import init_dependencies
-from . import auth, messages, notifications, marketplace, admin
 
 __all__ = [
     "init_dependencies",
-    "auth",
-    "messages", 
-    "notifications",
-    "marketplace",
-    "admin"
 ]
+
