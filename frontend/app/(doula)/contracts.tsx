@@ -474,7 +474,7 @@ export default function DoulaContracts() {
       
       await apiRequest(`${API_ENDPOINTS.DOULA_CONTRACTS}/${selectedContract.contract_id}`, {
         method: 'PUT',
-        body: JSON.stringify(updateData),
+        body: updateData,
       });
       
       Alert.alert('Success', 'Contract updated successfully');
