@@ -1728,6 +1728,16 @@ def calculate_subscription_status(subscription: dict) -> dict:
     status = subscription.get("subscription_status", "none")
     trial_end = subscription.get("trial_end_date")
     sub_end = subscription.get("subscription_end_date")
+    provider = subscription.get("subscription_provider", subscription.get("store_type", "MOCK"))
+    auto_renewing = subscription.get("auto_renewing", True)
+    
+    # Normalize provider to uppercase
+    if provider and provider.lower() in ["ios", "apple"]:
+        provider = "APPLE"
+    elif provider and provider.lower() in ["android", "google"]:
+        provider = "GOOGLE"
+    elif provider:
+        provider = provider.upper()
     
     # Convert trial_end to timezone-aware datetime
     if trial_end:
@@ -1751,9 +1761,12 @@ def calculate_subscription_status(subscription: dict) -> dict:
                 "has_pro_access": True,
                 "subscription_status": "trial",
                 "plan_type": subscription.get("plan_type"),
+                "subscription_provider": provider,
                 "trial_end_date": trial_end.isoformat(),
+                "subscription_end_date": None,
                 "days_remaining": days_remaining,
-                "is_trial": True
+                "is_trial": True,
+                "auto_renewing": auto_renewing
             }
         else:
             # Trial expired
@@ -1761,9 +1774,12 @@ def calculate_subscription_status(subscription: dict) -> dict:
                 "has_pro_access": False,
                 "subscription_status": "expired",
                 "plan_type": subscription.get("plan_type"),
+                "subscription_provider": provider,
                 "trial_end_date": trial_end.isoformat(),
+                "subscription_end_date": None,
                 "days_remaining": 0,
-                "is_trial": False
+                "is_trial": False,
+                "auto_renewing": False
             }
     
     # Check active subscription
@@ -1775,9 +1791,12 @@ def calculate_subscription_status(subscription: dict) -> dict:
                     "has_pro_access": True,
                     "subscription_status": "active",
                     "plan_type": subscription.get("plan_type"),
+                    "subscription_provider": provider,
                     "trial_end_date": None,
+                    "subscription_end_date": sub_end.isoformat(),
                     "days_remaining": days_remaining,
-                    "is_trial": False
+                    "is_trial": False,
+                    "auto_renewing": auto_renewing
                 }
         else:
             # No end date means perpetual (for mock)
@@ -1785,18 +1804,24 @@ def calculate_subscription_status(subscription: dict) -> dict:
                 "has_pro_access": True,
                 "subscription_status": "active",
                 "plan_type": subscription.get("plan_type"),
+                "subscription_provider": provider,
                 "trial_end_date": None,
+                "subscription_end_date": None,
                 "days_remaining": None,
-                "is_trial": False
+                "is_trial": False,
+                "auto_renewing": auto_renewing
             }
     
     return {
         "has_pro_access": False,
         "subscription_status": status,
         "plan_type": subscription.get("plan_type"),
+        "subscription_provider": provider,
         "trial_end_date": trial_end.isoformat() if trial_end else None,
+        "subscription_end_date": sub_end.isoformat() if sub_end else None,
         "days_remaining": 0,
-        "is_trial": False
+        "is_trial": False,
+        "auto_renewing": False
     }
 
 @api_router.get("/subscription/status")
