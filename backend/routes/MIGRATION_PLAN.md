@@ -117,6 +117,18 @@ This document outlines the phased migration plan for breaking down the monolithi
 - `routes/mom.py` - 9 endpoints migrated (onboarding, profile GET/PUT, midwife-visits, team, team-providers, invoices, invoices/{id}, appointments)
 - Server.py reduced from 6,893 → 6,599 lines
 
+### Phase 7: Doula & Midwife Routes (COMPLETED)
+- [x] Create `routes/doula.py` with feature parity
+- [x] Create `routes/midwife.py` with feature parity
+- [x] Include routers in server.py
+- [x] Remove duplicated doula/midwife routes from server.py
+- [x] Test all routes (36/36 tests passed)
+
+**Completed**: Doula and Midwife core routes now served from modular routers.
+- `routes/doula.py` - 6 endpoints migrated (onboarding, profile GET/PUT, dashboard, contract-defaults GET/PUT)
+- `routes/midwife.py` - 4 endpoints migrated (onboarding, profile GET/PUT, dashboard)
+- Server.py reduced from 6,599 → 6,483 lines
+
 ### Phase 3: Role-Specific Routes
 - [ ] Create `routes/mom.py` - mom onboarding, profile, birth plan
 - [ ] Create `routes/doula.py` - doula onboarding, profile, dashboard
