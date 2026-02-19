@@ -679,6 +679,44 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - Test DOULA: `marketplace_doula@test.com` / `password123`
 - Create ADMIN via API with role: "ADMIN"
 
+## Code Smell Analysis (2026-02-19)
+
+### Identified Code Smells (Prioritized)
+
+**P1 - High Impact Technical Debt:**
+1. **Field Naming Inconsistency**: `provider_id` (105 occurrences) vs `pro_user_id` (70 occurrences)
+   - `provider_id`: Used in share_requests, appointments, visits, notes (newer models)
+   - `pro_user_id`: Used in clients, invoices, contracts (older models)
+   - Risk: Causes confusion, potential bugs when querying across collections
+   - Fix: Standardize to `provider_id`, requires data migration
+
+2. **Monolithic server.py**: 7,888 lines - should be split into modular routers
+   - Suggested modules: auth, users, clients, appointments, contracts, invoices, messages, admin
+
+3. **Duplicated Contract Screens**: ~3,000 lines duplicated between Doula and Midwife contracts
+   - `contracts.tsx`: 1,514 (Doula) + 1,523 (Midwife) = 3,037 lines
+   - `contract-templates.tsx`: 569 + 556 = 1,125 lines
+   - Fix: Create shared ProviderContracts component (config already prepared in `contractsConfig.ts`)
+
+**P2 - Medium Impact:**
+4. **Midwife client-detail.tsx**: 1,112 lines - specialized prenatal visit form, different from shared component
+   - Decision: Keep separate (different purpose from shared ProviderClientDetail)
+
+5. **Large Shared Components**: Some shared components are still large
+   - ProviderAppointments.tsx: 950 lines
+   - ProviderInvoices.tsx: 799 lines
+   - Could be broken down into smaller sub-components
+
+**P3 - Low Priority:**
+6. **ProGate.tsx**: Defined but never used (subscription gating component)
+7. **BirthPlanForms.tsx**: 1,248 lines - complex but serves single purpose
+
+### Already Fixed:
+- ✅ Dead code cleanup (appointments screens consolidated)
+- ✅ Duplicate route conflict for `/provider/notes/{id}`
+- ✅ Message model now has `client_id` for client-centric queries
+- ✅ Permission check updated to allow linked client messaging
+
 ## Files of Reference
 - `backend/server.py` - Main backend file
 - `frontend/app/(mom)/messages.tsx` - MOM messaging
