@@ -4823,9 +4823,19 @@ async def send_doula_invoice(invoice_id: str, user: User = Depends(check_role(["
 
 @api_router.post("/doula/invoices/{invoice_id}/mark-paid")
 async def mark_doula_invoice_paid(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
-    """Mark invoice as paid"""
+    """Mark invoice as paid and remove from Mom's notifications"""
     now = datetime.now(timezone.utc)
     
+    # Get the invoice first to find the client
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "pro_user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Update invoice status
     result = await db.invoices.update_one(
         {"invoice_id": invoice_id, "pro_user_id": user.user_id},
         {"$set": {"status": "Paid", "paid_at": now, "updated_at": now}}
@@ -4833,6 +4843,32 @@ async def mark_doula_invoice_paid(invoice_id: str, user: User = Depends(check_ro
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Get client and mark the invoice notification as read (or delete it)
+    client = await db.clients.find_one({"client_id": invoice["client_id"]}, {"_id": 0})
+    if client and client.get("linked_mom_id"):
+        # Mark any invoice-related notifications as read
+        await db.notifications.update_many(
+            {
+                "user_id": client["linked_mom_id"],
+                "type": {"$in": ["invoice_received", "invoice_reminder"]},
+                "data.invoice_id": invoice_id
+            },
+            {"$set": {"read": True, "resolved": True, "resolved_at": now}}
+        )
+        
+        # Also send a "paid" notification to the Mom
+        paid_notification = {
+            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+            "user_id": client["linked_mom_id"],
+            "type": "invoice_paid",
+            "title": "Payment Received",
+            "message": f"Your payment of ${invoice['amount']:.2f} has been confirmed. Thank you!",
+            "data": {"invoice_id": invoice_id},
+            "read": False,
+            "created_at": now
+        }
+        await db.notifications.insert_one(paid_notification)
     
     return {"message": "Invoice marked as paid"}
 
