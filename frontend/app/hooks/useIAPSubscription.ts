@@ -4,12 +4,16 @@
  * A React hook that provides in-app purchase functionality for True Joy Birthing.
  * This hook manages the billing connection lifecycle and provides methods for
  * purchasing subscriptions and restoring purchases.
+ * 
+ * Note: On web, this hook returns mock/disabled functionality since IAP is native-only.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Alert, Platform } from 'react-native';
-import * as RNIap from 'react-native-iap';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Only import react-native-iap on native platforms
+const RNIap = Platform.OS !== 'web' ? require('react-native-iap') : null;
 
 import {
   initializeBilling,
