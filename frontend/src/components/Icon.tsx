@@ -227,6 +227,12 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   // Sparkles
   'sparkles': 'Sparkles',
   'sparkles-outline': 'Sparkles',
+  
+  // Send/Paper plane
+  'paper-plane': 'Send',
+  'paper-plane-outline': 'Send',
+  'send': 'Send',
+  'send-outline': 'Send',
 };
 
 interface IconProps {
