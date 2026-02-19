@@ -86,7 +86,8 @@ export default function MidwifeVisitsScreen() {
     
     setSaving(true);
     try {
-      await apiRequest(API_ENDPOINTS.MIDWIFE_VISITS, {
+      // Use unified endpoint which auto-creates linked appointment
+      await apiRequest('/provider/visits', {
         method: 'POST',
         body: {
           client_id: selectedClientId,
@@ -94,9 +95,9 @@ export default function MidwifeVisitsScreen() {
           visit_type: visitType,
           gestational_age: gestationalAge || null,
           blood_pressure: bloodPressure || null,
-          weight: weight || null,
-          fetal_heart_rate: fetalHeartRate || null,
-          note: note || null,
+          weight: weight ? parseFloat(weight) : null,
+          fetal_heart_rate: fetalHeartRate ? parseInt(fetalHeartRate) : null,
+          general_notes: note || null,
         },
       });
       
