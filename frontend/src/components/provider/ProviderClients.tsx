@@ -40,13 +40,15 @@ interface ConnectedClient {
   email?: string;
   picture?: string;
   edd?: string;
+  due_date?: string;
   status: string;
   planned_birth_setting?: string;
   created_at: string;
+  is_active?: boolean;
 }
 
 const DOULA_STATUS_COLORS: Record<string, string> = {
-  'Lead': COLORS.info,
+  'Lead': COLORS.info || COLORS.primary,
   'Contract Sent': COLORS.warning,
   'Contract Signed': COLORS.success,
   'Active': COLORS.roleDoula,
@@ -63,6 +65,8 @@ const MIDWIFE_STATUS_COLORS: Record<string, string> = {
   'Completed': COLORS.textLight,
 };
 
+type ClientFilter = 'active' | 'inactive' | 'all';
+
 interface ProviderClientsProps {
   config: ProviderConfig;
 }
@@ -75,6 +79,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<ShareRequest | null>(null);
   const [processingRequest, setProcessingRequest] = useState<string | null>(null);
+  const [clientFilter, setClientFilter] = useState<ClientFilter>('active');
 
   const primaryColor = config.primaryColor;
   const isMidwife = config.role === 'MIDWIFE';
@@ -87,18 +92,24 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
       const pending = (requestsData.requests || []).filter((r: ShareRequest) => r.status === 'pending');
       setPendingRequests(pending);
       
-      // Fetch clients
-      const clientsData = await apiRequest(config.endpoints.clients);
-      
-      // Midwife shows all clients, Doula shows only linked clients
-      if (isMidwife) {
-        setConnectedClients(clientsData || []);
-      } else {
-        const linkedClients = (clientsData || []).filter((c: any) => c.linked_mom_id);
-        setConnectedClients(linkedClients);
-      }
+      // Use unified endpoint with include_inactive param
+      const includeInactive = clientFilter !== 'active';
+      const clientsData = await apiRequest(`/api${config.endpoints.unifiedClients}?include_inactive=${includeInactive}`);
+      setConnectedClients(clientsData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
+      // Fallback to legacy endpoint if unified fails
+      try {
+        const clientsData = await apiRequest(config.endpoints.clients);
+        if (isMidwife) {
+          setConnectedClients(clientsData || []);
+        } else {
+          const linkedClients = (clientsData || []).filter((c: any) => c.linked_mom_id);
+          setConnectedClients(linkedClients);
+        }
+      } catch (e) {
+        console.error('Fallback failed:', e);
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -107,7 +118,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [clientFilter]);
   
   const onRefresh = async () => {
     setRefreshing(true);
