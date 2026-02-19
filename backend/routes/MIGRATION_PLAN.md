@@ -107,6 +107,16 @@ This document outlines the phased migration plan for breaking down the monolithi
 - Server.py reduced from 7,190 → 6,893 lines
 - Note: IAP endpoints are MOCKED (not connected to real Apple/Google)
 
+### Phase 6: Mom Routes (COMPLETED)
+- [x] Create `routes/mom.py` with feature parity
+- [x] Include router in server.py
+- [x] Remove duplicated mom routes from server.py
+- [x] Test all routes (32/32 tests passed)
+
+**Completed**: Mom routes now served from modular router.
+- `routes/mom.py` - 9 endpoints migrated (onboarding, profile GET/PUT, midwife-visits, team, team-providers, invoices, invoices/{id}, appointments)
+- Server.py reduced from 6,893 → 6,599 lines
+
 ### Phase 3: Role-Specific Routes
 - [ ] Create `routes/mom.py` - mom onboarding, profile, birth plan
 - [ ] Create `routes/doula.py` - doula onboarding, profile, dashboard
