@@ -359,8 +359,18 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.md },
+  header: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: SIZES.md,
+    paddingBottom: 0,
+  },
+  backButton: { 
+    padding: SIZES.xs, 
+    marginRight: SIZES.sm,
+  },
   title: { fontSize: SIZES.fontXxl, fontFamily: FONTS.heading, color: COLORS.textPrimary },
+  subtitle: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary },
   addButton: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center' },
   
   filterContainer: { marginBottom: SIZES.md },
