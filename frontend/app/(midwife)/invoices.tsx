@@ -137,13 +137,13 @@ export default function MidwifeInvoicesScreen() {
       if (editingInvoice) {
         await apiRequest(`${API_ENDPOINTS.MIDWIFE_INVOICES}/${editingInvoice.invoice_id}`, {
           method: 'PUT',
-          body: JSON.stringify(invoiceData),
+          body: invoiceData,
         });
         Alert.alert('Success', 'Invoice updated');
       } else {
         await apiRequest(API_ENDPOINTS.MIDWIFE_INVOICES, {
           method: 'POST',
-          body: JSON.stringify(invoiceData),
+          body: invoiceData,
         });
         Alert.alert('Success', 'Invoice created');
       }
