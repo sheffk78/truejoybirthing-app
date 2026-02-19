@@ -251,6 +251,19 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Code Refactoring
 
+#### Dead Code Cleanup & Provider Component Consolidation (COMPLETED - 2026-02-19)
+- [x] **ProviderNotes.tsx** - Shared notes component for both Doula and Midwife
+- [x] **ProviderAppointments.tsx** - Shared appointments component with config-based filter tabs
+  - Doula: No filter tabs (shows all appointments)
+  - Midwife: Shows filter tabs (All, Prenatal, Postpartum)
+- [x] **Thin Wrappers** - Both role screens reduced to ~8 lines each
+  - `(doula)/notes.tsx` - 8 lines
+  - `(midwife)/notes.tsx` - 8 lines
+  - `(doula)/appointments.tsx` - 8 lines
+  - `(midwife)/appointments.tsx` - 8 lines (reduced from 943 lines!)
+- [x] **Backend Route Conflict Fixed** - Renamed `/provider/notes/{id}` to `/provider/birth-plan-notes/{id}` for birth plan section notes to avoid conflict with unified notes delete endpoint
+- [x] **Deleted Old Files** - Removed `/app/frontend/src/components/ProviderAppointments.tsx` (replaced by `/app/frontend/src/components/provider/ProviderAppointments.tsx`)
+
 #### Shared Provider Component Architecture (COMPLETED - 2026-02-19)
 - [x] Created unified `ProviderDashboard` component used by both Doula and Midwife
 - [x] Created unified `ProviderMessages` component used by both Doula and Midwife
