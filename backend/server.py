@@ -5137,8 +5137,8 @@ async def send_midwife_invoice(invoice_id: str, user: User = Depends(check_role(
         {"$set": {"status": "Sent", "sent_at": now, "updated_at": now}}
     )
     
-    # Get client and send notification (clients with provider_type=MIDWIFE are in clients collection)
-    client = await db.clients.find_one({"client_id": invoice["client_id"], "provider_type": "MIDWIFE"}, {"_id": 0})
+    # Get client and send notification (midwife clients use pro_type=MIDWIFE)
+    client = await db.clients.find_one({"client_id": invoice["client_id"], "pro_type": "MIDWIFE"}, {"_id": 0})
     if client and client.get("linked_mom_id"):
         # Create in-app notification for the mom
         notification = {
