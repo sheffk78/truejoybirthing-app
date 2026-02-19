@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
   // Request cards
   requestCard: { marginBottom: SIZES.sm, borderLeftWidth: 3 },
   requestRow: { flexDirection: 'row', alignItems: 'center' },
-  requestAvatar: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  requestAvatar: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarImage: { width: 48, height: 48, borderRadius: 24 },
   requestInfo: { flex: 1, marginLeft: SIZES.md },
   requestName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: COLORS.textPrimary },
@@ -420,7 +420,8 @@ const styles = StyleSheet.create({
   // Client cards
   clientCard: { marginBottom: SIZES.sm },
   clientRow: { flexDirection: 'row', alignItems: 'center' },
-  clientAvatar: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
+  clientAvatar: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  clientAvatarImage: { width: 56, height: 56, borderRadius: 28 },
   clientInfo: { flex: 1, marginLeft: SIZES.md },
   clientName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: COLORS.textPrimary },
   clientDueDate: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
