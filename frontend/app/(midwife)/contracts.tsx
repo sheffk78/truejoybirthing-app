@@ -255,6 +255,42 @@ export default function MidwifeContracts() {
     }
   };
 
+  // Save the last used contract values as user preferences
+  const saveLastUsedDefaults = async (data: any) => {
+    try {
+      await apiRequest('/midwife/contract-defaults', {
+        method: 'PUT',
+        body: {
+          // Fees & Payment
+          total_fee: data.total_fee,
+          retainer_amount: data.retainer_amount,
+          remaining_balance_due_description: data.remaining_balance_due_description,
+          fee_coverage_description: data.fee_coverage_description,
+          refund_policy_description: data.refund_policy_description,
+          // Place of Birth & Scope
+          planned_birth_location: data.planned_birth_location,
+          scope_description: data.scope_description,
+          // Transfer & Withdrawal
+          transfer_indications_description: data.transfer_indications_description,
+          client_refusal_of_transfer_note: data.client_refusal_of_transfer_note,
+          midwife_withdrawal_reasons: data.midwife_withdrawal_reasons,
+          no_refund_scenarios_description: data.no_refund_scenarios_description,
+          // On-Call & Backup
+          on_call_window_description: data.on_call_window_description,
+          backup_midwife_policy: data.backup_midwife_policy,
+          // Communication & Emergencies
+          contact_instructions_routine: data.contact_instructions_routine,
+          contact_instructions_urgent: data.contact_instructions_urgent,
+          emergency_instructions: data.emergency_instructions,
+          // Special Arrangements
+          special_arrangements: data.special_arrangements,
+        },
+      });
+    } catch (error) {
+      console.log('Could not save contract defaults:', error);
+    }
+  };
+
   const handleCreateContract = async () => {
     if (!selectedClientId) {
       Alert.alert('Error', 'Please select a client');
