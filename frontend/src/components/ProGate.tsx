@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSubscriptionStore } from '../store/subscriptionStore';
 import { useAuthStore } from '../store/authStore';
+import { SUBSCRIPTION_CONFIG, getStatusDisplayText, getProviderDisplayName } from '../../app/config/subscriptionConfig';
 
 interface ProGateProps {
   children: React.ReactNode;
@@ -61,7 +62,7 @@ export function ProGate({ children, feature = 'This feature', showUpgradePrompt 
         </View>
         <Text style={styles.title}>Pro Feature</Text>
         <Text style={styles.description}>
-          {feature} requires True Joy Pro. Start your free 30-day trial to unlock all professional tools.
+          {feature} requires True Joy Pro. Start your free {SUBSCRIPTION_CONFIG.trialDays}-day trial to unlock all professional tools.
         </Text>
         <TouchableOpacity 
           style={styles.upgradeButton}
@@ -86,7 +87,7 @@ export function ProGate({ children, feature = 'This feature', showUpgradePrompt 
  */
 export function useProAccess() {
   const { user } = useAuthStore();
-  const { status, fetchStatus, isLoading } = useSubscriptionStore();
+  const { status, fetchStatus, isLoading, getSubscriptionManageUrl } = useSubscriptionStore();
 
   useEffect(() => {
     if (!status && user) {
@@ -94,13 +95,34 @@ export function useProAccess() {
     }
   }, [user]);
 
+  // Helper to open subscription management
+  const openSubscriptionManagement = async () => {
+    const manageUrl = getSubscriptionManageUrl();
+    if (manageUrl) {
+      try {
+        await Linking.openURL(manageUrl);
+      } catch (e) {
+        console.error('Failed to open subscription management URL:', e);
+      }
+    }
+  };
+
   return {
     hasProAccess: status?.has_pro_access ?? false,
     isTrialing: status?.is_trial ?? false,
     daysRemaining: status?.days_remaining,
     subscriptionStatus: status?.subscription_status ?? 'none',
+    subscriptionProvider: status?.subscription_provider ?? null,
+    subscriptionEndDate: status?.subscription_end_date ?? null,
+    autoRenewing: status?.auto_renewing ?? false,
     isMom: user?.role === 'MOM',
     isLoading,
+    // Helper methods
+    openSubscriptionManagement,
+    getStatusText: () => getStatusDisplayText(status?.subscription_status ?? 'none', status?.days_remaining),
+    getProviderName: () => getProviderDisplayName(status?.subscription_provider ?? 'MOCK'),
+    canManageSubscription: () => 
+      status?.subscription_provider === 'APPLE' || status?.subscription_provider === 'GOOGLE',
   };
 }
 
@@ -108,7 +130,7 @@ export function useProAccess() {
  * Trial banner component for showing trial status
  */
 export function TrialBanner() {
-  const { status, fetchStatus } = useSubscriptionStore();
+  const { status, fetchStatus, getSubscriptionManageUrl } = useSubscriptionStore();
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -126,10 +148,14 @@ export function TrialBanner() {
   const daysRemaining = status.days_remaining ?? 0;
   const isUrgent = daysRemaining <= 7;
 
+  const handlePress = () => {
+    router.push('/plans-pricing');
+  };
+
   return (
     <TouchableOpacity 
       style={[styles.trialBanner, isUrgent && styles.trialBannerUrgent]}
-      onPress={() => router.push('/plans-pricing')}
+      onPress={handlePress}
     >
       <Ionicons 
         name={isUrgent ? 'warning' : 'time'} 
@@ -144,6 +170,89 @@ export function TrialBanner() {
       </Text>
       <Ionicons name="chevron-forward" size={16} color={isUrgent ? '#f59e0b' : COLORS.primary} />
     </TouchableOpacity>
+  );
+}
+
+/**
+ * Subscription Info Card - shows current subscription details
+ * Use this in profile pages or settings
+ */
+export function SubscriptionInfoCard() {
+  const { status, fetchStatus, getSubscriptionManageUrl } = useSubscriptionStore();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (!status && user) {
+      fetchStatus();
+    }
+  }, [user]);
+
+  // Don't show for moms
+  if (user?.role === 'MOM' || !status) return null;
+
+  const manageUrl = getSubscriptionManageUrl();
+  const canManage = status.subscription_provider === 'APPLE' || status.subscription_provider === 'GOOGLE';
+
+  const handleManagePress = async () => {
+    if (manageUrl) {
+      try {
+        await Linking.openURL(manageUrl);
+      } catch (e) {
+        console.error('Failed to open subscription management:', e);
+      }
+    }
+  };
+
+  return (
+    <View style={styles.infoCard}>
+      <View style={styles.infoHeader}>
+        <Ionicons 
+          name={status.has_pro_access ? 'checkmark-shield' : 'shield-outline'} 
+          size={24} 
+          color={status.has_pro_access ? '#10b981' : COLORS.textSecondary} 
+        />
+        <Text style={styles.infoTitle}>
+          {status.has_pro_access ? 'True Joy Pro' : 'Free Plan'}
+        </Text>
+      </View>
+      
+      <Text style={styles.infoStatus}>
+        {getStatusDisplayText(status.subscription_status, status.days_remaining)}
+      </Text>
+      
+      {status.subscription_provider && status.subscription_provider !== 'MOCK' && (
+        <Text style={styles.infoProvider}>
+          Managed through {getProviderDisplayName(status.subscription_provider)}
+        </Text>
+      )}
+      
+      {status.subscription_end_date && status.subscription_status === 'active' && (
+        <Text style={styles.infoExpiry}>
+          {status.auto_renewing ? 'Renews' : 'Expires'}: {new Date(status.subscription_end_date).toLocaleDateString()}
+        </Text>
+      )}
+      
+      <View style={styles.infoActions}>
+        {!status.has_pro_access && (
+          <TouchableOpacity 
+            style={styles.upgradeSmallButton}
+            onPress={() => router.push('/plans-pricing')}
+          >
+            <Text style={styles.upgradeSmallButtonText}>Upgrade to Pro</Text>
+          </TouchableOpacity>
+        )}
+        
+        {canManage && status.has_pro_access && (
+          <TouchableOpacity 
+            style={styles.manageButton}
+            onPress={handleManagePress}
+          >
+            <Text style={styles.manageButtonText}>Manage Subscription</Text>
+            <Ionicons name="open-outline" size={14} color={COLORS.primary} />
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
   );
 }
 
