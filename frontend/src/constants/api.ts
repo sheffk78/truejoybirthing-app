@@ -112,6 +112,9 @@ export const API_ENDPOINTS = {
   // Mom - Midwife Visits
   MOM_MIDWIFE_VISITS: '/mom/midwife-visits',
   
+  // Midwife Prenatal Visit Assessments
+  MIDWIFE_PRENATAL_VISITS: '/midwife/clients', // Full path: /midwife/clients/{client_id}/prenatal-visits
+  
   // Weekly Content (Tips & Affirmations)
   WEEKLY_CONTENT: '/weekly-content',
   WEEKLY_CONTENT_ALL: '/weekly-content/all',
