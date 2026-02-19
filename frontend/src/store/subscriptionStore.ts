@@ -1,15 +1,19 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE, API_ENDPOINTS } from '../constants/api';
+import { getSubscriptionProvider } from '../../app/services/billing';
 
 export interface SubscriptionStatus {
   has_pro_access: boolean;
   subscription_status: 'none' | 'trial' | 'active' | 'expired' | 'cancelled' | 'free';
   plan_type: string | null;
+  subscription_provider: 'APPLE' | 'GOOGLE' | 'MOCK' | 'WEB' | null;
   trial_end_date: string | null;
+  subscription_end_date: string | null;
   days_remaining: number | null;
   is_trial: boolean;
   is_mom: boolean;
+  auto_renewing: boolean;
 }
 
 export interface PricingPlan {
@@ -40,8 +44,10 @@ interface SubscriptionState {
   startTrial: (planType: string) => Promise<void>;
   activateSubscription: (planType: string) => Promise<void>;
   cancelSubscription: () => Promise<void>;
+  validateReceipt: (receipt: string, productId: string) => Promise<boolean>;
   hasProAccess: () => boolean;
   isMom: () => boolean;
+  getSubscriptionManageUrl: () => string | null;
 }
 
 const getAuthToken = async (): Promise<string | null> => {
