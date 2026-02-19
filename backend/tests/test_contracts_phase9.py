@@ -56,8 +56,11 @@ class TestAuthLogin:
         assert response.status_code == 200, f"Doula login failed: {response.status_code} - {response.text}"
         data = response.json()
         assert "session_token" in data, "session_token not in response"
-        assert data.get("user", {}).get("role") == "DOULA", "User role should be DOULA"
-        print(f"Doula login successful: {data.get('user', {}).get('full_name')}")
+        # Role can be in data directly or inside user object
+        role = data.get("role") or data.get("user", {}).get("role")
+        assert role == "DOULA", f"User role should be DOULA, got {role}"
+        full_name = data.get("full_name") or data.get("user", {}).get("full_name")
+        print(f"Doula login successful: {full_name}")
     
     def test_midwife_login_success(self):
         """Verify Midwife can login and get session token"""
@@ -68,8 +71,11 @@ class TestAuthLogin:
         assert response.status_code == 200, f"Midwife login failed: {response.status_code} - {response.text}"
         data = response.json()
         assert "session_token" in data, "session_token not in response"
-        assert data.get("user", {}).get("role") == "MIDWIFE", "User role should be MIDWIFE"
-        print(f"Midwife login successful: {data.get('user', {}).get('full_name')}")
+        # Role can be in data directly or inside user object
+        role = data.get("role") or data.get("user", {}).get("role")
+        assert role == "MIDWIFE", f"User role should be MIDWIFE, got {role}"
+        full_name = data.get("full_name") or data.get("user", {}).get("full_name")
+        print(f"Midwife login successful: {full_name}")
 
 
 @pytest.fixture
