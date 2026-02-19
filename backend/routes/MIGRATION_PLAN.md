@@ -72,6 +72,19 @@ This document outlines the phased migration plan for breaking down the monolithi
 - `routes/marketplace.py` - 2 endpoints migrated
 - Server.py reduced from 7,888 → 7,743 lines
 
+### Phase 3: Notifications & Messages (COMPLETED)
+- [x] Update `routes/notifications.py` for feature parity
+- [x] Update `routes/messages.py` for feature parity  
+- [x] Include routers in server.py
+- [x] Remove duplicated code from server.py
+- [x] Test all routes (19/19 tests passed)
+
+**Completed**: Notifications and Messages routes now served from modular routers.
+- `routes/notifications.py` - 3 endpoints migrated
+- `routes/messages.py` - 5 endpoints migrated
+- Server.py reduced from 7,743 → 7,463 lines
+- Note: `/provider/clients/{client_id}/messages` moved to `/messages/client/{client_id}`
+
 ### Phase 3: Role-Specific Routes
 - [ ] Create `routes/mom.py` - mom onboarding, profile, birth plan
 - [ ] Create `routes/doula.py` - doula onboarding, profile, dashboard
