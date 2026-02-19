@@ -1,0 +1,459 @@
+// Shared Clients Screen for Doula and Midwife
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  Modal,
+  Alert,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { Icon } from '../Icon';
+import Card from '../Card';
+import Button from '../Button';
+import { apiRequest } from '../../utils/api';
+import { API_ENDPOINTS } from '../../constants/api';
+import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { ProviderConfig } from './config/providerConfig';
+
+interface ShareRequest {
+  request_id: string;
+  mom_user_id: string;
+  mom_name: string;
+  mom_email?: string;
+  mom_picture?: string;
+  due_date?: string;
+  status: string;
+  created_at: string;
+}
+
+interface ConnectedClient {
+  client_id: string;
+  linked_mom_id: string | null;
+  name: string;
+  email?: string;
+  picture?: string;
+  edd?: string;
+  status: string;
+  planned_birth_setting?: string;
+  created_at: string;
+}
+
+const DOULA_STATUS_COLORS: Record<string, string> = {
+  'Lead': COLORS.info,
+  'Contract Sent': COLORS.warning,
+  'Contract Signed': COLORS.success,
+  'Active': COLORS.roleDoula,
+  'Postpartum': COLORS.accent,
+  'Completed': COLORS.textLight,
+};
+
+const MIDWIFE_STATUS_COLORS: Record<string, string> = {
+  'Prenatal': COLORS.roleMidwife,
+  'Contract Sent': COLORS.warning,
+  'Contract Signed': COLORS.success,
+  'In Labor': COLORS.error,
+  'Postpartum': COLORS.accent,
+  'Completed': COLORS.textLight,
+};
+
+interface ProviderClientsProps {
+  config: ProviderConfig;
+}
+
+export default function ProviderClients({ config }: ProviderClientsProps) {
+  const router = useRouter();
+  const [pendingRequests, setPendingRequests] = useState<ShareRequest[]>([]);
+  const [connectedClients, setConnectedClients] = useState<ConnectedClient[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [selectedRequest, setSelectedRequest] = useState<ShareRequest | null>(null);
+  const [processingRequest, setProcessingRequest] = useState<string | null>(null);
+
+  const primaryColor = config.primaryColor;
+  const isMidwife = config.role === 'MIDWIFE';
+  const STATUS_COLORS = isMidwife ? MIDWIFE_STATUS_COLORS : DOULA_STATUS_COLORS;
+  
+  const fetchData = async () => {
+    try {
+      // Fetch pending share requests
+      const requestsData = await apiRequest(API_ENDPOINTS.PROVIDER_SHARE_REQUESTS);
+      const pending = (requestsData.requests || []).filter((r: ShareRequest) => r.status === 'pending');
+      setPendingRequests(pending);
+      
+      // Fetch clients
+      const clientsData = await apiRequest(config.endpoints.clients);
+      
+      // Midwife shows all clients, Doula shows only linked clients
+      if (isMidwife) {
+        setConnectedClients(clientsData || []);
+      } else {
+        const linkedClients = (clientsData || []).filter((c: any) => c.linked_mom_id);
+        setConnectedClients(linkedClients);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+  
+  useEffect(() => {
+    fetchData();
+  }, []);
+  
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+  };
+  
+  const handleAcceptRequest = async (request: ShareRequest) => {
+    setProcessingRequest(request.request_id);
+    try {
+      await apiRequest(`${API_ENDPOINTS.PROVIDER_SHARE_REQUESTS}/${request.request_id}/respond`, {
+        method: 'PUT',
+        body: { action: 'accept' },
+      });
+      Alert.alert('Welcome!', `${request.mom_name} is now connected with you. You can view their birth plan and communicate with them.`);
+      setSelectedRequest(null);
+      fetchData();
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to accept request');
+    } finally {
+      setProcessingRequest(null);
+    }
+  };
+
+  const handleDeclineRequest = async (request: ShareRequest) => {
+    Alert.alert(
+      'Decline Request',
+      `Are you sure you want to decline ${request.mom_name}'s request to connect?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Decline',
+          style: 'destructive',
+          onPress: async () => {
+            setProcessingRequest(request.request_id);
+            try {
+              await apiRequest(`${API_ENDPOINTS.PROVIDER_SHARE_REQUESTS}/${request.request_id}/respond`, {
+                method: 'PUT',
+                body: { action: 'decline' },
+              });
+              setSelectedRequest(null);
+              fetchData();
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to decline request');
+            } finally {
+              setProcessingRequest(null);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleClientPress = (client: ConnectedClient) => {
+    if (isMidwife) {
+      // Navigate to client detail page for prenatal visits
+      router.push(`/(midwife)/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+    }
+    // Doula: Currently no client detail view, could expand in future
+  };
+  
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return 'Not set';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={primaryColor} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+  
+  return (
+    <SafeAreaView style={styles.container} edges={['top']} data-testid={`${config.role.toLowerCase()}-clients-screen`}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={primaryColor} />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>My Clients</Text>
+          <Text style={styles.subtitle}>Manage your client relationships</Text>
+        </View>
+        
+        {/* Pending Requests Section */}
+        {pendingRequests.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>
+              <Icon name="heart" size={18} color={primaryColor} /> Pending Requests ({pendingRequests.length})
+            </Text>
+            {pendingRequests.map((request) => (
+              <TouchableOpacity
+                key={request.request_id}
+                onPress={() => setSelectedRequest(request)}
+                data-testid={`pending-request-${request.request_id}`}
+              >
+                <Card style={[styles.requestCard, { borderLeftColor: primaryColor }]}>
+                  <View style={styles.requestRow}>
+                    <View style={[styles.requestAvatar, { backgroundColor: COLORS.primary + '20' }]}>
+                      {request.mom_picture ? (
+                        <Image source={{ uri: request.mom_picture }} style={styles.avatarImage} />
+                      ) : (
+                        <Icon name="person" size={24} color={COLORS.primary} />
+                      )}
+                    </View>
+                    <View style={styles.requestInfo}>
+                      <Text style={styles.requestName}>{request.mom_name}</Text>
+                      <Text style={styles.requestSubtext}>Wants to share their birth plan</Text>
+                      {request.due_date && (
+                        <Text style={styles.requestDate}>Due: {formatDate(request.due_date)}</Text>
+                      )}
+                    </View>
+                    <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
+        
+        {/* Connected Clients Section */}
+        <Text style={styles.sectionTitle}>
+          <Icon name="people" size={18} color={primaryColor} /> Active Clients ({connectedClients.length})
+        </Text>
+        
+        {connectedClients.length === 0 ? (
+          <Card style={styles.emptyCard}>
+            <Icon name="people-outline" size={48} color={COLORS.textLight} />
+            <Text style={styles.emptyText}>No clients yet</Text>
+            <Text style={styles.emptySubtext}>
+              When moms share their birth plan with you, they'll appear here.
+            </Text>
+          </Card>
+        ) : (
+          connectedClients.map((client) => (
+            <TouchableOpacity
+              key={client.client_id}
+              onPress={() => handleClientPress(client)}
+              disabled={!isMidwife}
+              data-testid={`client-${client.client_id}`}
+            >
+              <Card style={styles.clientCard}>
+                <View style={styles.clientRow}>
+                  <View style={[styles.clientAvatar, { backgroundColor: primaryColor + '20' }]}>
+                    {client.picture ? (
+                      <Image source={{ uri: client.picture }} style={styles.avatarImage} />
+                    ) : (
+                      <Icon name="person" size={28} color={primaryColor} />
+                    )}
+                  </View>
+                  <View style={styles.clientInfo}>
+                    <Text style={styles.clientName}>{client.name}</Text>
+                    {client.edd && (
+                      <Text style={styles.clientDueDate}>Due: {formatDate(client.edd)}</Text>
+                    )}
+                    {isMidwife && client.planned_birth_setting && (
+                      <Text style={styles.clientSetting}>{client.planned_birth_setting}</Text>
+                    )}
+                  </View>
+                  <View style={styles.clientMeta}>
+                    <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[client.status] || COLORS.textLight) + '20' }]}>
+                      <Text style={[styles.statusText, { color: STATUS_COLORS[client.status] || COLORS.textLight }]}>
+                        {client.status}
+                      </Text>
+                    </View>
+                    {isMidwife && (
+                      <Icon name="chevron-forward" size={20} color={COLORS.textLight} style={{ marginTop: 8 }} />
+                    )}
+                  </View>
+                </View>
+                
+                {/* Action buttons */}
+                <View style={styles.clientActions}>
+                  {client.linked_mom_id && (
+                    <TouchableOpacity 
+                      style={styles.actionButton} 
+                      onPress={() => router.push(`${config.routes.messages}?userId=${client.linked_mom_id}` as any)}
+                    >
+                      <Icon name="chatbubble-outline" size={16} color={primaryColor} />
+                      <Text style={[styles.actionText, { color: primaryColor }]}>Message</Text>
+                    </TouchableOpacity>
+                  )}
+                  {client.linked_mom_id && (
+                    <TouchableOpacity style={styles.actionButton}>
+                      <Icon name="document-text-outline" size={16} color={primaryColor} />
+                      <Text style={[styles.actionText, { color: primaryColor }]}>Birth Plan</Text>
+                    </TouchableOpacity>
+                  )}
+                  {isMidwife && (
+                    <TouchableOpacity 
+                      style={[styles.actionButton, { backgroundColor: primaryColor + '10' }]}
+                      onPress={() => handleClientPress(client)}
+                    >
+                      <Icon name="clipboard-outline" size={16} color={primaryColor} />
+                      <Text style={[styles.actionText, { color: primaryColor }]}>Prenatal Visits</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </Card>
+            </TouchableOpacity>
+          ))
+        )}
+      </ScrollView>
+      
+      {/* Request Detail Modal */}
+      <Modal
+        visible={!!selectedRequest}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setSelectedRequest(null)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={() => setSelectedRequest(null)}>
+              <Icon name="close" size={24} color={COLORS.textPrimary} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Connection Request</Text>
+            <View style={{ width: 24 }} />
+          </View>
+          
+          {selectedRequest && (
+            <ScrollView style={styles.modalContent}>
+              <View style={styles.modalProfile}>
+                <View style={[styles.modalAvatar, { backgroundColor: COLORS.primary + '20' }]}>
+                  {selectedRequest.mom_picture ? (
+                    <Image source={{ uri: selectedRequest.mom_picture }} style={styles.modalAvatarImage} />
+                  ) : (
+                    <Icon name="person" size={48} color={COLORS.primary} />
+                  )}
+                </View>
+                <Text style={styles.modalName}>{selectedRequest.mom_name}</Text>
+                {selectedRequest.mom_email && (
+                  <Text style={styles.modalEmail}>{selectedRequest.mom_email}</Text>
+                )}
+              </View>
+              
+              <Card style={styles.modalInfoCard}>
+                <View style={styles.modalInfoRow}>
+                  <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} />
+                  <View style={styles.modalInfoText}>
+                    <Text style={styles.modalInfoLabel}>Due Date</Text>
+                    <Text style={styles.modalInfoValue}>
+                      {selectedRequest.due_date ? formatDate(selectedRequest.due_date) : 'Not specified'}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.modalInfoRow}>
+                  <Icon name="time-outline" size={20} color={COLORS.textSecondary} />
+                  <View style={styles.modalInfoText}>
+                    <Text style={styles.modalInfoLabel}>Request Sent</Text>
+                    <Text style={styles.modalInfoValue}>{formatDate(selectedRequest.created_at)}</Text>
+                  </View>
+                </View>
+              </Card>
+              
+              <Text style={styles.modalDescription}>
+                {selectedRequest.mom_name} would like to share their birth plan with you. 
+                By accepting, you'll be able to view their birth preferences and communicate with them directly.
+              </Text>
+            </ScrollView>
+          )}
+          
+          <View style={styles.modalFooter}>
+            <Button
+              title="Decline"
+              variant="outline"
+              onPress={() => selectedRequest && handleDeclineRequest(selectedRequest)}
+              disabled={!!processingRequest}
+              style={styles.declineBtn}
+            />
+            <Button
+              title={processingRequest ? 'Accepting...' : 'Accept'}
+              onPress={() => selectedRequest && handleAcceptRequest(selectedRequest)}
+              disabled={!!processingRequest}
+              style={[styles.acceptBtn, { backgroundColor: primaryColor }]}
+            />
+          </View>
+        </SafeAreaView>
+      </Modal>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.background },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
+  header: { marginBottom: SIZES.lg },
+  title: { fontSize: SIZES.fontXxl, fontFamily: FONTS.heading, color: COLORS.textPrimary },
+  subtitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textSecondary, marginTop: 4 },
+  sectionTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.subheading, color: COLORS.textPrimary, marginBottom: SIZES.md, marginTop: SIZES.md },
+  
+  // Request cards
+  requestCard: { marginBottom: SIZES.sm, borderLeftWidth: 3 },
+  requestRow: { flexDirection: 'row', alignItems: 'center' },
+  requestAvatar: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  avatarImage: { width: 48, height: 48, borderRadius: 24 },
+  requestInfo: { flex: 1, marginLeft: SIZES.md },
+  requestName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: COLORS.textPrimary },
+  requestSubtext: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
+  requestDate: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: COLORS.textLight, marginTop: 4 },
+  
+  // Client cards
+  clientCard: { marginBottom: SIZES.sm },
+  clientRow: { flexDirection: 'row', alignItems: 'center' },
+  clientAvatar: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center' },
+  clientInfo: { flex: 1, marginLeft: SIZES.md },
+  clientName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: COLORS.textPrimary },
+  clientDueDate: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
+  clientSetting: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: COLORS.textLight, marginTop: 2 },
+  clientMeta: { alignItems: 'flex-end' },
+  statusBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusSm },
+  statusText: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyMedium },
+  clientActions: { flexDirection: 'row', marginTop: SIZES.md, paddingTop: SIZES.sm, borderTopWidth: 1, borderTopColor: COLORS.border, gap: SIZES.sm },
+  actionButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SIZES.sm, paddingVertical: SIZES.xs, borderRadius: SIZES.radiusSm },
+  actionText: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyMedium, marginLeft: 4 },
+  
+  // Empty state
+  emptyCard: { alignItems: 'center', paddingVertical: SIZES.xl },
+  emptyText: { fontSize: SIZES.fontLg, fontFamily: FONTS.bodyBold, color: COLORS.textPrimary, marginTop: SIZES.md },
+  emptySubtext: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary, textAlign: 'center', paddingHorizontal: SIZES.lg, marginTop: SIZES.xs },
+  
+  // Modal styles
+  modalContainer: { flex: 1, backgroundColor: COLORS.background },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.md, borderBottomWidth: 1, borderBottomColor: COLORS.border, backgroundColor: COLORS.white },
+  modalTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.subheading, color: COLORS.textPrimary },
+  modalContent: { flex: 1, padding: SIZES.md },
+  modalProfile: { alignItems: 'center', marginBottom: SIZES.lg },
+  modalAvatar: { width: 100, height: 100, borderRadius: 50, alignItems: 'center', justifyContent: 'center', marginBottom: SIZES.md },
+  modalAvatarImage: { width: 100, height: 100, borderRadius: 50 },
+  modalName: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading, color: COLORS.textPrimary },
+  modalEmail: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textSecondary, marginTop: 4 },
+  modalInfoCard: { marginBottom: SIZES.md },
+  modalInfoRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: SIZES.sm },
+  modalInfoText: { marginLeft: SIZES.md },
+  modalInfoLabel: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: COLORS.textLight },
+  modalInfoValue: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium, color: COLORS.textPrimary },
+  modalDescription: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textSecondary, lineHeight: 22 },
+  modalFooter: { flexDirection: 'row', padding: SIZES.md, gap: SIZES.md, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: COLORS.white },
+  declineBtn: { flex: 1 },
+  acceptBtn: { flex: 1 },
+});
