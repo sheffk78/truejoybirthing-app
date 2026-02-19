@@ -13,11 +13,11 @@ import {
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Icon } from '../../Icon';
-import Card from '../../Card';
-import { apiRequest } from '../../../utils/api';
-import { API_ENDPOINTS } from '../../../constants/api';
-import { COLORS, SIZES } from '../../../constants/theme';
+import { Icon } from '../Icon';
+import Card from '../Card';
+import { apiRequest } from '../../utils/api';
+import { API_ENDPOINTS } from '../../constants/api';
+import { COLORS, SIZES } from '../../constants/theme';
 import { ProviderConfig } from '../config/providerConfig';
 import { Conversation, Message } from '../types/provider';
 
