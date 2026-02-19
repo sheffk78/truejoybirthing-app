@@ -523,6 +523,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   trialButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  restoreButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+  },
+  restoreButtonText: {
+    color: COLORS.primary,
+    fontWeight: '500',
+    fontSize: 14,
+    textDecorationLine: 'underline',
+  },
   subscribeButton: {
     flexDirection: 'row',
     alignItems: 'center',
