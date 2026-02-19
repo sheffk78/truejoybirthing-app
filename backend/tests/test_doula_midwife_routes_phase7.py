@@ -33,6 +33,18 @@ MOM_EMAIL = "demo.mom@truejoybirthing.com"
 MOM_PASSWORD = "DemoScreenshot2024!"
 
 
+def login_user(email: str, password: str) -> str:
+    """Helper function to login and get session token"""
+    response = requests.post(
+        f"{BASE_URL}/api/auth/login",
+        json={"email": email, "password": password}
+    )
+    assert response.status_code == 200, f"Login failed: {response.status_code} - {response.text}"
+    data = response.json()
+    # Auth returns session_token directly
+    return data.get("session_token")
+
+
 class TestSetup:
     """Verify test environment is properly configured"""
     
@@ -53,37 +65,41 @@ class TestAuthLogin:
     """Test authentication for all user types"""
     
     def test_doula_login_success(self):
-        """Verify doula can login"""
+        """Verify doula can login and get session_token"""
         response = requests.post(
             f"{BASE_URL}/api/auth/login",
             json={"email": DOULA_EMAIL, "password": DOULA_PASSWORD}
         )
         assert response.status_code == 200, f"Doula login failed: {response.status_code}"
         data = response.json()
-        assert "user" in data or "token" in data, "Login response missing user/token"
-        print(f"Doula login successful - user: {data.get('user', {}).get('email', 'N/A')}")
+        assert "session_token" in data, "Login response missing session_token"
+        assert "email" in data, "Login response missing email"
+        assert data["email"] == DOULA_EMAIL
+        print(f"Doula login successful - email: {data.get('email')}, role: {data.get('role')}")
     
     def test_midwife_login_success(self):
-        """Verify midwife can login"""
+        """Verify midwife can login and get session_token"""
         response = requests.post(
             f"{BASE_URL}/api/auth/login",
             json={"email": MIDWIFE_EMAIL, "password": MIDWIFE_PASSWORD}
         )
         assert response.status_code == 200, f"Midwife login failed: {response.status_code}"
         data = response.json()
-        assert "user" in data or "token" in data, "Login response missing user/token"
-        print(f"Midwife login successful - user: {data.get('user', {}).get('email', 'N/A')}")
+        assert "session_token" in data, "Login response missing session_token"
+        assert data["email"] == MIDWIFE_EMAIL
+        print(f"Midwife login successful - email: {data.get('email')}, role: {data.get('role')}")
     
     def test_mom_login_success(self):
-        """Verify mom can login"""
+        """Verify mom can login and get session_token"""
         response = requests.post(
             f"{BASE_URL}/api/auth/login",
             json={"email": MOM_EMAIL, "password": MOM_PASSWORD}
         )
         assert response.status_code == 200, f"Mom login failed: {response.status_code}"
         data = response.json()
-        assert "user" in data or "token" in data, "Login response missing user/token"
-        print(f"Mom login successful - user: {data.get('user', {}).get('email', 'N/A')}")
+        assert "session_token" in data, "Login response missing session_token"
+        assert data["email"] == MOM_EMAIL
+        print(f"Mom login successful - email: {data.get('email')}, role: {data.get('role')}")
 
 
 # ============== DOULA ROUTES TESTS ==============
@@ -94,12 +110,12 @@ class TestDoulaProfile:
     @pytest.fixture
     def doula_token(self):
         """Get doula auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": DOULA_EMAIL, "password": DOULA_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(DOULA_EMAIL, DOULA_PASSWORD)
+    
+    @pytest.fixture
+    def mom_token(self):
+        """Get mom auth token"""
+        return login_user(MOM_EMAIL, MOM_PASSWORD)
     
     def test_get_doula_profile_success(self, doula_token):
         """Doula can retrieve their profile"""
@@ -116,16 +132,9 @@ class TestDoulaProfile:
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("Doula profile correctly requires auth")
     
-    def test_get_doula_profile_requires_doula_role(self):
+    def test_get_doula_profile_requires_doula_role(self, mom_token):
         """Doula profile requires DOULA role (not MOM)"""
-        # Login as mom
-        login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MOM_EMAIL, "password": MOM_PASSWORD}
-        )
-        mom_token = login_response.json().get("token")
         headers = {"Authorization": f"Bearer {mom_token}"}
-        
         response = requests.get(f"{BASE_URL}/api/doula/profile", headers=headers)
         assert response.status_code == 403, f"Expected 403 for MOM accessing doula profile, got {response.status_code}"
         print("Doula profile correctly requires DOULA role")
@@ -137,12 +146,7 @@ class TestDoulaProfileUpdate:
     @pytest.fixture
     def doula_token(self):
         """Get doula auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": DOULA_EMAIL, "password": DOULA_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(DOULA_EMAIL, DOULA_PASSWORD)
     
     def test_update_doula_profile_success(self, doula_token):
         """Doula can update their profile"""
@@ -177,12 +181,12 @@ class TestDoulaOnboarding:
     @pytest.fixture
     def doula_token(self):
         """Get doula auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": DOULA_EMAIL, "password": DOULA_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(DOULA_EMAIL, DOULA_PASSWORD)
+    
+    @pytest.fixture
+    def mom_token(self):
+        """Get mom auth token"""
+        return login_user(MOM_EMAIL, MOM_PASSWORD)
     
     def test_doula_onboarding_success(self, doula_token):
         """Doula can complete onboarding"""
@@ -217,16 +221,9 @@ class TestDoulaOnboarding:
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("Doula onboarding correctly requires auth")
     
-    def test_doula_onboarding_requires_doula_role(self):
+    def test_doula_onboarding_requires_doula_role(self, mom_token):
         """Doula onboarding requires DOULA role"""
-        # Login as mom
-        login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MOM_EMAIL, "password": MOM_PASSWORD}
-        )
-        mom_token = login_response.json().get("token")
         headers = {"Authorization": f"Bearer {mom_token}"}
-        
         response = requests.post(
             f"{BASE_URL}/api/doula/onboarding",
             headers=headers,
@@ -242,12 +239,12 @@ class TestDoulaDashboard:
     @pytest.fixture
     def doula_token(self):
         """Get doula auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": DOULA_EMAIL, "password": DOULA_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(DOULA_EMAIL, DOULA_PASSWORD)
+    
+    @pytest.fixture
+    def mom_token(self):
+        """Get mom auth token"""
+        return login_user(MOM_EMAIL, MOM_PASSWORD)
     
     def test_get_doula_dashboard_success(self, doula_token):
         """Doula can retrieve dashboard stats"""
@@ -267,16 +264,9 @@ class TestDoulaDashboard:
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("Doula dashboard correctly requires auth")
     
-    def test_get_doula_dashboard_requires_doula_role(self):
+    def test_get_doula_dashboard_requires_doula_role(self, mom_token):
         """Doula dashboard requires DOULA role"""
-        # Login as mom
-        login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MOM_EMAIL, "password": MOM_PASSWORD}
-        )
-        mom_token = login_response.json().get("token")
         headers = {"Authorization": f"Bearer {mom_token}"}
-        
         response = requests.get(f"{BASE_URL}/api/doula/dashboard", headers=headers)
         assert response.status_code == 403, f"Expected 403 for MOM, got {response.status_code}"
         print("Doula dashboard correctly requires DOULA role")
@@ -288,12 +278,7 @@ class TestDoulaContractDefaults:
     @pytest.fixture
     def doula_token(self):
         """Get doula auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": DOULA_EMAIL, "password": DOULA_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(DOULA_EMAIL, DOULA_PASSWORD)
     
     def test_get_contract_defaults_success(self, doula_token):
         """Doula can retrieve contract defaults"""
@@ -339,12 +324,12 @@ class TestMidwifeProfile:
     @pytest.fixture
     def midwife_token(self):
         """Get midwife auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MIDWIFE_EMAIL, "password": MIDWIFE_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(MIDWIFE_EMAIL, MIDWIFE_PASSWORD)
+    
+    @pytest.fixture
+    def mom_token(self):
+        """Get mom auth token"""
+        return login_user(MOM_EMAIL, MOM_PASSWORD)
     
     def test_get_midwife_profile_success(self, midwife_token):
         """Midwife can retrieve their profile"""
@@ -361,16 +346,9 @@ class TestMidwifeProfile:
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("Midwife profile correctly requires auth")
     
-    def test_get_midwife_profile_requires_midwife_role(self):
+    def test_get_midwife_profile_requires_midwife_role(self, mom_token):
         """Midwife profile requires MIDWIFE role (not MOM)"""
-        # Login as mom
-        login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MOM_EMAIL, "password": MOM_PASSWORD}
-        )
-        mom_token = login_response.json().get("token")
         headers = {"Authorization": f"Bearer {mom_token}"}
-        
         response = requests.get(f"{BASE_URL}/api/midwife/profile", headers=headers)
         assert response.status_code == 403, f"Expected 403 for MOM, got {response.status_code}"
         print("Midwife profile correctly requires MIDWIFE role")
@@ -382,12 +360,7 @@ class TestMidwifeProfileUpdate:
     @pytest.fixture
     def midwife_token(self):
         """Get midwife auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MIDWIFE_EMAIL, "password": MIDWIFE_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(MIDWIFE_EMAIL, MIDWIFE_PASSWORD)
     
     def test_update_midwife_profile_success(self, midwife_token):
         """Midwife can update their profile"""
@@ -423,12 +396,12 @@ class TestMidwifeOnboarding:
     @pytest.fixture
     def midwife_token(self):
         """Get midwife auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MIDWIFE_EMAIL, "password": MIDWIFE_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(MIDWIFE_EMAIL, MIDWIFE_PASSWORD)
+    
+    @pytest.fixture
+    def mom_token(self):
+        """Get mom auth token"""
+        return login_user(MOM_EMAIL, MOM_PASSWORD)
     
     def test_midwife_onboarding_success(self, midwife_token):
         """Midwife can complete onboarding"""
@@ -467,16 +440,9 @@ class TestMidwifeOnboarding:
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("Midwife onboarding correctly requires auth")
     
-    def test_midwife_onboarding_requires_midwife_role(self):
+    def test_midwife_onboarding_requires_midwife_role(self, mom_token):
         """Midwife onboarding requires MIDWIFE role"""
-        # Login as mom
-        login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MOM_EMAIL, "password": MOM_PASSWORD}
-        )
-        mom_token = login_response.json().get("token")
         headers = {"Authorization": f"Bearer {mom_token}"}
-        
         response = requests.post(
             f"{BASE_URL}/api/midwife/onboarding",
             headers=headers,
@@ -492,12 +458,12 @@ class TestMidwifeDashboard:
     @pytest.fixture
     def midwife_token(self):
         """Get midwife auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MIDWIFE_EMAIL, "password": MIDWIFE_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(MIDWIFE_EMAIL, MIDWIFE_PASSWORD)
+    
+    @pytest.fixture
+    def mom_token(self):
+        """Get mom auth token"""
+        return login_user(MOM_EMAIL, MOM_PASSWORD)
     
     def test_get_midwife_dashboard_success(self, midwife_token):
         """Midwife can retrieve dashboard stats"""
@@ -517,16 +483,9 @@ class TestMidwifeDashboard:
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("Midwife dashboard correctly requires auth")
     
-    def test_get_midwife_dashboard_requires_midwife_role(self):
+    def test_get_midwife_dashboard_requires_midwife_role(self, mom_token):
         """Midwife dashboard requires MIDWIFE role"""
-        # Login as mom
-        login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MOM_EMAIL, "password": MOM_PASSWORD}
-        )
-        mom_token = login_response.json().get("token")
         headers = {"Authorization": f"Bearer {mom_token}"}
-        
         response = requests.get(f"{BASE_URL}/api/midwife/dashboard", headers=headers)
         assert response.status_code == 403, f"Expected 403 for MOM, got {response.status_code}"
         print("Midwife dashboard correctly requires MIDWIFE role")
@@ -544,22 +503,19 @@ class TestAuthRoutesRegression:
             json={"email": DOULA_EMAIL, "password": DOULA_PASSWORD}
         )
         assert response.status_code == 200, f"Login failed: {response.status_code}"
+        data = response.json()
+        assert "session_token" in data, "Login missing session_token"
         print("Auth login endpoint works")
     
     def test_me_endpoint_works(self):
         """GET /api/auth/me still works"""
-        # Login first
-        login_response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": DOULA_EMAIL, "password": DOULA_PASSWORD}
-        )
-        token = login_response.json().get("token")
+        token = login_user(DOULA_EMAIL, DOULA_PASSWORD)
         headers = {"Authorization": f"Bearer {token}"}
         
         response = requests.get(f"{BASE_URL}/api/auth/me", headers=headers)
         assert response.status_code == 200, f"Me endpoint failed: {response.status_code}"
         data = response.json()
-        assert "email" in data or "user" in data, "Me endpoint response invalid"
+        assert "email" in data, "Me endpoint response missing email"
         print("Auth me endpoint works")
 
 
@@ -569,12 +525,7 @@ class TestMomRoutesRegression:
     @pytest.fixture
     def mom_token(self):
         """Get mom auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MOM_EMAIL, "password": MOM_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(MOM_EMAIL, MOM_PASSWORD)
     
     def test_mom_profile_endpoint(self, mom_token):
         """GET /api/mom/profile still works"""
@@ -597,12 +548,7 @@ class TestProviderRoutesRegression:
     @pytest.fixture
     def doula_token(self):
         """Get doula auth token"""
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": DOULA_EMAIL, "password": DOULA_PASSWORD}
-        )
-        assert response.status_code == 200
-        return response.json().get("token")
+        return login_user(DOULA_EMAIL, DOULA_PASSWORD)
     
     def test_provider_clients_endpoint(self, doula_token):
         """GET /api/provider/clients still works"""
