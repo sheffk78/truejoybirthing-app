@@ -135,7 +135,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
           <TouchableOpacity 
             style={[styles.avatarContainer, { backgroundColor: primaryColor + '20' }]}
             onPress={() => router.push(config.routes.profile as any)}
-            data-testid="profile-avatar-btn"
+            testID="profile-avatar-btn"
           >
             {profile?.picture || user?.picture ? (
               <Image 
