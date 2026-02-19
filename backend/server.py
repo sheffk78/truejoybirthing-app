@@ -1334,6 +1334,20 @@ async def create_notification(user_id: str, notif_type: str, title: str, message
     await db.notifications.insert_one(notif_doc)
     return notif_doc
 
+# ============== INITIALIZE MODULAR ROUTE DEPENDENCIES ==============
+# This initializes shared state for modular routers
+route_deps.init_dependencies(
+    database=db,
+    password_context=pwd_context,
+    secret_key=SECRET_KEY,
+    algorithm=ALGORITHM,
+    expire_days=ACCESS_TOKEN_EXPIRE_DAYS,
+    notification_func=create_notification,
+    email_func=None,  # Will be set when email routes are modularized
+    websocket_manager=ws_manager,
+    sender_email=SENDER_EMAIL
+)
+
 # ============== AUTH HELPERS ==============
 
 def generate_user_id():
