@@ -91,15 +91,19 @@ export const DOULA_CONFIG: ProviderConfig = {
   dashboard: {
     title: 'Doula Dashboard',
     statsCards: [
-      { key: 'prenatal_clients', label: 'Prenatal Clients', icon: 'people-outline' },
-      { key: 'upcoming_appointments', label: 'Upcoming Appts', icon: 'calendar-outline' },
+      { key: 'active_clients', label: 'Active Clients', colorKey: 'primary' },
+      { key: 'upcoming_appointments', label: 'Upcoming Appts', colorKey: 'accent' },
+      { key: 'contracts_pending_signature', label: 'Pending Contracts', colorKey: 'warning' },
+      { key: 'pending_invoices', label: 'Pending Invoices', colorKey: 'success' },
     ],
     quickActions: [
-      { label: 'See Clients', icon: 'people-outline', route: '/(doula)/clients' },
-      { label: 'Contracts', icon: 'document-text-outline', route: '/(doula)/contracts' },
-      { label: 'Invoices', icon: 'cash-outline', route: '/(doula)/invoices' },
-      { label: 'Appointments', icon: 'calendar-outline', route: '/(doula)/appointments' },
+      { label: 'See Clients', icon: 'people', route: '/(doula)/clients', colorKey: 'primary' },
+      { label: 'New Contract', icon: 'document-text', route: '/(doula)/contracts', colorKey: 'accent' },
+      { label: 'New Invoice', icon: 'cash-outline', route: '/(doula)/invoices', colorKey: 'success' },
+      { label: 'Appointments', icon: 'calendar-outline', route: '/(doula)/appointments', colorKey: 'warning' },
     ],
+    tipTitle: 'Doula Tip',
+    tipText: 'Keep your client records updated regularly. This helps you provide better care and maintain professional documentation.',
   },
   
   clientStatuses: ['Active', 'Prenatal', 'Contract Sent', 'Contract Signed', 'In Labor', 'Postpartum', 'Completed'],
