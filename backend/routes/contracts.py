@@ -599,6 +599,25 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
             except Exception as e:
                 print(f"Failed to send contract email: {e}")
     
+    # Create in-app notification for the mom
+    if client and client.get("linked_mom_id") and _create_notification:
+        try:
+            await _create_notification(
+                user_id=client["linked_mom_id"],
+                notif_type="contract_sent",
+                title="New Contract to Sign",
+                message=f"{user.full_name} has sent you a Doula Service Agreement to review and sign.",
+                data={
+                    "contract_id": contract_id,
+                    "provider_id": user.user_id,
+                    "provider_name": user.full_name,
+                    "provider_role": "DOULA",
+                    "action_url": f"/contract/{contract_id}"
+                }
+            )
+        except Exception as e:
+            print(f"Failed to create contract notification: {e}")
+    
     return {
         "message": "Contract sent",
         "email_sent": email_sent,
