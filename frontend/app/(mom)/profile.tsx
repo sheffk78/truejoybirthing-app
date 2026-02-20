@@ -537,6 +537,40 @@ export default function MomProfileScreen() {
           </Card>
         </TouchableOpacity>
         
+        {/* Legal Links - App Store Compliance */}
+        <View style={styles.legalSection}>
+          <View style={styles.legalLinks}>
+            <TouchableOpacity 
+              onPress={() => Linking.openURL('https://truejoybirthing.com/privacy-policy/')}
+              style={styles.legalLink}
+            >
+              <Text style={styles.legalLinkText}>Privacy Policy</Text>
+            </TouchableOpacity>
+            <Text style={styles.legalSeparator}>•</Text>
+            <TouchableOpacity 
+              onPress={() => Linking.openURL('https://truejoybirthing.com/disclaimer/')}
+              style={styles.legalLink}
+            >
+              <Text style={styles.legalLinkText}>Disclaimer</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.legalLinks}>
+            <TouchableOpacity 
+              onPress={() => Linking.openURL('https://truejoybirthing.com/terms-of-service/')}
+              style={styles.legalLink}
+            >
+              <Text style={styles.legalLinkText}>Terms of Service</Text>
+            </TouchableOpacity>
+            <Text style={styles.legalSeparator}>•</Text>
+            <TouchableOpacity 
+              onPress={() => Linking.openURL('https://truejoybirthing.com/contact/')}
+              style={styles.legalLink}
+            >
+              <Text style={styles.legalLinkText}>Contact</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
         {/* Bottom spacing for tab bar */}
         <View style={{ height: 100 }} />
       </ScrollView>
