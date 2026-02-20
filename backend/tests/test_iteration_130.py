@@ -71,7 +71,7 @@ def mom_token():
         "email": MOM_EMAIL,
         "password": MOM_PASSWORD
     })
-    return response.json().get("token")
+    return response.json().get("session_token")
 
 
 @pytest.fixture
@@ -81,7 +81,7 @@ def doula_token():
         "email": DOULA_EMAIL,
         "password": DOULA_PASSWORD
     })
-    return response.json().get("token")
+    return response.json().get("session_token")
 
 
 @pytest.fixture
@@ -91,7 +91,7 @@ def midwife_token():
         "email": MIDWIFE_EMAIL,
         "password": MIDWIFE_PASSWORD
     })
-    return response.json().get("token")
+    return response.json().get("session_token")
 
 
 class TestMomContractsEndpoint:
