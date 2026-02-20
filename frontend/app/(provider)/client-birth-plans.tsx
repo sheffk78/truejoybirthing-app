@@ -78,6 +78,7 @@ export default function ClientBirthPlansScreen() {
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [newNote, setNewNote] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   
   // Back navigation handler
   const handleBack = () => {
