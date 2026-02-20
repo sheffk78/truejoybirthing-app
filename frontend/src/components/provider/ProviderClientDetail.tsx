@@ -392,6 +392,44 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
     );
   };
 
+  // ============== BIRTH RECORD HANDLERS ==============
+  const handleSaveBirthRecord = async () => {
+    if (!birthDate) {
+      Alert.alert('Error', 'Please enter the birth date');
+      return;
+    }
+    
+    setSaving(true);
+    try {
+      const birthData = {
+        birth_date: birthDate,
+        birth_time: birthTime || undefined,
+        birth_setting: birthSetting || undefined,
+        delivery_type: deliveryType || undefined,
+        baby_weight: babyWeight || undefined,
+        baby_length: babyLength || undefined,
+        apgar_1min: apgar1min ? parseInt(apgar1min) : undefined,
+        apgar_5min: apgar5min ? parseInt(apgar5min) : undefined,
+        baby_gender: babyGender || undefined,
+        complications: birthComplications || undefined,
+        notes: birthNotes || undefined,
+      };
+      
+      await apiRequest(`/provider/clients/${clientId}/birth-record`, {
+        method: 'POST',
+        body: birthData,
+      });
+      
+      Alert.alert('Success', 'Birth record saved');
+      setShowBirthModal(false);
+      fetchData();
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to save birth record');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // ============== RENDER HELPERS ==============
   const renderScoreSelector = (
     label: string,
