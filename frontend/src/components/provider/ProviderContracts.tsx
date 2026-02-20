@@ -1012,6 +1012,11 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyMedium,
     color: COLORS.white,
   },
+  actionButtonTextSmall: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyMedium,
+    marginLeft: SIZES.xs,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
