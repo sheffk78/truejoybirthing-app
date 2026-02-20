@@ -221,6 +221,19 @@ async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
         "read": False
     })
     
+    # Lead Insights
+    all_leads = await db.leads.find(
+        {"provider_id": user.user_id},
+        {"_id": 0, "status": 1}
+    ).to_list(500)
+    
+    total_leads = len(all_leads)
+    active_leads = len([l for l in all_leads if l.get("status") in ["consultation_requested", "consultation_scheduled", "consultation_completed"]])
+    converted_leads = len([l for l in all_leads if l.get("status") == "converted_to_client"])
+    
+    # Calculate conversion rate (leads that became clients)
+    conversion_rate = round((converted_leads / total_leads * 100), 1) if total_leads > 0 else 0
+    
     return {
         "prenatal_clients": prenatal_clients,
         "active_clients": active_clients,
@@ -230,7 +243,13 @@ async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
         "visits_this_month": visits_this_month,
         "births_this_month": births_this_month,
         "upcoming_appointments": upcoming_appointments,
-        "unread_messages": unread_messages
+        "unread_messages": unread_messages,
+        "lead_insights": {
+            "total_leads": total_leads,
+            "active_leads": active_leads,
+            "converted_leads": converted_leads,
+            "conversion_rate": conversion_rate
+        }
     }
 
 
