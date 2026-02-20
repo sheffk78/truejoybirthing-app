@@ -795,13 +795,15 @@ const styles = StyleSheet.create({
   
   // Cards
   appointmentCard: { marginBottom: SIZES.sm },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.sm },
-  providerInfo: { flexDirection: 'row', alignItems: 'center' },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.sm },
+  providerInfo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   providerAvatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.sm },
   providerName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: COLORS.textPrimary },
   providerRole: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary },
+  cardHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: SIZES.sm },
   statusBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusSm },
   statusText: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyBold },
+  deleteButton: { padding: 4 },
   appointmentDetails: { marginTop: SIZES.sm },
   detailRow: { flexDirection: 'row', alignItems: 'center', marginBottom: SIZES.xs },
   detailText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary, marginLeft: SIZES.sm },
