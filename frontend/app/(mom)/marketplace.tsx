@@ -1146,6 +1146,9 @@ const styles = StyleSheet.create({
   addButton: {
     backgroundColor: COLORS.success,
   },
+  consultButton: {
+    backgroundColor: COLORS.accent,
+  },
   disabledButton: {
     backgroundColor: COLORS.textLight,
     opacity: 0.7,
