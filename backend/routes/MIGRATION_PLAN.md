@@ -187,18 +187,33 @@ This document outlines the phased migration plan for breaking down the monolithi
 - Role-based access control verified
 - No ObjectId serialization errors
 
-### Phase 11: Midwife Visits (NEXT)
-- [ ] Create `routes/visits.py` or add to midwife.py
-- [ ] Visit scheduling and management
-- [ ] Visit types (prenatal, postnatal)
-- [ ] Include router in server.py
-- [ ] Test all routes
+### Phase 11: Midwife Visits (COMPLETED)
+- [x] Create `routes/visits.py` with feature parity
+- [x] Basic midwife visits (GET/POST/PUT)
+- [x] Prenatal visit assessments with vitals and well-being scores (CRUD)
+- [x] Birth summaries with duplicate prevention
+- [x] Provider unified visits with auto-appointment creation
+- [x] Include router in server.py
+- [x] Remove duplicated visit routes from server.py
+- [x] Test all routes (47/47 tests passed)
 
-### Phase 12: Birth Plan, Wellness, Postpartum, Timeline
+**Completed**: All visit routes now served from modular router.
+- `routes/visits.py` - 17 endpoints migrated
+  - Basic midwife visits: GET/POST/PUT
+  - Prenatal assessments: GET/POST/GET single/PUT/DELETE
+  - Birth summaries: GET/POST/PUT
+  - Provider unified visits: GET/POST/PUT/DELETE
+  - Visit summary auto-generation from vitals
+- Server.py reduced from 4,646 → 4,158 lines (~488 lines migrated)
+- Role-based access control verified (MIDWIFE only)
+- No ObjectId serialization errors
+
+### Phase 12: Birth Plan, Wellness, Postpartum, Timeline (NEXT)
 - [ ] Birth plan routes
 - [ ] Wellness check routes
 - [ ] Postpartum plan routes
 - [ ] Timeline routes
+- [ ] Include routers in server.py
 - [ ] Test all routes
 
 ### Phase 13: Final Cleanup
