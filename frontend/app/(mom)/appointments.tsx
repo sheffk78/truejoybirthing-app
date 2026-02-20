@@ -776,6 +776,13 @@ const styles = StyleSheet.create({
   dateTimeButton: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: COLORS.white, borderRadius: SIZES.radiusMd, gap: SIZES.sm },
   dateTimeText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary },
   
+  // Date Modal (web)
+  dateModalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center', padding: SIZES.lg },
+  dateModalContent: { backgroundColor: COLORS.white, borderRadius: SIZES.radiusLg, padding: SIZES.lg, width: '100%', maxWidth: 400 },
+  dateModalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.lg },
+  dateModalTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: COLORS.textPrimary },
+  webCalendarWrapper: { marginVertical: SIZES.md },
+  
   // Type Options
   typeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.sm },
   typeOption: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, backgroundColor: COLORS.white, borderRadius: SIZES.radiusMd, borderWidth: 1, borderColor: COLORS.border },
