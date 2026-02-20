@@ -549,8 +549,11 @@ export default function MarketplaceScreen() {
                   {(() => {
                     const videoId = getYouTubeVideoId(selectedProvider.profile.video_intro_url);
                     return videoId ? (
-                      <TouchableOpacity 
-                        style={styles.videoThumbnailContainer}
+                      <Pressable 
+                        style={({ pressed }) => [
+                          styles.videoThumbnailContainer,
+                          pressed && { opacity: 0.8 }
+                        ]}
                         onPress={() => {
                           // Open embedded video player modal
                           setCurrentVideoId(videoId);
@@ -570,7 +573,7 @@ export default function MarketplaceScreen() {
                           <Icon name="videocam" size={14} color={COLORS.white} />
                           <Text style={styles.videoLabelText}>Watch Video</Text>
                         </View>
-                      </TouchableOpacity>
+                      </Pressable>
                     ) : null;
                   })()}
                 </View>
