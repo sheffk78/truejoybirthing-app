@@ -187,7 +187,7 @@ export default function ClientBirthPlansScreen() {
     try {
       if (editingNoteId) {
         // Update existing note
-        await apiRequest(`${API_ENDPOINTS.PROVIDER_BIRTH_PLAN_NOTES}/${selectedPlan.mom_user_id}/notes/${editingNoteId}`, {
+        await apiRequest(`/provider/birth-plan-notes/${editingNoteId}`, {
           method: 'PUT',
           body: {
             note_content: newNote.trim(),
