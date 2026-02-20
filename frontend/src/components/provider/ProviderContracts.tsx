@@ -434,20 +434,10 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
           </>
         )}
         {contract.status === 'Sent' && (
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: COLORS.success }]}
-            onPress={() => {
-              // Navigate to e-sign page based on role
-              const signUrl = config.roleLabel === 'Midwife' 
-                ? `/sign-midwife-contract?contractId=${contract.contract_id}`
-                : `/sign-contract?contractId=${contract.contract_id}`;
-              router.push(signUrl as any);
-            }}
-            data-testid={`esign-contract-${contract.contract_id}`}
-          >
-            <Ionicons name="create-outline" size={16} color="#fff" />
-            <Text style={styles.actionButtonText}>E-Sign</Text>
-          </TouchableOpacity>
+          <View style={[styles.actionButton, { backgroundColor: COLORS.warning + '20', paddingHorizontal: 12 }]}>
+            <Ionicons name="time-outline" size={16} color={COLORS.warning} />
+            <Text style={[styles.actionButtonTextSmall, { color: COLORS.warning, marginLeft: 4 }]}>Awaiting Mom's Signature</Text>
+          </View>
         )}
         {contract.status === 'Signed' && (
           <TouchableOpacity
