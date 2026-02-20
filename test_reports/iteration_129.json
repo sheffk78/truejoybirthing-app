@@ -1,0 +1,56 @@
+{
+  "summary": "Tested 4 bug fixes for Doula/Midwife provider features. Backend APIs: 11/11 tests passed. Code review confirms all 4 fixes are properly implemented.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_bug_fixes_129.py",
+    "/app/test_reports/pytest/pytest_bug_fixes_129.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Birth Plan Breadcrumb Fix: Correctly checks returnTo param to determine Doula vs Midwife navigation (line 266-270)",
+    "Birth Plan Note Editing: Edit button added with data-testid='edit-note-btn-{id}', calls openNoteModal with existing note (line 492-499)",
+    "Contract PDF Download: handleViewPDF properly opens PDF URL with window.open for web, Linking for native (line 293-314)",
+    "Contract E-Sign Removal: Sent contracts now show 'Awaiting Mom's Signature' instead of E-Sign button (line 452-456)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_bug_fixes_129.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "Code review confirms fixes are properly implemented"
+  },
+  "test_credentials": {
+    "doula_account": "demo.doula@truejoybirthing.com / DemoScreenshot2024!",
+    "midwife_account": "demo.midwife@truejoybirthing.com / DemoScreenshot2024!"
+  },
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Bug fixes for provider (Doula/Midwife) features tested. Contract statuses: contract_6cc57257d974 (Signed), contract_9067983f2507 (Draft), contract_96735522ebb6 (Sent). Birth plan notes can be created via POST /api/provider/birth-plan/{mom_id}/notes and edited via PUT /api/provider/birth-plan-notes/{note_id}. PDF download returns proper application/pdf content.",
+  "features_tested": {
+    "birth_plan_breadcrumb_fix": "VERIFIED - Code correctly uses returnTo param to navigate to /(midwife)/clients or /(doula)/clients",
+    "birth_plan_note_editing": "PASS - Backend API PUT /api/provider/birth-plan-notes/{id} returns 200, Edit button added in UI code",
+    "contract_pdf_download": "PASS - GET /api/contracts/{id}/pdf returns 200 with application/pdf content (9182 bytes verified)",
+    "contract_esign_removal": "VERIFIED - Code shows 'Awaiting Mom's Signature' for Sent contracts, no E-Sign button",
+    "contract_status_flow": "PASS - Draft shows Send/Delete, Sent shows status indicator, Signed shows PDF button"
+  },
+  "api_endpoints_tested": [
+    "POST /api/auth/login - 200",
+    "GET /api/doula/contracts - 200 (lists 3 contracts: Signed, Draft, Sent)",
+    "GET /api/midwife/contracts - 200",
+    "GET /api/contracts/{id}/pdf - 200 (returns PDF)",
+    "GET /api/midwife-contracts/{id}/pdf - 200",
+    "GET /api/provider/shared-birth-plans - 200",
+    "GET /api/provider/shared-birth-plan/{mom_id} - 200",
+    "POST /api/provider/birth-plan/{mom_id}/notes - 200",
+    "PUT /api/provider/birth-plan-notes/{note_id} - 200"
+  ]
+}
