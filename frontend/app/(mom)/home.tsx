@@ -520,4 +520,34 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontStyle: 'italic',
   },
+  actionRequiredCard: {
+    marginBottom: SIZES.sm,
+    padding: SIZES.md,
+  },
+  actionRequiredHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionRequiredIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SIZES.md,
+  },
+  actionRequiredContent: {
+    flex: 1,
+  },
+  actionRequiredTitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textPrimary,
+    marginBottom: 2,
+  },
+  actionRequiredSubtitle: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
 });
