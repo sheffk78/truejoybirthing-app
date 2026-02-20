@@ -32,7 +32,7 @@ export interface PushNotificationState {
 }
 
 export function usePushNotifications() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuthStore();
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   const [notification, setNotification] = useState<Notifications.Notification | null>(null);
   const [permissionStatus, setPermissionStatus] = useState<Notifications.PermissionStatus | null>(null);
