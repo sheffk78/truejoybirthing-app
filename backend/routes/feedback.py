@@ -211,23 +211,7 @@ async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends
     </div>
     """
     
-    # Send email to Shelbi
-    try:
-        if resend.api_key:
-            resend.Emails.send({
-                "from": SENDER_EMAIL,
-                "to": "shelbi@truejoybirthing.com",
-                "subject": subject,
-                "html": email_body,
-                "reply_to": user.email
-            })
-        else:
-            logging.warning("Resend API key not configured - feedback email not sent")
-    except Exception as e:
-        logging.error(f"Failed to send feedback email: {e}")
-        raise HTTPException(status_code=500, detail="Failed to send feedback. Please try again.")
-    
-    # Store feedback in database for records
+    # Store feedback in database for records FIRST
     feedback_record = {
         "feedback_id": f"feedback_{uuid.uuid4().hex[:12]}",
         "user_id": user.user_id,
@@ -238,9 +222,33 @@ async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends
         "feedback_topic": topic,
         "platform": platform_info,
         "app_version": version_info,
-        "created_at": now
+        "created_at": now,
+        "email_sent": False
     }
     await db.pro_feedback.insert_one(feedback_record)
+    
+    # Send email to Shelbi (non-blocking)
+    email_sent = False
+    try:
+        if resend.api_key:
+            resend.Emails.send({
+                "from": SENDER_EMAIL,
+                "to": "shelbi@truejoybirthing.com",
+                "subject": subject,
+                "html": email_body,
+                "reply_to": user.email
+            })
+            email_sent = True
+            # Update record to mark email as sent
+            await db.pro_feedback.update_one(
+                {"feedback_id": feedback_record["feedback_id"]},
+                {"$set": {"email_sent": True}}
+            )
+        else:
+            logging.warning("Resend API key not configured - feedback email not sent")
+    except Exception as e:
+        logging.error(f"Failed to send feedback email: {e}")
+        # Don't raise exception - feedback is still stored
     
     return {"message": "Thank you. Your feedback was sent to the True Joy Birthing team."}
 
