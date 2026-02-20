@@ -282,9 +282,16 @@ export default function AppointmentsScreen() {
       <Card key={appointment.appointment_id} style={styles.appointmentCard} data-testid={`appointment-${appointment.appointment_id}`}>
         <View style={styles.cardHeader}>
           <View style={styles.providerInfo}>
-            <View style={[styles.providerAvatar, { backgroundColor: appointment.provider_role === 'DOULA' ? COLORS.roleDoula : COLORS.roleMidwife }]}>
-              <Icon name={appointment.provider_role === 'DOULA' ? 'heart' : 'medical'} size={20} color={COLORS.white} />
-            </View>
+            {appointment.provider_picture ? (
+              <Image 
+                source={{ uri: appointment.provider_picture }} 
+                style={styles.providerAvatarImage}
+              />
+            ) : (
+              <View style={[styles.providerAvatar, { backgroundColor: appointment.provider_role === 'DOULA' ? COLORS.roleDoula : COLORS.roleMidwife }]}>
+                <Icon name={appointment.provider_role === 'DOULA' ? 'heart' : 'medical'} size={20} color={COLORS.white} />
+              </View>
+            )}
             <View style={{ flex: 1 }}>
               <Text style={styles.providerName}>{appointment.provider_name}</Text>
               <Text style={styles.providerRole}>{appointment.provider_role}</Text>
