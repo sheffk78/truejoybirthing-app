@@ -563,6 +563,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         <KeyboardAvoidingView 
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
         >
           <SafeAreaView style={styles.modalContainer}>
             <View style={styles.modalHeader}>
@@ -577,23 +578,53 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
 
             <ScrollView 
               style={styles.modalContent}
-              contentContainerStyle={{ paddingBottom: 100 }}
+              contentContainerStyle={{ paddingBottom: 120 }}
               keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
             >
             <Text style={styles.fieldLabel}>Client *</Text>
-            <View style={styles.clientGrid}>
-              {activeClients.map((client) => (
+            {isClientScoped && params.clientId ? (
+              <View style={[styles.clientDropdown, { borderColor: primaryColor, backgroundColor: primaryColor + '10' }]}>
+                <Ionicons name="person" size={18} color={primaryColor} />
+                <Text style={[styles.clientDropdownText, { color: primaryColor, fontWeight: '600' }]}>
+                  {clientName || activeClients.find(c => c.client_id === params.clientId)?.name || 'Selected Client'}
+                </Text>
+                <Ionicons name="checkmark-circle" size={18} color={primaryColor} />
+              </View>
+            ) : (
+              <View style={styles.clientDropdownContainer}>
                 <TouchableOpacity
-                  key={client.client_id}
-                  style={[styles.clientOption, selectedClientId === client.client_id && { borderColor: primaryColor, backgroundColor: primaryColor + '10' }]}
-                  onPress={() => handleClientSelect(client.client_id)}
+                  style={[styles.clientDropdown, selectedClientId && { borderColor: primaryColor }]}
+                  onPress={() => {
+                    // Simple dropdown logic - show options
+                  }}
                 >
-                  <Text style={[styles.clientOptionText, selectedClientId === client.client_id && { color: primaryColor }]}>
-                    {client.name}
+                  <Ionicons name="person-outline" size={18} color={selectedClientId ? primaryColor : COLORS.textLight} />
+                  <Text style={[styles.clientDropdownText, selectedClientId ? { color: COLORS.textPrimary } : { color: COLORS.textLight }]}>
+                    {selectedClientId 
+                      ? activeClients.find(c => c.client_id === selectedClientId)?.name || 'Select Client'
+                      : 'Select a client'}
                   </Text>
+                  <Ionicons name="chevron-down" size={18} color={COLORS.textLight} />
                 </TouchableOpacity>
-              ))}
-            </View>
+                <View style={styles.clientOptions}>
+                  {activeClients.map((client) => (
+                    <TouchableOpacity
+                      key={client.client_id}
+                      style={[styles.clientOption, selectedClientId === client.client_id && { borderColor: primaryColor, backgroundColor: primaryColor + '10' }]}
+                      onPress={() => handleClientSelect(client.client_id)}
+                    >
+                      <Text style={[styles.clientOptionText, selectedClientId === client.client_id && { color: primaryColor, fontWeight: '600' }]}>
+                        {client.name}
+                      </Text>
+                      {selectedClientId === client.client_id && (
+                        <Ionicons name="checkmark" size={18} color={primaryColor} />
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            )}
             {activeClients.length === 0 && (
               <Text style={styles.noClientsText}>No active clients. Connect with clients in the Marketplace first.</Text>
             )}
