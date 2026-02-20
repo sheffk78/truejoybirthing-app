@@ -67,6 +67,19 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Mom Timeline & Appointments Improvements
+
+#### Timeline "Schedule with Provider" Button (COMPLETED - 2026-02-20)
+- [x] **Changed "Add Appointment"** → "Schedule with Provider"  
+- [x] **Calendar icon** replaces add-circle icon
+- [x] **Navigation** to `/(mom)/appointments` - same as My Team's Schedule button
+
+#### Appointment Deletion (COMPLETED - 2026-02-20)
+- [x] **Delete (X) button** on all upcoming appointments
+- [x] **Delete (X) button** on pending requests (awaiting response)
+- [x] **Confirmation dialog** - "Cancel Appointment" with confirmation
+- [x] **API integration** - Calls `DELETE /api/appointments/{id}`
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Client-Centric Navigation Fixes
 
 #### Client Detail Back Button (COMPLETED - 2026-02-20)
