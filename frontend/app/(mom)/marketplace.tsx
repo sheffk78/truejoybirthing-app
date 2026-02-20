@@ -567,8 +567,14 @@ export default function MarketplaceScreen() {
                           const url = `https://www.youtube.com/watch?v=${videoId}`;
                           if (Platform.OS === 'web') {
                             window.open(url, '_blank');
+                          } else {
+                            // For native platforms, use Linking
+                            import('react-native').then(({ Linking }) => {
+                              Linking.openURL(url);
+                            });
                           }
                         }}
+                        data-testid="video-play-btn"
                       >
                         <Image 
                           source={{ uri: getYouTubeThumbnail(videoId) }} 
