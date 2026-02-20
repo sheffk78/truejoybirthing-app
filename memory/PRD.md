@@ -67,6 +67,26 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Client-Centric Navigation Fixes
+
+#### Client Detail Back Button (COMPLETED - 2026-02-20)
+- [x] **Back arrow now goes to Clients list** - Uses `router.replace(config.routes.clients)` instead of `router.back()`
+- [x] **Consistent navigation** - Always returns to Clients section, not Home
+
+#### Birth Plan All Fields Display (COMPLETED - 2026-02-20)
+- [x] **Shows ALL fields** - Removed `.slice(0, 3)` limitation
+- [x] **No more "+ X more fields"** - Full birth plan data now visible
+- [x] **Better field labels** - Added `formatFieldLabel()` helper for proper title casing
+
+#### Birth Plan Back Navigation (COMPLETED - 2026-02-20)
+- [x] **returnTo parameter** - Birth Plan URL now includes returnTo pointing to Client Detail
+- [x] **handleBack function** - Uses returnTo param for proper back navigation
+- [x] **"Back to Client" button** - Correctly navigates to Client Detail page
+
+#### Client-Centric Navigation Pattern (COMPLETED - 2026-02-20)
+- [x] **All tools return to client** - Schedule, Invoice, Contract, Birth Plan all use returnTo param
+- [x] **Consistent flow** - Client Detail → Tool → Back to Client Detail → Back to Clients
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Unified Appointments Frontend Integration
 
 #### Mom's My Team Quick Actions (COMPLETED - 2026-02-20)
