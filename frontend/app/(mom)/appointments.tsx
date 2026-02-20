@@ -122,7 +122,7 @@ export default function AppointmentsScreen() {
   const handleRespond = async (appointmentId: string, response: 'accepted' | 'declined') => {
     setRespondingId(appointmentId);
     try {
-      await apiRequest(`/api/appointments/${appointmentId}/respond?response=${response}`, {
+      await apiRequest(`/appointments/${appointmentId}/respond?response=${response}`, {
         method: 'PUT',
       });
       
@@ -171,7 +171,7 @@ export default function AppointmentsScreen() {
       const dateStr = appointmentDate.toISOString().split('T')[0];
       const timeStr = `${appointmentTime.getHours().toString().padStart(2, '0')}:${appointmentTime.getMinutes().toString().padStart(2, '0')}`;
       
-      const result = await apiRequest('/api/appointments', {
+      const result = await apiRequest('/appointments', {
         method: 'POST',
         body: {
           provider_id: isPersonalAppointment ? 'none' : selectedProvider?.user_id,
