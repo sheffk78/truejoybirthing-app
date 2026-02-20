@@ -12,10 +12,15 @@
  */
 
 import React, { useState, useCallback, useRef } from 'react';
-import { View, StyleSheet, Platform, TouchableOpacity, Text, Modal, Dimensions } from 'react-native';
-import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
+import { View, StyleSheet, Platform, TouchableOpacity, Text, Modal, Dimensions, Linking } from 'react-native';
 import { Icon } from './Icon';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
+
+// Conditionally import YoutubePlayer only on native platforms
+let YoutubePlayer: any = null;
+if (Platform.OS !== 'web') {
+  YoutubePlayer = require('react-native-youtube-iframe').default;
+}
 
 interface YouTubePlayerProps {
   videoId: string;
