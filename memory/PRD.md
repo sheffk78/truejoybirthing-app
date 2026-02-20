@@ -1255,9 +1255,14 @@ Hidden but accessible via navigation:
 - `frontend/app/(mom)/marketplace.tsx` - Provider marketplace
 
 ## Future Enhancements (Backlog)
-- Push notifications (deferred per user request)
-- Stripe integration for subscription payment processing
-- Admin Panel enhancements
-- File attachments in messages
-- Provider scheduling/availability
-- Backend refactoring (split server.py into modular routers)
+- Stripe integration for subscription payment processing (P1)
+- Refactor `/pro/feedback` route from server.py to its own router (P2)
+- Admin Panel enhancements (P2)
+- File attachments in messages (P3)
+- Provider scheduling/availability calendar (P3)
+- Backend refactoring - remaining routes in server.py (P3)
+
+## Recently Completed (Moved from Backlog)
+- ✅ Push notifications (COMPLETED 2026-02-20)
+- ✅ Lead → Consultation → Client flow (COMPLETED 2026-02-20)
+
