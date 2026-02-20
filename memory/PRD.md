@@ -67,6 +67,26 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Lead → Consultation → Client Flow (P0)
+
+#### Lead Management System (COMPLETED - 2026-02-20)
+- [x] **Backend Leads API** - Full CRUD for leads at `/api/leads`
+  - POST `/api/leads/request-consultation` - Mom requests consultation with provider
+  - GET `/api/leads` - Provider gets their leads list
+  - GET `/api/leads/stats` - Provider gets lead statistics
+  - GET `/api/leads/my-consultation-requests` - Mom sees their consultation requests
+  - PUT `/api/leads/{id}/status` - Update lead status
+  - POST `/api/leads/{id}/convert-to-client` - Convert lead to full client
+- [x] **Lead statuses** - consultation_requested, consultation_scheduled, consultation_completed, converted_to_client, declined, not_a_fit
+- [x] **Provider Leads Tab** - New "Leads" tab in bottom navigation for Doula and Midwife
+- [x] **ProviderLeads Component** - Shared component displays leads with filters (Active, Converted, Closed)
+- [x] **Lead Cards** - Show mom name, EDD, birth setting, message, request date, status badge
+- [x] **Lead Actions** - Schedule (consultation), Message, Decline buttons
+- [x] **Marketplace Update** - "Add to Team" replaced with "Request Consultation" button
+- [x] **Consultation Request Status** - Shows "Requested" when pending, "Request Consultation" when available
+- [x] **Consultation Appointment Type** - Schedule button navigates to appointments with consultation type pre-selected
+- [x] **Testing** - 100% backend (15/15 tests passed), frontend UI verified
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - App Store Compliance - Legal Links
 
 #### Legal Links on All Profile Pages (COMPLETED - 2026-02-20)
