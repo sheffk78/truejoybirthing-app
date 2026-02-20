@@ -532,7 +532,9 @@ export default function ClientBirthPlansScreen() {
       >
         <View style={styles.noteModalOverlay}>
           <View style={styles.noteModalContent}>
-            <Text style={styles.noteModalTitle}>Add Note</Text>
+            <Text style={styles.noteModalTitle}>
+              {editingNoteId ? 'Edit Note' : 'Add Note'}
+            </Text>
             <Text style={styles.noteModalSection}>
               Section: {selectedSection ? (SECTION_TITLES[selectedSection] || selectedSection) : ''}
             </Text>
@@ -556,6 +558,7 @@ export default function ClientBirthPlansScreen() {
                   setNoteModalVisible(false);
                   setNewNote('');
                   setSelectedSection(null);
+                  setEditingNoteId(null);
                 }}
               >
                 <Text style={styles.cancelNoteBtnText}>Cancel</Text>
