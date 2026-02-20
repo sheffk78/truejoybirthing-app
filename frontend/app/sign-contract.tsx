@@ -283,6 +283,23 @@ export default function SignContractScreen() {
             <Text style={styles.signedNote}>
               A copy of the signed agreement has been sent to your email.
             </Text>
+            
+            {/* Download PDF Button */}
+            <TouchableOpacity 
+              style={styles.downloadButton}
+              onPress={() => {
+                const pdfUrl = `${API_BASE_URL}/api/contracts/${contractId}/pdf`;
+                if (Platform.OS === 'web') {
+                  window.open(pdfUrl, '_blank');
+                } else {
+                  Linking.openURL(pdfUrl);
+                }
+              }}
+              data-testid="download-pdf-btn"
+            >
+              <Icon name="download-outline" size={20} color={COLORS.white} />
+              <Text style={styles.downloadButtonText}>Download Signed PDF</Text>
+            </TouchableOpacity>
           </Card>
         ) : (
           <Card style={styles.signatureCard}>
