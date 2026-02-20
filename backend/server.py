@@ -17,14 +17,6 @@ import httpx
 import resend
 import json
 
-# Import weekly content
-from weekly_content import (
-    WEEKLY_TIPS, POSTPARTUM_TIPS,
-    WEEKLY_AFFIRMATIONS, POSTPARTUM_AFFIRMATIONS,
-    GENERIC_POSTPARTUM_AFFIRMATION,
-    get_weekly_tip, get_weekly_affirmation
-)
-
 # Import doula contract template
 from doula_contract_template import (
     get_contract_template,
