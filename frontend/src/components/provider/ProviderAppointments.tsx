@@ -422,11 +422,23 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
         visible={showCreateModal}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => setShowCreateModal(false)}
+        onRequestClose={() => {
+          setShowCreateModal(false);
+          // If we came from client detail and are closing without creating, go back
+          if (preSelectedClientId && returnTo) {
+            handleBack();
+          }
+        }}
       >
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={() => setShowCreateModal(false)}>
+            <TouchableOpacity onPress={() => {
+              setShowCreateModal(false);
+              // If we came from client detail and are closing without creating, go back
+              if (preSelectedClientId && returnTo) {
+                handleBack();
+              }
+            }} data-testid="modal-close-btn">
               <Icon name="close" size={24} color={COLORS.textPrimary} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>New Appointment</Text>
