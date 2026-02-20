@@ -642,6 +642,20 @@ export default function MarketplaceScreen() {
           </View>
         </SafeAreaView>
       </Modal>
+      
+      {/* Video Player Modal */}
+      {currentVideoId && (
+        <VideoPlayerModal
+          visible={showVideoModal}
+          videoId={currentVideoId}
+          title={currentVideoTitle}
+          onClose={() => {
+            setShowVideoModal(false);
+            setCurrentVideoId(null);
+            setCurrentVideoTitle('');
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
