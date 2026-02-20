@@ -20,24 +20,30 @@ import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 
 type RoleOption = 'MOM' | 'DOULA' | 'MIDWIFE';
 
-const ROLE_OPTIONS: { value: RoleOption; label: string; description: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+const ROLE_OPTIONS: { value: RoleOption; label: string; description: string; icon: keyof typeof Ionicons.glyphMap; pricing: string; pricingColor: string }[] = [
   {
     value: 'MOM',
     label: "I'm pregnant / planning a baby",
     description: 'Create your birth plan and connect with your care team',
     icon: 'heart-outline',
+    pricing: 'Free',
+    pricingColor: COLORS.success,
   },
   {
     value: 'DOULA',
     label: "I'm a doula",
     description: 'Manage clients, contracts, and collaborate on birth plans',
     icon: 'people-outline',
+    pricing: 'Paid subscription',
+    pricingColor: COLORS.primary,
   },
   {
     value: 'MIDWIFE',
     label: "I'm a midwife",
     description: 'Track clients, visits, and birth summaries',
     icon: 'medkit-outline',
+    pricing: 'Paid subscription',
+    pricingColor: COLORS.primary,
   },
 ];
 
