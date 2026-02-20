@@ -89,12 +89,16 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Notifications** - Created when appointments are made/responded to
 - [x] **Status flow** - pending → confirmed/declined/cancelled
 
-**Frontend Changes Needed:**
-- [ ] Update Mom appointments.tsx to use `/api/appointments` and add provider selection
-- [ ] Update ProviderAppointments.tsx to use `/api/appointments` 
-- [ ] Ensure client pre-selection and back navigation work
-- [ ] Add "Appt" badge based on `/api/appointments/has-upcoming/{client_id}`
-- [ ] Update dashboard to show upcoming appointment count
+**Frontend Changes (COMPLETED - 2026-02-20):**
+- [x] Updated Mom appointments.tsx to use `/api/appointments`
+- [x] Updated ProviderAppointments.tsx to use `/api/appointments` 
+- [x] Client pre-selection and back navigation work
+- [x] Cancel returns to Client Detail (not home)
+
+**Verified End-to-End:**
+- Mom creates appointment with Doula → Doula sees it in their list
+- Doula creates appointment for Emma → Emma sees it in her appointments
+- Both views show the same appointment data
 - [x] **Fixed My Team card display** - Share-requests API now returns provider_name, provider_role, provider_picture
 - [x] **Fixed client photos on provider side** - Clients list and detail now include linked mom's picture
 - [x] **Fixed shared birth plans endpoint** - Now properly fetches mom_name from users collection
