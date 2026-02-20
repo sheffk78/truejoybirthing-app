@@ -666,17 +666,15 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
           {isMidwife && (
             <TouchableOpacity 
               style={styles.actionButton}
-              onPress={() => setShowBirthModal(true)}
+              onPress={() => {
+                // Scroll to Birth Record section
+              }}
               data-testid="action-birth"
             >
-              <View style={[styles.actionIcon, { backgroundColor: birthRecord ? COLORS.success + '15' : COLORS.error + '15' }]}>
-                <Icon 
-                  name={birthRecord ? 'checkmark-circle' : 'fitness-outline'} 
-                  size={20} 
-                  color={birthRecord ? COLORS.success : COLORS.error} 
-                />
+              <View style={[styles.actionIcon, { backgroundColor: COLORS.primary + '15' }]}>
+                <Icon name="heart-outline" size={20} color={COLORS.primary} />
               </View>
-              <Text style={styles.actionLabel}>{birthRecord ? 'Birth Record' : 'Birth Day'}</Text>
+              <Text style={styles.actionLabel}>Birth Record</Text>
             </TouchableOpacity>
           )}
           
