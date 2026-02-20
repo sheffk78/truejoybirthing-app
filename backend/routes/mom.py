@@ -465,31 +465,36 @@ async def cancel_mom_appointment(appointment_id: str, user: User = Depends(check
 async def get_mom_contracts(user: User = Depends(get_current_user())):
     """
     Get all contracts for the Mom user.
-    This includes contracts where the Mom is linked through their team or as a client.
+    This includes contracts where:
+    1. The Mom is listed as mom_user_id on the contract
+    2. The contract is from a provider in the Mom's team
+    3. The Mom's client_id matches the contract's client_id
     """
-    # Get Mom's linked client IDs from their team
+    # Get Mom's team to find linked providers
     mom_doc = await db.users.find_one(
         {"user_id": user.user_id},
         {"_id": 0, "team": 1}
     )
     
-    # Collect all client_ids the mom is linked to
-    client_ids = []
+    # Collect provider IDs from mom's team
+    provider_ids = []
     if mom_doc and "team" in mom_doc:
         for team_member in mom_doc.get("team", []):
-            if team_member.get("client_id"):
-                client_ids.append(team_member["client_id"])
+            if team_member.get("provider_id"):
+                provider_ids.append(team_member["provider_id"])
     
-    # Also check if mom themselves is a client (user_id matches client_id pattern)
-    client_ids.append(user.user_id)
-    
-    # Fetch contracts for these client IDs from both doula and midwife contracts
     contracts = []
     
-    # Fetch doula contracts
-    doula_contracts = await db.doula_contracts.find(
-        {"client_id": {"$in": client_ids}}
-    ).to_list(100)
+    # Fetch doula contracts - where mom_user_id matches OR doula is in mom's team
+    doula_query = {
+        "$or": [
+            {"mom_user_id": user.user_id},
+        ]
+    }
+    if provider_ids:
+        doula_query["$or"].append({"doula_id": {"$in": provider_ids}})
+    
+    doula_contracts = await db.doula_contracts.find(doula_query).to_list(100)
     
     for contract in doula_contracts:
         contract.pop("_id", None)
@@ -503,10 +508,16 @@ async def get_mom_contracts(user: User = Depends(get_current_user())):
             contract["provider_role"] = "DOULA"
         contracts.append(contract)
     
-    # Fetch midwife contracts
-    midwife_contracts = await db.midwife_contracts.find(
-        {"client_id": {"$in": client_ids}}
-    ).to_list(100)
+    # Fetch midwife contracts - where mom_user_id matches OR midwife is in mom's team
+    midwife_query = {
+        "$or": [
+            {"mom_user_id": user.user_id},
+        ]
+    }
+    if provider_ids:
+        midwife_query["$or"].append({"midwife_id": {"$in": provider_ids}})
+    
+    midwife_contracts = await db.midwife_contracts.find(midwife_query).to_list(100)
     
     for contract in midwife_contracts:
         contract.pop("_id", None)
@@ -532,28 +543,34 @@ async def get_mom_contracts(user: User = Depends(get_current_user())):
 async def get_mom_invoices(user: User = Depends(get_current_user())):
     """
     Get all invoices for the Mom user.
-    This includes invoices where the Mom is linked through their team or as a client.
+    This includes invoices where:
+    1. The Mom is listed as mom_user_id on the invoice
+    2. The invoice is from a provider in the Mom's team
     """
-    # Get Mom's linked client IDs from their team
+    # Get Mom's team to find linked providers
     mom_doc = await db.users.find_one(
         {"user_id": user.user_id},
         {"_id": 0, "team": 1}
     )
     
-    # Collect all client_ids the mom is linked to
-    client_ids = []
+    # Collect provider IDs from mom's team
+    provider_ids = []
     if mom_doc and "team" in mom_doc:
         for team_member in mom_doc.get("team", []):
-            if team_member.get("client_id"):
-                client_ids.append(team_member["client_id"])
+            if team_member.get("provider_id"):
+                provider_ids.append(team_member["provider_id"])
     
-    # Also check if mom themselves is a client
-    client_ids.append(user.user_id)
+    # Build query: invoices where mom_user_id matches OR provider is in team
+    query = {
+        "$or": [
+            {"mom_user_id": user.user_id},
+        ]
+    }
+    if provider_ids:
+        query["$or"].append({"provider_id": {"$in": provider_ids}})
+        query["$or"].append({"pro_user_id": {"$in": provider_ids}})
     
-    # Fetch invoices for these client IDs
-    invoices_cursor = db.invoices.find(
-        {"client_id": {"$in": client_ids}}
-    )
+    invoices_cursor = db.invoices.find(query)
     
     invoices = []
     async for invoice in invoices_cursor:
