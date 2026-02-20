@@ -216,7 +216,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
           style: 'destructive',
           onPress: async () => {
             try {
-              await apiRequest(`/provider/appointments/${appointmentId}`, { method: 'DELETE' });
+              await apiRequest(`/appointments/${appointmentId}`, { method: 'DELETE' });
               setAppointments(prev =>
                 prev.map(apt =>
                   apt.appointment_id === appointmentId
