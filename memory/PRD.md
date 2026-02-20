@@ -774,7 +774,7 @@ Hidden but accessible via navigation:
 
 ### Remaining Technical Debt (P3 - Low Priority)
 
-1. **Backend Modularization Progress**: server.py reduced from 7,888 → ~4,646 lines (~41% reduction)
+1. **Backend Modularization Progress**: server.py reduced from 7,888 → ~4,158 lines (~47% reduction)
    - **Phase 1 COMPLETED**: Created modular router foundation
    - **Phase 2 COMPLETED**: Admin (4 endpoints) + Marketplace (2 endpoints) migrated
    - **Phase 3 COMPLETED**: Notifications (3 endpoints) + Messages (5 endpoints) migrated
@@ -783,22 +783,18 @@ Hidden but accessible via navigation:
    - **Phase 6 COMPLETED**: Mom (9 endpoints) migrated
    - **Phase 7 COMPLETED**: Doula (6 endpoints) + Midwife (4 endpoints) migrated
    - **Phase 8 COMPLETED** (2026-02-19): Provider Clients & Notes routes migrated
-     - Doula: clients CRUD (4 endpoints), notes CRUD (4 endpoints)
-     - Midwife: clients CRUD (4 endpoints), notes CRUD (4 endpoints)
      - 40/40 tests passed (iteration_104.json)
    - **Phase 9 COMPLETED** (2026-02-19): Contracts routes migrated (~1,073 lines)
-     - Doula contracts: CRUD, send, duplicate, sign, HTML, PDF
-     - Midwife contracts: CRUD, send, duplicate, sign, HTML, PDF
-     - Midwife contract defaults: GET/PUT
-     - Contract templates: CRUD for both provider types
      - 47/47 tests passed (iteration_105.json)
    - **Phase 10 COMPLETED** (2026-02-20): Invoices routes migrated (~676 lines)
-     - Payment instructions templates: CRUD (4 endpoints)
-     - Doula invoices: CRUD (5) + actions (4)
-     - Midwife invoices: CRUD (5) + actions (4)
-     - Invoice lifecycle: Draft -> Send -> (Paid | Cancelled)
      - 45/45 tests passed (iteration_106.json)
-   - **Total Endpoints Migrated**: ~116 endpoints across 11 modular routers
+   - **Phase 11 COMPLETED** (2026-02-20): Visits routes migrated (~488 lines)
+     - Basic midwife visits: GET/POST/PUT
+     - Prenatal visit assessments: full CRUD with vitals and well-being scores
+     - Birth summaries: GET/POST/PUT with duplicate prevention
+     - Provider unified visits: GET/POST/PUT/DELETE with auto-appointment creation
+     - 47/47 tests passed (iteration_107.json)
+   - **Total Endpoints Migrated**: ~133 endpoints across 12 modular routers
    - **Active Modular Routers**:
      - `routes/auth.py` - Authentication
      - `routes/admin.py` - Admin user/content management
@@ -811,10 +807,10 @@ Hidden but accessible via navigation:
      - `routes/midwife.py` - Midwife onboarding/profile/dashboard/clients/notes
      - `routes/contracts.py` - All contract CRUD, templates, defaults, PDF, signing
      - `routes/invoices.py` - Payment instructions, invoices CRUD + actions
+     - `routes/visits.py` - Midwife visits, prenatal assessments, birth summaries, unified visits
    - **Migration Plan**: `/app/backend/routes/MIGRATION_PLAN.md`
    - **Remaining Phases**:
-     - Phase 11: Midwife Visits (NEXT)
-     - Phase 12: Birth Plan, Wellness, Postpartum, Timeline
+     - Phase 12: Birth Plan, Wellness, Postpartum, Timeline (NEXT)
      - Phase 13: Share Requests, Appointments, Final Cleanup
 
 2. **Large Shared Components**: Some shared components are still large but functional
