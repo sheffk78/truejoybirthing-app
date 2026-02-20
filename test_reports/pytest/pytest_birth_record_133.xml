@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="10" time="4.310" timestamp="2026-02-20T23:39:18.696015+00:00" hostname="agent-env-15f6b734-410b-4017-9925-874ce310914b"><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_get_birth_record_returns_empty_when_none" time="0.582"><failure message="AssertionError: GET failed: {&quot;detail&quot;:&quot;Invalid session&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_birth_record_133.py:46: in test_get_birth_record_returns_empty_when_none
+    assert response.status_code == 200, f"GET failed: {response.text}"
+E   AssertionError: GET failed: {"detail":"Invalid session"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_get_birth_record_invalid_client" time="0.448"><failure message="AssertionError: Expected 404, got 401: {&quot;detail&quot;:&quot;Invalid session&quot;}&#10;assert 401 == 404&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_birth_record_133.py:59: in test_get_birth_record_invalid_client
+    assert response.status_code == 404, f"Expected 404, got {response.status_code}: {response.text}"
+E   AssertionError: Expected 404, got 401: {"detail":"Invalid session"}
+E   assert 401 == 404
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_get_birth_record_unauthorized" time="0.165" /><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_create_birth_record" time="0.501"><failure message="AssertionError: POST failed: {&quot;detail&quot;:&quot;Invalid session&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_birth_record_133.py:108: in test_create_birth_record
+    assert response.status_code == 200, f"POST failed: {response.text}"
+E   AssertionError: POST failed: {"detail":"Invalid session"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_verify_birth_record_created" time="0.469"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_birth_record_133.py:120: in test_verify_birth_record_created
+    assert response.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_update_birth_record" time="0.522"><failure message="AssertionError: Update failed: {&quot;detail&quot;:&quot;Invalid session&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_birth_record_133.py:157: in test_update_birth_record
+    assert response.status_code == 200, f"Update failed: {response.text}"
+E   AssertionError: Update failed: {"detail":"Invalid session"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_verify_birth_record_updated" time="0.478"><failure message="assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_birth_record_133.py:170: in test_verify_birth_record_updated
+    assert response.status_code == 200
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_create_birth_record_invalid_client" time="0.455"><failure message="AssertionError: Expected 404, got 401&#10;assert 401 == 404&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_birth_record_133.py:195: in test_create_birth_record_invalid_client
+    assert response.status_code == 404, f"Expected 404, got {response.status_code}"
+E   AssertionError: Expected 404, got 401
+E   assert 401 == 404
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_create_birth_record_unauthorized" time="0.132" /><testcase classname="backend.tests.test_birth_record_133.TestBirthRecordAPI" name="test_birth_record_all_fields" time="0.442"><failure message="AssertionError: Failed: {&quot;detail&quot;:&quot;Invalid session&quot;}&#10;assert 401 == 200&#10; +  where 401 = &lt;Response [401]&gt;.status_code">backend/tests/test_birth_record_133.py:249: in test_birth_record_all_fields
+    assert response.status_code == 200, f"Failed: {response.text}"
+E   AssertionError: Failed: {"detail":"Invalid session"}
+E   assert 401 == 200
+E    +  where 401 = &lt;Response [401]&gt;.status_code</failure></testcase></testsuite></testsuites>
