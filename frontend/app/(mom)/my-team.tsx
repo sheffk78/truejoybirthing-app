@@ -172,6 +172,25 @@ export default function MyTeamScreen() {
                     <Icon name="close-circle" size={24} color={COLORS.error} />
                   </TouchableOpacity>
                 </View>
+                {/* Quick Actions */}
+                <View style={styles.quickActions}>
+                  <TouchableOpacity
+                    style={styles.quickActionBtn}
+                    onPress={() => router.push(`/(mom)/messages?providerId=${request.provider_id}&providerName=${encodeURIComponent(request.provider_name)}`)}
+                    data-testid={`message-btn-${request.request_id}`}
+                  >
+                    <Icon name="chatbubble-outline" size={18} color={COLORS.primary} />
+                    <Text style={styles.quickActionText}>Message</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.quickActionBtn}
+                    onPress={() => router.push(`/(mom)/appointments?providerId=${request.provider_id}&providerName=${encodeURIComponent(request.provider_name)}`)}
+                    data-testid={`schedule-btn-${request.request_id}`}
+                  >
+                    <Icon name="calendar-outline" size={18} color={COLORS.primary} />
+                    <Text style={styles.quickActionText}>Schedule</Text>
+                  </TouchableOpacity>
+                </View>
               </Card>
             ))}
           </View>
