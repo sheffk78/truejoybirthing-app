@@ -1877,57 +1877,16 @@ async def get_all_weekly_content():
 # Routes: /mom/invoices, /mom/invoices/{invoice_id}
 
 # ============== DOULA NOTES ROUTES ==============
-
-@api_router.get("/doula/notes")
-async def get_doula_notes(user: User = Depends(check_role(["DOULA"])), client_id: Optional[str] = None):
-    """Get notes, optionally filtered by client"""
-    query = {"provider_id": user.user_id}
-    if client_id:
-        query["client_id"] = client_id
-    
-    notes = await db.notes.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
-    return notes
-
-@api_router.post("/doula/notes")
-async def create_doula_note(note_data: NoteCreate, user: User = Depends(check_role(["DOULA"]))):
-    """Create a new note"""
-    now = datetime.now(timezone.utc)
-    
-    note = {
-        "note_id": f"note_{uuid.uuid4().hex[:12]}",
-        "provider_id": user.user_id,
-        "client_id": note_data.client_id,
-        "note_type": note_data.note_type,
-        "content": note_data.content,
-        "date": note_data.date or now.strftime("%Y-%m-%d"),
-        "created_at": now,
-        "updated_at": now
-    }
-    
-    await db.notes.insert_one(note)
-    note.pop('_id', None)  # Remove ObjectId added by insert_one
-    return note
-
-@api_router.put("/doula/notes/{note_id}")
-async def update_doula_note(note_id: str, request: Request, user: User = Depends(check_role(["DOULA"]))):
-    """Update a note"""
-    body = await request.json()
-    update_data = {k: v for k, v in body.items() if k not in ["note_id", "provider_id", "created_at"]}
-    update_data["updated_at"] = datetime.now(timezone.utc)
-    
-    result = await db.notes.update_one(
-        {"note_id": note_id, "provider_id": user.user_id},
-        {"$set": update_data}
-    )
-    
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Note not found")
-    
-    return {"message": "Note updated"}
+# MIGRATED TO: routes/doula.py
+# Routes: /doula/notes (GET/POST), /doula/notes/{note_id} (PUT)
 
 # ============== MIDWIFE ROUTES ==============
+# MIGRATED TO: routes/midwife.py
+# Routes: /midwife/onboarding, /midwife/profile, /midwife/dashboard, 
+#         /midwife/clients (GET/POST), /midwife/clients/{id} (GET/PUT),
+#         /midwife/notes (GET/POST)
 
-@api_router.post("/midwife/onboarding")
+@api_router.post("/midwife/onboarding"@api_router.post("/midwife/onboarding")
 async def midwife_onboarding(profile_data: MidwifeProfileUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
     """Complete midwife onboarding"""
     now = datetime.now(timezone.utc)
