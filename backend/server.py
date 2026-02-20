@@ -1306,8 +1306,8 @@ def get_share_request_email_html(mom_name: str, provider_name: str):
     </html>
     """
 
-async def create_notification(user_id: str, notif_type: str, title: str, message: str, data: dict = None):
-    """Create an in-app notification"""
+async def create_notification(user_id: str, notif_type: str, title: str, message: str, data: dict = None, send_push: bool = True):
+    """Create an in-app notification and optionally send a push notification"""
     now = datetime.now(timezone.utc)
     notif_doc = {
         "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
@@ -1320,6 +1320,20 @@ async def create_notification(user_id: str, notif_type: str, title: str, message
         "created_at": now
     }
     await db.notifications.insert_one(notif_doc)
+    
+    # Send push notification if enabled
+    if send_push:
+        try:
+            from services.push_notifications import send_push_to_user
+            push_data = data or {}
+            push_data["notification_type"] = notif_type
+            push_data["notification_id"] = notif_doc["notification_id"]
+            await send_push_to_user(db, user_id, title, message, push_data, notif_type)
+        except Exception as e:
+            # Log but don't fail if push notification fails
+            import logging
+            logging.warning(f"Failed to send push notification: {e}")
+    
     return notif_doc
 
 # ============== AUTH HELPERS ==============
