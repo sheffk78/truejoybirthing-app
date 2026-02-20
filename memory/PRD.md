@@ -67,6 +67,19 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - UI/UX Fixes from Human Testing
+
+#### UI/UX Fixes (COMPLETED - 2026-02-20)
+- [x] **Dashboard stats fixed** - Now shows contracts_pending_signature and pending_invoices
+- [x] **Client filter updated** - Changed from Active/Inactive/All to Active/Inactive/Leads
+- [x] **Birth Plan tab added** - Client Detail now has Birth Plan tab that navigates to view client's birth plan
+- [x] **Timeline contracts query fixed** - Now checks doula_id/midwife_id in addition to provider_id
+- [x] **KeyboardAvoidingView added** - Notes, Contracts, Invoices modals now handle keyboard properly
+- [x] **ScrollView bottom padding** - Added contentContainerStyle={{ paddingBottom: 100 }} to prevent keyboard covering buttons
+- [x] **Navigation returnTo param** - Quick actions from Client Detail pass returnTo for proper back navigation
+- [x] **client-birth-plans.tsx created** - Wrapper files for both doula and midwife folders
+- [x] **All 25 tests passing** (iteration_112.json)
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Backend Modular Architecture Refactoring
 
 #### Final Cleanup (COMPLETED - 2026-02-20)
