@@ -163,13 +163,17 @@ export default function ClientBirthPlansScreen() {
     setPlanModalVisible(true);
   };
 
-  const openNoteModal = (sectionId: string) => {
+  const openNoteModal = (sectionId: string, existingNote?: ProviderNote) => {
     setSelectedSection(sectionId);
-    // Check if there's an existing note for this section
-    const existingNote = selectedPlan?.provider_notes.find(
-      (n: ProviderNote) => n.section_id === sectionId
-    );
-    setNewNote(existingNote?.note_content || '');
+    if (existingNote) {
+      // Editing existing note
+      setEditingNoteId(existingNote.note_id);
+      setNewNote(existingNote.note_content);
+    } else {
+      // Creating new note
+      setEditingNoteId(null);
+      setNewNote('');
+    }
     setNoteModalVisible(true);
   };
 
@@ -181,17 +185,30 @@ export default function ClientBirthPlansScreen() {
 
     setSavingNote(true);
     try {
-      await apiRequest(`${API_ENDPOINTS.PROVIDER_BIRTH_PLAN_NOTES}/${selectedPlan.mom_user_id}/notes`, {
-        method: 'POST',
-        body: {
-          section_id: selectedSection,
-          note_content: newNote.trim(),
-        },
-      });
-      Alert.alert('Success', 'Note saved');
+      if (editingNoteId) {
+        // Update existing note
+        await apiRequest(`${API_ENDPOINTS.PROVIDER_BIRTH_PLAN_NOTES}/${selectedPlan.mom_user_id}/notes/${editingNoteId}`, {
+          method: 'PUT',
+          body: {
+            note_content: newNote.trim(),
+          },
+        });
+        Alert.alert('Success', 'Note updated');
+      } else {
+        // Create new note
+        await apiRequest(`${API_ENDPOINTS.PROVIDER_BIRTH_PLAN_NOTES}/${selectedPlan.mom_user_id}/notes`, {
+          method: 'POST',
+          body: {
+            section_id: selectedSection,
+            note_content: newNote.trim(),
+          },
+        });
+        Alert.alert('Success', 'Note saved');
+      }
       setNoteModalVisible(false);
       setNewNote('');
       setSelectedSection(null);
+      setEditingNoteId(null);
       await fetchData();
       
       // Update selected plan with new data
