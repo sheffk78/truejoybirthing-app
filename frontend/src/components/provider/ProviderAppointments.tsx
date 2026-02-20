@@ -107,9 +107,9 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
 
   const fetchData = useCallback(async () => {
     try {
-      // Use unified provider endpoints
+      // Use unified appointments endpoint (works for all roles)
       const [appointmentsData, clientsData] = await Promise.all([
-        apiRequest(config.endpoints.unifiedAppointments || '/provider/appointments'),
+        apiRequest('/appointments'),
         apiRequest(config.endpoints.unifiedClients || '/provider/clients'),
       ]);
       setAppointments(appointmentsData || []);
