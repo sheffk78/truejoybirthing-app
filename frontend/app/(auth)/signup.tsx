@@ -202,14 +202,21 @@ export default function SignupScreen() {
                       />
                     </View>
                     <View style={styles.roleText}>
-                      <Text
-                        style={[
-                          styles.roleTitle,
-                          selectedRole === option.value && styles.roleTitleSelected,
-                        ]}
-                      >
-                        {option.label}
-                      </Text>
+                      <View style={styles.roleTitleRow}>
+                        <Text
+                          style={[
+                            styles.roleTitle,
+                            selectedRole === option.value && styles.roleTitleSelected,
+                          ]}
+                        >
+                          {option.label}
+                        </Text>
+                        <View style={[styles.pricingBadge, { backgroundColor: option.pricingColor + '20' }]}>
+                          <Text style={[styles.pricingText, { color: option.pricingColor }]}>
+                            {option.pricing}
+                          </Text>
+                        </View>
+                      </View>
                       <Text style={styles.roleDescription}>{option.description}</Text>
                     </View>
                     {selectedRole === option.value && (
