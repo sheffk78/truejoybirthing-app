@@ -1446,6 +1446,7 @@ from routes import invoices as invoices_routes
 from routes import visits as visits_routes
 from routes import care_plans as care_plans_routes
 from routes import provider_unified as provider_unified_routes
+from routes import appointments as appointments_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1462,6 +1463,7 @@ api_router.include_router(invoices_routes.router)
 api_router.include_router(visits_routes.router)
 api_router.include_router(care_plans_routes.router)
 api_router.include_router(provider_unified_routes.router)
+api_router.include_router(appointments_routes.router)
 
 # ============== AUTH ROUTES ==============
 # MIGRATED TO: routes/auth.py
