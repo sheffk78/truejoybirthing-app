@@ -270,8 +270,18 @@ async def get_client_timeline(client_id: str, user: User = Depends(check_role(["
     
     timeline.sort(key=get_sort_date, reverse=True)
     
+    # Enrich client with linked mom's picture if available
+    enriched_client = calculate_client_active_status(client)
+    if client.get("linked_mom_id") and not enriched_client.get("picture"):
+        mom = await db.users.find_one(
+            {"user_id": client["linked_mom_id"]},
+            {"_id": 0, "picture": 1}
+        )
+        if mom and mom.get("picture"):
+            enriched_client["picture"] = mom["picture"]
+    
     return {
-        "client": calculate_client_active_status(client),
+        "client": enriched_client,
         "timeline": timeline
     }
 
