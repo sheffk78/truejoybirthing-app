@@ -144,34 +144,45 @@ async def update_doula_profile(profile_data: DoulaProfileUpdate, user: User = De
 @router.get("/dashboard")
 async def get_doula_dashboard(user: User = Depends(check_role(["DOULA"]))):
     """Get doula dashboard data"""
-    # Get counts
-    active_clients = await db.clients.count_documents({
-        "provider_id": user.user_id,
-        "status": {"$in": ["Active", "Prenatal"]}
+    # Get all clients for the provider
+    all_clients = await db.clients.find(
+        {"provider_id": user.user_id},
+        {"_id": 0, "status": 1}
+    ).to_list(500)
+    
+    total_clients = len(all_clients)
+    
+    # Active clients: any client that is not completed/inactive
+    # Include: Active, Prenatal, Contract Sent, Contract Signed, In Labor, Postpartum
+    active_statuses = ["Active", "Prenatal", "Contract Sent", "Contract Signed", "In Labor", "Postpartum", "active", "prenatal"]
+    active_clients = len([c for c in all_clients if c.get("status") in active_statuses])
+    
+    # Pending contracts - match frontend key name
+    contracts_pending_signature = await db.contracts.count_documents({
+        "$or": [
+            {"provider_id": user.user_id},
+            {"doula_id": user.user_id}
+        ],
+        "status": {"$in": ["Sent", "sent", "pending"]}
     })
     
-    total_clients = await db.clients.count_documents({"provider_id": user.user_id})
-    
-    pending_contracts = await db.contracts.count_documents({
+    # Pending invoices - match frontend key name
+    pending_invoices = await db.invoices.count_documents({
         "provider_id": user.user_id,
-        "status": "Sent"
-    })
-    
-    unpaid_invoices = await db.invoices.count_documents({
-        "provider_id": user.user_id,
-        "status": "Sent"
+        "status": {"$in": ["Sent", "sent", "pending"]}
     })
     
     # Get upcoming appointments
     now = get_now()
-    upcoming_appointments = await db.appointments.find(
-        {
-            "provider_id": user.user_id,
-            "status": {"$in": ["confirmed", "pending"]},
-            "start_datetime": {"$gte": now.isoformat()}
-        },
-        {"_id": 0}
-    ).sort("start_datetime", 1).limit(5).to_list(5)
+    today = now.strftime("%Y-%m-%d")
+    upcoming_appointments = await db.appointments.count_documents({
+        "provider_id": user.user_id,
+        "status": {"$in": ["confirmed", "pending", "scheduled", "accepted"]},
+        "$or": [
+            {"start_datetime": {"$gte": now.isoformat()}},
+            {"appointment_date": {"$gte": today}}
+        ]
+    })
     
     # Get recent messages count
     unread_messages = await db.messages.count_documents({
@@ -182,8 +193,8 @@ async def get_doula_dashboard(user: User = Depends(check_role(["DOULA"]))):
     return {
         "active_clients": active_clients,
         "total_clients": total_clients,
-        "pending_contracts": pending_contracts,
-        "unpaid_invoices": unpaid_invoices,
+        "contracts_pending_signature": contracts_pending_signature,
+        "pending_invoices": pending_invoices,
         "upcoming_appointments": upcoming_appointments,
         "unread_messages": unread_messages
     }
