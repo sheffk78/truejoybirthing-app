@@ -67,6 +67,19 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Full Contract Signing Flow (P0)
+
+#### Contract Signing E-Signature Flow (COMPLETED - 2026-02-20)
+- [x] **Contract viewing page** - `/sign-contract?contractId=xxx` displays full contract details
+- [x] **Provider/Client info** - Shows names, practice name, and due date
+- [x] **Fee summary** - Total Fee, Retainer (Due Now), and Remaining Balance
+- [x] **Full agreement text** - Complete contract text displayed in scrollable section
+- [x] **Provider signature status** - Shows if provider has already signed
+- [x] **Signature form** - Name input (pre-filled with client name), agreement checkbox
+- [x] **E-signing** - Submit button calls `/api/contracts/{id}/sign` endpoint
+- [x] **Email notifications** - Signed PDF sent to both Mom and Provider via Resend
+- [x] **Signed confirmation** - Shows success message with signed date/time
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Contract Email & In-App Notifications
 
 #### Contract Sent Notifications (COMPLETED - 2026-02-20)
