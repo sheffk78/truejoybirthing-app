@@ -113,6 +113,9 @@ def generate_visit_summary(data: Dict[str, Any]) -> str:
         summary_parts.append(f"Wt {data['weight']} {unit}")
     return ", ".join(summary_parts) if summary_parts else "Visit recorded"
 
+
+# ============== BASIC VISIT ROUTES (MIDWIFE) ==============
+
 @router.get("/midwife/visits")
 async def get_midwife_visits(user: User = Depends(check_role(["MIDWIFE"])), client_id: Optional[str] = None):
     """Get visits, optionally filtered by client"""
