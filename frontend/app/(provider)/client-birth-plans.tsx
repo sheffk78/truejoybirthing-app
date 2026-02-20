@@ -239,17 +239,24 @@ export default function ClientBirthPlansScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Back Header for client-specific view */}
+      {/* Breadcrumb Navigation */}
       {isClientSpecificView && (
-        <View style={styles.backHeader}>
+        <View style={styles.breadcrumb}>
           <TouchableOpacity 
-            style={styles.backButton} 
-            onPress={handleBack}
-            data-testid="back-btn"
+            onPress={() => router.push('/(doula)/clients' as any)}
+            style={styles.breadcrumbItem}
           >
-            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
-            <Text style={styles.backButtonText}>Back to Client</Text>
+            <Text style={styles.breadcrumbLink}>Clients</Text>
           </TouchableOpacity>
+          <Text style={styles.breadcrumbSeparator}>›</Text>
+          <TouchableOpacity 
+            onPress={handleBack}
+            style={styles.breadcrumbItem}
+          >
+            <Text style={styles.breadcrumbLink}>{clientName}</Text>
+          </TouchableOpacity>
+          <Text style={styles.breadcrumbSeparator}>›</Text>
+          <Text style={styles.breadcrumbCurrent}>Birth Plan</Text>
         </View>
       )}
       
