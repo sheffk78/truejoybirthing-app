@@ -656,6 +656,7 @@ Hidden but accessible via navigation:
 - [x] **My Team Provider Photos** - Accepted and pending provider invitations show profile photos
 
 ### 📊 Test Reports
+- `/app/test_reports/iteration_107.json` - **Phase 11 Backend Refactoring VERIFIED** (47/47 tests - Midwife visits, prenatal assessments, birth summaries, provider unified visits)
 - `/app/test_reports/iteration_106.json` - **Phase 10 Backend Refactoring VERIFIED** (45/45 tests - Payment instructions, Doula/Midwife invoices CRUD + actions)
 - `/app/test_reports/iteration_105.json` - **Phase 9 Backend Refactoring VERIFIED** (47/47 tests - All Contracts routes: Doula/Midwife CRUD, templates, defaults, PDF, HTML, signing)
 - `/app/test_reports/iteration_104.json` - **Phase 8 Backend Refactoring VERIFIED** (40/40 tests - Doula & Midwife Clients/Notes CRUD, role-based access control)
