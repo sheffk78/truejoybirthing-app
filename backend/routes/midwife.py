@@ -205,10 +205,10 @@ async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
         "created_at": {"$gte": month_start}
     })
     
-    # Get upcoming appointments count
+    # Get upcoming appointments count (confirmed only, exclude pending)
     upcoming_appointments = await db.appointments.count_documents({
         "provider_id": user.user_id,
-        "status": {"$in": ["confirmed", "pending", "scheduled", "accepted"]},
+        "status": {"$in": ["confirmed", "scheduled", "accepted"]},
         "$or": [
             {"start_datetime": {"$gte": now.isoformat()}},
             {"appointment_date": {"$gte": today}}
