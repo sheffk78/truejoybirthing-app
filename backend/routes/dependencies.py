@@ -125,3 +125,47 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def get_password_hash(password: str) -> str:
     """Hash a password"""
     return pwd_context.hash(password)
+
+
+# ============== FASTAPI DEPENDENCY FUNCTIONS ==============
+# These functions return dependency callables for use with Depends()
+
+def get_db():
+    """FastAPI dependency to get the database"""
+    if db is None:
+        raise RuntimeError("Dependencies not initialized. Call init_dependencies first.")
+    return db
+
+
+def get_current_user_dep():
+    """FastAPI dependency to get the current user function"""
+    if _get_current_user is None:
+        raise RuntimeError("Dependencies not initialized. Call init_dependencies first.")
+    return _get_current_user
+
+
+def check_role_dep():
+    """FastAPI dependency to get the check_role function"""
+    if _check_role is None:
+        raise RuntimeError("Dependencies not initialized. Call init_dependencies first.")
+    return _check_role
+
+
+def get_notification_func():
+    """FastAPI dependency to get the notification function"""
+    if create_notification is None:
+        raise RuntimeError("Dependencies not initialized. Call init_dependencies first.")
+    return create_notification
+
+
+def get_email_func():
+    """FastAPI dependency to get the email function"""
+    # Can be None if not configured - return the function anyway
+    return send_notification_email
+
+
+def get_ws_manager():
+    """FastAPI dependency to get the WebSocket manager"""
+    if ws_manager is None:
+        raise RuntimeError("Dependencies not initialized. Call init_dependencies first.")
+    return ws_manager
