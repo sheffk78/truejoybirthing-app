@@ -89,6 +89,10 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Birth Plan as first action** - Moved to first position in actions row
 - [x] **Removed Birth Info filter** - Removed from both doula and midwife configs
 - [x] **Added Back button to birth plan view** - Shows "Back to Client" when accessed from client detail
+- [x] **Fixed Message button in client list** - Now opens conversation with specific client (passes userId and userName)
+- [x] **Birth Plan button shows "Birth Plan Shared"** - Changed to non-clickable status indicator with checkmark
+- [x] **Appointments pre-select client** - Auto-selects client when navigating from client detail
+- [x] **Appointments back navigation** - Returns to client detail instead of home
 
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Database Cleanup
 
