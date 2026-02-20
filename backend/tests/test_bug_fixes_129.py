@@ -218,12 +218,12 @@ class TestBirthPlanNotes:
         assert create_response.status_code in [200, 201], f"Failed to create note: {create_response.text}"
         
         note_data = create_response.json()
-        note_id = note_data.get('note_id')
+        # Note ID is nested under 'note' object
+        note_id = note_data.get('note', {}).get('note_id') or note_data.get('note_id')
         print(f"Created note with ID: {note_id}")
+        print(f"Full response: {note_data}")
         
-        assert note_id is not None, "Note ID not returned"
-        
-        return note_id
+        assert note_id is not None, f"Note ID not returned. Response: {note_data}"
     
     def test_edit_birth_plan_note(self, doula_session):
         """Test editing an existing birth plan note"""
