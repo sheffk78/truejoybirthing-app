@@ -875,6 +875,32 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     fontWeight: '600',
   },
+  // Breadcrumb styles
+  breadcrumb: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
+    backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  breadcrumbItem: { paddingVertical: 4 },
+  breadcrumbLink: { 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.primary, 
+    fontWeight: '500' 
+  },
+  breadcrumbSeparator: { 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.textLight, 
+    marginHorizontal: SIZES.sm 
+  },
+  breadcrumbCurrent: { 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.textPrimary, 
+    fontWeight: '600' 
+  },
   noteModalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
