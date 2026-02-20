@@ -85,6 +85,10 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Fixed shared birth plans endpoint** - Now properly fetches mom_name from users collection
 - [x] **Hidden client-birth-plans from bottom nav** - Added href:null for doula and midwife layouts
 - [x] **Birth Plan access from Client Detail** - Tab already exists in clientDetailTabs config
+- [x] **Renamed Quick Actions to Actions** - Updated in ProviderClientDetail
+- [x] **Birth Plan as first action** - Moved to first position in actions row
+- [x] **Removed Birth Info filter** - Removed from both doula and midwife configs
+- [x] **Added Back button to birth plan view** - Shows "Back to Client" when accessed from client detail
 
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Database Cleanup
 
