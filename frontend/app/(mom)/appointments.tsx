@@ -511,22 +511,127 @@ export default function AppointmentsScreen() {
               </TouchableOpacity>
             </View>
 
-            {(showDatePicker || showTimePicker) && (
-              <DateTimePicker
-                value={showDatePicker ? appointmentDate : appointmentTime}
-                mode={showDatePicker ? 'date' : 'time'}
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                minimumDate={new Date()}
-                onChange={(event, date) => {
-                  if (showDatePicker) {
+            {/* Date Picker - Platform specific */}
+            {showDatePicker && (
+              Platform.OS === 'web' ? (
+                <Modal
+                  visible={showDatePicker}
+                  transparent
+                  animationType="fade"
+                  onRequestClose={() => setShowDatePicker(false)}
+                >
+                  <View style={styles.dateModalOverlay}>
+                    <View style={styles.dateModalContent}>
+                      <View style={styles.dateModalHeader}>
+                        <Text style={styles.dateModalTitle}>Select Date</Text>
+                        <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                          <Icon name="close" size={24} color={COLORS.textPrimary} />
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.webCalendarWrapper}>
+                        <input
+                          type="date"
+                          value={appointmentDate.toISOString().split('T')[0]}
+                          min={new Date().toISOString().split('T')[0]}
+                          onChange={(e: any) => {
+                            if (e.target.value) {
+                              setAppointmentDate(new Date(e.target.value + 'T12:00:00'));
+                            }
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: 16,
+                            fontSize: 18,
+                            border: `2px solid ${COLORS.primary}`,
+                            borderRadius: 12,
+                            outline: 'none',
+                            cursor: 'pointer',
+                          }}
+                        />
+                      </View>
+                      <Button
+                        title="Done"
+                        onPress={() => setShowDatePicker(false)}
+                        fullWidth
+                        style={{ marginTop: 16 }}
+                      />
+                    </View>
+                  </View>
+                </Modal>
+              ) : (
+                <DateTimePicker
+                  value={appointmentDate}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  minimumDate={new Date()}
+                  onChange={(event, date) => {
                     setShowDatePicker(Platform.OS === 'ios');
                     if (date) setAppointmentDate(date);
-                  } else {
+                  }}
+                />
+              )
+            )}
+
+            {/* Time Picker - Platform specific */}
+            {showTimePicker && (
+              Platform.OS === 'web' ? (
+                <Modal
+                  visible={showTimePicker}
+                  transparent
+                  animationType="fade"
+                  onRequestClose={() => setShowTimePicker(false)}
+                >
+                  <View style={styles.dateModalOverlay}>
+                    <View style={styles.dateModalContent}>
+                      <View style={styles.dateModalHeader}>
+                        <Text style={styles.dateModalTitle}>Select Time</Text>
+                        <TouchableOpacity onPress={() => setShowTimePicker(false)}>
+                          <Icon name="close" size={24} color={COLORS.textPrimary} />
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.webCalendarWrapper}>
+                        <input
+                          type="time"
+                          value={`${appointmentTime.getHours().toString().padStart(2, '0')}:${appointmentTime.getMinutes().toString().padStart(2, '0')}`}
+                          onChange={(e: any) => {
+                            if (e.target.value) {
+                              const [hours, minutes] = e.target.value.split(':');
+                              const newTime = new Date(appointmentTime);
+                              newTime.setHours(parseInt(hours), parseInt(minutes));
+                              setAppointmentTime(newTime);
+                            }
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: 16,
+                            fontSize: 18,
+                            border: `2px solid ${COLORS.primary}`,
+                            borderRadius: 12,
+                            outline: 'none',
+                            cursor: 'pointer',
+                          }}
+                        />
+                      </View>
+                      <Button
+                        title="Done"
+                        onPress={() => setShowTimePicker(false)}
+                        fullWidth
+                        style={{ marginTop: 16 }}
+                      />
+                    </View>
+                  </View>
+                </Modal>
+              ) : (
+                <DateTimePicker
+                  value={appointmentTime}
+                  mode="time"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={(event, date) => {
                     setShowTimePicker(Platform.OS === 'ios');
                     if (date) setAppointmentTime(date);
-                  }
-                }}
-              />
+                  }}
+                />
+              )
             )}
 
             {/* Appointment Type */}
