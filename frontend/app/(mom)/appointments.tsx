@@ -565,7 +565,14 @@ export default function AppointmentsScreen() {
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                   minimumDate={new Date()}
                   onChange={(event, date) => {
-                    setShowDatePicker(Platform.OS === 'ios');
+                    // On Android, always hide the picker after selection
+                    if (Platform.OS === 'android') {
+                      setShowDatePicker(false);
+                    }
+                    // On iOS, keep it open for spinner mode
+                    if (Platform.OS === 'ios' && event.type === 'dismissed') {
+                      setShowDatePicker(false);
+                    }
                     if (date) setAppointmentDate(date);
                   }}
                 />
