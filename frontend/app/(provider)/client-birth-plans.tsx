@@ -63,6 +63,7 @@ export default function ClientBirthPlansScreen() {
   const router = useRouter();
   const momUserId = params.momUserId as string | undefined;
   const clientName = params.clientName as string | undefined;
+  const returnTo = params.returnTo as string | undefined;
   
   const [pendingRequests, setPendingRequests] = useState<ShareRequest[]>([]);
   const [sharedBirthPlans, setSharedBirthPlans] = useState<SharedBirthPlan[]>([]);
@@ -77,6 +78,15 @@ export default function ClientBirthPlansScreen() {
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [newNote, setNewNote] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+  
+  // Back navigation handler
+  const handleBack = () => {
+    if (returnTo) {
+      router.push(returnTo as any);
+    } else {
+      router.back();
+    }
+  };
 
   const fetchData = async () => {
     try {
