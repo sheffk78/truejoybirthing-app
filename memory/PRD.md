@@ -67,6 +67,16 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Code Refactoring
+
+#### Utility Routes Migration (COMPLETED - 2026-02-20)
+- [x] **Created routes/utils.py** - New utility routes module
+- [x] **Migrated /lookup/zipcode/{zipcode}** - Zip code lookup using Zippopotam.us API
+- [x] **Migrated /weekly-content** - Weekly pregnancy tips and affirmations for moms
+- [x] **Migrated /weekly-content/all** - All 42 pregnancy weeks + 6 postpartum weeks content
+- [x] **Updated server.py** - Removed old routes, added utils_routes.router include
+- [x] **All routes tested** - 100% backend test success rate
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Contract UI Cleanup
 
 #### Provider Contracts View Cleanup (COMPLETED - 2026-02-20)
