@@ -12,6 +12,10 @@ Structure:
 - marketplace.py: Provider marketplace routes
 - admin.py: Admin routes (user management, content)
 - provider.py: Unified provider routes (clients, appointments, notes, visits)
+- contracts.py: Contract routes (doula and midwife contracts)
+- invoices.py: Invoice routes
+- visits.py: Visit routes (midwife prenatal/postpartum visits)
+- care_plans.py: Care plan routes (birth plan, wellness, postpartum, timeline)
 
 Usage:
     from routes.dependencies import init_dependencies
