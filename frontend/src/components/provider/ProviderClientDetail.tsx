@@ -292,17 +292,16 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with back button */}
-        <View style={styles.header}>
+        {/* Breadcrumb Navigation */}
+        <View style={styles.breadcrumb}>
           <TouchableOpacity 
-            onPress={() => router.replace(config.routes.clients as any)} 
-            style={styles.backButton} 
-            data-testid="back-button"
+            onPress={() => router.replace(config.routes.clients as any)}
+            style={styles.breadcrumbItem}
           >
-            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Text style={styles.breadcrumbLink}>Clients</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Client Details</Text>
-          <View style={{ width: 40 }} />
+          <Text style={styles.breadcrumbSeparator}>›</Text>
+          <Text style={styles.breadcrumbCurrent}>{client.name}</Text>
         </View>
 
         {/* Client Profile Card */}
