@@ -114,7 +114,7 @@ export const DOULA_CONFIG: ProviderConfig = {
     visits: '',
     // Unified endpoints
     unifiedClients: '/provider/clients',
-    unifiedAppointments: '/provider/appointments',
+    unifiedAppointments: '/appointments',
     unifiedNotes: '/provider/notes',
     unifiedVisits: '',
     unifiedDashboard: '/provider/dashboard',
@@ -203,7 +203,7 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
     visits: '/midwife/visits',
     // Unified endpoints
     unifiedClients: '/provider/clients',
-    unifiedAppointments: '/provider/appointments',
+    unifiedAppointments: '/appointments',
     unifiedNotes: '/provider/notes',
     unifiedVisits: '/provider/visits',
     unifiedDashboard: '/provider/dashboard',
