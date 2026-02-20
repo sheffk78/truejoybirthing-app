@@ -526,6 +526,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
+  backHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: SIZES.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.white,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.xs,
+  },
+  backButtonText: {
+    fontSize: SIZES.fontMd,
+    color: COLORS.textPrimary,
+    fontWeight: '500',
+  },
   loadingContainer: {
     flex: 1,
     alignItems: 'center',
