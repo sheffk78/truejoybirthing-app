@@ -222,6 +222,7 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
     notes: '/(midwife)/notes',
     appointments: '/(midwife)/appointments',
     visits: '/(midwife)/visits',
+    leads: '/(midwife)/leads',
     clientBirthPlans: '/(midwife)/client-birth-plans',
   },
   
