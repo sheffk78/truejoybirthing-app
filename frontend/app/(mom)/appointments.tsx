@@ -74,6 +74,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function AppointmentsScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ providerId?: string; providerName?: string }>();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,6 +94,7 @@ export default function AppointmentsScreen() {
   const [isCreating, setIsCreating] = useState(false);
   const [isPersonalAppointment, setIsPersonalAppointment] = useState(false);
   const [personalTitle, setPersonalTitle] = useState('');
+  const [preSelectedProviderId, setPreSelectedProviderId] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -102,13 +104,23 @@ export default function AppointmentsScreen() {
       ]);
       setAppointments(appointmentsData || []);
       setProviders(providersData || []);
+      
+      // Handle pre-selection from URL params
+      if (params.providerId && providersData?.length > 0) {
+        const provider = providersData.find((p: Provider) => p.user_id === params.providerId);
+        if (provider) {
+          setSelectedProvider(provider);
+          setPreSelectedProviderId(params.providerId);
+          setShowCreateModal(true);
+        }
+      }
     } catch (error: any) {
       console.error('Error fetching data:', error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [params.providerId]);
 
   useEffect(() => {
     fetchData();
