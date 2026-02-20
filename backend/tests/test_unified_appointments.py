@@ -31,9 +31,10 @@ class TestAuthLogin:
         assert response.status_code == 200, f"Doula login failed: {response.text}"
         data = response.json()
         assert "token" in data or "session_token" in data, "No token in response"
-        assert "user" in data, "No user in response"
-        assert data["user"]["role"] == "DOULA", f"Unexpected role: {data['user']['role']}"
-        print(f"SUCCESS: Doula login - {data['user']['full_name']}")
+        # Login returns user data at root level (not nested in 'user')
+        user_data = data.get("user", data)  # Handle both formats
+        assert user_data.get("role") == "DOULA", f"Unexpected role: {user_data.get('role')}"
+        print(f"SUCCESS: Doula login - {user_data.get('full_name')}")
         
     def test_midwife_login(self):
         """Test Midwife can login"""
@@ -44,8 +45,9 @@ class TestAuthLogin:
         assert response.status_code == 200, f"Midwife login failed: {response.text}"
         data = response.json()
         assert "token" in data or "session_token" in data, "No token in response"
-        assert data["user"]["role"] == "MIDWIFE", f"Unexpected role: {data['user']['role']}"
-        print(f"SUCCESS: Midwife login - {data['user']['full_name']}")
+        user_data = data.get("user", data)
+        assert user_data.get("role") == "MIDWIFE", f"Unexpected role: {user_data.get('role')}"
+        print(f"SUCCESS: Midwife login - {user_data.get('full_name')}")
         
     def test_mom_login(self):
         """Test Mom can login"""
@@ -56,8 +58,9 @@ class TestAuthLogin:
         assert response.status_code == 200, f"Mom login failed: {response.text}"
         data = response.json()
         assert "token" in data or "session_token" in data, "No token in response"
-        assert data["user"]["role"] == "MOM", f"Unexpected role: {data['user']['role']}"
-        print(f"SUCCESS: Mom login - {data['user']['full_name']}")
+        user_data = data.get("user", data)
+        assert user_data.get("role") == "MOM", f"Unexpected role: {user_data.get('role')}"
+        print(f"SUCCESS: Mom login - {user_data.get('full_name')}")
 
 
 @pytest.fixture
