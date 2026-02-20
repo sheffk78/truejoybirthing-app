@@ -43,9 +43,20 @@ async def get_provider_clients(
     clients = await db.clients.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
     
     # Add is_active computed field and filter if needed
+    # Also enrich with linked mom's picture
     result = []
     for client in clients:
         client["is_active"] = is_client_active(client)
+        
+        # Add picture from linked mom if not present
+        if client.get("linked_mom_id") and not client.get("picture"):
+            mom = await db.users.find_one(
+                {"user_id": client["linked_mom_id"]},
+                {"_id": 0, "picture": 1}
+            )
+            if mom and mom.get("picture"):
+                client["picture"] = mom["picture"]
+        
         if include_inactive or client["is_active"]:
             result.append(client)
     
