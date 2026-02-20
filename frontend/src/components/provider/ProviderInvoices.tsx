@@ -580,6 +580,12 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     </TouchableOpacity>
                   </>
                 )}
+                {invoice.status === 'Paid' && (
+                  <TouchableOpacity style={styles.actionButton} onPress={() => handleMarkUnpaid(invoice.invoice_id)}>
+                    <Ionicons name="refresh-outline" size={18} color={COLORS.warning} />
+                    <Text style={[styles.actionText, { color: COLORS.warning }]}>Mark Unpaid</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </TouchableOpacity>
           ))
