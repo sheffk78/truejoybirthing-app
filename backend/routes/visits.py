@@ -100,6 +100,18 @@ class BirthSummaryCreate(BaseModel):
 # ============== HELPER FUNCTIONS ==============
 
 def generate_visit_summary(data: Dict[str, Any]) -> str:
+    """Generate summary line from vitals"""
+    summary_parts = []
+    if data.get("blood_pressure"):
+        summary_parts.append(f"BP {data['blood_pressure']}")
+    if data.get("fetal_heart_rate"):
+        summary_parts.append(f"FHR {data['fetal_heart_rate']}")
+    if data.get("fundal_height"):
+        summary_parts.append(f"FH {data['fundal_height']} cm")
+    if data.get("weight"):
+        unit = data.get("weight_unit", "lbs")
+        summary_parts.append(f"Wt {data['weight']} {unit}")
+    return ", ".join(summary_parts) if summary_parts else "Visit recorded"
 
 @router.get("/midwife/visits")
 async def get_midwife_visits(user: User = Depends(check_role(["MIDWIFE"])), client_id: Optional[str] = None):
