@@ -131,7 +131,7 @@ async def get_my_consultation_requests(user: User = Depends(check_role(["MOM"]))
 
 # ============== PROVIDER ENDPOINTS ==============
 
-@router.get("/")
+@router.get("", include_in_schema=True)
 async def get_provider_leads(
     status: Optional[str] = None,
     user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
