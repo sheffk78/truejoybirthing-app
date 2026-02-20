@@ -218,6 +218,31 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
     }
   };
 
+  const handleMarkUnpaid = async (invoiceId: string) => {
+    Alert.alert(
+      'Mark as Unpaid',
+      'Are you sure you want to mark this invoice as unpaid? This will change the status back to "Sent".',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Mark Unpaid',
+          onPress: async () => {
+            try {
+              await apiRequest(`${invoicesEndpoint}/${invoiceId}`, { 
+                method: 'PUT',
+                body: { status: 'Sent' }
+              });
+              await fetchData();
+              Alert.alert('Success', 'Invoice status changed to Sent');
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to update invoice status');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleCancelInvoice = async (invoiceId: string) => {
     Alert.alert(
       'Cancel Invoice',
