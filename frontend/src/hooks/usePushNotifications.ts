@@ -181,7 +181,7 @@ export function usePushNotifications() {
     if (!isAuthenticated) return;
 
     try {
-      const status = await apiRequest('/push/status');
+      const status = await apiRequest<{ has_push_enabled: boolean; active_devices: number }>('/push/status');
       setIsRegistered(status.has_push_enabled);
     } catch (err) {
       console.error('[Push] Failed to check push status:', err);
