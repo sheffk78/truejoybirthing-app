@@ -325,15 +325,28 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
     const isPending = appointment.status === 'pending';
     const isResponding = respondingId === appointment.appointment_id;
     const isConfirmed = ['accepted', 'scheduled', 'confirmed'].includes(appointment.status);
+    const clientInitial = (appointment.client_name || appointment.mom_name || 'C').charAt(0).toUpperCase();
     
     return (
       <Card key={appointment.appointment_id} style={styles.appointmentCard} data-testid={`appointment-${appointment.appointment_id}`}>
         <View style={styles.cardHeader}>
-          <View>
-            <Text style={styles.clientName}>{appointment.client_name || appointment.mom_name}</Text>
-            <Text style={styles.appointmentType}>
-              {APPOINTMENT_TYPES.find(t => t.value === appointment.appointment_type)?.label || appointment.appointment_type}
-            </Text>
+          <View style={styles.clientInfoRow}>
+            {appointment.client_picture ? (
+              <Image 
+                source={{ uri: appointment.client_picture }} 
+                style={styles.clientAvatar}
+              />
+            ) : (
+              <View style={[styles.clientAvatarPlaceholder, { backgroundColor: primaryColor }]}>
+                <Text style={styles.clientAvatarText}>{clientInitial}</Text>
+              </View>
+            )}
+            <View style={{ flex: 1 }}>
+              <Text style={styles.clientName}>{appointment.client_name || appointment.mom_name}</Text>
+              <Text style={styles.appointmentType}>
+                {APPOINTMENT_TYPES.find(t => t.value === appointment.appointment_type)?.label || appointment.appointment_type}
+              </Text>
+            </View>
           </View>
           <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[appointment.status] || COLORS.textLight) + '20' }]}>
             <Text style={[styles.statusText, { color: STATUS_COLORS[appointment.status] || COLORS.textLight }]}>
