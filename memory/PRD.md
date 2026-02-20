@@ -67,6 +67,25 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Midwife Client Detail Refactoring
+
+#### Midwife Client Detail Page Refactoring (COMPLETED - 2026-02-20)
+- [x] **Breadcrumb navigation** - "Clients > ClientName" replaces old header
+- [x] **Client profile header** - Avatar with initial, name, status badge, EDD display
+- [x] **Quick action buttons** - Contract, Invoice, Schedule, Notes - consistent with other provider screens
+- [x] **Prenatal visits section** - Improved UI with visit count, date badges, vitals preview chips (BP, FHR, FH)
+- [x] **Complete styles** - All missing styles added for breadcrumbs, profile card, actions, vitals
+- [x] **Backend verified** - All 14 API tests passed (dashboard, clients CRUD, prenatal visits CRUD)
+- [x] **Frontend verified** - 100% UI elements verified
+- [x] **Test client created** - "Test Client Sarah" with prenatal visit for testing
+
+### ✅ RECENTLY COMPLETED (2026-02-20) - Mom Home Key Actions Update
+
+#### Mom Home "Schedule with Provider" Link (COMPLETED - 2026-02-20)
+- [x] **Updated Key Actions** - "Schedule" subtitle changed from "Book appointments" to "With your provider"
+- [x] **data-testid updated** - Changed from "key-action-schedule" to "key-action-schedule-provider"
+- [x] **Navigation** - Links to `/(mom)/appointments` for scheduling with connected providers
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Code Refactoring
 
 #### Utility Routes Migration (COMPLETED - 2026-02-20)
