@@ -91,6 +91,8 @@ export default function AppointmentsScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isPersonalAppointment, setIsPersonalAppointment] = useState(false);
+  const [personalTitle, setPersonalTitle] = useState('');
 
   const fetchData = useCallback(async () => {
     try {
