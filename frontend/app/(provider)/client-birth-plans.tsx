@@ -59,6 +59,11 @@ const SECTION_TITLES: Record<string, string> = {
 };
 
 export default function ClientBirthPlansScreen() {
+  const params = useLocalSearchParams();
+  const router = useRouter();
+  const momUserId = params.momUserId as string | undefined;
+  const clientName = params.clientName as string | undefined;
+  
   const [pendingRequests, setPendingRequests] = useState<ShareRequest[]>([]);
   const [sharedBirthPlans, setSharedBirthPlans] = useState<SharedBirthPlan[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -75,15 +80,42 @@ export default function ClientBirthPlansScreen() {
 
   const fetchData = async () => {
     try {
-      const [requestsData, plansData] = await Promise.all([
-        apiRequest(API_ENDPOINTS.PROVIDER_SHARE_REQUESTS),
-        apiRequest(API_ENDPOINTS.PROVIDER_SHARED_BIRTH_PLANS),
-      ]);
-      
-      setPendingRequests(requestsData.requests?.filter((r: ShareRequest) => r.status === 'pending') || []);
-      setSharedBirthPlans(plansData.birth_plans || []);
+      // If momUserId is provided, fetch specific birth plan directly
+      if (momUserId) {
+        const planData = await apiRequest(`${API_ENDPOINTS.PROVIDER_SHARED_BIRTH_PLAN}/${momUserId}`);
+        if (planData && planData.plan) {
+          const transformedPlan: SharedBirthPlan = {
+            mom_user_id: momUserId,
+            mom_name: planData.mom?.full_name || clientName || 'Unknown',
+            due_date: planData.mom_profile?.due_date || null,
+            birth_setting: planData.mom_profile?.planned_birth_setting || null,
+            plan: planData.plan,
+            provider_notes: planData.provider_notes || [],
+            shared_at: new Date().toISOString(),
+          };
+          setSharedBirthPlans([transformedPlan]);
+          // Auto-open the plan detail modal
+          setSelectedPlan(transformedPlan);
+          setPlanModalVisible(true);
+        }
+        setPendingRequests([]);
+      } else {
+        // Fetch all shared plans (original behavior)
+        const [requestsData, plansData] = await Promise.all([
+          apiRequest(API_ENDPOINTS.PROVIDER_SHARE_REQUESTS),
+          apiRequest(API_ENDPOINTS.PROVIDER_SHARED_BIRTH_PLANS),
+        ]);
+        
+        setPendingRequests(requestsData.requests?.filter((r: ShareRequest) => r.status === 'pending') || []);
+        setSharedBirthPlans(plansData.birth_plans || []);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
+      // If specific plan not found, show empty state
+      if (momUserId) {
+        Alert.alert('Not Available', 'This birth plan is not available or has not been shared with you.');
+        router.back();
+      }
     } finally {
       setLoading(false);
     }
