@@ -168,9 +168,10 @@ This document outlines the phased migration plan for breaking down the monolithi
 - [ ] Remove duplicated contract routes from server.py
 - [ ] Test all routes
 
-### Phase 10: Invoices
+### Phase 10: Invoices (NEXT)
 - [ ] Create `routes/invoices.py` with feature parity
 - [ ] Invoice CRUD for both provider types
+- [ ] Payment instructions templates
 - [ ] Include router in server.py
 - [ ] Remove duplicated invoice routes from server.py
 - [ ] Test all routes
