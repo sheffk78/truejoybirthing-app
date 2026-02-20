@@ -485,10 +485,20 @@ export default function ClientBirthPlansScreen() {
                         <Text style={styles.providerNotesLabel}>Your Notes:</Text>
                         {sectionNotes.map((note: ProviderNote) => (
                           <View key={note.note_id} style={styles.noteItem}>
+                            <View style={styles.noteHeader}>
+                              <Text style={styles.noteDate}>
+                                {new Date(note.created_at).toLocaleDateString()}
+                              </Text>
+                              <TouchableOpacity
+                                onPress={() => openNoteModal(section.section_id, note)}
+                                style={styles.editNoteBtn}
+                                data-testid={`edit-note-btn-${note.note_id}`}
+                              >
+                                <Icon name="create-outline" size={16} color={COLORS.primary} />
+                                <Text style={styles.editNoteBtnText}>Edit</Text>
+                              </TouchableOpacity>
+                            </View>
                             <Text style={styles.noteContent}>{note.note_content}</Text>
-                            <Text style={styles.noteDate}>
-                              {new Date(note.created_at).toLocaleDateString()}
-                            </Text>
                           </View>
                         ))}
                       </View>
