@@ -42,6 +42,7 @@ export const API_ENDPOINTS = {
   // Provider Share Endpoints
   PROVIDER_SHARE_REQUESTS: '/provider/share-requests',
   PROVIDER_SHARED_BIRTH_PLANS: '/provider/shared-birth-plans',
+  PROVIDER_SHARED_BIRTH_PLAN: '/provider/shared-birth-plan',
   PROVIDER_BIRTH_PLAN_NOTES: '/provider/birth-plan',
   PROVIDER_NOTES: '/provider/notes',
   
