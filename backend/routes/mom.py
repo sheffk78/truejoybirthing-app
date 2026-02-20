@@ -323,3 +323,77 @@ async def create_mom_appointment(request_data: dict, user: User = Depends(check_
     appointment.pop("_id", None)
     
     return appointment
+
+
+@router.get("/appointments")
+async def get_mom_appointments(user: User = Depends(check_role(["MOM"]))):
+    """Get all appointments for Mom (excluding provider's private notes)"""
+    appointments = await db.appointments.find(
+        {"$or": [{"mom_user_id": user.user_id}, {"mom_id": user.user_id}]},
+        {"_id": 0, "notes": 0}  # Exclude provider's private notes
+    ).sort("appointment_date", 1).to_list(100)
+    
+    return appointments
+
+
+@router.put("/appointments/{appointment_id}/respond")
+async def respond_to_appointment(
+    appointment_id: str,
+    response: str,
+    user: User = Depends(check_role(["MOM"]))
+):
+    """Mom responds to an appointment invitation"""
+    if response not in ["accepted", "declined"]:
+        raise HTTPException(status_code=400, detail="Response must be 'accepted' or 'declined'")
+    
+    appointment = await db.appointments.find_one({
+        "appointment_id": appointment_id,
+        "$or": [{"mom_user_id": user.user_id}, {"mom_id": user.user_id}]
+    })
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    
+    now = get_now()
+    await db.appointments.update_one(
+        {"appointment_id": appointment_id},
+        {"$set": {"status": response, "updated_at": now}}
+    )
+    
+    # Notify the provider
+    await create_notification(
+        user_id=appointment["provider_id"],
+        notif_type="appointment_response",
+        title=f"Appointment {response.title()}",
+        message=f"{user.full_name} has {response} your appointment invitation",
+        data={"appointment_id": appointment_id, "status": response}
+    )
+    
+    return {"message": f"Appointment {response}"}
+
+
+@router.delete("/appointments/{appointment_id}")
+async def cancel_mom_appointment(appointment_id: str, user: User = Depends(check_role(["MOM"]))):
+    """Mom cancels an appointment"""
+    appointment = await db.appointments.find_one({
+        "appointment_id": appointment_id,
+        "$or": [{"mom_user_id": user.user_id}, {"mom_id": user.user_id}]
+    })
+    if not appointment:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    
+    now = get_now()
+    await db.appointments.update_one(
+        {"appointment_id": appointment_id},
+        {"$set": {"status": "cancelled", "updated_at": now}}
+    )
+    
+    # Notify the provider
+    await create_notification(
+        user_id=appointment["provider_id"],
+        notif_type="appointment_response",
+        title="Appointment Cancelled",
+        message=f"{user.full_name} has cancelled the appointment",
+        data={"appointment_id": appointment_id, "status": "cancelled"}
+    )
+    
+    return {"message": "Appointment cancelled"}
