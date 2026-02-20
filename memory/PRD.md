@@ -65,7 +65,51 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - **BirthSummary**: {midwife_id, client_id, summary}
 - **Message**: {message_id, sender_id, receiver_id, content, read, created_at}
 
-## What's Been Implemented (Last Updated: 2026-02-19)
+## What's Been Implemented (Last Updated: 2026-02-20)
+
+### ✅ RECENTLY COMPLETED (2026-02-20) - Backend Modular Architecture Refactoring
+
+#### Phase 12: Care Plans Migration (COMPLETED - 2026-02-20)
+- [x] **Migrated care plan routes** from monolithic `server.py` to `routes/care_plans.py` (~1179 lines)
+- [x] **Birth Plan Routes**: GET/PUT /api/birth-plan, GET /api/birth-plan/export, GET /api/birth-plan/export/pdf
+- [x] **Provider Search**: GET /api/providers/search?query=xxx
+- [x] **Birth Plan Sharing (Mom)**: POST/GET/DELETE /api/birth-plan/share
+- [x] **Provider Share Requests**: GET /api/provider/share-requests, PUT /api/provider/share-requests/{id}/respond
+- [x] **Provider Birth Plan Access**: GET /api/provider/shared-birth-plans, GET /api/provider/shared-birth-plan/{mom_id}, GET /api/provider/client/{mom_id}/birth-plan, GET /api/provider/client/{mom_id}/birth-plan/pdf
+- [x] **Provider Birth Plan Notes**: POST/PUT/DELETE /api/provider/birth-plan/{mom_id}/notes
+- [x] **Wellness Routes**: POST/GET /api/wellness/checkin, POST/GET /api/wellness/entry, GET /api/wellness/stats
+- [x] **Postpartum Routes**: GET/PUT /api/postpartum/plan
+- [x] **Timeline Routes**: GET/POST/DELETE /api/timeline, /api/timeline/events
+- [x] **All 67 tests passing** (iteration_108.json)
+- [x] **Role-based access verified** - Mom-only and Provider-only routes properly secured
+
+#### Previous Migration Phases (COMPLETED - 2026-02-19)
+- Phases 1-11: Auth, Admin, Marketplace, Messages, Notifications, Subscriptions, Mom, Doula, Midwife, Contracts, Invoices, Visits routes migrated
+- See `backend/routes/` directory for modular structure
+
+#### Backend Architecture After Migration:
+```
+/app/backend
+├── routes/
+│   ├── __init__.py      # Module exports
+│   ├── dependencies.py  # Shared deps (db, auth, utils)
+│   ├── auth.py         # Auth routes
+│   ├── admin.py        # Admin routes
+│   ├── marketplace.py  # Provider search/marketplace
+│   ├── messages.py     # Messaging routes
+│   ├── notifications.py # Notification routes
+│   ├── subscription.py # Subscription routes
+│   ├── mom.py          # Mom-specific routes
+│   ├── doula.py        # Doula-specific routes
+│   ├── midwife.py      # Midwife-specific routes
+│   ├── contracts.py    # Contract routes
+│   ├── invoices.py     # Invoice routes
+│   ├── visits.py       # Visit routes
+│   └── care_plans.py   # Care plan routes (NEW)
+├── server.py           # Main app (reduced from ~4000 lines)
+└── models/
+    └── models.py       # Pydantic models
+```
 
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Client-Centered Architecture Refactoring
 - [x] **Unified Provider Routes** - `/api/provider/*` endpoints work for both DOULA and MIDWIFE roles
