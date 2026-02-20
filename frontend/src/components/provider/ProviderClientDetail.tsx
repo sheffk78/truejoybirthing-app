@@ -435,7 +435,18 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             <TouchableOpacity
               key={tab.key}
               style={[styles.tab, activeTab === tab.key && { backgroundColor: primaryColor }]}
-              onPress={() => setActiveTab(tab.key)}
+              onPress={() => {
+                if (tab.key === 'birthplan') {
+                  // Navigate to birth plan view
+                  if (client.linked_mom_id) {
+                    router.push(`${config.routes.clientBirthPlans || '/(doula)/client-birth-plans'}?momUserId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
+                  } else {
+                    Alert.alert('Not Available', 'This client is not linked to a registered user yet.');
+                  }
+                } else {
+                  setActiveTab(tab.key);
+                }
+              }}
               data-testid={`tab-${tab.key}`}
             >
               <Icon 
