@@ -433,18 +433,32 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
             </TouchableOpacity>
           </>
         )}
-        <TouchableOpacity
-          style={[styles.actionButton, styles.actionButtonOutline]}
-          onPress={() => handleDuplicateContract(contract)}
-        >
-          <Ionicons name="copy-outline" size={16} color={primaryColor} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.actionButton, styles.actionButtonOutline]}
-          onPress={() => handleViewPDF(contract)}
-        >
-          <Ionicons name="document-outline" size={16} color={primaryColor} />
-        </TouchableOpacity>
+        {contract.status === 'Sent' && (
+          <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: COLORS.success }]}
+            onPress={() => {
+              // Navigate to e-sign page based on role
+              const signUrl = config.roleLabel === 'Midwife' 
+                ? `/sign-midwife-contract?contractId=${contract.contract_id}`
+                : `/sign-contract?contractId=${contract.contract_id}`;
+              router.push(signUrl as any);
+            }}
+            data-testid={`esign-contract-${contract.contract_id}`}
+          >
+            <Ionicons name="create-outline" size={16} color="#fff" />
+            <Text style={styles.actionButtonText}>E-Sign</Text>
+          </TouchableOpacity>
+        )}
+        {contract.status === 'Signed' && (
+          <TouchableOpacity
+            style={[styles.actionButton, styles.actionButtonOutline]}
+            onPress={() => handleViewPDF(contract)}
+            data-testid={`view-pdf-${contract.contract_id}`}
+          >
+            <Ionicons name="document-outline" size={16} color={primaryColor} />
+            <Text style={[styles.actionButtonTextSmall, { color: primaryColor }]}>PDF</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   );
