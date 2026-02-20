@@ -79,11 +79,22 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Renamed Quick Actions to Key Actions** - Updated section title on home screen
 - [x] **Simplified Key Actions** - Removed Birth Plan, Find Providers, Appointments, My Team; kept only Timeline and Wellness
 
-#### Mom Appointments & Messages (COMPLETED - 2026-02-20)
-- [x] **Fixed Mom appointment creation** - Backend now properly sets appointment_date, appointment_time, client_id, mom_user_id
-- [x] **Appointments sync to providers** - Mom-created appointments include client_id for provider visibility
-- [x] **Added "Appt" badge on client cards** - Shows calendar icon with "Appt" when client has upcoming appointment
-- [x] **Messages back button** - Already works (setSelectedConversation(null) closes the modal)
+#### Unified Appointments System (COMPLETED - 2026-02-20)
+**Backend: `/app/backend/routes/appointments.py`**
+- [x] **Unified `/api/appointments` endpoint** - Works for both Mom and Provider
+- [x] **Mom creates appointment with provider** - Links to client_id and provider_id
+- [x] **Provider creates appointment with client** - Links to mom_user_id for visibility
+- [x] **"None" appointments** - Mom can create personal appointments without provider
+- [x] **Appointment appears on both sides** - Mom sees provider info, Provider sees client info
+- [x] **Notifications** - Created when appointments are made/responded to
+- [x] **Status flow** - pending → confirmed/declined/cancelled
+
+**Frontend Changes Needed:**
+- [ ] Update Mom appointments.tsx to use `/api/appointments` and add provider selection
+- [ ] Update ProviderAppointments.tsx to use `/api/appointments` 
+- [ ] Ensure client pre-selection and back navigation work
+- [ ] Add "Appt" badge based on `/api/appointments/has-upcoming/{client_id}`
+- [ ] Update dashboard to show upcoming appointment count
 - [x] **Fixed My Team card display** - Share-requests API now returns provider_name, provider_role, provider_picture
 - [x] **Fixed client photos on provider side** - Clients list and detail now include linked mom's picture
 - [x] **Fixed shared birth plans endpoint** - Now properly fetches mom_name from users collection
