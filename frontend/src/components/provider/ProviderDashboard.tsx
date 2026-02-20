@@ -150,14 +150,19 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
         
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
-          {config.dashboard.statsCards.map((stat, index) => (
-            <Card key={stat.key} style={styles.statCard}>
-              <Text style={[styles.statNumber, { color: getStatColor(stat.colorKey) }]}>
-                {stats?.[stat.key] || 0}
-              </Text>
-              <Text style={styles.statLabel}>{stat.label}</Text>
-            </Card>
-          ))}
+          {config.dashboard.statsCards.map((stat, index) => {
+            // Handle array values (like upcoming_appointments) - show the length
+            const value = stats?.[stat.key];
+            const displayValue = Array.isArray(value) ? value.length : (value || 0);
+            return (
+              <Card key={stat.key} style={styles.statCard}>
+                <Text style={[styles.statNumber, { color: getStatColor(stat.colorKey) }]}>
+                  {displayValue}
+                </Text>
+                <Text style={styles.statLabel}>{stat.label}</Text>
+              </Card>
+            );
+          })}
         </View>
 
         {/* Pending Share Requests */}
