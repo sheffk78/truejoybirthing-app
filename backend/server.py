@@ -3143,16 +3143,7 @@ async def update_midwife_client(client_id: str, request: Request, user: User = D
     return {"message": "Client updated"}
 
 # ============== VISIT ROUTES (MIDWIFE) ==============
-
-@api_router.get("/midwife/visits")
-async def get_midwife_visits(user: User = Depends(check_role(["MIDWIFE"])), client_id: Optional[str] = None):
-    """Get visits, optionally filtered by client"""
-    query = {"midwife_id": user.user_id}
-    if client_id:
-        query["client_id"] = client_id
-    
-    visits = await db.visits.find(query, {"_id": 0}).sort("visit_date", -1).to_list(100)
-    return visits
+# MIGRATED TO: routes/visits.py
 
 @api_router.post("/midwife/visits")
 async def create_visit(visit_data: VisitCreate, user: User = Depends(check_role(["MIDWIFE"]))):
