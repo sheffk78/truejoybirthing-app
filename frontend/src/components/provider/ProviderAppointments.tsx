@@ -87,6 +87,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
+  const [respondingId, setRespondingId] = useState<string | null>(null);
 
   // Create appointment form state
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
