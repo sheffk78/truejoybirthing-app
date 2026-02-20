@@ -107,6 +107,10 @@ export default function MidwifeLayout() {
         name="contract-templates"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="client-birth-plans"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }
