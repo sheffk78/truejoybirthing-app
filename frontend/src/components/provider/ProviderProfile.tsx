@@ -537,6 +537,43 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           <Icon name="log-out-outline" size={20} color={COLORS.error} />
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
+        
+        {/* Legal Links - App Store Compliance */}
+        <View style={styles.legalSection}>
+          <View style={styles.legalLinks}>
+            <TouchableOpacity 
+              onPress={() => Linking.openURL('https://truejoybirthing.com/privacy-policy/')}
+              style={styles.legalLink}
+            >
+              <Text style={styles.legalLinkText}>Privacy Policy</Text>
+            </TouchableOpacity>
+            <Text style={styles.legalSeparator}>•</Text>
+            <TouchableOpacity 
+              onPress={() => Linking.openURL('https://truejoybirthing.com/disclaimer/')}
+              style={styles.legalLink}
+            >
+              <Text style={styles.legalLinkText}>Disclaimer</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.legalLinks}>
+            <TouchableOpacity 
+              onPress={() => Linking.openURL('https://truejoybirthing.com/terms-of-service/')}
+              style={styles.legalLink}
+            >
+              <Text style={styles.legalLinkText}>Terms of Service</Text>
+            </TouchableOpacity>
+            <Text style={styles.legalSeparator}>•</Text>
+            <TouchableOpacity 
+              onPress={() => Linking.openURL('https://truejoybirthing.com/contact/')}
+              style={styles.legalLink}
+            >
+              <Text style={styles.legalLinkText}>Contact</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        {/* Bottom Spacing */}
+        <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
   );
