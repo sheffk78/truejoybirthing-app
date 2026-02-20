@@ -41,18 +41,18 @@ class TestSetup:
         response = requests.post(f"{BASE_URL}/api/auth/login", json=DOULA_CREDS)
         assert response.status_code == 200, f"Doula login failed: {response.status_code} - {response.text}"
         data = response.json()
-        assert "access_token" in data, "No access_token in response"
+        assert "session_token" in data, "No session_token in response"
         print(f"PASS: Doula login successful")
-        return data["access_token"]
+        return data["session_token"]
     
     def test_midwife_login(self):
         """Test midwife login and get token"""
         response = requests.post(f"{BASE_URL}/api/auth/login", json=MIDWIFE_CREDS)
         assert response.status_code == 200, f"Midwife login failed: {response.status_code} - {response.text}"
         data = response.json()
-        assert "access_token" in data, "No access_token in response"
+        assert "session_token" in data, "No session_token in response"
         print(f"PASS: Midwife login successful")
-        return data["access_token"]
+        return data["session_token"]
 
 
 @pytest.fixture(scope="module")
@@ -61,7 +61,7 @@ def doula_token():
     response = requests.post(f"{BASE_URL}/api/auth/login", json=DOULA_CREDS)
     if response.status_code != 200:
         pytest.skip(f"Doula login failed: {response.status_code}")
-    return response.json()["access_token"]
+    return response.json()["session_token"]
 
 
 @pytest.fixture(scope="module")
@@ -70,7 +70,7 @@ def midwife_token():
     response = requests.post(f"{BASE_URL}/api/auth/login", json=MIDWIFE_CREDS)
     if response.status_code != 200:
         pytest.skip(f"Midwife login failed: {response.status_code}")
-    return response.json()["access_token"]
+    return response.json()["session_token"]
 
 
 @pytest.fixture(scope="module")
