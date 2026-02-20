@@ -263,6 +263,7 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
           <KeyboardAvoidingView 
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
           >
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => { setModalVisible(false); resetForm(); }}>
@@ -275,7 +276,7 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
             <ScrollView 
               style={styles.modalContent} 
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 100 }}
+              contentContainerStyle={{ paddingBottom: 140 }}
               keyboardShouldPersistTaps="handled"
             >
               {/* Client Selection */}
