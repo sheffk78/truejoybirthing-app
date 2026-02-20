@@ -220,6 +220,7 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
     notes: '/(midwife)/notes',
     appointments: '/(midwife)/appointments',
     visits: '/(midwife)/visits',
+    clientBirthPlans: '/(midwife)/client-birth-plans',
   },
   
   dashboard: {
@@ -246,6 +247,7 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
     { key: 'messages', label: 'Messages', icon: 'chatbubbles' },
     { key: 'contracts', label: 'Contracts', icon: 'document' },
     { key: 'invoices', label: 'Invoices', icon: 'cash' },
+    { key: 'birthplan', label: 'Birth Plan', icon: 'clipboard' },
     { key: 'birth', label: 'Birth Info', icon: 'heart' },
   ],
   
