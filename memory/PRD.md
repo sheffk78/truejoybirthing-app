@@ -79,6 +79,13 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Renamed Quick Actions to Key Actions** - Updated section title on home screen
 - [x] **Simplified Key Actions** - Removed Birth Plan, Find Providers, Appointments, My Team; kept only Timeline and Wellness
 
+#### Provider & Data Fixes (COMPLETED - 2026-02-20)
+- [x] **Fixed My Team card display** - Share-requests API now returns provider_name, provider_role, provider_picture
+- [x] **Fixed client photos on provider side** - Clients list and detail now include linked mom's picture
+- [x] **Fixed shared birth plans endpoint** - Now properly fetches mom_name from users collection
+- [x] **Hidden client-birth-plans from bottom nav** - Added href:null for doula and midwife layouts
+- [x] **Birth Plan access from Client Detail** - Tab already exists in clientDetailTabs config
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Database Cleanup
 
 #### Database Cleanup (COMPLETED - 2026-02-20)
