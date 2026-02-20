@@ -223,6 +223,38 @@ async def get_team_providers(user: User = Depends(check_role(["MOM"]))):
     return providers
 
 
+@router.get("/contracts")
+async def get_mom_contracts(user: User = Depends(check_role(["MOM"]))):
+    """Get contracts sent to this mom"""
+    # Find client records where this mom is linked
+    clients = await db.clients.find(
+        {"linked_mom_id": user.user_id},
+        {"_id": 0, "client_id": 1}
+    ).to_list(100)
+    
+    client_ids = [c["client_id"] for c in clients]
+    
+    contracts = await db.contracts.find(
+        {"client_id": {"$in": client_ids}},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Enrich with provider info
+    for contract in contracts:
+        # Get provider from doula_id or midwife_id or provider_id
+        provider_id = contract.get("provider_id") or contract.get("doula_id") or contract.get("midwife_id")
+        if provider_id:
+            provider = await db.users.find_one(
+                {"user_id": provider_id},
+                {"_id": 0, "full_name": 1, "role": 1}
+            )
+            if provider:
+                contract["provider_name"] = provider.get("full_name")
+                contract["provider_role"] = provider.get("role")
+    
+    return contracts
+
+
 @router.get("/invoices")
 async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
     """Get invoices sent to this mom"""
