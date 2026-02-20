@@ -393,11 +393,6 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               <Text style={[styles.quickActionText, { color: COLORS.accent }]}>Add Note</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={[styles.quickAction, { backgroundColor: COLORS.info + '20' }]} onPress={() => handleQuickAction('message')} data-testid="quick-action-message">
-              <Icon name="chatbubble" size={20} color={COLORS.info || COLORS.primary} />
-              <Text style={[styles.quickActionText, { color: COLORS.info || COLORS.primary }]}>Message</Text>
-            </TouchableOpacity>
-            
             <TouchableOpacity style={[styles.quickAction, { backgroundColor: COLORS.warning + '20' }]} onPress={() => handleQuickAction('contract')} data-testid="quick-action-contract">
               <Icon name="document" size={20} color={COLORS.warning} />
               <Text style={[styles.quickActionText, { color: COLORS.warning }]}>Contract</Text>
