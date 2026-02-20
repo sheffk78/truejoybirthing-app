@@ -158,7 +158,6 @@ export const DOULA_CONFIG: ProviderConfig = {
     { key: 'contracts', label: 'Contracts', icon: 'document' },
     { key: 'invoices', label: 'Invoices', icon: 'cash' },
     { key: 'birthplan', label: 'Birth Plan', icon: 'clipboard' },
-    { key: 'birth', label: 'Birth Info', icon: 'heart' },
   ],
   
   clientStatuses: ['Active', 'Prenatal', 'Contract Sent', 'Contract Signed', 'In Labor', 'Postpartum', 'Completed'],
@@ -249,7 +248,6 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
     { key: 'contracts', label: 'Contracts', icon: 'document' },
     { key: 'invoices', label: 'Invoices', icon: 'cash' },
     { key: 'birthplan', label: 'Birth Plan', icon: 'clipboard' },
-    { key: 'birth', label: 'Birth Info', icon: 'heart' },
   ],
   
   clientStatuses: ['Prenatal', 'Contract Sent', 'Contract Signed', 'In Labor', 'Postpartum', 'Completed'],
