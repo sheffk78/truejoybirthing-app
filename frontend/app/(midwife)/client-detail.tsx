@@ -977,7 +977,13 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     marginLeft: SIZES.sm,
   },
-  addButton: {
+  visitCount: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    marginLeft: SIZES.xs,
+  },
+  addVisitButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
