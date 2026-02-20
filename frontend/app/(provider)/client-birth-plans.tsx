@@ -212,6 +212,18 @@ export default function ClientBirthPlansScreen() {
     return selectedPlan?.provider_notes.filter((n: ProviderNote) => n.section_id === sectionId) || [];
   };
 
+  // Format field labels for better readability
+  const formatFieldLabel = (key: string): string => {
+    // Convert camelCase to Title Case with spaces
+    return key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/_/g, ' ')
+      .trim()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
