@@ -143,11 +143,27 @@ This document outlines the phased migration plan for breaking down the monolithi
 - Role-based access control verified (403 for cross-role access)
 - No ObjectId serialization errors
 
-### Phase 9: Contracts (NEXT)
-- [ ] Create `routes/contracts.py` with feature parity
-- [ ] Include Doula contract templates
-- [ ] Include Midwife contract templates
-- [ ] Handle PDF generation (WeasyPrint)
+### Phase 9: Contracts (COMPLETED)
+- [x] Create `routes/contracts.py` with feature parity
+- [x] Include Doula contract CRUD, send, duplicate, sign, PDF, HTML
+- [x] Include Midwife contract CRUD, send, duplicate, sign, PDF, HTML
+- [x] Handle PDF generation (ReportLab)
+- [x] Include Midwife contract defaults
+- [x] Include Contract templates CRUD
+- [x] Include router in server.py
+- [x] Remove duplicated contract routes from server.py
+- [x] Test all routes (47/47 tests passed)
+
+**Completed**: All contract routes now served from modular router.
+- `routes/contracts.py` - ~30 endpoints migrated
+  - Doula contracts: GET/POST/PUT/DELETE, send, duplicate, sign, HTML, PDF
+  - Midwife contracts: GET/POST/PUT/DELETE, send, duplicate, sign, HTML, PDF
+  - Midwife contract defaults: GET/PUT
+  - Contract templates: CRUD for both provider types
+- Server.py reduced from 6,395 → 5,322 lines (~1,073 lines migrated)
+- PDF generation using ReportLab library
+- Role-based access control verified
+- No ObjectId serialization errors
 - [ ] Include router in server.py
 - [ ] Remove duplicated contract routes from server.py
 - [ ] Test all routes
