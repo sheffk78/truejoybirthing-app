@@ -248,6 +248,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
       </Card>
     </TouchableOpacity>
   );
+  };
 
   const filteredTimeline = timeline.filter(item => {
     if (activeTab === 'timeline') return true;
