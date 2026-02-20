@@ -14,8 +14,7 @@ from pydantic import BaseModel
 
 import resend
 
-from database import db
-from auth import User, check_role
+from .dependencies import db, check_role, User
 
 # ============== CONSTANTS ==============
 SENDER_EMAIL = "True Joy Birthing <noreply@truejoybirthing.com>"
