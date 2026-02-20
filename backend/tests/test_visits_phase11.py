@@ -54,8 +54,8 @@ class TestAuthLogin:
         assert response.status_code == 200
         data = response.json()
         assert "session_token" in data
-        assert data["user"]["role"] == "MIDWIFE"
-        print(f"Midwife login successful: {data['user']['full_name']}")
+        assert data["role"] == "MIDWIFE"
+        print(f"Midwife login successful: {data['full_name']}")
     
     def test_doula_login_success(self):
         """Test doula can login"""
@@ -66,8 +66,8 @@ class TestAuthLogin:
         assert response.status_code == 200
         data = response.json()
         assert "session_token" in data
-        assert data["user"]["role"] == "DOULA"
-        print(f"Doula login successful: {data['user']['full_name']}")
+        assert data["role"] == "DOULA"
+        print(f"Doula login successful: {data['full_name']}")
 
 
 @pytest.fixture(scope="module")
@@ -85,7 +85,14 @@ def midwife_session():
         "Authorization": f"Bearer {data['session_token']}",
         "Content-Type": "application/json"
     })
-    return session, data["user"]
+    # Return user data directly (not nested under 'user' key)
+    user_data = {
+        "user_id": data["user_id"],
+        "email": data["email"],
+        "full_name": data["full_name"],
+        "role": data["role"]
+    }
+    return session, user_data
 
 
 @pytest.fixture(scope="module")
@@ -103,7 +110,14 @@ def doula_session():
         "Authorization": f"Bearer {data['session_token']}",
         "Content-Type": "application/json"
     })
-    return session, data["user"]
+    # Return user data directly (not nested under 'user' key)
+    user_data = {
+        "user_id": data["user_id"],
+        "email": data["email"],
+        "full_name": data["full_name"],
+        "role": data["role"]
+    }
+    return session, user_data
 
 
 @pytest.fixture(scope="module")
