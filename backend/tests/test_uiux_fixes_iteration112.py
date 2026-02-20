@@ -261,14 +261,20 @@ class TestProviderContractsCreation:
         if len(clients) == 0:
             pytest.skip("No clients available for testing")
         
-        client_id = clients[0]["client_id"]
+        client = clients[0]
+        client_id = client["client_id"]
+        client_name = client.get("name", "Test Client")
+        due_date = client.get("due_date") or client.get("edd") or (datetime.now() + timedelta(days=60)).strftime("%Y-%m-%d")
         
         contract_data = {
             "client_id": client_id,
+            "client_name": client_name,
+            "estimated_due_date": due_date,
             "title": f"{TEST_PREFIX}Test Contract",
             "services_included": ["Birth Support", "Postpartum Support"],
             "total_fee": 1500.00,
             "deposit_amount": 500.00,
+            "retainer_amount": 500.00,
             "status": "Draft"
         }
         response = requests.post(f"{BASE_URL}/api/doula/contracts", json=contract_data, headers=doula_headers)
