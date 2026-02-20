@@ -11,7 +11,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Platform, Alert } from 'react-native';
 import Constants from 'expo-constants';
 import { apiRequest } from '../utils/api';
-import { useAuth } from './useAuth';
+import { useAuthStore } from '../store/authStore';
 
 // Configure how notifications are handled when app is in foreground
 Notifications.setNotificationHandler({
