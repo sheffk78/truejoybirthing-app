@@ -18,6 +18,22 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 
+interface PendingContract {
+  contract_id: string;
+  provider_name: string;
+  provider_role: string;
+  status: string;
+  created_at: string;
+}
+
+interface PendingInvoice {
+  invoice_id: string;
+  provider_name: string;
+  amount: number;
+  status: string;
+  due_date?: string;
+}
+
 export default function MomHomeScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
@@ -26,17 +42,25 @@ export default function MomHomeScreen() {
   const [timeline, setTimeline] = useState<any>(null);
   const [weeklyContent, setWeeklyContent] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [pendingContracts, setPendingContracts] = useState<PendingContract[]>([]);
+  const [pendingInvoices, setPendingInvoices] = useState<PendingInvoice[]>([]);
   
   const fetchData = async () => {
     try {
-      const [planData, timelineData, contentData] = await Promise.all([
+      const [planData, timelineData, contentData, contractsData, invoicesData] = await Promise.all([
         apiRequest(API_ENDPOINTS.BIRTH_PLAN),
         apiRequest(API_ENDPOINTS.TIMELINE),
         apiRequest(API_ENDPOINTS.WEEKLY_CONTENT),
+        apiRequest('/mom/contracts').catch(() => []),
+        apiRequest('/mom/invoices').catch(() => []),
       ]);
       setBirthPlan(planData);
       setTimeline(timelineData);
       setWeeklyContent(contentData);
+      // Filter for contracts that need mom's signature
+      setPendingContracts(contractsData.filter((c: any) => c.status === 'Sent' || c.status === 'sent'));
+      // Filter for unpaid invoices
+      setPendingInvoices(invoicesData.filter((i: any) => i.status === 'Sent' || i.status === 'sent' || i.status === 'pending'));
     } catch (error) {
       console.error('Error fetching data:', error);
     }
