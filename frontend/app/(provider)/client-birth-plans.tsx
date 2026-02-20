@@ -802,12 +802,14 @@ const styles = StyleSheet.create({
   dataLabel: {
     fontSize: SIZES.fontSm,
     color: COLORS.textLight,
-    width: 100,
+    width: 140,
+    flexShrink: 0,
   },
   dataValue: {
     fontSize: SIZES.fontSm,
     color: COLORS.textPrimary,
     flex: 1,
+    flexWrap: 'wrap',
   },
   moreData: {
     fontSize: SIZES.fontSm,
