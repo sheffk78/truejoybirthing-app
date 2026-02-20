@@ -256,6 +256,9 @@ export const MIDWIFE_CONTRACTS_CONFIG: ContractsConfig = {
     defaults: '/midwife/contract-defaults',
   },
   clientsEndpoint: '/midwife/clients',
+  routes: {
+    clients: '/(midwife)/clients',
+  },
 };
 
 // Helper to get config by role
