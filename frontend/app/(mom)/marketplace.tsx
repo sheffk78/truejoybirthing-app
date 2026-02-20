@@ -36,6 +36,7 @@ export default function MarketplaceScreen() {
   const [contactingProvider, setContactingProvider] = useState(false);
   const [addingToTeam, setAddingToTeam] = useState(false);
   const [teamStatus, setTeamStatus] = useState<Record<string, string>>({}); // Track share status per provider
+  const [consultationStatus, setConsultationStatus] = useState<Record<string, string>>({}); // Track consultation request status
   
   // Video player modal state
   const [showVideoModal, setShowVideoModal] = useState(false);
