@@ -41,7 +41,7 @@ def mom_token(api_client):
     })
     if response.status_code == 200:
         data = response.json()
-        return data.get("token")
+        return data.get("session_token")
     pytest.skip(f"Mom login failed: {response.text}")
 
 
@@ -54,7 +54,7 @@ def doula_token(api_client):
     })
     if response.status_code == 200:
         data = response.json()
-        return data.get("token")
+        return data.get("session_token")
     pytest.skip(f"Doula login failed: {response.text}")
 
 
@@ -67,7 +67,7 @@ def midwife_token(api_client):
     })
     if response.status_code == 200:
         data = response.json()
-        return data.get("token")
+        return data.get("session_token")
     pytest.skip(f"Midwife login failed: {response.text}")
 
 
@@ -108,7 +108,7 @@ class TestLeadsBackendAPI:
         })
         assert response.status_code == 200, f"Mom login failed: {response.text}"
         data = response.json()
-        assert "token" in data
+        assert "session_token" in data
         print(f"✓ Mom login successful")
     
     def test_2_doula_login(self, api_client):
@@ -119,7 +119,7 @@ class TestLeadsBackendAPI:
         })
         assert response.status_code == 200, f"Doula login failed: {response.text}"
         data = response.json()
-        assert "token" in data
+        assert "session_token" in data
         print(f"✓ Doula login successful")
     
     def test_3_midwife_login(self, api_client):
@@ -130,7 +130,7 @@ class TestLeadsBackendAPI:
         })
         assert response.status_code == 200, f"Midwife login failed: {response.text}"
         data = response.json()
-        assert "token" in data
+        assert "session_token" in data
         print(f"✓ Midwife login successful")
     
     def test_4_mom_consultation_requests_endpoint(self, api_client, mom_token):
