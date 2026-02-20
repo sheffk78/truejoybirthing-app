@@ -40,6 +40,7 @@ interface CustomEvent {
 }
 
 export default function TimelineScreen() {
+  const router = useRouter();
   const [timeline, setTimeline] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
