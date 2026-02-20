@@ -75,6 +75,11 @@ interface ProviderAppointmentsProps {
 
 export default function ProviderAppointments({ config }: ProviderAppointmentsProps) {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const preSelectedClientId = params.clientId as string | undefined;
+  const preSelectedClientName = params.clientName as string | undefined;
+  const returnTo = params.returnTo as string | undefined;
+  
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -111,13 +116,23 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
       // Filter clients that have linked mom accounts
       const linkedClients = (clientsData || []).filter((c: Client) => c.linked_mom_id);
       setClients(linkedClients);
+      
+      // Auto-select client if coming from client detail
+      if (preSelectedClientId && linkedClients.length > 0) {
+        const matchingClient = linkedClients.find((c: Client) => c.client_id === preSelectedClientId);
+        if (matchingClient) {
+          setSelectedClient(matchingClient);
+          // Auto-open create modal if coming from client detail
+          setShowCreateModal(true);
+        }
+      }
     } catch (error: any) {
       console.error('Error fetching data:', error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [config.endpoints]);
+  }, [config.endpoints, preSelectedClientId]);
 
   useEffect(() => {
     fetchData();
@@ -126,6 +141,14 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
   const handleRefresh = () => {
     setIsRefreshing(true);
     fetchData();
+  };
+  
+  const handleBack = () => {
+    if (returnTo) {
+      router.push(decodeURIComponent(returnTo) as any);
+    } else {
+      router.back();
+    }
   };
 
   const resetForm = () => {
