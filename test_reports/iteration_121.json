@@ -1,0 +1,66 @@
+{
+  "summary": "Testing Download PDF button on signed contract page. Fixed missing API_BASE_URL constant and verified full functionality works correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "backend_pdf_endpoint": {
+      "GET /api/contracts/{id}/pdf": "PASS - Returns 200 with valid PDF",
+      "content_type": "PASS - application/pdf",
+      "file_size": "PASS - 9182 bytes",
+      "pdf_header": "PASS - File starts with %PDF-1.4",
+      "content_disposition": "PASS - Triggers browser download with filename"
+    },
+    "frontend_signed_contract_page": {
+      "page_loads": "PASS - /sign-contract?contractId=contract_6cc57257d974 loads successfully",
+      "contract_signed_section": "PASS - 'Contract Signed' header displayed with checkmark",
+      "signed_date": "PASS - Shows 'Signed by Emma Johnson on February 20, 2026 at 03:16 PM'",
+      "email_note": "PASS - Shows 'A copy of the signed agreement has been sent to your email'",
+      "download_button_visible": "PASS - 'Download Signed PDF' button visible with download icon",
+      "download_button_styling": "PASS - Purple/violet background with white text",
+      "download_click": "PASS - Clicking button triggers PDF download",
+      "downloaded_filename": "PASS - Doula_Agreement_Emma_Johnson_contract_6cc57257d974.pdf"
+    }
+  },
+  "fixes_applied": [
+    {
+      "file": "/app/frontend/src/constants/api.ts",
+      "issue": "API_BASE_URL constant was not exported but was imported in sign-contract.tsx",
+      "fix": "Added export of API_BASE_URL constant for PDF download URL construction"
+    }
+  ],
+  "verified_features": [
+    "Contract page displays 'Contract Signed' confirmation section for signed contracts",
+    "Download Signed PDF button is visible in the signed confirmation section",
+    "Button has data-testid='download-pdf-btn' for automated testing",
+    "Clicking button opens PDF download in browser",
+    "PDF endpoint returns valid PDF with correct filename",
+    "PDF contains contract details (Client: Emma Johnson, Doula: Sarah Mitchell)"
+  ],
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": ["/app/frontend/src/constants/api.ts"],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "test_contract_url": "https://doula-connect-3.preview.emergentagent.com/sign-contract?contractId=contract_6cc57257d974",
+    "pdf_download_url": "https://doula-connect-3.preview.emergentagent.com/api/contracts/contract_6cc57257d974/pdf"
+  },
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Download PDF feature fully tested and working. The API_BASE_URL constant was missing from api.ts exports - this was fixed. Contract contract_6cc57257d974 is in 'Signed' status and shows the download button correctly.",
+  "mocked_api": {
+    "has_mocked_apis": false,
+    "mocked_apis_list": []
+  }
+}
