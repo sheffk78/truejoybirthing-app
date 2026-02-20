@@ -77,7 +77,10 @@ export default function DoulaLayout() {
       {/* Hidden screens - accessed via navigation, not tab bar */}
       <Tabs.Screen
         name="client-detail"
-        options={{ href: null }}
+        options={{ 
+          href: null,
+          headerShown: false,
+        }}
       />
       <Tabs.Screen
         name="appointments"
