@@ -460,7 +460,7 @@ export default function MomProfileScreen() {
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Icon name="medical-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="add-circle-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Birth Setting</Text>
                   <Text style={styles.infoValue}>{getBirthSetting()}</Text>

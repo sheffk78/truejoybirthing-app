@@ -45,19 +45,13 @@ export default function MomLayout() {
       <Tabs.Screen
         name="timeline"
         options={{
-          title: 'Timeline',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="calendar-outline" size={size} color={color} />
-          ),
+          href: null,  // Hidden - accessible from home
         }}
       />
       <Tabs.Screen
         name="wellness"
         options={{
-          title: 'Wellness',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="heart-outline" size={size} color={color} />
-          ),
+          href: null,  // Hidden - accessible from home
         }}
       />
       <Tabs.Screen

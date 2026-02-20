@@ -174,8 +174,8 @@ export default function MomHomeScreen() {
           </Card>
         )}
         
-        {/* Quick Actions */}
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        {/* Key Actions */}
+        <Text style={styles.sectionTitle}>Key Actions</Text>
         <View style={styles.actionsGrid}>
           <TouchableOpacity
             style={styles.actionCard}
@@ -201,61 +201,6 @@ export default function MomHomeScreen() {
             </View>
             <Text style={styles.actionTitle}>Wellness</Text>
             <Text style={styles.actionSubtitle}>How are you feeling?</Text>
-          </TouchableOpacity>
-        </View>
-        
-        {/* More Actions Row */}
-        <View style={styles.actionsGrid}>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/(mom)/birth-plan')}
-            activeOpacity={0.8}
-          >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '30' }]}>
-              <Icon name="document-text" size={24} color={COLORS.warning} />
-            </View>
-            <Text style={styles.actionTitle}>Birth Plan</Text>
-            <Text style={styles.actionSubtitle}>Your preferences</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/(mom)/appointments')}
-            activeOpacity={0.8}
-            data-testid="appointments-quick-action"
-          >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.roleDoula + '30' }]}>
-              <Icon name="calendar" size={24} color={COLORS.roleDoula} />
-            </View>
-            <Text style={styles.actionTitle}>Appointments</Text>
-            <Text style={styles.actionSubtitle}>Upcoming visits</Text>
-          </TouchableOpacity>
-        </View>
-        
-        {/* Team Row */}
-        <View style={styles.actionsGrid}>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/(mom)/my-team')}
-            activeOpacity={0.8}
-          >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.primary + '30' }]}>
-              <Icon name="people" size={24} color={COLORS.primary} />
-            </View>
-            <Text style={styles.actionTitle}>My Team</Text>
-            <Text style={styles.actionSubtitle}>Care providers</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => router.push('/(mom)/marketplace')}
-            activeOpacity={0.8}
-          >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.roleMidwife + '30' }]}>
-              <Icon name="search" size={24} color={COLORS.roleMidwife} />
-            </View>
-            <Text style={styles.actionTitle}>Find Providers</Text>
-            <Text style={styles.actionSubtitle}>Browse marketplace</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
