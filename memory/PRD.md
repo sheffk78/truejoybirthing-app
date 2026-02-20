@@ -67,6 +67,20 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Push Notifications
+
+#### Push Notifications Implementation (COMPLETED - 2026-02-20)
+- [x] **Backend Push Service** - `backend/services/push_notifications.py` using Expo Push Notifications (exponent_server_sdk)
+- [x] **Push Token Registration API** - POST `/api/push/register` for registering Expo push tokens
+- [x] **Push Token Unregister API** - POST `/api/push/unregister` for unregistering tokens
+- [x] **Push Status API** - GET `/api/push/status` for checking user's push notification status
+- [x] **create_notification Integration** - Push notifications sent automatically when in-app notifications are created
+- [x] **Frontend Hook** - `frontend/src/hooks/usePushNotifications.ts` for handling push notification permissions and registration
+- [x] **Android Notification Channels** - Default, Messages, and Appointments channels configured
+- [x] **Graceful Error Handling** - Push notification failures don't break application flow
+- [x] **Testing** - 100% backend (18/18 tests passed)
+- Note: Actual push delivery requires physical device with Expo app or production build
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - YouTube Video Embedding
 
 #### YouTube Video Embedding (COMPLETED - 2026-02-20)
