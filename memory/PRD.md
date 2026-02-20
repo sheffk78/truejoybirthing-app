@@ -67,6 +67,24 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Unified Provider UI
+
+#### Shared ProviderClientDetail Component (COMPLETED - 2026-02-20)
+- [x] **Unified Layout** - Both Doula and Midwife now use the same `ProviderClientDetail.tsx` component
+- [x] **Same UI Structure** - Profile card, quick actions, breadcrumb navigation identical for both roles
+- [x] **Role-based Configuration** - `config.role === 'MIDWIFE'` enables Midwife-only sections
+- [x] **Common Sections** (both roles):
+  - Client Profile Card (avatar, name, status, EDD, days until due)
+  - Contact Information (email, phone, birth setting)
+  - Quick Actions: Contract, Invoice, Schedule, Notes, Birth Plan, Messages
+- [x] **Midwife-only Sections**:
+  - "Add Visit" action button
+  - "Prenatal Visits" section with full CRUD for clinical data
+  - Wellbeing scores (Eating, Water, Emotional, Physical, Mental, Spiritual)
+  - Vitals & Measurements (BP, FHR, Fundal Height, Weight, Urinalysis)
+- [x] **Shared Behavior** - Contracts, invoices, appointments, notes, birth plans all work identically
+- [x] **DRY Code** - Single component with ~50% less code than before
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Lead → Consultation → Client Flow (P0)
 
 #### Lead Management System (COMPLETED - 2026-02-20)
