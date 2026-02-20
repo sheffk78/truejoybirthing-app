@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="40" failures="2" skipped="0" tests="47" time="2.676" timestamp="2026-02-20T00:16:54.526125+00:00" hostname="agent-env-da27e621-3687-4fff-aff9-4c220afa0162"><testcase classname="tests.test_visits_phase11.TestSetup" name="test_base_url_configured" time="0.000" /><testcase classname="tests.test_visits_phase11.TestSetup" name="test_health_check" time="0.280" /><testcase classname="tests.test_visits_phase11.TestAuthLogin" name="test_midwife_login_success" time="0.381"><failure message="KeyError: 'user'">tests/test_visits_phase11.py:57: in test_midwife_login_success
+    assert data["user"]["role"] == "MIDWIFE"
+           ^^^^^^^^^^^^
+E   KeyError: 'user'</failure></testcase><testcase classname="tests.test_visits_phase11.TestAuthLogin" name="test_doula_login_success" time="0.367"><failure message="KeyError: 'user'">tests/test_visits_phase11.py:69: in test_doula_login_success
+    assert data["user"]["role"] == "DOULA"
+           ^^^^^^^^^^^^
+E   KeyError: 'user'</failure></testcase><testcase classname="tests.test_visits_phase11.TestMidwifeVisitsCRUD" name="test_get_visits_requires_auth" time="0.114" /><testcase classname="tests.test_visits_phase11.TestMidwifeVisitsCRUD" name="test_get_visits_as_midwife" time="0.343"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestMidwifeVisitsCRUD" name="test_create_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestMidwifeVisitsCRUD" name="test_create_and_update_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestMidwifeVisitsCRUD" name="test_get_visits_filtered_by_client" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestMidwifeVisitsCRUD" name="test_update_nonexistent_visit_returns_404" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestPrenatalVisitAssessments" name="test_get_prenatal_visits_requires_auth" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestPrenatalVisitAssessments" name="test_get_prenatal_visits" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestPrenatalVisitAssessments" name="test_create_prenatal_visit_assessment" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestPrenatalVisitAssessments" name="test_get_single_prenatal_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestPrenatalVisitAssessments" name="test_update_prenatal_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestPrenatalVisitAssessments" name="test_delete_prenatal_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestPrenatalVisitAssessments" name="test_delete_nonexistent_prenatal_visit_returns_404" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestPrenatalVisitAssessments" name="test_prenatal_visit_for_nonexistent_client_returns_404" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestBirthSummaries" name="test_get_birth_summaries_requires_auth" time="0.223" /><testcase classname="tests.test_visits_phase11.TestBirthSummaries" name="test_get_birth_summaries" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestBirthSummaries" name="test_create_birth_summary" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestBirthSummaries" name="test_create_duplicate_birth_summary_fails" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestBirthSummaries" name="test_update_birth_summary" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestBirthSummaries" name="test_update_nonexistent_birth_summary_returns_404" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_get_provider_visits_requires_auth" time="0.133" /><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_get_provider_visits_as_midwife" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_get_provider_visits_filtered_by_client" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_get_provider_visits_filtered_by_type" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_get_provider_visits_include_inactive_clients" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_create_provider_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_create_provider_visit_requires_client_id" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_update_provider_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_delete_provider_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_delete_nonexistent_provider_visit_returns_404" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestProviderUnifiedVisits" name="test_update_nonexistent_provider_visit_returns_404" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestRoleBasedAccessControl" name="test_doula_cannot_get_midwife_visits" time="0.350"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:106: in doula_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestRoleBasedAccessControl" name="test_doula_cannot_create_midwife_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:106: in doula_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestRoleBasedAccessControl" name="test_doula_cannot_get_birth_summaries" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:106: in doula_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestRoleBasedAccessControl" name="test_doula_cannot_create_birth_summary" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:106: in doula_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestRoleBasedAccessControl" name="test_doula_cannot_get_provider_visits" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:106: in doula_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestRoleBasedAccessControl" name="test_doula_cannot_create_provider_visit" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:106: in doula_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestRoleBasedAccessControl" name="test_doula_cannot_get_prenatal_visits" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:106: in doula_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestObjectIdSerialization" name="test_midwife_visits_no_objectid" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestObjectIdSerialization" name="test_provider_visits_no_objectid" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestObjectIdSerialization" name="test_birth_summaries_no_objectid" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestVisitSummaryGeneration" name="test_provider_visit_generates_summary" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase><testcase classname="tests.test_visits_phase11.TestVisitSummaryGeneration" name="test_prenatal_visit_generates_summary" time="0.000"><error message="failed on setup with &quot;KeyError: 'user'&quot;">tests/test_visits_phase11.py:88: in midwife_session
+    return session, data["user"]
+                    ^^^^^^^^^^^^
+E   KeyError: 'user'</error></testcase></testsuite></testsuites>
