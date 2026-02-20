@@ -263,32 +263,3 @@ async def get_all_weekly_content():
         "pregnancy": pregnancy_content,
         "postpartum": postpartum_content
     }
-
-
-# ============== PRO FEEDBACK ==============
-
-class ProFeedbackRequest(BaseModel):
-    feedback_type: str  # 'bug', 'feature', 'general'
-    message: str
-    screen: Optional[str] = None
-
-
-@router.post("/pro/feedback")
-async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
-    """Submit feedback from PRO users"""
-    from datetime import datetime, timezone
-    
-    feedback_doc = {
-        "feedback_id": f"feedback_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}_{user.user_id[:8]}",
-        "user_id": user.user_id,
-        "user_email": user.email,
-        "user_role": user.role,
-        "feedback_type": feedback.feedback_type,
-        "message": feedback.message,
-        "screen": feedback.screen,
-        "created_at": datetime.now(timezone.utc)
-    }
-    
-    await db.pro_feedback.insert_one(feedback_doc)
-    
-    return {"message": "Thank you for your feedback! We appreciate your input."}
