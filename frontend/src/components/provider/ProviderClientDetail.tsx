@@ -185,7 +185,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
         break;
       case 'birthplan':
         if (client.linked_mom_id) {
-          router.push(`${config.routes.clientBirthPlans || '/(doula)/client-birth-plans'}?momUserId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
+          const returnTo = `${config.routes.clientDetail}?clientId=${client.client_id}`;
+          router.push(`${config.routes.clientBirthPlans || '/(doula)/client-birth-plans'}?momUserId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}&returnTo=${encodeURIComponent(returnTo)}`);
         } else {
           Alert.alert('Not Available', 'This client is not linked to a registered user yet.');
         }
