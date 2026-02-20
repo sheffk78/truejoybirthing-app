@@ -212,8 +212,25 @@ export default function ClientBirthPlansScreen() {
     );
   }
 
+  // If viewing a specific client's birth plan (came from client detail)
+  const isClientSpecificView = !!momUserId;
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Back Header for client-specific view */}
+      {isClientSpecificView && (
+        <View style={styles.backHeader}>
+          <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={() => router.back()}
+            data-testid="back-btn"
+          >
+            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Text style={styles.backButtonText}>Back to Client</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
