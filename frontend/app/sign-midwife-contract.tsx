@@ -262,7 +262,7 @@ export default function SignMidwifeContractScreen() {
               <Text style={styles.signedTitle}>Contract Signed</Text>
             </View>
             <Text style={styles.signedInfo}>
-              This agreement has been signed by both parties.
+              This agreement has been signed by both parties. A copy has been sent to your email.
             </Text>
             
             <View style={styles.signatureDisplay}>
@@ -281,6 +281,23 @@ export default function SignMidwifeContractScreen() {
                 </View>
               )}
             </View>
+            
+            {/* Download PDF Button */}
+            <TouchableOpacity 
+              style={styles.downloadButton}
+              onPress={() => {
+                const pdfUrl = `${API_BASE_URL}/api/midwife-contracts/${contractId}/pdf`;
+                if (Platform.OS === 'web') {
+                  window.open(pdfUrl, '_blank');
+                } else {
+                  Linking.openURL(pdfUrl);
+                }
+              }}
+              data-testid="download-pdf-btn"
+            >
+              <Icon name="download-outline" size={20} color={COLORS.white} />
+              <Text style={styles.downloadButtonText}>Download Signed PDF</Text>
+            </TouchableOpacity>
           </Card>
         ) : contract.status === 'Sent' ? (
           <Card style={styles.signatureCard}>
