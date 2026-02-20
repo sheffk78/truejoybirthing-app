@@ -931,6 +931,11 @@ async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDW
         if not req.get("can_view_birth_plan", True):
             continue
             
+        # Get mom's info
+        mom = await db.users.find_one({"user_id": req["mom_user_id"]}, {"_id": 0, "full_name": 1, "picture": 1})
+        mom_name = mom.get("full_name") if mom else req.get("mom_name", "Unknown")
+        mom_picture = mom.get("picture") if mom else None
+            
         # Get the mom's birth plan
         plan = await db.birth_plans.find_one({"user_id": req["mom_user_id"]}, {"_id": 0})
         mom_profile = await db.mom_profiles.find_one({"user_id": req["mom_user_id"]}, {"_id": 0})
@@ -944,13 +949,14 @@ async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDW
         if plan:
             birth_plans.append({
                 "mom_user_id": req["mom_user_id"],
-                "mom_name": req["mom_name"],
+                "mom_name": mom_name,
+                "mom_picture": mom_picture,
                 "due_date": mom_profile.get("due_date") if mom_profile else None,
                 "birth_setting": mom_profile.get("planned_birth_setting") if mom_profile else None,
                 "plan": plan,
                 "birth_plan_status": plan.get("birth_plan_status", "not_started"),
                 "provider_notes": notes,
-                "shared_at": req["responded_at"],
+                "shared_at": req.get("responded_at") or req.get("accepted_at"),
                 "read_only": True  # Provider can only VIEW, not edit
             })
     
