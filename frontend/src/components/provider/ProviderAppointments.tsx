@@ -37,6 +37,7 @@ interface Appointment {
   mom_name: string;
   client_id?: string;
   client_name?: string;
+  client_picture?: string;
   appointment_date: string;
   appointment_time: string;
   appointment_type: string;
@@ -45,6 +46,7 @@ interface Appointment {
   notes?: string;
   status: string;
   created_at: string;
+  created_by?: string;
 }
 
 interface Client {
