@@ -16,6 +16,12 @@ import uuid
 
 from .dependencies import db, get_now, check_role, User
 
+# Import shared client utilities
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.client_utils import is_client_active
+
 router = APIRouter(tags=["Visits"])
 
 
