@@ -374,6 +374,12 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                       <Text style={[styles.actionText, { color: COLORS.success }]}>Birth Plan Shared</Text>
                     </View>
                   )}
+                  {(clientAppointments[client.client_id] || clientAppointments[client.linked_mom_id]) && (
+                    <View style={[styles.actionButton, { backgroundColor: COLORS.primary + '10' }]}>
+                      <Icon name="calendar" size={16} color={COLORS.primary} />
+                      <Text style={[styles.actionText, { color: COLORS.primary }]}>Appt</Text>
+                    </View>
+                  )}
                   {isMidwife && (
                     <TouchableOpacity 
                       style={[styles.actionButton, { backgroundColor: primaryColor + '10' }]}
