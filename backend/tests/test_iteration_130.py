@@ -35,9 +35,9 @@ class TestAuthentication:
         })
         assert response.status_code == 200, f"Mom login failed: {response.text}"
         data = response.json()
-        assert "token" in data
-        assert data.get("user", {}).get("role") == "MOM"
-        return data["token"]
+        assert "session_token" in data, f"Response missing session_token: {data.keys()}"
+        assert data.get("role") == "MOM"
+        return data["session_token"]
 
     def test_doula_login(self):
         """Test Doula account login"""
@@ -47,9 +47,9 @@ class TestAuthentication:
         })
         assert response.status_code == 200, f"Doula login failed: {response.text}"
         data = response.json()
-        assert "token" in data
-        assert data.get("user", {}).get("role") == "DOULA"
-        return data["token"]
+        assert "session_token" in data, f"Response missing session_token: {data.keys()}"
+        assert data.get("role") == "DOULA"
+        return data["session_token"]
 
     def test_midwife_login(self):
         """Test Midwife account login"""
@@ -59,9 +59,9 @@ class TestAuthentication:
         })
         assert response.status_code == 200, f"Midwife login failed: {response.text}"
         data = response.json()
-        assert "token" in data
-        assert data.get("user", {}).get("role") == "MIDWIFE"
-        return data["token"]
+        assert "session_token" in data, f"Response missing session_token: {data.keys()}"
+        assert data.get("role") == "MIDWIFE"
+        return data["session_token"]
 
 
 @pytest.fixture
