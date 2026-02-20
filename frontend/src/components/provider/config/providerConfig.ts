@@ -130,6 +130,7 @@ export const DOULA_CONFIG: ProviderConfig = {
     notes: '/(doula)/notes',
     appointments: '/(doula)/appointments',
     visits: '',
+    clientBirthPlans: '/(doula)/client-birth-plans',
   },
   
   dashboard: {
