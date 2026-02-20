@@ -634,7 +634,14 @@ export default function AppointmentsScreen() {
                   mode="time"
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                   onChange={(event, date) => {
-                    setShowTimePicker(Platform.OS === 'ios');
+                    // On Android, always hide the picker after selection
+                    if (Platform.OS === 'android') {
+                      setShowTimePicker(false);
+                    }
+                    // On iOS, keep it open for spinner mode
+                    if (Platform.OS === 'ios' && event.type === 'dismissed') {
+                      setShowTimePicker(false);
+                    }
                     if (date) setAppointmentTime(date);
                   }}
                 />
