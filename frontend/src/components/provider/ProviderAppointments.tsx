@@ -315,8 +315,8 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
 
   const filteredAppointments = getFilteredAppointments();
   const pendingAppointments = filteredAppointments.filter(a => a.status === 'pending');
-  const upcomingAppointments = filteredAppointments.filter(a => a.status === 'accepted');
-  const pastAppointments = filteredAppointments.filter(a => ['declined', 'cancelled'].includes(a.status));
+  const upcomingAppointments = filteredAppointments.filter(a => ['accepted', 'scheduled', 'confirmed'].includes(a.status));
+  const pastAppointments = filteredAppointments.filter(a => ['declined', 'cancelled', 'completed'].includes(a.status));
 
   const renderAppointmentCard = (appointment: Appointment) => {
     const isPending = appointment.status === 'pending';
