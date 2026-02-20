@@ -243,7 +243,14 @@ export default function ClientBirthPlansScreen() {
       {isClientSpecificView && (
         <View style={styles.breadcrumb}>
           <TouchableOpacity 
-            onPress={() => router.push('/(doula)/clients' as any)}
+            onPress={() => {
+              // Use returnTo param to determine correct client route
+              if (returnTo && returnTo.includes('midwife')) {
+                router.push('/(midwife)/clients' as any);
+              } else {
+                router.push('/(doula)/clients' as any);
+              }
+            }}
             style={styles.breadcrumbItem}
           >
             <Text style={styles.breadcrumbLink}>Clients</Text>
