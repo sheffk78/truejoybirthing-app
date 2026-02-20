@@ -97,8 +97,8 @@ export default function AppointmentsScreen() {
   const fetchData = useCallback(async () => {
     try {
       const [appointmentsData, providersData] = await Promise.all([
-        apiRequest('/api/appointments', { method: 'GET' }),
-        apiRequest('/api/mom/team-providers', { method: 'GET' }).catch(() => []),
+        apiRequest('/appointments', { method: 'GET' }),
+        apiRequest('/mom/team-providers', { method: 'GET' }).catch(() => []),
       ]);
       setAppointments(appointmentsData || []);
       setProviders(providersData || []);
