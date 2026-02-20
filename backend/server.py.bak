@@ -1746,9 +1746,94 @@ async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends
 # - Timeline: /timeline, /timeline/events, /timeline/events/{id}
 
 # ============== WEEKLY TIPS & AFFIRMATIONS ==============
-# MIGRATED TO: routes/utils.py
-# Routes: /weekly-content, /weekly-content/all
 
+@api_router.get("/weekly-content")
+async def get_weekly_content(user: User = Depends(check_role(["MOM"]))):
+    """Get weekly tip and affirmation based on pregnancy week or postpartum status"""
+    mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
+    
+    if not mom_profile or not mom_profile.get("due_date"):
+        return {
+            "week": None,
+            "is_postpartum": False,
+            "postpartum_week": None,
+            "tip": "Complete your onboarding with your due date to receive personalized weekly tips.",
+            "affirmation": "Every step you take toward preparing for your baby is a step in the right direction."
+        }
+    
+    due_date_str = mom_profile.get("due_date")
+    try:
+        due_date = datetime.strptime(due_date_str, "%Y-%m-%d")
+    except:
+        return {
+            "week": None,
+            "is_postpartum": False,
+            "postpartum_week": None,
+            "tip": "Please update your due date in your profile.",
+            "affirmation": "You are capable and strong."
+        }
+    
+    today = datetime.now()
+    
+    # Calculate conception date (roughly 40 weeks before due date)
+    conception_date = due_date - timedelta(weeks=40)
+    
+    # Calculate current week
+    days_pregnant = (today - conception_date).days
+    current_week = days_pregnant // 7
+    
+    # Check if postpartum
+    is_postpartum = today > due_date
+    postpartum_week = None
+    
+    if is_postpartum:
+        days_postpartum = (today - due_date).days
+        postpartum_week = min((days_postpartum // 7) + 1, 6)  # Cap at 6 weeks
+    
+    # Get the appropriate content
+    if is_postpartum:
+        tip = get_weekly_tip(current_week, is_postpartum=True, postpartum_week=postpartum_week)
+        affirmation = get_weekly_affirmation(current_week, is_postpartum=True, postpartum_week=postpartum_week)
+        display_week = f"Postpartum Week {postpartum_week}"
+    else:
+        # Clamp to valid pregnancy weeks
+        clamped_week = max(1, min(current_week, 42))
+        tip = get_weekly_tip(clamped_week)
+        affirmation = get_weekly_affirmation(clamped_week)
+        display_week = f"Week {clamped_week}"
+    
+    return {
+        "week": current_week,
+        "display_week": display_week,
+        "is_postpartum": is_postpartum,
+        "postpartum_week": postpartum_week,
+        "tip": tip,
+        "affirmation": affirmation
+    }
+
+@api_router.get("/weekly-content/all")
+async def get_all_weekly_content():
+    """Get all weekly tips and affirmations (for browsing)"""
+    pregnancy_content = []
+    for week in range(1, 43):
+        pregnancy_content.append({
+            "week": week,
+            "tip": WEEKLY_TIPS.get(week, ""),
+            "affirmation": WEEKLY_AFFIRMATIONS.get(week, "")
+        })
+    
+    postpartum_content = []
+    for week in range(1, 7):
+        postpartum_content.append({
+            "week": week,
+            "tip": POSTPARTUM_TIPS.get(week, ""),
+            "affirmation": POSTPARTUM_AFFIRMATIONS.get(week, "")
+        })
+    
+    return {
+        "pregnancy": pregnancy_content,
+        "postpartum": postpartum_content
+    }
 
 # ============== DOULA ROUTES ==============
 # MIGRATED TO: routes/doula.py
