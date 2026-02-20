@@ -288,7 +288,7 @@ export default function AppointmentsScreen() {
               <Text style={styles.providerRole}>{appointment.provider_role}</Text>
             </View>
           </View>
-          <View style={styles.headerRight}>
+          <View style={styles.cardHeaderRight}>
             <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[appointment.status] || COLORS.textLight) + '20' }]}>
               <Text style={[styles.statusText, { color: STATUS_COLORS[appointment.status] || COLORS.textLight }]}>
                 {isMyRequest ? 'Awaiting Response' : appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
