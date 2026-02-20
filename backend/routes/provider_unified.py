@@ -218,9 +218,13 @@ async def get_client_timeline(client_id: str, user: User = Depends(check_role(["
             "data": note
         })
     
-    # Get contracts
+    # Get contracts - check both provider_id and role-specific IDs
     contracts = await db.contracts.find(
-        {"client_id": client_id, "provider_id": user.user_id},
+        {"client_id": client_id, "$or": [
+            {"provider_id": user.user_id},
+            {"doula_id": user.user_id},
+            {"midwife_id": user.user_id}
+        ]},
         {"_id": 0}
     ).to_list(100)
     
