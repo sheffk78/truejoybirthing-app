@@ -24,6 +24,7 @@ import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { COLORS, SIZES, FONTS, SHADOWS } from '../../constants/theme';
 import { ProviderConfig } from './config/providerConfig';
+import LaborSection from '../midwife/LaborSection';
 
 // ============== TYPES ==============
 interface Client {
