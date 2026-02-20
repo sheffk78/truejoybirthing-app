@@ -424,18 +424,24 @@ class TestTimelineShowsCreatedItems:
         if len(clients) == 0:
             pytest.skip("No clients available for testing")
         
-        client_id = clients[0]["client_id"]
+        client = clients[0]
+        client_id = client["client_id"]
+        client_name = client.get("name", "Test Client")
+        due_date = client.get("due_date") or client.get("edd") or (datetime.now() + timedelta(days=60)).strftime("%Y-%m-%d")
         
         # Create a contract
         contract_data = {
             "client_id": client_id,
+            "client_name": client_name,
+            "estimated_due_date": due_date,
             "title": f"{TEST_PREFIX}Timeline Test Contract",
             "services_included": ["Test Service"],
             "total_fee": 100.00,
+            "retainer_amount": 50.00,
             "status": "Draft"
         }
         create_resp = requests.post(f"{BASE_URL}/api/doula/contracts", json=contract_data, headers=doula_headers)
-        assert create_resp.status_code in [200, 201], f"Create contract failed: {create_resp.status_code}"
+        assert create_resp.status_code in [200, 201], f"Create contract failed: {create_resp.status_code} - {create_resp.text}"
         contract_id = create_resp.json().get("contract_id")
         
         # Get timeline
