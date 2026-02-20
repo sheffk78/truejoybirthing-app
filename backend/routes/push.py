@@ -8,7 +8,12 @@ from fastapi import APIRouter, Depends, HTTPException, Body
 from pydantic import BaseModel
 from typing import Optional
 from .dependencies import db, get_current_user, User
-from ..services.push_notifications import register_push_token, unregister_push_token
+import sys
+import os
+
+# Add parent directory for services import
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from services.push_notifications import register_push_token, unregister_push_token
 
 router = APIRouter(prefix="/push", tags=["Push Notifications"])
 
