@@ -79,6 +79,7 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **E-signing** - Submit button calls `/api/contracts/{id}/sign` endpoint
 - [x] **Email notifications** - Signed PDF sent to both Mom and Provider via Resend
 - [x] **Signed confirmation** - Shows success message with signed date/time
+- [x] **Download PDF button** - "Download Signed PDF" button to save local copy of signed agreement
 
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Contract Email & In-App Notifications
 
