@@ -517,14 +517,34 @@ async def get_my_share_requests(user: User = Depends(check_role(["MOM"]))):
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     
-    # Enrich with provider pictures
+    # Enrich with provider info (name, picture, role)
     for req in requests:
         provider = await db.users.find_one(
             {"user_id": req.get("provider_id")}, 
-            {"_id": 0, "picture": 1}
+            {"_id": 0, "picture": 1, "full_name": 1, "role": 1}
         )
         if provider:
             req["provider_picture"] = provider.get("picture")
+            req["provider_name"] = provider.get("full_name")
+            req["provider_role"] = provider.get("role")
+        
+        # Also get profile picture if available (prefer profile over user picture)
+        provider_role = req.get("provider_type") or req.get("provider_role")
+        if provider_role == "DOULA":
+            profile = await db.doula_profiles.find_one(
+                {"user_id": req.get("provider_id")},
+                {"_id": 0, "picture": 1}
+            )
+        elif provider_role == "MIDWIFE":
+            profile = await db.midwife_profiles.find_one(
+                {"user_id": req.get("provider_id")},
+                {"_id": 0, "picture": 1}
+            )
+        else:
+            profile = None
+        
+        if profile and profile.get("picture"):
+            req["provider_picture"] = profile.get("picture")
     
     return {"requests": requests}
 
