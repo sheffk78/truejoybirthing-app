@@ -158,10 +158,14 @@ export default function TimelineScreen() {
           <Text style={styles.dueDate}>Due Date: {timeline.due_date}</Text>
         )}
 
-        {/* Add Event Button */}
-        <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)} data-testid="add-event-btn">
-          <Icon name="add-circle" size={20} color={COLORS.white} />
-          <Text style={styles.addButtonText}>Add Appointment</Text>
+        {/* Schedule with Provider Button */}
+        <TouchableOpacity 
+          style={styles.addButton} 
+          onPress={() => router.push('/(mom)/appointments')} 
+          data-testid="schedule-btn"
+        >
+          <Icon name="calendar" size={20} color={COLORS.white} />
+          <Text style={styles.addButtonText}>Schedule with Provider</Text>
         </TouchableOpacity>
 
         {/* Custom Events */}
