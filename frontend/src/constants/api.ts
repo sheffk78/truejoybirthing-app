@@ -14,6 +14,10 @@ const getBackendUrl = () => {
 
 export const API_BASE = `${getBackendUrl()}/api`;
 
+// Full base URL for direct resource access (like PDF downloads)
+// On web, this will be empty string (same origin), on native it uses the env var
+export const API_BASE_URL = getBackendUrl() || (typeof window !== 'undefined' ? window.location.origin : '');
+
 export const API_ENDPOINTS = {
   // Auth
   AUTH_REGISTER: '/auth/register',
