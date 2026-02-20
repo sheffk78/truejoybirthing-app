@@ -172,12 +172,12 @@ async def get_doula_dashboard(user: User = Depends(check_role(["DOULA"]))):
         "status": {"$in": ["Sent", "sent", "pending"]}
     })
     
-    # Get upcoming appointments
+    # Get upcoming appointments (confirmed only, exclude pending)
     now = get_now()
     today = now.strftime("%Y-%m-%d")
     upcoming_appointments = await db.appointments.count_documents({
         "provider_id": user.user_id,
-        "status": {"$in": ["confirmed", "pending", "scheduled", "accepted"]},
+        "status": {"$in": ["confirmed", "scheduled", "accepted"]},
         "$or": [
             {"start_datetime": {"$gte": now.isoformat()}},
             {"appointment_date": {"$gte": today}}
