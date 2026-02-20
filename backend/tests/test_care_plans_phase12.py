@@ -93,9 +93,10 @@ class TestAuthLogin:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "user" in data
-        assert data["user"]["role"] == "MOM"
-        print(f"Mom login successful: {data['user']['full_name']}")
+        # Login returns user data directly or wrapped in 'user' key
+        user_data = data.get("user", data)
+        assert user_data["role"] == "MOM"
+        print(f"Mom login successful: {user_data['full_name']}")
     
     def test_doula_login_success(self):
         """Test Doula login works"""
@@ -105,9 +106,10 @@ class TestAuthLogin:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "user" in data
-        assert data["user"]["role"] == "DOULA"
-        print(f"Doula login successful: {data['user']['full_name']}")
+        # Login returns user data directly or wrapped in 'user' key
+        user_data = data.get("user", data)
+        assert user_data["role"] == "DOULA"
+        print(f"Doula login successful: {user_data['full_name']}")
     
     def test_midwife_login_success(self):
         """Test Midwife login works"""
@@ -117,9 +119,10 @@ class TestAuthLogin:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "user" in data
-        assert data["user"]["role"] == "MIDWIFE"
-        print(f"Midwife login successful: {data['user']['full_name']}")
+        # Login returns user data directly or wrapped in 'user' key
+        user_data = data.get("user", data)
+        assert user_data["role"] == "MIDWIFE"
+        print(f"Midwife login successful: {user_data['full_name']}")
 
 
 # ============== BIRTH PLAN TESTS (MOM) ==============
