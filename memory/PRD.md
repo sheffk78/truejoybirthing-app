@@ -67,6 +67,28 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Multiple Features Batch
+
+#### Appointment Acceptance Flow (COMPLETED - 2026-02-20)
+- [x] **Accept/Decline buttons** - Provider appointments page shows Accept/Decline for pending appointments from moms
+- [x] **Confirmation dialogs** - Confirmation prompts before accepting or declining
+- [x] **Status updates** - Accepted appointments change to "confirmed", declined to "declined"
+- [x] **Alert notifications** - Success messages shown after responding
+- [x] **Backend endpoint** - PUT /api/appointments/{id}/respond already existed, now used in provider UI
+
+#### Invoice Editing & Reminders (COMPLETED - 2026-02-20)
+- [x] **Mark Paid button** - Sent invoices can be marked as paid
+- [x] **Mark Unpaid button** - Paid invoices can be reverted to "Sent" status
+- [x] **Send Reminder** - Reminder button sends email and in-app notification to mom
+- [x] **Cancel button** - Draft/Sent invoices can be cancelled
+
+#### Number of Children in Mom Profile (COMPLETED - 2026-02-20)
+- [x] **Backend field** - Added number_of_children to MomProfileUpdate model
+- [x] **Stepper UI** - Edit mode shows +/- stepper buttons for easy input
+- [x] **Display format** - View mode shows "X Kids" (e.g., "2 Kids") or "Not set"
+- [x] **Hint text** - Shows "Including this pregnancy" below stepper
+- [x] **Save functionality** - Saves with other profile fields
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Full Contract Signing Flow (P0)
 
 #### Contract Signing E-Signature Flow (COMPLETED - 2026-02-20)
