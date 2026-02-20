@@ -498,6 +498,30 @@ const styles = StyleSheet.create({
   errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: SIZES.md },
   errorText: { fontSize: SIZES.fontLg, color: COLORS.error },
   
+  // Breadcrumb styles
+  breadcrumb: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginBottom: SIZES.md,
+    paddingVertical: SIZES.sm,
+  },
+  breadcrumbItem: { paddingVertical: 4 },
+  breadcrumbLink: { 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.primary, 
+    fontWeight: '500' 
+  },
+  breadcrumbSeparator: { 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.textLight, 
+    marginHorizontal: SIZES.sm 
+  },
+  breadcrumbCurrent: { 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.textPrimary, 
+    fontWeight: '600' 
+  },
+  
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SIZES.md },
   backButton: { padding: SIZES.sm },
   headerTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary },
