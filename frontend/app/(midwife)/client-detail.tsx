@@ -833,48 +833,130 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SIZES.md,
+  breadcrumbHeader: {
     backgroundColor: COLORS.white,
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
-  backButton: {
-    marginRight: SIZES.md,
+  breadcrumb: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  headerInfo: {
-    flex: 1,
+  breadcrumbItem: {
+    paddingVertical: SIZES.xs,
   },
-  headerTitle: {
-    fontSize: SIZES.fontXl,
-    fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
-  },
-  headerSubtitle: {
-    fontSize: SIZES.fontSm,
+  breadcrumbLink: {
+    fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-    marginTop: 2,
+    color: COLORS.roleMidwife,
+  },
+  breadcrumbSeparator: {
+    marginHorizontal: SIZES.xs,
+    fontSize: SIZES.fontMd,
+    color: COLORS.textLight,
+  },
+  breadcrumbCurrent: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textPrimary,
   },
   scrollContent: {
     padding: SIZES.md,
     paddingBottom: SIZES.xxl,
   },
-  infoCard: {
+  profileCard: {
     marginBottom: SIZES.md,
   },
-  infoRow: {
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.roleMidwife,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SIZES.md,
+  },
+  avatarText: {
+    fontSize: SIZES.fontXl,
+    fontFamily: FONTS.heading,
+    color: COLORS.white,
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.heading,
+    color: COLORS.textPrimary,
+    marginBottom: SIZES.xs,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: SIZES.sm,
+  },
+  statusBadge: {
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: 2,
+    borderRadius: SIZES.radiusFull,
+  },
+  statusText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+  },
+  eddText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  profileDetails: {
+    marginTop: SIZES.md,
+    paddingTop: SIZES.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SIZES.xs,
   },
-  infoText: {
-    fontSize: SIZES.fontMd,
+  detailText: {
+    fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
     color: COLORS.textSecondary,
     marginLeft: SIZES.sm,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: COLORS.white,
+    padding: SIZES.md,
+    borderRadius: SIZES.radiusMd,
+    marginBottom: SIZES.md,
+  },
+  actionButton: {
+    alignItems: 'center',
+    paddingHorizontal: SIZES.sm,
+  },
+  actionIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.xs,
+  },
+  actionLabel: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
   },
   section: {
     marginBottom: SIZES.lg,
