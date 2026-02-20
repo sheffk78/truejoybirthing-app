@@ -508,7 +508,7 @@ export default function MarketplaceScreen() {
                       color={COLORS.white} 
                     />
                     <Text style={styles.cardActionBtnText}>
-                      {getTeamButtonText(provider.user_id)}
+                      {getConsultationButtonText(provider.user_id)}
                     </Text>
                   </TouchableOpacity>
                 </View>
