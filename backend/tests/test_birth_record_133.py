@@ -24,7 +24,9 @@ def get_auth_headers():
     )
     assert response.status_code == 200, f"Login failed: {response.text}"
     data = response.json()
-    token = data.get("token") or data.get("access_token")
+    # Check multiple possible token fields
+    token = data.get("session_token") or data.get("token") or data.get("access_token")
+    assert token, f"No token found in login response: {data}"
     return {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
