@@ -54,10 +54,10 @@ export function usePushNotifications() {
       const deviceType = Platform.OS;
       await apiRequest('/push/register', {
         method: 'POST',
-        body: JSON.stringify({
+        body: {
           push_token: token,
           device_type: deviceType,
-        }),
+        },
       });
       console.log('[Push] Token registered with backend successfully');
       return true;
