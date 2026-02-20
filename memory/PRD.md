@@ -772,7 +772,7 @@ Hidden but accessible via navigation:
 
 ### Remaining Technical Debt (P3 - Low Priority)
 
-1. **Backend Modularization Progress**: server.py reduced from 7,888 → ~6,200 lines (~21% reduction)
+1. **Backend Modularization Progress**: server.py reduced from 7,888 → ~5,322 lines (~32.5% reduction)
    - **Phase 1 COMPLETED**: Created modular router foundation
    - **Phase 2 COMPLETED**: Admin (4 endpoints) + Marketplace (2 endpoints) migrated
    - **Phase 3 COMPLETED**: Notifications (3 endpoints) + Messages (5 endpoints) migrated
@@ -784,7 +784,13 @@ Hidden but accessible via navigation:
      - Doula: clients CRUD (4 endpoints), notes CRUD (4 endpoints)
      - Midwife: clients CRUD (4 endpoints), notes CRUD (4 endpoints)
      - 40/40 tests passed (iteration_104.json)
-   - **Total Endpoints Migrated**: 62 endpoints across 9 modular routers
+   - **Phase 9 COMPLETED** (2026-02-19): Contracts routes migrated (~1,073 lines)
+     - Doula contracts: CRUD, send, duplicate, sign, HTML, PDF
+     - Midwife contracts: CRUD, send, duplicate, sign, HTML, PDF
+     - Midwife contract defaults: GET/PUT
+     - Contract templates: CRUD for both provider types
+     - 47/47 tests passed (iteration_105.json)
+   - **Total Endpoints Migrated**: ~92 endpoints across 10 modular routers
    - **Active Modular Routers**:
      - `routes/auth.py` - Authentication
      - `routes/admin.py` - Admin user/content management
@@ -795,10 +801,10 @@ Hidden but accessible via navigation:
      - `routes/mom.py` - Mom-specific routes
      - `routes/doula.py` - Doula onboarding/profile/dashboard/clients/notes
      - `routes/midwife.py` - Midwife onboarding/profile/dashboard/clients/notes
+     - `routes/contracts.py` - All contract CRUD, templates, defaults, PDF, signing
    - **Migration Plan**: `/app/backend/routes/MIGRATION_PLAN.md`
    - **Remaining Phases**:
-     - Phase 9: Contracts (high complexity - PDF generation)
-     - Phase 10: Invoices
+     - Phase 10: Invoices (NEXT)
      - Phase 11: Midwife Visits
      - Phase 12: Birth Plan, Wellness, Postpartum, Timeline
      - Phase 13: Share Requests, Appointments, Final Cleanup
