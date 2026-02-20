@@ -67,6 +67,30 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Mom Home & Appointments UX Improvements
+
+#### Mom Home - Contracts & Invoices Display (COMPLETED - 2026-02-20)
+- [x] **Action Required Section** - Added new section to Mom's Home showing pending contracts and invoices
+- [x] **Pending Contracts** - Fetches from `/api/mom/contracts`, shows contracts needing signature
+- [x] **Pending Invoices** - Fetches from `/api/mom/invoices`, shows unpaid invoices with amounts
+- [x] **Navigation** - Clicking contract navigates to sign-contract page, invoices go to invoices list
+- [x] **NEW ENDPOINT** - Created `/api/mom/contracts` endpoint to fetch contracts for mom's linked clients
+
+#### Mom Appointments - Keyboard & UI Fixes (COMPLETED - 2026-02-20)
+- [x] **KeyboardAvoidingView** - Appointment form modal now properly handles keyboard on iOS/Android
+- [x] **ScrollView paddingBottom** - Added 120px padding to ensure bottom fields are accessible
+- [x] **Accept/Decline Buttons** - Mom can now accept/decline appointments sent by providers (was already implemented)
+
+#### Profile Pictures in Appointments (COMPLETED - 2026-02-20)
+- [x] **Mom Appointments** - Shows provider's profile picture or role-based icon fallback
+- [x] **Provider Appointments** - Shows client's profile picture or initial placeholder
+- [x] **Backend** - appointments.py already returns provider_picture and client_picture fields
+
+#### Dashboard Upcoming Count Fix (COMPLETED - 2026-02-20)
+- [x] **Doula Dashboard** - upcoming_appointments now only counts confirmed/scheduled/accepted (excludes pending)
+- [x] **Midwife Dashboard** - upcoming_appointments now only counts confirmed/scheduled/accepted (excludes pending)
+- [x] **Testing** - 100% backend (11/11 tests passed)
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Bug Fixes for Doula/Midwife
 
 #### Provider Bug Fixes (COMPLETED - 2026-02-20)
