@@ -967,6 +967,22 @@ const styles = StyleSheet.create({
     color: COLORS.error,
     marginLeft: SIZES.xs,
   },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: SIZES.md,
+    paddingTop: SIZES.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    gap: SIZES.sm,
+  },
+  declineButton: {
+    flex: 1,
+    borderColor: COLORS.error,
+  },
+  acceptButton: {
+    flex: 1,
+  },
   modalContainer: {
     flex: 1,
     backgroundColor: COLORS.white,
