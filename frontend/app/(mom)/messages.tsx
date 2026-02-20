@@ -102,24 +102,30 @@ export default function MessagesScreen() {
     setLoadingTeam(true);
     try {
       const data = await apiRequest(API_ENDPOINTS.MOM_TEAM);
+      console.log('[Messages] Team API response:', JSON.stringify(data));
+      
       // API returns array of { provider: {...}, profile: {...}, share_request: {...} }
       const members: TeamMember[] = [];
       
       if (Array.isArray(data)) {
         // New array format
+        console.log('[Messages] Data is array with length:', data.length);
         for (const item of data) {
           if (item.provider) {
-            members.push({
+            const member = {
               user_id: item.provider.user_id,
               name: item.provider.full_name,
               role: item.provider.role,
               email: item.provider.email || '',
               picture: item.profile?.picture || item.provider.picture,
-            });
+            };
+            console.log('[Messages] Adding team member:', member.name, member.role);
+            members.push(member);
           }
         }
       } else {
         // Legacy object format (doula/midwife keys)
+        console.log('[Messages] Data is object format');
         if (data.doula) {
           members.push({
             user_id: data.doula.user_id,
@@ -139,9 +145,11 @@ export default function MessagesScreen() {
           });
         }
       }
+      
+      console.log('[Messages] Total team members:', members.length);
       setTeamMembers(members);
     } catch (error) {
-      console.error('Error fetching team:', error);
+      console.error('[Messages] Error fetching team:', error);
     } finally {
       setLoadingTeam(false);
     }
