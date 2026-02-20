@@ -77,7 +77,10 @@ export default function MidwifeLayout() {
       {/* Hidden screens - accessed via navigation, not tab bar */}
       <Tabs.Screen
         name="client-detail"
-        options={{ href: null }}
+        options={{ 
+          href: null,
+          headerShown: false,
+        }}
       />
       <Tabs.Screen
         name="appointments"
@@ -109,7 +112,10 @@ export default function MidwifeLayout() {
       />
       <Tabs.Screen
         name="client-birth-plans"
-        options={{ href: null }}
+        options={{ 
+          href: null,
+          headerShown: false,
+        }}
       />
     </Tabs>
   );
