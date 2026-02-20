@@ -1,0 +1,61 @@
+{
+  "summary": "Tested client-centric navigation fixes. Found critical BUG: Client Detail back button navigates to /dashboard instead of /clients. Birth Plan all-fields issue was FIXED after cache clear. Schedule/tools correctly include returnTo param.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "critical": [
+      {
+        "component": "ProviderClientDetail.tsx",
+        "issue": "Back button in header navigates to /dashboard instead of /clients. Code shows router.push(config.routes.clients) at line 297 but actual behavior goes to dashboard.",
+        "selector": "Back arrow SVG in header (no working data-testid)",
+        "priority": "HIGH",
+        "reproduction_steps": "1. Login as Doula, 2. Go to Clients, 3. Click on Emma Johnson (Client Detail), 4. Click back arrow in top-left header, 5. Observe: Goes to /dashboard instead of /clients"
+      }
+    ],
+    "minor": [
+      {
+        "component": "ProviderClientDetail.tsx", 
+        "issue": "data-testid='back-button' attribute not rendering in DOM. React Native Web may not pass data-testid to HTML.",
+        "selector": "[data-testid='back-button']",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/frontend/src/components/provider/ProviderClientDetail.tsx",
+    "/app/frontend/app/(provider)/client-birth-plans.tsx"
+  ],
+  "action_items": [
+    "CRITICAL: Fix Client Detail back button navigation - currently goes to /dashboard instead of config.routes.clients (/doula/clients)",
+    "Investigate why router.push(config.routes.clients) navigates to dashboard instead of clients list",
+    "Consider using router.replace() instead of router.push() for back navigation"
+  ],
+  "critical_code_review_comments": [
+    "Line 297 in ProviderClientDetail.tsx: router.push(config.routes.clients) is not working as expected",
+    "The back button click IS being captured and navigates away, but to wrong destination",
+    "Possible issue: Expo Router may have navigation stack issues or config.routes.clients value is wrong at runtime"
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend only test)", "frontend": "60%"},
+  "test_credentials": {
+    "Doula": "demo.doula@truejoybirthing.com / DemoScreenshot2024!"
+  },
+  "seed_data_creation": "None - used existing demo accounts",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Critical bug: Client Detail back button goes to /dashboard instead of /clients. The fix was supposed to be in line 297 of ProviderClientDetail.tsx using router.push(config.routes.clients) but it's not working. Birth Plan shows all fields after cache clear (metro cache was cleared and expo restarted). Schedule button correctly includes returnTo param.",
+  "verified_features": {
+    "client_detail_back_button": "FAIL - Goes to /dashboard instead of /clients",
+    "birth_plan_all_fields": "PASS - Shows all fields after cache clear, no '+ X more fields' text",
+    "birth_plan_returnTo_param": "PASS - URL includes returnTo pointing to Client Detail",
+    "schedule_returnTo_param": "PASS - URL includes returnTo pointing to Client Detail"
+  },
+  "mocked_api": {
+    "has_mocked_apis": false,
+    "mocked_apis_list": []
+  }
+}
