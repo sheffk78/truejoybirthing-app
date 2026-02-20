@@ -207,6 +207,8 @@ export default function AppointmentsScreen() {
     setAppointmentType('consultation');
     setAppointmentNotes('');
     setIsVirtual(false);
+    setIsPersonalAppointment(false);
+    setPersonalTitle('');
   };
 
   const formatDate = (dateStr: string) => {
