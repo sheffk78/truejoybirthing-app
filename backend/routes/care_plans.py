@@ -651,6 +651,119 @@ async def revoke_share(
     return {"message": "Share access revoked"}
 
 
+# ============== PROVIDER SHARE REQUEST ROUTES ==============
+
+@router.get("/provider/share-requests")
+async def get_provider_share_requests(
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get all share requests received by the provider"""
+    user = await check_role(["DOULA", "MIDWIFE"])
+    requests = await db.share_requests.find(
+        {"provider_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    return {"requests": requests}
+
+
+@router.put("/provider/share-requests/{request_id}/respond")
+async def respond_to_share_request(
+    request_id: str,
+    request: Request,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Accept or reject a share request"""
+    user = await check_role(["DOULA", "MIDWIFE"])
+    body = await request.json()
+    action = body.get("action")  # "accept" or "reject"
+    
+    if action not in ["accept", "reject"]:
+        raise HTTPException(status_code=400, detail="Action must be 'accept' or 'reject'")
+    
+    now = datetime.now(timezone.utc)
+    new_status = "accepted" if action == "accept" else "rejected"
+    
+    result = await db.share_requests.update_one(
+        {"request_id": request_id, "provider_id": user.user_id, "status": "pending"},
+        {"$set": {"status": new_status, "responded_at": now}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Share request not found or already responded")
+    
+    # If accepted, link the mom to the provider's client list
+    if action == "accept":
+        share_request = await db.share_requests.find_one({"request_id": request_id}, {"_id": 0})
+        if share_request:
+            mom_user_id = share_request["mom_user_id"]
+            mom_name = share_request.get("mom_name", "Client")
+            
+            # Get mom's profile for additional info
+            mom_profile = await db.mom_profiles.find_one({"user_id": mom_user_id}, {"_id": 0})
+            mom_user = await db.users.find_one({"user_id": mom_user_id}, {"_id": 0, "email": 1})
+            
+            # Update mom's profile to show connected provider
+            if user.role == "DOULA":
+                await db.mom_profiles.update_one(
+                    {"user_id": mom_user_id},
+                    {"$set": {"connected_doula_id": user.user_id}}
+                )
+                # Create/update client entry in doula's clients list
+                existing_client = await db.clients.find_one({
+                    "provider_id": user.user_id, 
+                    "linked_mom_id": mom_user_id
+                })
+                if not existing_client:
+                    await db.clients.insert_one({
+                        "client_id": "client_" + str(uuid.uuid4().hex)[:12],
+                        "provider_id": user.user_id,
+                        "provider_type": "DOULA",
+                        "name": mom_name,
+                        "email": mom_user.get("email") if mom_user else None,
+                        "phone": "",
+                        "linked_mom_id": mom_user_id,
+                        "status": "Active",
+                        "edd": mom_profile.get("due_date") if mom_profile else None,
+                        "planned_birth_setting": mom_profile.get("planned_birth_setting") if mom_profile else None,
+                        "notes": "",
+                        "created_at": now,
+                        "updated_at": now
+                    })
+            elif user.role == "MIDWIFE":
+                await db.mom_profiles.update_one(
+                    {"user_id": mom_user_id},
+                    {"$set": {"connected_midwife_id": user.user_id}}
+                )
+                # Create/update client entry in midwife's clients list
+                existing_client = await db.clients.find_one({
+                    "provider_id": user.user_id, 
+                    "linked_mom_id": mom_user_id
+                })
+                if not existing_client:
+                    await db.clients.insert_one({
+                        "client_id": "client_" + str(uuid.uuid4().hex)[:12],
+                        "provider_id": user.user_id,
+                        "provider_type": "MIDWIFE",
+                        "name": mom_name,
+                        "email": mom_user.get("email") if mom_user else None,
+                        "phone": "",
+                        "linked_mom_id": mom_user_id,
+                        "status": "Prenatal",
+                        "edd": mom_profile.get("due_date") if mom_profile else None,
+                        "planned_birth_setting": mom_profile.get("planned_birth_setting") if mom_profile else None,
+                        "notes": "",
+                        "created_at": now,
+                        "updated_at": now
+                    })
+    
+    return {"message": f"Share request {new_status}"}
+
+
 # ============== WELLNESS ROUTES ==============
 
 @router.post("/wellness/checkin")
