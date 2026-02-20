@@ -165,6 +165,7 @@ export default function MomProfileScreen() {
           zip_code: zipCode,
           location_city: locationCity,
           location_state: locationState,
+          number_of_children: numberOfChildren,
         },
       });
       
