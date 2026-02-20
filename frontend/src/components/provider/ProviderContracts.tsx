@@ -290,11 +290,27 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
   };
 
   const handleViewPDF = async (contract: Contract) => {
-    const pdfUrl = config.endpoints.pdf(contract.contract_id, backendUrl || '');
-    if (Platform.OS === 'web') {
-      window.open(pdfUrl, '_blank');
-    } else {
-      Linking.openURL(pdfUrl);
+    try {
+      const pdfUrl = config.endpoints.pdf(contract.contract_id, backendUrl || '');
+      if (Platform.OS === 'web') {
+        // Open in new window/tab for web
+        const newWindow = window.open(pdfUrl, '_blank');
+        if (!newWindow) {
+          // Popup blocked - try direct navigation
+          window.location.href = pdfUrl;
+        }
+      } else {
+        // Use Linking for native
+        const canOpen = await Linking.canOpenURL(pdfUrl);
+        if (canOpen) {
+          await Linking.openURL(pdfUrl);
+        } else {
+          Alert.alert('Error', 'Unable to open PDF. Please try again.');
+        }
+      }
+    } catch (error: any) {
+      console.error('PDF open error:', error);
+      Alert.alert('Error', 'Failed to open PDF. Please try again.');
     }
   };
 
