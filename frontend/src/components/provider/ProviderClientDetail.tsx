@@ -680,10 +680,29 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             </TouchableOpacity>
           )}
           
-          {/* Placeholder for alignment */}
+          {/* Placeholder for alignment - only for non-midwife */}
           {!isMidwife && <View style={styles.actionButton} />}
           {!isMidwife && <View style={styles.actionButton} />}
         </View>
+
+        {/* Third row of actions - Midwife only for Labor tracking */}
+        {isMidwife && (
+          <View style={[styles.actionsRow, { justifyContent: 'flex-start' }]}>
+            {/* Labor Records Quick Access */}
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => {
+                // Scroll to Labor section - the LaborSection component handles add modal
+              }}
+              data-testid="action-labor"
+            >
+              <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '15' }]}>
+                <Icon name="pulse-outline" size={20} color={COLORS.warning} />
+              </View>
+              <Text style={styles.actionLabel}>Labor Log</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         
         {/* Prenatal Visits Section - Midwife Only */}
         {isMidwife && (
