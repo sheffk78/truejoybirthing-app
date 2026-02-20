@@ -1442,6 +1442,8 @@ contracts_routes.init_contracts_deps(
     notification_func=create_notification
 )
 
+from routes import invoices as invoices_routes
+
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
 api_router.include_router(marketplace_routes.router)
