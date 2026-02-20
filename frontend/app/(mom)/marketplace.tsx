@@ -546,11 +546,11 @@ export default function MarketplaceScreen() {
                 </View>
               )}
               
-              {/* Bio */}
-              {selectedProvider.profile?.bio && (
+              {/* About Me */}
+              {selectedProvider.profile?.more_about_me && (
                 <View style={styles.profileSection}>
-                  <Text style={styles.sectionTitle}>About</Text>
-                  <Text style={styles.bioText}>{selectedProvider.profile.bio}</Text>
+                  <Text style={styles.sectionTitle}>About Me</Text>
+                  <Text style={styles.bioText}>{selectedProvider.profile.more_about_me}</Text>
                 </View>
               )}
               
@@ -587,14 +587,6 @@ export default function MarketplaceScreen() {
                       </TouchableOpacity>
                     ) : null;
                   })()}
-                </View>
-              )}
-              
-              {/* More About Me */}
-              {selectedProvider.profile?.more_about_me && (
-                <View style={styles.profileSection}>
-                  <Text style={styles.sectionTitle}>More About Me</Text>
-                  <Text style={styles.bioText}>{selectedProvider.profile.more_about_me}</Text>
                 </View>
               )}
               
