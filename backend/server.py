@@ -1886,7 +1886,7 @@ async def get_all_weekly_content():
 #         /midwife/clients (GET/POST), /midwife/clients/{id} (GET/PUT),
 #         /midwife/notes (GET/POST)
 
-@api_router.post("/midwife/onboarding"@api_router.post("/midwife/onboarding")
+@api_router.post("/midwife/onboarding")
 async def midwife_onboarding(profile_data: MidwifeProfileUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
     """Complete midwife onboarding"""
     now = datetime.now(timezone.utc)
