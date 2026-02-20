@@ -371,7 +371,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                   {client.linked_mom_id && (
                     <View style={[styles.actionButton, { backgroundColor: COLORS.success + '10' }]}>
                       <Icon name="checkmark-circle" size={16} color={COLORS.success} />
-                      <Text style={[styles.actionText, { color: COLORS.success }]}>Birth Plan Shared</Text>
+                      <Text style={[styles.actionText, { color: COLORS.success }]}>Plan Shared</Text>
                     </View>
                   )}
                   {(clientAppointments[client.client_id] || clientAppointments[client.linked_mom_id]) && (
