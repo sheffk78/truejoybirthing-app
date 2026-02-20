@@ -1004,6 +1004,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  videoLabel: {
+    position: 'absolute',
+    bottom: SIZES.sm,
+    left: SIZES.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: 4,
+    borderRadius: SIZES.radiusSm,
+  },
+  videoLabelText: {
+    color: COLORS.white,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    marginLeft: 4,
+  },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
