@@ -1278,7 +1278,6 @@ Hidden but accessible via navigation:
 
 ## Future Enhancements (Backlog)
 - Stripe integration for subscription payment processing (P1)
-- Refactor `/pro/feedback` route from server.py to its own router (P2)
 - Admin Panel enhancements (P2)
 - File attachments in messages (P3)
 - Provider scheduling/availability calendar (P3)
@@ -1287,4 +1286,7 @@ Hidden but accessible via navigation:
 ## Recently Completed (Moved from Backlog)
 - ✅ Push notifications (COMPLETED 2026-02-20)
 - ✅ Lead → Consultation → Client flow (COMPLETED 2026-02-20)
+- ✅ Unified Provider UI - Doula/Midwife (COMPLETED 2026-02-20)
+- ✅ Refactored `/pro/feedback` to modular router (COMPLETED 2026-02-20)
+- ✅ Birth Day form for Midwives (COMPLETED 2026-02-20)
 
