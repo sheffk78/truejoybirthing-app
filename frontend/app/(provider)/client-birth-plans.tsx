@@ -413,22 +413,17 @@ export default function ClientBirthPlansScreen() {
                       </View>
                     </View>
                     
-                    {/* Section Data Preview */}
+                    {/* Section Data - Show ALL fields */}
                     {hasData && (
                       <View style={styles.sectionDataPreview}>
-                        {Object.entries(section.data).slice(0, 3).map(([key, value]) => (
+                        {Object.entries(section.data).map(([key, value]) => (
                           <View key={key} style={styles.dataRow}>
-                            <Text style={styles.dataLabel}>{key.replace(/([A-Z])/g, ' $1').trim()}:</Text>
+                            <Text style={styles.dataLabel}>{formatFieldLabel(key)}:</Text>
                             <Text style={styles.dataValue}>
                               {Array.isArray(value) ? value.join(', ') : String(value)}
                             </Text>
                           </View>
                         ))}
-                        {Object.keys(section.data).length > 3 && (
-                          <Text style={styles.moreData}>
-                            + {Object.keys(section.data).length - 3} more fields
-                          </Text>
-                        )}
                       </View>
                     )}
 
