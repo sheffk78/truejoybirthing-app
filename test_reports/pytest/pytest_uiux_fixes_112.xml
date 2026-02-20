@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="22" failures="2" skipped="0" tests="25" time="2.237" timestamp="2026-02-20T02:59:34.465079+00:00" hostname="agent-env-a44ade04-1230-4129-9fca-94c9d5904190"><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestSetup" name="test_health_check" time="0.249" /><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestSetup" name="test_doula_login" time="0.454"><failure message="AssertionError: No access_token in response&#10;assert 'access_token' in {'email': 'demo.doula@truejoybirthing.com', 'full_name': 'Sarah Mitchell', 'onboarding_completed': True, 'picture': 'https://example.com/test-picture.jpg', ...}">backend/tests/test_uiux_fixes_iteration112.py:44: in test_doula_login
+    assert "access_token" in data, "No access_token in response"
+E   AssertionError: No access_token in response
+E   assert 'access_token' in {'email': 'demo.doula@truejoybirthing.com', 'full_name': 'Sarah Mitchell', 'onboarding_completed': True, 'picture': 'https://example.com/test-picture.jpg', ...}</failure></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestSetup" name="test_midwife_login" time="0.386"><failure message="AssertionError: No access_token in response&#10;assert 'access_token' in {'email': 'demo.midwife@truejoybirthing.com', 'full_name': 'Emily Thompson', 'onboarding_completed': True, 'picture': 'https://api.dicebear.com/7.x/lorelei/png?seed=Emily Thompson&amp;size=200', ...}">backend/tests/test_uiux_fixes_iteration112.py:53: in test_midwife_login
+    assert "access_token" in data, "No access_token in response"
+E   AssertionError: No access_token in response
+E   assert 'access_token' in {'email': 'demo.midwife@truejoybirthing.com', 'full_name': 'Emily Thompson', 'onboarding_completed': True, 'picture': 'https://api.dicebear.com/7.x/lorelei/png?seed=Emily Thompson&amp;size=200', ...}</failure></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestDashboardStats" name="test_doula_dashboard_has_active_clients" time="0.446"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestDashboardStats" name="test_doula_dashboard_has_upcoming_appointments" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestDashboardStats" name="test_doula_dashboard_has_contracts_pending_signature" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestDashboardStats" name="test_doula_dashboard_has_pending_invoices" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestDashboardStats" name="test_midwife_dashboard_has_role_specific_stats" time="0.406"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:73: in midwife_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestClientFilter" name="test_get_clients_default_active_only" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestClientFilter" name="test_get_clients_include_inactive" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestClientFilter" name="test_get_clients_status_filter_lead" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestClientFilter" name="test_client_has_is_active_field" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestProviderNotesCreation" name="test_create_note_requires_client_id" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestProviderNotesCreation" name="test_create_note_with_client_id" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestProviderContractsCreation" name="test_create_doula_contract_with_client_id" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestProviderInvoicesCreation" name="test_create_doula_invoice_with_client_id" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestClientTimelineContractsQuery" name="test_doula_timeline_returns_contracts" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestClientTimelineContractsQuery" name="test_midwife_timeline_returns_contracts" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:73: in midwife_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestTimelineShowsCreatedItems" name="test_created_note_appears_in_timeline" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestTimelineShowsCreatedItems" name="test_created_contract_appears_in_timeline" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestTimelineShowsCreatedItems" name="test_created_invoice_appears_in_timeline" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestClientDetailResponse" name="test_client_detail_has_counts" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestNoObjectIdInResponses" name="test_dashboard_no_objectid" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestNoObjectIdInResponses" name="test_clients_no_objectid" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase><testcase classname="backend.tests.test_uiux_fixes_iteration112.TestNoObjectIdInResponses" name="test_timeline_no_objectid" time="0.000"><error message="failed on setup with &quot;KeyError: 'access_token'&quot;">backend/tests/test_uiux_fixes_iteration112.py:64: in doula_token
+    return response.json()["access_token"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'access_token'</error></testcase></testsuite></testsuites>
