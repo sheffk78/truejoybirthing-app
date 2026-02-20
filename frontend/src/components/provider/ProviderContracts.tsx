@@ -550,8 +550,9 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
 
             <ScrollView 
               style={styles.modalBody} 
-              contentContainerStyle={{ paddingBottom: 100 }}
+              contentContainerStyle={{ paddingBottom: 140 }}
               keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
             >
               {/* Template Selection */}
               {currentSection === 0 && templates.length > 0 && (
