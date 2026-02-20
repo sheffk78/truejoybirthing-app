@@ -104,7 +104,10 @@ export default function DoulaLayout() {
       />
       <Tabs.Screen
         name="client-birth-plans"
-        options={{ href: null }}
+        options={{ 
+          href: null,
+          headerShown: false,
+        }}
       />
     </Tabs>
   );
