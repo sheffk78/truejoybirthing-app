@@ -560,18 +560,26 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         presentationStyle="pageSheet"
         onRequestClose={() => setShowInvoiceModal(false)}
       >
-        <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={() => setShowInvoiceModal(false)}>
-              <Ionicons name="close" size={24} color={COLORS.textPrimary} />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>
-              {editingInvoice ? 'Edit Invoice' : 'New Invoice'}
-            </Text>
-            <View style={{ width: 24 }} />
-          </View>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <SafeAreaView style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={() => setShowInvoiceModal(false)}>
+                <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>
+                {editingInvoice ? 'Edit Invoice' : 'New Invoice'}
+              </Text>
+              <View style={{ width: 24 }} />
+            </View>
 
-          <ScrollView style={styles.modalContent}>
+            <ScrollView 
+              style={styles.modalContent}
+              contentContainerStyle={{ paddingBottom: 100 }}
+              keyboardShouldPersistTaps="handled"
+            >
             <Text style={styles.fieldLabel}>Client *</Text>
             <View style={styles.clientGrid}>
               {activeClients.map((client) => (
