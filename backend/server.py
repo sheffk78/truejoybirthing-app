@@ -1459,6 +1459,7 @@ api_router.include_router(care_plans_routes.router)
 api_router.include_router(provider_unified_routes.router)
 api_router.include_router(appointments_routes.router)
 api_router.include_router(utils_routes.router)
+api_router.include_router(push_routes.router)
 
 # ============== AUTH ROUTES ==============
 # MIGRATED TO: routes/auth.py
