@@ -20,10 +20,15 @@ from datetime import datetime
 
 from .dependencies import (
     db, check_role, User, create_notification, get_now, generate_id,
-    get_current_user
+    get_current_user as get_current_user_fn
 )
 
 router = APIRouter(tags=["Appointments"])
+
+
+# Helper to get current user
+async def get_current_user(user: User = Depends(get_current_user_fn)):
+    return user
 
 
 # ============== SHARED APPOINTMENT ENDPOINTS ==============
