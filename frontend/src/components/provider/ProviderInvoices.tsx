@@ -821,6 +821,38 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
+  // Breadcrumb styles
+  breadcrumbHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SIZES.lg,
+    paddingVertical: SIZES.md,
+    backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  breadcrumb: { 
+    flexDirection: 'row', 
+    alignItems: 'center',
+    flex: 1,
+  },
+  breadcrumbItem: { paddingVertical: 4 },
+  breadcrumbLink: { 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.primary, 
+    fontWeight: '500' 
+  },
+  breadcrumbSeparator: { 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.textLight, 
+    marginHorizontal: SIZES.sm 
+  },
+  breadcrumbCurrent: { 
+    fontSize: SIZES.fontMd, 
+    color: COLORS.textPrimary, 
+    fontWeight: '600' 
+  },
   mainHeader: { 
     flexDirection: 'row', 
     alignItems: 'center', 
