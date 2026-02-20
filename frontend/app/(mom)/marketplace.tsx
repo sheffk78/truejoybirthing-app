@@ -551,16 +551,10 @@ export default function MarketplaceScreen() {
                       <TouchableOpacity 
                         style={styles.videoThumbnailContainer}
                         onPress={() => {
-                          // Open YouTube video in browser
-                          const url = `https://www.youtube.com/watch?v=${videoId}`;
-                          if (Platform.OS === 'web') {
-                            window.open(url, '_blank');
-                          } else {
-                            // For native platforms, use Linking
-                            import('react-native').then(({ Linking }) => {
-                              Linking.openURL(url);
-                            });
-                          }
+                          // Open embedded video player modal
+                          setCurrentVideoId(videoId);
+                          setCurrentVideoTitle(`${selectedProvider.full_name}'s Introduction`);
+                          setShowVideoModal(true);
                         }}
                         data-testid="video-play-btn"
                       >
@@ -570,6 +564,10 @@ export default function MarketplaceScreen() {
                         />
                         <View style={styles.playIconOverlay}>
                           <Icon name="play-circle" size={48} color={COLORS.white} />
+                        </View>
+                        <View style={styles.videoLabel}>
+                          <Icon name="videocam" size={14} color={COLORS.white} />
+                          <Text style={styles.videoLabelText}>Watch Video</Text>
                         </View>
                       </TouchableOpacity>
                     ) : null;
