@@ -757,6 +757,15 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             )}
           </View>
         )}
+
+        {/* Labor Records Section - Midwife Only */}
+        {isMidwife && (
+          <LaborSection
+            clientId={clientId}
+            primaryColor={primaryColor}
+            onRefresh={fetchData}
+          />
+        )}
       </ScrollView>
       
       {/* Add/Edit Visit Modal - Midwife Only */}
