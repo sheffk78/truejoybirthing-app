@@ -35,6 +35,9 @@ export interface ContractsConfig {
     defaults: string;
   };
   clientsEndpoint: string;
+  routes: {
+    clients: string;
+  };
 }
 
 // ============ DOULA CONTRACT CONFIG ============
