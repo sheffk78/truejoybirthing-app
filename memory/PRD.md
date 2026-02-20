@@ -67,6 +67,19 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Contract UI Cleanup
+
+#### Provider Contracts View Cleanup (COMPLETED - 2026-02-20)
+- [x] **Removed duplicate button** - No more copy/duplicate icon on contract cards
+- [x] **Added E-Sign button** - Green E-Sign button for Sent contracts, navigates to signing page
+- [x] **Context-specific buttons** - Draft: Send + Delete, Sent: E-Sign, Signed: PDF only
+- [x] **Clean UI** - Each contract shows only relevant action buttons
+
+#### Midwife Contract Download PDF (COMPLETED - 2026-02-20)
+- [x] **Download PDF button** - Added to signed midwife contracts
+- [x] **Consistent with Doula** - Same UI pattern as doula contract signing page
+- [x] **Cross-platform** - Works on web (window.open) and mobile (Linking.openURL)
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Multiple Features Batch
 
 #### Appointment Acceptance Flow (COMPLETED - 2026-02-20)
