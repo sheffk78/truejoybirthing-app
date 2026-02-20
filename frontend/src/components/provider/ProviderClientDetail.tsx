@@ -142,7 +142,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
     
     try {
       // Fetch client details
-      const clientData = await apiRequest(`${config.api.clients}/${clientId}`);
+      const clientData = await apiRequest(`${config.endpoints.clients}/${clientId}`);
       setClient(clientData);
       
       // Fetch prenatal visits for midwives
@@ -161,7 +161,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [clientId, config.api.clients, isMidwife]);
+  }, [clientId, config.endpoints.clients, isMidwife]);
 
   useEffect(() => {
     fetchData();
