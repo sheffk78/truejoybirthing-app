@@ -372,14 +372,6 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
                   <View style={[styles.toggleDot, acceptingClients && styles.toggleDotActive]} />
                 </View>
               </TouchableOpacity>
-              
-              <Button
-                title="Save Changes"
-                onPress={handleSave}
-                loading={saving}
-                fullWidth
-                style={{ backgroundColor: primaryColor }}
-              />
             </View>
           ) : (
             <View>
