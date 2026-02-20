@@ -28,6 +28,7 @@ interface Appointment {
   provider_id: string;
   provider_name: string;
   provider_role: string;
+  provider_picture?: string;
   appointment_date: string;
   appointment_time: string;
   appointment_type: string;
