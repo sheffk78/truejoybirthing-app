@@ -775,7 +775,8 @@ export default function AppointmentsScreen() {
               data-testid="submit-appointment-btn"
             />
           </View>
-        </SafeAreaView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
