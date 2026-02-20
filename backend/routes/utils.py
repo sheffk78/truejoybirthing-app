@@ -11,13 +11,12 @@ import httpx
 from pydantic import BaseModel
 from typing import Optional
 
-from .dependencies import get_db, get_check_role, User
+from .dependencies import get_db, check_role, User
 
 router = APIRouter()
 
 # Get dependencies
 db = get_db()
-check_role = get_check_role()
 
 
 # ============== ZIP CODE LOOKUP ==============
