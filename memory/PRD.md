@@ -69,6 +69,17 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Backend Modular Architecture Refactoring
 
+#### Phase 13: Provider Unified Routes Migration (COMPLETED - 2026-02-20)
+- [x] **Migrated provider unified routes** from monolithic `server.py` to `routes/provider_unified.py` (~679 lines)
+- [x] **Provider Clients**: GET /api/provider/clients, GET /api/provider/clients/{id}, PUT /api/provider/clients/{id}
+- [x] **Client Timeline**: GET /api/provider/clients/{id}/timeline (appointments, notes, visits, contracts, invoices)
+- [x] **Provider Appointments**: GET/POST/PUT/DELETE /api/provider/appointments
+- [x] **Provider Notes**: GET/POST/PUT/DELETE /api/provider/notes
+- [x] **Provider Birth Records**: GET/POST /api/provider/clients/{id}/birth-record
+- [x] **Provider Dashboard**: GET /api/provider/dashboard (with MIDWIFE-specific stats)
+- [x] **All 49 tests passing** (iteration_109.json)
+- [x] **Role-based access verified** - Both DOULA and MIDWIFE can access; MOM correctly blocked
+
 #### Phase 12: Care Plans Migration (COMPLETED - 2026-02-20)
 - [x] **Migrated care plan routes** from monolithic `server.py` to `routes/care_plans.py` (~1179 lines)
 - [x] **Birth Plan Routes**: GET/PUT /api/birth-plan, GET /api/birth-plan/export, GET /api/birth-plan/export/pdf
@@ -91,24 +102,25 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 ```
 /app/backend
 ├── routes/
-│   ├── __init__.py      # Module exports
-│   ├── dependencies.py  # Shared deps (db, auth, utils)
-│   ├── auth.py         # Auth routes
-│   ├── admin.py        # Admin routes
-│   ├── marketplace.py  # Provider search/marketplace
-│   ├── messages.py     # Messaging routes
-│   ├── notifications.py # Notification routes
-│   ├── subscription.py # Subscription routes
-│   ├── mom.py          # Mom-specific routes
-│   ├── doula.py        # Doula-specific routes
-│   ├── midwife.py      # Midwife-specific routes
-│   ├── contracts.py    # Contract routes
-│   ├── invoices.py     # Invoice routes
-│   ├── visits.py       # Visit routes
-│   └── care_plans.py   # Care plan routes (NEW)
-├── server.py           # Main app (reduced from ~4000 lines)
+│   ├── __init__.py          # Module exports
+│   ├── dependencies.py      # Shared deps (db, auth, utils)
+│   ├── auth.py              # Auth routes
+│   ├── admin.py             # Admin routes
+│   ├── marketplace.py       # Provider search/marketplace
+│   ├── messages.py          # Messaging routes
+│   ├── notifications.py     # Notification routes
+│   ├── subscription.py      # Subscription routes
+│   ├── mom.py               # Mom-specific routes
+│   ├── doula.py             # Doula-specific routes
+│   ├── midwife.py           # Midwife-specific routes
+│   ├── contracts.py         # Contract routes
+│   ├── invoices.py          # Invoice routes
+│   ├── visits.py            # Visit routes
+│   ├── care_plans.py        # Care plan routes (Phase 12)
+│   └── provider_unified.py  # Provider unified routes (Phase 13)
+├── server.py                # Main app (reduced significantly)
 └── models/
-    └── models.py       # Pydantic models
+    └── models.py            # Pydantic models
 ```
 
 ### ✅ RECENTLY COMPLETED (2026-02-19) - Client-Centered Architecture Refactoring
