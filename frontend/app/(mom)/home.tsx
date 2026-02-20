@@ -207,13 +207,13 @@ export default function MomHomeScreen() {
             style={styles.actionCard}
             onPress={() => router.push('/(mom)/appointments')}
             activeOpacity={0.8}
-            data-testid="key-action-schedule"
+            data-testid="key-action-schedule-provider"
           >
             <View style={[styles.actionIcon, { backgroundColor: COLORS.primary + '30' }]}>
               <Icon name="calendar-outline" size={24} color={COLORS.primary} />
             </View>
             <Text style={styles.actionTitle}>Schedule</Text>
-            <Text style={styles.actionSubtitle}>Book appointments</Text>
+            <Text style={styles.actionSubtitle}>With your provider</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
