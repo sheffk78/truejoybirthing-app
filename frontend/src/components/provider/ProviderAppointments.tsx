@@ -235,6 +235,50 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
     );
   };
 
+  // Handle Accept/Decline pending appointments from moms
+  const handleRespond = async (appointmentId: string, response: 'accepted' | 'declined') => {
+    setRespondingId(appointmentId);
+    try {
+      await apiRequest(`/appointments/${appointmentId}/respond`, {
+        method: 'PUT',
+        body: { response },
+      });
+      setAppointments(prev =>
+        prev.map(apt =>
+          apt.appointment_id === appointmentId
+            ? { ...apt, status: response === 'accepted' ? 'confirmed' : 'declined' }
+            : apt
+        )
+      );
+      Alert.alert(
+        'Success',
+        response === 'accepted'
+          ? 'Appointment accepted! The client has been notified.'
+          : 'Appointment declined. The client has been notified.'
+      );
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to respond to appointment');
+    } finally {
+      setRespondingId(null);
+    }
+  };
+
+  const confirmResponse = (appointmentId: string, response: 'accepted' | 'declined') => {
+    const action = response === 'accepted' ? 'accept' : 'decline';
+    Alert.alert(
+      `${action.charAt(0).toUpperCase() + action.slice(1)} Appointment?`,
+      `Are you sure you want to ${action} this appointment request?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: response === 'accepted' ? 'Accept' : 'Decline',
+          style: response === 'accepted' ? 'default' : 'destructive',
+          onPress: () => handleRespond(appointmentId, response),
+        },
+      ]
+    );
+  };
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
