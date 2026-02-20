@@ -660,10 +660,28 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               <Text style={styles.actionLabel}>Add Visit</Text>
             </TouchableOpacity>
           )}
+
+          {/* Birth Day Record - Midwife only */}
+          {isMidwife && (
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => setShowBirthModal(true)}
+              data-testid="action-birth"
+            >
+              <View style={[styles.actionIcon, { backgroundColor: birthRecord ? COLORS.success + '15' : COLORS.error + '15' }]}>
+                <Icon 
+                  name={birthRecord ? 'checkmark-circle' : 'fitness-outline'} 
+                  size={20} 
+                  color={birthRecord ? COLORS.success : COLORS.error} 
+                />
+              </View>
+              <Text style={styles.actionLabel}>{birthRecord ? 'Birth Record' : 'Birth Day'}</Text>
+            </TouchableOpacity>
+          )}
           
           {/* Placeholder for alignment */}
           {!isMidwife && <View style={styles.actionButton} />}
-          <View style={styles.actionButton} />
+          {!isMidwife && <View style={styles.actionButton} />}
         </View>
         
         {/* Prenatal Visits Section - Midwife Only */}
