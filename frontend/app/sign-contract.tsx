@@ -466,8 +466,68 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     color: COLORS.textPrimary,
   },
+  signedNote: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.textSecondary,
+    marginTop: SIZES.sm,
+  },
   signatureCard: {
     marginBottom: SIZES.md,
+  },
+  signatureInstructions: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.textSecondary,
+    marginBottom: SIZES.lg,
+    lineHeight: 20,
+  },
+  providerSignatureCard: {
+    marginBottom: SIZES.md,
+    backgroundColor: COLORS.success + '08',
+    borderColor: COLORS.success + '30',
+    borderWidth: 1,
+  },
+  signatureHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SIZES.xs,
+  },
+  signatureLabel: {
+    fontSize: SIZES.fontSm,
+    fontWeight: '600',
+    color: COLORS.success,
+    marginLeft: SIZES.xs,
+  },
+  signatureText: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.textSecondary,
+    marginLeft: 28,
+  },
+  feeSummary: {
+    marginTop: SIZES.lg,
+    paddingTop: SIZES.lg,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  feeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SIZES.sm,
+  },
+  feeLabel: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.textSecondary,
+  },
+  feeDetail: {
+    fontSize: SIZES.fontMd,
+    color: COLORS.textPrimary,
+    fontWeight: '500',
+  },
+  contractText: {
+    fontSize: SIZES.fontSm,
+    color: COLORS.textPrimary,
+    lineHeight: 22,
+    textAlign: 'justify',
   },
   agreementRow: {
     flexDirection: 'row',
