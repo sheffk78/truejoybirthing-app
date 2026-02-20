@@ -75,21 +75,21 @@ def doula_token():
     response = requests.post(f"{BASE_URL}/api/auth/login", json=DOULA_CREDS)
     if response.status_code != 200:
         pytest.skip("Doula login failed")
-    return response.json()["token"]
+    return response.json()["session_token"]
 
 @pytest.fixture
 def midwife_token():
     response = requests.post(f"{BASE_URL}/api/auth/login", json=MIDWIFE_CREDS)
     if response.status_code != 200:
         pytest.skip("Midwife login failed")
-    return response.json()["token"]
+    return response.json()["session_token"]
 
 @pytest.fixture
 def mom_token():
     response = requests.post(f"{BASE_URL}/api/auth/login", json=MOM_CREDS)
     if response.status_code != 200:
         pytest.skip("Mom login failed")
-    return response.json()["token"]
+    return response.json()["session_token"]
 
 @pytest.fixture
 def doula_client(doula_token):
