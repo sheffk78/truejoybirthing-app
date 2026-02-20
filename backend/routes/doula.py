@@ -190,13 +190,32 @@ async def get_doula_dashboard(user: User = Depends(check_role(["DOULA"]))):
         "read": False
     })
     
+    # Lead Insights
+    all_leads = await db.leads.find(
+        {"provider_id": user.user_id},
+        {"_id": 0, "status": 1}
+    ).to_list(500)
+    
+    total_leads = len(all_leads)
+    active_leads = len([l for l in all_leads if l.get("status") in ["consultation_requested", "consultation_scheduled", "consultation_completed"]])
+    converted_leads = len([l for l in all_leads if l.get("status") == "converted_to_client"])
+    
+    # Calculate conversion rate (leads that became clients)
+    conversion_rate = round((converted_leads / total_leads * 100), 1) if total_leads > 0 else 0
+    
     return {
         "active_clients": active_clients,
         "total_clients": total_clients,
         "contracts_pending_signature": contracts_pending_signature,
         "pending_invoices": pending_invoices,
         "upcoming_appointments": upcoming_appointments,
-        "unread_messages": unread_messages
+        "unread_messages": unread_messages,
+        "lead_insights": {
+            "total_leads": total_leads,
+            "active_leads": active_leads,
+            "converted_leads": converted_leads,
+            "conversion_rate": conversion_rate
+        }
     }
 
 
