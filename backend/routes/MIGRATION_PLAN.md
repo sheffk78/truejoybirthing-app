@@ -168,17 +168,30 @@ This document outlines the phased migration plan for breaking down the monolithi
 - [ ] Remove duplicated contract routes from server.py
 - [ ] Test all routes
 
-### Phase 10: Invoices (NEXT)
-- [ ] Create `routes/invoices.py` with feature parity
-- [ ] Invoice CRUD for both provider types
-- [ ] Payment instructions templates
-- [ ] Include router in server.py
-- [ ] Remove duplicated invoice routes from server.py
-- [ ] Test all routes
+### Phase 10: Invoices (COMPLETED)
+- [x] Create `routes/invoices.py` with feature parity
+- [x] Payment instructions templates CRUD
+- [x] Doula invoices CRUD + actions (send, mark-paid, cancel, send-reminder)
+- [x] Midwife invoices CRUD + actions (send, mark-paid, cancel, send-reminder)
+- [x] Include router in server.py
+- [x] Remove duplicated invoice routes from server.py
+- [x] Test all routes (45/45 tests passed)
 
-### Phase 11: Midwife Visits
+**Completed**: All invoice routes now served from modular router.
+- `routes/invoices.py` - 24 endpoints migrated
+  - Payment instructions: CRUD (4 endpoints)
+  - Doula invoices: CRUD (5) + actions (4)
+  - Midwife invoices: CRUD (5) + actions (4)
+  - Invoice lifecycle: Draft -> Send -> (Paid | Cancelled)
+- Server.py reduced from 5,322 → 4,646 lines (~676 lines migrated)
+- Role-based access control verified
+- No ObjectId serialization errors
+
+### Phase 11: Midwife Visits (NEXT)
 - [ ] Create `routes/visits.py` or add to midwife.py
 - [ ] Visit scheduling and management
+- [ ] Visit types (prenatal, postnatal)
+- [ ] Include router in server.py
 - [ ] Test all routes
 
 ### Phase 12: Birth Plan, Wellness, Postpartum, Timeline
