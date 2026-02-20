@@ -165,6 +165,46 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
           })}
         </View>
 
+        {/* Lead Insights Card */}
+        {stats?.lead_insights && (stats.lead_insights.total_leads > 0 || stats.lead_insights.active_leads > 0) && (
+          <TouchableOpacity 
+            style={styles.leadInsightsCard}
+            onPress={() => router.push(config.routes.leads as any)}
+            activeOpacity={0.8}
+            data-testid="lead-insights-card"
+          >
+            <View style={styles.leadInsightsHeader}>
+              <View style={[styles.leadInsightsIcon, { backgroundColor: primaryColor + '20' }]}>
+                <Icon name="trending-up" size={20} color={primaryColor} />
+              </View>
+              <Text style={styles.leadInsightsTitle}>Lead Insights</Text>
+              <Icon name="chevron-forward" size={20} color={COLORS.textSecondary} />
+            </View>
+            <View style={styles.leadInsightsStats}>
+              <View style={styles.leadInsightsStat}>
+                <Text style={[styles.leadInsightsValue, { color: COLORS.warning }]}>
+                  {stats.lead_insights.active_leads}
+                </Text>
+                <Text style={styles.leadInsightsLabel}>Active</Text>
+              </View>
+              <View style={styles.leadInsightsDivider} />
+              <View style={styles.leadInsightsStat}>
+                <Text style={[styles.leadInsightsValue, { color: COLORS.success }]}>
+                  {stats.lead_insights.converted_leads}
+                </Text>
+                <Text style={styles.leadInsightsLabel}>Converted</Text>
+              </View>
+              <View style={styles.leadInsightsDivider} />
+              <View style={styles.leadInsightsStat}>
+                <Text style={[styles.leadInsightsValue, { color: primaryColor }]}>
+                  {stats.lead_insights.conversion_rate}%
+                </Text>
+                <Text style={styles.leadInsightsLabel}>Rate</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+
         {/* Pending Share Requests */}
         {shareRequests.length > 0 && (
           <>
