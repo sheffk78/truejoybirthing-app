@@ -130,20 +130,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
   const [showVisitDetail, setShowVisitDetail] = useState<PrenatalVisit | null>(null);
   const [saving, setSaving] = useState(false);
   
-  // Birth record state (midwife only)
-  const [birthRecord, setBirthRecord] = useState<BirthRecord | null>(null);
-  const [showBirthModal, setShowBirthModal] = useState(false);
-  const [birthDate, setBirthDate] = useState('');
-  const [birthTime, setBirthTime] = useState('');
-  const [birthSetting, setBirthSetting] = useState('');
-  const [deliveryType, setDeliveryType] = useState('');
-  const [babyWeight, setBabyWeight] = useState('');
-  const [babyLength, setBabyLength] = useState('');
-  const [apgar1min, setApgar1min] = useState('');
-  const [apgar5min, setApgar5min] = useState('');
-  const [babyGender, setBabyGender] = useState('');
-  const [birthComplications, setBirthComplications] = useState('');
-  const [birthNotes, setBirthNotes] = useState('');
+  // Birth record is now handled by the BirthRecordSection component
   
   // Prenatal visit form state
   const [visitDate, setVisitDate] = useState('');
