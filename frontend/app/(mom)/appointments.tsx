@@ -818,6 +818,7 @@ const styles = StyleSheet.create({
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.sm },
   providerInfo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   providerAvatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.sm },
+  providerAvatarImage: { width: 40, height: 40, borderRadius: 20, marginRight: SIZES.sm },
   providerName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: COLORS.textPrimary },
   providerRole: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary },
   cardHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: SIZES.sm },
