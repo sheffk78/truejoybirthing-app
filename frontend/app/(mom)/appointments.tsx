@@ -171,6 +171,29 @@ export default function AppointmentsScreen() {
     );
   };
 
+  const handleDeleteAppointment = async (appointmentId: string) => {
+    Alert.alert(
+      'Cancel Appointment',
+      'Are you sure you want to cancel this appointment? This cannot be undone.',
+      [
+        { text: 'No, Keep It', style: 'cancel' },
+        {
+          text: 'Yes, Cancel',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await apiRequest(`/appointments/${appointmentId}`, { method: 'DELETE' });
+              Alert.alert('Success', 'Appointment cancelled successfully.');
+              fetchData();
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to cancel appointment');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleCreateAppointment = async () => {
     // Allow creating appointments without provider ("none" option)
     if (!selectedProvider && !isPersonalAppointment) {
