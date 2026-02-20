@@ -232,7 +232,7 @@ export default function ClientBirthPlansScreen() {
         <View style={styles.backHeader}>
           <TouchableOpacity 
             style={styles.backButton} 
-            onPress={() => router.back()}
+            onPress={handleBack}
             data-testid="back-btn"
           >
             <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
