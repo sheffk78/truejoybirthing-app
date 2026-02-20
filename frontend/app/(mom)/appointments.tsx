@@ -158,8 +158,9 @@ export default function AppointmentsScreen() {
   };
 
   const handleCreateAppointment = async () => {
-    if (!selectedProvider) {
-      Alert.alert('Error', 'Please select a provider');
+    // Allow creating appointments without provider ("none" option)
+    if (!selectedProvider && !isPersonalAppointment) {
+      Alert.alert('Error', 'Please select a provider or choose "Personal/Other"');
       return;
     }
 
@@ -168,28 +169,30 @@ export default function AppointmentsScreen() {
       const dateStr = appointmentDate.toISOString().split('T')[0];
       const timeStr = `${appointmentTime.getHours().toString().padStart(2, '0')}:${appointmentTime.getMinutes().toString().padStart(2, '0')}`;
       
-      const result = await apiRequest('/api/mom/appointments', {
+      const result = await apiRequest('/api/appointments', {
         method: 'POST',
         body: {
-          provider_id: selectedProvider.user_id,
+          provider_id: isPersonalAppointment ? 'none' : selectedProvider?.user_id,
           appointment_date: dateStr,
           appointment_time: timeStr,
           appointment_type: appointmentType,
+          title: isPersonalAppointment ? personalTitle : undefined,
           is_virtual: isVirtual,
           notes: appointmentNotes,
         },
       });
       
-      Alert.alert(
-        'Request Sent!',
-        `Your appointment request has been sent to ${selectedProvider.full_name}. They will confirm shortly.`
-      );
+      const message = isPersonalAppointment
+        ? 'Your personal appointment has been added to your timeline.'
+        : `Your appointment request has been sent to ${selectedProvider?.full_name}. They will confirm shortly.`;
+      
+      Alert.alert('Success!', message);
       
       setShowCreateModal(false);
       resetForm();
       fetchData();
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to create appointment request');
+      Alert.alert('Error', error.message || 'Failed to create appointment');
     } finally {
       setIsCreating(false);
     }
