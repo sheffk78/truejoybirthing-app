@@ -155,6 +155,7 @@ export const DOULA_CONFIG: ProviderConfig = {
     { key: 'messages', label: 'Messages', icon: 'chatbubbles' },
     { key: 'contracts', label: 'Contracts', icon: 'document' },
     { key: 'invoices', label: 'Invoices', icon: 'cash' },
+    { key: 'birthplan', label: 'Birth Plan', icon: 'clipboard' },
     { key: 'birth', label: 'Birth Info', icon: 'heart' },
   ],
   
