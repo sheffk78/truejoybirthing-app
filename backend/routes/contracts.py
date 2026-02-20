@@ -579,7 +579,7 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
-                signing_url = f"https://modular-migration.preview.emergentagent.com/contract/{contract_id}"
+                signing_url = f"https://cleanup-verify.preview.emergentagent.com/contract/{contract_id}"
                 params = {
                     "from": _sender_email,
                     "to": mom["email"],
@@ -1082,7 +1082,7 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
-                signing_url = f"https://modular-migration.preview.emergentagent.com/sign-midwife-contract?contractId={contract_id}"
+                signing_url = f"https://cleanup-verify.preview.emergentagent.com/sign-midwife-contract?contractId={contract_id}"
                 params = {
                     "from": _sender_email,
                     "to": mom["email"],

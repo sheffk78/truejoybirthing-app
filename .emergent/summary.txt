@@ -1,62 +1,65 @@
-<analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing. The work has been focused on a large-scale backend refactoring to improve the application's architecture and maintainability.
+<analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing. The project recently completed a large-scale backend refactoring to move from a monolithic  to a modular FastAPI router structure. Following this, the user performed a manual test pass and reported a detailed list of UI/UX, data consistency, and navigation bugs. The current focus is on fixing these reported issues and preparing the application for a final user acceptance test.
 
 **PRODUCT REQUIREMENTS**:
-*   **Code Cleanup**: Systematically find and remove duplicated code and components between the Doula and Midwife features.
-*   **Fix Architectural Gaps**: Address known technical debt, including making the  model fully client-centric, standardizing inconsistent field names, and crucially, refactoring the monolithic  file.
-*   **Simplify UI Navigation**: Rework the provider (Doula/Midwife) navigation to enforce a client-first workflow.
-*   **Monolithic Backend Refactoring**: Break the massive  file into a modular structure using FastAPI's . This has been the primary focus.
+*   **Complete Backend Refactoring**: Finalize the migration of all routes from  to a modular structure. (DONE)
+*   **Verify Client-Centered Architecture**: Ensure the data model, navigation, and features are all centered around the Client (Mom) entity. (DONE)
+*   **Fix User-Reported Bugs**: Address a comprehensive list of issues related to data visibility, UI controls (date pickers, dropdowns), keyboard handling, and navigation.
+*   **Data Cleanup**: Remove all test data from the database, preserving only the essential demo accounts for the user's final review.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React Native (Expo) and FastAPI app. A major, multi-phase refactoring of the monolithic  is well underway. The original file has been significantly reduced by systematically migrating functionality into a new modular structure under . The following domains have been successfully migrated and tested: Auth, Admin, Marketplace, Messages, Notifications, Subscriptions, Mom-specific routes, Doula/Midwife onboarding/profiles, Client management, Notes, Contracts, Invoices, and Midwife Visits. The agent was in the middle of migrating care plan routes.
+The application's backend has been fully refactored from a single  file into a clean, modular architecture under . A comprehensive verification of the client-centered data model and workflows was completed, passing all automated tests. The agent has just addressed a detailed list of ~15 UI/UX and data consistency bugs reported by the user, including fixes to the provider dashboard, client filters, back navigation, date pickers, keyboard avoidance in forms, and ensuring newly created items (Notes, Contracts, Invoices) appear correctly on the client's timeline. The agent was in the middle of cleaning up test data from the database as per the user's request.
 
 **Last working item**:
-*   **Last item agent was working**: Migrating the Care Plans routes (Birth Plan, Wellness, Postpartum, Timeline) from  to a new modular file, . The agent has successfully created the new file containing all the necessary route logic.
+*   **Last item agent was working**: Cleaning the database by removing test data while preserving demo accounts. The user reported a large number of test accounts were cluttering the UI and requested a clean environment for final testing.
 *   **Status**: IN PROGRESS
 *   **Agent Testing Done**: N
-*   **Which testing method agent to use?**: Backend testing agent. Once the new router is integrated and the old code is removed from , the testing agent should be called to perform a full regression test on all care plan functionalities.
+*   **Which testing method agent to use?**: The agent should execute the cleanup script and then verify the data removal by running database queries () to confirm only demo accounts remain.
 *   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-*   **Issue 1: Complete Phase 12 Migration (Care Plans) (P0)**
-    *   **Description**: The  router file has been created, but it is not yet integrated into the main application. The original code still exists in .
+*   **Issue 1: Complete Database Cleanup (P0)**
+    *   **Description**: User requested the removal of all test data (users, clients, appointments, etc.) from the database, leaving only the primary demo/screenshot accounts (, , ).
+    *   **Attempted fixes**: The agent identified the demo accounts which are prefixed with  and was preparing a Python script () to perform the deletion. The script was not completed or executed.
     *   **Next debug checklist**:
-        1.  Update  to export the .
-        2.  Update  to import and  for the care plans module.
-        3.  Carefully find and remove the original blocks of code for Birth Plan, Wellness, Postpartum, and Timeline routes from .
-        4.  Verify the server restarts correctly.
-        5.  Call the  to thoroughly test all migrated care plan functionalities.
-    *   **Why fix this issue and what will be achieved with the fix?**: This step continues the critical backend refactoring, further modularizing the codebase and reducing the size of the monolithic  file.
+        1.  Complete and execute the Python script to delete all non-demo users and their associated data. The script should iterate through collections like , , , , , and  and remove documents not linked to the preserved demo accounts.
+        2.  Verify the cleanup by connecting to the MongoDB instance and running  queries on the collections to ensure only a small number of documents remain.
+        3.  Inform the user that the cleanup is complete and the environment is ready for their final review.
+    *   **Why fix this issue and what will be achieved with the fix?**: Provides a clean environment for the user to conduct their final acceptance testing without being confused by old test data.
     *   **Status**: IN PROGRESS
     *   **Is recurring issue?**: N
-    *   **Should Test frontend/backend/both after fix?**: Backend
+    *   **Should Test frontend/backend/both after fix?**: Backend (database verification)
     *   **Blocked on other issue**: No
 
 **In progress Task List**:
-*   **Task 1: Complete Backend Refactoring of  (P0)**
-    *   **Where to resume**: Continue with the integration and testing of the  module as outlined in the issue above. After successful validation, proceed to the final migration phase.
-    *   **What will be achieved with this?**: A fully modular, maintainable, and scalable backend architecture, eliminating the significant technical debt of the monolithic  file.
-    *   **Status**: IN PROGRESS
-    *   **Should Test frontend/backend/both after fix?**: Backend
-    - **Blocked on something**: No
+*   **Task 1: Final User Acceptance Testing (UAT) Pass (P0)**
+    *   **Where to resume**: After the database cleanup is complete and verified, the next step is to hand the application back to the user for a final manual testing pass.
+    *   **What will be achieved with this?**: User confirmation that all ~15 reported bugs are resolved and the application's client-centered workflow behaves as expected.
+    *   **Status**: BLOCKED (on Issue 1: Database Cleanup)
+    *   **Should Test frontend/backend/both after fix?**: Both (by user)
+    *   **Blocked on something**: Database Cleanup
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks**:
-    *   **P0: Continue Backend Refactoring (Phase 13)**:
-        *   **Phase 13**: Share Requests, Appointments, and Final Cleanup (including addressing the legacy  module).
+    *   **P1: Migrate Remaining Utility Routes**: The  file still contains a few utility routes (, , ). These should be migrated to new, topic-specific routers (e.g., , ) to complete the refactoring 100%.
 *   **Future Tasks**:
     *   **P1: Stripe Integration**: Implement payment processing for provider invoices.
-    *   **P2: Push Notifications**: For new messages and client requests.
-    *   **P2: Consolidate Midwife **: A specialized screen that was deferred for a potential future refactor.
-    *   **Admin Panel**: Build out the full Admin UI experience.
+    *   **P2: Push Notifications**: Implement notifications for new messages and client requests.
+    *   **P2: Refactor Midwife **: The specialized midwife screen (1100+ lines) was deferred for a future refactor to better align with the shared provider components and reduce role-specific code.
+    *   **P2: Admin Panel**: Build out the full Admin UI experience.
 
 **Completed work in this session**
-*   **Phase 8**: Migrated and tested Doula & Midwife **Client and Notes** routes.
-*   **Phase 9**: Migrated and tested **Contracts** routes for all roles.
-*   **Phase 10**: Migrated and tested **Invoices** routes for all roles.
-*   **Phase 11**: Migrated and tested **Midwife Visits** and related provider visit routes.
-*   **Phase 12 (in progress)**: Began migration of **Care Plans** (Birth Plan, Wellness, Postpartum, Timeline) routes.
+*   **Backend Refactoring (Phase 12 & 13)**: Completed the migration of all remaining feature routes (Care Plans, Unified Provider routes, Mom Appointments) from  into modular files (, , ).
+*   **Backend Cleanup**: Removed over 1000 lines of legacy and duplicated code from  and deleted the unused legacy  router.
+*   **Client-Centered Architecture Verification**: Conducted a full-stack audit of the data model, navigation, and code sharing. Passed 36/36 automated regression tests.
+*   **User-Reported Bug Fixes**: Fixed a list of ~15 UI/UX and data bugs, including:
+    *   Corrected dashboard active client count.
+    *   Replaced All client filter with Leads.
+    *   Fixed non-functional Birth Plan button by adding a new tab to the client detail view.
+    *   Corrected back-navigation logic to return to the client detail screen instead of Home.
+    *   Fixed UI issues with date pickers, keyboard-obstructed buttons, and missing client dropdowns/auto-selection in Notes, Contracts, and Invoices forms.
+    *   Resolved backend logic so that newly created items (Notes, Contracts) correctly appear in the client timeline.
 
 **Earlier issues found/mentioned but not fixed**
 *   None.
@@ -68,59 +71,62 @@ The application is a full-stack React Native (Expo) and FastAPI app. A major, mu
 
 
 **Key Technical Concepts**
-*   **Backend**: FastAPI, MongoDB, Pydantic.
-*   **Frontend**: React Native (Expo), TypeScript.
-*   **Architecture**: **Phased Code Migration**, **Dependency Injection for FastAPI Routers**, Client-Centered Model.
+*   **Backend**: FastAPI, MongoDB, Pydantic, Modular  Architecture.
+*   **Frontend**: React Native (Expo), TypeScript, Zustand, TanStack Query, Expo Router.
+*   **Architecture**: Client-Centered Model, Shared Components with Role-Based Configuration, Phased Code Migration.
 
 **key DB schema**
-*   Unchanged.
+*   **users**: Core user model for all roles.
+*   **clients**: Represents a Mom client, linked to a provider. Stores  status logic.
+*   **appointments, visits, notes, contracts, invoices**: All contain required  and  foreign keys to enforce the client-centered model.
 
 **All files of reference**
-*   **Main Refactoring Target**: 
-*   **New Router Modules**: All files in , especially the newly created .
-*   **Infrastructure**: , 
+*   **Cleanup Script**:  (To be created/executed)
+*   **Backend Routes**: , 
+*   **Frontend Components**: , , , , 
+*   **Configuration**: , 
 
 **Areas that need refactoring**:
-*   ****: This remains the top priority. The migration is nearing completion, but the final routes must be moved.
-*   ****: This existing file uses an older, different initialization pattern and should be addressed in the final cleanup phase.
+*   ****: A few utility routes (, , ) remain. Migrating them would complete the refactoring.
+*   ****: This is a large, specialized component for midwives. It could be refactored in the future to better leverage the shared  and reduce role-specific UI code.
 
 **key api endpoints**
-*   All migrated endpoints now live under their respective router files (e.g.,  is in ). The API contract with the frontend remains unchanged.
+*   : Provides stats for the provider home screen.
+*   : Aggregates all client-related events (appointments, notes, etc.) for the client detail view.
+*   CRUD endpoints for , , , . All now require a .
 
 **Critical Info for New Agent**
-*   **Your immediate task is to complete the Phase 12 migration**. This involves integrating  into , removing the old code, and using the testing agent to verify the changes.
-*   **Follow the established pattern for migration**: The workflow of (1) Update Modular File, (2) Include Router in , (3) Remove Original Code from , (4) Test with Testing Agent is highly effective and should be continued.
-*   **The user is aware of the multi-phase plan** and has been consistently approving the continuation of the refactoring work.
+*   Your immediate priority is to complete the database cleanup. Create and run a script to remove all non-demo data.
+*   After the cleanup is verified, the application must be handed over to the user for their final testing pass. Your main goal is to achieve user sign-off on the recent bug fixes.
+*   The backend refactoring is considered complete. Avoid further architectural changes unless explicitly requested. The focus should be on stability and polishing the existing features based on user feedback.
 
 **documents and test reports created in this job**
-*    (Continuously updated to track migration progress)
-*    (Continuously updated)
-*   Numerous test reports from the testing agent, with the latest successful one being for Phase 11.
+*   
+*    (Updated with completed work)
+*   Multiple test reports in  confirming the success of the refactoring and bug fixes.
 
 **Last 10 User Messages and any pending HUMAN messages**
-*   A series of direct instructions from the user to continue the migration plan phase by phase.
-    *    (Completed)
-    *    (Completed)
-    *    (Completed)
-    *    (Completed Phase 11)
-    *    (In Progress)
+*   The user provided a detailed list of ~15 bugs found during manual testing, covering data discrepancies, UI issues (date picker, keyboard), incorrect navigation, and missing data on client timelines.
+*   The user requested to have all test data removed from the database to provide a clean slate for their final review, keeping only the main demo accounts.
+*   **Pending**: The user is waiting for the bug fixes and data cleanup to be completed so they can perform their final acceptance testing.
 
 **Project Health Check:**
-*   **Broken**:  is unreliable for interactive UI testing;  is the required alternative for robust testing.
+*   **Broken**: None.
 *   **Mocked**: In-app purchase (IAP) functionality is mocked.
 
 **3rd Party Integrations**
 *   , , Emergent-managed Google Auth, , , .
 
 **Testing status**
-*   **Testing agent used after significant changes**: YES. The testing agent has been used successfully after every migration phase to ensure no regressions were introduced. This is a critical step in the workflow.
-*   **Test files created**: No new persistent test files were created.  tracks the refactoring progress.
+*   **Testing agent used after significant changes**: YES. The testing agent was used successfully after each refactoring phase and again after the comprehensive bug-fixing pass, with all tests passing.
+*   **Troubleshoot agent used after agent stuck in loop**: NO.
+*   **Test files created**: None.
+*   **Known regressions**: None.
 
 **Credentials to test flow:**
-*   All demo credentials are in .
 *   **Doula**:  / 
 *   **Midwife**:  / 
 *   **Mom**:  / 
 
 **What agent forgot to execute**
-*   The agent has not forgotten any steps. It is correctly following a systematic plan. The last action (creating ) is logically waiting for the next actions of integration and testing.</analysis>
+*   The agent was in the middle of handling the user's request to clean up the database. It correctly identified the demo accounts to preserve but did not finish creating or executing the cleanup script. This is the immediate next step.</analysis>

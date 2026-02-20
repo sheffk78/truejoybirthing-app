@@ -19,7 +19,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Use BASE_URL from environment
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://modular-migration.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://cleanup-verify.preview.emergentagent.com')
 
 # Test credentials
 DOULA_EMAIL = "demo.doula@truejoybirthing.com"
