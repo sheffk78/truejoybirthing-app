@@ -67,6 +67,28 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Unified Appointments Frontend Integration
+
+#### Mom's My Team Quick Actions (COMPLETED - 2026-02-20)
+- [x] **Message Button** - Opens conversation with provider
+- [x] **Schedule Button** - Navigates to appointments with provider pre-selected
+- [x] **UI Styling** - Light purple background with primary color icons
+
+#### Mom's Appointments Pre-selection (COMPLETED - 2026-02-20)
+- [x] **URL Parameter Handling** - `providerId` and `providerName` params read from URL
+- [x] **Auto-open Create Modal** - Modal opens automatically with provider pre-selected
+- [x] **Fixed API Paths** - Removed double `/api` prefix in appointments.tsx
+
+#### Provider Config Fix (COMPLETED - 2026-02-20)
+- [x] **Fixed unifiedAppointments endpoint** - Changed from `/provider/appointments` to `/appointments`
+- [x] **All providers now use unified API** - Both Doula and Midwife use `/api/appointments`
+
+#### Testing Results (COMPLETED - 2026-02-20)
+- [x] **Backend Tests** - 17/17 passed (iteration_115.json)
+- [x] **Frontend Tests** - 100% verified
+- [x] **Cross-visibility** - Appointments created by provider appear on Mom's side
+- [x] **Mom appointments layout** - Fixed (was showing provider layout before)
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Mom Experience Fixes
 
 #### Mom UI/UX Fixes (COMPLETED - 2026-02-20)
