@@ -318,54 +318,82 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
   const upcomingAppointments = filteredAppointments.filter(a => a.status === 'accepted');
   const pastAppointments = filteredAppointments.filter(a => ['declined', 'cancelled'].includes(a.status));
 
-  const renderAppointmentCard = (appointment: Appointment) => (
-    <Card key={appointment.appointment_id} style={styles.appointmentCard} data-testid={`appointment-${appointment.appointment_id}`}>
-      <View style={styles.cardHeader}>
-        <View>
-          <Text style={styles.clientName}>{appointment.client_name || appointment.mom_name}</Text>
-          <Text style={styles.appointmentType}>
-            {APPOINTMENT_TYPES.find(t => t.value === appointment.appointment_type)?.label || appointment.appointment_type}
-          </Text>
+  const renderAppointmentCard = (appointment: Appointment) => {
+    const isPending = appointment.status === 'pending';
+    const isResponding = respondingId === appointment.appointment_id;
+    const isConfirmed = ['accepted', 'scheduled', 'confirmed'].includes(appointment.status);
+    
+    return (
+      <Card key={appointment.appointment_id} style={styles.appointmentCard} data-testid={`appointment-${appointment.appointment_id}`}>
+        <View style={styles.cardHeader}>
+          <View>
+            <Text style={styles.clientName}>{appointment.client_name || appointment.mom_name}</Text>
+            <Text style={styles.appointmentType}>
+              {APPOINTMENT_TYPES.find(t => t.value === appointment.appointment_type)?.label || appointment.appointment_type}
+            </Text>
+          </View>
+          <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[appointment.status] || COLORS.textLight) + '20' }]}>
+            <Text style={[styles.statusText, { color: STATUS_COLORS[appointment.status] || COLORS.textLight }]}>
+              {isPending ? 'Awaiting Response' : appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+            </Text>
+          </View>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[appointment.status] + '20' }]}>
-          <Text style={[styles.statusText, { color: STATUS_COLORS[appointment.status] }]}>
-            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-          </Text>
-        </View>
-      </View>
 
-      <View style={styles.appointmentDetails}>
-        <View style={styles.detailRow}>
-          <Icon name="calendar" size={16} color={COLORS.textSecondary} />
-          <Text style={styles.detailText}>{formatDate(appointment.appointment_date)}</Text>
-          <Icon name="time" size={16} color={COLORS.textSecondary} style={{ marginLeft: SIZES.md }} />
-          <Text style={styles.detailText}>{formatTime(appointment.appointment_time)}</Text>
-        </View>
-        {appointment.location && (
+        <View style={styles.appointmentDetails}>
           <View style={styles.detailRow}>
-            <Icon name={appointment.is_virtual ? 'videocam' : 'location'} size={16} color={COLORS.textSecondary} />
-            <Text style={styles.detailText}>{appointment.location}</Text>
+            <Icon name="calendar" size={16} color={COLORS.textSecondary} />
+            <Text style={styles.detailText}>{formatDate(appointment.appointment_date)}</Text>
+            <Icon name="time" size={16} color={COLORS.textSecondary} style={{ marginLeft: SIZES.md }} />
+            <Text style={styles.detailText}>{formatTime(appointment.appointment_time)}</Text>
           </View>
-        )}
-        {appointment.notes && (
-          <View style={styles.notesSection}>
-            <Text style={styles.notesLabel}>Private Notes:</Text>
-            <Text style={styles.notesText}>{appointment.notes}</Text>
-          </View>
-        )}
-      </View>
+          {appointment.location && (
+            <View style={styles.detailRow}>
+              <Icon name={appointment.is_virtual ? 'videocam' : 'location'} size={16} color={COLORS.textSecondary} />
+              <Text style={styles.detailText}>{appointment.location}</Text>
+            </View>
+          )}
+          {appointment.notes && (
+            <View style={styles.notesSection}>
+              <Text style={styles.notesLabel}>Private Notes:</Text>
+              <Text style={styles.notesText}>{appointment.notes}</Text>
+            </View>
+          )}
+        </View>
 
-      {['pending', 'accepted'].includes(appointment.status) && (
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={() => handleCancelAppointment(appointment.appointment_id)}
-        >
-          <Icon name="close-circle-outline" size={18} color={COLORS.error} />
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
-      )}
-    </Card>
-  );
+        {/* Accept/Decline buttons for pending appointments */}
+        {isPending && (
+          <View style={styles.actionButtons}>
+            <Button
+              title={isResponding ? 'Declining...' : 'Decline'}
+              variant="outline"
+              onPress={() => confirmResponse(appointment.appointment_id, 'declined')}
+              style={styles.declineButton}
+              disabled={isResponding}
+              testID={`decline-appointment-${appointment.appointment_id}`}
+            />
+            <Button
+              title={isResponding ? 'Accepting...' : 'Accept'}
+              onPress={() => confirmResponse(appointment.appointment_id, 'accepted')}
+              style={[styles.acceptButton, { backgroundColor: primaryColor }]}
+              disabled={isResponding}
+              testID={`accept-appointment-${appointment.appointment_id}`}
+            />
+          </View>
+        )}
+
+        {/* Cancel button for confirmed appointments */}
+        {isConfirmed && (
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => handleCancelAppointment(appointment.appointment_id)}
+          >
+            <Icon name="close-circle-outline" size={18} color={COLORS.error} />
+            <Text style={styles.cancelText}>Cancel</Text>
+          </TouchableOpacity>
+        )}
+      </Card>
+    );
+  };
 
   if (isLoading) {
     return (
