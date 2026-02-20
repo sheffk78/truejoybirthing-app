@@ -67,6 +67,18 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Mom Experience Fixes
+
+#### Mom UI/UX Fixes (COMPLETED - 2026-02-20)
+- [x] **Fixed Marketplace video playback** - Video intro now opens YouTube properly on web and native
+- [x] **Fixed provider photo in marketplace** - Code now prefers profile.picture over user.picture
+- [x] **Fixed Mom appointments date picker** - Added web-compatible date/time picker modal
+- [x] **My Team pending requests** - Verified pending section displays when requests exist
+- [x] **Birth Setting icon** - Changed to medical plus symbol (add-circle-outline)
+- [x] **Removed Timeline/Wellness from bottom nav** - Hidden via href:null
+- [x] **Renamed Quick Actions to Key Actions** - Updated section title on home screen
+- [x] **Simplified Key Actions** - Removed Birth Plan, Find Providers, Appointments, My Team; kept only Timeline and Wellness
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Database Cleanup
 
 #### Database Cleanup (COMPLETED - 2026-02-20)
