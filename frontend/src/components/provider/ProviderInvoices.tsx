@@ -698,6 +698,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             </TouchableOpacity>
           </View>
         </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Payment Template Modal */}
