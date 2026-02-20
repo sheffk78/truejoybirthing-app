@@ -1464,39 +1464,15 @@ api_router.include_router(visits_routes.router)
 api_router.include_router(care_plans_routes.router)
 api_router.include_router(provider_unified_routes.router)
 api_router.include_router(appointments_routes.router)
+api_router.include_router(utils_routes.router)
 
 # ============== AUTH ROUTES ==============
 # MIGRATED TO: routes/auth.py
 # Routes: /auth/register, /auth/login, /auth/google-session, /auth/me, /auth/logout, /auth/set-role, /auth/update-profile
 
 # ============== ZIP CODE LOOKUP ==============
-
-@api_router.get("/lookup/zipcode/{zipcode}")
-async def lookup_zipcode(zipcode: str):
-    """Look up city and state from zip code using Zippopotam.us API"""
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(f"https://api.zippopotam.us/us/{zipcode}")
-            if response.status_code == 404:
-                raise HTTPException(status_code=404, detail="Invalid zip code")
-            if response.status_code != 200:
-                raise HTTPException(status_code=500, detail="Zip code lookup failed")
-            
-            data = response.json()
-            places = data.get("places", [])
-            if not places:
-                raise HTTPException(status_code=404, detail="No location found for zip code")
-            
-            place = places[0]
-            return {
-                "zip_code": zipcode,
-                "city": place.get("place name", ""),
-                "state": place.get("state", ""),
-                "state_abbreviation": place.get("state abbreviation", ""),
-                "country": data.get("country", "United States")
-            }
-    except httpx.RequestError:
-        raise HTTPException(status_code=500, detail="Unable to reach zip code service")
+# MIGRATED TO: routes/utils.py
+# Routes: /lookup/zipcode/{zipcode}
 
 # ============== SUBSCRIPTION ROUTES ==============
 
