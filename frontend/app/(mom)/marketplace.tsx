@@ -238,6 +238,73 @@ export default function MarketplaceScreen() {
     }
   };
   
+  // Request Consultation handler
+  const [requestingConsultation, setRequestingConsultation] = useState(false);
+  
+  const handleRequestConsultation = async (provider: any) => {
+    if (!provider?.user_id || requestingConsultation) return;
+    
+    setRequestingConsultation(true);
+    
+    try {
+      const currentStatus = consultationStatus[provider.user_id];
+      
+      if (currentStatus && !['declined', 'not_a_fit'].includes(currentStatus)) {
+        if (currentStatus === 'converted_to_client') {
+          Alert.alert('Already a Client', `You're already a client of ${provider.full_name}!`);
+        } else {
+          Alert.alert('Request Pending', `You already have a consultation request with ${provider.full_name}.`);
+        }
+        return;
+      }
+      
+      // Send consultation request
+      await apiRequest('/leads/request-consultation', {
+        method: 'POST',
+        body: {
+          provider_id: provider.user_id,
+          message: `Hi ${provider.full_name}, I'm interested in learning more about your services and would love to schedule a consultation call.`,
+        },
+      });
+      
+      // Update local status
+      setConsultationStatus(prev => ({
+        ...prev,
+        [provider.user_id]: 'consultation_requested'
+      }));
+      
+      Alert.alert(
+        'Consultation Requested!',
+        `${provider.full_name} will be notified of your request. They'll reach out to schedule a time to chat.`,
+        [{ text: 'OK' }]
+      );
+    } catch (error: any) {
+      console.error('Error requesting consultation:', error);
+      
+      if (error.message?.includes('already')) {
+        Alert.alert('Request Pending', `You already have a consultation request with ${provider.full_name}.`);
+      } else {
+        Alert.alert('Error', error.message || 'Failed to send request. Please try again.');
+      }
+    } finally {
+      setRequestingConsultation(false);
+    }
+  };
+  
+  const getConsultationButtonText = (providerId: string) => {
+    const status = consultationStatus[providerId];
+    if (status === 'consultation_requested') return 'Requested';
+    if (status === 'consultation_scheduled') return 'Scheduled';
+    if (status === 'consultation_completed') return 'Completed';
+    if (status === 'converted_to_client') return 'Client';
+    return 'Request Consultation';
+  };
+  
+  const getConsultationButtonDisabled = (providerId: string) => {
+    const status = consultationStatus[providerId];
+    return status && !['declined', 'not_a_fit'].includes(status);
+  };
+  
   const getTeamButtonText = (providerId: string) => {
     const status = teamStatus[providerId];
     if (status === 'accepted') return 'On Team';
