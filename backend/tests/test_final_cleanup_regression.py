@@ -607,21 +607,13 @@ class TestSubscriptionRoutes:
 class TestMarketplaceRoutes:
     """Marketplace routes"""
     
-    def test_marketplace_doulas(self, mom_session):
-        """Mom can get marketplace doulas"""
-        response = mom_session.get(f"{BASE_URL}/api/marketplace/doulas")
+    def test_marketplace_providers(self, mom_session):
+        """Mom can get marketplace providers via /api/providers"""
+        response = mom_session.get(f"{BASE_URL}/api/providers")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, (list, dict))
-        print(f"✅ Marketplace doulas returned")
-    
-    def test_marketplace_midwives(self, mom_session):
-        """Mom can get marketplace midwives"""
-        response = mom_session.get(f"{BASE_URL}/api/marketplace/midwives")
-        assert response.status_code == 200
-        data = response.json()
-        assert isinstance(data, (list, dict))
-        print(f"✅ Marketplace midwives returned")
+        print(f"✅ Marketplace providers returned")
 
 
 if __name__ == "__main__":
