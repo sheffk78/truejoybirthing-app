@@ -42,6 +42,7 @@ export default function MomProfileScreen() {
   const [zipCode, setZipCode] = useState('');
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
+  const [numberOfChildren, setNumberOfChildren] = useState<number>(0);
   
   const fetchData = async () => {
     try {
