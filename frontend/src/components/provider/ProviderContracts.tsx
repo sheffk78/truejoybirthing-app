@@ -506,7 +506,10 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
 
       {/* Create Contract Modal */}
       <Modal visible={showCreateModal} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalOverlay}
+        >
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowCreateModal(false)}>
@@ -543,7 +546,11 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
               ))}
             </View>
 
-            <ScrollView style={styles.modalBody}>
+            <ScrollView 
+              style={styles.modalBody} 
+              contentContainerStyle={{ paddingBottom: 100 }}
+              keyboardShouldPersistTaps="handled"
+            >
               {/* Template Selection */}
               {currentSection === 0 && templates.length > 0 && (
                 <View style={styles.fieldContainer}>
