@@ -337,17 +337,21 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                   {client.linked_mom_id && (
                     <TouchableOpacity 
                       style={styles.actionButton} 
-                      onPress={() => router.push(`${config.routes.messages}?userId=${client.linked_mom_id}` as any)}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        router.push(`${config.routes.messages}?userId=${client.linked_mom_id}&userName=${encodeURIComponent(client.name)}` as any);
+                      }}
+                      data-testid={`message-btn-${client.client_id}`}
                     >
                       <Icon name="chatbubble-outline" size={16} color={primaryColor} />
                       <Text style={[styles.actionText, { color: primaryColor }]}>Message</Text>
                     </TouchableOpacity>
                   )}
                   {client.linked_mom_id && (
-                    <TouchableOpacity style={styles.actionButton}>
-                      <Icon name="document-text-outline" size={16} color={primaryColor} />
-                      <Text style={[styles.actionText, { color: primaryColor }]}>Birth Plan</Text>
-                    </TouchableOpacity>
+                    <View style={[styles.actionButton, { backgroundColor: COLORS.success + '10' }]}>
+                      <Icon name="checkmark-circle" size={16} color={COLORS.success} />
+                      <Text style={[styles.actionText, { color: COLORS.success }]}>Birth Plan Shared</Text>
+                    </View>
                   )}
                   {isMidwife && (
                     <TouchableOpacity 
