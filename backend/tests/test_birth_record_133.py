@@ -15,27 +15,37 @@ MIDWIFE_EMAIL = "demo.midwife@truejoybirthing.com"
 MIDWIFE_PASSWORD = "DemoScreenshot2024!"
 TEST_CLIENT_ID = "client_a034be9c9748"
 
-class TestBirthRecordAPI:
-    """Birth Record CRUD API Tests"""
-    
-    @pytest.fixture(scope="class")
-    def auth_token(self):
-        """Get auth token for midwife"""
+# Global auth token (refreshed once per module)
+_auth_token = None
+
+def get_auth_token():
+    """Get cached auth token or create new one"""
+    global _auth_token
+    if _auth_token is None:
         response = requests.post(
             f"{BASE_URL}/api/auth/login",
             json={"email": MIDWIFE_EMAIL, "password": MIDWIFE_PASSWORD}
         )
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
-        return data.get("token") or data.get("access_token")
+        _auth_token = data.get("token") or data.get("access_token")
+    return _auth_token
+
+def get_auth_headers():
+    """Get auth headers with valid token"""
+    return {
+        "Authorization": f"Bearer {get_auth_token()}",
+        "Content-Type": "application/json"
+    }
+
+class TestBirthRecordAPI:
+    """Birth Record CRUD API Tests"""
     
-    @pytest.fixture(scope="class")
-    def auth_headers(self, auth_token):
+    @pytest.fixture(autouse=True)
+    def auth_headers(self):
         """Get auth headers"""
-        return {
-            "Authorization": f"Bearer {auth_token}",
-            "Content-Type": "application/json"
-        }
+        self._auth_headers = get_auth_headers()
+        return self._auth_headers
     
     # ==================== GET BIRTH RECORD ====================
     
