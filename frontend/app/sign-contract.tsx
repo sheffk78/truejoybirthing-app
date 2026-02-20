@@ -150,6 +150,7 @@ export default function SignContractScreen() {
   
   const { contract, client, doula } = contractData;
   const isAlreadySigned = contract.status === 'Signed';
+  const contractTitle = contract.contract_title || 'Doula Service Agreement';
   
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']} data-testid="sign-contract-screen">
@@ -158,14 +159,14 @@ export default function SignContractScreen() {
         <TouchableOpacity onPress={() => router.back()} data-testid="back-btn">
           <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Contract</Text>
+        <Text style={styles.headerTitle}>Review & Sign</Text>
         <View style={{ width: 24 }} />
       </View>
       
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
-        {/* Contract Info */}
+        {/* Contract Header Card */}
         <Card style={styles.contractCard}>
-          <Text style={styles.contractTitle}>{contract.contract_title}</Text>
+          <Text style={styles.contractTitle}>{contractTitle}</Text>
           
           <View style={styles.partiesSection}>
             <View style={styles.partyInfo}>
@@ -180,43 +181,89 @@ export default function SignContractScreen() {
             </View>
             <View style={styles.partyInfo}>
               <Text style={styles.partyLabel}>Client</Text>
-              <Text style={styles.partyName}>{client?.name || 'Client'}</Text>
+              <Text style={styles.partyName}>{contract.client_name || client?.name || 'Client'}</Text>
+              {contract.estimated_due_date && (
+                <Text style={styles.partyDetail}>Due: {new Date(contract.estimated_due_date).toLocaleDateString()}</Text>
+              )}
             </View>
           </View>
+          
+          {/* Fee Summary */}
+          {contract.total_fee && (
+            <View style={styles.feeSummary}>
+              <View style={styles.feeRow}>
+                <Text style={styles.feeLabel}>Total Fee</Text>
+                <Text style={styles.feeAmount}>{formatCurrency(contract.total_fee)}</Text>
+              </View>
+              {contract.retainer_amount && (
+                <View style={styles.feeRow}>
+                  <Text style={styles.feeLabel}>Retainer (Due Now)</Text>
+                  <Text style={styles.feeDetail}>{formatCurrency(contract.retainer_amount)}</Text>
+                </View>
+              )}
+              {contract.remaining_balance && (
+                <View style={styles.feeRow}>
+                  <Text style={styles.feeLabel}>Remaining Balance</Text>
+                  <Text style={styles.feeDetail}>{formatCurrency(contract.remaining_balance)}</Text>
+                </View>
+              )}
+            </View>
+          )}
         </Card>
         
-        {/* Contract Details */}
-        <Card style={styles.detailsCard}>
-          <Text style={styles.sectionTitle}>Contract Details</Text>
-          
-          {contract.services_description && (
-            <View style={styles.detailSection}>
-              <Text style={styles.detailLabel}>Services</Text>
-              <Text style={styles.detailText}>{contract.services_description}</Text>
+        {/* Full Contract Text */}
+        {contract.contract_text && (
+          <Card style={styles.detailsCard}>
+            <Text style={styles.sectionTitle}>Full Agreement</Text>
+            <Text style={styles.contractText}>{contract.contract_text}</Text>
+          </Card>
+        )}
+        
+        {/* Legacy format details (if no contract_text) */}
+        {!contract.contract_text && (
+          <Card style={styles.detailsCard}>
+            <Text style={styles.sectionTitle}>Contract Details</Text>
+            
+            {contract.services_description && (
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Services</Text>
+                <Text style={styles.detailText}>{contract.services_description}</Text>
+              </View>
+            )}
+            
+            {contract.payment_schedule_description && (
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Payment Schedule</Text>
+                <Text style={styles.detailText}>{contract.payment_schedule_description}</Text>
+              </View>
+            )}
+            
+            {contract.cancellation_policy && (
+              <View style={styles.detailSection}>
+                <Text style={styles.detailLabel}>Cancellation Policy</Text>
+                <Text style={styles.detailText}>{contract.cancellation_policy}</Text>
+              </View>
+            )}
+          </Card>
+        )}
+        
+        {/* Provider Signature (if already signed by provider) */}
+        {contract.doula_signature && (
+          <Card style={styles.providerSignatureCard}>
+            <View style={styles.signatureHeader}>
+              <Icon name="checkmark-circle" size={20} color={COLORS.success} />
+              <Text style={styles.signatureLabel}>Provider Signature</Text>
             </View>
-          )}
-          
-          {contract.total_fee && (
-            <View style={styles.detailSection}>
-              <Text style={styles.detailLabel}>Total Fee</Text>
-              <Text style={styles.feeAmount}>{formatCurrency(contract.total_fee)}</Text>
-            </View>
-          )}
-          
-          {contract.payment_schedule_description && (
-            <View style={styles.detailSection}>
-              <Text style={styles.detailLabel}>Payment Schedule</Text>
-              <Text style={styles.detailText}>{contract.payment_schedule_description}</Text>
-            </View>
-          )}
-          
-          {contract.cancellation_policy && (
-            <View style={styles.detailSection}>
-              <Text style={styles.detailLabel}>Cancellation Policy</Text>
-              <Text style={styles.detailText}>{contract.cancellation_policy}</Text>
-            </View>
-          )}
-        </Card>
+            <Text style={styles.signatureText}>
+              {contract.doula_signature.signer_name} signed on{' '}
+              {new Date(contract.doula_signature.signed_at).toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            </Text>
+          </Card>
+        )}
         
         {/* Signature Section */}
         {isAlreadySigned ? (
@@ -226,7 +273,7 @@ export default function SignContractScreen() {
               <Text style={styles.signedTitle}>Contract Signed</Text>
             </View>
             <Text style={styles.signedInfo}>
-              Signed by {contract.signature_data?.signer_name || 'Client'} on{' '}
+              Signed by {contract.client_signature?.signer_name || 'Client'} on{' '}
               {new Date(contract.signed_at || '').toLocaleDateString('en-US', {
                 month: 'long',
                 day: 'numeric',
@@ -235,28 +282,25 @@ export default function SignContractScreen() {
                 minute: '2-digit',
               })}
             </Text>
+            <Text style={styles.signedNote}>
+              A copy of the signed agreement has been sent to your email.
+            </Text>
           </Card>
         ) : (
           <Card style={styles.signatureCard}>
             <Text style={styles.sectionTitle}>Sign Contract</Text>
+            <Text style={styles.signatureInstructions}>
+              By entering your name below and clicking "Sign Contract", you agree to the terms of this agreement. 
+              This constitutes a legally binding electronic signature.
+            </Text>
             
             <Input
               label="Your Full Legal Name *"
-              placeholder="Enter your full name"
+              placeholder="Enter your full name as it should appear on the contract"
               value={signerName}
               onChangeText={setSignerName}
               leftIcon="person-outline"
               testID="signer-name-input"
-            />
-            
-            <Input
-              label="Email (optional)"
-              placeholder="Enter your email"
-              value={signerEmail}
-              onChangeText={setSignerEmail}
-              leftIcon="mail-outline"
-              keyboardType="email-address"
-              testID="signer-email-input"
             />
             
             {/* Agreement Checkbox */}
@@ -269,8 +313,7 @@ export default function SignContractScreen() {
                 {agreed && <Icon name="checkmark" size={16} color={COLORS.white} />}
               </View>
               <Text style={styles.agreementText}>
-                I have read and agree to the terms of this contract. By clicking "Sign Contract", 
-                I understand this constitutes a legally binding electronic signature.
+                I have read the entire agreement above, understand its terms, and agree to be bound by them.
               </Text>
             </TouchableOpacity>
             
