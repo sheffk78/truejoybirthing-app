@@ -457,3 +457,120 @@ async def cancel_mom_appointment(appointment_id: str, user: User = Depends(check
     )
     
     return {"message": "Appointment cancelled"}
+
+
+# ============== MOM CONTRACTS ENDPOINT ==============
+
+@router.get("/contracts")
+async def get_mom_contracts(user: User = Depends(get_current_user())):
+    """
+    Get all contracts for the Mom user.
+    This includes contracts where the Mom is linked through their team or as a client.
+    """
+    # Get Mom's linked client IDs from their team
+    mom_doc = await db.users.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0, "team": 1}
+    )
+    
+    # Collect all client_ids the mom is linked to
+    client_ids = []
+    if mom_doc and "team" in mom_doc:
+        for team_member in mom_doc.get("team", []):
+            if team_member.get("client_id"):
+                client_ids.append(team_member["client_id"])
+    
+    # Also check if mom themselves is a client (user_id matches client_id pattern)
+    client_ids.append(user.user_id)
+    
+    # Fetch contracts for these client IDs from both doula and midwife contracts
+    contracts = []
+    
+    # Fetch doula contracts
+    doula_contracts = await db.doula_contracts.find(
+        {"client_id": {"$in": client_ids}}
+    ).to_list(100)
+    
+    for contract in doula_contracts:
+        contract.pop("_id", None)
+        # Add provider info
+        provider = await db.users.find_one(
+            {"user_id": contract.get("doula_id")},
+            {"_id": 0, "full_name": 1, "role": 1}
+        )
+        if provider:
+            contract["provider_name"] = provider.get("full_name", "Unknown")
+            contract["provider_role"] = "DOULA"
+        contracts.append(contract)
+    
+    # Fetch midwife contracts
+    midwife_contracts = await db.midwife_contracts.find(
+        {"client_id": {"$in": client_ids}}
+    ).to_list(100)
+    
+    for contract in midwife_contracts:
+        contract.pop("_id", None)
+        # Add provider info
+        provider = await db.users.find_one(
+            {"user_id": contract.get("midwife_id")},
+            {"_id": 0, "full_name": 1, "role": 1}
+        )
+        if provider:
+            contract["provider_name"] = provider.get("full_name", "Unknown")
+            contract["provider_role"] = "MIDWIFE"
+        contracts.append(contract)
+    
+    # Sort by created_at descending
+    contracts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    return contracts
+
+
+# ============== MOM INVOICES ENDPOINT ==============
+
+@router.get("/invoices")
+async def get_mom_invoices(user: User = Depends(get_current_user())):
+    """
+    Get all invoices for the Mom user.
+    This includes invoices where the Mom is linked through their team or as a client.
+    """
+    # Get Mom's linked client IDs from their team
+    mom_doc = await db.users.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0, "team": 1}
+    )
+    
+    # Collect all client_ids the mom is linked to
+    client_ids = []
+    if mom_doc and "team" in mom_doc:
+        for team_member in mom_doc.get("team", []):
+            if team_member.get("client_id"):
+                client_ids.append(team_member["client_id"])
+    
+    # Also check if mom themselves is a client
+    client_ids.append(user.user_id)
+    
+    # Fetch invoices for these client IDs
+    invoices_cursor = db.invoices.find(
+        {"client_id": {"$in": client_ids}}
+    )
+    
+    invoices = []
+    async for invoice in invoices_cursor:
+        invoice.pop("_id", None)
+        # Add provider info
+        provider_id = invoice.get("provider_id") or invoice.get("pro_user_id")
+        if provider_id:
+            provider = await db.users.find_one(
+                {"user_id": provider_id},
+                {"_id": 0, "full_name": 1, "role": 1}
+            )
+            if provider:
+                invoice["provider_name"] = provider.get("full_name", "Unknown")
+                invoice["provider_role"] = provider.get("role", "DOULA")
+        invoices.append(invoice)
+    
+    # Sort by created_at descending
+    invoices.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    return invoices
