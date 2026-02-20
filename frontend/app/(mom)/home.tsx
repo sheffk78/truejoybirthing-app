@@ -47,20 +47,41 @@ export default function MomHomeScreen() {
   
   const fetchData = async () => {
     try {
-      const [planData, timelineData, contentData, contractsData, invoicesData] = await Promise.all([
+      const [planData, timelineData, contentData] = await Promise.all([
         apiRequest(API_ENDPOINTS.BIRTH_PLAN),
         apiRequest(API_ENDPOINTS.TIMELINE),
         apiRequest(API_ENDPOINTS.WEEKLY_CONTENT),
-        apiRequest('/mom/contracts').catch(() => []),
-        apiRequest('/mom/invoices').catch(() => []),
       ]);
       setBirthPlan(planData);
       setTimeline(timelineData);
       setWeeklyContent(contentData);
-      // Filter for contracts that need mom's signature
-      setPendingContracts(contractsData.filter((c: any) => c.status === 'Sent' || c.status === 'sent'));
-      // Filter for unpaid invoices
-      setPendingInvoices(invoicesData.filter((i: any) => i.status === 'Sent' || i.status === 'sent' || i.status === 'pending'));
+      
+      // Fetch contracts and invoices separately to handle errors gracefully
+      try {
+        const contractsData = await apiRequest('/mom/contracts');
+        // Filter for contracts that need mom's signature (status = Sent)
+        const pending = (contractsData as any[]).filter((c: any) => 
+          c.status === 'Sent' || c.status === 'sent'
+        );
+        console.log('Fetched contracts:', contractsData.length, 'Pending:', pending.length);
+        setPendingContracts(pending);
+      } catch (err) {
+        console.log('Error fetching contracts:', err);
+        setPendingContracts([]);
+      }
+      
+      try {
+        const invoicesData = await apiRequest('/mom/invoices');
+        // Filter for unpaid invoices
+        const pending = (invoicesData as any[]).filter((i: any) => 
+          i.status === 'Sent' || i.status === 'sent' || i.status === 'pending'
+        );
+        console.log('Fetched invoices:', invoicesData.length, 'Pending:', pending.length);
+        setPendingInvoices(pending);
+      } catch (err) {
+        console.log('Error fetching invoices:', err);
+        setPendingInvoices([]);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
