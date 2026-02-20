@@ -644,7 +644,8 @@ const styles = StyleSheet.create({
     marginVertical: SIZES.sm,
     backgroundColor: COLORS.white,
     borderRadius: SIZES.radiusMd,
-    overflow: 'hidden',
+    overflow: 'visible',
+    zIndex: 1000,
   },
   header: {
     flexDirection: 'row',
