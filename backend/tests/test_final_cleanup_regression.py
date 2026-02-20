@@ -471,32 +471,32 @@ class TestContractsAndInvoices:
     """Contracts and invoices - verify these routes still work"""
     
     def test_doula_get_contracts(self, doula_session):
-        """Doula gets contracts"""
-        response = doula_session.get(f"{BASE_URL}/api/contracts")
+        """Doula gets contracts via /api/doula/contracts"""
+        response = doula_session.get(f"{BASE_URL}/api/doula/contracts")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, (list, dict))
         print(f"✅ Doula contracts returned")
     
     def test_doula_get_invoices(self, doula_session):
-        """Doula gets invoices"""
-        response = doula_session.get(f"{BASE_URL}/api/invoices")
+        """Doula gets invoices via /api/doula/invoices"""
+        response = doula_session.get(f"{BASE_URL}/api/doula/invoices")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, (list, dict))
         print(f"✅ Doula invoices returned")
     
     def test_midwife_get_contracts(self, midwife_session):
-        """Midwife gets contracts"""
-        response = midwife_session.get(f"{BASE_URL}/api/contracts")
+        """Midwife gets contracts via /api/midwife/contracts"""
+        response = midwife_session.get(f"{BASE_URL}/api/midwife/contracts")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, (list, dict))
         print(f"✅ Midwife contracts returned")
     
     def test_midwife_get_invoices(self, midwife_session):
-        """Midwife gets invoices"""
-        response = midwife_session.get(f"{BASE_URL}/api/invoices")
+        """Midwife gets invoices via /api/midwife/invoices"""
+        response = midwife_session.get(f"{BASE_URL}/api/midwife/invoices")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, (list, dict))
