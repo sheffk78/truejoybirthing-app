@@ -492,6 +492,17 @@ export default function MomProfileScreen() {
                   <Text style={styles.infoValue}>{getBirthSetting()}</Text>
                 </View>
               </View>
+              <View style={styles.infoRow}>
+                <Icon name="people-outline" size={20} color={COLORS.textSecondary} />
+                <View style={styles.infoText}>
+                  <Text style={styles.infoLabel}>Children</Text>
+                  <Text style={styles.infoValue}>
+                    {profile?.number_of_children 
+                      ? `${profile.number_of_children} Kid${profile.number_of_children > 1 ? 's' : ''}`
+                      : 'Not set'}
+                  </Text>
+                </View>
+              </View>
             </View>
           )}
         </Card>
