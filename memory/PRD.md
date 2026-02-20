@@ -773,7 +773,7 @@ Hidden but accessible via navigation:
 
 ### Remaining Technical Debt (P3 - Low Priority)
 
-1. **Backend Modularization Progress**: server.py reduced from 7,888 → ~5,322 lines (~32.5% reduction)
+1. **Backend Modularization Progress**: server.py reduced from 7,888 → ~4,646 lines (~41% reduction)
    - **Phase 1 COMPLETED**: Created modular router foundation
    - **Phase 2 COMPLETED**: Admin (4 endpoints) + Marketplace (2 endpoints) migrated
    - **Phase 3 COMPLETED**: Notifications (3 endpoints) + Messages (5 endpoints) migrated
@@ -791,7 +791,13 @@ Hidden but accessible via navigation:
      - Midwife contract defaults: GET/PUT
      - Contract templates: CRUD for both provider types
      - 47/47 tests passed (iteration_105.json)
-   - **Total Endpoints Migrated**: ~92 endpoints across 10 modular routers
+   - **Phase 10 COMPLETED** (2026-02-20): Invoices routes migrated (~676 lines)
+     - Payment instructions templates: CRUD (4 endpoints)
+     - Doula invoices: CRUD (5) + actions (4)
+     - Midwife invoices: CRUD (5) + actions (4)
+     - Invoice lifecycle: Draft -> Send -> (Paid | Cancelled)
+     - 45/45 tests passed (iteration_106.json)
+   - **Total Endpoints Migrated**: ~116 endpoints across 11 modular routers
    - **Active Modular Routers**:
      - `routes/auth.py` - Authentication
      - `routes/admin.py` - Admin user/content management
@@ -803,10 +809,10 @@ Hidden but accessible via navigation:
      - `routes/doula.py` - Doula onboarding/profile/dashboard/clients/notes
      - `routes/midwife.py` - Midwife onboarding/profile/dashboard/clients/notes
      - `routes/contracts.py` - All contract CRUD, templates, defaults, PDF, signing
+     - `routes/invoices.py` - Payment instructions, invoices CRUD + actions
    - **Migration Plan**: `/app/backend/routes/MIGRATION_PLAN.md`
    - **Remaining Phases**:
-     - Phase 10: Invoices (NEXT)
-     - Phase 11: Midwife Visits
+     - Phase 11: Midwife Visits (NEXT)
      - Phase 12: Birth Plan, Wellness, Postpartum, Timeline
      - Phase 13: Share Requests, Appointments, Final Cleanup
 
