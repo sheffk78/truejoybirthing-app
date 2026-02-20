@@ -608,8 +608,8 @@ class TestMarketplaceRoutes:
     """Marketplace routes"""
     
     def test_marketplace_providers(self, mom_session):
-        """Mom can get marketplace providers via /api/providers"""
-        response = mom_session.get(f"{BASE_URL}/api/providers")
+        """Mom can get marketplace providers via /api/marketplace/providers"""
+        response = mom_session.get(f"{BASE_URL}/api/marketplace/providers")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, (list, dict))
