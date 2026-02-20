@@ -93,6 +93,22 @@ export default function MarketplaceScreen() {
       }
       
       setTeamStatus(statusMap);
+      
+      // Fetch consultation requests status
+      try {
+        const consultationRequests = await apiRequest('/leads/my-consultation-requests');
+        const consultMap: Record<string, string> = {};
+        
+        if (Array.isArray(consultationRequests)) {
+          consultationRequests.forEach((req: any) => {
+            consultMap[req.provider_id] = req.status;
+          });
+        }
+        
+        setConsultationStatus(consultMap);
+      } catch (err) {
+        console.log('Error fetching consultation status:', err);
+      }
     } catch (error) {
       console.error('Error fetching team status:', error);
     }
