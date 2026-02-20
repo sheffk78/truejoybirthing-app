@@ -19,16 +19,40 @@ from typing import Optional
 from datetime import datetime
 
 from .dependencies import (
-    db, check_role, User, create_notification, get_now, generate_id,
-    get_current_user as get_current_user_fn
+    db, check_role, User, create_notification, get_now, generate_id
 )
 
 router = APIRouter(tags=["Appointments"])
 
 
-# Helper to get current user
-async def get_current_user(user: User = Depends(get_current_user_fn)):
-    return user
+# ============== AUTHENTICATION HELPER ==============
+
+async def verify_token_and_get_user(authorization: str = None) -> User:
+    """Verify JWT token and return user"""
+    if not authorization or not authorization.startswith("Bearer "):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    token = authorization.replace("Bearer ", "")
+    
+    session = await db.user_sessions.find_one({"session_token": token})
+    if not session:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    user_data = await db.users.find_one({"user_id": session["user_id"]}, {"_id": 0, "password_hash": 0})
+    if not user_data:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    return User(**user_data)
+
+
+from fastapi import Header
+
+async def get_current_user(authorization: str = Header(None)) -> User:
+    """Dependency to get current user from token"""
+    return await verify_token_and_get_user(authorization)
 
 
 # ============== SHARED APPOINTMENT ENDPOINTS ==============
