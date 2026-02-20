@@ -699,7 +699,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
               )}
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Preview Modal */}
