@@ -198,6 +198,72 @@ export default function MomHomeScreen() {
           </Card>
         )}
         
+        {/* Pending Actions Section - Contracts & Invoices */}
+        {(pendingContracts.length > 0 || pendingInvoices.length > 0) && (
+          <>
+            <Text style={styles.sectionTitle}>Action Required</Text>
+            
+            {/* Pending Contracts */}
+            {pendingContracts.map((contract) => (
+              <TouchableOpacity
+                key={contract.contract_id}
+                onPress={() => {
+                  // Navigate to sign contract page based on provider role
+                  const role = contract.provider_role?.toLowerCase() || 'doula';
+                  if (role === 'midwife') {
+                    router.push(`/(mom)/sign-midwife-contract?contractId=${contract.contract_id}` as any);
+                  } else {
+                    router.push(`/(mom)/sign-contract?contractId=${contract.contract_id}` as any);
+                  }
+                }}
+                activeOpacity={0.8}
+                data-testid={`pending-contract-${contract.contract_id}`}
+              >
+                <Card style={styles.actionRequiredCard}>
+                  <View style={styles.actionRequiredHeader}>
+                    <View style={[styles.actionRequiredIcon, { backgroundColor: COLORS.warning + '20' }]}>
+                      <Icon name="document-text" size={24} color={COLORS.warning} />
+                    </View>
+                    <View style={styles.actionRequiredContent}>
+                      <Text style={styles.actionRequiredTitle}>Contract to Sign</Text>
+                      <Text style={styles.actionRequiredSubtitle}>
+                        From {contract.provider_name} ({contract.provider_role})
+                      </Text>
+                    </View>
+                    <Icon name="chevron-forward" size={24} color={COLORS.textLight} />
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            ))}
+            
+            {/* Pending Invoices */}
+            {pendingInvoices.map((invoice) => (
+              <TouchableOpacity
+                key={invoice.invoice_id}
+                onPress={() => router.push('/(mom)/invoices' as any)}
+                activeOpacity={0.8}
+                data-testid={`pending-invoice-${invoice.invoice_id}`}
+              >
+                <Card style={styles.actionRequiredCard}>
+                  <View style={styles.actionRequiredHeader}>
+                    <View style={[styles.actionRequiredIcon, { backgroundColor: COLORS.roleDoula + '20' }]}>
+                      <Icon name="receipt" size={24} color={COLORS.roleDoula} />
+                    </View>
+                    <View style={styles.actionRequiredContent}>
+                      <Text style={styles.actionRequiredTitle}>Invoice - ${invoice.amount}</Text>
+                      <Text style={styles.actionRequiredSubtitle}>
+                        From {invoice.provider_name}
+                        {invoice.due_date ? ` • Due ${new Date(invoice.due_date).toLocaleDateString()}` : ''}
+                      </Text>
+                    </View>
+                    <Icon name="chevron-forward" size={24} color={COLORS.textLight} />
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
+        
         {/* Key Actions */}
         <Text style={styles.sectionTitle}>Key Actions</Text>
         <View style={styles.actionsGrid}>
