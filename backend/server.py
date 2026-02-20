@@ -1455,6 +1455,7 @@ api_router.include_router(mom_routes.router)
 api_router.include_router(doula_routes.router)
 api_router.include_router(midwife_routes.router)
 api_router.include_router(contracts_routes.router)
+api_router.include_router(invoices_routes.router)
 
 # ============== AUTH ROUTES ==============
 # MIGRATED TO: routes/auth.py
