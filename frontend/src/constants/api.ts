@@ -54,6 +54,11 @@ export const API_ENDPOINTS = {
   NOTIFICATIONS: '/notifications',
   NOTIFICATIONS_READ_ALL: '/notifications/read-all',
   
+  // Push Notifications
+  PUSH_REGISTER: '/push/register',
+  PUSH_UNREGISTER: '/push/unregister',
+  PUSH_STATUS: '/push/status',
+  
   // Wellness (Enhanced)
   WELLNESS_CHECKIN: '/wellness/checkin',
   WELLNESS_CHECKINS: '/wellness/checkins',
