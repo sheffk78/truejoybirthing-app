@@ -189,29 +189,114 @@ class MessageCreate(BaseModel):
 # ============== BIRTH RECORD MODELS ==============
 
 class BirthRecordCreate(BaseModel):
-    """Birth information for a client"""
+    """Comprehensive birth outcome record for a client - single record per birth episode"""
     client_id: str
-    birth_date: str
-    birth_time: Optional[str] = None
-    birth_location: Optional[str] = None
-    birth_type: Optional[str] = None  # Spontaneous Vaginal, Cesarean, etc.
-    baby_weight: Optional[str] = None
-    baby_length: Optional[str] = None
+    
+    # Timeline
+    full_dilation_datetime: Optional[str] = None  # When full dilation was achieved
+    pushing_start_datetime: Optional[str] = None  # When pushing started
+    birth_datetime: Optional[str] = None  # Actual time of birth
+    
+    # Birth Details
+    mode_of_birth: Optional[str] = None  # spontaneous_vaginal, assisted_vaginal, cesarean, vbac
+    place_of_birth: Optional[str] = None  # home, birth_center, hospital
+    
+    # Newborn Information
     baby_name: Optional[str] = None
-    baby_gender: Optional[str] = None
+    baby_sex: Optional[str] = None  # male, female, intersex
+    baby_weight_lbs: Optional[float] = None
+    baby_weight_oz: Optional[float] = None
+    baby_length_inches: Optional[float] = None
+    
+    # Newborn Condition
+    newborn_condition: Optional[str] = None  # vigorous, needed_assistance, required_resuscitation
+    newborn_condition_notes: Optional[str] = None
     apgar_1min: Optional[int] = None
     apgar_5min: Optional[int] = None
+    
+    # Maternal Outcomes
+    estimated_blood_loss_ml: Optional[int] = None
+    repairs_performed: Optional[str] = None  # none, first_degree, second_degree, third_degree, fourth_degree, other
+    repairs_notes: Optional[str] = None
+    
+    # Immediate Postpartum
+    maternal_status: Optional[str] = None  # stable, monitored, transferred, complications
+    maternal_status_notes: Optional[str] = None
+    baby_status: Optional[str] = None  # skin_to_skin, breastfeeding_initiated, transferred, nicu
+    baby_status_notes: Optional[str] = None
+    
+    # Transfer of Care
+    transfer_occurred: Optional[bool] = None
+    transfer_who: Optional[str] = None  # mother, baby, both
+    transfer_destination: Optional[str] = None
+    transfer_reason: Optional[str] = None
+    
+    # General
+    birth_story_notes: Optional[str] = None
+    
+    # Legacy fields for compatibility
+    birth_date: Optional[str] = None  # Kept for backward compatibility
+    birth_time: Optional[str] = None
+    birth_location: Optional[str] = None
+    birth_type: Optional[str] = None
+    baby_weight: Optional[str] = None
+    baby_length: Optional[str] = None
+    baby_gender: Optional[str] = None
+    complications: Optional[str] = None
     notes: Optional[str] = None
 
+
 class BirthRecordUpdate(BaseModel):
+    """Update model for birth record"""
+    # Timeline
+    full_dilation_datetime: Optional[str] = None
+    pushing_start_datetime: Optional[str] = None
+    birth_datetime: Optional[str] = None
+    
+    # Birth Details
+    mode_of_birth: Optional[str] = None
+    place_of_birth: Optional[str] = None
+    
+    # Newborn Information
+    baby_name: Optional[str] = None
+    baby_sex: Optional[str] = None
+    baby_weight_lbs: Optional[float] = None
+    baby_weight_oz: Optional[float] = None
+    baby_length_inches: Optional[float] = None
+    
+    # Newborn Condition
+    newborn_condition: Optional[str] = None
+    newborn_condition_notes: Optional[str] = None
+    apgar_1min: Optional[int] = None
+    apgar_5min: Optional[int] = None
+    
+    # Maternal Outcomes
+    estimated_blood_loss_ml: Optional[int] = None
+    repairs_performed: Optional[str] = None
+    repairs_notes: Optional[str] = None
+    
+    # Immediate Postpartum
+    maternal_status: Optional[str] = None
+    maternal_status_notes: Optional[str] = None
+    baby_status: Optional[str] = None
+    baby_status_notes: Optional[str] = None
+    
+    # Transfer of Care
+    transfer_occurred: Optional[bool] = None
+    transfer_who: Optional[str] = None
+    transfer_destination: Optional[str] = None
+    transfer_reason: Optional[str] = None
+    
+    # General
+    birth_story_notes: Optional[str] = None
+    
+    # Legacy fields
     birth_date: Optional[str] = None
     birth_time: Optional[str] = None
     birth_location: Optional[str] = None
     birth_type: Optional[str] = None
     baby_weight: Optional[str] = None
     baby_length: Optional[str] = None
-    baby_name: Optional[str] = None
     baby_gender: Optional[str] = None
-    apgar_1min: Optional[int] = None
-    apgar_5min: Optional[int] = None
+    complications: Optional[str] = None
     notes: Optional[str] = None
