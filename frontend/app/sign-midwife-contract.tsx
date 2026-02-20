@@ -553,6 +553,22 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
+  downloadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.accent,
+    paddingVertical: SIZES.md,
+    paddingHorizontal: SIZES.lg,
+    borderRadius: SIZES.radiusMd,
+    marginTop: SIZES.lg,
+  },
+  downloadButtonText: {
+    color: COLORS.white,
+    fontSize: SIZES.fontMd,
+    fontWeight: '600',
+    marginLeft: SIZES.sm,
+  },
   pendingCard: {
     alignItems: 'center',
     paddingVertical: SIZES.xl,
