@@ -1443,6 +1443,7 @@ contracts_routes.init_contracts_deps(
 )
 
 from routes import invoices as invoices_routes
+from routes import visits as visits_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
