@@ -331,7 +331,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
     <SafeAreaView style={styles.container} edges={['top']} data-testid="provider-appointments-screen">
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton} data-testid="back-btn">
           <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Appointments</Text>
