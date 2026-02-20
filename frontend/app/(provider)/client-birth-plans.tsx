@@ -888,15 +888,37 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.xs,
   },
   noteItem: {
+    marginBottom: SIZES.sm,
+    padding: SIZES.sm,
+    backgroundColor: COLORS.background,
+    borderRadius: SIZES.radiusSm,
+  },
+  noteHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: SIZES.xs,
   },
   noteContent: {
     fontSize: SIZES.fontSm,
     color: COLORS.textPrimary,
+    lineHeight: 20,
   },
   noteDate: {
     fontSize: SIZES.fontXs,
     color: COLORS.textLight,
+  },
+  editNoteBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 2,
+    paddingHorizontal: SIZES.xs,
+  },
+  editNoteBtnText: {
+    fontSize: SIZES.fontXs,
+    color: COLORS.primary,
+    fontWeight: '500',
   },
   addNoteBtn: {
     flexDirection: 'row',
