@@ -67,6 +67,20 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - App Store Compliance - Legal Links
+
+#### Legal Links on All Profile Pages (COMPLETED - 2026-02-20)
+- [x] **Mom Profile** - Added discrete legal links section at bottom of profile page
+- [x] **Doula Profile** - Added via shared ProviderProfile component  
+- [x] **Midwife Profile** - Added via shared ProviderProfile component
+- [x] **Links included**:
+  - Privacy Policy: https://truejoybirthing.com/privacy-policy/
+  - Disclaimer: https://truejoybirthing.com/disclaimer/
+  - Terms of Service: https://truejoybirthing.com/terms-of-service/
+  - Contact: https://truejoybirthing.com/contact/
+- [x] **Opens in browser** - Uses Linking.openURL for proper external link handling
+- [x] **Discrete styling** - Small, light text with dot separators
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Mom Home & Appointments UX Improvements
 
 #### Mom Home - Contracts & Invoices Display (COMPLETED - 2026-02-20)
