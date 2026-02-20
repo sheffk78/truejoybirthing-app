@@ -327,14 +327,29 @@ const styles = StyleSheet.create({
   roleText: {
     flex: 1,
   },
+  roleTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: SIZES.xs,
+    marginBottom: 2,
+  },
   roleTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     color: COLORS.textPrimary,
-    marginBottom: 2,
   },
   roleTitleSelected: {
     color: COLORS.primary,
+  },
+  pricingBadge: {
+    paddingHorizontal: SIZES.xs,
+    paddingVertical: 2,
+    borderRadius: SIZES.radiusSm,
+  },
+  pricingText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
   },
   roleDescription: {
     fontSize: SIZES.fontSm,
