@@ -67,6 +67,18 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - YouTube Video Embedding
+
+#### YouTube Video Embedding (COMPLETED - 2026-02-20)
+- [x] **YouTubePlayer component** - New reusable component at `frontend/src/components/YouTubePlayer.tsx`
+- [x] **VideoPlayerModal** - Modal overlay for playing YouTube videos in-app
+- [x] **Marketplace integration** - Provider video intros now play in embedded modal instead of opening external browser
+- [x] **Utility functions** - `getYouTubeVideoId` extracts IDs from standard, short, and embed URLs; `getYouTubeThumbnail` generates thumbnail URLs
+- [x] **Video label UI** - "Watch Video" label displayed on video thumbnails
+- [x] **react-native-youtube-iframe** - Library installed and configured
+- [x] **Web compatibility** - Changed TouchableOpacity to Pressable for better web click handling
+- [x] **Testing** - 100% backend (11/11), 90% frontend (UI elements verified)
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Midwife Client Detail Refactoring
 
 #### Midwife Client Detail Page Refactoring (COMPLETED - 2026-02-20)
