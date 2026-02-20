@@ -653,6 +653,24 @@ async def get_dashboard(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
         "upcoming_appointments": upcoming_appointments
     }
     
+    # Count pending contracts and invoices
+    contracts_pending = await db.contracts.count_documents({
+        "$or": [
+            {"provider_id": user.user_id},
+            {"doula_id": user.user_id},
+            {"midwife_id": user.user_id}
+        ],
+        "status": {"$in": ["Sent", "sent", "pending"]}
+    })
+    
+    pending_invoices = await db.invoices.count_documents({
+        "provider_id": user.user_id,
+        "status": {"$in": ["Sent", "sent", "pending"]}
+    })
+    
+    stats["contracts_pending_signature"] = contracts_pending
+    stats["pending_invoices"] = pending_invoices
+    
     # Role-specific stats
     if user.role == "MIDWIFE":
         # Count visits this month
