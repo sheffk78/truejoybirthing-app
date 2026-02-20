@@ -64,6 +64,7 @@ export default function MomProfileScreen() {
       setZipCode(profileData.zip_code || '');
       setLocationCity(profileData.location_city || '');
       setLocationState(profileData.location_state || '');
+      setNumberOfChildren(profileData.number_of_children || 0);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
