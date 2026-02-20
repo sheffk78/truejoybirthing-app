@@ -675,4 +675,32 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.md, marginTop: SIZES.md 
   },
   logoutText: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium, color: COLORS.error, marginLeft: SIZES.sm },
+  
+  // Legal Links styles
+  legalSection: {
+    marginTop: SIZES.lg,
+    paddingTop: SIZES.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    alignItems: 'center',
+  },
+  legalLinks: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.xs,
+  },
+  legalLink: {
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: SIZES.xs,
+  },
+  legalLinkText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+  },
+  legalSeparator: {
+    fontSize: SIZES.fontXs,
+    color: COLORS.textLight,
+  },
 });
