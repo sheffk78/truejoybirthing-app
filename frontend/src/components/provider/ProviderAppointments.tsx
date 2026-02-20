@@ -918,6 +918,30 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: SIZES.sm,
   },
+  clientInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  clientAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: SIZES.sm,
+  },
+  clientAvatarPlaceholder: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: SIZES.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  clientAvatarText: {
+    color: COLORS.white,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+  },
   clientName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
