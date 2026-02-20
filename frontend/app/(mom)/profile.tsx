@@ -898,4 +898,30 @@ const styles = StyleSheet.create({
     color: COLORS.error,
     fontFamily: FONTS.bodyBold,
   },
+  legalSection: {
+    marginTop: SIZES.lg,
+    paddingTop: SIZES.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    alignItems: 'center',
+  },
+  legalLinks: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.xs,
+  },
+  legalLink: {
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: SIZES.xs,
+  },
+  legalLinkText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+  },
+  legalSeparator: {
+    fontSize: SIZES.fontXs,
+    color: COLORS.textLight,
+  },
 });
