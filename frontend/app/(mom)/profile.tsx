@@ -704,6 +704,43 @@ const styles = StyleSheet.create({
     color: COLORS.success,
     fontWeight: '500',
   },
+  childrenInputContainer: {
+    marginTop: SIZES.md,
+  },
+  childrenStepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: SIZES.sm,
+    gap: SIZES.lg,
+  },
+  stepperButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.background,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepperButtonDisabled: {
+    borderColor: COLORS.textLight,
+    opacity: 0.5,
+  },
+  childrenCount: {
+    fontSize: SIZES.fontXxl,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    minWidth: 40,
+    textAlign: 'center',
+  },
+  childrenHint: {
+    fontSize: SIZES.fontXs,
+    color: COLORS.textLight,
+    textAlign: 'center',
+    marginTop: SIZES.xs,
+  },
   profileCard: {
     marginBottom: SIZES.md,
   },
