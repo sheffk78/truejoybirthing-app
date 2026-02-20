@@ -47,24 +47,24 @@ class TestAuth:
         response = requests.post(f"{BASE_URL}/api/auth/login", json=DOULA_CREDS)
         assert response.status_code == 200
         data = response.json()
-        assert "token" in data
-        assert data.get("user", {}).get("role") == "DOULA"
+        assert "session_token" in data
+        assert data.get("role") == "DOULA"
         print("Doula login successful")
     
     def test_midwife_login(self):
         response = requests.post(f"{BASE_URL}/api/auth/login", json=MIDWIFE_CREDS)
         assert response.status_code == 200
         data = response.json()
-        assert "token" in data
-        assert data.get("user", {}).get("role") == "MIDWIFE"
+        assert "session_token" in data
+        assert data.get("role") == "MIDWIFE"
         print("Midwife login successful")
     
     def test_mom_login(self):
         response = requests.post(f"{BASE_URL}/api/auth/login", json=MOM_CREDS)
         assert response.status_code == 200
         data = response.json()
-        assert "token" in data
-        assert data.get("user", {}).get("role") == "MOM"
+        assert "session_token" in data
+        assert data.get("role") == "MOM"
         print("Mom login successful")
 
 
