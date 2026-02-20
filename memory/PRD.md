@@ -85,6 +85,10 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Marketplace Update** - "Add to Team" replaced with "Request Consultation" button
 - [x] **Consultation Request Status** - Shows "Requested" when pending, "Request Consultation" when available
 - [x] **Consultation Appointment Type** - Schedule button navigates to appointments with consultation type pre-selected
+- [x] **Lead Insights Dashboard Card** - Shows Active leads, Converted leads, and Conversion Rate %
+  - Clickable card navigates to Leads page
+  - Integrated into both Doula and Midwife dashboards
+  - Backend endpoints updated to return `lead_insights` object
 - [x] **Testing** - 100% backend (15/15 tests passed), frontend UI verified
 
 ### ✅ RECENTLY COMPLETED (2026-02-20) - App Store Compliance - Legal Links
