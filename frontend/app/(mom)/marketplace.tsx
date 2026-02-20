@@ -704,24 +704,24 @@ export default function MarketplaceScreen() {
               <TouchableOpacity
                 style={[
                   styles.footerButton, 
-                  styles.addButton,
-                  getTeamButtonDisabled(selectedProvider?.user_id) && styles.disabledButton
+                  styles.consultButton,
+                  getConsultationButtonDisabled(selectedProvider?.user_id) && styles.disabledButton
                 ]}
-                onPress={() => handleAddToTeam(selectedProvider)}
-                disabled={addingToTeam || getTeamButtonDisabled(selectedProvider?.user_id)}
-                data-testid="add-to-team-btn"
+                onPress={() => handleRequestConsultation(selectedProvider)}
+                disabled={requestingConsultation || getConsultationButtonDisabled(selectedProvider?.user_id)}
+                data-testid="request-consultation-btn"
               >
-                {addingToTeam ? (
+                {requestingConsultation ? (
                   <ActivityIndicator size="small" color={COLORS.white} />
                 ) : (
                   <>
                     <Icon 
-                      name={teamStatus[selectedProvider?.user_id] === 'accepted' ? 'checkmark-circle' : 'person-add-outline'} 
+                      name={consultationStatus[selectedProvider?.user_id] ? 'calendar' : 'calendar-outline'} 
                       size={20} 
                       color={COLORS.white} 
                     />
                     <Text style={styles.footerButtonText}>
-                      {getTeamButtonText(selectedProvider?.user_id)}
+                      {getConsultationButtonText(selectedProvider?.user_id)}
                     </Text>
                   </>
                 )}
