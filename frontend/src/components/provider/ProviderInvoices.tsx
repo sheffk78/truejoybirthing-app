@@ -391,20 +391,28 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header with back navigation when client-scoped */}
-      <View style={styles.mainHeader}>
-        {isClientScoped && (
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
+      {/* Breadcrumb Navigation */}
+      <View style={styles.breadcrumbHeader}>
+        <View style={styles.breadcrumb}>
+          <TouchableOpacity 
+            onPress={() => router.replace(config.routes.clients as any)}
+            style={styles.breadcrumbItem}
+          >
+            <Text style={styles.breadcrumbLink}>Clients</Text>
           </TouchableOpacity>
-        )}
-        <View style={{ flex: 1 }}>
-          <Text style={styles.mainTitle}>
-            {isClientScoped ? `${clientName}'s Invoices` : 'Invoices'}
-          </Text>
           {isClientScoped && (
-            <Text style={styles.mainSubtitle}>Client Invoices</Text>
+            <>
+              <Text style={styles.breadcrumbSeparator}>›</Text>
+              <TouchableOpacity 
+                onPress={() => router.back()}
+                style={styles.breadcrumbItem}
+              >
+                <Text style={styles.breadcrumbLink}>{clientName}</Text>
+              </TouchableOpacity>
+            </>
           )}
+          <Text style={styles.breadcrumbSeparator}>›</Text>
+          <Text style={styles.breadcrumbCurrent}>Invoices</Text>
         </View>
         <View style={styles.headerButtons}>
           {!isClientScoped && (

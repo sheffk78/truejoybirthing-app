@@ -461,18 +461,28 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']} data-testid="provider-contracts-screen">
-      {/* Header with back navigation when client-scoped */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>
-            {isClientScoped ? `${clientName}'s Contracts` : `${config.roleLabel} Contracts`}
-          </Text>
+      {/* Breadcrumb Navigation */}
+      <View style={styles.breadcrumbHeader}>
+        <View style={styles.breadcrumb}>
+          <TouchableOpacity 
+            onPress={() => router.replace(config.routes.clients as any)}
+            style={styles.breadcrumbItem}
+          >
+            <Text style={styles.breadcrumbLink}>Clients</Text>
+          </TouchableOpacity>
           {isClientScoped && (
-            <Text style={styles.headerSubtitle}>Client Contracts</Text>
+            <>
+              <Text style={styles.breadcrumbSeparator}>›</Text>
+              <TouchableOpacity 
+                onPress={() => router.back()}
+                style={styles.breadcrumbItem}
+              >
+                <Text style={styles.breadcrumbLink}>{clientName}</Text>
+              </TouchableOpacity>
+            </>
           )}
+          <Text style={styles.breadcrumbSeparator}>›</Text>
+          <Text style={styles.breadcrumbCurrent}>Contracts</Text>
         </View>
         <TouchableOpacity
           style={[styles.addButton, { backgroundColor: primaryColor }]}

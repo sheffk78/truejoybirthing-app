@@ -162,24 +162,29 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header with back navigation when client-scoped */}
-      <View style={styles.header}>
-        {isClientScoped && (
+      {/* Breadcrumb Navigation */}
+      <View style={styles.breadcrumbHeader}>
+        <View style={styles.breadcrumb}>
           <TouchableOpacity 
-            onPress={() => router.back()} 
-            style={styles.backButton}
-            data-testid="back-button"
+            onPress={() => router.replace(config.routes.clients as any)}
+            style={styles.breadcrumbItem}
           >
-            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Text style={styles.breadcrumbLink}>Clients</Text>
           </TouchableOpacity>
-        )}
-        <View style={{ flex: 1 }}>
-          <Text style={styles.title}>
-            {isClientScoped ? `${clientName}'s Notes` : 'Notes'}
-          </Text>
           {isClientScoped && (
-            <Text style={styles.subtitle}>Client Notes</Text>
+            <>
+              <Text style={styles.breadcrumbSeparator}>›</Text>
+              <TouchableOpacity 
+                onPress={() => router.back()}
+                style={styles.breadcrumbItem}
+                data-testid="back-button"
+              >
+                <Text style={styles.breadcrumbLink}>{clientName}</Text>
+              </TouchableOpacity>
+            </>
           )}
+          <Text style={styles.breadcrumbSeparator}>›</Text>
+          <Text style={styles.breadcrumbCurrent}>Notes</Text>
         </View>
         <TouchableOpacity
           style={[styles.addButton, { backgroundColor: primaryColor }]}

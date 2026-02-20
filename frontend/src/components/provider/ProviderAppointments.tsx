@@ -334,12 +334,30 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
 
   return (
     <SafeAreaView style={styles.container} edges={['top']} data-testid="provider-appointments-screen">
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton} data-testid="back-btn">
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Appointments</Text>
+      {/* Breadcrumb Navigation */}
+      <View style={styles.breadcrumbHeader}>
+        <View style={styles.breadcrumb}>
+          <TouchableOpacity 
+            onPress={() => router.replace(config.routes.clients as any)}
+            style={styles.breadcrumbItem}
+          >
+            <Text style={styles.breadcrumbLink}>Clients</Text>
+          </TouchableOpacity>
+          {preSelectedClientId && preSelectedClientName && (
+            <>
+              <Text style={styles.breadcrumbSeparator}>›</Text>
+              <TouchableOpacity 
+                onPress={handleBack}
+                style={styles.breadcrumbItem}
+                data-testid="back-btn"
+              >
+                <Text style={styles.breadcrumbLink}>{preSelectedClientName}</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          <Text style={styles.breadcrumbSeparator}>›</Text>
+          <Text style={styles.breadcrumbCurrent}>Appointments</Text>
+        </View>
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => setShowCreateModal(true)}
