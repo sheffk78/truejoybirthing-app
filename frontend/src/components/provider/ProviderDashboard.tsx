@@ -465,4 +465,58 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bodyMedium,
     color: COLORS.white,
   },
+  // Lead Insights Card Styles
+  leadInsightsCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: SIZES.radiusMd,
+    padding: SIZES.md,
+    marginBottom: SIZES.md,
+    ...SHADOWS.sm,
+  },
+  leadInsightsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SIZES.md,
+  },
+  leadInsightsIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SIZES.sm,
+  },
+  leadInsightsTitle: {
+    flex: 1,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+    color: COLORS.textPrimary,
+  },
+  leadInsightsStats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingTop: SIZES.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  leadInsightsStat: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  leadInsightsValue: {
+    fontSize: SIZES.fontXl,
+    fontFamily: FONTS.heading,
+  },
+  leadInsightsLabel: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  leadInsightsDivider: {
+    width: 1,
+    height: 30,
+    backgroundColor: COLORS.border,
+  },
 });
