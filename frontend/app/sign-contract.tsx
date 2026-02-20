@@ -21,19 +21,28 @@ import { COLORS, SIZES } from '../src/constants/theme';
 interface ContractData {
   contract: {
     contract_id: string;
-    contract_title: string;
-    services_description: string | null;
+    doula_name: string;
+    client_name: string;
+    estimated_due_date: string;
     total_fee: number | null;
-    payment_schedule_description: string | null;
-    cancellation_policy: string | null;
+    retainer_amount: number | null;
+    remaining_balance: number | null;
+    contract_text: string | null;
     status: string;
     signed_at: string | null;
-    signature_data: any | null;
+    client_signature: any | null;
+    doula_signature: any | null;
+    // Legacy fields for backwards compatibility
+    contract_title?: string;
+    services_description?: string | null;
+    payment_schedule_description?: string | null;
+    cancellation_policy?: string | null;
+    signature_data?: any | null;
   };
   client: {
     name: string;
     email: string | null;
-  };
+  } | null;
   doula: {
     full_name: string;
     email: string;
