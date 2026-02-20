@@ -100,45 +100,6 @@ class BirthSummaryCreate(BaseModel):
 # ============== HELPER FUNCTIONS ==============
 
 def generate_visit_summary(data: Dict[str, Any]) -> str:
-    """Generate summary line from vitals"""
-    summary_parts = []
-    if data.get("blood_pressure"):
-        summary_parts.append(f"BP {data['blood_pressure']}")
-    if data.get("fetal_heart_rate"):
-        summary_parts.append(f"FHR {data['fetal_heart_rate']}")
-    if data.get("fundal_height"):
-        summary_parts.append(f"FH {data['fundal_height']} cm")
-    if data.get("weight"):
-        unit = data.get("weight_unit", "lbs")
-        summary_parts.append(f"Wt {data['weight']} {unit}")
-    return ", ".join(summary_parts) if summary_parts else "Visit recorded"
-
-
-def is_client_active(client: Dict[str, Any]) -> bool:
-    """Check if a client is currently active based on due date"""
-    due_date_str = client.get("due_date") or client.get("edd")
-    birth_date_str = client.get("birth_date")
-    
-    if birth_date_str:
-        try:
-            birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d")
-            days_since_birth = (datetime.now() - birth_date).days
-            return days_since_birth <= 90
-        except:
-            pass
-    
-    if due_date_str:
-        try:
-            due_date = datetime.strptime(due_date_str, "%Y-%m-%d")
-            days_until_due = (due_date - datetime.now()).days
-            return days_until_due >= -90
-        except:
-            pass
-    
-    return True
-
-
-# ============== BASIC VISIT ROUTES (MIDWIFE) ==============
 
 @router.get("/midwife/visits")
 async def get_midwife_visits(user: User = Depends(check_role(["MIDWIFE"])), client_id: Optional[str] = None):
