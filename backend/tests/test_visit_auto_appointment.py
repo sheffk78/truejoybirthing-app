@@ -13,7 +13,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get("EXPO_PUBLIC_BACKEND_URL", "https://true-joy-preview-1.preview.emergentagent.com")
+BASE_URL = os.environ.get("EXPO_PUBLIC_BACKEND_URL", "https://midwife-labor.preview.emergentagent.com")
 
 # Test credentials
 MIDWIFE_EMAIL = "demo.midwife@truejoybirthing.com"

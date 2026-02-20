@@ -57,7 +57,7 @@
     "frontend": "100%"
   },
   "test_credentials": {
-    "test_contract_url": "https://true-joy-preview-1.preview.emergentagent.com/sign-contract?contractId=contract_6cc57257d974"
+    "test_contract_url": "https://midwife-labor.preview.emergentagent.com/sign-contract?contractId=contract_6cc57257d974"
   },
   "seed_data_creation": "",
   "retest_needed": false,

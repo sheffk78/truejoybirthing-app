@@ -17,7 +17,7 @@ import os
 import time
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://true-joy-preview-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://midwife-labor.preview.emergentagent.com')
 BASE_URL = BASE_URL.rstrip('/')
 
 # Test data

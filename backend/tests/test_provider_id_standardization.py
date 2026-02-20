@@ -15,7 +15,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://true-joy-preview-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://midwife-labor.preview.emergentagent.com')
 
 # Test credentials
 DOULA_EMAIL = "demo.doula@truejoybirthing.com"

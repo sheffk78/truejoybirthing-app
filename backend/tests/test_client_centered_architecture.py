@@ -19,7 +19,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://true-joy-preview-1.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://midwife-labor.preview.emergentagent.com").rstrip("/")
 
 # Test credentials
 DOULA_CREDS = {"email": "demo.doula@truejoybirthing.com", "password": "DemoScreenshot2024!"}
