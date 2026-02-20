@@ -75,7 +75,8 @@ export default function MarketplaceScreen() {
         user_id: p.user?.user_id,
         full_name: p.user?.full_name,
         email: p.user?.email,
-        picture: p.user?.picture,
+        // Prefer profile picture over user picture, fallback to user picture
+        picture: p.profile?.picture || p.user?.picture,
         role: p.user?.role || p.provider_type,
         provider_type: p.provider_type,
         profile: p.profile
