@@ -36,13 +36,22 @@ export default function MidwifeLayout() {
         },
       }}
     >
-      {/* Primary Navigation - 4 tabs */}
+      {/* Primary Navigation - 5 tabs */}
       <Tabs.Screen
         name="dashboard"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
             <Icon name="home-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="leads"
+        options={{
+          title: 'Leads',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="person-add-outline" size={size} color={color} />
           ),
         }}
       />
