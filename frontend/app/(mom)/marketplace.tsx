@@ -18,16 +18,12 @@ import { useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
+import { VideoPlayerModal, getYouTubeVideoId, getYouTubeThumbnail } from '../../src/components/YouTubePlayer';
 import { apiRequest } from '../../src/utils/api';
 import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 import { API_ENDPOINTS } from '../../src/constants/api';
 
 const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE'];
-
-// Helper to extract YouTube video ID
-const getYouTubeVideoId = (url: string): string | null => {
-  if (!url) return null;
-  const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
     /^([a-zA-Z0-9_-]{11})$/
   ];
