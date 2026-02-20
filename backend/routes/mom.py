@@ -33,6 +33,7 @@ class MomProfileUpdate(BaseModel):
     zip_code: Optional[str] = None
     location_city: Optional[str] = None
     location_state: Optional[str] = None
+    number_of_children: Optional[int] = None
 
 
 class WellnessCheckinRequest(BaseModel):
