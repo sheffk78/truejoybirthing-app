@@ -349,6 +349,29 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusMd 
   },
   cancelBtnText: { color: COLORS.textSecondary, fontWeight: '600', fontSize: SIZES.fontSm },
+  quickActions: { 
+    flexDirection: 'row', 
+    justifyContent: 'flex-start', 
+    marginTop: SIZES.md, 
+    paddingTop: SIZES.md, 
+    borderTopWidth: 1, 
+    borderTopColor: COLORS.border,
+    gap: SIZES.md,
+  },
+  quickActionBtn: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: COLORS.primary + '10', 
+    paddingVertical: SIZES.xs + 2, 
+    paddingHorizontal: SIZES.md, 
+    borderRadius: SIZES.radiusMd,
+    gap: SIZES.xs,
+  },
+  quickActionText: { 
+    fontSize: SIZES.fontSm, 
+    color: COLORS.primary, 
+    fontWeight: '500' 
+  },
   emptyCard: { alignItems: 'center', padding: SIZES.xl, marginBottom: SIZES.lg },
   emptyIcon: { marginBottom: SIZES.md },
   emptyTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary, marginBottom: SIZES.xs },
