@@ -28,11 +28,11 @@ print('User ID: ' + userId);
 ## Step 2: Test Backend API
 ```bash
 # Test auth endpoint
-curl -X GET "https://birth-timeline.preview.emergentagent.com/api/auth/me" \
+curl -X GET "https://doula-connect-3.preview.emergentagent.com/api/auth/me" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 
 # Test protected endpoints
-curl -X GET "https://birth-timeline.preview.emergentagent.com/api/users/profile" \
+curl -X GET "https://doula-connect-3.preview.emergentagent.com/api/users/profile" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 ```
 
@@ -48,7 +48,7 @@ await page.context.add_cookies([{
     "secure": true,
     "sameSite": "None"
 }]);
-await page.goto("https://birth-timeline.preview.emergentagent.com");
+await page.goto("https://doula-connect-3.preview.emergentagent.com");
 ```
 
 ## Quick Debug

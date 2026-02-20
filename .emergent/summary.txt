@@ -1,68 +1,122 @@
-<analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing. The project recently completed a large-scale backend refactoring to move from a monolithic  to a modular FastAPI router structure. Following this, the user performed a manual test pass and reported a detailed list of UI/UX, data consistency, and navigation bugs. The current focus is on fixing these reported issues and preparing the application for a final user acceptance test.
+<analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing. The primary objective has been to overhaul the Appointments feature into a unified system connecting Moms and Providers. Recent requests have expanded to include a full contract signing flow, fixing data inconsistencies on the provider dashboard, implementing an appointment acceptance workflow, and numerous UI/UX enhancements to improve client-centric navigation and usability for both Moms and Providers.
 
 **PRODUCT REQUIREMENTS**:
-*   **Complete Backend Refactoring**: Finalize the migration of all routes from  to a modular structure. (DONE)
-*   **Verify Client-Centered Architecture**: Ensure the data model, navigation, and features are all centered around the Client (Mom) entity. (DONE)
-*   **Fix User-Reported Bugs**: Address a comprehensive list of issues related to data visibility, UI controls (date pickers, dropdowns), keyboard handling, and navigation.
-*   **Data Cleanup**: Remove all test data from the database, preserving only the essential demo accounts for the user's final review.
+*   **Unified Appointments System**: Appointments are shared between Moms and Providers.
+*   **Client-Centric Navigation**: Back buttons should consistently return the user to the previous logical view within the client context (e.g., from a birth plan back to the specific client's detail page). Breadcrumbs should be used for clarity.
+*   **Provider Dashboard Accuracy**: Dashboard stats (active clients, pending contracts, pending invoices) must reflect the correct data.
+*   **Full Contract Flow**:
+    *   Providers send contracts, which appear as messages for Moms.
+    *   Moms can view, e-sign, and accept contracts within the app.
+    *   A signed PDF copy is emailed to both Mom and Provider.
+*   **Appointment/Schedule Acceptance**: Both Moms and Providers need a way to accept appointments scheduled by the other party.
+*   **Invoice Management**: Providers must be able to edit an invoice's status (e.g., from paid to unpaid) and send reminders to Moms.
+*   **UI/UX Enhancements (Mom)**:
+    *   Add a Schedule with Provider link to the Home screen's Key Actions.
+    *   Add a Number of Children field to the profile, displaying as X Kids.
+    *   Add a delete (X) button to upcoming appointments.
+*   **UI/UX Enhancements (Provider)**:
+    *   Remove non-functional duplicate and PDF buttons from the Contracts view, adding an e-sign button.
+    *   On the Client Details page, remove redundant Message buttons/tabs and the Birth Plan filter tab.
+    *   In the New Invoice form, the client field must be a pre-selected dropdown.
+    *   Fix keyboard-obstructed buttons in Invoice, Contract, and Note forms.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application's backend has been fully refactored from a single  file into a clean, modular architecture under . A comprehensive verification of the client-centered data model and workflows was completed, passing all automated tests. The agent has just addressed a detailed list of ~15 UI/UX and data consistency bugs reported by the user, including fixes to the provider dashboard, client filters, back navigation, date pickers, keyboard avoidance in forms, and ensuring newly created items (Notes, Contracts, Invoices) appear correctly on the client's timeline. The agent was in the middle of cleaning up test data from the database as per the user's request.
+The application has a unified appointments backend () and a largely integrated frontend for both Mom and Provider roles. Numerous UI/UX bugs related to navigation, form handling, and data display have been fixed in this session. Key features like client-centric back navigation, expanded birth plan views, and breadcrumbs in provider sections have been implemented. The agent had just started working on a large batch of new user requests, beginning with UI cleanup tasks like adding more breadcrumbs and removing redundant elements from the provider's client detail page.
 
 **Last working item**:
-*   **Last item agent was working**: Cleaning the database by removing test data while preserving demo accounts. The user reported a large number of test accounts were cluttering the UI and requested a clean environment for final testing.
+*   **Last item agent was working**: The agent was in the middle of a large batch of user-requested features. The immediate work involved implementing UI fixes for the provider side: adding breadcrumbs to more sections and cleaning up the Client Details page by removing redundant buttons and tabs. The agent had started editing the layout files to enable breadcrumbs.
 *   **Status**: IN PROGRESS
 *   **Agent Testing Done**: N
-*   **Which testing method agent to use?**: The agent should execute the cleanup script and then verify the data removal by running database queries () to confirm only demo accounts remain.
+*   **Which testing method agent to use?**:  after the entire batch of features is complete. A screenshot can be used to verify the initial UI cleanup tasks.
 *   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-*   **Issue 1: Complete Database Cleanup (P0)**
-    *   **Description**: User requested the removal of all test data (users, clients, appointments, etc.) from the database, leaving only the primary demo/screenshot accounts (, , ).
-    *   **Attempted fixes**: The agent identified the demo accounts which are prefixed with  and was preparing a Python script () to perform the deletion. The script was not completed or executed.
+*   **Issue 1: Provider Dashboard Stats are Incorrect (P0)**
+    *   **Description**: The provider dashboard shows 0 active clients, 0 pending contracts, and 0 pending invoices even when data exists in the database. This is a critical data integrity bug.
     *   **Next debug checklist**:
-        1.  Complete and execute the Python script to delete all non-demo users and their associated data. The script should iterate through collections like , , , , , and  and remove documents not linked to the preserved demo accounts.
-        2.  Verify the cleanup by connecting to the MongoDB instance and running  queries on the collections to ensure only a small number of documents remain.
-        3.  Inform the user that the cleanup is complete and the environment is ready for their final review.
-    *   **Why fix this issue and what will be achieved with the fix?**: Provides a clean environment for the user to conduct their final acceptance testing without being confused by old test data.
+        1.  Investigate the backend dashboard endpoints:  and  in .
+        2.  Verify the database queries that calculate , , and .
+        3.  Check the logic for what constitutes an active client or a pending document.
+    *   **Why fix this issue and what will be achieved with the fix?**: Provides accurate, at-a-glance information to providers, which is crucial for their workflow.
+    *   **Status**: NOT STARTED
+    *   **Is recurring issue?**: N
+    *   **Should Test frontend/backend/both after fix?**: Backend
+
+*   **Issue 2: Remove Redundant Items from Client Details (P1)**
+    *   **Description**: On the provider's Client Details page, there are two Message buttons/links and extra Messages and Birth Plan filter tabs that need to be removed to streamline the UI.
+    *   **Attempted fixes**: The agent edited  to remove the filter tabs and the action button.
+    *   **Next debug checklist**:
+        1.  Take a screenshot of the Client Detail page to verify the elements have been removed.
+        2.  Ensure no functionality was broken.
+    *   **Why fix this issue and what will be achieved with the fix?**: Simplifies the UI and removes confusing, duplicated actions.
     *   **Status**: IN PROGRESS
     *   **Is recurring issue?**: N
-    *   **Should Test frontend/backend/both after fix?**: Backend (database verification)
-    *   **Blocked on other issue**: No
+    *   **Should Test frontend/backend/both after fix?**: Frontend
+    *   **Blocked on other issue**: None
 
 **In progress Task List**:
-*   **Task 1: Final User Acceptance Testing (UAT) Pass (P0)**
-    *   **Where to resume**: After the database cleanup is complete and verified, the next step is to hand the application back to the user for a final manual testing pass.
-    *   **What will be achieved with this?**: User confirmation that all ~15 reported bugs are resolved and the application's client-centered workflow behaves as expected.
-    *   **Status**: BLOCKED (on Issue 1: Database Cleanup)
-    *   **Should Test frontend/backend/both after fix?**: Both (by user)
-    *   **Blocked on something**: Database Cleanup
+*   **Task 1: Implement Full Contract Signing Flow (P0)**
+    *   **Description**: Create a complete e-signing workflow. When a provider sends a contract, it should appear in the Mom's messages. The Mom should be able to view, e-sign, and accept it. A signed PDF copy should be emailed to both parties.
+    *   **Where to resume**:
+        1.  **Backend**: Implement logic to create a message/notification for a sent contract. Create endpoints to handle e-signing (saving signature data) and accepting. Implement PDF generation () and email sending ().
+        2.  **Frontend (Mom)**: Create UI in the messages view to display contract notifications. Build a modal/page for viewing the contract, signing, and accepting.
+        3.  **Frontend (Provider)**: Add an e-sign button to the contract view as requested.
+    *   **What will be achieved with this?**: A core feature for finalizing agreements between Moms and Providers.
+    *   **Status**: NOT STARTED
+    *   **Should Test frontend/backend/both after fix?**: Both
+    *   **Blocked on something**: None
+
+*   **Task 2: Implement Appointment Acceptance Flow (P1)**
+    *   **Description**: When one party schedules an appointment, the other party needs to be able to Accept it to confirm.
+    *   **Where to resume**:
+        1.  **Backend**: Implement a  endpoint to change the appointment status from  to .
+        2.  **Frontend**: In both Mom () and Provider () views, add an Accept button to appointments that have a pending or Awaiting Response status.
+    *   **What will be achieved with this?**: A clear confirmation workflow for scheduling.
+    *   **Status**: NOT STARTED
+    *   **Should Test frontend/backend/both after fix?**: Both
+    *   **Blocked on something**: None
+
+*   **Task 3: Add Breadcrumbs to Provider Sections (P2)**
+    *   **Description**: Add breadcrumb navigation to the Contract, Invoice, Notes, and Appointments sections.
+    *   **Where to resume**: The agent already added  to the layout files. Now, the  component needs to be added to , , , and .
+    *   **What will be achieved with this?**: Consistent and clear navigation for providers.
+    *   **Status**: IN PROGRESS
+    *   **Should Test frontend/backend/both after fix?**: Frontend
+    *   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks**:
-    *   **P1: Migrate Remaining Utility Routes**: The  file still contains a few utility routes (, , ). These should be migrated to new, topic-specific routers (e.g., , ) to complete the refactoring 100%.
+    *   **P1: Implement Invoice Editing and Reminders**: Allow providers to edit an invoice's status and send payment reminders.
+    *   **P1: Add Number of Children to Mom Profile**: Add and display the new field.
+    *   **P1: Remove Buttons from Provider Contracts View**: Remove non-functional buttons and add an e-sign button.
+    *   **P2: Add Schedule link to Mom's Home Key Actions**: This was started but needs verification.
+    *   **P2: Migrate Remaining Utility Routes**: Move routes like  from  to dedicated routers.
 *   **Future Tasks**:
-    *   **P1: Stripe Integration**: Implement payment processing for provider invoices.
-    *   **P2: Push Notifications**: Implement notifications for new messages and client requests.
-    *   **P2: Refactor Midwife **: The specialized midwife screen (1100+ lines) was deferred for a future refactor to better align with the shared provider components and reduce role-specific code.
-    *   **P2: Admin Panel**: Build out the full Admin UI experience.
+    *   **P1: Stripe Integration**: Implement payment processing.
+    *   **P2: Push Notifications**: Implement for new messages and requests.
+    *   **P2: Embed YouTube Videos**: Investigate playing provider videos within the app.
+    *   **P2: Refactor Midwife **: Align the large, specialized midwife component with shared provider components.
+    *   **P2: Admin Panel**: Build out the Admin UI.
 
 **Completed work in this session**
-*   **Backend Refactoring (Phase 12 & 13)**: Completed the migration of all remaining feature routes (Care Plans, Unified Provider routes, Mom Appointments) from  into modular files (, , ).
-*   **Backend Cleanup**: Removed over 1000 lines of legacy and duplicated code from  and deleted the unused legacy  router.
-*   **Client-Centered Architecture Verification**: Conducted a full-stack audit of the data model, navigation, and code sharing. Passed 36/36 automated regression tests.
-*   **User-Reported Bug Fixes**: Fixed a list of ~15 UI/UX and data bugs, including:
-    *   Corrected dashboard active client count.
-    *   Replaced All client filter with Leads.
-    *   Fixed non-functional Birth Plan button by adding a new tab to the client detail view.
-    *   Corrected back-navigation logic to return to the client detail screen instead of Home.
-    *   Fixed UI issues with date pickers, keyboard-obstructed buttons, and missing client dropdowns/auto-selection in Notes, Contracts, and Invoices forms.
-    *   Resolved backend logic so that newly created items (Notes, Contracts) correctly appear in the client timeline.
+*   **Unified Appointments Feature (Frontend)**: Fully integrated the Mom and Provider appointment UIs with the new  backend, completing the feature's core logic.
+*   **Client-Centric Navigation**: Fixed back-arrow navigation from the Provider's Client Detail and Birth Plan views to maintain user context.
+*   **Breadcrumb Implementation**: Added breadcrumb navigation to the Provider Client Detail and Birth Plan pages.
+*   **UI/UX Fixes (Mom)**:
+    *   Changed the Add Appointment button on the Timeline to Schedule with Provider.
+    *   Added a delete (X) button to cancel upcoming/pending appointments.
+    *   Added Schedule and Message quick-action buttons to provider cards on the My Team page.
+*   **UI/UX Fixes (Provider)**:
+    *   Expanded the Birth Plan modal to show all fields, removing the + X more fields limitation.
+    *   Fixed the keyboard-avoiding view for Invoice, Contract, and Note modals.
+    *   Changed the client input on the New Invoice form to a pre-selected dropdown.
+*   **Bug Fixes**: Resolved an issue with a doubled  prefix in an API call and corrected an endpoint path in .
+*   **Testing**: Successfully used  multiple times to validate fixes and new functionality.
 
 **Earlier issues found/mentioned but not fixed**
-*   None.
+*   None. The latest user message contains a new list of issues to be addressed.
 
 **Known issue recurrence from previous fork**
 *   None.
@@ -72,56 +126,79 @@ The application's backend has been fully refactored from a single  file into a c
 
 **Key Technical Concepts**
 *   **Backend**: FastAPI, MongoDB, Pydantic, Modular  Architecture.
-*   **Frontend**: React Native (Expo), TypeScript, Zustand, TanStack Query, Expo Router.
-*   **Architecture**: Client-Centered Model, Shared Components with Role-Based Configuration, Phased Code Migration.
+*   **Frontend**: React (Expo), TypeScript, Zustand, TanStack Query, Expo Router for file-based routing and navigation.
+*   **Architecture**: Client-Centered Model, Unified Data Model for Appointments, Component-based UI.
 
 **key DB schema**
-*   **users**: Core user model for all roles.
-*   **clients**: Represents a Mom client, linked to a provider. Stores  status logic.
-*   **appointments, visits, notes, contracts, invoices**: All contain required  and  foreign keys to enforce the client-centered model.
+*   **appointments**: Central collection with , , Fri Feb 20 14:27:24 UTC 2026, ,  (, , etc).
+*   **users**: Core user model. The user has requested adding a  field for moms.
+*   **invoices**: Stores invoice data. The user has requested a status field that can be edited.
+*   **contracts**: Stores contract data.
 
 **All files of reference**
-*   **Cleanup Script**:  (To be created/executed)
-*   **Backend Routes**: , 
-*   **Frontend Components**: , , , , 
-*   **Configuration**: , 
+*   **Key Modified Files**:
+    *   : Added delete functionality and query param handling.
+    *   : Added quick action buttons to provider cards.
+    *   : Implemented breadcrumbs and client-centric back navigation.
+    *   : Fixed navigation and expanded data display.
+    *    & : Disabled default headers to allow for custom breadcrumbs.
+    *   : Fixed keyboard avoiding view and client dropdown.
+    *   : Changed button functionality.
+*   **Key Files for Next Steps**:
+    *   : To debug dashboard stats.
+    *   : To implement e-signing.
+    *    & : To add Number of Children field.
 
 **Areas that need refactoring**:
-*   ****: A few utility routes (, , ) remain. Migrating them would complete the refactoring.
-*   ****: This is a large, specialized component for midwives. It could be refactored in the future to better leverage the shared  and reduce role-specific UI code.
+*   ****: Still contains utility routes that should be migrated to their own routers for better organization.
+*   ****: A large, role-specific component that could be refactored to use more shared provider components.
 
 **key api endpoints**
-*   : Provides stats for the provider home screen.
-*   : Aggregates all client-related events (appointments, notes, etc.) for the client detail view.
-*   CRUD endpoints for , , , . All now require a .
+*   : Fetches appointments for the current user.
+*   : Creates a new appointment.
+*   : Deletes/cancels an appointment.
+*   , : Provider dashboard stats (NEEDS FIXING).
+*   **To be created**:
+    *   : To accept a scheduled appointment.
+    *   : To edit an invoice status.
+    *   : To send an invoice reminder.
+    *   Endpoints for contract e-signing and acceptance.
 
 **Critical Info for New Agent**
-*   Your immediate priority is to complete the database cleanup. Create and run a script to remove all non-demo data.
-*   After the cleanup is verified, the application must be handed over to the user for their final testing pass. Your main goal is to achieve user sign-off on the recent bug fixes.
-*   The backend refactoring is considered complete. Avoid further architectural changes unless explicitly requested. The focus should be on stability and polishing the existing features based on user feedback.
+*   The user's last message (message #381) is a comprehensive list of new tasks and bugs that define the immediate work plan.
+*   The highest priority (P0) is fixing the **incorrect provider dashboard stats**. This is a critical bug impacting core functionality.
+*   The next major feature is the **full contract signing flow (P0)**, which is a multi-step task involving backend (notifications, PDF generation, email) and frontend (UI for signing) work.
+*   The agent was in the middle of a batch of UI fixes (breadcrumbs, removing buttons). This work should be completed and verified.
+*   Pay close attention to maintaining the client-centric navigation pattern for all new and existing provider-side features.
 
 **documents and test reports created in this job**
-*   
-*    (Updated with completed work)
-*   Multiple test reports in  confirming the success of the refactoring and bug fixes.
+*    (Continuously updated)
+*   Multiple test reports located in , e.g., .
 
 **Last 10 User Messages and any pending HUMAN messages**
-*   The user provided a detailed list of ~15 bugs found during manual testing, covering data discrepancies, UI issues (date picker, keyboard), incorrect navigation, and missing data on client timelines.
-*   The user requested to have all test data removed from the database to provide a clean slate for their final review, keeping only the main demo accounts.
-*   **Pending**: The user is waiting for the bug fixes and data cleanup to be completed so they can perform their final acceptance testing.
+1.  **User (pending)**: Requested a large list of new features and bug fixes for both Mom and Provider sides, including fixing dashboard stats, implementing a full contract signing flow, an appointment acceptance mechanism, and multiple UI cleanups. (IN PROGRESS)
+2.  **User**: Requested breadcrumbs, a fix for the invoice client dropdown, and a fix for keyboard-obstructed buttons in provider forms. (RESOLVED)
+3.  **User**: Requested changing the Mom's timeline Add Appointment button and adding a delete (X) button for upcoming appointments. (RESOLVED)
+4.  **User**: Requested fixing client-centric back navigation and expanding the birth plan view to show all fields without truncation. (RESOLVED)
+5.  **User**: yes proceed - approved the initial work plan. (COMPLETED)
 
 **Project Health Check:**
-*   **Broken**: None.
-*   **Mocked**: In-app purchase (IAP) functionality is mocked.
+*   **Broken**: Provider dashboard stats (, , ) are showing incorrect 0 values.
+*   **Mocked**:  (In-App Purchase) functionality.
 
 **3rd Party Integrations**
-*   , , Emergent-managed Google Auth, , , .
+*   
+*   
+*   Emergent-managed Google Auth
+*    (State management)
+*    (PDF generation)
+*    (Email sending)
 
 **Testing status**
-*   **Testing agent used after significant changes**: YES. The testing agent was used successfully after each refactoring phase and again after the comprehensive bug-fixing pass, with all tests passing.
+*   **Testing agent used after significant changes**: YES. The agent successfully used  multiple times to validate features and fixes.
 *   **Troubleshoot agent used after agent stuck in loop**: NO.
 *   **Test files created**: None.
-*   **Known regressions**: None.
+*   **Known regressions**: None identified.
 
 **Credentials to test flow:**
 *   **Doula**:  / 
@@ -129,4 +206,5 @@ The application's backend has been fully refactored from a single  file into a c
 *   **Mom**:  / 
 
 **What agent forgot to execute**
-*   The agent was in the middle of handling the user's request to clean up the database. It correctly identified the demo accounts to preserve but did not finish creating or executing the cleanup script. This is the immediate next step.</analysis>
+*   The agent has not yet migrated all remaining utility routes from .
+*   The agent has not investigated the feasibility of embedding YouTube videos, a previous user request.</analysis>
