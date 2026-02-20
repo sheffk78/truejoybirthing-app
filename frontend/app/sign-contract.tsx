@@ -93,11 +93,11 @@ export default function SignContractScreen() {
     
     setSigning(true);
     try {
-      await apiRequest(`/doula/contracts/${contractId}/sign`, {
+      await apiRequest(`/contracts/${contractId}/sign`, {
         method: 'POST',
         body: {
           signer_name: signerName.trim(),
-          signer_email: signerEmail.trim() || null,
+          signature_data: `Electronically signed by ${signerName.trim()} on ${new Date().toISOString()}`,
         },
       });
       
