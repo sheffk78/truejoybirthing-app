@@ -165,9 +165,9 @@ export function usePushNotifications() {
     try {
       await apiRequest('/push/unregister', {
         method: 'POST',
-        body: JSON.stringify({
+        body: {
           push_token: expoPushToken,
-        }),
+        },
       });
       setIsRegistered(false);
       console.log('[Push] Token unregistered');
