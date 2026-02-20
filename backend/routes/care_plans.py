@@ -824,7 +824,7 @@ async def get_timeline(user: User = Depends(check_role(["MOM"]))):
     due_date_str = mom_profile["due_date"]
     try:
         due_date = datetime.strptime(due_date_str, "%Y-%m-%d")
-    except:
+    except ValueError:
         return {"milestones": [], "custom_events": [], "message": "Invalid due date format"}
     
     # Calculate conception date (40 weeks before due date)
