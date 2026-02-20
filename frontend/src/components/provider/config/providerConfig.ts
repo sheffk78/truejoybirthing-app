@@ -65,6 +65,7 @@ export interface ProviderConfig {
     notes: string;
     appointments: string;
     visits: string;
+    clientBirthPlans?: string;
   };
   
   // Dashboard config
