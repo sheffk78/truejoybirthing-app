@@ -15,46 +15,33 @@ MIDWIFE_EMAIL = "demo.midwife@truejoybirthing.com"
 MIDWIFE_PASSWORD = "DemoScreenshot2024!"
 TEST_CLIENT_ID = "client_a034be9c9748"
 
-# Global auth token (refreshed once per module)
-_auth_token = None
-
-def get_auth_token():
-    """Get cached auth token or create new one"""
-    global _auth_token
-    if _auth_token is None:
-        response = requests.post(
-            f"{BASE_URL}/api/auth/login",
-            json={"email": MIDWIFE_EMAIL, "password": MIDWIFE_PASSWORD}
-        )
-        assert response.status_code == 200, f"Login failed: {response.text}"
-        data = response.json()
-        _auth_token = data.get("token") or data.get("access_token")
-    return _auth_token
 
 def get_auth_headers():
-    """Get auth headers with valid token"""
+    """Login and get auth headers"""
+    response = requests.post(
+        f"{BASE_URL}/api/auth/login",
+        json={"email": MIDWIFE_EMAIL, "password": MIDWIFE_PASSWORD}
+    )
+    assert response.status_code == 200, f"Login failed: {response.text}"
+    data = response.json()
+    token = data.get("token") or data.get("access_token")
     return {
-        "Authorization": f"Bearer {get_auth_token()}",
+        "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
     }
+
 
 class TestBirthRecordAPI:
     """Birth Record CRUD API Tests"""
     
-    @pytest.fixture(autouse=True)
-    def auth_headers(self):
-        """Get auth headers"""
-        self._auth_headers = get_auth_headers()
-        return self._auth_headers
-    
     # ==================== GET BIRTH RECORD ====================
     
-    def test_get_birth_record_returns_empty_when_none(self, auth_headers):
+    def test_get_birth_record_returns_empty_when_none(self):
         """GET birth record returns empty object when no record exists"""
-        # First, we need to ensure there's no birth record - we'll check the response structure
+        headers = get_auth_headers()
         response = requests.get(
             f"{BASE_URL}/api/provider/clients/{TEST_CLIENT_ID}/birth-record",
-            headers=auth_headers
+            headers=headers
         )
         assert response.status_code == 200, f"GET failed: {response.text}"
         data = response.json()
@@ -62,11 +49,12 @@ class TestBirthRecordAPI:
         assert isinstance(data, dict), "Response should be a dict (empty or with data)"
         print(f"GET birth record response: {data}")
     
-    def test_get_birth_record_invalid_client(self, auth_headers):
+    def test_get_birth_record_invalid_client(self):
         """GET birth record for invalid client returns 404"""
+        headers = get_auth_headers()
         response = requests.get(
             f"{BASE_URL}/api/provider/clients/invalid_client_id/birth-record",
-            headers=auth_headers
+            headers=headers
         )
         assert response.status_code == 404, f"Expected 404, got {response.status_code}: {response.text}"
     
@@ -79,8 +67,9 @@ class TestBirthRecordAPI:
     
     # ==================== CREATE BIRTH RECORD ====================
     
-    def test_create_birth_record(self, auth_headers):
+    def test_create_birth_record(self):
         """POST creates a new birth record"""
+        headers = get_auth_headers()
         birth_data = {
             # Timeline
             "full_dilation_datetime": "2024-03-15T08:30:00",
@@ -113,7 +102,7 @@ class TestBirthRecordAPI:
         
         response = requests.post(
             f"{BASE_URL}/api/provider/clients/{TEST_CLIENT_ID}/birth-record",
-            headers=auth_headers,
+            headers=headers,
             json=birth_data
         )
         assert response.status_code == 200, f"POST failed: {response.text}"
@@ -121,11 +110,12 @@ class TestBirthRecordAPI:
         assert "message" in data, f"Response should have message: {data}"
         print(f"Create birth record response: {data}")
     
-    def test_verify_birth_record_created(self, auth_headers):
+    def test_verify_birth_record_created(self):
         """GET verifies birth record was created"""
+        headers = get_auth_headers()
         response = requests.get(
             f"{BASE_URL}/api/provider/clients/{TEST_CLIENT_ID}/birth-record",
-            headers=auth_headers
+            headers=headers
         )
         assert response.status_code == 200
         data = response.json()
@@ -144,8 +134,9 @@ class TestBirthRecordAPI:
     
     # ==================== UPDATE BIRTH RECORD ====================
     
-    def test_update_birth_record(self, auth_headers):
+    def test_update_birth_record(self):
         """POST updates existing birth record (same endpoint as create)"""
+        headers = get_auth_headers()
         update_data = {
             "baby_name": "Updated Baby Name",
             "baby_weight_lbs": 8,
@@ -160,7 +151,7 @@ class TestBirthRecordAPI:
         
         response = requests.post(
             f"{BASE_URL}/api/provider/clients/{TEST_CLIENT_ID}/birth-record",
-            headers=auth_headers,
+            headers=headers,
             json=update_data
         )
         assert response.status_code == 200, f"Update failed: {response.text}"
@@ -169,11 +160,12 @@ class TestBirthRecordAPI:
         assert "updated" in data["message"].lower(), f"Should indicate update: {data}"
         print(f"Update birth record response: {data}")
     
-    def test_verify_birth_record_updated(self, auth_headers):
+    def test_verify_birth_record_updated(self):
         """GET verifies birth record was updated"""
+        headers = get_auth_headers()
         response = requests.get(
             f"{BASE_URL}/api/provider/clients/{TEST_CLIENT_ID}/birth-record",
-            headers=auth_headers
+            headers=headers
         )
         assert response.status_code == 200
         data = response.json()
@@ -192,11 +184,12 @@ class TestBirthRecordAPI:
     
     # ==================== VALIDATION TESTS ====================
     
-    def test_create_birth_record_invalid_client(self, auth_headers):
+    def test_create_birth_record_invalid_client(self):
         """POST to invalid client returns 404"""
+        headers = get_auth_headers()
         response = requests.post(
             f"{BASE_URL}/api/provider/clients/invalid_client_id/birth-record",
-            headers=auth_headers,
+            headers=headers,
             json={"baby_name": "Test"}
         )
         assert response.status_code == 404, f"Expected 404, got {response.status_code}"
@@ -211,8 +204,9 @@ class TestBirthRecordAPI:
     
     # ==================== ALL FIELDS TEST ====================
     
-    def test_birth_record_all_fields(self, auth_headers):
+    def test_birth_record_all_fields(self):
         """Test that all comprehensive birth record fields can be saved"""
+        headers = get_auth_headers()
         comprehensive_data = {
             # Timeline
             "full_dilation_datetime": "2024-03-20T06:00:00",
@@ -249,7 +243,7 @@ class TestBirthRecordAPI:
         
         response = requests.post(
             f"{BASE_URL}/api/provider/clients/{TEST_CLIENT_ID}/birth-record",
-            headers=auth_headers,
+            headers=headers,
             json=comprehensive_data
         )
         assert response.status_code == 200, f"Failed: {response.text}"
@@ -257,7 +251,7 @@ class TestBirthRecordAPI:
         # Verify all fields saved
         get_response = requests.get(
             f"{BASE_URL}/api/provider/clients/{TEST_CLIENT_ID}/birth-record",
-            headers=auth_headers
+            headers=headers
         )
         assert get_response.status_code == 200
         data = get_response.json()
