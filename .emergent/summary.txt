@@ -1,157 +1,187 @@
-<analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing. The primary objective has been to overhaul the Appointments feature into a unified system connecting Moms and Providers. Recent requests have expanded to include a full contract signing flow, fixing data inconsistencies on the provider dashboard, implementing an appointment acceptance workflow, and numerous UI/UX enhancements to improve client-centric navigation and usability for both Moms and Providers.
+<analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing. The primary objective is to create a unified platform for Moms, Doulas, and Midwives.
 
-**PRODUCT REQUIREMENTS**:
-*   **Unified Appointments System**: Appointments are shared between Moms and Providers.
-*   **Client-Centric Navigation**: Back buttons should consistently return the user to the previous logical view within the client context. Breadcrumbs should be used for clarity.
-*   **Provider Dashboard Accuracy**: Dashboard stats (active clients, pending contracts, pending invoices) must reflect the correct data.
-*   **Full Contract Flow**:
-    *   Providers send contracts, which appear as messages for Moms.
-    *   Moms can view, e-sign, and accept contracts within the app.
-    *   A signed PDF copy is emailed to both Mom and Provider, and is downloadable.
-*   **Appointment/Schedule Acceptance**: Both Moms and Providers need a way to accept appointments scheduled by the other party.
-*   **Invoice Management**: Providers must be able to edit an invoice's status (e.g., from paid to unpaid) and send reminders to Moms.
-*   **UI/UX Enhancements (Mom)**:
-    *   Add a Schedule with Provider link to the Home screen's Key Actions.
-    *   Add a Number of Children field to the profile, displaying as X Kids.
-*   **UI/UX Enhancements (Provider)**:
-    *   Remove non-functional duplicate and PDF buttons from the Contracts view, adding an e-sign button.
-    *   On the Client Details page, remove redundant Message buttons/tabs.
-    *   In the New Invoice form, the client field must be a pre-selected dropdown.
-    *   Fix keyboard-obstructed buttons in Invoice, Contract, and Note forms.
-*   **Backend Refactoring**: Migrate utility routes from  to dedicated routers.
+Recent requests have focused on:
+1.  **Implementing a Lead → Consultation → Client flow**: Create a pre-client relationship where Moms can request consultations, appear as Leads for Providers, and then be converted to full clients. This should reuse existing appointment and user systems.
+2.  **Fixing UI display issues**: The user is not seeing recently implemented features on the Mom's dashboard (pending contracts/invoices) and profile pages (legal links).
+3.  **Improving User Experience**: Add profile pictures to appointments, fix keyboard obstruction on forms, and refine dashboard counts.
+4.  **Adding App Store Compliance Links**: Add links for Privacy Policy, T&C, etc., to all profile pages.
+5.  **Adding Feature functionality**: Add youtube video embedding and push notifications.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React/FastAPI app. Many features requested by the user have been implemented and tested in this session. This includes fixing the provider dashboard data, completing the contract e-signing flow from the mom's perspective (including UI, notifications, and PDF downloads), implementing an appointment acceptance flow for providers, adding a Number of Children field to the mom's profile, and various UI cleanups. The agent has also started refactoring backend routes and major frontend components.
+The application is a full-stack React/FastAPI app connecting Moms with Doula and Midwife providers. In this session, the agent implemented several features including a YouTube video embedder, push notifications, and fixes for the provider contract flow. The agent also addressed a user request to display pending contracts and invoices on the Mom's dashboard and add legal links to profile pages. However, the user reports these UI changes are not visible. The agent has just begun scaffolding the new Lead → Consultation → Client feature by creating the initial backend route and frontend component.
 
 **Last working item**:
-*   **Last item agent was working**: The agent was refactoring the Midwife  page. The goal was to align its UI with other provider screens by adding breadcrumbs, a client info header, and quick action buttons, while preserving its specialized clinical prenatal visit functionality. The agent completely overwrote the file with a new, refactored structure.
-*   **Status**: IN PROGRESS
-*   **Agent Testing Done**: N
-*   **Which testing method agent to use?**:  to perform a comprehensive test of the refactored Midwife client detail page, ensuring the new layout renders correctly and all clinical features remain functional.
-*   **User Testing Done**: N
+- **Last item agent was working**: The agent started implementing the new Lead → Consultation → Client flow as requested by the user. The initial scaffolding involved creating a new backend router  to manage leads and a new frontend component  to serve as the view for providers.
+- **Status**: IN PROGRESS
+- **Agent Testing Done**: N
+- **Which testing method agent to use?**:  should be used to test both the backend logic and the complete frontend user flow for this new feature.
+- **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
-*   There are no outstanding high-priority issues. The P0 dashboard bug was resolved in this session.
+-   **Issue 1: Mom's Dashboard and Profile Links Not Visible (P0, HIGHEST)**
+-   **Issue 2: Implement Lead → Consultation → Client Flow (P0)**
+
+**Issues Detail**:
+- **Issue 1: Mom's Dashboard and Profile Links Not Visible**
+    - **Attempted fixes**: The agent created and verified the backend endpoints (, ) which correctly return pending items. The agent also added the necessary JSX and styles to the frontend files (, , ). However, multiple attempts to visually verify the changes via screenshot failed due to the testing tool's inability to reliably log into the application. The user has confirmed twice that the features are not visible.
+    - **Next debug checklist**:
+        - **1. Force a clean frontend build:** Delete  and run yarn install v1.22.22
+[1/4] Resolving packages...
+success Already up-to-date.
+Done in 0.42s. to prevent stale cache issues.
+        - **2. Isolate the rendering logic:** In , temporarily hardcode mock data for  and  to confirm if the  component renders correctly. If it does, the issue is with data fetching or state updates. If not, the issue is within the JSX or styles.
+        - **3. Verify API call from frontend:** Add explicit  and  in the  function within  to ensure API requests are being sent and that responses are being parsed correctly without silent failures.
+        - **4. Inspect Profile Page Styles:** For the missing legal links, re-examine the styles in  and  to ensure they are not conditionally hidden or styled in a way that makes them invisible (e.g., , incorrect color, zero height).
+    - **Why fix this issue and what will be achieved with the fix?**: This is a high-priority, recurring bug reported directly by the user on a feature that was marked as complete. Resolving it is critical for user trust and to unblock acceptance of recent work.
+    - **Status**: IN PROGRESS
+    - **Is recurring issue?**: Y
+    - **Should Test frontend/backend/both after fix?**: Frontend
+    - **Blocked on other issue**: None
+
+- **Issue 2: Implement Lead → Consultation → Client Flow**
+    - **Attempted fixes**: None, this is a new feature in progress. The agent has laid the initial groundwork.
+    - **Next debug checklist**: This is a task, not an issue. The next step is to continue development.
+    - **Why fix this issue and what will be achieved with the fix?**: This is the user's latest major feature request and will introduce a crucial getting to know you step in the user journey.
+    - **Status**: IN PROGRESS
+    - **Is recurring issue?**: N
+    - **Should Test frontend/backend/both after fix?**: Both
+    - **Blocked on other issue**: It's highly recommended to resolve Issue 1 first, as it may indicate an underlying problem with the frontend state management or rendering that could impact this new feature.
 
 **In progress Task List**:
-*   **Task 1: Refactor Midwife  (P3, HIGHEST)**
-    *   **Description**: The Midwife's client detail page, a specialized clinical tracking tool, was being refactored to align with the app's standard UI/UX patterns (breadcrumbs, shared header).
-    *   **Where to resume**: The file  has just been overwritten. The immediate next step is to verify that the application still runs and that the new component renders correctly without breaking the clinical features.
-    *   **What will be achieved with this?**: A more consistent user experience for Midwife users, aligning the clinical page with the rest of the provider portal's navigation and layout.
-    *   **Status**: IN PROGRESS
-    *   **Should Test frontend/backend/both after fix?**: Frontend
-    *   **Blocked on something**: None
+-   **Task 1: Complete Lead → Consultation → Client Flow (P0)**
+    - **Where to resume**: The backend router () and frontend component () have been created. The next steps are:
+        1.  Build out the  component UI.
+        2.  Create new pages for Doulas and Midwives (e.g., ) to display the  component.
+        3.  Update the provider navigation to include a link to the new Leads page.
+        4.  Modify  to change the Request to Share button to Request Consultation and have it call the new  endpoint.
+        5.  Implement the provider actions within the Leads view (Schedule Consultation, Message, Decline, Convert to Client).
+    - **What will be achieved with this?**: A complete pre-client management workflow, allowing providers to handle inquiries as Leads before formally accepting them as clients.
+    - **Status**: IN PROGRESS
+    - **Should Test frontend/backend/both after fix?**: Both
+    - **Blocked on something**: Issue 1 should be resolved first to ensure the frontend is in a stable state.
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks**:
-    *   **P2: Add Schedule link to Mom's Home Key Actions**: This task from the original request list has not been addressed yet. It involves adding a link on .
-*   **Future Tasks**:
     *   **P1: Stripe Integration**: Implement payment processing.
-    *   **P2: Push Notifications**: Implement for new messages and requests.
-    *   **P2: Embed YouTube Videos**: Investigate and implement playing provider videos within the app.
+    *   **P2: Refactor  route**: Migrate this complex route from  to its own router file.
+*   **Future Tasks**:
     *   **P2: Admin Panel**: Build out the Admin UI.
-    *   **P2: Refactor  route**: This complex route with email logic remains in  and should be migrated to its own router for better code organization.
 
 **Completed work in this session**
-- **Fixed P0 Provider Dashboard Stats**: Corrected the backend logic in  and  to count and return the correct statistics for active clients and pending documents.
-- **Implemented Full Contract Signing Flow (P0)**:
-  - Added in-app notifications upon sending a contract.
-  - Built and enhanced the Mom-side UI () for reviewing and e-signing contracts.
-  - Added a Download PDF button on the signed contract confirmation for both Doula and Midwife flows.
-  - Cleaned up the Provider contract list view () to remove a duplicate button and add a contextual E-Sign button.
-- **Implemented Appointment Acceptance Flow (P1)**: Added Accept/Decline functionality for providers on pending appointments scheduled by moms in .
-- **Implemented Invoice Status Revert**: Added functionality for providers to revert a Paid invoice back to Sent status in .
-- **Added Number of Children to Mom Profile (P1)**: Added the field to the backend data model () and implemented the UI for viewing and editing it on the Mom's profile page ().
-- **Added Breadcrumbs to Provider Sections (P2)**: Implemented breadcrumb navigation across the provider's , , , and  sections for consistent UX.
-- **Migrated Backend Utility Routes (P2)**: Refactored  by moving the zip code lookup and weekly content routes into a new, dedicated  router.
+- **Refactored Midwife Client Detail Page**: The UI was updated to align with the app's design, and functionality was verified with the testing agent.
+- **Implemented YouTube Video Embedding**: Replaced external YouTube links with an in-app modal player () using .
+- **Implemented Push Notifications**: Integrated Expo Push Notifications to alert users of in-app events, including backend services and a frontend hook ().
+- **Resolved Multiple User-Reported Bugs**:
+    - Fixed a freeze and broken breadcrumb navigation on the birth plan page.
+    - Added functionality for providers to edit notes on a client's birth plan.
+    - Corrected the contract workflow by removing the confusing E-Sign button for providers on already-sent contracts.
+- **Implemented Multiple UX/Feature Enhancements**:
+    - Added profile pictures to appointment cards for all user types.
+    - Wrapped the appointment scheduling form in a  to prevent UI obstruction.
+    - Updated provider dashboard logic to exclude pending appointments from the Upcoming Appt count.
+- **Implemented (but unverified) UI changes**:
+    - Added an Action Required section to the Mom's home screen for pending contracts and invoices.
+    - Added legal/compliance links (Privacy Policy, T&C) to the bottom of all user profile pages.
 
 **Earlier issues found/mentioned but not fixed**
-*   None.
+- The core issue where the user cannot see the Action Required section on the Mom dashboard or the legal links on profile pages remains unresolved, despite the agent's implementation and API-level verification.
 
 **Known issue recurrence from previous fork**
-*   None.
+- None.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-*   **Backend**: FastAPI, MongoDB, Pydantic, Modular  Architecture.
-*   **Frontend**: React (Expo), TypeScript, Zustand for state management, TanStack Query for data fetching, Expo Router for navigation.
-*   **3rd Party**:  for PDF generation,  for emails.
+- **Backend**: FastAPI, MongoDB, Pydantic, Modular  Architecture.
+- **Frontend**: React (Expo), TypeScript, Zustand, TanStack Query, Expo Router.
+- **3rd Party**: , , , Expo Push Notifications.
 
 **key DB schema**
-*   **users**: Core user model. Added a  field for moms.
-*   **appointments**: Central collection for scheduling.
-*   **invoices**: Stores invoice data.
-*   **contracts**: Stores contract data, including signature status.
-*   **notifications**: Stores in-app notifications for users.
+- **users**: Added  to store user's Expo push token.
+- **share_requests**: This collection is being repurposed to manage the Lead lifecycle. It will require a  field (e.g., Consultation requested, Consultation scheduled, Converted to client).
+- **contracts, invoices**: No schema changes. New endpoints were added for moms to fetch their documents.
 
 **All files of reference**
-*   **Key Modified Files**:
-    *   , : Fixed dashboard stats and added in-app notifications for contracts.
-    *   : Major UI overhaul for contract signing.
-    *   : Overwritten with a refactored component structure.
-    *   : Added appointment acceptance logic.
-    *   : UI cleanup and added E-Sign button.
-    *   : Added logic to revert invoice status.
-    *   : Added Number of Children field.
-    *   : Cleaned up by migrating utility routes.
-*   **Key New Files**:
-    *   : New router for utility endpoints.
+- **Key New Files**:
+    - , : New routers for leads and push notifications.
+    - : Service to handle sending push notifications.
+    - : New component for the provider's lead management view.
+    - : Reusable component for embedding YouTube videos.
+    - : Frontend hook to manage push notification registration.
+- **Key Modified Files**:
+    - : Added logic to fetch and display pending contracts/invoices (currently not visible to user).
+    - , : Added legal links (currently not visible to user).
+    - : To be modified for the new Request Consultation flow.
+    - : Registered new  and  routers.
+    - , : Updated dashboard logic.
+    - , : Added profile pictures to appointment cards.
 
 **Areas that need refactoring**:
-*   ****: The  route still exists in the main server file and should be migrated to its own router to complete the backend refactoring effort.
+- The  route still exists in  and should be migrated to its own router.
 
 **key api endpoints**
-*   , : (FIXED) Now returns correct stats.
-*   , : (ENHANCED) Now also create in-app notifications.
-*   : (VERIFIED) Endpoint for downloading signed contract PDFs.
-*   : (VERIFIED) Endpoint for accepting/declining appointments.
-*   , : (MIGRATED) Now served from .
+- **Leads (New)**:
+    - 
+    - 
+    - 
+- **Push Notifications (New)**:
+    - 
+- **Mom Data (New)**:
+    - 
+    - 
+- **Provider Dashboards (Modified)**:
+    - , 
 
 **Critical Info for New Agent**
-*   Your immediate priority is to verify the refactoring of . The file was just overwritten, so it's critical to test that the app runs and the page renders correctly.
-*   The project has a robust testing workflow. Use  after completing any significant feature or refactor, as was done multiple times in this session.
-*   Most of the user's recent high-priority requests have been completed. Refer to the Upcoming and Future Tasks for the next items in the backlog.
+- **Your immediate and highest priority (P0) is to fix the bug preventing the Mom's dashboard and profile pages from displaying recently added features.** The user has reported this twice. Do not proceed with new features until this is resolved and you have a clear plan to verify the fix from the user's perspective.
+- After fixing the bug, your next task is to continue the implementation of the **Lead → Consultation → Client** flow.
+- The screenshot tool has proven unreliable for testing logged-in states due to issues clicking buttons in React Native Web. For verification, prioritize API testing with  and comprehensive end-to-end testing with . When a UI feature is complete, clearly state that backend APIs are verified and explain that final visual confirmation is needed from the user.
 
 **documents and test reports created in this job**
-*    (Updated multiple times)
-*   Multiple test reports in  created by the .
+-  (Updated multiple times)
+- Multiple test reports in  from .
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Work on P3 - Approved refactoring the midwife client detail page. (IN PROGRESS)
-2.  **User**: Excellent. Please work on the next action. - Approved moving to the next set of tasks. (COMPLETED)
-3.  **User**: yes please - Approved adding the Download PDF button. (COMPLETED)
-4.  **User**: yes please proceed - Approved working on the Mom-side contract signing UI. (COMPLETED)
-5.  **User**: yes please - Approved implementing the contract notification flow. (COMPLETED)
-6.  **User**: Please move forward with the next actions - Approved plan to work on appointment acceptance and invoice editing. (COMPLETED)
-7.  **User**: finish UI tasks first then go to others. use resend - Set initial priority for the session. (COMPLETED)
+1.  **User**: Requested the Lead → Consultation → Client flow. (IN PROGRESS)
+2.  **User**: Reported again that legal links and pending items on the Mom dashboard are not visible. (PENDING FIX)
+3.  **Agent**: Claimed the features were implemented and APIs were working, but screenshot tool was failing to log in. Finished the task. (INCORRECTLY FINISHED)
+4.  **User**: Reported that pending contracts/invoices are not showing up on the Mom's dashboard. (PENDING FIX)
+5.  **Agent**: Investigated, found a missing backend endpoint, implemented it, verified APIs with curl, but could not get a verified screenshot of the logged-in state. Finished the task. (INCORRECTLY FINISHED)
+6.  **User**: Requested adding legal/compliance links to all profile pages. (COMPLETED, BUT NOT VISIBLE)
+7.  **User**: Requested multiple features: move contracts/invoices to Mom's home, fix keyboard issue, add profile pics to appointments, allow Mom to accept/decline appointments, update dashboard counts. (COMPLETED)
+8.  **User**: Reported multiple bugs: birth plan freeze, inability to edit birth plan notes, confusing contract e-sign flow, and a contract PDF error. (COMPLETED/FIXED)
+9.  **User**: Requested push notifications. (COMPLETED)
+10. **User**: Requested to embed YouTube videos. (COMPLETED)
 
 **Project Health Check:**
-*   **Broken**: The  component is potentially broken or in an unverified state after a major refactoring.
-*   **Mocked**:  functionality is present but not actively used.
+- **Broken**:
+    - : The Action Required section for pending contracts/invoices is not rendering for the user.
+    -  & : The legal links section is not rendering for the user.
+- **Mocked**:  functionality is present but not actively used.
 
 **3rd Party Integrations**
-*    (In-App Purchase)
-*    (Icons)
-*   Emergent-managed Google Auth
-*    (State management)
-*    (PDF generation)
-*    (Email sending)
+-  (In-App Purchase)
+-  (Icons)
+- Emergent-managed Google Auth
+-  (State management)
+-  (PDF generation)
+-  (Email sending)
+-  (Video Embedding)
+- Expo Push Notification Services
 
 **Testing status**
-*   **Testing agent used after significant changes**: YES. The agent successfully used  after every major feature batch, ensuring high-quality and verified deliverables.
-*   **Troubleshoot agent used after agent stuck in loop**: NO.
-*   **Test files created**: None.
-*   **Known regressions**: None identified.
+- **Testing agent used after significant changes**: YES, multiple times.
+- **Troubleshoot agent used after agent stuck in loop**: NO.
+- **Test files created**: None.
+- **Known regressions**: The UI for Mom's dashboard and profile pages is not displaying newly added elements.
 
 **Credentials to test flow:**
-*   **Doula**:  / 
-*   **Midwife**:  / 
-*   **Mom**:  / 
+-   **Doula**:  / 
+-   **Midwife**:  / 
+-   **Mom**:  / 
 
 **What agent forgot to execute**
-*   The task to **add a Schedule link to the Mom's Home Key Actions** was part of the user's request list but was not implemented.
-*   The agent intentionally deferred refactoring the  route from  due to its complexity, so this remains an outstanding technical debt item.</analysis>
+- The agent failed to successfully resolve and verify the UI display issues for the Mom's dashboard and profile links. Despite implementing the code and verifying backend APIs, the final result was not visible to the user, and the agent moved on prematurely. This needs to be the first point of action.</analysis>

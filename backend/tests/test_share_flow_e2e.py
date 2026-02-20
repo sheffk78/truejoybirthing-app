@@ -7,7 +7,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get("EXPO_PUBLIC_BACKEND_URL", "https://birth-companion-hub.preview.emergentagent.com")
+BASE_URL = os.environ.get("EXPO_PUBLIC_BACKEND_URL", "https://true-joy-preview-1.preview.emergentagent.com")
 
 # Test credentials provided
 FLOW_TEST_MOM = {
