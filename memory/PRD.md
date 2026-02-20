@@ -67,6 +67,26 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Doula/Midwife UI Improvements
+
+#### Breadcrumb Navigation (COMPLETED - 2026-02-20)
+- [x] **Client Detail breadcrumb** - "Clients › Emma Johnson" replaces old header
+- [x] **Birth Plan breadcrumb** - "Clients › Emma Johnson › Birth Plan" (3-level)
+- [x] **Clickable links** - Click "Clients" to return to clients list
+- [x] **Headers hidden** - `headerShown: false` for client-detail and client-birth-plans screens
+
+#### Invoice Client Dropdown (COMPLETED - 2026-02-20)
+- [x] **Client pre-selected** when accessing from client context
+- [x] **Locked field** - Shows client name with checkmark icon (non-editable)
+- [x] **Visual indicator** - Purple border and background tint
+- [x] **Dropdown options** - List of active clients when not in client context
+
+#### Keyboard Avoidance Fixes (COMPLETED - 2026-02-20)
+- [x] **Invoice modal** - `keyboardVerticalOffset` + `paddingBottom: 120px`
+- [x] **Contract modal** - `keyboardVerticalOffset` + `paddingBottom: 140px`
+- [x] **Notes modal** - `keyboardVerticalOffset` + `paddingBottom: 140px`
+- [x] **Create/Save buttons** - Now visible above keyboard
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Mom Timeline & Appointments Improvements
 
 #### Timeline "Schedule with Provider" Button (COMPLETED - 2026-02-20)
