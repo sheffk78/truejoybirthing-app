@@ -488,16 +488,26 @@ export default function AppointmentsScreen() {
         presentationStyle="pageSheet"
         onRequestClose={() => setShowCreateModal(false)}
       >
-        <SafeAreaView style={styles.modalContainer} edges={['top']}>
-          <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={() => { setShowCreateModal(false); resetForm(); }} data-testid="close-modal-btn">
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Request Appointment</Text>
-            <View style={{ width: 24 }} />
-          </View>
+        <KeyboardAvoidingView 
+          style={{ flex: 1 }} 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        >
+          <SafeAreaView style={styles.modalContainer} edges={['top']}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={() => { setShowCreateModal(false); resetForm(); }} data-testid="close-modal-btn">
+                <Icon name="close" size={24} color={COLORS.textPrimary} />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>Request Appointment</Text>
+              <View style={{ width: 24 }} />
+            </View>
 
-          <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+            <ScrollView 
+              style={styles.modalContent} 
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={{ paddingBottom: 120 }}
+            >
             {/* Provider Selection */}
             <Text style={styles.fieldLabel}>Select Provider</Text>
             {providers.length === 0 ? (
