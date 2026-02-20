@@ -13,6 +13,12 @@ from jose import jwt
 from fastapi import Request, HTTPException, Depends
 from pydantic import BaseModel
 import uuid
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.client_utils import is_client_active, calculate_client_active_status
 
 # Global references - initialized by init_dependencies()
 db: Optional[AsyncIOMotorDatabase] = None
