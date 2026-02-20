@@ -24,20 +24,6 @@ import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 import { API_ENDPOINTS } from '../../src/constants/api';
 
 const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE'];
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-    /^([a-zA-Z0-9_-]{11})$/
-  ];
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-  return null;
-};
-
-// Get YouTube thumbnail URL
-const getYouTubeThumbnail = (videoId: string): string => {
-  return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-};
 
 export default function MarketplaceScreen() {
   const router = useRouter();
@@ -49,6 +35,11 @@ export default function MarketplaceScreen() {
   const [contactingProvider, setContactingProvider] = useState(false);
   const [addingToTeam, setAddingToTeam] = useState(false);
   const [teamStatus, setTeamStatus] = useState<Record<string, string>>({}); // Track share status per provider
+  
+  // Video player modal state
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [currentVideoId, setCurrentVideoId] = useState<string | null>(null);
+  const [currentVideoTitle, setCurrentVideoTitle] = useState<string>('');
   
   const fetchProviders = async () => {
     try {
