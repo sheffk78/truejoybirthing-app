@@ -302,16 +302,39 @@ async def create_mom_appointment(request_data: dict, user: User = Depends(check_
     if not share_request:
         raise HTTPException(status_code=403, detail="Not connected with this provider")
     
+    # Get mom's full name for display
+    mom_name = user.full_name
+    
+    # Get provider info for display
+    provider = await db.users.find_one({"user_id": provider_id}, {"_id": 0, "full_name": 1, "role": 1})
+    
+    # Get client record for this mom-provider relationship
+    client = await db.clients.find_one(
+        {"provider_id": provider_id, "linked_mom_id": user.user_id},
+        {"_id": 0, "client_id": 1}
+    )
+    
+    # Accept both field name formats from frontend
+    appointment_date = request_data.get("appointment_date") or request_data.get("date")
+    appointment_time = request_data.get("appointment_time") or request_data.get("time")
+    
     appointment = {
         "appointment_id": f"apt_{uuid.uuid4().hex[:12]}",
         "provider_id": provider_id,
         "mom_id": user.user_id,
+        "mom_user_id": user.user_id,  # Add both for compatibility
+        "mom_name": mom_name,
+        "client_id": client["client_id"] if client else None,
+        "client_name": mom_name,
         "title": request_data.get("title", "Appointment"),
-        "description": request_data.get("description"),
-        "proposed_date": request_data.get("date"),
-        "proposed_time": request_data.get("time"),
+        "description": request_data.get("description") or request_data.get("notes"),
+        "appointment_date": appointment_date,
+        "appointment_time": appointment_time,
+        "proposed_date": appointment_date,
+        "proposed_time": appointment_time,
         "duration_minutes": request_data.get("duration_minutes", 60),
         "location": request_data.get("location"),
+        "is_virtual": request_data.get("is_virtual", False),
         "appointment_type": request_data.get("appointment_type", "consultation"),
         "status": "pending",  # Provider needs to confirm
         "created_by": "mom",
@@ -321,6 +344,10 @@ async def create_mom_appointment(request_data: dict, user: User = Depends(check_
     
     await db.appointments.insert_one(appointment)
     appointment.pop("_id", None)
+    
+    # Add provider info for response
+    appointment["provider_name"] = provider.get("full_name") if provider else None
+    appointment["provider_role"] = provider.get("role") if provider else None
     
     return appointment
 
