@@ -272,7 +272,12 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
               <View style={{ width: 24 }} />
             </View>
             
-            <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+            <ScrollView 
+              style={styles.modalContent} 
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 100 }}
+              keyboardShouldPersistTaps="handled"
+            >
               {/* Client Selection */}
               <Text style={styles.fieldLabel}>Client</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.clientSelector}>
