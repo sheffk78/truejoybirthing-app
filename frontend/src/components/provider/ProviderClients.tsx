@@ -75,6 +75,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   const router = useRouter();
   const [pendingRequests, setPendingRequests] = useState<ShareRequest[]>([]);
   const [connectedClients, setConnectedClients] = useState<ConnectedClient[]>([]);
+  const [clientAppointments, setClientAppointments] = useState<Record<string, boolean>>({});
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<ShareRequest | null>(null);
@@ -96,6 +97,26 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
       const includeInactive = clientFilter !== 'active';
       const clientsData = await apiRequest(`${config.endpoints.unifiedClients}?include_inactive=${includeInactive}`);
       setConnectedClients(clientsData || []);
+      
+      // Fetch appointments to check which clients have upcoming appointments
+      try {
+        const appointmentsData = await apiRequest(config.endpoints.unifiedAppointments || '/provider/appointments');
+        const apptMap: Record<string, boolean> = {};
+        const now = new Date();
+        for (const apt of (appointmentsData || [])) {
+          // Check if appointment is upcoming (accepted/pending and in the future)
+          if (['pending', 'accepted', 'scheduled', 'confirmed'].includes(apt.status)) {
+            const aptDate = new Date(apt.appointment_date);
+            if (aptDate >= now || apt.status === 'pending') {
+              const clientId = apt.client_id || apt.mom_id || apt.mom_user_id;
+              if (clientId) apptMap[clientId] = true;
+            }
+          }
+        }
+        setClientAppointments(apptMap);
+      } catch (e) {
+        console.log('Could not fetch appointments for badges');
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
       // Fallback to legacy endpoint if unified fails
