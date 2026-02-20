@@ -214,7 +214,7 @@ async def get_team_providers(user: User = Depends(check_role(["MOM"]))):
     for req in share_requests:
         provider = await db.users.find_one(
             {"user_id": req["provider_id"]},
-            {"_id": 0, "password_hash": 0, "user_id": 1, "full_name": 1, "role": 1, "picture": 1}
+            {"_id": 0, "password_hash": 0}
         )
         if provider:
             providers.append(provider)
