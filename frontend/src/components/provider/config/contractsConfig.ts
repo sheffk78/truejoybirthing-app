@@ -143,6 +143,9 @@ export const DOULA_CONTRACTS_CONFIG: ContractsConfig = {
     defaults: '/doula/contract-defaults',
   },
   clientsEndpoint: '/doula/clients',
+  routes: {
+    clients: '/(doula)/clients',
+  },
 };
 
 // ============ MIDWIFE CONTRACT CONFIG ============
