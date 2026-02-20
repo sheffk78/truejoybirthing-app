@@ -1886,6 +1886,9 @@ async def get_all_weekly_content():
 #         /midwife/clients (GET/POST), /midwife/clients/{id} (GET/PUT),
 #         /midwife/notes (GET/POST)
 
+# ============== DUPLICATE MIDWIFE ROUTES (BELOW) - TO BE REMOVED ==============
+# These routes are already in routes/midwife.py
+
 @api_router.post("/midwife/onboarding")
 async def midwife_onboarding(profile_data: MidwifeProfileUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
     """Complete midwife onboarding"""
