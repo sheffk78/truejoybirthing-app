@@ -159,27 +159,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
           console.log('No prenatal visits endpoint or error:', e);
         }
         
-        // Fetch birth record
-        try {
-          const birthData = await apiRequest(`/provider/clients/${clientId}/birth-record`);
-          if (birthData && Object.keys(birthData).length > 0) {
-            setBirthRecord(birthData);
-            // Pre-fill form if record exists
-            setBirthDate(birthData.birth_date || '');
-            setBirthTime(birthData.birth_time || '');
-            setBirthSetting(birthData.birth_setting || '');
-            setDeliveryType(birthData.delivery_type || '');
-            setBabyWeight(birthData.baby_weight || '');
-            setBabyLength(birthData.baby_length || '');
-            setApgar1min(birthData.apgar_1min?.toString() || '');
-            setApgar5min(birthData.apgar_5min?.toString() || '');
-            setBabyGender(birthData.baby_gender || '');
-            setBirthComplications(birthData.complications || '');
-            setBirthNotes(birthData.notes || '');
-          }
-        } catch (e) {
-          console.log('No birth record or error:', e);
-        }
+        // Birth record is now handled by the BirthRecordSection component
       }
     } catch (error: any) {
       console.error('Error fetching data:', error);
