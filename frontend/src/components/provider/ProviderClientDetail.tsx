@@ -294,7 +294,11 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
       >
         {/* Header with back button */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.push(config.routes.clients)} style={styles.backButton} data-testid="back-button">
+          <TouchableOpacity 
+            onPress={() => router.replace(config.routes.clients as any)} 
+            style={styles.backButton} 
+            data-testid="back-button"
+          >
             <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Client Details</Text>
