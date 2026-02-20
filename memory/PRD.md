@@ -88,7 +88,9 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Pending Contracts** - Fetches from `/api/mom/contracts`, shows contracts needing signature
 - [x] **Pending Invoices** - Fetches from `/api/mom/invoices`, shows unpaid invoices with amounts
 - [x] **Navigation** - Clicking contract navigates to sign-contract page, invoices go to invoices list
-- [x] **NEW ENDPOINT** - Created `/api/mom/contracts` endpoint to fetch contracts for mom's linked clients
+- [x] **NEW ENDPOINT** - Created `/api/mom/contracts` endpoint - queries by provider_ids from mom's team
+- [x] **NEW ENDPOINT** - Created `/api/mom/invoices` endpoint - queries by provider_ids from mom's team
+- [x] **FIX** - Updated query logic to use provider_ids from team instead of client_ids
 
 #### Mom Appointments - Keyboard & UI Fixes (COMPLETED - 2026-02-20)
 - [x] **KeyboardAvoidingView** - Appointment form modal now properly handles keyboard on iOS/Android
