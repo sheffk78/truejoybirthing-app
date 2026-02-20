@@ -363,10 +363,15 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
           </View>
         </Card>
 
-        {/* Quick Actions */}
+        {/* Actions */}
         <View style={styles.quickActionsSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>Actions</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickActionsScroll}>
+            <TouchableOpacity style={[styles.quickAction, { backgroundColor: COLORS.roleDoula + '20' }]} onPress={() => handleQuickAction('birthplan')} data-testid="quick-action-birthplan">
+              <Icon name="document-text" size={20} color={COLORS.roleDoula} />
+              <Text style={[styles.quickActionText, { color: COLORS.roleDoula }]}>Birth Plan</Text>
+            </TouchableOpacity>
+            
             <TouchableOpacity style={[styles.quickAction, { backgroundColor: COLORS.primary + '20' }]} onPress={() => handleQuickAction('appointment')} data-testid="quick-action-appointment">
               <Icon name="calendar-outline" size={20} color={COLORS.primary} />
               <Text style={[styles.quickActionText, { color: COLORS.primary }]}>Schedule</Text>
