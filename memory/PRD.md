@@ -67,6 +67,15 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Contract Email & In-App Notifications
+
+#### Contract Sent Notifications (COMPLETED - 2026-02-20)
+- [x] **Email notification** - When contract is sent, Mom receives an email with a "View & Sign Contract" button
+- [x] **In-app notification** - Creates "New Contract to Sign" notification in Mom's notifications list
+- [x] **Notification data** - Includes contract_id, provider_id, provider_name, provider_role, action_url
+- [x] **Both Doula and Midwife** - Both contract types send email and in-app notifications
+- [x] **Signed contract email** - After signing, both parties receive signed PDF via email (already existed)
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Dashboard Stats Bug Fix (P0)
 
 #### Provider Dashboard Stats (COMPLETED - 2026-02-20)
