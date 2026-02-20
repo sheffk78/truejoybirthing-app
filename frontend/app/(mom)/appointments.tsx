@@ -270,10 +270,11 @@ export default function AppointmentsScreen() {
   const upcomingAppointments = appointments.filter(a => ['accepted', 'scheduled', 'confirmed'].includes(a.status));
   const pastAppointments = appointments.filter(a => ['declined', 'cancelled', 'completed'].includes(a.status));
 
-  const renderAppointmentCard = (appointment: Appointment, showActions = true) => {
+  const renderAppointmentCard = (appointment: Appointment, showActions = true, showDelete = false) => {
     const isPending = appointment.status === 'pending' && appointment.created_by !== 'mom';
     const isMyRequest = appointment.status === 'pending' && appointment.created_by === 'mom';
     const isResponding = respondingId === appointment.appointment_id;
+    const isUpcoming = ['accepted', 'scheduled', 'confirmed'].includes(appointment.status);
 
     return (
       <Card key={appointment.appointment_id} style={styles.appointmentCard} data-testid={`appointment-${appointment.appointment_id}`}>
@@ -282,15 +283,26 @@ export default function AppointmentsScreen() {
             <View style={[styles.providerAvatar, { backgroundColor: appointment.provider_role === 'DOULA' ? COLORS.roleDoula : COLORS.roleMidwife }]}>
               <Icon name={appointment.provider_role === 'DOULA' ? 'heart' : 'medical'} size={20} color={COLORS.white} />
             </View>
-            <View>
+            <View style={{ flex: 1 }}>
               <Text style={styles.providerName}>{appointment.provider_name}</Text>
               <Text style={styles.providerRole}>{appointment.provider_role}</Text>
             </View>
           </View>
-          <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[appointment.status] || COLORS.textLight) + '20' }]}>
-            <Text style={[styles.statusText, { color: STATUS_COLORS[appointment.status] || COLORS.textLight }]}>
-              {isMyRequest ? 'Awaiting Response' : appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-            </Text>
+          <View style={styles.headerRight}>
+            <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[appointment.status] || COLORS.textLight) + '20' }]}>
+              <Text style={[styles.statusText, { color: STATUS_COLORS[appointment.status] || COLORS.textLight }]}>
+                {isMyRequest ? 'Awaiting Response' : appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+              </Text>
+            </View>
+            {(showDelete || isUpcoming || isMyRequest) && (
+              <TouchableOpacity 
+                style={styles.deleteButton}
+                onPress={() => handleDeleteAppointment(appointment.appointment_id)}
+                data-testid={`delete-appointment-${appointment.appointment_id}`}
+              >
+                <Icon name="close-circle" size={24} color={COLORS.error} />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
