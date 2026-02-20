@@ -202,6 +202,19 @@ export default function MomHomeScreen() {
             <Text style={styles.actionTitle}>Wellness</Text>
             <Text style={styles.actionSubtitle}>How are you feeling?</Text>
           </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => router.push('/(mom)/appointments')}
+            activeOpacity={0.8}
+            data-testid="key-action-schedule"
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.primary + '30' }]}>
+              <Icon name="calendar-outline" size={24} color={COLORS.primary} />
+            </View>
+            <Text style={styles.actionTitle}>Schedule</Text>
+            <Text style={styles.actionSubtitle}>Book appointments</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
