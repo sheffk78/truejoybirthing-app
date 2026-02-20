@@ -9,7 +9,7 @@ import time
 import json
 
 # Use the preview URL for testing
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://doula-connect-3.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://birth-companion-hub.preview.emergentagent.com')
 BASE_URL = BASE_URL.rstrip('/')
 
 class TestAuthEndpoints:

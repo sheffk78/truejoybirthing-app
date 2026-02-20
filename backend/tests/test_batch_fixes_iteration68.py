@@ -15,7 +15,7 @@ import os
 
 BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://doula-connect-3.preview.emergentagent.com"
+    BASE_URL = "https://birth-companion-hub.preview.emergentagent.com"
 
 # Test credentials
 DOULA_EMAIL = "testdoula123@test.com"
