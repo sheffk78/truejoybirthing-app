@@ -176,7 +176,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
       const dateStr = appointmentDate.toISOString().split('T')[0];
       const timeStr = `${appointmentTime.getHours().toString().padStart(2, '0')}:${appointmentTime.getMinutes().toString().padStart(2, '0')}`;
 
-      await apiRequest(config.endpoints.unifiedAppointments || '/provider/appointments', {
+      await apiRequest('/appointments', {
         method: 'POST',
         body: {
           client_id: selectedClient.client_id,
@@ -193,6 +193,11 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
       setShowCreateModal(false);
       resetForm();
       fetchData();
+      
+      // If we came from client detail, go back there
+      if (preSelectedClientId && returnTo) {
+        handleBack();
+      }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to create appointment');
     } finally {
