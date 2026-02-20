@@ -76,6 +76,22 @@ interface PrenatalVisit {
   created_at: string;
 }
 
+interface BirthRecord {
+  birth_record_id?: string;
+  client_id: string;
+  birth_date?: string;
+  birth_time?: string;
+  birth_setting?: string;
+  delivery_type?: string;
+  baby_weight?: string;
+  baby_length?: string;
+  apgar_1min?: number;
+  apgar_5min?: number;
+  baby_gender?: string;
+  complications?: string;
+  notes?: string;
+}
+
 interface ClientDetailProps {
   config: ProviderConfig;
 }
