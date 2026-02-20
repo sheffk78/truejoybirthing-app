@@ -538,12 +538,20 @@ class TestVisitsRoutes:
     """Visit routes for midwife"""
     
     def test_midwife_get_visits(self, midwife_session):
-        """Midwife gets visits"""
-        response = midwife_session.get(f"{BASE_URL}/api/visits")
+        """Midwife gets visits via /api/midwife/visits"""
+        response = midwife_session.get(f"{BASE_URL}/api/midwife/visits")
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
         print(f"✅ Midwife visits: {len(data)} visits returned")
+    
+    def test_provider_get_visits(self, midwife_session):
+        """Provider gets visits via /api/provider/visits"""
+        response = midwife_session.get(f"{BASE_URL}/api/provider/visits")
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        print(f"✅ Provider visits: {len(data)} visits returned")
 
 
 class TestMessagesRoutes:
