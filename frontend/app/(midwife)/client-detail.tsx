@@ -349,15 +349,17 @@ export default function MidwifeClientDetailScreen() {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
-        </TouchableOpacity>
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>{client?.name || clientName}</Text>
-          <Text style={styles.headerSubtitle}>
-            {client?.status} {client?.edd ? `• EDD: ${formatDate(client.edd)}` : ''}
-          </Text>
+      {/* Breadcrumb Navigation */}
+      <View style={styles.breadcrumbHeader}>
+        <View style={styles.breadcrumb}>
+          <TouchableOpacity 
+            onPress={() => router.replace('/(midwife)/clients' as any)}
+            style={styles.breadcrumbItem}
+          >
+            <Text style={styles.breadcrumbLink}>Clients</Text>
+          </TouchableOpacity>
+          <Text style={styles.breadcrumbSeparator}>›</Text>
+          <Text style={styles.breadcrumbCurrent}>{client?.name || clientName}</Text>
         </View>
       </View>
       
@@ -368,19 +370,81 @@ export default function MidwifeClientDetailScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Client Info Card */}
-        <Card style={styles.infoCard}>
-          <View style={styles.infoRow}>
-            <Icon name="mail-outline" size={18} color={COLORS.textSecondary} />
-            <Text style={styles.infoText}>{client?.email || 'No email'}</Text>
-          </View>
-          {client?.planned_birth_setting && (
-            <View style={styles.infoRow}>
-              <Icon name="location-outline" size={18} color={COLORS.textSecondary} />
-              <Text style={styles.infoText}>{client.planned_birth_setting}</Text>
+        {/* Client Profile Header */}
+        <Card style={styles.profileCard}>
+          <View style={styles.profileHeader}>
+            <View style={styles.avatarContainer}>
+              <Text style={styles.avatarText}>{(client?.name || clientName || '?')[0].toUpperCase()}</Text>
             </View>
-          )}
+            <View style={styles.profileInfo}>
+              <Text style={styles.profileName}>{client?.name || clientName}</Text>
+              <View style={styles.statusRow}>
+                <View style={[styles.statusBadge, { backgroundColor: COLORS.roleMidwife + '20' }]}>
+                  <Text style={[styles.statusText, { color: COLORS.roleMidwife }]}>{client?.status || 'Active'}</Text>
+                </View>
+                {client?.edd && (
+                  <Text style={styles.eddText}>EDD: {formatDate(client.edd)}</Text>
+                )}
+              </View>
+            </View>
+          </View>
+          
+          <View style={styles.profileDetails}>
+            <View style={styles.detailRow}>
+              <Icon name="mail-outline" size={16} color={COLORS.textSecondary} />
+              <Text style={styles.detailText}>{client?.email || 'No email'}</Text>
+            </View>
+            {client?.planned_birth_setting && (
+              <View style={styles.detailRow}>
+                <Icon name="location-outline" size={16} color={COLORS.textSecondary} />
+                <Text style={styles.detailText}>{client.planned_birth_setting}</Text>
+              </View>
+            )}
+          </View>
         </Card>
+        
+        {/* Quick Actions */}
+        <View style={styles.actionsRow}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => router.push({ pathname: '/(midwife)/contracts', params: { clientId, clientName: client?.name || clientName } } as any)}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.roleMidwife + '15' }]}>
+              <Icon name="document-text-outline" size={20} color={COLORS.roleMidwife} />
+            </View>
+            <Text style={styles.actionLabel}>Contract</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => router.push({ pathname: '/(midwife)/invoices', params: { clientId, clientName: client?.name || clientName } } as any)}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.success + '15' }]}>
+              <Icon name="cash-outline" size={20} color={COLORS.success} />
+            </View>
+            <Text style={styles.actionLabel}>Invoice</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => router.push({ pathname: '/(midwife)/appointments', params: { clientId, clientName: client?.name || clientName } } as any)}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '15' }]}>
+              <Icon name="calendar-outline" size={20} color={COLORS.warning} />
+            </View>
+            <Text style={styles.actionLabel}>Schedule</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => router.push({ pathname: '/(midwife)/notes', params: { clientId, clientName: client?.name || clientName } } as any)}
+          >
+            <View style={[styles.actionIcon, { backgroundColor: COLORS.primary + '15' }]}>
+              <Icon name="create-outline" size={20} color={COLORS.primary} />
+            </View>
+            <Text style={styles.actionLabel}>Notes</Text>
+          </TouchableOpacity>
+        </View>
         
         {/* Prenatal Visits Section */}
         <View style={styles.section}>
@@ -388,9 +452,10 @@ export default function MidwifeClientDetailScreen() {
             <View style={styles.sectionTitleRow}>
               <Icon name="clipboard-outline" size={22} color={COLORS.roleMidwife} />
               <Text style={styles.sectionTitle}>Prenatal Visits</Text>
+              <Text style={styles.visitCount}>({prenatalVisits.length})</Text>
             </View>
             <TouchableOpacity
-              style={styles.addButton}
+              style={styles.addVisitButton}
               onPress={openAddVisit}
               data-testid="add-prenatal-visit-btn"
             >
@@ -422,6 +487,30 @@ export default function MidwifeClientDetailScreen() {
                     <Icon name="chevron-forward" size={18} color={COLORS.textLight} />
                   </View>
                   <Text style={styles.visitSummary}>{visit.summary}</Text>
+                  
+                  {/* Quick vitals preview */}
+                  {(visit.blood_pressure || visit.fetal_heart_rate || visit.fundal_height) && (
+                    <View style={styles.vitalsPreview}>
+                      {visit.blood_pressure && (
+                        <View style={styles.vitalChip}>
+                          <Text style={styles.vitalLabel}>BP</Text>
+                          <Text style={styles.vitalValue}>{visit.blood_pressure}</Text>
+                        </View>
+                      )}
+                      {visit.fetal_heart_rate && (
+                        <View style={styles.vitalChip}>
+                          <Text style={styles.vitalLabel}>FHR</Text>
+                          <Text style={styles.vitalValue}>{visit.fetal_heart_rate}</Text>
+                        </View>
+                      )}
+                      {visit.fundal_height && (
+                        <View style={styles.vitalChip}>
+                          <Text style={styles.vitalLabel}>FH</Text>
+                          <Text style={styles.vitalValue}>{visit.fundal_height}cm</Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
                 </Card>
               </TouchableOpacity>
             ))
