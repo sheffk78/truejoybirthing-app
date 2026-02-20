@@ -215,7 +215,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
           <Text style={styles.subtitle}>Manage your client relationships</Text>
         </View>
         
-        {/* Active/Inactive Filter Toggle */}
+        {/* Active/Inactive/Leads Filter Toggle */}
         <View style={styles.filterContainer}>
           <TouchableOpacity
             style={[styles.filterButton, clientFilter === 'active' && { backgroundColor: primaryColor }]}
@@ -232,11 +232,11 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
             <Text style={[styles.filterText, clientFilter === 'inactive' && { color: COLORS.white }]}>Inactive</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.filterButton, clientFilter === 'all' && { backgroundColor: primaryColor }]}
-            onPress={() => setClientFilter('all')}
-            data-testid="filter-all"
+            style={[styles.filterButton, clientFilter === 'leads' && { backgroundColor: primaryColor }]}
+            onPress={() => setClientFilter('leads')}
+            data-testid="filter-leads"
           >
-            <Text style={[styles.filterText, clientFilter === 'all' && { color: COLORS.white }]}>All</Text>
+            <Text style={[styles.filterText, clientFilter === 'leads' && { color: COLORS.white }]}>Leads</Text>
           </TouchableOpacity>
         </View>
         
