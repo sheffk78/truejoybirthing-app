@@ -1097,3 +1097,742 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
         </Modal>
       )}
 
+      {/* Birth Day Modal - Midwife Only */}
+      {isMidwife && (
+        <Modal
+          visible={showBirthModal}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setShowBirthModal(false)}
+        >
+          <SafeAreaView style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={() => setShowBirthModal(false)}>
+                <Icon name="close" size={24} color={COLORS.textPrimary} />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>Birth Day Record</Text>
+              <View style={{ width: 24 }} />
+            </View>
+            
+            <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+              {/* Birth Date & Time */}
+              <View style={styles.formSection}>
+                <Text style={styles.formSectionTitle}>Birth Date & Time</Text>
+                
+                <Text style={styles.fieldLabel}>Birth Date *</Text>
+                {Platform.OS === 'web' ? (
+                  <input
+                    type="date"
+                    value={birthDate}
+                    onChange={(e) => setBirthDate(e.target.value)}
+                    style={{
+                      padding: 14,
+                      borderWidth: 1,
+                      borderColor: COLORS.border,
+                      borderRadius: 10,
+                      fontSize: 16,
+                      width: '100%',
+                      backgroundColor: COLORS.white,
+                    }}
+                  />
+                ) : (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="YYYY-MM-DD"
+                    placeholderTextColor={COLORS.textLight}
+                    value={birthDate}
+                    onChangeText={setBirthDate}
+                  />
+                )}
+                
+                <Text style={styles.fieldLabel}>Birth Time</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g., 14:32"
+                  placeholderTextColor={COLORS.textLight}
+                  value={birthTime}
+                  onChangeText={setBirthTime}
+                />
+              </View>
+              
+              {/* Birth Details */}
+              <View style={styles.formSection}>
+                <Text style={styles.formSectionTitle}>Birth Details</Text>
+                
+                <Text style={styles.fieldLabel}>Birth Setting</Text>
+                <View style={styles.urinalysisRow}>
+                  {['Hospital', 'Birth Center', 'Home'].map((option) => (
+                    <TouchableOpacity
+                      key={option}
+                      style={[
+                        styles.urinalysisOption,
+                        birthSetting === option && [styles.urinalysisOptionSelected, { backgroundColor: primaryColor, borderColor: primaryColor }],
+                      ]}
+                      onPress={() => setBirthSetting(birthSetting === option ? '' : option)}
+                    >
+                      <Text
+                        style={[styles.urinalysisOptionText, birthSetting === option && styles.urinalysisOptionTextSelected]}
+                      >
+                        {option}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                
+                <Text style={styles.fieldLabel}>Delivery Type</Text>
+                <View style={styles.urinalysisRow}>
+                  {['Vaginal', 'C-Section', 'VBAC', 'Water Birth', 'Assisted'].map((option) => (
+                    <TouchableOpacity
+                      key={option}
+                      style={[
+                        styles.urinalysisOption,
+                        deliveryType === option && [styles.urinalysisOptionSelected, { backgroundColor: primaryColor, borderColor: primaryColor }],
+                      ]}
+                      onPress={() => setDeliveryType(deliveryType === option ? '' : option)}
+                    >
+                      <Text
+                        style={[styles.urinalysisOptionText, deliveryType === option && styles.urinalysisOptionTextSelected]}
+                      >
+                        {option}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+              
+              {/* Baby Stats */}
+              <View style={styles.formSection}>
+                <Text style={styles.formSectionTitle}>Baby Information</Text>
+                
+                <Text style={styles.fieldLabel}>Baby Gender</Text>
+                <View style={styles.urinalysisRow}>
+                  {['Boy', 'Girl'].map((option) => (
+                    <TouchableOpacity
+                      key={option}
+                      style={[
+                        styles.urinalysisOption,
+                        babyGender === option && [styles.urinalysisOptionSelected, { backgroundColor: option === 'Boy' ? '#60A5FA' : '#F472B6', borderColor: option === 'Boy' ? '#60A5FA' : '#F472B6' }],
+                      ]}
+                      onPress={() => setBabyGender(babyGender === option ? '' : option)}
+                    >
+                      <Text
+                        style={[styles.urinalysisOptionText, babyGender === option && styles.urinalysisOptionTextSelected]}
+                      >
+                        {option}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                
+                <Text style={styles.fieldLabel}>Birth Weight (lbs oz)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g., 7 lbs 8 oz"
+                  placeholderTextColor={COLORS.textLight}
+                  value={babyWeight}
+                  onChangeText={setBabyWeight}
+                />
+                
+                <Text style={styles.fieldLabel}>Birth Length (inches)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="e.g., 20.5"
+                  placeholderTextColor={COLORS.textLight}
+                  value={babyLength}
+                  onChangeText={setBabyLength}
+                />
+                
+                <Text style={styles.fieldLabel}>APGAR Score (1 min)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="0-10"
+                  placeholderTextColor={COLORS.textLight}
+                  value={apgar1min}
+                  onChangeText={setApgar1min}
+                  keyboardType="numeric"
+                />
+                
+                <Text style={styles.fieldLabel}>APGAR Score (5 min)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="0-10"
+                  placeholderTextColor={COLORS.textLight}
+                  value={apgar5min}
+                  onChangeText={setApgar5min}
+                  keyboardType="numeric"
+                />
+              </View>
+              
+              {/* Notes */}
+              <View style={styles.formSection}>
+                <Text style={styles.formSectionTitle}>Additional Notes</Text>
+                
+                <Text style={styles.fieldLabel}>Complications (if any)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter any complications..."
+                  placeholderTextColor={COLORS.textLight}
+                  value={birthComplications}
+                  onChangeText={setBirthComplications}
+                />
+                
+                <Text style={styles.fieldLabel}>Birth Story Notes</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  placeholder="Notes about the birth experience..."
+                  placeholderTextColor={COLORS.textLight}
+                  value={birthNotes}
+                  onChangeText={setBirthNotes}
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                />
+              </View>
+              
+              <View style={{ height: 40 }} />
+            </ScrollView>
+            
+            <View style={styles.modalFooter}>
+              <Button
+                title={birthRecord ? 'Update Birth Record' : 'Save Birth Record'}
+                onPress={handleSaveBirthRecord}
+                loading={saving}
+                fullWidth
+              />
+            </View>
+          </SafeAreaView>
+        </Modal>
+      )}
+    </SafeAreaView>
+  );
+}
+
+// ============== STYLES ==============
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: SIZES.md,
+  },
+  errorText: {
+    fontSize: SIZES.fontLg,
+    color: COLORS.error,
+  },
+  breadcrumbHeader: {
+    backgroundColor: COLORS.white,
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  breadcrumb: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  breadcrumbItem: {
+    paddingVertical: SIZES.xs,
+  },
+  breadcrumbLink: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+  },
+  breadcrumbSeparator: {
+    marginHorizontal: SIZES.xs,
+    fontSize: SIZES.fontMd,
+    color: COLORS.textLight,
+  },
+  breadcrumbCurrent: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textPrimary,
+  },
+  scrollContent: {
+    padding: SIZES.md,
+    paddingBottom: SIZES.xxl,
+  },
+  profileCard: {
+    marginBottom: SIZES.md,
+  },
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SIZES.md,
+  },
+  avatarImage: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 2,
+    marginRight: SIZES.md,
+  },
+  avatarText: {
+    fontSize: SIZES.fontXl,
+    fontFamily: FONTS.heading,
+    color: COLORS.white,
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.heading,
+    color: COLORS.textPrimary,
+    marginBottom: SIZES.xs,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: SIZES.sm,
+  },
+  statusBadge: {
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: 2,
+    borderRadius: SIZES.radiusFull,
+  },
+  statusText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+  },
+  eddText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  daysUntilText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    fontStyle: 'italic',
+    marginTop: SIZES.xs,
+  },
+  profileDetails: {
+    marginTop: SIZES.md,
+    paddingTop: SIZES.md,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SIZES.xs,
+  },
+  detailText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginLeft: SIZES.sm,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: COLORS.white,
+    padding: SIZES.md,
+    borderRadius: SIZES.radiusMd,
+    marginBottom: SIZES.sm,
+    ...SHADOWS.sm,
+  },
+  actionButton: {
+    alignItems: 'center',
+    paddingHorizontal: SIZES.sm,
+    minWidth: 70,
+  },
+  actionIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.xs,
+  },
+  actionLabel: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  section: {
+    marginTop: SIZES.md,
+    marginBottom: SIZES.lg,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SIZES.md,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.subheading,
+    color: COLORS.textPrimary,
+    marginLeft: SIZES.sm,
+  },
+  visitCount: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    marginLeft: SIZES.xs,
+  },
+  addVisitButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyCard: {
+    alignItems: 'center',
+    paddingVertical: SIZES.xl,
+  },
+  emptyTitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.subheading,
+    color: COLORS.textPrimary,
+    marginTop: SIZES.md,
+  },
+  emptyText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    marginTop: SIZES.xs,
+    paddingHorizontal: SIZES.lg,
+  },
+  visitCard: {
+    marginBottom: SIZES.sm,
+  },
+  visitHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SIZES.xs,
+  },
+  visitDateBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: SIZES.xs,
+    borderRadius: SIZES.radiusFull,
+  },
+  visitDateText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    marginLeft: 4,
+  },
+  visitSummary: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  vitalsPreview: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SIZES.xs,
+    marginTop: SIZES.sm,
+    paddingTop: SIZES.sm,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  vitalChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.background,
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: 4,
+    borderRadius: SIZES.radiusFull,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  vitalLabel: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textLight,
+    marginRight: 4,
+  },
+  vitalValue: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textPrimary,
+  },
+  // Modal styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: SIZES.md,
+    backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  modalTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.subheading,
+    color: COLORS.textPrimary,
+  },
+  modalContent: {
+    flex: 1,
+    padding: SIZES.md,
+  },
+  modalFooter: {
+    padding: SIZES.md,
+    backgroundColor: COLORS.white,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  // Form styles
+  formSection: {
+    marginBottom: SIZES.lg,
+  },
+  formSectionTitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.subheading,
+    color: COLORS.textPrimary,
+    marginBottom: SIZES.sm,
+  },
+  formSectionSubtitle: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginBottom: SIZES.md,
+  },
+  fieldLabel: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textSecondary,
+    marginBottom: SIZES.xs,
+    marginTop: SIZES.sm,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radiusSm,
+    padding: SIZES.md,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textPrimary,
+    backgroundColor: COLORS.white,
+  },
+  textArea: {
+    minHeight: 100,
+    textAlignVertical: 'top',
+  },
+  urinalysisRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SIZES.xs,
+  },
+  urinalysisOption: {
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
+    borderRadius: SIZES.radiusFull,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.white,
+  },
+  urinalysisOptionSelected: {
+    borderColor: COLORS.primary,
+  },
+  urinalysisOptionText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  urinalysisOptionTextSelected: {
+    color: COLORS.white,
+    fontFamily: FONTS.bodyMedium,
+  },
+  weightRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
+  },
+  unitToggle: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radiusSm,
+    overflow: 'hidden',
+  },
+  unitOption: {
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.md,
+    backgroundColor: COLORS.white,
+  },
+  unitOptionSelected: {
+    backgroundColor: COLORS.primary,
+  },
+  unitText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  unitTextSelected: {
+    color: COLORS.white,
+    fontFamily: FONTS.bodyMedium,
+  },
+  wellbeingItem: {
+    marginBottom: SIZES.md,
+    paddingBottom: SIZES.md,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  wellbeingLabel: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textPrimary,
+    marginBottom: SIZES.sm,
+  },
+  scoreRow: {
+    flexDirection: 'row',
+    gap: SIZES.sm,
+    marginBottom: SIZES.sm,
+  },
+  scoreButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scoreButtonSelected: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  scoreButtonText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textSecondary,
+  },
+  scoreButtonTextSelected: {
+    color: COLORS.white,
+  },
+  noteInput: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radiusSm,
+    padding: SIZES.sm,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textPrimary,
+    backgroundColor: COLORS.white,
+  },
+  // Detail modal styles
+  detailDateHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.md,
+    paddingVertical: SIZES.sm,
+  },
+  detailDate: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.subheading,
+    marginLeft: SIZES.sm,
+  },
+  detailCard: {
+    marginBottom: SIZES.md,
+  },
+  detailCardTitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.subheading,
+    color: COLORS.textPrimary,
+    marginBottom: SIZES.sm,
+    paddingBottom: SIZES.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  detailInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: SIZES.xs,
+  },
+  detailLabel: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  detailValue: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textPrimary,
+  },
+  noDataText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    paddingVertical: SIZES.md,
+  },
+  wellbeingDetailRow: {
+    paddingVertical: SIZES.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  wellbeingDetailHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  scoreBadge: {
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: SIZES.xs,
+    borderRadius: SIZES.radiusFull,
+  },
+  scoreBadgeText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+  },
+  wellbeingNote: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginTop: SIZES.xs,
+    fontStyle: 'italic',
+  },
+  generalNotesText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.textPrimary,
+    lineHeight: 22,
+  },
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SIZES.md,
+    marginTop: SIZES.lg,
+  },
+  deleteButtonText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: COLORS.error,
+    marginLeft: SIZES.xs,
+  },
+});
