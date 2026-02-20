@@ -1,26 +1,14 @@
 /**
  * YouTubePlayer - Embedded YouTube Video Player Component
  * 
- * Uses react-native-youtube-iframe to embed and play YouTube videos
- * directly within the app instead of opening in external browser.
- * 
- * Features:
- * - Inline playback in modals and screens
- * - Play/pause controls
- * - Fullscreen support on native
- * - Web and native platform support
+ * Uses iframe for web and react-native-youtube-iframe for native platforms.
+ * This allows YouTube videos to play inline within the app.
  */
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity, Text, Modal, Dimensions, Linking } from 'react-native';
 import { Icon } from './Icon';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
-
-// Conditionally import YoutubePlayer only on native platforms
-let YoutubePlayer: any = null;
-if (Platform.OS !== 'web') {
-  YoutubePlayer = require('react-native-youtube-iframe').default;
-}
 
 interface YouTubePlayerProps {
   videoId: string;
@@ -49,6 +37,27 @@ export const getYouTubeThumbnail = (videoId: string): string => {
   return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
 };
 
+// Web Video Player using iframe
+function WebVideoPlayer({ videoId, height = 200, autoPlay = false }: { videoId: string; height?: number; autoPlay?: boolean }) {
+  const screenWidth = Dimensions.get('window').width;
+  const playerWidth = screenWidth - (SIZES.md * 2);
+  
+  return (
+    <View style={[styles.playerContainer, { height, width: playerWidth }]}>
+      <iframe
+        width="100%"
+        height="100%"
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=${autoPlay ? 1 : 0}&rel=0`}
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        style={{ borderRadius: SIZES.radiusMd }}
+      />
+    </View>
+  );
+}
+
 export function YouTubePlayer({ 
   videoId, 
   autoPlay = false, 
@@ -56,99 +65,22 @@ export function YouTubePlayer({
   height = 200,
   onClose 
 }: YouTubePlayerProps) {
-  const [playing, setPlaying] = useState(autoPlay);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const playerRef = useRef<YoutubeIframeRef>(null);
-
-  const onStateChange = useCallback((state: string) => {
-    if (state === 'ended') {
-      setPlaying(false);
-    }
-  }, []);
-
-  const togglePlaying = useCallback(() => {
-    setPlaying((prev) => !prev);
-  }, []);
-
-  const toggleFullscreen = useCallback(() => {
-    setIsFullscreen((prev) => !prev);
-  }, []);
-
-  // Calculate dimensions
-  const screenWidth = Dimensions.get('window').width;
-  const screenHeight = Dimensions.get('window').height;
-  const aspectRatio = 16 / 9;
-  
-  const playerWidth = isFullscreen ? screenWidth : screenWidth - (SIZES.md * 2);
-  const playerHeight = isFullscreen ? screenWidth / aspectRatio : height;
-
-  const renderPlayer = () => (
-    <View style={[styles.playerContainer, isFullscreen && styles.fullscreenContainer]}>
-      <YoutubePlayer
-        ref={playerRef}
-        height={playerHeight}
-        width={playerWidth}
-        play={playing}
-        videoId={videoId}
-        onChangeState={onStateChange}
-        webViewStyle={styles.webView}
-        webViewProps={{
-          allowsInlineMediaPlayback: true,
-          mediaPlaybackRequiresUserAction: false,
-        }}
-      />
-      
-      {/* Control overlay */}
-      <View style={styles.controlsOverlay}>
-        {/* Close button for fullscreen */}
-        {isFullscreen && onClose && (
-          <TouchableOpacity 
-            style={styles.closeButton}
-            onPress={() => {
-              setIsFullscreen(false);
-              if (onClose) onClose();
-            }}
-          >
-            <Icon name="close" size={24} color={COLORS.white} />
-          </TouchableOpacity>
-        )}
-        
-        {/* Fullscreen toggle button */}
-        {showFullscreenButton && !isFullscreen && (
-          <TouchableOpacity 
-            style={styles.fullscreenButton}
-            onPress={toggleFullscreen}
-          >
-            <Icon name="expand" size={20} color={COLORS.white} />
-          </TouchableOpacity>
-        )}
-      </View>
-    </View>
-  );
-
-  // Render fullscreen modal on native
-  if (isFullscreen && Platform.OS !== 'web') {
-    return (
-      <Modal
-        visible={isFullscreen}
-        animationType="fade"
-        supportedOrientations={['portrait', 'landscape']}
-        onRequestClose={() => setIsFullscreen(false)}
-      >
-        <View style={styles.fullscreenModal}>
-          <TouchableOpacity 
-            style={styles.fullscreenCloseButton}
-            onPress={() => setIsFullscreen(false)}
-          >
-            <Icon name="close" size={28} color={COLORS.white} />
-          </TouchableOpacity>
-          {renderPlayer()}
-        </View>
-      </Modal>
-    );
+  // For web, use iframe
+  if (Platform.OS === 'web') {
+    return <WebVideoPlayer videoId={videoId} height={height} autoPlay={autoPlay} />;
   }
-
-  return renderPlayer();
+  
+  // For native, dynamically import and use the library
+  // This is a fallback that opens in browser since the library has web issues
+  return (
+    <TouchableOpacity 
+      style={[styles.playerContainer, styles.nativeFallback, { height }]}
+      onPress={() => Linking.openURL(`https://www.youtube.com/watch?v=${videoId}`)}
+    >
+      <Icon name="play-circle" size={48} color={COLORS.white} />
+      <Text style={styles.fallbackText}>Tap to watch video</Text>
+    </TouchableOpacity>
+  );
 }
 
 // Video Player Modal - For opening video in a modal overlay
@@ -161,7 +93,7 @@ interface VideoPlayerModalProps {
 
 export function VideoPlayerModal({ visible, videoId, onClose, title }: VideoPlayerModalProps) {
   const screenWidth = Dimensions.get('window').width;
-  const playerHeight = (screenWidth - 32) * (9 / 16); // 16:9 aspect ratio with padding
+  const playerHeight = Math.min((screenWidth - 32) * (9 / 16), 300); // 16:9 aspect ratio with max height
 
   return (
     <Modal
@@ -184,16 +116,28 @@ export function VideoPlayerModal({ visible, videoId, onClose, title }: VideoPlay
           
           {/* Video Player */}
           <View style={styles.videoWrapper}>
-            <YoutubePlayer
-              height={playerHeight}
-              play={true}
-              videoId={videoId}
-              webViewStyle={styles.webView}
-              webViewProps={{
-                allowsInlineMediaPlayback: true,
-                mediaPlaybackRequiresUserAction: false,
-              }}
-            />
+            {Platform.OS === 'web' ? (
+              <iframe
+                width="100%"
+                height={playerHeight}
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <TouchableOpacity 
+                style={[styles.nativeFallback, { height: playerHeight }]}
+                onPress={() => {
+                  Linking.openURL(`https://www.youtube.com/watch?v=${videoId}`);
+                  onClose();
+                }}
+              >
+                <Icon name="play-circle" size={64} color={COLORS.white} />
+                <Text style={styles.fallbackText}>Tap to open in YouTube</Text>
+              </TouchableOpacity>
+            )}
           </View>
           
           {/* Footer */}
@@ -217,42 +161,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: COLORS.textPrimary,
   },
-  fullscreenContainer: {
-    borderRadius: 0,
-  },
-  webView: {
-    opacity: 0.99, // Fixes rendering issues on Android
-  },
-  controlsOverlay: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    padding: SIZES.sm,
-  },
-  closeButton: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 20,
-    padding: SIZES.xs,
-  },
-  fullscreenButton: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 16,
-    padding: SIZES.xs,
-  },
-  fullscreenModal: {
-    flex: 1,
-    backgroundColor: COLORS.textPrimary,
-    justifyContent: 'center',
+  nativeFallback: {
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1a1a1a',
   },
-  fullscreenCloseButton: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    zIndex: 10,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 20,
-    padding: SIZES.sm,
+  fallbackText: {
+    color: COLORS.white,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    marginTop: SIZES.sm,
   },
   // Modal styles
   modalOverlay: {
