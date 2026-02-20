@@ -78,9 +78,6 @@ export default function SignContractScreen() {
       if (data.client?.name) {
         setSignerName(data.client.name);
       }
-      if (data.client?.email) {
-        setSignerEmail(data.client.email);
-      }
     } catch (err: any) {
       setError(err.message || 'Failed to load contract');
     } finally {
