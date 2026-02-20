@@ -1440,6 +1440,7 @@ from routes import care_plans as care_plans_routes
 from routes import provider_unified as provider_unified_routes
 from routes import appointments as appointments_routes
 from routes import utils as utils_routes
+from routes import push as push_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
