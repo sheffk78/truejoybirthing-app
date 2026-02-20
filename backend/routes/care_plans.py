@@ -1,0 +1,1170 @@
+"""
+Care Plans Routes - Migrated from server.py
+
+This module handles all care plan-related routes including:
+- Birth Plan (Mom)
+- Wellness Check-ins and Entries (Mom)
+- Postpartum Plan (Mom)
+- Timeline (Mom)
+- Birth Plan Sharing (Mom <-> Provider)
+- Provider Birth Plan Views and Notes
+
+Routes:
+- GET /birth-plan - Get user's birth plan
+- PUT /birth-plan/section/{section_id} - Update birth plan section
+- GET /birth-plan/export - Export birth plan
+- GET /birth-plan/export/pdf - Export birth plan as PDF
+- POST /birth-plan/share - Share birth plan with provider
+- GET /birth-plan/share-requests - Get share requests (Mom)
+- DELETE /birth-plan/share/{request_id} - Revoke share
+- POST /wellness/checkin - Create wellness check-in
+- GET /wellness/checkins - Get wellness check-in history
+- POST /wellness/entry - Create wellness entry
+- GET /wellness/entries - Get wellness entries
+- GET /wellness/stats - Get wellness statistics
+- GET /postpartum/plan - Get postpartum plan
+- PUT /postpartum/plan - Update postpartum plan
+- GET /timeline - Get pregnancy timeline
+- POST /timeline/events - Create timeline event
+- DELETE /timeline/events/{event_id} - Delete timeline event
+- GET /provider/shared-birth-plans - Get shared birth plans (Provider)
+- GET /provider/shared-birth-plan/{mom_user_id} - Get specific shared birth plan
+- GET /provider/client/{mom_user_id}/birth-plan - Get client birth plan
+- GET /provider/client/{mom_id}/birth-plan/pdf - Export client birth plan as PDF
+- POST /provider/birth-plan/{mom_user_id}/notes - Add provider note
+- PUT /provider/birth-plan-notes/{note_id} - Update provider note
+- DELETE /provider/birth-plan-notes/{note_id} - Delete provider note
+"""
+
+from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+from typing import List, Optional, Dict, Any
+from datetime import datetime, timezone, timedelta
+import uuid
+from io import BytesIO
+
+from .dependencies import (
+    get_db,
+    get_current_user_dep,
+    check_role_dep,
+    get_notification_func,
+    get_email_func
+)
+
+router = APIRouter()
+
+# ============== PYDANTIC MODELS ==============
+
+class WellnessCheckInCreate(BaseModel):
+    mood: str
+    mood_note: Optional[str] = None
+
+class WellnessEntryCreate(BaseModel):
+    mood: int  # 1-5 scale
+    energy_level: Optional[int] = None  # 1-5 scale
+    sleep_quality: Optional[int] = None  # 1-5 scale
+    symptoms: Optional[List[str]] = None
+    journal_notes: Optional[str] = None
+
+class TimelineEventCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    event_date: str
+    event_type: str = "custom"  # "milestone" or "custom" or "appointment"
+
+class ShareRequestCreate(BaseModel):
+    provider_id: str  # The doula or midwife user_id
+
+class ProviderNoteCreate(BaseModel):
+    section_id: str
+    note_content: str
+
+# ============== CONSTANTS ==============
+
+BIRTH_PLAN_SECTIONS = [
+    {"section_id": "about_me", "title": "About Me & My Preferences"},
+    {"section_id": "labor_delivery", "title": "Labor & Delivery Preferences"},
+    {"section_id": "pain_management", "title": "Pain Management"},
+    {"section_id": "monitoring_iv", "title": "Labor Environment & Comfort"},
+    {"section_id": "induction_interventions", "title": "Induction & Birth Interventions"},
+    {"section_id": "pushing_safe_word", "title": "Pushing, Delivery & Safe Word"},
+    {"section_id": "post_delivery", "title": "Post-Delivery Preferences"},
+    {"section_id": "newborn_care", "title": "Newborn Care Preferences"},
+    {"section_id": "other_considerations", "title": "Other Important Considerations"},
+]
+
+PREGNANCY_MILESTONES = [
+    {"week": 4, "title": "Positive Test!", "description": "Your pregnancy test is positive. Baby is the size of a poppy seed."},
+    {"week": 6, "title": "Heartbeat Begins", "description": "Baby's heart starts beating. Size: lentil."},
+    {"week": 8, "title": "First Prenatal Visit", "description": "Schedule your first prenatal appointment. Baby is the size of a raspberry."},
+    {"week": 10, "title": "Fingers & Toes Form", "description": "Baby's fingers and toes are forming. Size: strawberry."},
+    {"week": 12, "title": "End of First Trimester", "description": "Risk of miscarriage drops significantly. Baby is the size of a lime."},
+    {"week": 16, "title": "Gender Can Be Determined", "description": "Baby's gender may be visible on ultrasound. Size: avocado."},
+    {"week": 20, "title": "Anatomy Scan", "description": "Detailed ultrasound to check baby's development. Baby is the size of a banana."},
+    {"week": 24, "title": "Viability Milestone", "description": "Baby has a chance of survival if born now. Size: ear of corn."},
+    {"week": 28, "title": "Third Trimester Begins", "description": "Final stretch! Baby is the size of an eggplant."},
+    {"week": 32, "title": "Baby Practices Breathing", "description": "Lungs are developing. Baby is the size of a squash."},
+    {"week": 36, "title": "Full Term Soon", "description": "Baby is considered early term at 37 weeks. Size: honeydew melon."},
+    {"week": 37, "title": "Full Term", "description": "Baby is now considered full term!"},
+    {"week": 40, "title": "Due Date", "description": "Your estimated due date has arrived!"},
+]
+
+# ============== HELPER FUNCTIONS ==============
+
+def get_share_request_email_html(mom_name: str, provider_name: str):
+    """Generate HTML for share request notification email"""
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+            .header {{ background: linear-gradient(135deg, #9d7a9d, #c9a8c9); padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }}
+            .header h1 {{ color: white; margin: 0; font-size: 24px; }}
+            .content {{ background: #fff; padding: 30px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 10px 10px; }}
+            .highlight {{ background: #f9f5f9; padding: 15px; border-radius: 8px; margin: 20px 0; }}
+            .button {{ display: inline-block; background: #9d7a9d; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; margin-top: 20px; }}
+            .footer {{ text-align: center; margin-top: 30px; color: #888; font-size: 12px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>True Joy Birthing</h1>
+            </div>
+            <div class="content">
+                <h2>New Birth Plan Share Request</h2>
+                <p>Hi {provider_name},</p>
+                <div class="highlight">
+                    <p><strong>{mom_name}</strong> has shared their birth plan with you!</p>
+                </div>
+                <p>They've chosen you to be part of their birth support team and would like you to review their birth preferences.</p>
+                <p>Log in to your True Joy Birthing account to:</p>
+                <ul>
+                    <li>Accept or decline the share request</li>
+                    <li>Review their complete birth plan</li>
+                    <li>Add your professional notes and recommendations</li>
+                </ul>
+                <p style="text-align: center;">
+                    <a href="#" class="button">View Share Request</a>
+                </p>
+            </div>
+            <div class="footer">
+                <p>True Joy Birthing - Your birth plan, your team, your support.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+
+async def notify_providers_birth_plan_complete(db, create_notification, mom_user_id: str, mom_name: str):
+    """Notify all connected providers when Mom completes her birth plan"""
+    connections = await db.share_requests.find({
+        "mom_user_id": mom_user_id,
+        "status": "accepted"
+    }).to_list(100)
+    
+    for conn in connections:
+        if conn.get("can_view_birth_plan", True):
+            await create_notification(
+                user_id=conn["provider_id"],
+                notif_type="birth_plan_complete",
+                title="Birth Plan Complete",
+                message=f"{mom_name} has completed her Joyful Birth Plan. Tap to review and discuss together.",
+                data={"mom_user_id": mom_user_id}
+            )
+
+
+# ============== MOM BIRTH PLAN ROUTES ==============
+
+@router.get("/birth-plan")
+async def get_birth_plan(
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get user's birth plan"""
+    user = await check_role(["MOM"])
+    plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
+    if not plan:
+        # Create default plan
+        now = datetime.now(timezone.utc)
+        plan = {
+            "plan_id": f"plan_{uuid.uuid4().hex[:12]}",
+            "user_id": user.user_id,
+            "sections": [
+                {"section_id": s["section_id"], "title": s["title"], "status": "Not started", "data": {}, "discussion_notes": []}
+                for s in BIRTH_PLAN_SECTIONS
+            ],
+            "completion_percentage": 0.0,
+            "birth_plan_status": "not_started",
+            "created_at": now,
+            "updated_at": now
+        }
+        await db.birth_plans.insert_one(plan)
+        plan.pop("_id", None)
+    return plan
+
+
+@router.put("/birth-plan/section/{section_id}")
+async def update_birth_plan_section(
+    section_id: str,
+    request: Request,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep),
+    create_notification=Depends(get_notification_func)
+):
+    """Update a section of the birth plan"""
+    user = await check_role(["MOM"])
+    body = await request.json()
+    data = body.get("data", {})
+    notes_to_provider = body.get("notes_to_provider")
+    
+    now = datetime.now(timezone.utc)
+    
+    plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
+    if not plan:
+        raise HTTPException(status_code=404, detail="Birth plan not found")
+    
+    sections = plan.get("sections", [])
+    section_found = False
+    completed_count = 0
+    previous_status = plan.get("birth_plan_status", "not_started")
+    
+    for section in sections:
+        if section["section_id"] == section_id:
+            section["data"] = data
+            section["notes_to_provider"] = notes_to_provider
+            section["status"] = "Complete" if data else "In progress"
+            section_found = True
+        if section.get("status") == "Complete":
+            completed_count += 1
+    
+    if not section_found:
+        raise HTTPException(status_code=404, detail="Section not found")
+    
+    completion_percentage = (completed_count / len(sections)) * 100 if sections else 0
+    
+    # Determine birth plan status
+    if completion_percentage == 100:
+        new_status = "complete"
+    elif completion_percentage > 0:
+        new_status = "in_progress"
+    else:
+        new_status = "not_started"
+    
+    await db.birth_plans.update_one(
+        {"user_id": user.user_id},
+        {"$set": {
+            "sections": sections,
+            "completion_percentage": completion_percentage,
+            "birth_plan_status": new_status,
+            "updated_at": now
+        }}
+    )
+    
+    # Sync Due Date and Birth Setting from birth plan to mom profile
+    if section_id == "about_me" and data:
+        profile_updates = {}
+        if data.get("due_date"):
+            profile_updates["due_date"] = data["due_date"]
+        if data.get("planned_birth_location"):
+            profile_updates["planned_birth_setting"] = data["planned_birth_location"]
+        if profile_updates:
+            await db.mom_profiles.update_one(
+                {"user_id": user.user_id},
+                {"$set": profile_updates},
+                upsert=True
+            )
+    
+    # Notify providers when birth plan is marked complete for the first time
+    if new_status == "complete" and previous_status != "complete":
+        await notify_providers_birth_plan_complete(db, create_notification, user.user_id, user.full_name)
+    
+    return {"message": "Section updated", "completion_percentage": completion_percentage, "birth_plan_status": new_status}
+
+
+@router.get("/birth-plan/export")
+async def export_birth_plan(
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get birth plan for export (mock PDF generation)"""
+    user = await check_role(["MOM"])
+    plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
+    user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
+    mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
+    
+    return {
+        "plan": plan,
+        "user_name": user_doc.get("full_name") if user_doc else None,
+        "due_date": mom_profile.get("due_date") if mom_profile else None,
+        "birth_setting": mom_profile.get("planned_birth_setting") if mom_profile else None,
+        "export_note": "PDF generation is mocked. In production, this would generate a downloadable PDF."
+    }
+
+
+@router.get("/birth-plan/export/pdf")
+async def export_birth_plan_pdf(
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Generate and download PDF version of birth plan"""
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib import colors
+    
+    user = await check_role(["MOM"])
+    
+    plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
+    user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
+    mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
+    
+    if not plan:
+        raise HTTPException(status_code=404, detail="Birth plan not found")
+    
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=24, textColor=colors.HexColor('#9F83B6'), spaceAfter=6)
+    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#9F83B6'), spaceBefore=20, spaceAfter=10)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=6)
+    
+    elements = []
+    
+    # Title
+    user_name = user_doc.get("full_name", "Mom") if user_doc else "Mom"
+    elements.append(Paragraph(f"{user_name}'s Birth Plan", title_style))
+    elements.append(Spacer(1, 10))
+    
+    # Basic info
+    if mom_profile:
+        info_data = []
+        if mom_profile.get("due_date"):
+            info_data.append(["Expected Due Date:", mom_profile["due_date"]])
+        if mom_profile.get("planned_birth_setting"):
+            info_data.append(["Planned Birth Setting:", mom_profile["planned_birth_setting"]])
+        if mom_profile.get("provider_name"):
+            info_data.append(["Provider:", mom_profile["provider_name"]])
+        
+        if info_data:
+            info_table = Table(info_data, colWidths=[2*inch, 4*inch])
+            info_table.setStyle(TableStyle([
+                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ]))
+            elements.append(info_table)
+            elements.append(Spacer(1, 15))
+    
+    # Sections
+    sections = plan.get("sections", [])
+    section_names = {
+        "getting_started": "Getting Started",
+        "support_preferences": "Support & Atmosphere",
+        "pain_management": "Pain Management",
+        "monitoring_iv": "Labor Environment & Comfort",
+        "interventions": "Interventions & C-Section",
+        "pushing_safe_word": "Pushing, Delivery & Safe Word",
+        "baby_care": "Baby Care After Birth",
+        "feeding": "Feeding Preferences",
+        "postpartum": "Postpartum Care",
+        "additional_info": "Additional Information"
+    }
+    
+    for section in sections:
+        section_id = section.get("section_id", "")
+        section_name = section_names.get(section_id, section_id.replace("_", " ").title())
+        data = section.get("data", {})
+        
+        if not data:
+            continue
+        
+        elements.append(Paragraph(section_name, heading_style))
+        
+        for key, value in data.items():
+            if value:
+                label = key.replace("_", " ").replace("Preference", "").title()
+                
+                if isinstance(value, list):
+                    value_str = ", ".join(str(v) for v in value)
+                else:
+                    value_str = str(value)
+                
+                elements.append(Paragraph(f"<b>{label}:</b> {value_str}", body_style))
+        
+        elements.append(Spacer(1, 10))
+    
+    doc.build(elements)
+    buffer.seek(0)
+    
+    filename = f"Birth_Plan_{user_name.replace(' ', '_')}.pdf"
+    
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+# ============== BIRTH PLAN SHARING ROUTES ==============
+
+@router.post("/birth-plan/share")
+async def share_birth_plan(
+    share_data: ShareRequestCreate,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep),
+    create_notification=Depends(get_notification_func),
+    send_email=Depends(get_email_func)
+):
+    """Send a share request to a provider"""
+    user = await check_role(["MOM"])
+    
+    # Verify provider exists and is a doula or midwife
+    provider = await db.users.find_one(
+        {"user_id": share_data.provider_id, "role": {"$in": ["DOULA", "MIDWIFE"]}},
+        {"_id": 0}
+    )
+    
+    if not provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+    
+    # Check if request already exists
+    existing = await db.share_requests.find_one({
+        "mom_user_id": user.user_id,
+        "provider_id": share_data.provider_id,
+        "status": {"$in": ["pending", "accepted"]}
+    })
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Share request already exists")
+    
+    now = datetime.now(timezone.utc)
+    
+    request_doc = {
+        "request_id": f"share_{uuid.uuid4().hex[:12]}",
+        "mom_user_id": user.user_id,
+        "mom_name": user.full_name,
+        "provider_id": share_data.provider_id,
+        "provider_name": provider["full_name"],
+        "provider_role": provider["role"],
+        "status": "pending",
+        "created_at": now,
+        "responded_at": None
+    }
+    
+    await db.share_requests.insert_one(request_doc)
+    request_doc.pop('_id', None)
+    
+    # Send email notification to provider
+    if send_email:
+        email_html = get_share_request_email_html(user.full_name, provider["full_name"])
+        await send_email(
+            to_email=provider["email"],
+            subject=f"New Birth Plan Share Request from {user.full_name}",
+            html_content=email_html
+        )
+    
+    # Create in-app notification for provider
+    await create_notification(
+        user_id=provider["user_id"],
+        notif_type="share_request",
+        title="New Birth Plan Share Request",
+        message=f"{user.full_name} has shared their birth plan with you.",
+        data={"request_id": request_doc["request_id"], "mom_name": user.full_name}
+    )
+    
+    return {"message": "Share request sent", "request": request_doc}
+
+
+@router.get("/birth-plan/share-requests")
+async def get_my_share_requests(
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get all share requests sent by the mom"""
+    user = await check_role(["MOM"])
+    requests = await db.share_requests.find(
+        {"mom_user_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    # Enrich with provider pictures
+    for req in requests:
+        provider = await db.users.find_one(
+            {"user_id": req.get("provider_id")}, 
+            {"_id": 0, "picture": 1}
+        )
+        if provider:
+            req["provider_picture"] = provider.get("picture")
+    
+    return {"requests": requests}
+
+
+@router.delete("/birth-plan/share/{request_id}")
+async def revoke_share(
+    request_id: str,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Revoke a share request"""
+    user = await check_role(["MOM"])
+    
+    # First, fetch the request to get provider info BEFORE deleting
+    request_doc = await db.share_requests.find_one({
+        "request_id": request_id,
+        "mom_user_id": user.user_id
+    })
+    
+    if not request_doc:
+        raise HTTPException(status_code=404, detail="Share request not found")
+    
+    provider_id = request_doc.get("provider_id")
+    
+    # Delete the share request
+    await db.share_requests.delete_one({
+        "request_id": request_id,
+        "mom_user_id": user.user_id
+    })
+    
+    # Also delete any provider notes for this birth plan from this provider
+    if provider_id:
+        await db.provider_notes.delete_many({
+            "birth_plan_id": user.user_id,
+            "provider_id": provider_id
+        })
+        
+        # If this provider was connected to mom's profile, remove the connection
+        if request_doc.get("provider_role") == "DOULA":
+            await db.mom_profiles.update_one(
+                {"user_id": user.user_id, "connected_doula_id": provider_id},
+                {"$unset": {"connected_doula_id": ""}}
+            )
+        elif request_doc.get("provider_role") == "MIDWIFE":
+            await db.mom_profiles.update_one(
+                {"user_id": user.user_id, "connected_midwife_id": provider_id},
+                {"$unset": {"connected_midwife_id": ""}}
+            )
+    
+    return {"message": "Share access revoked"}
+
+
+# ============== WELLNESS ROUTES ==============
+
+@router.post("/wellness/checkin")
+async def create_wellness_checkin(
+    checkin_data: WellnessCheckInCreate,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Create a wellness check-in"""
+    user = await check_role(["MOM"])
+    now = datetime.now(timezone.utc)
+    
+    checkin = {
+        "checkin_id": f"checkin_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "mood": checkin_data.mood,
+        "mood_note": checkin_data.mood_note,
+        "created_at": now
+    }
+    
+    await db.wellness_checkins.insert_one(checkin)
+    checkin.pop('_id', None)
+    return checkin
+
+
+@router.get("/wellness/checkins")
+async def get_wellness_checkins(
+    limit: int = 30,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get wellness check-in history"""
+    user = await check_role(["MOM"])
+    checkins = await db.wellness_checkins.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    return checkins
+
+
+@router.post("/wellness/entry")
+async def create_wellness_entry(
+    entry_data: WellnessEntryCreate,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Create a detailed wellness entry with mood, energy, sleep, symptoms, and journal"""
+    user = await check_role(["MOM"])
+    now = datetime.now(timezone.utc)
+    
+    entry = {
+        "entry_id": f"wellness_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "mood": entry_data.mood,
+        "energy_level": entry_data.energy_level,
+        "sleep_quality": entry_data.sleep_quality,
+        "symptoms": entry_data.symptoms or [],
+        "journal_notes": entry_data.journal_notes,
+        "created_at": now
+    }
+    
+    await db.wellness_entries.insert_one(entry)
+    entry.pop('_id', None)
+    return entry
+
+
+@router.get("/wellness/entries")
+async def get_wellness_entries(
+    limit: int = 30,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get wellness entry history"""
+    user = await check_role(["MOM"])
+    entries = await db.wellness_entries.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    return {"entries": entries}
+
+
+@router.get("/wellness/stats")
+async def get_wellness_stats(
+    days: int = 7,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get wellness statistics for the past N days"""
+    user = await check_role(["MOM"])
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    
+    entries = await db.wellness_entries.find(
+        {"user_id": user.user_id, "created_at": {"$gte": cutoff}},
+        {"_id": 0}
+    ).to_list(100)
+    
+    if not entries:
+        return {"entries_count": 0, "avg_mood": None, "avg_energy": None, "avg_sleep": None}
+    
+    moods = [e["mood"] for e in entries if e.get("mood")]
+    energies = [e["energy_level"] for e in entries if e.get("energy_level")]
+    sleeps = [e["sleep_quality"] for e in entries if e.get("sleep_quality")]
+    
+    return {
+        "entries_count": len(entries),
+        "avg_mood": sum(moods) / len(moods) if moods else None,
+        "avg_energy": sum(energies) / len(energies) if energies else None,
+        "avg_sleep": sum(sleeps) / len(sleeps) if sleeps else None,
+        "entries": entries
+    }
+
+
+# ============== POSTPARTUM ROUTES ==============
+
+@router.get("/postpartum/plan")
+async def get_postpartum_plan(
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get postpartum plan"""
+    user = await check_role(["MOM"])
+    plan = await db.postpartum_plans.find_one({"user_id": user.user_id}, {"_id": 0})
+    if not plan:
+        return {"user_id": user.user_id}
+    return plan
+
+
+@router.put("/postpartum/plan")
+async def update_postpartum_plan(
+    request: Request,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Update postpartum plan"""
+    user = await check_role(["MOM"])
+    body = await request.json()
+    now = datetime.now(timezone.utc)
+    
+    # Get existing plan to preserve plan_id
+    existing = await db.postpartum_plans.find_one({"user_id": user.user_id})
+    plan_id = existing.get("plan_id") if existing else f"postpartum_{uuid.uuid4().hex[:12]}"
+    
+    plan_data = {
+        "plan_id": plan_id,
+        "user_id": user.user_id,
+        "support_people": body.get("support_people"),
+        "meal_prep_plans": body.get("meal_prep_plans"),
+        "recovery_goals": body.get("recovery_goals"),
+        "mental_health_resources": body.get("mental_health_resources"),
+        "baby_feeding_plan": body.get("baby_feeding_plan"),
+        "visitor_policy": body.get("visitor_policy"),
+        "self_care_activities": body.get("self_care_activities"),
+        "warning_signs_to_watch": body.get("warning_signs_to_watch"),
+        "emergency_contacts": body.get("emergency_contacts"),
+        "notes": body.get("notes"),
+        "updated_at": now
+    }
+    
+    await db.postpartum_plans.update_one(
+        {"user_id": user.user_id},
+        {"$set": plan_data},
+        upsert=True
+    )
+    
+    return {"message": "Postpartum plan updated"}
+
+
+# ============== TIMELINE ROUTES ==============
+
+@router.get("/timeline")
+async def get_timeline(
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get pregnancy timeline with milestones and custom events"""
+    user = await check_role(["MOM"])
+    
+    # Get mom profile for due date
+    mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
+    
+    if not mom_profile or not mom_profile.get("due_date"):
+        return {"milestones": [], "custom_events": [], "message": "Please complete onboarding with your due date"}
+    
+    # Parse due date
+    due_date_str = mom_profile["due_date"]
+    try:
+        due_date = datetime.strptime(due_date_str, "%Y-%m-%d")
+    except:
+        return {"milestones": [], "custom_events": [], "message": "Invalid due date format"}
+    
+    # Calculate conception date (40 weeks before due date)
+    conception_date = due_date - timedelta(weeks=40)
+    today = datetime.now()
+    
+    # Calculate current week
+    days_pregnant = (today - conception_date).days
+    current_week = max(1, min(42, days_pregnant // 7))
+    
+    # Generate milestones with dates
+    milestones = []
+    for milestone in PREGNANCY_MILESTONES:
+        milestone_date = conception_date + timedelta(weeks=milestone["week"])
+        milestones.append({
+            **milestone,
+            "date": milestone_date.strftime("%Y-%m-%d"),
+            "is_past": milestone["week"] < current_week,
+            "is_current": milestone["week"] == current_week
+        })
+    
+    # Get custom events
+    custom_events = await db.timeline_events.find(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    ).sort("event_date", 1).to_list(100)
+    
+    return {
+        "current_week": current_week,
+        "due_date": due_date_str,
+        "milestones": milestones,
+        "custom_events": custom_events
+    }
+
+
+@router.post("/timeline/events")
+async def create_timeline_event(
+    event_data: TimelineEventCreate,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Create a custom timeline event"""
+    user = await check_role(["MOM"])
+    now = datetime.now(timezone.utc)
+    
+    event = {
+        "event_id": f"event_{uuid.uuid4().hex[:12]}",
+        "user_id": user.user_id,
+        "title": event_data.title,
+        "description": event_data.description,
+        "event_date": event_data.event_date,
+        "event_type": event_data.event_type,
+        "created_at": now
+    }
+    
+    await db.timeline_events.insert_one(event)
+    event.pop('_id', None)
+    return event
+
+
+@router.delete("/timeline/events/{event_id}")
+async def delete_timeline_event(
+    event_id: str,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Delete a custom timeline event"""
+    user = await check_role(["MOM"])
+    result = await db.timeline_events.delete_one({
+        "event_id": event_id,
+        "user_id": user.user_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    return {"message": "Event deleted"}
+
+
+# ============== PROVIDER BIRTH PLAN ROUTES ==============
+
+@router.get("/provider/shared-birth-plans")
+async def get_shared_birth_plans(
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get all birth plans shared with this provider (read-only)"""
+    user = await check_role(["DOULA", "MIDWIFE"])
+    
+    # Get accepted share requests where provider has view permission
+    accepted_requests = await db.share_requests.find(
+        {"provider_id": user.user_id, "status": "accepted"},
+        {"_id": 0}
+    ).to_list(100)
+    
+    birth_plans = []
+    for req in accepted_requests:
+        # Check if provider has permission to view birth plan
+        if not req.get("can_view_birth_plan", True):
+            continue
+            
+        # Get the mom's birth plan
+        plan = await db.birth_plans.find_one({"user_id": req["mom_user_id"]}, {"_id": 0})
+        mom_profile = await db.mom_profiles.find_one({"user_id": req["mom_user_id"]}, {"_id": 0})
+        
+        # Get provider notes for this plan
+        notes = await db.provider_notes.find(
+            {"birth_plan_id": req["mom_user_id"], "provider_id": user.user_id},
+            {"_id": 0}
+        ).to_list(100)
+        
+        if plan:
+            birth_plans.append({
+                "mom_user_id": req["mom_user_id"],
+                "mom_name": req["mom_name"],
+                "due_date": mom_profile.get("due_date") if mom_profile else None,
+                "birth_setting": mom_profile.get("planned_birth_setting") if mom_profile else None,
+                "plan": plan,
+                "birth_plan_status": plan.get("birth_plan_status", "not_started"),
+                "provider_notes": notes,
+                "shared_at": req["responded_at"],
+                "read_only": True  # Provider can only VIEW, not edit
+            })
+    
+    return {"birth_plans": birth_plans}
+
+
+@router.get("/provider/shared-birth-plan/{mom_user_id}")
+async def get_shared_birth_plan_detail(
+    mom_user_id: str,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get a specific shared birth plan with provider notes (read-only view)"""
+    user = await check_role(["DOULA", "MIDWIFE"])
+    
+    # Verify access and permissions
+    share_request = await db.share_requests.find_one({
+        "mom_user_id": mom_user_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    
+    if not share_request:
+        raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
+    
+    # Check if provider has permission to view birth plan
+    if not share_request.get("can_view_birth_plan", True):
+        raise HTTPException(status_code=403, detail="You do not have permission to view this birth plan")
+    
+    plan = await db.birth_plans.find_one({"user_id": mom_user_id}, {"_id": 0})
+    mom = await db.users.find_one({"user_id": mom_user_id}, {"_id": 0, "password_hash": 0})
+    mom_profile = await db.mom_profiles.find_one({"user_id": mom_user_id}, {"_id": 0})
+    
+    # Get all provider notes for this plan (from all providers)
+    all_notes = await db.provider_notes.find(
+        {"birth_plan_id": mom_user_id},
+        {"_id": 0}
+    ).to_list(100)
+    
+    return {
+        "mom": mom,
+        "mom_profile": mom_profile,
+        "plan": plan,
+        "birth_plan_status": plan.get("birth_plan_status", "not_started") if plan else "not_started",
+        "provider_notes": all_notes,
+        "read_only": True,  # Indicates this is a read-only view - provider cannot edit Mom's answers
+        "can_add_notes": True  # Provider can add their own discussion notes
+    }
+
+
+@router.get("/provider/client/{mom_user_id}/birth-plan")
+async def get_client_birth_plan(
+    mom_user_id: str,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Get a client's birth plan (simplified view for client list)"""
+    user = await check_role(["DOULA", "MIDWIFE"])
+    
+    # Verify the provider has access via share request or client relationship
+    share_request = await db.share_requests.find_one({
+        "mom_user_id": mom_user_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    
+    # Also check if they have a client with this linked_mom_id
+    client = await db.clients.find_one({
+        "provider_id": user.user_id,
+        "linked_mom_id": mom_user_id
+    })
+    
+    if not share_request and not client:
+        raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
+    
+    plan = await db.birth_plans.find_one({"user_id": mom_user_id}, {"_id": 0})
+    
+    if not plan:
+        raise HTTPException(status_code=404, detail="Birth plan not found")
+    
+    return plan
+
+
+@router.get("/provider/client/{mom_id}/birth-plan/pdf")
+async def provider_export_birth_plan_pdf(
+    mom_id: str,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Generate and download PDF version of a client's birth plan for providers"""
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib import colors
+    
+    user = await check_role(["DOULA", "MIDWIFE"])
+    
+    # Verify provider has access to this mom's birth plan
+    share_request = await db.share_requests.find_one({
+        "mom_user_id": mom_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    
+    if not share_request:
+        raise HTTPException(status_code=403, detail="You don't have access to this client's birth plan")
+    
+    plan = await db.birth_plans.find_one({"user_id": mom_id}, {"_id": 0})
+    user_doc = await db.users.find_one({"user_id": mom_id}, {"_id": 0})
+    mom_profile = await db.mom_profiles.find_one({"user_id": mom_id}, {"_id": 0})
+    
+    if not plan:
+        raise HTTPException(status_code=404, detail="Birth plan not found")
+    
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=24, textColor=colors.HexColor('#9F83B6'), spaceAfter=6)
+    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#9F83B6'), spaceBefore=20, spaceAfter=10)
+    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=6)
+    
+    elements = []
+    
+    # Title
+    user_name = user_doc.get("full_name", "Client") if user_doc else "Client"
+    elements.append(Paragraph(f"{user_name}'s Birth Plan", title_style))
+    elements.append(Spacer(1, 10))
+    
+    # Basic info
+    if mom_profile:
+        info_data = []
+        if mom_profile.get("due_date"):
+            info_data.append(["Expected Due Date:", mom_profile["due_date"]])
+        if mom_profile.get("planned_birth_setting"):
+            info_data.append(["Planned Birth Setting:", mom_profile["planned_birth_setting"]])
+        
+        if info_data:
+            info_table = Table(info_data, colWidths=[2*inch, 4*inch])
+            info_table.setStyle(TableStyle([
+                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ]))
+            elements.append(info_table)
+            elements.append(Spacer(1, 15))
+    
+    # Sections
+    sections = plan.get("sections", [])
+    section_names = {
+        "getting_started": "Getting Started",
+        "support_preferences": "Support & Atmosphere",
+        "pain_management": "Pain Management",
+        "monitoring_iv": "Labor Environment & Comfort",
+        "interventions": "Interventions & C-Section",
+        "pushing_safe_word": "Pushing, Delivery & Safe Word",
+        "baby_care": "Baby Care After Birth",
+        "feeding": "Feeding Preferences",
+        "postpartum": "Postpartum Care",
+        "additional_info": "Additional Information"
+    }
+    
+    for section in sections:
+        section_id = section.get("section_id", "")
+        section_name = section_names.get(section_id, section_id.replace("_", " ").title())
+        data = section.get("data", {})
+        
+        if not data:
+            continue
+        
+        elements.append(Paragraph(section_name, heading_style))
+        
+        for key, value in data.items():
+            if value:
+                label = key.replace("_", " ").replace("Preference", "").title()
+                
+                if isinstance(value, list):
+                    value_str = ", ".join(str(v) for v in value)
+                else:
+                    value_str = str(value)
+                
+                elements.append(Paragraph(f"<b>{label}:</b> {value_str}", body_style))
+        
+        elements.append(Spacer(1, 10))
+    
+    doc.build(elements)
+    buffer.seek(0)
+    
+    filename = f"Birth_Plan_{user_name.replace(' ', '_')}.pdf"
+    
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@router.post("/provider/birth-plan/{mom_user_id}/notes")
+async def add_provider_note(
+    mom_user_id: str,
+    note_data: ProviderNoteCreate,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Add a note to a section of a shared birth plan"""
+    user = await check_role(["DOULA", "MIDWIFE"])
+    
+    # Verify access
+    share_request = await db.share_requests.find_one({
+        "mom_user_id": mom_user_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    
+    if not share_request:
+        raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
+    
+    now = datetime.now(timezone.utc)
+    
+    note_doc = {
+        "note_id": f"pnote_{uuid.uuid4().hex[:12]}",
+        "birth_plan_id": mom_user_id,
+        "section_id": note_data.section_id,
+        "provider_id": user.user_id,
+        "provider_name": user.full_name,
+        "provider_role": user.role,
+        "note_content": note_data.note_content,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.provider_notes.insert_one(note_doc)
+    note_doc.pop('_id', None)
+    
+    return {"message": "Note added", "note": note_doc}
+
+
+@router.put("/provider/birth-plan-notes/{note_id}")
+async def update_birth_plan_note(
+    note_id: str,
+    request: Request,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Update a provider note on a birth plan section"""
+    user = await check_role(["DOULA", "MIDWIFE"])
+    body = await request.json()
+    note_content = body.get("note_content")
+    
+    if not note_content:
+        raise HTTPException(status_code=400, detail="Note content required")
+    
+    result = await db.provider_notes.update_one(
+        {"note_id": note_id, "provider_id": user.user_id},
+        {"$set": {"note_content": note_content, "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Note not found")
+    
+    return {"message": "Note updated"}
+
+
+@router.delete("/provider/birth-plan-notes/{note_id}")
+async def delete_birth_plan_note(
+    note_id: str,
+    db=Depends(get_db),
+    get_current_user=Depends(get_current_user_dep),
+    check_role=Depends(check_role_dep)
+):
+    """Delete a provider note from a birth plan section"""
+    user = await check_role(["DOULA", "MIDWIFE"])
+    result = await db.provider_notes.delete_one({
+        "note_id": note_id,
+        "provider_id": user.user_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Note not found")
+    
+    return {"message": "Note deleted"}
