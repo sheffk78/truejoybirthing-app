@@ -67,13 +67,30 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
-### ✅ RECENTLY COMPLETED (2026-02-20) - Doula/Midwife UI Improvements
+### ✅ RECENTLY COMPLETED (2026-02-20) - Dashboard Stats Bug Fix (P0)
+
+#### Provider Dashboard Stats (COMPLETED - 2026-02-20)
+- [x] **Fixed key mismatch** - Backend now returns `contracts_pending_signature` (was `pending_contracts`)
+- [x] **Fixed key mismatch** - Backend now returns `pending_invoices` (was `unpaid_invoices`)
+- [x] **Fixed active_clients count** - Now includes statuses: Active, Prenatal, Contract Sent, Contract Signed, In Labor, Postpartum
+- [x] **Fixed upcoming_appointments** - Now returns count instead of array for consistent display
+- [x] **Dashboard now shows correct values** - Active Clients=1, Pending Contracts=1, Upcoming Appts=4, Pending Invoices=0
+- [x] **Backend files updated** - `routes/doula.py`, `routes/midwife.py`
+
+### ✅ RECENTLY COMPLETED (2026-02-20) - Breadcrumb Navigation for Provider Sections
 
 #### Breadcrumb Navigation (COMPLETED - 2026-02-20)
 - [x] **Client Detail breadcrumb** - "Clients › Emma Johnson" replaces old header
 - [x] **Birth Plan breadcrumb** - "Clients › Emma Johnson › Birth Plan" (3-level)
+- [x] **Contracts breadcrumb** - "Clients › Emma Johnson › Contracts" (3-level)
+- [x] **Invoices breadcrumb** - "Clients › Emma Johnson › Invoices" (3-level)
+- [x] **Notes breadcrumb** - "Clients › Emma Johnson › Notes" (3-level)
+- [x] **Appointments breadcrumb** - "Clients › Emma Johnson › Appointments" (3-level)
 - [x] **Clickable links** - Click "Clients" to return to clients list
 - [x] **Headers hidden** - `headerShown: false` for client-detail and client-birth-plans screens
+- [x] **Added routes.clients to ContractsConfig** - Fixed breadcrumb navigation in Contracts view
+
+### ✅ RECENTLY COMPLETED (2026-02-20) - Previous Doula/Midwife UI Improvements
 
 #### Invoice Client Dropdown (COMPLETED - 2026-02-20)
 - [x] **Client pre-selected** when accessing from client context
