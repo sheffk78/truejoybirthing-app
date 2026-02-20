@@ -432,6 +432,29 @@ export default function MomProfileScreen() {
                   <Text style={styles.locationDisplayText}>{locationCity}, {locationState}</Text>
                 </View>
               )}
+              
+              {/* Number of Children */}
+              <View style={styles.childrenInputContainer}>
+                <Text style={styles.inputLabel}>Number of Children</Text>
+                <View style={styles.childrenStepper}>
+                  <TouchableOpacity 
+                    style={[styles.stepperButton, numberOfChildren === 0 && styles.stepperButtonDisabled]}
+                    onPress={() => setNumberOfChildren(Math.max(0, numberOfChildren - 1))}
+                    disabled={numberOfChildren === 0}
+                  >
+                    <Icon name="remove" size={20} color={numberOfChildren === 0 ? COLORS.textLight : COLORS.primary} />
+                  </TouchableOpacity>
+                  <Text style={styles.childrenCount}>{numberOfChildren}</Text>
+                  <TouchableOpacity 
+                    style={styles.stepperButton}
+                    onPress={() => setNumberOfChildren(numberOfChildren + 1)}
+                  >
+                    <Icon name="add" size={20} color={COLORS.primary} />
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.childrenHint}>Including this pregnancy</Text>
+              </View>
+              
               <Button
                 title="Save Changes"
                 onPress={handleSave}
