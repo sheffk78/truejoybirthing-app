@@ -155,12 +155,15 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
   const handleQuickAction = (action: string) => {
     if (!client) return;
     
+    // Pass returnTo param so back navigation returns here
+    const returnTo = `${config.routes.clientDetail}?clientId=${client.client_id}`;
+    
     switch (action) {
       case 'appointment':
-        router.push(`${config.routes.appointments}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+        router.push(`${config.routes.appointments}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}&returnTo=${encodeURIComponent(returnTo)}`);
         break;
       case 'note':
-        router.push(`${config.routes.notes}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+        router.push(`${config.routes.notes}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}&returnTo=${encodeURIComponent(returnTo)}`);
         break;
       case 'message':
         if (client.linked_mom_id) {
@@ -170,32 +173,53 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
         }
         break;
       case 'contract':
-        router.push(`${config.routes.contracts}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+        router.push(`${config.routes.contracts}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}&returnTo=${encodeURIComponent(returnTo)}`);
         break;
       case 'invoice':
-        router.push(`${config.routes.invoices}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+        router.push(`${config.routes.invoices}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}&returnTo=${encodeURIComponent(returnTo)}`);
         break;
       case 'visit':
         if (config.features.showVisits) {
-          router.push(`${config.routes.visits}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+          router.push(`${config.routes.visits}?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}&returnTo=${encodeURIComponent(returnTo)}`);
+        }
+        break;
+      case 'birthplan':
+        if (client.linked_mom_id) {
+          router.push(`${config.routes.clientBirthPlans || '/(doula)/client-birth-plans'}?momUserId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
+        } else {
+          Alert.alert('Not Available', 'This client is not linked to a registered user yet.');
         }
         break;
     }
   };
 
-  const renderTimelineItem = (item: TimelineItem) => (
+  const renderTimelineItem = (item: TimelineItem) => {
+    // Build returnTo URL for proper back navigation
+    const returnTo = `${config.routes.clientDetail}?clientId=${clientId}`;
+    
+    return (
     <TouchableOpacity
       key={`${item.type}-${item.id}`}
       onPress={() => {
-        // Navigate to the appropriate detail view
+        // Navigate to the appropriate detail view with returnTo param
         switch (item.type) {
           case 'appointment':
-            router.push(`${config.routes.appointments}?appointmentId=${item.id}`);
+            router.push(`${config.routes.appointments}?appointmentId=${item.id}&clientId=${clientId}&returnTo=${encodeURIComponent(returnTo)}`);
             break;
           case 'note':
-            router.push(`${config.routes.notes}?noteId=${item.id}`);
+            router.push(`${config.routes.notes}?noteId=${item.id}&clientId=${clientId}&returnTo=${encodeURIComponent(returnTo)}`);
             break;
-          // Add other navigation as needed
+          case 'contract':
+            router.push(`${config.routes.contracts}?contractId=${item.id}&clientId=${clientId}&returnTo=${encodeURIComponent(returnTo)}`);
+            break;
+          case 'invoice':
+            router.push(`${config.routes.invoices}?invoiceId=${item.id}&clientId=${clientId}&returnTo=${encodeURIComponent(returnTo)}`);
+            break;
+          case 'visit':
+            if (config.features.showVisits) {
+              router.push(`${config.routes.visits}?visitId=${item.id}&clientId=${clientId}&returnTo=${encodeURIComponent(returnTo)}`);
+            }
+            break;
         }
       }}
       activeOpacity={0.8}
