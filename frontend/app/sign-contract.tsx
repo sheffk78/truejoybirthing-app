@@ -56,7 +56,6 @@ export default function SignContractScreen() {
   const [loading, setLoading] = useState(true);
   const [contractData, setContractData] = useState<ContractData | null>(null);
   const [signerName, setSignerName] = useState('');
-  const [signerEmail, setSignerEmail] = useState('');
   const [signing, setSigning] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
