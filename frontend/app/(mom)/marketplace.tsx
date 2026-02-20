@@ -956,6 +956,9 @@ const styles = StyleSheet.create({
   cardAddBtn: {
     backgroundColor: COLORS.success,
   },
+  cardConsultBtn: {
+    backgroundColor: COLORS.accent,
+  },
   cardDisabledBtn: {
     backgroundColor: COLORS.textLight,
     opacity: 0.7,
