@@ -8,32 +8,6 @@ This module handles all care plan-related routes including:
 - Timeline (Mom)
 - Birth Plan Sharing (Mom <-> Provider)
 - Provider Birth Plan Views and Notes
-
-Routes:
-- GET /birth-plan - Get user's birth plan
-- PUT /birth-plan/section/{section_id} - Update birth plan section
-- GET /birth-plan/export - Export birth plan
-- GET /birth-plan/export/pdf - Export birth plan as PDF
-- POST /birth-plan/share - Share birth plan with provider
-- GET /birth-plan/share-requests - Get share requests (Mom)
-- DELETE /birth-plan/share/{request_id} - Revoke share
-- POST /wellness/checkin - Create wellness check-in
-- GET /wellness/checkins - Get wellness check-in history
-- POST /wellness/entry - Create wellness entry
-- GET /wellness/entries - Get wellness entries
-- GET /wellness/stats - Get wellness statistics
-- GET /postpartum/plan - Get postpartum plan
-- PUT /postpartum/plan - Update postpartum plan
-- GET /timeline - Get pregnancy timeline
-- POST /timeline/events - Create timeline event
-- DELETE /timeline/events/{event_id} - Delete timeline event
-- GET /provider/shared-birth-plans - Get shared birth plans (Provider)
-- GET /provider/shared-birth-plan/{mom_user_id} - Get specific shared birth plan
-- GET /provider/client/{mom_user_id}/birth-plan - Get client birth plan
-- GET /provider/client/{mom_id}/birth-plan/pdf - Export client birth plan as PDF
-- POST /provider/birth-plan/{mom_user_id}/notes - Add provider note
-- PUT /provider/birth-plan-notes/{note_id} - Update provider note
-- DELETE /provider/birth-plan-notes/{note_id} - Delete provider note
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Request
@@ -44,15 +18,9 @@ from datetime import datetime, timezone, timedelta
 import uuid
 from io import BytesIO
 
-from .dependencies import (
-    get_db,
-    get_current_user_dep,
-    check_role_dep,
-    get_notification_func,
-    get_email_func
-)
+from .dependencies import db, check_role, User, create_notification, send_notification_email, get_now
 
-router = APIRouter()
+router = APIRouter(tags=["Care Plans"])
 
 # ============== PYDANTIC MODELS ==============
 
@@ -160,7 +128,7 @@ def get_share_request_email_html(mom_name: str, provider_name: str):
     """
 
 
-async def notify_providers_birth_plan_complete(db, create_notification, mom_user_id: str, mom_name: str):
+async def notify_providers_birth_plan_complete(mom_user_id: str, mom_name: str):
     """Notify all connected providers when Mom completes her birth plan"""
     connections = await db.share_requests.find({
         "mom_user_id": mom_user_id,
@@ -181,17 +149,12 @@ async def notify_providers_birth_plan_complete(db, create_notification, mom_user
 # ============== MOM BIRTH PLAN ROUTES ==============
 
 @router.get("/birth-plan")
-async def get_birth_plan(
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_birth_plan(user: User = Depends(check_role(["MOM"]))):
     """Get user's birth plan"""
-    user = await check_role(["MOM"])
     plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
     if not plan:
         # Create default plan
-        now = datetime.now(timezone.utc)
+        now = get_now()
         plan = {
             "plan_id": f"plan_{uuid.uuid4().hex[:12]}",
             "user_id": user.user_id,
@@ -213,18 +176,14 @@ async def get_birth_plan(
 async def update_birth_plan_section(
     section_id: str,
     request: Request,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep),
-    create_notification=Depends(get_notification_func)
+    user: User = Depends(check_role(["MOM"]))
 ):
     """Update a section of the birth plan"""
-    user = await check_role(["MOM"])
     body = await request.json()
     data = body.get("data", {})
     notes_to_provider = body.get("notes_to_provider")
     
-    now = datetime.now(timezone.utc)
+    now = get_now()
     
     plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
     if not plan:
@@ -283,19 +242,14 @@ async def update_birth_plan_section(
     
     # Notify providers when birth plan is marked complete for the first time
     if new_status == "complete" and previous_status != "complete":
-        await notify_providers_birth_plan_complete(db, create_notification, user.user_id, user.full_name)
+        await notify_providers_birth_plan_complete(user.user_id, user.full_name)
     
     return {"message": "Section updated", "completion_percentage": completion_percentage, "birth_plan_status": new_status}
 
 
 @router.get("/birth-plan/export")
-async def export_birth_plan(
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def export_birth_plan(user: User = Depends(check_role(["MOM"]))):
     """Get birth plan for export (mock PDF generation)"""
-    user = await check_role(["MOM"])
     plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
     user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
     mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
@@ -310,19 +264,13 @@ async def export_birth_plan(
 
 
 @router.get("/birth-plan/export/pdf")
-async def export_birth_plan_pdf(
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def export_birth_plan_pdf(user: User = Depends(check_role(["MOM"]))):
     """Generate and download PDF version of birth plan"""
     from reportlab.lib.pagesizes import letter
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import inch
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
     from reportlab.lib import colors
-    
-    user = await check_role(["MOM"])
     
     plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
     user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
@@ -419,15 +367,8 @@ async def export_birth_plan_pdf(
 # ============== PROVIDER SEARCH ==============
 
 @router.get("/providers/search")
-async def search_providers(
-    query: str,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def search_providers(query: str, user: User = Depends(check_role(["MOM"]))):
     """Search for doulas and midwives by name, email, city, or state"""
-    user = await check_role(["MOM"])
-    
     if len(query) < 2:
         return {"providers": []}
     
@@ -506,20 +447,11 @@ async def search_providers(
     return {"providers": result}
 
 
-# ============== BIRTH PLAN SHARING ROUTES ==============
+# ============== BIRTH PLAN SHARING ROUTES (MOM) ==============
 
 @router.post("/birth-plan/share")
-async def share_birth_plan(
-    share_data: ShareRequestCreate,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep),
-    create_notification=Depends(get_notification_func),
-    send_email=Depends(get_email_func)
-):
+async def share_birth_plan(share_data: ShareRequestCreate, user: User = Depends(check_role(["MOM"]))):
     """Send a share request to a provider"""
-    user = await check_role(["MOM"])
-    
     # Verify provider exists and is a doula or midwife
     provider = await db.users.find_one(
         {"user_id": share_data.provider_id, "role": {"$in": ["DOULA", "MIDWIFE"]}},
@@ -539,7 +471,7 @@ async def share_birth_plan(
     if existing:
         raise HTTPException(status_code=400, detail="Share request already exists")
     
-    now = datetime.now(timezone.utc)
+    now = get_now()
     
     request_doc = {
         "request_id": f"share_{uuid.uuid4().hex[:12]}",
@@ -557,9 +489,9 @@ async def share_birth_plan(
     request_doc.pop('_id', None)
     
     # Send email notification to provider
-    if send_email:
+    if send_notification_email:
         email_html = get_share_request_email_html(user.full_name, provider["full_name"])
-        await send_email(
+        await send_notification_email(
             to_email=provider["email"],
             subject=f"New Birth Plan Share Request from {user.full_name}",
             html_content=email_html
@@ -578,13 +510,8 @@ async def share_birth_plan(
 
 
 @router.get("/birth-plan/share-requests")
-async def get_my_share_requests(
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_my_share_requests(user: User = Depends(check_role(["MOM"]))):
     """Get all share requests sent by the mom"""
-    user = await check_role(["MOM"])
     requests = await db.share_requests.find(
         {"mom_user_id": user.user_id},
         {"_id": 0}
@@ -603,15 +530,8 @@ async def get_my_share_requests(
 
 
 @router.delete("/birth-plan/share/{request_id}")
-async def revoke_share(
-    request_id: str,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def revoke_share(request_id: str, user: User = Depends(check_role(["MOM"]))):
     """Revoke a share request"""
-    user = await check_role(["MOM"])
-    
     # First, fetch the request to get provider info BEFORE deleting
     request_doc = await db.share_requests.find_one({
         "request_id": request_id,
@@ -654,13 +574,8 @@ async def revoke_share(
 # ============== PROVIDER SHARE REQUEST ROUTES ==============
 
 @router.get("/provider/share-requests")
-async def get_provider_share_requests(
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_provider_share_requests(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Get all share requests received by the provider"""
-    user = await check_role(["DOULA", "MIDWIFE"])
     requests = await db.share_requests.find(
         {"provider_id": user.user_id},
         {"_id": 0}
@@ -673,19 +588,16 @@ async def get_provider_share_requests(
 async def respond_to_share_request(
     request_id: str,
     request: Request,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
+    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
 ):
     """Accept or reject a share request"""
-    user = await check_role(["DOULA", "MIDWIFE"])
     body = await request.json()
     action = body.get("action")  # "accept" or "reject"
     
     if action not in ["accept", "reject"]:
         raise HTTPException(status_code=400, detail="Action must be 'accept' or 'reject'")
     
-    now = datetime.now(timezone.utc)
+    now = get_now()
     new_status = "accepted" if action == "accept" else "rejected"
     
     result = await db.share_requests.update_one(
@@ -767,15 +679,9 @@ async def respond_to_share_request(
 # ============== WELLNESS ROUTES ==============
 
 @router.post("/wellness/checkin")
-async def create_wellness_checkin(
-    checkin_data: WellnessCheckInCreate,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def create_wellness_checkin(checkin_data: WellnessCheckInCreate, user: User = Depends(check_role(["MOM"]))):
     """Create a wellness check-in"""
-    user = await check_role(["MOM"])
-    now = datetime.now(timezone.utc)
+    now = get_now()
     
     checkin = {
         "checkin_id": f"checkin_{uuid.uuid4().hex[:12]}",
@@ -791,14 +697,8 @@ async def create_wellness_checkin(
 
 
 @router.get("/wellness/checkins")
-async def get_wellness_checkins(
-    limit: int = 30,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_wellness_checkins(limit: int = 30, user: User = Depends(check_role(["MOM"]))):
     """Get wellness check-in history"""
-    user = await check_role(["MOM"])
     checkins = await db.wellness_checkins.find(
         {"user_id": user.user_id},
         {"_id": 0}
@@ -807,15 +707,9 @@ async def get_wellness_checkins(
 
 
 @router.post("/wellness/entry")
-async def create_wellness_entry(
-    entry_data: WellnessEntryCreate,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def create_wellness_entry(entry_data: WellnessEntryCreate, user: User = Depends(check_role(["MOM"]))):
     """Create a detailed wellness entry with mood, energy, sleep, symptoms, and journal"""
-    user = await check_role(["MOM"])
-    now = datetime.now(timezone.utc)
+    now = get_now()
     
     entry = {
         "entry_id": f"wellness_{uuid.uuid4().hex[:12]}",
@@ -834,14 +728,8 @@ async def create_wellness_entry(
 
 
 @router.get("/wellness/entries")
-async def get_wellness_entries(
-    limit: int = 30,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_wellness_entries(limit: int = 30, user: User = Depends(check_role(["MOM"]))):
     """Get wellness entry history"""
-    user = await check_role(["MOM"])
     entries = await db.wellness_entries.find(
         {"user_id": user.user_id},
         {"_id": 0}
@@ -850,15 +738,9 @@ async def get_wellness_entries(
 
 
 @router.get("/wellness/stats")
-async def get_wellness_stats(
-    days: int = 7,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_wellness_stats(days: int = 7, user: User = Depends(check_role(["MOM"]))):
     """Get wellness statistics for the past N days"""
-    user = await check_role(["MOM"])
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    cutoff = get_now() - timedelta(days=days)
     
     entries = await db.wellness_entries.find(
         {"user_id": user.user_id, "created_at": {"$gte": cutoff}},
@@ -884,13 +766,8 @@ async def get_wellness_stats(
 # ============== POSTPARTUM ROUTES ==============
 
 @router.get("/postpartum/plan")
-async def get_postpartum_plan(
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_postpartum_plan(user: User = Depends(check_role(["MOM"]))):
     """Get postpartum plan"""
-    user = await check_role(["MOM"])
     plan = await db.postpartum_plans.find_one({"user_id": user.user_id}, {"_id": 0})
     if not plan:
         return {"user_id": user.user_id}
@@ -898,16 +775,10 @@ async def get_postpartum_plan(
 
 
 @router.put("/postpartum/plan")
-async def update_postpartum_plan(
-    request: Request,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def update_postpartum_plan(request: Request, user: User = Depends(check_role(["MOM"]))):
     """Update postpartum plan"""
-    user = await check_role(["MOM"])
     body = await request.json()
-    now = datetime.now(timezone.utc)
+    now = get_now()
     
     # Get existing plan to preserve plan_id
     existing = await db.postpartum_plans.find_one({"user_id": user.user_id})
@@ -941,14 +812,8 @@ async def update_postpartum_plan(
 # ============== TIMELINE ROUTES ==============
 
 @router.get("/timeline")
-async def get_timeline(
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_timeline(user: User = Depends(check_role(["MOM"]))):
     """Get pregnancy timeline with milestones and custom events"""
-    user = await check_role(["MOM"])
-    
     # Get mom profile for due date
     mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
     
@@ -996,15 +861,9 @@ async def get_timeline(
 
 
 @router.post("/timeline/events")
-async def create_timeline_event(
-    event_data: TimelineEventCreate,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def create_timeline_event(event_data: TimelineEventCreate, user: User = Depends(check_role(["MOM"]))):
     """Create a custom timeline event"""
-    user = await check_role(["MOM"])
-    now = datetime.now(timezone.utc)
+    now = get_now()
     
     event = {
         "event_id": f"event_{uuid.uuid4().hex[:12]}",
@@ -1022,14 +881,8 @@ async def create_timeline_event(
 
 
 @router.delete("/timeline/events/{event_id}")
-async def delete_timeline_event(
-    event_id: str,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def delete_timeline_event(event_id: str, user: User = Depends(check_role(["MOM"]))):
     """Delete a custom timeline event"""
-    user = await check_role(["MOM"])
     result = await db.timeline_events.delete_one({
         "event_id": event_id,
         "user_id": user.user_id
@@ -1044,14 +897,8 @@ async def delete_timeline_event(
 # ============== PROVIDER BIRTH PLAN ROUTES ==============
 
 @router.get("/provider/shared-birth-plans")
-async def get_shared_birth_plans(
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Get all birth plans shared with this provider (read-only)"""
-    user = await check_role(["DOULA", "MIDWIFE"])
-    
     # Get accepted share requests where provider has view permission
     accepted_requests = await db.share_requests.find(
         {"provider_id": user.user_id, "status": "accepted"},
@@ -1091,15 +938,8 @@ async def get_shared_birth_plans(
 
 
 @router.get("/provider/shared-birth-plan/{mom_user_id}")
-async def get_shared_birth_plan_detail(
-    mom_user_id: str,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_shared_birth_plan_detail(mom_user_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Get a specific shared birth plan with provider notes (read-only view)"""
-    user = await check_role(["DOULA", "MIDWIFE"])
-    
     # Verify access and permissions
     share_request = await db.share_requests.find_one({
         "mom_user_id": mom_user_id,
@@ -1136,15 +976,8 @@ async def get_shared_birth_plan_detail(
 
 
 @router.get("/provider/client/{mom_user_id}/birth-plan")
-async def get_client_birth_plan(
-    mom_user_id: str,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def get_client_birth_plan(mom_user_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Get a client's birth plan (simplified view for client list)"""
-    user = await check_role(["DOULA", "MIDWIFE"])
-    
     # Verify the provider has access via share request or client relationship
     share_request = await db.share_requests.find_one({
         "mom_user_id": mom_user_id,
@@ -1170,20 +1003,13 @@ async def get_client_birth_plan(
 
 
 @router.get("/provider/client/{mom_id}/birth-plan/pdf")
-async def provider_export_birth_plan_pdf(
-    mom_id: str,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Generate and download PDF version of a client's birth plan for providers"""
     from reportlab.lib.pagesizes import letter
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import inch
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
     from reportlab.lib import colors
-    
-    user = await check_role(["DOULA", "MIDWIFE"])
     
     # Verify provider has access to this mom's birth plan
     share_request = await db.share_requests.find_one({
@@ -1286,16 +1112,8 @@ async def provider_export_birth_plan_pdf(
 
 
 @router.post("/provider/birth-plan/{mom_user_id}/notes")
-async def add_provider_note(
-    mom_user_id: str,
-    note_data: ProviderNoteCreate,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def add_provider_note(mom_user_id: str, note_data: ProviderNoteCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Add a note to a section of a shared birth plan"""
-    user = await check_role(["DOULA", "MIDWIFE"])
-    
     # Verify access
     share_request = await db.share_requests.find_one({
         "mom_user_id": mom_user_id,
@@ -1306,7 +1124,7 @@ async def add_provider_note(
     if not share_request:
         raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
     
-    now = datetime.now(timezone.utc)
+    now = get_now()
     
     note_doc = {
         "note_id": f"pnote_{uuid.uuid4().hex[:12]}",
@@ -1327,15 +1145,8 @@ async def add_provider_note(
 
 
 @router.put("/provider/birth-plan-notes/{note_id}")
-async def update_birth_plan_note(
-    note_id: str,
-    request: Request,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def update_birth_plan_note(note_id: str, request: Request, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Update a provider note on a birth plan section"""
-    user = await check_role(["DOULA", "MIDWIFE"])
     body = await request.json()
     note_content = body.get("note_content")
     
@@ -1344,7 +1155,7 @@ async def update_birth_plan_note(
     
     result = await db.provider_notes.update_one(
         {"note_id": note_id, "provider_id": user.user_id},
-        {"$set": {"note_content": note_content, "updated_at": datetime.now(timezone.utc)}}
+        {"$set": {"note_content": note_content, "updated_at": get_now()}}
     )
     
     if result.matched_count == 0:
@@ -1354,14 +1165,8 @@ async def update_birth_plan_note(
 
 
 @router.delete("/provider/birth-plan-notes/{note_id}")
-async def delete_birth_plan_note(
-    note_id: str,
-    db=Depends(get_db),
-    get_current_user=Depends(get_current_user_dep),
-    check_role=Depends(check_role_dep)
-):
+async def delete_birth_plan_note(note_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Delete a provider note from a birth plan section"""
-    user = await check_role(["DOULA", "MIDWIFE"])
     result = await db.provider_notes.delete_one({
         "note_id": note_id,
         "provider_id": user.user_id
