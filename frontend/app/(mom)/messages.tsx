@@ -102,26 +102,42 @@ export default function MessagesScreen() {
     setLoadingTeam(true);
     try {
       const data = await apiRequest(API_ENDPOINTS.MOM_TEAM);
-      // API returns { doula: {...}, midwife: {...} } format
-      // Convert to array of team members
+      // API returns array of { provider: {...}, profile: {...}, share_request: {...} }
       const members: TeamMember[] = [];
-      if (data.doula) {
-        members.push({
-          user_id: data.doula.user_id,
-          name: data.doula.name,
-          role: 'DOULA',
-          email: '',
-          picture: data.doula.picture,
-        });
-      }
-      if (data.midwife) {
-        members.push({
-          user_id: data.midwife.user_id,
-          name: data.midwife.name,
-          role: 'MIDWIFE',
-          email: '',
-          picture: data.midwife.picture,
-        });
+      
+      if (Array.isArray(data)) {
+        // New array format
+        for (const item of data) {
+          if (item.provider) {
+            members.push({
+              user_id: item.provider.user_id,
+              name: item.provider.full_name,
+              role: item.provider.role,
+              email: item.provider.email || '',
+              picture: item.profile?.picture || item.provider.picture,
+            });
+          }
+        }
+      } else {
+        // Legacy object format (doula/midwife keys)
+        if (data.doula) {
+          members.push({
+            user_id: data.doula.user_id,
+            name: data.doula.name,
+            role: 'DOULA',
+            email: '',
+            picture: data.doula.picture,
+          });
+        }
+        if (data.midwife) {
+          members.push({
+            user_id: data.midwife.user_id,
+            name: data.midwife.name,
+            role: 'MIDWIFE',
+            email: '',
+            picture: data.midwife.picture,
+          });
+        }
       }
       setTeamMembers(members);
     } catch (error) {
