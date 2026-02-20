@@ -67,6 +67,15 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-20)
 
+### ✅ RECENTLY COMPLETED (2026-02-20) - Bug Fixes for Doula/Midwife
+
+#### Provider Bug Fixes (COMPLETED - 2026-02-20)
+- [x] **Birth Plan Breadcrumb Fix** - Breadcrumbs now correctly navigate to `/(midwife)/clients` or `/(doula)/clients` based on returnTo param
+- [x] **Birth Plan Note Editing** - Added Edit button on each existing note, PUT endpoint for updating notes
+- [x] **Contract PDF Download Fix** - Improved error handling and popup blocking fallback
+- [x] **Contract E-Sign Removal** - Replaced E-Sign button with "Awaiting Mom's Signature" status indicator for Sent contracts
+- [x] **Testing** - 100% backend (11/11 tests passed), code review verified all fixes
+
 ### ✅ RECENTLY COMPLETED (2026-02-20) - Push Notifications
 
 #### Push Notifications Implementation (COMPLETED - 2026-02-20)
