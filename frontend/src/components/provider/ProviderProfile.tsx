@@ -499,6 +499,17 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           )}
         </Card>
 
+        {/* Save Button - Shows when editing */}
+        {isEditing && (
+          <Button
+            title="Save Changes"
+            onPress={handleSave}
+            loading={saving}
+            fullWidth
+            style={{ backgroundColor: primaryColor, marginBottom: SIZES.lg }}
+          />
+        )}
+
         {/* Subscription Status */}
         <Card style={styles.profileCard}>
           <View style={styles.cardHeader}>
