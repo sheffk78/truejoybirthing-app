@@ -153,48 +153,67 @@ async def update_midwife_profile(profile_data: MidwifeProfileUpdate, user: User 
 @router.get("/dashboard")
 async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
     """Get midwife dashboard data"""
-    # Get counts
-    prenatal_clients = await db.clients.count_documents({
-        "provider_id": user.user_id,
-        "status": "Prenatal"
+    # Get all clients
+    all_clients = await db.clients.find(
+        {"provider_id": user.user_id},
+        {"_id": 0, "status": 1}
+    ).to_list(500)
+    
+    total_clients = len(all_clients)
+    
+    # Prenatal clients - clients in prenatal stage
+    prenatal_clients = len([c for c in all_clients if c.get("status") in ["Prenatal", "prenatal"]])
+    
+    # Active clients - any client that is not completed/inactive
+    active_statuses = ["Active", "Prenatal", "Contract Sent", "Contract Signed", "Labor", "Postpartum", "active", "prenatal"]
+    active_clients = len([c for c in all_clients if c.get("status") in active_statuses])
+    
+    # Pending contracts - match frontend key name
+    contracts_pending_signature = await db.contracts.count_documents({
+        "$or": [
+            {"provider_id": user.user_id},
+            {"midwife_id": user.user_id}
+        ],
+        "status": {"$in": ["Sent", "sent", "pending"]}
     })
     
-    active_clients = await db.clients.count_documents({
+    # Pending invoices - match frontend key name
+    pending_invoices = await db.invoices.count_documents({
         "provider_id": user.user_id,
-        "status": {"$in": ["Active", "Prenatal", "Labor"]}
+        "status": {"$in": ["Sent", "sent", "pending"]}
     })
     
-    total_clients = await db.clients.count_documents({"provider_id": user.user_id})
-    
-    pending_contracts = await db.contracts.count_documents({
-        "provider_id": user.user_id,
-        "status": "Sent"
-    })
-    
-    unpaid_invoices = await db.invoices.count_documents({
-        "provider_id": user.user_id,
-        "status": "Sent"
-    })
-    
-    # Get upcoming visits
+    # Get current month stats
     now = get_now()
-    upcoming_visits = await db.visits.find(
-        {
-            "midwife_id": user.user_id,
-            "visit_date": {"$gte": now.strftime("%Y-%m-%d")}
-        },
-        {"_id": 0}
-    ).sort("visit_date", 1).limit(5).to_list(5)
+    today = now.strftime("%Y-%m-%d")
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     
-    # Get upcoming appointments
-    upcoming_appointments = await db.appointments.find(
-        {
-            "provider_id": user.user_id,
-            "status": {"$in": ["confirmed", "pending"]},
-            "start_datetime": {"$gte": now.isoformat()}
-        },
-        {"_id": 0}
-    ).sort("start_datetime", 1).limit(5).to_list(5)
+    # Visits this month (including prenatal visits)
+    visits_this_month = await db.visits.count_documents({
+        "midwife_id": user.user_id,
+        "created_at": {"$gte": month_start}
+    })
+    prenatal_visits_count = await db.prenatal_visits.count_documents({
+        "midwife_id": user.user_id,
+        "created_at": {"$gte": month_start}
+    })
+    visits_this_month += prenatal_visits_count
+    
+    # Births this month
+    births_this_month = await db.birth_records.count_documents({
+        "provider_id": user.user_id,
+        "created_at": {"$gte": month_start}
+    })
+    
+    # Get upcoming appointments count
+    upcoming_appointments = await db.appointments.count_documents({
+        "provider_id": user.user_id,
+        "status": {"$in": ["confirmed", "pending", "scheduled", "accepted"]},
+        "$or": [
+            {"start_datetime": {"$gte": now.isoformat()}},
+            {"appointment_date": {"$gte": today}}
+        ]
+    })
     
     # Get recent messages count
     unread_messages = await db.messages.count_documents({
@@ -206,9 +225,10 @@ async def get_midwife_dashboard(user: User = Depends(check_role(["MIDWIFE"]))):
         "prenatal_clients": prenatal_clients,
         "active_clients": active_clients,
         "total_clients": total_clients,
-        "pending_contracts": pending_contracts,
-        "unpaid_invoices": unpaid_invoices,
-        "upcoming_visits": upcoming_visits,
+        "contracts_pending_signature": contracts_pending_signature,
+        "pending_invoices": pending_invoices,
+        "visits_this_month": visits_this_month,
+        "births_this_month": births_this_month,
         "upcoming_appointments": upcoming_appointments,
         "unread_messages": unread_messages
     }
