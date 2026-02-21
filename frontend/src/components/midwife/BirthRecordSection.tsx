@@ -339,7 +339,12 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
   };
 
   // ============== DOWNLOAD REPORT ==============
+  const openReportPreview = () => {
+    setShowPreviewModal(true);
+  };
+
   const handleDownloadReport = async () => {
+    setDownloading(true);
     try {
       const token = useAuthStore.getState().token;
       const baseUrl = getApiBaseUrl();
@@ -368,14 +373,47 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(blobUrl);
+        
+        setShowPreviewModal(false);
       } else {
         // For native, open in browser
         Alert.alert('Download Report', 'Opening report download...');
         await Linking.openURL(url);
+        setShowPreviewModal(false);
       }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to download report');
+    } finally {
+      setDownloading(false);
     }
+  };
+
+  // ============== HELPER FUNCTIONS ==============
+  const formatDateTimeDisplay = (dateStr?: string) => {
+    if (!dateStr) return null;
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const getModeOfBirthLabel = (value?: string) => {
+    const option = MODE_OF_BIRTH_OPTIONS.find(o => o.value === value);
+    return option?.label || value;
+  };
+
+  const getPlaceOfBirthLabel = (value?: string) => {
+    const option = PLACE_OF_BIRTH_OPTIONS.find(o => o.value === value);
+    return option?.label || value;
   };
 
   // ============== RENDER HELPERS ==============
