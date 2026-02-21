@@ -12,13 +12,16 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Platform,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
-import { apiRequest } from '../../utils/api';
+import { apiRequest, getApiUrl } from '../../utils/api';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { useAuthStore } from '../../store/useAuthStore';
 
 // ============== TYPES ==============
 interface BirthRecord {
