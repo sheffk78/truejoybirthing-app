@@ -240,12 +240,16 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   };
   
   const handleLogout = async () => {
-    // Use window.confirm for web compatibility
-    if (typeof window !== 'undefined' && window.confirm) {
+    // On web, use window.confirm for cross-browser compatibility
+    if (Platform.OS === 'web') {
       const confirmed = window.confirm('Are you sure you want to log out?');
       if (confirmed) {
-        await logout();
-        router.replace('/(auth)/welcome');
+        try {
+          await logout();
+          router.replace('/(auth)/welcome');
+        } catch (error) {
+          console.error('Logout error:', error);
+        }
       }
     } else {
       // Native Alert for mobile
@@ -255,8 +259,12 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           text: 'Logout',
           style: 'destructive',
           onPress: async () => {
-            await logout();
-            router.replace('/(auth)/welcome');
+            try {
+              await logout();
+              router.replace('/(auth)/welcome');
+            } catch (error) {
+              console.error('Logout error:', error);
+            }
           },
         },
       ]);
