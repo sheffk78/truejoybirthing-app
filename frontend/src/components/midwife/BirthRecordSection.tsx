@@ -462,10 +462,10 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
           <View style={styles.headerButtons}>
             <TouchableOpacity
               style={[styles.downloadButton, { backgroundColor: primaryColor }]}
-              onPress={handleDownloadReport}
+              onPress={openReportPreview}
               data-testid="download-birth-report-btn"
             >
-              <Icon name="download-outline" size={18} color={COLORS.white} />
+              <Icon name="document-text-outline" size={18} color={COLORS.white} />
               <Text style={styles.downloadButtonText}>Report</Text>
             </TouchableOpacity>
             <TouchableOpacity
