@@ -222,7 +222,6 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   };
   
   const filteredClients = connectedClients.filter(client => {
-    if (clientFilter === 'leads') return client.status === 'Lead';
     if (clientFilter === 'active') return client.is_active !== false && client.status !== 'Lead';
     if (clientFilter === 'inactive') return client.is_active === false;
     return true;
