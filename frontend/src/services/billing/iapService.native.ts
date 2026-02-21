@@ -84,33 +84,6 @@ class IAPService {
   private onPurchaseError: ((error: any) => void) | null = null;
 
   /**
-   * Check if running in Expo Go (where native modules aren't available)
-   */
-  private isExpoGo(): boolean {
-    try {
-      // In Expo Go, Constants.appOwnership is 'expo'
-      // In standalone/dev builds, it's 'standalone' or 'guest'
-      const Constants = require('expo-constants').default;
-      return Constants.appOwnership === 'expo';
-    } catch {
-      return false;
-    }
-  }
-
-  /**
-   * Check if NitroModules are supported (required by react-native-iap)
-   */
-  private hasNitroModulesSupport(): boolean {
-    try {
-      // Try to access NitroModules - if it throws, we're in Expo Go
-      const NitroModules = require('react-native-nitro-modules');
-      return !!NitroModules;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
    * Initialize the IAP connection
    * Call this when the app starts or user enters subscription flow
    */
@@ -124,7 +97,7 @@ class IAPService {
     }
 
     // Skip IAP in Expo Go (native modules not available)
-    if (this.isExpoGo()) {
+    if (IS_EXPO_GO) {
       console.log('[IAP] Running in Expo Go - IAP not available. Use a development build for IAP testing.');
       return false;
     }
