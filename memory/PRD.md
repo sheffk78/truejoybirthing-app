@@ -69,7 +69,15 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-21)
 
-**Latest Session (2026-02-21 - UI/UX Bug Fixes):**
+**Latest Session (2026-02-21 - UI/UX Terminology Updates):**
+- **Updated: Lead Insights Icon** - Changed from `trending-up` to `disc-outline` (target icon) on Dashboard for Midwife and Doula
+- **Updated: Lead Terminology** - Changed "Active" to "Open" throughout the leads section to avoid confusion with "Active client":
+  - Dashboard Lead Insights now shows "1 Open" instead of "1 Active"
+  - Leads page header badge shows "1 Open"
+  - Leads page filter tab shows "Open (1)" instead of "Active (1)"
+  - Empty state text updated accordingly
+
+**Previous Session (2026-02-21 - UI/UX Bug Fixes):**
 - **FIXED: Logout Button** - Replaced `TouchableOpacity` with `Pressable` for better web compatibility
   - Shows confirmation dialog: "Are you sure you want to log out?"
   - Successfully redirects to `/welcome` page after logout
