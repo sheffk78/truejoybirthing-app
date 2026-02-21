@@ -371,75 +371,11 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
         
         {/* Prenatal Visits Section - Midwife Only */}
         {isMidwife && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <View style={styles.sectionTitleRow}>
-                <Icon name="clipboard-outline" size={22} color={primaryColor} />
-                <Text style={styles.sectionTitle}>Prenatal Visits</Text>
-                <Text style={styles.visitCount}>({prenatalVisits.length})</Text>
-              </View>
-              <TouchableOpacity
-                style={[styles.addVisitButton, { backgroundColor: primaryColor }]}
-                onPress={openAddVisit}
-                data-testid="add-prenatal-visit-btn"
-              >
-                <Icon name="add" size={22} color={COLORS.white} />
-              </TouchableOpacity>
-            </View>
-            
-            {prenatalVisits.length === 0 ? (
-              <Card style={styles.emptyCard}>
-                <Icon name="document-text-outline" size={40} color={COLORS.textLight} />
-                <Text style={styles.emptyTitle}>No prenatal visits yet</Text>
-                <Text style={styles.emptyText}>
-                  Tap the + button above to record your first prenatal visit assessment.
-                </Text>
-              </Card>
-            ) : (
-              prenatalVisits.map((visit) => (
-                <TouchableOpacity
-                  key={visit.prenatal_visit_id}
-                  activeOpacity={0.8}
-                  onPress={() => setShowVisitDetail(visit)}
-                >
-                  <Card style={styles.visitCard}>
-                    <View style={styles.visitHeader}>
-                      <View style={[styles.visitDateBadge, { backgroundColor: primaryColor + '15' }]}>
-                        <Icon name="calendar-outline" size={14} color={primaryColor} />
-                        <Text style={[styles.visitDateText, { color: primaryColor }]}>{formatDate(visit.visit_date)}</Text>
-                      </View>
-                      <Icon name="chevron-forward" size={18} color={COLORS.textLight} />
-                    </View>
-                    <Text style={styles.visitSummary}>{visit.summary}</Text>
-                    
-                    {/* Quick vitals preview */}
-                    {(visit.blood_pressure || visit.fetal_heart_rate || visit.fundal_height) && (
-                      <View style={styles.vitalsPreview}>
-                        {visit.blood_pressure && (
-                          <View style={styles.vitalChip}>
-                            <Text style={styles.vitalLabel}>BP</Text>
-                            <Text style={styles.vitalValue}>{visit.blood_pressure}</Text>
-                          </View>
-                        )}
-                        {visit.fetal_heart_rate && (
-                          <View style={styles.vitalChip}>
-                            <Text style={styles.vitalLabel}>FHR</Text>
-                            <Text style={styles.vitalValue}>{visit.fetal_heart_rate}</Text>
-                          </View>
-                        )}
-                        {visit.fundal_height && (
-                          <View style={styles.vitalChip}>
-                            <Text style={styles.vitalLabel}>FH</Text>
-                            <Text style={styles.vitalValue}>{visit.fundal_height}cm</Text>
-                          </View>
-                        )}
-                      </View>
-                    )}
-                  </Card>
-                </TouchableOpacity>
-              ))
-            )}
-          </View>
+          <PrenatalVisitSection
+            clientId={clientId}
+            primaryColor={primaryColor}
+            onRefresh={fetchData}
+          />
         )}
 
         {/* Labor Records Section - Midwife Only */}
