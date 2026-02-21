@@ -75,9 +75,16 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - Added "303 days remaining" badge with calendar icon on Profile page
 - Added subscription progress bar on Subscription management page
 - Added "Share Your Feedback" section for paying providers (non-trial)
-- Created IAP service for Apple/Google In-App Purchase integration
 - Fixed logout button for web (using window.confirm instead of Alert.alert)
-- Note: Logout button works in real browsers; Playwright can't trigger React Native Web TouchableOpacity clicks (known limitation)
+- **COMPLETED: Apple/Google IAP Integration**:
+  - Created `iapService.ts` - Core IAP service for Apple App Store and Google Play
+  - Created `useIAP.ts` - React hook for seamless IAP integration
+  - Updated `SubscriptionPage.tsx` with real IAP purchase flow
+  - Added "Restore Previous Purchase" button (iOS/Android only)
+  - Created `/docs/IAP_SETUP_GUIDE.md` - Complete setup guide for App Store Connect and Play Console
+  - Product IDs configured:
+    - Apple: `truejoy.pro.monthly` ($29), `truejoy.pro.annual` ($276)
+    - Google: `truejoy_pro` with `monthly` and `annual` base plans
 
 ### ✅ RECENTLY COMPLETED (2026-02-21) - Subscription Gatekeeping & Route Fix
 
