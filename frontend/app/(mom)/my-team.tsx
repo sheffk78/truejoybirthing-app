@@ -110,7 +110,7 @@ export default function MyTeamScreen() {
         {/* Header */}
         <Text style={styles.title}>My Care Team</Text>
         <Text style={styles.subtitle}>
-          Your birth support team with automatic access to your birth plan
+          Complete your birth plan before inviting your care team. Doulas and midwives will first see key details to consider working together, then your full plan after you approve them.
         </Text>
 
         {/* Browse Marketplace Button */}

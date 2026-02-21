@@ -232,9 +232,9 @@ export default function MomHomeScreen() {
                   // Navigate to sign contract page based on provider role
                   const role = contract.provider_role?.toLowerCase() || 'doula';
                   if (role === 'midwife') {
-                    router.push(`/(mom)/sign-midwife-contract?contractId=${contract.contract_id}` as any);
+                    router.push(`/sign-midwife-contract?contractId=${contract.contract_id}` as any);
                   } else {
-                    router.push(`/(mom)/sign-contract?contractId=${contract.contract_id}` as any);
+                    router.push(`/sign-contract?contractId=${contract.contract_id}` as any);
                   }
                 }}
                 activeOpacity={0.8}
