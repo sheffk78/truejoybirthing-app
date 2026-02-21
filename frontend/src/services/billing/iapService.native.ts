@@ -2,8 +2,9 @@
  * In-App Purchase Service
  * Handles Apple App Store and Google Play subscriptions
  * 
- * NOTE: This module is web-safe. react-native-iap is only loaded on native platforms.
- * On web, all methods return appropriate fallback values.
+ * NOTE: This module is web-safe and Expo Go-safe. 
+ * react-native-iap is only loaded on native builds (not Expo Go).
+ * On web/Expo Go, all methods return appropriate fallback values.
  * 
  * Product IDs:
  * - Apple: truejoy.pro.monthly ($29/month), truejoy.pro.annual ($276/year)
@@ -13,6 +14,10 @@
 import { Platform } from 'react-native';
 import { SUBSCRIPTION_PRODUCTS } from './subscriptionConfig';
 import { API_BASE, API_ENDPOINTS } from '../../constants/api';
+import Constants from 'expo-constants';
+
+// Check if running in Expo Go at module level
+const IS_EXPO_GO = Constants.appOwnership === 'expo';
 
 // Product SKUs - defined here to avoid importing from IAP
 const PRODUCT_SKUS = Platform.select({
