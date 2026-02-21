@@ -306,7 +306,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
           <Text style={styles.supportTitle}>Need Help?</Text>
           <TouchableOpacity 
             style={styles.supportButton}
-            onPress={() => Linking.openURL('mailto:support@truejoybirthing.com')}
+            onPress={() => Linking.openURL('https://truejoybirthing.com/contact/')}
           >
             <Icon name="mail-outline" size={20} color={primaryColor} />
             <Text style={[styles.supportButtonText, { color: primaryColor }]}>Contact Support</Text>
