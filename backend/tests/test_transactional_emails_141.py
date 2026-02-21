@@ -199,8 +199,8 @@ class TestTransactionalEmails:
         mom_headers = {"Authorization": f"Bearer {mom_token}"}
         
         # Get provider info for the doula
-        user_response = self.session.get(f"{BASE_URL}/api/users/me", headers=doula_headers)
-        assert user_response.status_code == 200
+        user_response = self.session.get(f"{BASE_URL}/api/auth/me", headers=doula_headers)
+        assert user_response.status_code == 200, f"Failed to get user: {user_response.status_code}, {user_response.text}"
         doula_user = user_response.json()
         doula_id = doula_user.get("user_id")
         
