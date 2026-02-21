@@ -248,6 +248,17 @@ async def start_trial(request: StartTrialRequest, user: User = Depends(check_rol
     else:
         await db.subscriptions.insert_one(subscription)
     
+    # Send trial started email (non-blocking)
+    try:
+        await send_trial_started_email(
+            provider_email=user.email,
+            provider_name=user.full_name,
+            trial_end_date=trial_end,
+            plan_type=request.plan_type
+        )
+    except Exception as e:
+        logging.warning(f"Failed to send trial started email to {user.email}: {e}")
+    
     return {
         "message": "Trial started successfully",
         "trial_end_date": trial_end.isoformat(),
