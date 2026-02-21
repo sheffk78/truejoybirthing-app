@@ -8,22 +8,18 @@
  */
 
 import { Platform } from 'react-native';
-import {
-  initConnection,
-  endConnection,
-  getSubscriptions,
-  requestSubscription,
-  finishTransaction,
-  purchaseUpdatedListener,
-  purchaseErrorListener,
-  getAvailablePurchases,
-  type Subscription,
-  type SubscriptionPurchase,
-  type PurchaseError,
-} from 'react-native-iap';
-
 import { SUBSCRIPTION_PRODUCTS, SUBSCRIPTION_PLANS } from './subscriptionConfig';
 import { API_BASE, API_ENDPOINTS } from '../../constants/api';
+
+// Only import react-native-iap on native platforms
+let RNIap: any = null;
+if (Platform.OS !== 'web') {
+  try {
+    RNIap = require('react-native-iap');
+  } catch (e) {
+    console.warn('[IAP] react-native-iap not available:', e);
+  }
+}
 
 // Product SKUs
 const PRODUCT_SKUS = Platform.select({
