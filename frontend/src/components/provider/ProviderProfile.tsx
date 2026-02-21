@@ -521,15 +521,25 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           </View>
           <View style={styles.subscriptionInfo}>
             <Icon 
-              name={subscriptionStatus === 'active' ? 'checkmark-circle' : 'alert-circle'} 
+              name={subscriptionData?.has_pro_access ? 'checkmark-circle' : 'alert-circle'} 
               size={24} 
-              color={subscriptionStatus === 'active' ? COLORS.success : COLORS.warning} 
+              color={subscriptionData?.has_pro_access ? COLORS.success : COLORS.warning} 
             />
             <Text style={styles.subscriptionText}>
-              {subscriptionStatus === 'active' ? 'Pro Plan Active' : 
-               subscriptionStatus === 'trial' ? 'Free Trial' : 'No Active Plan'}
+              {subscriptionData?.has_pro_access 
+                ? (subscriptionData?.is_trial ? 'Free Trial Active' : 'Pro Plan Active')
+                : 'No Active Plan'}
             </Text>
           </View>
+          {subscriptionData?.has_pro_access && subscriptionData?.days_remaining !== null && (
+            <Text style={styles.subscriptionSubtext}>
+              {subscriptionData.is_trial 
+                ? `${subscriptionData.days_remaining} days left in trial`
+                : subscriptionData.auto_renewing 
+                  ? 'Auto-renews'
+                  : `${subscriptionData.days_remaining} days remaining`}
+            </Text>
+          )}
         </Card>
 
         {/* Logout Button */}
