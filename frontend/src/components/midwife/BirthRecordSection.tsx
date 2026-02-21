@@ -419,14 +419,24 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
           <Text style={styles.sectionTitle}>Birth Record</Text>
         </View>
         {birthRecord && (
-          <TouchableOpacity
-            style={[styles.editButton, { borderColor: primaryColor }]}
-            onPress={openEditModal}
-            data-testid="edit-birth-record-btn"
-          >
-            <Icon name="create-outline" size={18} color={primaryColor} />
-            <Text style={[styles.editButtonText, { color: primaryColor }]}>Edit</Text>
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              style={[styles.downloadButton, { backgroundColor: primaryColor }]}
+              onPress={handleDownloadReport}
+              data-testid="download-birth-report-btn"
+            >
+              <Icon name="download-outline" size={18} color={COLORS.white} />
+              <Text style={styles.downloadButtonText}>Report</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.editButton, { borderColor: primaryColor }]}
+              onPress={openEditModal}
+              data-testid="edit-birth-record-btn"
+            >
+              <Icon name="create-outline" size={18} color={primaryColor} />
+              <Text style={[styles.editButtonText, { color: primaryColor }]}>Edit</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 
