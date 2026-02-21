@@ -368,6 +368,16 @@ async def cancel_subscription(user: User = Depends(check_role(["DOULA", "MIDWIFE
         manage_url = None
         manage_instructions = "Your subscription has been cancelled."
     
+    # Send cancellation email (non-blocking)
+    try:
+        await send_subscription_cancelled_email(
+            provider_email=user.email,
+            provider_name=user.full_name,
+            end_date=end_date
+        )
+    except Exception as e:
+        logging.warning(f"Failed to send subscription cancelled email to {user.email}: {e}")
+    
     return {
         "message": "Subscription cancelled. You will retain access until the end of your current period.",
         "subscription_provider": provider,
