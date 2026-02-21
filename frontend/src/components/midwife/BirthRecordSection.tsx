@@ -142,7 +142,9 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
   const [birthRecord, setBirthRecord] = useState<BirthRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   // Form state
   const [fullDilationDatetime, setFullDilationDatetime] = useState('');
