@@ -25,6 +25,7 @@ import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
 import { ProviderConfig } from './config/providerConfig';
+import { useSubscriptionGate } from '../../utils/subscriptionGate';
 
 interface Lead {
   lead_id: string;
