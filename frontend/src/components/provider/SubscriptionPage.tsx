@@ -172,6 +172,38 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                 <Icon name="checkmark-circle" size={18} color={COLORS.success} />
                 <Text style={styles.statusText}>Full access to all features</Text>
               </View>
+              
+              {/* Days Remaining Progress Bar */}
+              {status.days_remaining !== null && status.days_remaining !== undefined && (
+                <View style={styles.progressSection}>
+                  <View style={styles.progressHeader}>
+                    <Text style={styles.progressLabel}>
+                      {status.is_trial ? 'Trial Period' : 'Subscription Period'}
+                    </Text>
+                    <Text style={[styles.progressDays, { color: status.is_trial ? COLORS.warning : primaryColor }]}>
+                      {status.days_remaining} days remaining
+                    </Text>
+                  </View>
+                  <View style={styles.progressBarBg}>
+                    <View 
+                      style={[
+                        styles.progressBarFill, 
+                        { 
+                          backgroundColor: status.is_trial ? COLORS.warning : primaryColor,
+                          width: `${Math.min(100, Math.max(5, (status.days_remaining / (status.is_trial ? 30 : 365)) * 100))}%`
+                        }
+                      ]} 
+                    />
+                  </View>
+                  <Text style={styles.progressSubtext}>
+                    {status.is_trial 
+                      ? `${30 - status.days_remaining} of 30 days used`
+                      : `${365 - status.days_remaining} of 365 days used`
+                    }
+                  </Text>
+                </View>
+              )}
+
               {status.subscription_end_date && (
                 <View style={styles.statusRow}>
                   <Icon name="calendar-outline" size={18} color={COLORS.textSecondary} />
@@ -184,6 +216,14 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                 <View style={styles.statusRow}>
                   <Icon name="time-outline" size={18} color={COLORS.warning} />
                   <Text style={styles.statusText}>Trial ends: {formatDate(status.trial_end_date)}</Text>
+                </View>
+              )}
+              {!status.is_trial && (
+                <View style={styles.statusRow}>
+                  <Icon name={status.auto_renewing ? 'refresh-outline' : 'time-outline'} size={18} color={COLORS.textSecondary} />
+                  <Text style={styles.statusText}>
+                    {status.auto_renewing ? 'Auto-renews annually' : 'No auto-renewal'}
+                  </Text>
                 </View>
               )}
             </View>
