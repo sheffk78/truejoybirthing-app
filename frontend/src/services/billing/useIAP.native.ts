@@ -3,15 +3,23 @@
  * 
  * React hook for handling In-App Purchases with Apple/Google stores.
  * Web-safe: Returns mock data on web platforms.
+ * Expo Go safe: Returns mock data when native modules aren't available.
  * 
  * Usage:
  * const { products, purchase, restore, isLoading, error } = useIAP();
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { Platform, Alert } from 'react-native';
+import { Platform, Alert, LogBox } from 'react-native';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { SUBSCRIPTION_PRODUCTS } from './subscriptionConfig';
+
+// Ignore IAP-related warnings in Expo Go
+LogBox.ignoreLogs([
+  '[IAP] Failed to initialize',
+  'NitroModules are not supported in Expo Go',
+  'Cannot read property \'initConnection\'',
+]);
 
 // Types
 export interface IAPProduct {
