@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 import uuid
 
 from .dependencies import db, get_current_user, User, check_role, create_notification, get_now
+from services.email_service import send_welcome_client_email
 
 router = APIRouter(prefix="/leads", tags=["Leads"])
 
@@ -473,6 +474,21 @@ async def convert_lead_to_client(
         message=f"{user.full_name} has added you as a client. You can now access all features!",
         data={"lead_id": lead_id, "client_id": client_id, "provider_id": user.user_id}
     )
+    
+    # Send welcome email to mom (non-blocking)
+    mom_email = lead.get("mom_email")
+    if mom_email:
+        try:
+            await send_welcome_client_email(
+                mom_email=mom_email,
+                mom_name=lead["mom_name"],
+                provider_name=user.full_name,
+                provider_role=user.role
+            )
+        except Exception as e:
+            # Log but don't fail the conversion
+            import logging
+            logging.warning(f"Failed to send welcome email to {mom_email}: {e}")
     
     return {
         "message": "Lead converted to client successfully",
