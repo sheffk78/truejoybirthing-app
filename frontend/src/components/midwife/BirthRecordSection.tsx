@@ -933,6 +933,169 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
           </View>
         </SafeAreaView>
       </Modal>
+
+      {/* Report Preview Modal */}
+      <Modal
+        visible={showPreviewModal}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setShowPreviewModal(false)}
+      >
+        <View style={styles.previewOverlay}>
+          <View style={styles.previewContainer}>
+            <View style={styles.previewHeader}>
+              <Icon name="document-text" size={28} color={primaryColor} />
+              <Text style={styles.previewTitle}>Birth Summary Report</Text>
+            </View>
+
+            <ScrollView style={styles.previewContent} showsVerticalScrollIndicator={false}>
+              {/* Baby Info Card */}
+              <View style={[styles.previewCard, { borderLeftColor: primaryColor }]}>
+                <Text style={styles.previewCardTitle}>Baby</Text>
+                <Text style={styles.previewBabyName}>{birthRecord?.baby_name || 'Not recorded'}</Text>
+                {birthRecord?.baby_sex && (
+                  <Text style={styles.previewSubtext}>
+                    {birthRecord.baby_sex === 'male' ? 'Boy' : birthRecord.baby_sex === 'female' ? 'Girl' : 'Intersex'}
+                  </Text>
+                )}
+              </View>
+
+              {/* Birth Details */}
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>Birth Details</Text>
+                <View style={styles.previewRow}>
+                  <Icon name="time-outline" size={16} color={COLORS.textSecondary} />
+                  <Text style={styles.previewLabel}>Born:</Text>
+                  <Text style={styles.previewValue}>
+                    {formatDateTimeDisplay(birthRecord?.birth_datetime) || 'Not recorded'}
+                  </Text>
+                </View>
+                <View style={styles.previewRow}>
+                  <Icon name="home-outline" size={16} color={COLORS.textSecondary} />
+                  <Text style={styles.previewLabel}>Place:</Text>
+                  <Text style={styles.previewValue}>
+                    {getPlaceOfBirthLabel(birthRecord?.place_of_birth) || 'Not recorded'}
+                  </Text>
+                </View>
+                <View style={styles.previewRow}>
+                  <Icon name="heart-outline" size={16} color={COLORS.textSecondary} />
+                  <Text style={styles.previewLabel}>Mode:</Text>
+                  <Text style={styles.previewValue}>
+                    {getModeOfBirthLabel(birthRecord?.mode_of_birth) || 'Not recorded'}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Vital Stats */}
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>Vital Stats</Text>
+                <View style={styles.previewStatsRow}>
+                  {/* Weight */}
+                  <View style={[styles.previewStatBox, { borderColor: primaryColor + '40' }]}>
+                    <Icon name="scale-outline" size={20} color={primaryColor} />
+                    <Text style={styles.previewStatValue}>
+                      {birthRecord?.baby_weight_lbs 
+                        ? `${birthRecord.baby_weight_lbs}lb ${birthRecord.baby_weight_oz || 0}oz`
+                        : '--'}
+                    </Text>
+                    <Text style={styles.previewStatLabel}>Weight</Text>
+                  </View>
+
+                  {/* Length */}
+                  <View style={[styles.previewStatBox, { borderColor: primaryColor + '40' }]}>
+                    <Icon name="resize-outline" size={20} color={primaryColor} />
+                    <Text style={styles.previewStatValue}>
+                      {birthRecord?.baby_length_inches 
+                        ? `${birthRecord.baby_length_inches}"`
+                        : '--'}
+                    </Text>
+                    <Text style={styles.previewStatLabel}>Length</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* APGAR Scores */}
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>APGAR Scores</Text>
+                <View style={styles.previewStatsRow}>
+                  <View style={[styles.previewApgarBox, { backgroundColor: primaryColor + '15' }]}>
+                    <Text style={[styles.previewApgarScore, { color: primaryColor }]}>
+                      {birthRecord?.apgar_1min ?? '--'}
+                    </Text>
+                    <Text style={styles.previewApgarLabel}>1 min</Text>
+                  </View>
+                  <View style={[styles.previewApgarBox, { backgroundColor: primaryColor + '15' }]}>
+                    <Text style={[styles.previewApgarScore, { color: primaryColor }]}>
+                      {birthRecord?.apgar_5min ?? '--'}
+                    </Text>
+                    <Text style={styles.previewApgarLabel}>5 min</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Status */}
+              <View style={styles.previewSection}>
+                <Text style={styles.previewSectionTitle}>Status</Text>
+                <View style={styles.previewRow}>
+                  <Icon name="woman-outline" size={16} color={COLORS.textSecondary} />
+                  <Text style={styles.previewLabel}>Mother:</Text>
+                  <View style={[
+                    styles.previewStatusBadge,
+                    { backgroundColor: birthRecord?.maternal_status === 'stable' ? COLORS.success + '20' : COLORS.warning + '20' }
+                  ]}>
+                    <Text style={[
+                      styles.previewStatusText,
+                      { color: birthRecord?.maternal_status === 'stable' ? COLORS.success : COLORS.warning }
+                    ]}>
+                      {birthRecord?.maternal_status?.charAt(0).toUpperCase() + birthRecord?.maternal_status?.slice(1) || 'Unknown'}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.previewRow}>
+                  <Icon name="happy-outline" size={16} color={COLORS.textSecondary} />
+                  <Text style={styles.previewLabel}>Baby:</Text>
+                  <View style={[
+                    styles.previewStatusBadge,
+                    { backgroundColor: COLORS.success + '20' }
+                  ]}>
+                    <Text style={[styles.previewStatusText, { color: COLORS.success }]}>
+                      {birthRecord?.baby_status?.replace(/_/g, ' ')?.charAt(0).toUpperCase() + 
+                       birthRecord?.baby_status?.replace(/_/g, ' ')?.slice(1) || 'Unknown'}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              <Text style={styles.previewNote}>
+                The full PDF report includes labor timeline, detailed notes, and complete birth documentation.
+              </Text>
+            </ScrollView>
+
+            <View style={styles.previewFooter}>
+              <TouchableOpacity
+                style={styles.previewCancelButton}
+                onPress={() => setShowPreviewModal(false)}
+              >
+                <Text style={styles.previewCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.previewDownloadButton, { backgroundColor: primaryColor }]}
+                onPress={handleDownloadReport}
+                disabled={downloading}
+              >
+                {downloading ? (
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                ) : (
+                  <>
+                    <Icon name="download-outline" size={20} color={COLORS.white} />
+                    <Text style={styles.previewDownloadText}>Download PDF</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
