@@ -29,7 +29,7 @@ import uuid
 from datetime import datetime, timedelta
 
 # Use EXPO_PUBLIC_BACKEND_URL for API access
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://joy-birth-records.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://birth-team-staging.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 DOULA_EMAIL = "demo.doula@truejoybirthing.com"
