@@ -134,42 +134,6 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
   // ============== BIRTH RECORD HANDLERS ==============
   // Birth record is now handled by the BirthRecordSection component
 
-  // ============== RENDER HELPERS ==============
-  const renderScoreSelector = (
-    label: string,
-    value: number | null,
-    onChange: (val: number | null) => void,
-    note: string,
-    onNoteChange: (val: string) => void
-  ) => (
-    <View style={styles.wellbeingItem}>
-      <Text style={styles.wellbeingLabel}>{label}</Text>
-      <View style={styles.scoreRow}>
-        {WELLBEING_SCALE.map((item) => (
-          <TouchableOpacity
-            key={item.value}
-            style={[
-              styles.scoreButton,
-              value === item.value && [styles.scoreButtonSelected, { backgroundColor: primaryColor, borderColor: primaryColor }],
-            ]}
-            onPress={() => onChange(value === item.value ? null : item.value)}
-          >
-            <Text style={[styles.scoreButtonText, value === item.value && styles.scoreButtonTextSelected]}>
-              {item.value}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <TextInput
-        style={styles.noteInput}
-        placeholder="Optional note..."
-        placeholderTextColor={COLORS.textLight}
-        value={note}
-        onChangeText={onNoteChange}
-      />
-    </View>
-  );
-
   // ============== LOADING STATE ==============
   if (loading) {
     return (
