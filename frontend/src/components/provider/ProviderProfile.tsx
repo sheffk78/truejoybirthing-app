@@ -591,7 +591,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
             </Text>
             <TouchableOpacity 
               style={[styles.feedbackButton, { backgroundColor: primaryColor }]}
-              onPress={() => Linking.openURL('https://truejoybirthing.com/feedback/')}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/contact/')}
               data-testid="feedback-btn"
             >
               <Icon name="star-outline" size={16} color={COLORS.white} />
