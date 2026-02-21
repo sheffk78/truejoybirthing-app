@@ -308,6 +308,17 @@ async def activate_subscription(request: StartTrialRequest, user: User = Depends
         upsert=True
     )
     
+    # Send subscription activated email (non-blocking)
+    try:
+        await send_subscription_activated_email(
+            provider_email=user.email,
+            provider_name=user.full_name,
+            plan_type=request.plan_type,
+            end_date=sub_end
+        )
+    except Exception as e:
+        logging.warning(f"Failed to send subscription activated email to {user.email}: {e}")
+    
     return {
         "message": "Subscription activated successfully",
         "subscription_end_date": sub_end.isoformat(),
