@@ -93,6 +93,19 @@ class IAPService {
   }
 
   /**
+   * Check if NitroModules are supported (required by react-native-iap)
+   */
+  private hasNitroModulesSupport(): boolean {
+    try {
+      // Try to access NitroModules - if it throws, we're in Expo Go
+      const NitroModules = require('react-native-nitro-modules');
+      return !!NitroModules;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Initialize the IAP connection
    * Call this when the app starts or user enters subscription flow
    */
@@ -128,7 +141,11 @@ class IAPService {
       return true;
     } catch (error: any) {
       // Handle the case where native module isn't available
-      if (error.message?.includes('NitroModules') || error.message?.includes('initConnection')) {
+      const errorMsg = error.message || '';
+      if (errorMsg.includes('NitroModules') || 
+          errorMsg.includes('initConnection') || 
+          errorMsg.includes('undefined') ||
+          errorMsg.includes('not supported')) {
         console.log('[IAP] Native IAP module not available - using backend subscription management');
       } else {
         console.error('[IAP] Failed to initialize:', error);
