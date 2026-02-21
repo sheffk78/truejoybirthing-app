@@ -476,7 +476,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
         {stats && (
           <View style={[styles.statsBadge, { backgroundColor: primaryColor + '20' }]}>
             <Text style={[styles.statsText, { color: primaryColor }]}>
-              {stats.active_leads} Active
+              {stats.active_leads} Open
             </Text>
           </View>
         )}
@@ -489,7 +489,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
           onPress={() => setStatusFilter('active')}
         >
           <Text style={[styles.filterTabText, statusFilter === 'active' && { color: COLORS.white }]}>
-            Active ({stats?.active_leads || 0})
+            Open ({stats?.active_leads || 0})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity 

@@ -175,7 +175,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
           >
             <View style={styles.leadInsightsHeader}>
               <View style={[styles.leadInsightsIcon, { backgroundColor: primaryColor + '20' }]}>
-                <Icon name="trending-up" size={20} color={primaryColor} />
+                <Icon name="disc-outline" size={20} color={primaryColor} />
               </View>
               <Text style={styles.leadInsightsTitle}>Lead Insights</Text>
               <Icon name="chevron-forward" size={20} color={COLORS.textSecondary} />
@@ -185,7 +185,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
                 <Text style={[styles.leadInsightsValue, { color: COLORS.warning }]}>
                   {stats.lead_insights.active_leads}
                 </Text>
-                <Text style={styles.leadInsightsLabel}>Active</Text>
+                <Text style={styles.leadInsightsLabel}>Open</Text>
               </View>
               <View style={styles.leadInsightsDivider} />
               <View style={styles.leadInsightsStat}>
