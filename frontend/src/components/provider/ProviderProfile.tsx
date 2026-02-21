@@ -532,13 +532,32 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
             </Text>
           </View>
           {subscriptionData?.has_pro_access && subscriptionData?.days_remaining !== null && (
-            <Text style={styles.subscriptionSubtext}>
-              {subscriptionData.is_trial 
-                ? `${subscriptionData.days_remaining} days left in trial`
-                : subscriptionData.auto_renewing 
-                  ? 'Auto-renews'
-                  : `${subscriptionData.days_remaining} days remaining`}
-            </Text>
+            <View style={styles.subscriptionDetails}>
+              {/* Days Remaining Badge */}
+              <View style={[styles.daysRemainingBadge, { backgroundColor: subscriptionData.is_trial ? COLORS.warning + '20' : primaryColor + '15' }]}>
+                <Icon 
+                  name="calendar-outline" 
+                  size={16} 
+                  color={subscriptionData.is_trial ? COLORS.warning : primaryColor} 
+                />
+                <Text style={[styles.daysRemainingText, { color: subscriptionData.is_trial ? COLORS.warning : primaryColor }]}>
+                  {subscriptionData.days_remaining} days {subscriptionData.is_trial ? 'left in trial' : 'remaining'}
+                </Text>
+              </View>
+              {/* Auto-renew Status */}
+              {!subscriptionData.is_trial && (
+                <View style={styles.autoRenewRow}>
+                  <Icon 
+                    name={subscriptionData.auto_renewing ? 'refresh-outline' : 'time-outline'} 
+                    size={14} 
+                    color={COLORS.textSecondary} 
+                  />
+                  <Text style={styles.autoRenewText}>
+                    {subscriptionData.auto_renewing ? 'Auto-renews annually' : 'Expires, no auto-renew'}
+                  </Text>
+                </View>
+              )}
+            </View>
           )}
         </Card>
 
