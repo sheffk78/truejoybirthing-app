@@ -73,37 +73,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
-  // Prenatal visits state (midwife only)
-  const [prenatalVisits, setPrenatalVisits] = useState<PrenatalVisit[]>([]);
-  const [showVisitModal, setShowVisitModal] = useState(false);
-  const [editingVisit, setEditingVisit] = useState<PrenatalVisit | null>(null);
-  const [showVisitDetail, setShowVisitDetail] = useState<PrenatalVisit | null>(null);
-  const [saving, setSaving] = useState(false);
-  
-  // Birth record is now handled by the BirthRecordSection component
-  
-  // Prenatal visit form state
-  const [visitDate, setVisitDate] = useState('');
-  const [urinalysis, setUrinalysis] = useState('');
-  const [urinalysisNote, setUrinalysisNote] = useState('');
-  const [bloodPressure, setBloodPressure] = useState('');
-  const [fetalHeartRate, setFetalHeartRate] = useState('');
-  const [fundalHeight, setFundalHeight] = useState('');
-  const [weight, setWeight] = useState('');
-  const [weightUnit, setWeightUnit] = useState('lbs');
-  const [eatingScore, setEatingScore] = useState<number | null>(null);
-  const [eatingNote, setEatingNote] = useState('');
-  const [waterScore, setWaterScore] = useState<number | null>(null);
-  const [waterNote, setWaterNote] = useState('');
-  const [emotionalScore, setEmotionalScore] = useState<number | null>(null);
-  const [emotionalNote, setEmotionalNote] = useState('');
-  const [physicalScore, setPhysicalScore] = useState<number | null>(null);
-  const [physicalNote, setPhysicalNote] = useState('');
-  const [mentalScore, setMentalScore] = useState<number | null>(null);
-  const [mentalNote, setMentalNote] = useState('');
-  const [spiritualScore, setSpiritualScore] = useState<number | null>(null);
-  const [spiritualNote, setSpiritualNote] = useState('');
-  const [generalNotes, setGeneralNotes] = useState('');
+  // Prenatal visits state is now handled by PrenatalVisitSection component
 
   // ============== DATA FETCHING ==============
   const fetchData = useCallback(async () => {
