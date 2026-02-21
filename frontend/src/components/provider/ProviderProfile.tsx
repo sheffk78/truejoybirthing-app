@@ -377,7 +377,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           ) : (
             <View>
               <View style={styles.infoRow}>
-                <Icon name="briefcase-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="medical-outline" size={20} color={COLORS.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Practice Name</Text>
                   <Text style={styles.infoValue}>{profile?.practice_name || 'Not set'}</Text>
@@ -386,7 +386,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
               
               {isMidwife && (
                 <View style={styles.infoRow}>
-                  <Icon name="school-outline" size={20} color={COLORS.textSecondary} />
+                  <Icon name="ribbon-outline" size={20} color={COLORS.textSecondary} />
                   <View style={styles.infoText}>
                     <Text style={styles.infoLabel}>Credentials</Text>
                     <Text style={styles.infoValue}>{profile?.credentials || 'Not set'}</Text>
