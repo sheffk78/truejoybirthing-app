@@ -601,6 +601,45 @@ async def get_provider_share_requests(user: User = Depends(check_role(["DOULA", 
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     
+    # Enrich with mom's profile and birth plan info (same as leads)
+    for req in requests:
+        mom_user_id = req.get("mom_user_id")
+        if not mom_user_id:
+            continue
+            
+        # Get mom's profile for EDD, birth setting, and number of children
+        profile = await db.mom_profiles.find_one(
+            {"user_id": mom_user_id},
+            {"_id": 0, "due_date": 1, "edd": 1, "planned_birth_setting": 1, "number_of_children": 1}
+        )
+        if profile:
+            req["edd"] = profile.get("due_date") or profile.get("edd")
+            req["planned_birth_setting"] = profile.get("planned_birth_setting")
+            req["number_of_children"] = profile.get("number_of_children")
+        
+        # Get birth plan key details for provider to consider working together
+        birth_plan = await db.birth_plans.find_one(
+            {"user_id": mom_user_id},
+            {"_id": 0, "sections": 1, "completion_percentage": 1}
+        )
+        if birth_plan:
+            req["birth_plan_completion"] = birth_plan.get("completion_percentage", 0)
+            
+            # Extract key details from "about_me" section
+            sections = birth_plan.get("sections", [])
+            about_me = next((s for s in sections if s.get("section_id") == "about_me"), None)
+            if about_me and about_me.get("data"):
+                data = about_me["data"]
+                req["birth_plan_due_date"] = data.get("dueDate")
+                req["birth_plan_location"] = data.get("birthLocation")
+                req["birth_plan_hospital_name"] = data.get("hospitalName")
+            
+            # Extract previous birth experience from "other_considerations" section
+            other_considerations = next((s for s in sections if s.get("section_id") == "other_considerations"), None)
+            if other_considerations and other_considerations.get("data"):
+                data = other_considerations["data"]
+                req["previous_birth_experience"] = data.get("previousBirthExperience")
+    
     return {"requests": requests}
 
 
