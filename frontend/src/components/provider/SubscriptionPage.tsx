@@ -142,33 +142,136 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
     }
   };
 
-  const handleManageSubscription = () => {
-    // Navigate to subscription management or show options
-    Alert.alert(
-      'Manage Subscription',
-      'What would you like to do?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Contact Support', 
-          onPress: () => Linking.openURL('https://truejoybirthing.com/contact/')
-        },
-        {
-          text: 'Cancel Subscription',
-          style: 'destructive',
-          onPress: () => {
-            Alert.alert(
-              'Cancel Subscription',
-              'To cancel your subscription, please contact our support team. We\'re here to help!',
-              [
-                { text: 'OK' },
-                { text: 'Contact Support', onPress: () => Linking.openURL('https://truejoybirthing.com/contact/') }
-              ]
-            );
+  const handleUpgradeToAnnual = async () => {
+    const confirmUpgrade = Platform.OS === 'web' 
+      ? window.confirm('Upgrade to Annual Plan?\n\nYou\'ll save $72/year compared to monthly billing. Your new annual subscription will start immediately.')
+      : await new Promise<boolean>((resolve) => {
+          Alert.alert(
+            'Upgrade to Annual Plan?',
+            'You\'ll save $72/year compared to monthly billing. Your new annual subscription will start immediately.',
+            [
+              { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+              { text: 'Upgrade Now', onPress: () => resolve(true) }
+            ]
+          );
+        });
+
+    if (!confirmUpgrade) return;
+
+    setProcessing(true);
+    try {
+      // Use real IAP on native platforms
+      if (iapAvailable && Platform.OS !== 'web') {
+        const productId = getProductIdForPlan('annual');
+        if (productId) {
+          const offerToken = Platform.OS === 'android' ? 'annual-offer' : undefined;
+          const result = await purchase(productId, offerToken);
+          if (!result.success && result.error) {
+            throw new Error(result.error);
           }
+          await fetchStatus();
+          Alert.alert('Upgrade Successful!', 'You\'re now on the annual plan. Thank you!');
+          return;
         }
-      ]
-    );
+      }
+      
+      // Fallback to mock activation for web/development
+      await activateSubscription('annual');
+      Alert.alert('Upgrade Successful!', 'You\'re now on the annual plan. Thank you!');
+    } catch (error: any) {
+      Alert.alert('Upgrade Failed', error.message || 'Failed to upgrade subscription');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    const confirmCancel = Platform.OS === 'web'
+      ? window.confirm('Cancel Subscription?\n\nYou will retain access until the end of your current billing period. Are you sure you want to cancel?')
+      : await new Promise<boolean>((resolve) => {
+          Alert.alert(
+            'Cancel Subscription?',
+            'You will retain access until the end of your current billing period. Are you sure you want to cancel?',
+            [
+              { text: 'Keep Subscription', style: 'cancel', onPress: () => resolve(false) },
+              { text: 'Yes, Cancel', style: 'destructive', onPress: () => resolve(true) }
+            ]
+          );
+        });
+
+    if (!confirmCancel) return;
+
+    setProcessing(true);
+    try {
+      await cancelSubscription();
+      
+      // For native apps, also direct users to the app store to manage
+      const manageUrl = getSubscriptionManageUrl();
+      if (manageUrl && Platform.OS !== 'web') {
+        Alert.alert(
+          'Subscription Cancelled',
+          'Auto-renewal has been turned off. To fully manage your subscription, you may also need to cancel in your device settings.',
+          [
+            { text: 'OK' },
+            { text: 'Open Settings', onPress: () => Linking.openURL(manageUrl) }
+          ]
+        );
+      } else {
+        Alert.alert('Subscription Cancelled', 'Auto-renewal has been turned off. You will retain access until the end of your current period.');
+      }
+      
+      await fetchStatus();
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to cancel subscription');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleManageSubscription = () => {
+    // Build options based on current subscription state
+    const options: { text: string; onPress?: () => void; style?: 'cancel' | 'destructive' | 'default' }[] = [
+      { text: 'Close', style: 'cancel' }
+    ];
+
+    // Add upgrade option for monthly subscribers
+    if (canUpgradeToAnnual) {
+      options.push({
+        text: 'Upgrade to Annual (Save $72/yr)',
+        onPress: handleUpgradeToAnnual
+      });
+    }
+
+    // Add contact support option
+    options.push({
+      text: 'Contact Support',
+      onPress: () => Linking.openURL('https://truejoybirthing.com/contact/')
+    });
+
+    // Add cancel option for active subscribers (not trial)
+    if (status?.subscription_status === 'active' && !status?.is_trial) {
+      options.push({
+        text: 'Cancel Subscription',
+        style: 'destructive',
+        onPress: handleCancelSubscription
+      });
+    }
+
+    // For trial users, show different cancel option
+    if (status?.is_trial) {
+      options.push({
+        text: 'End Trial Early',
+        style: 'destructive',
+        onPress: handleCancelSubscription
+      });
+    }
+
+    if (Platform.OS === 'web') {
+      // For web, show a more detailed management UI inline
+      setShowCancelConfirm(true);
+    } else {
+      Alert.alert('Manage Subscription', 'What would you like to do?', options);
+    }
   };
 
   const formatDate = (dateStr: string | null) => {
