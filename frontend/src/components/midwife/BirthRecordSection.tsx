@@ -21,7 +21,7 @@ import Card from '../Card';
 import Button from '../Button';
 import { apiRequest, getApiBaseUrl } from '../../utils/api';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
-import { useAuthStore } from '../../store/useAuthStore';
+import { useAuthStore } from '../../store/authStore';
 
 // ============== TYPES ==============
 interface BirthRecord {
