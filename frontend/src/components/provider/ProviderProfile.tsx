@@ -744,6 +744,34 @@ const styles = StyleSheet.create({
     marginLeft: SIZES.xs 
   },
   
+  // Feedback section styles
+  feedbackHeader: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: SIZES.sm, 
+    marginBottom: SIZES.xs 
+  },
+  feedbackDescription: { 
+    fontSize: SIZES.fontSm, 
+    fontFamily: FONTS.body, 
+    color: COLORS.textSecondary, 
+    marginBottom: SIZES.sm,
+    marginLeft: 30,
+  },
+  feedbackButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    paddingVertical: SIZES.sm, 
+    borderRadius: SIZES.radiusSm, 
+    gap: SIZES.xs 
+  },
+  feedbackButtonText: { 
+    fontSize: SIZES.fontSm, 
+    fontFamily: FONTS.bodyMedium, 
+    color: COLORS.white 
+  },
+  
   // Logout styles
   logoutButton: { 
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', 
