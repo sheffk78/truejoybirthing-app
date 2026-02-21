@@ -347,7 +347,7 @@ async def send_subscription_upgraded_email(
     
     return await send_email(
         to=provider_email,
-        subject=f"Upgrade confirmed! You're now on the Annual plan",
+        subject="Upgrade confirmed! You're now on the Annual plan",
         html=html
     )
 
