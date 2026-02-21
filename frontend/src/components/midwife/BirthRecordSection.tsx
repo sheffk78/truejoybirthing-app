@@ -19,7 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
-import { apiRequest, getApiUrl } from '../../utils/api';
+import { apiRequest, getApiBaseUrl } from '../../utils/api';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
 import { useAuthStore } from '../../store/useAuthStore';
 
