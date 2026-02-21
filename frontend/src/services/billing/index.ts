@@ -7,6 +7,8 @@
 
 export * from './subscriptionConfig';
 export * from './iapService';
+export * from './useIAP';
 
-// Re-export the singleton for convenience
+// Re-export singletons and hooks for convenience
 export { default as iapService } from './iapService';
+export { default as useIAP } from './useIAP';
