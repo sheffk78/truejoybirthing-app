@@ -126,6 +126,13 @@ export default function MidwifeLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="subscription"
+        options={{ 
+          href: null,
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }

@@ -118,6 +118,13 @@ export default function DoulaLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="subscription"
+        options={{ 
+          href: null,
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }
