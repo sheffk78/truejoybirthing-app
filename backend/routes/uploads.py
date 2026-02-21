@@ -55,7 +55,7 @@ def validate_base64_image(data_url: str) -> tuple[str, str]:
 
 
 @router.post("/image", response_model=ImageUploadResponse)
-async def upload_image(request: ImageUploadRequest, user: User = Depends(get_current_user)):
+async def upload_image(request: ImageUploadRequest, user: User = Depends(get_current_user())):
     """Upload an image as base64 data URL.
     
     The image is stored in the database and a reference URL is returned.
