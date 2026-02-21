@@ -69,6 +69,23 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-21)
 
+### ✅ RECENTLY COMPLETED (2026-02-21) - Provider UI/UX Improvements
+
+#### Midwife & Doula UI Updates (COMPLETED - 2026-02-21)
+- [x] **Leads Tab Icon** - Changed from `person-add-outline` to `disc-outline` (target/bullseye icon)
+- [x] **Midwife Profile Icons**:
+  - Credentials: Changed from `school-outline` to `ribbon-outline` (medal/ribbon icon)
+  - Practice Name: Changed from `briefcase-outline` to `medical-outline`
+- [x] **Connection Requests Enhanced** - Now shows same mom info as leads:
+  - Number of children
+  - Due date from birth plan
+  - Birth location (e.g., "Home", "Hospital")
+  - Hospital/Birth Center name
+  - Previous birth experience (truncated preview)
+  - Birth plan completion percentage
+- [x] **Logout Button Consistency** - Mom's profile logout now matches Midwife/Doula style (centered icon + text, no card wrapper)
+- [x] **Testing** - Code review verified, frontend building successfully
+
 ### ✅ RECENTLY COMPLETED (2026-02-21) - Mom's Side Improvements
 
 #### Mom's Side Improvements (COMPLETED - 2026-02-21)
