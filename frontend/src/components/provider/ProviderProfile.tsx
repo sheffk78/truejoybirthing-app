@@ -601,7 +601,14 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         )}
 
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} data-testid="logout-btn">
+        {/* Logout Button */}
+        <TouchableOpacity 
+          style={styles.logoutButton} 
+          onPress={handleLogout} 
+          data-testid="logout-btn"
+          accessibilityRole="button"
+          accessibilityLabel="Log out of your account"
+        >
           <Icon name="log-out-outline" size={20} color={COLORS.error} />
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
