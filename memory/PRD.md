@@ -67,11 +67,17 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - **LaborRecord** (NEW): {labor_record_id, client_id, provider_id, entry_datetime, labor_stage, dilation_cm, effacement_percent, station, contraction_*, membranes_*, maternal_*, fetal_*, interventions, notes}
 - **BirthRecord** (ENHANCED): {birth_record_id, client_id, provider_id, birth_datetime, mode_of_birth, place_of_birth, baby_*, newborn_*, apgar_*, estimated_blood_loss_ml, repairs_*, maternal_status, baby_status, transfer_*, birth_story_notes}
 
-## What's Been Implemented (Last Updated: 2026-02-21 - Subscription Fix VERIFIED)
+## What's Been Implemented (Last Updated: 2026-02-21)
 
 **Latest Session (2026-02-21):**
 - Verified subscription status display fix on Provider Profile page
 - Confirmed "Pro Plan Active" with green checkmark and "Auto-renews" showing correctly for active subscribers
+- Added "303 days remaining" badge with calendar icon on Profile page
+- Added subscription progress bar on Subscription management page
+- Added "Share Your Feedback" section for paying providers (non-trial)
+- Created IAP service for Apple/Google In-App Purchase integration
+- Fixed logout button for web (using window.confirm instead of Alert.alert)
+- Note: Logout button works in real browsers; Playwright can't trigger React Native Web TouchableOpacity clicks (known limitation)
 
 ### ✅ RECENTLY COMPLETED (2026-02-21) - Subscription Gatekeeping & Route Fix
 
