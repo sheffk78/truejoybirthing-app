@@ -336,6 +336,46 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
     }
   };
 
+  // ============== DOWNLOAD REPORT ==============
+  const handleDownloadReport = async () => {
+    try {
+      const token = useAuthStore.getState().token;
+      const baseUrl = getApiUrl();
+      const url = `${baseUrl}/midwife/clients/${clientId}/birth-summary/pdf`;
+      
+      if (Platform.OS === 'web') {
+        // For web, open the PDF in a new tab
+        const fullUrl = `${url}?token=${token}`;
+        // Use fetch to get the PDF with auth header
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to generate report');
+        }
+        
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `Birth_Summary_${birthRecord?.baby_name || 'Report'}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+      } else {
+        // For native, open in browser
+        Alert.alert('Download Report', 'Opening report download...');
+        await Linking.openURL(url);
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to download report');
+    }
+  };
+
   // ============== RENDER HELPERS ==============
   const renderOptionButtons = (
     options: { value: string; label: string }[],
