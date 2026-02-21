@@ -83,12 +83,53 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
     setProcessing(true);
     try {
+      // Use real IAP on native platforms
+      if (iapAvailable && Platform.OS !== 'web') {
+        const productId = getProductIdForPlan(selectedPlan);
+        if (productId) {
+          // For Android subscriptions with multiple base plans, we need offer token
+          const offerToken = Platform.OS === 'android' ? 
+            (selectedPlan === 'monthly' ? 'monthly-offer' : 'annual-offer') : 
+            undefined;
+          
+          const result = await purchase(productId, offerToken);
+          if (!result.success && result.error) {
+            throw new Error(result.error);
+          }
+          // If successful, the IAP callbacks will handle the rest
+          router.back();
+          return;
+        }
+      }
+      
+      // Fallback to mock activation for web/development
       await activateSubscription(selectedPlan);
       Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.', [
         { text: 'Continue', onPress: () => router.back() }
       ]);
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to activate subscription');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleRestorePurchases = async () => {
+    if (!iapAvailable) {
+      Alert.alert('Not Available', 'Restore purchases is only available on iOS and Android.');
+      return;
+    }
+    
+    setProcessing(true);
+    try {
+      const result = await restore();
+      if (!result.success && result.error !== 'No previous purchases found') {
+        Alert.alert('Restore Failed', result.error || 'Unable to restore purchases');
+      } else if (!result.success) {
+        Alert.alert('No Purchases Found', 'We could not find any previous purchases to restore.');
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to restore purchases');
     } finally {
       setProcessing(false);
     }
