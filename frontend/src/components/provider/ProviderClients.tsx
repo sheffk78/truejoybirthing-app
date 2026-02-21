@@ -294,12 +294,53 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                     <View style={styles.requestInfo}>
                       <Text style={styles.requestName}>{request.mom_name}</Text>
                       <Text style={styles.requestSubtext}>Wants to share their birth plan</Text>
-                      {request.due_date && (
-                        <Text style={styles.requestDate}>Due: {formatDate(request.due_date)}</Text>
+                      {(request.birth_plan_due_date || request.edd || request.due_date) && (
+                        <Text style={styles.requestDate}>Due: {formatDate(request.birth_plan_due_date || request.edd || request.due_date || '')}</Text>
                       )}
                     </View>
                     <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
                   </View>
+                  
+                  {/* Key Details Preview */}
+                  {(request.number_of_children !== undefined || request.birth_plan_location || request.birth_plan_hospital_name || request.previous_birth_experience) && (
+                    <View style={styles.requestKeyDetails}>
+                      <View style={styles.requestDetailsGrid}>
+                        {request.number_of_children !== undefined && (
+                          <View style={styles.requestDetailChip}>
+                            <Icon name="people-outline" size={12} color={COLORS.textSecondary} />
+                            <Text style={styles.requestDetailText}>{request.number_of_children} {request.number_of_children === 1 ? 'child' : 'children'}</Text>
+                          </View>
+                        )}
+                        {request.birth_plan_location && (
+                          <View style={styles.requestDetailChip}>
+                            <Icon name="home-outline" size={12} color={COLORS.textSecondary} />
+                            <Text style={styles.requestDetailText}>{request.birth_plan_location}</Text>
+                          </View>
+                        )}
+                        {request.birth_plan_hospital_name && (
+                          <View style={styles.requestDetailChip}>
+                            <Icon name="business-outline" size={12} color={COLORS.textSecondary} />
+                            <Text style={styles.requestDetailText}>{request.birth_plan_hospital_name}</Text>
+                          </View>
+                        )}
+                      </View>
+                      {request.previous_birth_experience && (
+                        <Text style={styles.requestPreviousExp} numberOfLines={2}>
+                          Previous: {request.previous_birth_experience}
+                        </Text>
+                      )}
+                      {request.birth_plan_completion !== undefined && (
+                        <View style={styles.requestCompletionRow}>
+                          <Text style={styles.requestCompletionLabel}>Birth Plan:</Text>
+                          <View style={[styles.requestCompletionBadge, { backgroundColor: request.birth_plan_completion >= 80 ? COLORS.success + '20' : COLORS.warning + '20' }]}>
+                            <Text style={[styles.requestCompletionText, { color: request.birth_plan_completion >= 80 ? COLORS.success : COLORS.warning }]}>
+                              {request.birth_plan_completion}%
+                            </Text>
+                          </View>
+                        </View>
+                      )}
+                    </View>
+                  )}
                 </Card>
               </TouchableOpacity>
             ))}
