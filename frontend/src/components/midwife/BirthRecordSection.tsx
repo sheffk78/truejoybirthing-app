@@ -340,7 +340,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
   const handleDownloadReport = async () => {
     try {
       const token = useAuthStore.getState().token;
-      const baseUrl = getApiUrl();
+      const baseUrl = getApiBaseUrl();
       const url = `${baseUrl}/midwife/clients/${clientId}/birth-summary/pdf`;
       
       if (Platform.OS === 'web') {
