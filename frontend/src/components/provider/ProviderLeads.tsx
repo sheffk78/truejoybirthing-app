@@ -398,11 +398,11 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
                   <Text style={styles.actionButtonText}>Schedule</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
-                  style={[styles.actionButton, styles.actionButtonOutline]}
-                  onPress={() => handleMessage(lead)}
+                  style={[styles.actionButton, { backgroundColor: COLORS.success }]}
+                  onPress={() => handleConvertToClient(lead)}
                 >
-                  <Icon name="chatbubble-outline" size={16} color={primaryColor} />
-                  <Text style={[styles.actionButtonText, { color: primaryColor }]}>Message</Text>
+                  <Icon name="checkmark" size={16} color={COLORS.white} />
+                  <Text style={styles.actionButtonText}>Accept</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.actionButton, styles.actionButtonGhost]}
