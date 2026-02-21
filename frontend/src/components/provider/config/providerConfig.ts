@@ -236,7 +236,7 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
     ],
     quickActions: [
       { label: 'See Clients', icon: 'people', route: '/(midwife)/clients', colorKey: 'primary' },
-      { label: 'Appointments', icon: 'calendar-number', route: '/(midwife)/appointments', colorKey: 'warning' },
+      { label: 'Appointments', icon: 'calendar-outline', route: '/(midwife)/appointments', colorKey: 'warning' },
     ],
     tipTitle: 'Midwifery Tools',
     tipText: 'Go to Clients to manage visits, birth summaries, contracts, and invoices for each client. The client-first workflow keeps everything organized.',
