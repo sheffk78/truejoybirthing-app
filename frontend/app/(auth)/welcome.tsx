@@ -24,7 +24,7 @@ export default function WelcomeScreen() {
       window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
     } else {
       // For native, use expo-web-browser or deep linking
-      const redirectUrl = 'https://birth-team-staging.preview.emergentagent.com/auth-callback';
+      const redirectUrl = 'https://provider-portal-qa.preview.emergentagent.com/auth-callback';
       Linking.openURL(`https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`);
     }
   };
