@@ -157,14 +157,38 @@ async def get_provider_leads(
             lead["mom_picture"] = mom.get("picture")
             lead["mom_email"] = mom.get("email")
         
-        # Get mom's profile for EDD if available
+        # Get mom's profile for EDD, birth setting, and number of children
         profile = await db.mom_profiles.find_one(
             {"user_id": lead["mom_user_id"]},
-            {"_id": 0, "due_date": 1, "edd": 1, "planned_birth_setting": 1}
+            {"_id": 0, "due_date": 1, "edd": 1, "planned_birth_setting": 1, "number_of_children": 1}
         )
         if profile:
             lead["edd"] = profile.get("due_date") or profile.get("edd")
             lead["planned_birth_setting"] = profile.get("planned_birth_setting")
+            lead["number_of_children"] = profile.get("number_of_children")
+        
+        # Get birth plan key details for provider to consider working together
+        birth_plan = await db.birth_plans.find_one(
+            {"user_id": lead["mom_user_id"]},
+            {"_id": 0, "sections": 1, "completion_percentage": 1}
+        )
+        if birth_plan:
+            lead["birth_plan_completion"] = birth_plan.get("completion_percentage", 0)
+            
+            # Extract key details from "about_me" section
+            sections = birth_plan.get("sections", [])
+            about_me = next((s for s in sections if s.get("section_id") == "about_me"), None)
+            if about_me and about_me.get("data"):
+                data = about_me["data"]
+                lead["birth_plan_due_date"] = data.get("dueDate")
+                lead["birth_plan_location"] = data.get("birthLocation")
+                lead["birth_plan_hospital_name"] = data.get("hospitalName")
+            
+            # Extract previous birth experience from "other_considerations" section
+            other_considerations = next((s for s in sections if s.get("section_id") == "other_considerations"), None)
+            if other_considerations and other_considerations.get("data"):
+                data = other_considerations["data"]
+                lead["previous_birth_experience"] = data.get("previousBirthExperience")
         
         # If consultation scheduled, get appointment info
         if lead.get("consultation_appointment_id"):
