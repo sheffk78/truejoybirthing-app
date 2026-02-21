@@ -69,6 +69,22 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-21)
 
+### ✅ RECENTLY COMPLETED (2026-02-21) - Subscription Gatekeeping & Route Fix
+
+#### Subscription Page & Gatekeeping (COMPLETED - 2026-02-21)
+- [x] **Fixed Subscription Route** - Created `/(midwife)/subscription.tsx` and `/(doula)/subscription.tsx`
+  - Full subscription management page with current status, features list, pricing plans
+  - Manage subscription link, support contact
+- [x] **Subscription Gate Utility** - `/app/frontend/src/utils/subscriptionGate.ts`
+  - `useSubscriptionGate()` hook for checking subscription status
+  - `checkAndAlert()` function shows friendly modal with "View Plans" option
+  - Supports gating: accept_client, add_client, approve_lead, send_contract, create_invoice
+- [x] **Soft Gatekeeping Implemented**:
+  - **Accept Connection Requests** - Blocked without subscription (ProviderClients.tsx)
+  - **Convert Lead to Client** - Blocked without subscription (ProviderLeads.tsx)
+  - **Existing clients** - Still accessible for managing ongoing work
+- [x] **Testing** - Frontend building successfully, routes accessible
+
 ### ✅ RECENTLY COMPLETED (2026-02-21) - Provider UI/UX Improvements
 
 #### Midwife & Doula UI Updates (COMPLETED - 2026-02-21)
