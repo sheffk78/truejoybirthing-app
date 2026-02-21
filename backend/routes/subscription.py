@@ -13,6 +13,14 @@ from datetime import datetime, timezone, timedelta
 import uuid
 
 from .dependencies import db, get_now, get_current_user, check_role, User
+from services.email_service import (
+    send_subscription_activated_email,
+    send_subscription_upgraded_email,
+    send_subscription_downgraded_email,
+    send_subscription_cancelled_email,
+    send_trial_started_email
+)
+import logging
 
 router = APIRouter(prefix="/subscription", tags=["Subscription"])
 
