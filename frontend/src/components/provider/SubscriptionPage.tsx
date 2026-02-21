@@ -397,6 +397,19 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               )}
             </View>
 
+            {/* Restore Purchases - iOS/Android only */}
+            {Platform.OS !== 'web' && (
+              <TouchableOpacity 
+                style={styles.restoreButton} 
+                onPress={handleRestorePurchases}
+                disabled={processing}
+              >
+                <Text style={[styles.restoreButtonText, { color: primaryColor }]}>
+                  Restore Previous Purchase
+                </Text>
+              </TouchableOpacity>
+            )}
+
             <Text style={styles.termsText}>
               By subscribing, you agree to our Terms of Service and Privacy Policy. 
               Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period.
