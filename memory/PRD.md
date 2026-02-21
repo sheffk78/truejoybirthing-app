@@ -98,7 +98,12 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - [x] **Frontend Integration** - "Report" button in BirthRecordSection header
   - Downloads PDF on web via blob URL
   - Button visible next to Edit when birth record exists
-- [x] **Testing** - Backend 100% (10/10 tests), PDF generation verified via curl
+- [x] **ENHANCEMENT: Birth Summary Preview Modal** (2026-02-21)
+  - Report button opens preview modal BEFORE downloading (not immediate download)
+  - Shows key stats: Baby name/sex, Birth datetime/place/mode, Weight/Length, APGAR scores (1min/5min), Maternal/Baby status
+  - "Cancel" and "Download PDF" buttons in modal footer
+  - Better UX - users see summary before committing to PDF download
+- [x] **Testing** - Backend 100% (10/10 tests), PDF generation verified, Code review verified modal implementation
 
 ### ✅ RECENTLY COMPLETED (2026-02-21) - Birth Record Feature (Midwife)
 
