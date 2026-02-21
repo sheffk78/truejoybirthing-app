@@ -352,6 +352,26 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
             <Text style={[styles.supportButtonText, { color: primaryColor }]}>Contact Support</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Feedback Section - Only for paying subscribers */}
+        {status?.has_pro_access && !status?.is_trial && (
+          <Card style={styles.feedbackCard}>
+            <View style={styles.feedbackHeader}>
+              <Icon name="chatbubble-ellipses-outline" size={24} color={primaryColor} />
+              <Text style={styles.feedbackTitle}>Share Your Feedback</Text>
+            </View>
+            <Text style={styles.feedbackDescription}>
+              As a Pro subscriber, your feedback helps us improve True Joy Birthing for all providers.
+            </Text>
+            <TouchableOpacity 
+              style={[styles.feedbackButton, { backgroundColor: primaryColor }]}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/feedback/')}
+            >
+              <Icon name="star-outline" size={18} color={COLORS.white} />
+              <Text style={styles.feedbackButtonText}>Leave Feedback</Text>
+            </TouchableOpacity>
+          </Card>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
