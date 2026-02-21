@@ -31,6 +31,15 @@ interface ShareRequest {
   due_date?: string;
   status: string;
   created_at: string;
+  // New fields - from mom profile & birth plan
+  edd?: string;
+  planned_birth_setting?: string;
+  number_of_children?: number;
+  birth_plan_completion?: number;
+  birth_plan_due_date?: string;
+  birth_plan_location?: string;
+  birth_plan_hospital_name?: string;
+  previous_birth_experience?: string;
 }
 
 interface ConnectedClient {
