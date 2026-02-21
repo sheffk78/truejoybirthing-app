@@ -452,3 +452,89 @@ async def validate_receipt(request: ValidateReceiptRequest, user: User = Depends
         "subscription_end_date": sub_end.isoformat(),
         "auto_renewing": True
     }
+
+
+
+# ============== PLAN CHANGE MODELS ==============
+
+class ChangePlanRequest(BaseModel):
+    new_plan_type: str  # "monthly" or "annual"
+
+
+# ============== PLAN CHANGE ROUTES ==============
+
+@router.post("/change-plan")
+async def change_subscription_plan(request: ChangePlanRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+    """Change subscription plan (upgrade from monthly to annual, or downgrade)
+    
+    Note: For real IAP, plan changes are managed through the respective app stores.
+    This endpoint is for web-based subscriptions or manual adjustments.
+    """
+    now = get_now()
+    
+    # Validate new plan type
+    if request.new_plan_type not in SUBSCRIPTION_PLANS:
+        raise HTTPException(status_code=400, detail="Invalid plan type. Must be 'monthly' or 'annual'")
+    
+    # Get current subscription
+    subscription = await db.subscriptions.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0}
+    )
+    
+    if not subscription:
+        raise HTTPException(status_code=404, detail="No subscription found")
+    
+    current_plan = subscription.get("plan_type")
+    
+    if current_plan == request.new_plan_type:
+        raise HTTPException(status_code=400, detail=f"You are already on the {request.new_plan_type} plan")
+    
+    # Calculate new end date based on plan
+    if request.new_plan_type == "annual":
+        sub_end = now + timedelta(days=365)
+        is_upgrade = True
+    else:
+        sub_end = now + timedelta(days=30)
+        is_upgrade = False
+    
+    # Update subscription
+    await db.subscriptions.update_one(
+        {"user_id": user.user_id},
+        {"$set": {
+            "plan_type": request.new_plan_type,
+            "subscription_end_date": sub_end,
+            "subscription_status": "active",
+            "auto_renewing": True,
+            "updated_at": now
+        }}
+    )
+    
+    # Send appropriate email (non-blocking)
+    try:
+        if is_upgrade:
+            await send_subscription_upgraded_email(
+                provider_email=user.email,
+                provider_name=user.full_name,
+                old_plan=current_plan,
+                new_plan=request.new_plan_type,
+                end_date=sub_end
+            )
+        else:
+            await send_subscription_downgraded_email(
+                provider_email=user.email,
+                provider_name=user.full_name,
+                old_plan=current_plan,
+                new_plan=request.new_plan_type,
+                end_date=sub_end
+            )
+    except Exception as e:
+        logging.warning(f"Failed to send plan change email to {user.email}: {e}")
+    
+    return {
+        "message": f"Plan changed from {current_plan} to {request.new_plan_type}",
+        "old_plan": current_plan,
+        "new_plan": request.new_plan_type,
+        "subscription_end_date": sub_end.isoformat(),
+        "is_upgrade": is_upgrade
+    }
