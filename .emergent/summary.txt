@@ -1,156 +1,143 @@
 <analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing for Moms, Doulas, and Midwives.
 
-Recent user requests implemented in this session:
-1.  **Refactor **: Extract the large Prenatal Visits section into a dedicated component to improve maintainability.
-2.  **Birth Summary PDF Preview**: Add a summary modal that appears before a user downloads the full PDF report.
-3.  **Lead/Connection Info Enhancement**: When a provider (Doula/Midwife) receives a lead or connection request, they should see more details about the Mom, including due date, planned birth location, number of children, and previous birth experience.
-4.  **UI/UX Improvements**:
-    *   Update text in the Mom's My Team section.
-    *   Update icons on the provider dashboard (Leads, Certifications, Practice Name).
-    *   Standardize the logout button style across all user roles (Mom, Doula, Midwife).
-5.  **Subscription Flow & Gatekeeping**:
-    *   Fix broken links on the Subscription page (Manage Subscription, Contact Support).
-    *   Implement a soft gate to prevent non-subscribed providers from accepting new clients, instead showing them a modal prompting them to subscribe.
-    *   Remove the Subscription link from the main bottom tab bar.
-    *   Fix an issue where the provider's profile page incorrectly showed No Active Plan.
-6.  **Data Management**: Review all midwife-related forms and clean out all test data from the database, leaving only the three primary demo accounts.
+Recent user requests:
+1.  **Birth Plan Formatting**: On the Lead details view, the Birth Location label and value should be on two separate lines for better readability.
+2.  **Accept Lead Logic**: When a provider Accepts a lead, the system should automatically convert that lead into an Active Client for the provider. Currently, this is not happening.
+3.  **Birth Plan Completion Percentage**: The system incorrectly shows a Mom's birth plan as 100% complete even if the underlying data has been deleted. This calculation needs to be fixed to reflect the actual completion status.
+4.  **Marketplace Button Text**: On the provider marketplace page that Moms see, the Request Consultation button text should be shortened to Request Consult.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The agent successfully performed a major refactoring of the  component, significantly reducing its size and complexity. It also implemented numerous UI/UX enhancements and bug fixes requested by the user.
+The agent has successfully completed a significant set of UI/UX improvements and bug fixes. The non-functional logout button on the web has been fixed by using a more web-compatible  component. The provider dashboard and leads section have been updated with new icons and terminology (changing Active leads to Open).
 
-A soft gate subscription model was implemented, which shows a modal to non-subscribed providers when they try to accept a new client. The backend endpoints for leads and connection requests were enhanced to provide more client details to providers.
-
-Finally, the agent created and executed a script to clean all test data from the database, leaving the application in a clean state with only the three demo user accounts (, , ). The last action was implementing a fix for an incorrect subscription status display on the provider profile page.
+Most importantly, the agent overhauled the subscription management page. It now includes a dedicated web UI for managing subscriptions, an option for monthly subscribers to upgrade to an annual plan, and a fully functional Cancel Subscription feature that correctly calls the backend API.
 
 **Last working item**:
--   **Last item agent was working**: Fixing the incorrect subscription status display on the  page. The component showed No Active Plan even for users with an active subscription because it was checking the wrong state property. The agent updated the code to use the correct boolean flag () from the subscription store.
--   **Status**: TESTING PENDING
+-   **Last item agent was working**: The agent was starting to investigate the four new issues raised by the user in their most recent message. It had identified the relevant files for each issue but had not yet started implementing any changes.
+-   **Status**: NOT STARTED
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: screenshot tool
+-   **Which testing method agent to use?**: Frontend testing agent for UI changes (formatting, button text), and both frontend/backend testing agent for logic changes (accept lead, birth plan percentage).
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Subscription Status Display Not Verified (P0, HIGHEST)**
-    -   **Attempted fixes**: The agent identified that  was using  instead of the correct boolean . The code was updated to use the correct flag.
+-   **Issue 1: Accept Lead does not make Mom an Active Client (P0, HIGHEST)**
+    -   **Description**: When a provider clicks Accept on a lead, the lead's status changes to Converted, but the corresponding Mom user is not being set as an Active Client for that provider.
     -   **Next debug checklist**:
-        1.  Log in as the midwife ( / ). This user has an active trial subscription.
-        2.  Navigate to the Profile page.
-        3.  Use the  tool to take a screenshot of the profile.
-        4.  Visually verify that the subscription section now shows an Active status instead of No Active Plan.
-        5.  If the issue persists, inspect  and the  to trace the state flow.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical UI bug that misinforms providers about their subscription status. Fixing it ensures the profile page is accurate and builds trust.
-    -   **Status**: TESTING PENDING
-    -   **Is recurring issue?**: N
+        1.  Examine , specifically the  function.
+        2.  The agent noted the function *does* create a client record. The bug might be in the default  of the new client or how the frontend displays the client list.
+        3.  Verify the  collection in MongoDB after accepting a lead. Check the  field of the newly created client document.
+        4.  Inspect  to see how it fetches and filters clients by Active status.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a broken core business logic. Providers cannot manage clients that they convert from leads.
+    -   **Status**: NOT STARTED
+    -   **Should Test frontend/backend/both after fix?**: Both
+-   **Issue 2: Birth Plan Completion Percentage is Incorrect After Data Deletion (P1)**
+    -   **Description**: The system shows a Mom's birth plan as 100% complete even after the underlying data has been deleted. The completion calculation needs to be more robust and reflect the actual data presence.
+    -   **Next debug checklist**:
+        1.  Locate the code responsible for calculating the birth plan completion percentage by searching in files like  and .
+        2.  Modify the logic to accurately check for the presence of data in each section of the birth plan instead of making assumptions.
+        3.  Test by deleting a mom's birth plan data from the database and verifying the percentage drops accordingly.
+    -   **Why fix this issue and what will be achieved with the fix?**: Fixes inaccurate and confusing information being displayed to both Moms and Providers.
+    -   **Status**: NOT STARTED
+    -   **Should Test frontend/backend/both after fix?**: Both
+-   **Issue 3: Poor Formatting for Birth Location on Lead Details (P2)**
+    -   **Description**: On the lead details view for providers, the Birth Location field and its value appear on a single line, causing awkward text wrapping. It should be formatted onto two lines.
+    -   **Next debug checklist**:
+        1.  Inspect .
+        2.  Modify the JSX/styling for the section that renders the birth plan details within the lead card to force the label and value onto separate lines.
+    -   **Why fix this issue and what will be achieved with the fix?**: A minor UI/UX improvement for better readability.
+    -   **Status**: NOT STARTED
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+-   **Issue 4: Marketplace Button Text is Too Long (P2)**
+    -   **Description**: In the provider marketplace view for Moms, the Request Consultation button text should be shortened to Request Consult.
+    -   **Next debug checklist**:
+        1.  Locate the button in .
+        2.  Change the text content of the button.
+    -   **Why fix this issue and what will be achieved with the fix?**: A minor UI/UX improvement for a cleaner design.
+    -   **Status**: NOT STARTED
     -   **Should Test frontend/backend/both after fix?**: Frontend
 
 **In progress Task List**:
-There are no in-progress tasks separate from the pending issue above.
+-   None.
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks**:
-    *   **P1: Stripe Integration**: The current subscription flow is a placeholder. The next step is to integrate a real payment provider like Stripe to handle subscription payments.
+    *   **P1: Complete Apple/Google IAP Integration**: The structure is in place, but it needs to be fleshed out to handle all edge cases (failed purchases, pending transactions) and tested on real devices using . The user-specified pricing tiers (9/month, 76/year) need to be configured.
 *   **Future Tasks**:
+    *   **P2: Stripe Integration**: May still be needed for web-based subscriptions.
     *   **P2: Admin Panel**: Build out a full administrative UI for managing users and application data.
 
 **Completed work in this session**
--   **Refactoring (DONE)**: Refactored  by extracting the prenatal visits section into , reducing file size by ~64%.
--   **Birth Summary PDF Preview (DONE)**: Added a preview modal in .
--   **Lead/Connection Info Enhancement (DONE)**: Updated  and  to include more mom details. Updated  and  to display this info.
--   **UI/UX Fixes (DONE)**:
-    -   Updated icons in  and .
-    -   Standardized logout button style in .
-    -   Updated text in .
--   **Subscription Flow (DONE)**:
-    -   Created a subscription page () and gatekeeping utility ().
-    -   Fixed links and trial day text on the subscription page.
-    -   Hid subscription page from tab bar in  and .
--   **Data Cleanup (DONE)**: Created and executed  to remove all non-essential data from the MongoDB database.
--   **Bug Fix (Implementation Complete)**: Corrected the subscription status logic in .
+-   **Logout Button Fix (DONE)**: Replaced  with  in  to resolve the non-functional logout button on the web.
+-   **UI/UX Updates (DONE)**: Changed the Midwife dashboard Appointments icon, updated the Lead Insights icon, and changed lead terminology from Active to Open across the provider dashboard and leads pages.
+-   **Subscription Management Overhaul (DONE)**: Redesigned  to include an inline management panel, an Upgrade to Annual option for monthly subscribers, and a fully functional Cancel Subscription flow that was verified via API and database checks.
 
 **Earlier issues found/mentioned but not fixed**
 -   None.
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork**: The Metro (frontend) bundler cache continues to be a recurring issue. When new routes or files are added, the agent frequently needs to clear the cache () and restart the frontend service to resolve  errors.
--   **Recurrence count**: High
--   **Status**: RECURRING (Environmental)
+-   **Metro Bundler Cache**: Continues to be a recurring issue, often requiring  to resolve module resolution errors.
+-   **Ngrok Tunnel Instability**: The preview tunnel is unstable and frequently returns  errors, requiring multiple service restarts.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Backend**: FastAPI, MongoDB.
--   **Frontend**: React (Expo), TypeScript, Expo Router, Zustand (state management).
--   **Subscription Logic**: Implemented a soft gate that checks subscription status () before allowing certain actions, showing a modal if the user is not subscribed.
--   **Refactoring**: Extracted a large, stateful section of a component into its own self-contained component to improve code clarity and maintainability.
+-   **React Native Web Compatibility**: Using  instead of  for reliable press events on the web.
+-   **Conditional Rendering**: Showing the Upgrade to Annual card in  only to monthly subscribers.
+-   **Backend API Interaction**: Frontend calls backend endpoints for critical business logic like subscription cancellation ().
 
 **key DB schema**
--   No new schemas were created. The agent enhanced existing API endpoints by performing additional lookups on the  and  collections.
+-   **users**: Contains user authentication info and subscription details (, , ).
+-   **leads**: Stores information about potential clients for providers, with statuses like Open, Converted, Closed.
+-   **clients**: Stores information about active/inactive clients for providers. This collection is at the center of the Accept Lead bug.
 
 **All files of reference**
--   **Key Modified Files**:
-    -   : Fixed subscription status display and updated icons.
-    -   : Enhanced to show more mom details.
-    -   : Enhanced to show more mom details in connection requests.
-    -   : Updated to aggregate and return more data.
-    -   : Updated to aggregate and return more data.
-    -   : Refactored to be much smaller.
--   **Key New Files**:
-    -   : The main UI for the subscription page.
-    -   : A reusable utility for checking subscription status.
-    -   : The extracted component from the refactor.
-    -   : A script to wipe all test data.
+-    (Lead formatting)
+-    (Button text)
+-    (Core logic for converting a lead to a client)
+-    (Potential location for birth plan completion logic)
+-    (Potential location for birth plan completion logic)
 
 **Areas that need refactoring**:
--   The previous major refactoring of  has been completed successfully. No immediate refactoring is required.
+-   The birth plan completion percentage logic needs to be refactored for robustness to handle cases where data is deleted.
 
 **key api endpoints**
--    (MODIFIED)
--    (MODIFIED)
+-   : This endpoint is central to the Accept Lead bug and needs investigation.
+-   : This endpoint was successfully used and verified for the new subscription cancellation feature.
 
 **Critical Info for New Agent**
--   Your immediate priority is to **verify the subscription status fix**. The implementation is done, but it has not been tested. Log in as a midwife and take a screenshot of the profile page.
--   **Test data has been completely wiped**, except for the three demo user accounts. You will need to create new clients, records, and leads to test provider-side functionality.
--   **Beware the Metro cache**. If you encounter  errors after adding or changing files, the first step is to clear the cache () and restart the frontend.
+-   Your immediate priorities are the four new issues raised by the user. The most critical (P0) is fixing the Accept Lead logic, as it's a core workflow for providers.
+-   When debugging the Accept Lead issue, start by examining the existing  function in . The endpoint likely exists but may have a logic error regarding the new client's default status. Do not create a new endpoint.
+-   The other three issues are a mix of backend logic (birth plan percentage) and simple frontend UI changes (formatting, button text). You can tackle the UI changes in parallel.
+-   Be mindful of the recurring environment issues (Metro cache, Ngrok tunnel). If the preview is not working, try clearing the cache and restarting the frontend service before assuming a code error.
 
 **documents and test reports created in this job**
--    (updated with recent changes)
--   
--   
--   
--   
+-    was updated.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Reports Unmatched Route on the Subscription page for Midwife/Doula and asks for subscription gatekeeping. (Resolved)
-2.  **User**: Chooses the soft gatekeep approach. (Implemented)
-3.  **User**: Reports an Expo Go error after the subscription page implementation. (Resolved)
-4.  **User**: Confirms the Expo Go error is fixed and asks for a review of Midwife forms and a full test data cleanup. (Completed)
-5.  **User**: Reports that Manage Subscription and Contact Support links are broken on the subscription page. (Resolved)
-6.  **User**: Asks for the Subscription page to be removed from the main bottom navigation bar. (Completed)
-7.  **User**: Reports that the subscription status on the provider profile is incorrect (No Active Plan for an active subscription). (Fix implemented, verification pending)
+-   **User**: Requested four new changes/fixes:
+    1.  Improve birth plan formatting on the lead details view. (NOT STARTED)
+    2.  Fix the logic so that accepting a lead makes the Mom an active client. (NOT STARTED)
+    3.  Fix the birth plan completion percentage to be accurate when data is deleted. (NOT STARTED)
+    4.  Shorten the Request Consultation button to Request Consult in the marketplace. (NOT STARTED)
 
 **Project Health Check:**
--   **Broken**: None.
--   **Mocked**:  is installed, but the subscription status is currently based on a simple backend flag (), not a real payment system.
--   **Brittle**: The frontend build process due to persistent Metro bundler cache issues that require manual intervention ().
+-   **Broken**: The core workflow of converting a lead into an active client is not working as intended. The birth plan completion percentage is unreliable.
+-   **Mocked**: The In-App Purchase (IAP) flow is still mocked on the web to prevent crashes.
 
 **3rd Party Integrations**
--    (In-App Purchase - placeholder)
--    (Icons)
--   Emergent-managed Google Auth
--    (State management)
--    (PDF generation)
--    (Email sending)
--    (Video Embedding)
--   Expo Push Notification Services
+-   : Integrated for handling In-App Purchases on iOS and Android.
+-   : For icons.
+-   : For state management.
+-   : For PDF generation.
+-   : For sending emails.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES, it was used to verify UI refactoring and icon updates.
--   **Troubleshoot agent used after agent stuck in loop**: NO.
--   **Test files created**:  was created and executed to clean the database.
--   **Known regressions**: None.
+-   **Testing agent used after significant changes**: NO (in the last cycle)
+-   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Test files created**: None
+-   **Known regressions**: The Accept Lead to Active Client workflow is a newly reported bug.
 
 **Credentials to test flow:**
 -   **Doula**:  / 
@@ -158,4 +145,4 @@ There are no in-progress tasks separate from the pending issue above.
 -   **Mom**:  / 
 
 **What agent forgot to execute**
--   The agent implemented the fix for the subscription status display in  but did not perform any verification (e.g., taking a screenshot) to confirm that the fix works visually. This is the top priority for the next agent.</analysis>
+-   The agent successfully completed all previously requested tasks. The current pending items are from a new user request at the end of the last session.</analysis>
