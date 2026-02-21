@@ -75,7 +75,7 @@ const MIDWIFE_STATUS_COLORS: Record<string, string> = {
   'Completed': COLORS.textLight,
 };
 
-type ClientFilter = 'active' | 'inactive' | 'leads';
+type ClientFilter = 'active' | 'inactive';
 
 interface ProviderClientsProps {
   config: ProviderConfig;
