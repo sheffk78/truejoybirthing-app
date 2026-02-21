@@ -678,6 +678,7 @@ const styles = StyleSheet.create({
   // Subscription styles
   subscriptionInfo: { flexDirection: 'row', alignItems: 'center' },
   subscriptionText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary, marginLeft: SIZES.sm },
+  subscriptionSubtext: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary, marginLeft: 36, marginTop: SIZES.xs },
   
   // Logout styles
   logoutButton: { 
