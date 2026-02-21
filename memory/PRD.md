@@ -69,6 +69,18 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-21)
 
+### ✅ RECENTLY COMPLETED (2026-02-21) - Birth Summary Report
+
+#### Birth Summary PDF Report (COMPLETED - 2026-02-21)
+- [x] **Backend PDF Generation** - `/api/midwife/clients/{client_id}/birth-summary/pdf`
+  - Uses ReportLab to generate professional PDF
+  - Includes: Title page with client/baby name, Birth Details (timeline, delivery, newborn info, maternal outcomes, postpartum), Labor Timeline (chronological entries), Birth Story Notes
+  - `/api/midwife/clients/{client_id}/birth-summary/preview` endpoint for checking if report can be generated
+- [x] **Frontend Integration** - "Report" button in BirthRecordSection header
+  - Downloads PDF on web via blob URL
+  - Button visible next to Edit when birth record exists
+- [x] **Testing** - Backend 100% (10/10 tests), PDF generation verified via curl
+
 ### ✅ RECENTLY COMPLETED (2026-02-21) - Birth Record Feature (Midwife)
 
 #### Comprehensive Birth Record System (COMPLETED - 2026-02-21)
