@@ -291,6 +291,61 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
           </View>
         )}
 
+        {/* Key Details Section - from Mom Profile & Birth Plan */}
+        {(lead.number_of_children !== undefined || lead.birth_plan_location || lead.birth_plan_due_date || lead.birth_plan_hospital_name || lead.previous_birth_experience) && (
+          <View style={styles.keyDetailsSection}>
+            <Text style={styles.keyDetailsTitle}>Key Details</Text>
+            <View style={styles.keyDetailsGrid}>
+              {lead.number_of_children !== undefined && (
+                <View style={styles.keyDetailItem}>
+                  <Icon name="people-outline" size={14} color={COLORS.textSecondary} />
+                  <Text style={styles.keyDetailLabel}>Children:</Text>
+                  <Text style={styles.keyDetailValue}>{lead.number_of_children}</Text>
+                </View>
+              )}
+              {(lead.birth_plan_due_date || lead.edd) && (
+                <View style={styles.keyDetailItem}>
+                  <Icon name="calendar-outline" size={14} color={COLORS.textSecondary} />
+                  <Text style={styles.keyDetailLabel}>Due Date:</Text>
+                  <Text style={styles.keyDetailValue}>{formatDate(lead.birth_plan_due_date || lead.edd || '')}</Text>
+                </View>
+              )}
+              {lead.birth_plan_location && (
+                <View style={styles.keyDetailItem}>
+                  <Icon name="home-outline" size={14} color={COLORS.textSecondary} />
+                  <Text style={styles.keyDetailLabel}>Birth Location:</Text>
+                  <Text style={styles.keyDetailValue}>{lead.birth_plan_location}</Text>
+                </View>
+              )}
+              {lead.birth_plan_hospital_name && (
+                <View style={styles.keyDetailItem}>
+                  <Icon name="business-outline" size={14} color={COLORS.textSecondary} />
+                  <Text style={styles.keyDetailLabel}>Facility:</Text>
+                  <Text style={styles.keyDetailValue}>{lead.birth_plan_hospital_name}</Text>
+                </View>
+              )}
+            </View>
+            {lead.previous_birth_experience && (
+              <View style={styles.previousExperienceBox}>
+                <Text style={styles.previousExperienceLabel}>Previous Birth Experience:</Text>
+                <Text style={styles.previousExperienceText} numberOfLines={3}>
+                  {lead.previous_birth_experience}
+                </Text>
+              </View>
+            )}
+            {lead.birth_plan_completion !== undefined && (
+              <View style={styles.planCompletionRow}>
+                <Text style={styles.planCompletionLabel}>Birth Plan:</Text>
+                <View style={[styles.planCompletionBadge, { backgroundColor: lead.birth_plan_completion >= 80 ? COLORS.success + '20' : COLORS.warning + '20' }]}>
+                  <Text style={[styles.planCompletionText, { color: lead.birth_plan_completion >= 80 ? COLORS.success : COLORS.warning }]}>
+                    {lead.birth_plan_completion}% Complete
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+        )}
+
         {/* Consultation Info */}
         {lead.consultation_date && (
           <View style={styles.consultationInfo}>
