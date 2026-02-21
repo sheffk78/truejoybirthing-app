@@ -316,13 +316,15 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
           {isMidwife && (
             <TouchableOpacity 
               style={styles.actionButton}
-              onPress={openAddVisit}
+              onPress={() => {
+                // Scroll to Prenatal Visits section - the PrenatalVisitSection component handles add modal
+              }}
               data-testid="action-visit"
             >
               <View style={[styles.actionIcon, { backgroundColor: COLORS.roleMidwife + '15' }]}>
                 <Icon name="clipboard-outline" size={20} color={COLORS.roleMidwife} />
               </View>
-              <Text style={styles.actionLabel}>Add Visit</Text>
+              <Text style={styles.actionLabel}>Prenatal</Text>
             </TouchableOpacity>
           )}
 
