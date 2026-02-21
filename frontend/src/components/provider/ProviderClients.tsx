@@ -96,6 +96,14 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   const isMidwife = config.role === 'MIDWIFE';
   const STATUS_COLORS = isMidwife ? MIDWIFE_STATUS_COLORS : DOULA_STATUS_COLORS;
   
+  // Subscription gatekeeping
+  const { checkAndAlert, isSubscribed, refreshStatus } = useSubscriptionGate();
+  const subscriptionRoute = isMidwife ? '/(midwife)/subscription' : '/(doula)/subscription';
+  
+  const navigateToSubscription = () => {
+    router.push(subscriptionRoute as any);
+  };
+  
   const fetchData = async () => {
     try {
       // Fetch pending share requests
