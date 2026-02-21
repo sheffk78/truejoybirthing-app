@@ -65,7 +65,7 @@ async def request_consultation(
     existing = await db.leads.find_one({
         "mom_user_id": user.user_id,
         "provider_id": data.provider_id,
-        "status": {"$nin": ["declined", "not_a_fit"]}
+        "status": {"$nin": ["declined", "not_a_fit", "removed_from_team"]}
     })
     
     if existing:
