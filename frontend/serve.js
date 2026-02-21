@@ -5,8 +5,8 @@ const app = express();
 // Serve static files from dist
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// For SPA - serve index.html for all routes
-app.get('*', (req, res) => {
+// For SPA - serve index.html for all routes (Express 5 syntax)
+app.get('/{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
