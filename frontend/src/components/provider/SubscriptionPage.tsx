@@ -43,7 +43,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
     setProcessing(true);
     try {
       await startTrial(selectedPlan);
-      Alert.alert('Trial Started!', 'Your 14-day free trial has begun. Enjoy full access to all features!', [
+      Alert.alert('Trial Started!', 'Your 30-day free trial has begun. Enjoy full access to all features!', [
         { text: 'Get Started', onPress: () => router.back() }
       ]);
     } catch (error: any) {
