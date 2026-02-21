@@ -1,5 +1,5 @@
 // Unified Client Detail Screen - Used by both Doula and Midwife
-// Midwife gets additional clinical tabs (Prenatal Visits, Birth Day)
+// Midwife gets additional clinical sections (Prenatal Visits, Labor, Birth Record)
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
@@ -12,9 +12,6 @@ import {
   Alert,
   Image,
   ActivityIndicator,
-  Modal,
-  TextInput,
-  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
