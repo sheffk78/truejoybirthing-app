@@ -519,7 +519,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
         {filteredLeads.length === 0 ? (
           <View style={styles.emptyState}>
             <Icon name="people-outline" size={48} color={COLORS.textLight} />
-            <Text style={styles.emptyTitle}>No {statusFilter} leads</Text>
+            <Text style={styles.emptyTitle}>No {statusFilter === 'active' ? 'open' : statusFilter} leads</Text>
             <Text style={styles.emptySubtitle}>
               {statusFilter === 'active' 
                 ? "When moms request consultations, they'll appear here."
