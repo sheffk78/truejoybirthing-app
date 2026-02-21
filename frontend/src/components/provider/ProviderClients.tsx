@@ -165,6 +165,11 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   };
   
   const handleAcceptRequest = async (request: ShareRequest) => {
+    // Check subscription before accepting
+    if (!checkAndAlert('accept_client', navigateToSubscription)) {
+      return;
+    }
+    
     setProcessingRequest(request.request_id);
     try {
       await apiRequest(`${API_ENDPOINTS.PROVIDER_SHARE_REQUESTS}/${request.request_id}/respond`, {
