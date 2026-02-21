@@ -2,8 +2,8 @@
  * In-App Purchase Service
  * Handles Apple App Store and Google Play subscriptions
  * 
- * NOTE: This module is designed to be web-safe. All react-native-iap imports
- * are done conditionally and dynamically on native platforms only.
+ * NOTE: This module is web-safe. react-native-iap is only loaded on native platforms.
+ * On web, all methods return appropriate fallback values.
  * 
  * Product IDs:
  * - Apple: truejoy.pro.monthly ($29/month), truejoy.pro.annual ($276/year)
@@ -14,7 +14,7 @@ import { Platform } from 'react-native';
 import { SUBSCRIPTION_PRODUCTS } from './subscriptionConfig';
 import { API_BASE, API_ENDPOINTS } from '../../constants/api';
 
-// Product SKUs
+// Product SKUs - defined here to avoid importing from IAP
 const PRODUCT_SKUS = Platform.select({
   ios: [
     SUBSCRIPTION_PRODUCTS.APPLE.PRO_MONTHLY,
@@ -42,12 +42,41 @@ export interface PurchaseResult {
   error?: string;
 }
 
+/**
+ * Get mock products for web/development
+ */
+function getMockProducts(): IAPProduct[] {
+  return [
+    {
+      productId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_MONTHLY,
+      title: 'True Joy Pro – Monthly',
+      description: 'Full access to all Pro features',
+      price: '29.00',
+      localizedPrice: '$29.00',
+      currency: 'USD',
+      isMonthly: true,
+      subscriptionPeriod: 'P1M',
+    },
+    {
+      productId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_ANNUAL,
+      title: 'True Joy Pro – Annual',
+      description: 'Full access to all Pro features. Save $72!',
+      price: '276.00',
+      localizedPrice: '$276.00',
+      currency: 'USD',
+      isMonthly: false,
+      subscriptionPeriod: 'P1Y',
+    },
+  ];
+}
+
 class IAPService {
   private isInitialized = false;
+  private RNIap: any = null;
   private purchaseUpdateSubscription: any = null;
   private purchaseErrorSubscription: any = null;
-  private onPurchaseUpdate: ((purchase: SubscriptionPurchase) => void) | null = null;
-  private onPurchaseError: ((error: PurchaseError) => void) | null = null;
+  private onPurchaseUpdate: ((purchase: any) => void) | null = null;
+  private onPurchaseError: ((error: any) => void) | null = null;
 
   /**
    * Initialize the IAP connection
@@ -63,7 +92,9 @@ class IAPService {
     }
 
     try {
-      const result = await initConnection();
+      // Dynamically require react-native-iap only on native
+      this.RNIap = require('react-native-iap');
+      const result = await this.RNIap.initConnection();
       console.log('[IAP] Connection initialized:', result);
       this.isInitialized = true;
       this.setupListeners();
@@ -78,8 +109,10 @@ class IAPService {
    * Set up purchase listeners
    */
   private setupListeners() {
+    if (!this.RNIap) return;
+
     // Listen for successful purchases
-    this.purchaseUpdateSubscription = purchaseUpdatedListener(async (purchase) => {
+    this.purchaseUpdateSubscription = this.RNIap.purchaseUpdatedListener(async (purchase: any) => {
       console.log('[IAP] Purchase update:', purchase);
       
       if (purchase.transactionReceipt) {
@@ -87,7 +120,7 @@ class IAPService {
         await this.validatePurchase(purchase);
         
         // Acknowledge the purchase
-        await finishTransaction({ purchase, isConsumable: false });
+        await this.RNIap.finishTransaction({ purchase, isConsumable: false });
         
         // Notify callback
         if (this.onPurchaseUpdate) {
@@ -97,7 +130,7 @@ class IAPService {
     });
 
     // Listen for purchase errors
-    this.purchaseErrorSubscription = purchaseErrorListener((error) => {
+    this.purchaseErrorSubscription = this.RNIap.purchaseErrorListener((error: any) => {
       console.warn('[IAP] Purchase error:', error);
       if (this.onPurchaseError) {
         this.onPurchaseError(error);
@@ -109,28 +142,32 @@ class IAPService {
    * Get available subscription products from store
    */
   async getProducts(): Promise<IAPProduct[]> {
+    // Return mock products on web
+    if (Platform.OS === 'web' || !this.RNIap) {
+      return getMockProducts();
+    }
+
     if (!this.isInitialized) {
       await this.initialize();
     }
 
-    if (Platform.OS === 'web' || !PRODUCT_SKUS || PRODUCT_SKUS.length === 0) {
-      // Return mock products for web/development
-      return this.getMockProducts();
+    if (!PRODUCT_SKUS || PRODUCT_SKUS.length === 0) {
+      return getMockProducts();
     }
 
     try {
-      const subscriptions = await getSubscriptions({ skus: PRODUCT_SKUS });
-      return subscriptions.map(this.mapSubscriptionToProduct);
+      const subscriptions = await this.RNIap.getSubscriptions({ skus: PRODUCT_SKUS });
+      return subscriptions.map((sub: any) => this.mapSubscriptionToProduct(sub));
     } catch (error) {
       console.error('[IAP] Failed to get products:', error);
-      return this.getMockProducts();
+      return getMockProducts();
     }
   }
 
   /**
    * Map store subscription to our product format
    */
-  private mapSubscriptionToProduct(sub: Subscription): IAPProduct {
+  private mapSubscriptionToProduct(sub: any): IAPProduct {
     const isMonthly = sub.productId.includes('monthly') || 
                       sub.subscriptionPeriodAndroid?.includes('P1M') ||
                       sub.subscriptionPeriodIOS?.includes('P1M');
@@ -148,34 +185,6 @@ class IAPService {
   }
 
   /**
-   * Get mock products for development/web
-   */
-  private getMockProducts(): IAPProduct[] {
-    return [
-      {
-        productId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_MONTHLY,
-        title: 'True Joy Pro – Monthly',
-        description: 'Full access to all Pro features',
-        price: '29.00',
-        localizedPrice: '$29.00',
-        currency: 'USD',
-        isMonthly: true,
-        subscriptionPeriod: 'P1M',
-      },
-      {
-        productId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_ANNUAL,
-        title: 'True Joy Pro – Annual',
-        description: 'Full access to all Pro features. Save $72!',
-        price: '276.00',
-        localizedPrice: '$276.00',
-        currency: 'USD',
-        isMonthly: false,
-        subscriptionPeriod: 'P1Y',
-      },
-    ];
-  }
-
-  /**
    * Purchase a subscription
    */
   async purchaseSubscription(
@@ -186,6 +195,10 @@ class IAPService {
       return { success: false, error: 'Web purchases not supported. Use Stripe.' };
     }
 
+    if (!this.RNIap) {
+      return { success: false, error: 'IAP not initialized' };
+    }
+
     if (!this.isInitialized) {
       await this.initialize();
     }
@@ -193,13 +206,13 @@ class IAPService {
     try {
       if (Platform.OS === 'android') {
         // Android requires offer token for subscription purchases
-        await requestSubscription({
+        await this.RNIap.requestSubscription({
           sku: productId,
           subscriptionOffers: offerToken ? [{ sku: productId, offerToken }] : undefined,
         });
       } else {
         // iOS
-        await requestSubscription({ sku: productId });
+        await this.RNIap.requestSubscription({ sku: productId });
       }
       
       // Purchase flow started - result will come through listener
@@ -216,7 +229,7 @@ class IAPService {
   /**
    * Validate purchase receipt with backend
    */
-  private async validatePurchase(purchase: SubscriptionPurchase): Promise<boolean> {
+  private async validatePurchase(purchase: any): Promise<boolean> {
     const sessionToken = await this.getSessionToken();
     if (!sessionToken) {
       console.error('[IAP] No session token for validation');
@@ -258,25 +271,29 @@ class IAPService {
       return { success: false, error: 'Restore not available on web' };
     }
 
+    if (!this.RNIap) {
+      return { success: false, error: 'IAP not initialized' };
+    }
+
     if (!this.isInitialized) {
       await this.initialize();
     }
 
     try {
-      const purchases = await getAvailablePurchases();
+      const purchases = await this.RNIap.getAvailablePurchases();
       
       if (purchases.length === 0) {
         return { success: false, error: 'No previous purchases found' };
       }
 
       // Find most recent subscription
-      const subscription = purchases.find(p => 
+      const subscription = purchases.find((p: any) => 
         PRODUCT_SKUS?.includes(p.productId)
       );
 
       if (subscription) {
         // Validate with backend
-        await this.validatePurchase(subscription as SubscriptionPurchase);
+        await this.validatePurchase(subscription);
         return { 
           success: true, 
           transactionId: subscription.transactionId,
@@ -295,8 +312,8 @@ class IAPService {
    * Set purchase callbacks
    */
   setCallbacks(
-    onPurchaseUpdate: (purchase: SubscriptionPurchase) => void,
-    onPurchaseError: (error: PurchaseError) => void
+    onPurchaseUpdate: (purchase: any) => void,
+    onPurchaseError: (error: any) => void
   ) {
     this.onPurchaseUpdate = onPurchaseUpdate;
     this.onPurchaseError = onPurchaseError;
@@ -328,15 +345,16 @@ class IAPService {
       this.purchaseErrorSubscription = null;
     }
     
-    if (this.isInitialized && Platform.OS !== 'web') {
+    if (this.isInitialized && this.RNIap && Platform.OS !== 'web') {
       try {
-        await endConnection();
+        await this.RNIap.endConnection();
       } catch (error) {
         console.warn('[IAP] Failed to end connection:', error);
       }
     }
     
     this.isInitialized = false;
+    this.RNIap = null;
   }
 }
 
