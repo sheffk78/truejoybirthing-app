@@ -95,7 +95,15 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - **Subscription Cancelled Email** - Sent when provider cancels subscription
 - New endpoint: `POST /api/subscription/change-plan` for plan upgrades/downgrades
 - All email sends are non-blocking - API operations succeed even if email fails
-- **Note**: Emails require domain verification in Resend (truejoybirthing.com or contact.truejoybirthing.com)
+- **Note**: Emails require domain verification in Resend (contact.truejoybirthing.com)
+
+**Data Fix: Converted Leads Not Showing as Clients (2026-02-21):**
+- Fixed field name mismatch: `clients` collection now uses `provider_id` (was `pro_user_id`)
+- Fixed converted leads that had missing client records - created clients in unified collection
+- Added cleanup logic when Mom removes provider from team:
+  - `care_plans.py revoke_share` now updates client status to "Removed" and lead status to "removed_from_team"
+  - `leads.py` now allows re-requesting consultation after provider removal (checks for "removed_from_team" status)
+  - `client_utils.py is_client_active` now returns False for "Removed" or "Inactive" clients
 
 **Previous Session (2026-02-21 - Subscription Management Enhancements):**
 - **NEW: Upgrade to Annual Option** - Monthly subscribers can now upgrade to annual billing with one click (saves $72/year)
