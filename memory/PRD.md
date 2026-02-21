@@ -69,7 +69,20 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-21)
 
-**Latest Session (2026-02-21 - UI/UX Terminology Updates):**
+**Latest Session (2026-02-21 - Subscription Management Enhancements):**
+- **NEW: Upgrade to Annual Option** - Monthly subscribers can now upgrade to annual billing with one click (saves $72/year)
+  - Shows prominent "Switch to Annual Billing" card for monthly subscribers
+  - Comparison showing $348/yr (monthly) vs $276/yr (annual)
+- **FIXED: Cancel Subscription** - Now properly calls backend `/subscription/cancel` endpoint
+  - Shows confirmation dialog before cancelling
+  - Updates subscription status to "cancelled" with `auto_renewing: false`
+  - Access continues until end of billing period
+- **NEW: Web Management Panel** - Inline subscription management for web users
+  - "Manage Your Subscription" panel with Contact Support and Cancel options
+  - Closes with X button
+  - Shows "Upgrade to Annual" for monthly subscribers
+
+**Previous Session (2026-02-21 - UI/UX Terminology Updates):**
 - **Updated: Lead Insights Icon** - Changed from `trending-up` to `disc-outline` (target icon) on Dashboard for Midwife and Doula
 - **Updated: Lead Terminology** - Changed "Active" to "Open" throughout the leads section to avoid confusion with "Active client":
   - Dashboard Lead Insights now shows "1 Open" instead of "1 Active"
