@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import Constants from 'expo-constants';
 import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
@@ -20,6 +21,9 @@ import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { SUBSCRIPTION_PRODUCTS } from '../../services/billing/subscriptionConfig';
 import { useIAP } from '../../services/billing/useIAP';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
+
+// Check if running in Expo Go
+const IS_EXPO_GO = Constants.appOwnership === 'expo';
 
 interface SubscriptionPageProps {
   primaryColor: string;
