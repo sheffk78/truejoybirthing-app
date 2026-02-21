@@ -881,18 +881,18 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     color: COLORS.textPrimary,
   },
-  logoutCard: {
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SIZES.md,
     marginTop: SIZES.md,
-    marginBottom: SIZES.sm,
-    borderColor: COLORS.error + '30',
-    borderWidth: 1,
   },
   logoutText: {
-    flex: 1,
-    marginLeft: SIZES.md,
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
     color: COLORS.error,
-    fontFamily: FONTS.bodyBold,
+    marginLeft: SIZES.sm,
   },
   legalSection: {
     marginTop: SIZES.lg,
