@@ -95,6 +95,16 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - Added visual "X days remaining" badge with calendar icon
   - Separate "Auto-renews annually" or "Expires, no auto-renew" status row
   - Color-coded: Trial uses warning color, Pro uses primary color
+- [x] **ENHANCEMENT: Subscription Page Progress Bar** (COMPLETED - 2026-02-21)
+  - Added "Subscription Period" progress bar section on Subscription management page
+  - Shows days remaining (e.g., "303 days remaining") with visual progress bar
+  - Subtext shows days used (e.g., "62 of 365 days used")
+  - Also shows "Auto-renews annually" status
+- [x] **ENHANCEMENT: Feedback Section for Paying Providers** (COMPLETED - 2026-02-21)
+  - Added "Share Your Feedback" card on Profile page (only visible to paying subscribers, not trial)
+  - Added "Share Your Feedback" card on Subscription page (only visible to paying subscribers, not trial)
+  - "Leave Feedback" button links to https://truejoybirthing.com/feedback/
+  - Feature helps gather provider insights to improve the platform
 - [x] **Testing** - Frontend building successfully, routes accessible, subscription status VERIFIED via screenshot
 
 ### ✅ RECENTLY COMPLETED (2026-02-21) - Provider UI/UX Improvements
