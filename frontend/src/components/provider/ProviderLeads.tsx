@@ -87,6 +87,14 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
   const primaryColor = config.primaryColor;
   const appointmentsRoute = config.role === 'MIDWIFE' ? '/(midwife)/appointments' : '/(doula)/appointments';
   const messagesRoute = config.role === 'MIDWIFE' ? '/(midwife)/messages' : '/(doula)/messages';
+  
+  // Subscription gatekeeping
+  const { checkAndAlert, isSubscribed } = useSubscriptionGate();
+  const subscriptionRoute = config.role === 'MIDWIFE' ? '/(midwife)/subscription' : '/(doula)/subscription';
+  
+  const navigateToSubscription = () => {
+    router.push(subscriptionRoute as any);
+  };
 
   const fetchLeads = useCallback(async () => {
     try {
