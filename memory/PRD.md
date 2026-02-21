@@ -69,13 +69,23 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-21)
 
-**Latest Session (2026-02-21):**
+**Latest Session (2026-02-21 - UI/UX Bug Fixes):**
+- **FIXED: Logout Button** - Replaced `TouchableOpacity` with `Pressable` for better web compatibility
+  - Shows confirmation dialog: "Are you sure you want to log out?"
+  - Successfully redirects to `/welcome` page after logout
+  - Works on both web and native platforms
+- **FIXED: Midwife Appointments Icon** - Changed from `calendar-outline` to filled `calendar` icon in Quick Actions
+- **VERIFIED: "Accept" Button on Leads** - Already working correctly with green checkmark button
+  - Backend endpoint `/leads/{id}/convert-to-client` fully functional
+- **VERIFIED: "Leads" filter removed** - My Clients page only shows "Active" and "Inactive" filters
+- **VERIFIED: Feedback Link** - Points to `https://truejoybirthing.com/contact/`
+
+**Previous Session (2026-02-21):**
 - Verified subscription status display fix on Provider Profile page
 - Confirmed "Pro Plan Active" with green checkmark and "Auto-renews" showing correctly for active subscribers
 - Added "303 days remaining" badge with calendar icon on Profile page
 - Added subscription progress bar on Subscription management page
 - Added "Share Your Feedback" section for paying providers (non-trial)
-- Fixed logout button for web (using window.confirm instead of Alert.alert)
 - **COMPLETED: Apple/Google IAP Integration**:
   - Created `iapService.ts` - Core IAP service for Apple App Store and Google Play
   - Created `useIAP.ts` - React hook for seamless IAP integration
