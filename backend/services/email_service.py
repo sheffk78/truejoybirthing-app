@@ -15,8 +15,11 @@ import resend
 # Configure logging
 logger = logging.getLogger(__name__)
 
-# Email configuration
-SENDER_EMAIL = "True Joy Birthing <noreply@truejoybirthing.com>"
+# Email configuration - use env variable with fallback
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "True Joy Birthing <noreply@truejoybirthing.com>")
+# Format the sender email if it doesn't include display name
+if "<" not in SENDER_EMAIL:
+    SENDER_EMAIL = f"True Joy Birthing <{SENDER_EMAIL}>"
 SUPPORT_EMAIL = "support@truejoybirthing.com"
 BRAND_COLOR = "#9F83B6"  # Soft Lavender
 ACCENT_COLOR = "#D4A5A5"  # Dusty Rose
