@@ -2,24 +2,17 @@
  * In-App Purchase Service
  * Handles Apple App Store and Google Play subscriptions
  * 
+ * NOTE: This module is designed to be web-safe. All react-native-iap imports
+ * are done conditionally and dynamically on native platforms only.
+ * 
  * Product IDs:
  * - Apple: truejoy.pro.monthly ($29/month), truejoy.pro.annual ($276/year)
  * - Google: truejoy_pro with base plans 'monthly' and 'annual'
  */
 
 import { Platform } from 'react-native';
-import { SUBSCRIPTION_PRODUCTS, SUBSCRIPTION_PLANS } from './subscriptionConfig';
+import { SUBSCRIPTION_PRODUCTS } from './subscriptionConfig';
 import { API_BASE, API_ENDPOINTS } from '../../constants/api';
-
-// Only import react-native-iap on native platforms
-let RNIap: any = null;
-if (Platform.OS !== 'web') {
-  try {
-    RNIap = require('react-native-iap');
-  } catch (e) {
-    console.warn('[IAP] react-native-iap not available:', e);
-  }
-}
 
 // Product SKUs
 const PRODUCT_SKUS = Platform.select({
