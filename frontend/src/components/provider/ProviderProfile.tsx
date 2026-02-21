@@ -561,6 +561,27 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           )}
         </Card>
 
+        {/* Feedback Card - Only for paying subscribers */}
+        {subscriptionData?.has_pro_access && !subscriptionData?.is_trial && (
+          <Card style={styles.profileCard}>
+            <View style={styles.feedbackHeader}>
+              <Icon name="chatbubble-ellipses-outline" size={22} color={primaryColor} />
+              <Text style={styles.cardTitle}>Share Your Feedback</Text>
+            </View>
+            <Text style={styles.feedbackDescription}>
+              Help us improve True Joy Birthing with your insights.
+            </Text>
+            <TouchableOpacity 
+              style={[styles.feedbackButton, { backgroundColor: primaryColor }]}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/feedback/')}
+              data-testid="feedback-btn"
+            >
+              <Icon name="star-outline" size={16} color={COLORS.white} />
+              <Text style={styles.feedbackButtonText}>Leave Feedback</Text>
+            </TouchableOpacity>
+          </Card>
+        )}
+
         {/* Logout Button */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout} data-testid="logout-btn">
           <Icon name="log-out-outline" size={20} color={COLORS.error} />
