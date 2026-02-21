@@ -239,18 +239,28 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
     }
   };
   
-  const handleLogout = () => {
-    Alert.alert('Logout', 'Are you sure you want to log out?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Logout',
-        style: 'destructive',
-        onPress: async () => {
-          await logout();
-          router.replace('/(auth)/welcome');
+  const handleLogout = async () => {
+    // Use window.confirm for web compatibility
+    if (typeof window !== 'undefined' && window.confirm) {
+      const confirmed = window.confirm('Are you sure you want to log out?');
+      if (confirmed) {
+        await logout();
+        router.replace('/(auth)/welcome');
+      }
+    } else {
+      // Native Alert for mobile
+      Alert.alert('Logout', 'Are you sure you want to log out?', [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+            router.replace('/(auth)/welcome');
+          },
         },
-      },
-    ]);
+      ]);
+    }
   };
 
   const videoId = getYouTubeVideoId(videoIntroUrl);
