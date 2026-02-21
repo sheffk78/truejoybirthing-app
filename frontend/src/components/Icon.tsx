@@ -192,8 +192,30 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   
   // Medical
   'medical': 'Stethoscope',
+  'medical-outline': 'Stethoscope',
   'medkit': 'Stethoscope',
   'medkit-outline': 'Stethoscope',
+  
+  // Target/Bullseye
+  'disc': 'Target',
+  'disc-outline': 'Target',
+  'target': 'Target',
+  'crosshairs': 'Crosshair',
+  
+  // Ribbon/Medal/Award
+  'ribbon': 'Award',
+  'ribbon-outline': 'Award',
+  'medal': 'Medal',
+  'medal-outline': 'Medal',
+  'award': 'Award',
+  'trophy': 'Trophy',
+  'trophy-outline': 'Trophy',
+  
+  // Business/Building
+  'business': 'Building',
+  'business-outline': 'Building2',
+  'storefront': 'Store',
+  'storefront-outline': 'Store',
   
   // Body/Health
   'body': 'Activity',
