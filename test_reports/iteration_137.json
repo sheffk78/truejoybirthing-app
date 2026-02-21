@@ -1,0 +1,69 @@
+{
+  "summary": "Tested Mom's side improvements for True Joy Birthing. All 3 features verified: 1) My Team section new subtitle text is present, 2) Contract to Sign route fix verified (uses /sign-contract without /(mom)/ prefix), 3) Provider leads endpoint returns new fields and Frontend UI has Key Details section. Backend tests pass 100%.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_leads_enhancement_137.py",
+    "/app/test_reports/pytest/pytest_leads_enhancement_137.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "My Team subtitle text updated in my-team.tsx line 113 - correctly shows 'Complete your birth plan before inviting your care team...'",
+    "Contract to Sign route fixed in home.tsx lines 235-237 - uses '/sign-contract' and '/sign-midwife-contract' without the problematic '/(mom)/' prefix",
+    "Backend leads.py lines 161-191 now fetches birth_plans collection and extracts: birth_plan_due_date, birth_plan_location, birth_plan_hospital_name, previous_birth_experience, birth_plan_completion",
+    "Frontend ProviderLeads.tsx lines 294-347 displays Key Details section with all new fields: Number of Children, Due Date, Birth Location, Hospital/Facility Name, Previous Birth Experience, Birth Plan Completion percentage",
+    "API curl test confirmed leads endpoint returns: number_of_children=3, birth_plan_completion=100.0 for demo mom (other fields null as expected when not populated in birth plan)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_leads_enhancement_137.py"
+  ],
+  "success_rate": {
+    "backend": "100% (7/7 tests passed)",
+    "frontend": "Code Review: 100% - all implementations verified"
+  },
+  "test_credentials": {
+    "mom_email": "demo.mom@truejoybirthing.com",
+    "mom_password": "DemoScreenshot2024!",
+    "doula_email": "demo.doula@truejoybirthing.com",
+    "doula_password": "DemoScreenshot2024!"
+  },
+  "seed_data_creation": "Used existing demo data. Lead for demo mom exists with number_of_children=3, birth_plan_completion=100%",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "React Native Web login button clicks not working in Playwright - same issue as iteration 136. Code review verification approach used. All features verified correct via code review and backend API tests. The mom's birth plan 'about_me' section fields (dueDate, birthLocation, hospitalName) return null because demo mom hasn't filled those specific fields in birth plan yet.",
+  "code_review_verification": {
+    "feature_1_my_team_text": {
+      "file": "/app/frontend/app/(mom)/my-team.tsx",
+      "line": 113,
+      "text": "Complete your birth plan before inviting your care team. Doulas and midwives will first see key details to consider working together, then your full plan after you approve them.",
+      "verified": true
+    },
+    "feature_2_contract_route_fix": {
+      "file": "/app/frontend/app/(mom)/home.tsx",
+      "lines": "235-238",
+      "old_route": "/(mom)/sign-contract",
+      "new_route": "/sign-contract",
+      "verified": true
+    },
+    "feature_3_backend_leads_enhancement": {
+      "file": "/app/backend/routes/leads.py",
+      "lines": "161-191",
+      "new_fields": ["number_of_children", "birth_plan_location", "birth_plan_hospital_name", "birth_plan_due_date", "previous_birth_experience", "birth_plan_completion"],
+      "verified": true
+    },
+    "feature_4_frontend_key_details_section": {
+      "file": "/app/frontend/src/components/provider/ProviderLeads.tsx",
+      "lines": "294-347",
+      "displays": ["Number of Children", "Due Date", "Birth Location", "Hospital/Facility Name", "Previous Birth Experience", "Birth Plan Completion %"],
+      "styles_defined": "lines 611-690",
+      "verified": true
+    }
+  }
+}
