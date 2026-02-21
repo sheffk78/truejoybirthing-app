@@ -594,6 +594,18 @@ async def revoke_share(request_id: str, user: User = Depends(check_role(["MOM"])
                 {"user_id": user.user_id, "connected_midwife_id": provider_id},
                 {"$unset": {"connected_midwife_id": ""}}
             )
+        
+        # Deactivate the client record so provider can see history but mom can request again
+        await db.clients.update_one(
+            {"linked_mom_id": user.user_id, "provider_id": provider_id},
+            {"$set": {"is_active": False, "status": "Removed"}}
+        )
+        
+        # Update any existing leads to allow re-requesting
+        await db.leads.update_many(
+            {"mom_user_id": user.user_id, "provider_id": provider_id, "status": "converted_to_client"},
+            {"$set": {"status": "removed_from_team"}}
+        )
     
     return {"message": "Share access revoked"}
 
