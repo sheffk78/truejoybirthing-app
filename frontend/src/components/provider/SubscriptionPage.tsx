@@ -18,17 +18,8 @@ import Card from '../Card';
 import Button from '../Button';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { SUBSCRIPTION_PRODUCTS } from '../../services/billing/subscriptionConfig';
+import { useIAP } from '../../services/billing/useIAP';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
-
-// Conditionally import useIAP only on native platforms
-let useIAPHook: any = null;
-if (Platform.OS !== 'web') {
-  try {
-    useIAPHook = require('../../services/billing/useIAP').useIAP;
-  } catch (e) {
-    console.warn('[SubscriptionPage] useIAP not available:', e);
-  }
-}
 
 interface SubscriptionPageProps {
   primaryColor: string;
