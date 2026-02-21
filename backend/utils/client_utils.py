@@ -17,6 +17,12 @@ def is_client_active(client: Dict[str, Any]) -> bool:
     """
     now = datetime.now(timezone.utc)
     
+    # Check if client was explicitly marked inactive or removed
+    if client.get("status") in ["Removed", "Inactive"]:
+        return False
+    if client.get("is_active") == False:
+        return False
+    
     # Use birth_date if available, otherwise due_date
     reference_date_str = client.get("birth_date") or client.get("due_date") or client.get("edd")
     
