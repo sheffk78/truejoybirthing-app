@@ -53,7 +53,7 @@ interface ProviderProfileProps {
 export default function ProviderProfile({ config }: ProviderProfileProps) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const { status: subscriptionStatus, fetchStatus: fetchSubscriptionStatus } = useSubscriptionStore();
+  const { status: subscriptionData, fetchStatus: fetchSubscriptionStatus } = useSubscriptionStore();
   
   const [profile, setProfile] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
