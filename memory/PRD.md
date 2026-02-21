@@ -69,6 +69,20 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-21)
 
+### ✅ RECENTLY COMPLETED (2026-02-21) - Mom's Side Improvements
+
+#### Mom's Side Improvements (COMPLETED - 2026-02-21)
+- [x] **My Team Section Text Update** - `/app/frontend/app/(mom)/my-team.tsx`
+  - Changed subtitle from "Your birth support team..." to: "Complete your birth plan before inviting your care team. Doulas and midwives will first see key details to consider working together, then your full plan after you approve them."
+- [x] **Contract Route Bug Fix** - `/app/frontend/app/(mom)/home.tsx`
+  - Fixed "Contract to Sign" link - removed `/(mom)/` prefix that caused "Unmatched Route" error
+  - Now correctly navigates to `/sign-contract` and `/sign-midwife-contract`
+- [x] **Enhanced Lead Information for Providers** - Backend + Frontend
+  - Backend `/api/leads` now returns: `number_of_children`, `birth_plan_location`, `birth_plan_hospital_name`, `birth_plan_due_date`, `previous_birth_experience`, `birth_plan_completion`
+  - Frontend `ProviderLeads.tsx` displays new "Key Details" section with all fields
+  - Helps providers understand mom's needs before consultation
+- [x] **Testing** - Backend 100% (7/7 tests), Frontend code review verified
+
 ### ✅ RECENTLY COMPLETED (2026-02-21) - Refactoring: ProviderClientDetail.tsx
 
 #### Component Extraction & Code Cleanup (COMPLETED - 2026-02-21)
