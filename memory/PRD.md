@@ -69,7 +69,23 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## What's Been Implemented (Last Updated: 2026-02-21)
 
-**Latest Session (2026-02-21 - Subscription Management Enhancements):**
+**Latest Session (2026-02-21 - Bug Fixes Batch):**
+- **FIXED: Accept Lead → Active Client Bug** - When provider accepts a lead, Mom now correctly becomes an Active Client
+  - Root cause: `leads.py` was writing to `doula_clients`/`midwife_clients` collections while `provider_unified.py` reads from unified `clients` collection
+  - Fix: Changed `leads.py` to write to `db.clients` collection with `linked_mom_id` field
+  - Verified: Client appears in `/api/provider/clients` with `status='Active'` and `is_active=true`
+- **FIXED: Birth Plan Completion Percentage Accuracy** - Now reflects actual data presence
+  - Root cause: Completion was based on section `status` field, not actual data values
+  - Fix: `care_plans.py` now checks `any(v for v in data.values() if v is not None and v != "" and v != [])`
+  - Verified: Clearing a section (data={}) correctly reduces completion percentage
+- **FIXED: Birth Location Formatting** - Label and value now on separate lines in lead details
+  - Changed `ProviderLeads.tsx` to use `keyDetailItemColumn` style with `flexDirection: 'column'`
+  - Birth Location label on first line, value indented below
+- **FIXED: Marketplace Button Text** - Changed "Request Consultation" → "Request Consult"
+  - Updated `getConsultationButtonText()` in `marketplace.tsx` to return shorter text
+  - Applies to both provider cards and modal footer button
+
+**Previous Session (2026-02-21 - Subscription Management Enhancements):**
 - **NEW: Upgrade to Annual Option** - Monthly subscribers can now upgrade to annual billing with one click (saves $72/year)
   - Shows prominent "Switch to Annual Billing" card for monthly subscribers
   - Comparison showing $348/yr (monthly) vs $276/yr (annual)
