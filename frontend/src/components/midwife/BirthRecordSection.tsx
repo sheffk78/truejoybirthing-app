@@ -919,6 +919,24 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     marginLeft: SIZES.sm,
   },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
+  },
+  downloadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.xs,
+    borderRadius: SIZES.radiusFull,
+  },
+  downloadButtonText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.white,
+    marginLeft: 4,
+  },
   editButton: {
     flexDirection: 'row',
     alignItems: 'center',
