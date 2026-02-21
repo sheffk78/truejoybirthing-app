@@ -85,6 +85,18 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - Updated `getConsultationButtonText()` in `marketplace.tsx` to return shorter text
   - Applies to both provider cards and modal footer button
 
+**Email Flows Added (2026-02-21):**
+- Created `/app/backend/services/email_service.py` with 7 transactional email templates:
+  - **Welcome Client Email** - Sent when provider converts lead to client (triggered in `leads.py`)
+  - **Trial Started Email** - Sent when provider starts 30-day free trial
+  - **Subscription Activated Email** - Sent when provider activates paid subscription
+  - **Subscription Upgraded Email** - Sent when provider upgrades monthly → annual
+  - **Subscription Downgraded Email** - Sent when provider downgrades annual → monthly  
+  - **Subscription Cancelled Email** - Sent when provider cancels subscription
+- New endpoint: `POST /api/subscription/change-plan` for plan upgrades/downgrades
+- All email sends are non-blocking - API operations succeed even if email fails
+- **Note**: Emails require domain verification in Resend (truejoybirthing.com or contact.truejoybirthing.com)
+
 **Previous Session (2026-02-21 - Subscription Management Enhancements):**
 - **NEW: Upgrade to Annual Option** - Monthly subscribers can now upgrade to annual billing with one click (saves $72/year)
   - Shows prominent "Switch to Annual Billing" card for monthly subscribers
