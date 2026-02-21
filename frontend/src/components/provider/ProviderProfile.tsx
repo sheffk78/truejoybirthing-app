@@ -602,43 +602,20 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         )}
 
         {/* Logout Button - Using Pressable for better web compatibility */}
-        {Platform.OS === 'web' ? (
-          <button
-            onClick={handleLogout}
-            data-testid="logout-btn"
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '12px 16px',
-              marginTop: 16,
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              gap: 8,
-            }}
-          >
-            <Icon name="log-out-outline" size={20} color={COLORS.error} />
-            <span style={{ 
-              fontSize: 16, 
-              fontFamily: 'inherit', 
-              color: COLORS.error,
-              fontWeight: '500'
-            }}>Log Out</span>
-          </button>
-        ) : (
-          <TouchableOpacity 
-            style={styles.logoutButton} 
-            onPress={handleLogout} 
-            data-testid="logout-btn"
-            accessibilityRole="button"
-            accessibilityLabel="Log out of your account"
-          >
-            <Icon name="log-out-outline" size={20} color={COLORS.error} />
-            <Text style={styles.logoutText}>Log Out</Text>
-          </TouchableOpacity>
-        )}
+        <Pressable 
+          style={({ pressed }) => [
+            styles.logoutButton,
+            Platform.OS === 'web' && { cursor: 'pointer' as any },
+            pressed && { opacity: 0.7 }
+          ]}
+          onPress={handleLogout}
+          data-testid="logout-btn"
+          accessibilityRole="button"
+          accessibilityLabel="Log out of your account"
+        >
+          <Icon name="log-out-outline" size={20} color={COLORS.error} />
+          <Text style={styles.logoutText}>Log Out</Text>
+        </Pressable>
         
         {/* Legal Links - App Store Compliance */}
         <View style={styles.legalSection}>
