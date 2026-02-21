@@ -27,7 +27,7 @@ import os
 from datetime import datetime
 
 # Get base URL from environment
-BASE_URL = os.environ.get("EXPO_PUBLIC_BACKEND_URL", "https://midwife-labor.preview.emergentagent.com")
+BASE_URL = os.environ.get("EXPO_PUBLIC_BACKEND_URL", "https://joy-birth-records.preview.emergentagent.com")
 
 # Test credentials
 DOULA_EMAIL = "demo.doula@truejoybirthing.com"
