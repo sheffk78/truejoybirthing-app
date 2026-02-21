@@ -421,6 +421,117 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
           )}
         </Card>
 
+        {/* Web Management Panel - Shown when user clicks Manage Subscription on web */}
+        {showCancelConfirm && Platform.OS === 'web' && (
+          <Card style={styles.managementPanel}>
+            <View style={styles.managementHeader}>
+              <Icon name="settings-outline" size={24} color={primaryColor} />
+              <Text style={styles.managementTitle}>Manage Your Subscription</Text>
+              <TouchableOpacity onPress={() => setShowCancelConfirm(false)}>
+                <Icon name="close" size={24} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Upgrade Option */}
+            {canUpgradeToAnnual && (
+              <TouchableOpacity 
+                style={[styles.managementOption, { borderColor: COLORS.success }]}
+                onPress={() => { setShowCancelConfirm(false); handleUpgradeToAnnual(); }}
+                disabled={processing}
+              >
+                <View style={styles.managementOptionContent}>
+                  <View style={[styles.managementOptionIcon, { backgroundColor: COLORS.success + '20' }]}>
+                    <Icon name="trending-up" size={20} color={COLORS.success} />
+                  </View>
+                  <View style={styles.managementOptionText}>
+                    <Text style={styles.managementOptionTitle}>Upgrade to Annual</Text>
+                    <Text style={styles.managementOptionDesc}>Save $72/year - That's 2 months free!</Text>
+                  </View>
+                </View>
+                <Icon name="chevron-forward" size={20} color={COLORS.success} />
+              </TouchableOpacity>
+            )}
+
+            {/* Contact Support */}
+            <TouchableOpacity 
+              style={styles.managementOption}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/contact/')}
+            >
+              <View style={styles.managementOptionContent}>
+                <View style={[styles.managementOptionIcon, { backgroundColor: primaryColor + '20' }]}>
+                  <Icon name="mail-outline" size={20} color={primaryColor} />
+                </View>
+                <View style={styles.managementOptionText}>
+                  <Text style={styles.managementOptionTitle}>Contact Support</Text>
+                  <Text style={styles.managementOptionDesc}>Get help with billing or account issues</Text>
+                </View>
+              </View>
+              <Icon name="chevron-forward" size={20} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+
+            {/* Cancel Subscription */}
+            {(status?.subscription_status === 'active' || status?.is_trial) && (
+              <TouchableOpacity 
+                style={[styles.managementOption, { borderColor: COLORS.error + '50' }]}
+                onPress={() => { setShowCancelConfirm(false); handleCancelSubscription(); }}
+                disabled={processing}
+              >
+                <View style={styles.managementOptionContent}>
+                  <View style={[styles.managementOptionIcon, { backgroundColor: COLORS.error + '20' }]}>
+                    <Icon name="close-circle-outline" size={20} color={COLORS.error} />
+                  </View>
+                  <View style={styles.managementOptionText}>
+                    <Text style={[styles.managementOptionTitle, { color: COLORS.error }]}>
+                      {status?.is_trial ? 'End Trial Early' : 'Cancel Subscription'}
+                    </Text>
+                    <Text style={styles.managementOptionDesc}>
+                      {status?.is_trial 
+                        ? 'Your trial will end immediately'
+                        : 'Access continues until end of billing period'
+                      }
+                    </Text>
+                  </View>
+                </View>
+                <Icon name="chevron-forward" size={20} color={COLORS.error} />
+              </TouchableOpacity>
+            )}
+          </Card>
+        )}
+
+        {/* Upgrade to Annual Card - For active monthly subscribers */}
+        {canUpgradeToAnnual && !showCancelConfirm && (
+          <Card style={[styles.upgradeCard, { borderColor: COLORS.success }]}>
+            <View style={styles.upgradeHeader}>
+              <View style={[styles.upgradeBadge, { backgroundColor: COLORS.success }]}>
+                <Icon name="star" size={14} color={COLORS.white} />
+                <Text style={styles.upgradeBadgeText}>SAVE $72/YEAR</Text>
+              </View>
+            </View>
+            <Text style={styles.upgradeTitle}>Switch to Annual Billing</Text>
+            <Text style={styles.upgradeDescription}>
+              Get 2 months free when you upgrade to annual billing. Your new plan starts immediately.
+            </Text>
+            <View style={styles.upgradeComparison}>
+              <View style={styles.upgradeComparisonItem}>
+                <Text style={styles.upgradeComparisonLabel}>Monthly</Text>
+                <Text style={styles.upgradeComparisonOld}>$348/yr</Text>
+              </View>
+              <Icon name="arrow-forward" size={20} color={COLORS.textSecondary} />
+              <View style={styles.upgradeComparisonItem}>
+                <Text style={styles.upgradeComparisonLabel}>Annual</Text>
+                <Text style={[styles.upgradeComparisonNew, { color: COLORS.success }]}>$276/yr</Text>
+              </View>
+            </View>
+            <Button
+              title={processing ? 'Processing...' : 'Upgrade to Annual'}
+              onPress={handleUpgradeToAnnual}
+              loading={processing}
+              fullWidth
+              style={{ backgroundColor: COLORS.success }}
+            />
+          </Card>
+        )}
+
         {/* Features List */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Pro Features</Text>
