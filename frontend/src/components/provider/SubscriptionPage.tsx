@@ -12,11 +12,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Icon } from '../components/Icon';
-import Card from '../components/Card';
-import Button from '../components/Button';
-import { useSubscriptionStore } from '../store/subscriptionStore';
-import { COLORS, SIZES, FONTS } from '../constants/theme';
+import { Icon } from '../Icon';
+import Card from '../Card';
+import Button from '../Button';
+import { useSubscriptionStore } from '../../store/subscriptionStore';
+import { COLORS, SIZES, FONTS } from '../../constants/theme';
 
 interface SubscriptionPageProps {
   primaryColor: string;
