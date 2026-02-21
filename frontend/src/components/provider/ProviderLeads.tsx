@@ -225,6 +225,11 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
   };
 
   const handleConvertToClient = async (lead: Lead) => {
+    // Check subscription before converting lead to client
+    if (!checkAndAlert('approve_lead', navigateToSubscription)) {
+      return;
+    }
+    
     Alert.alert(
       'Add as Client',
       `Would you like to add ${lead.mom_name} as a client? This will give them full access to your services.`,
