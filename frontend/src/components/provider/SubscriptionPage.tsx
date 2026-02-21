@@ -643,6 +643,16 @@ const styles = StyleSheet.create({
   actionButtons: {
     marginTop: SIZES.md,
   },
+  restoreButton: {
+    alignItems: 'center',
+    paddingVertical: SIZES.sm,
+    marginTop: SIZES.sm,
+  },
+  restoreButtonText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    textDecorationLine: 'underline',
+  },
   termsText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
