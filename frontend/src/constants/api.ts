@@ -135,6 +135,7 @@ export const API_ENDPOINTS = {
   SUBSCRIPTION_START_TRIAL: '/subscription/start-trial',
   SUBSCRIPTION_ACTIVATE: '/subscription/activate',
   SUBSCRIPTION_CANCEL: '/subscription/cancel',
+  SUBSCRIPTION_VALIDATE: '/subscription/validate-receipt',
   
   // Pro Feedback
   PRO_FEEDBACK: '/pro/feedback',
