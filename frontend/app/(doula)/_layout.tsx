@@ -51,7 +51,7 @@ export default function DoulaLayout() {
         options={{
           title: 'Leads',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="person-add-outline" size={size} color={color} />
+            <Icon name="disc-outline" size={size} color={color} />
           ),
         }}
       />
