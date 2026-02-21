@@ -3,7 +3,7 @@ Birth Summary Report Routes
 Generates a comprehensive PDF combining Labor Records + Birth Record
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import StreamingResponse
 from io import BytesIO
 from datetime import datetime
