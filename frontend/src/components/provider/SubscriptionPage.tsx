@@ -594,4 +594,79 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
   },
+  // Progress Bar styles
+  progressSection: {
+    backgroundColor: COLORS.surface,
+    padding: SIZES.md,
+    borderRadius: SIZES.radiusSm,
+    marginVertical: SIZES.sm,
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SIZES.sm,
+  },
+  progressLabel: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  progressDays: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
+  },
+  progressBarBg: {
+    height: 8,
+    backgroundColor: COLORS.border,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  progressSubtext: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    marginTop: SIZES.xs,
+    textAlign: 'right',
+  },
+  // Feedback section styles
+  feedbackCard: {
+    marginTop: SIZES.lg,
+    marginBottom: SIZES.xl,
+  },
+  feedbackHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
+    marginBottom: SIZES.sm,
+  },
+  feedbackTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.heading,
+    color: COLORS.textPrimary,
+  },
+  feedbackDescription: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+    marginBottom: SIZES.md,
+    lineHeight: 20,
+  },
+  feedbackButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SIZES.sm,
+    borderRadius: SIZES.radiusSm,
+    gap: SIZES.xs,
+  },
+  feedbackButtonText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.white,
+  },
 });
