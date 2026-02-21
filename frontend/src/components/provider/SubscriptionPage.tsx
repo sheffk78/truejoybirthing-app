@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -16,6 +17,7 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
+import { useIAP, SUBSCRIPTION_PRODUCTS } from '../../services/billing';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
 
 interface SubscriptionPageProps {
@@ -26,6 +28,7 @@ interface SubscriptionPageProps {
 export default function SubscriptionPage({ primaryColor, role }: SubscriptionPageProps) {
   const router = useRouter();
   const { status, pricing, isLoading, fetchStatus, fetchPricing, startTrial, activateSubscription, getSubscriptionManageUrl } = useSubscriptionStore();
+  const { products, purchase, restore, isLoading: iapLoading, isAvailable: iapAvailable, error: iapError } = useIAP();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
 
@@ -33,6 +36,25 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
     fetchStatus();
     fetchPricing();
   }, []);
+
+  // Get the product ID for the selected plan
+  const getProductIdForPlan = (planType: string) => {
+    if (Platform.OS === 'ios') {
+      return planType === 'monthly' 
+        ? SUBSCRIPTION_PRODUCTS.APPLE.PRO_MONTHLY 
+        : SUBSCRIPTION_PRODUCTS.APPLE.PRO_ANNUAL;
+    } else if (Platform.OS === 'android') {
+      // For Android, we pass the subscription ID and the base plan is determined by offerToken
+      return SUBSCRIPTION_PRODUCTS.GOOGLE.SUBSCRIPTION_ID;
+    }
+    return null;
+  };
+
+  // Find IAP product price to display
+  const getIAPPrice = (isMonthly: boolean) => {
+    const product = products.find(p => p.isMonthly === isMonthly);
+    return product?.localizedPrice || (isMonthly ? '$29.00' : '$276.00');
+  };
 
   const handleStartTrial = async () => {
     if (!selectedPlan) {
