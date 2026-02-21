@@ -21,6 +21,7 @@ import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
 import { ProviderConfig } from './config/providerConfig';
+import { useSubscriptionGate } from '../../utils/subscriptionGate';
 
 interface ShareRequest {
   request_id: string;
