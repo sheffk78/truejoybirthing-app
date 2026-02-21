@@ -56,15 +56,7 @@ interface ClientDetailProps {
 }
 
 // ============== CONSTANTS ==============
-const URINALYSIS_OPTIONS = ['Normal', 'Protein +', 'Protein ++', 'Glucose +', 'Glucose ++', 'Protein & Glucose +', 'Other'];
-
-const WELLBEING_SCALE = [
-  { value: 1, label: '1 - Struggling' },
-  { value: 2, label: '2 - Challenging' },
-  { value: 3, label: '3 - Okay' },
-  { value: 4, label: '4 - Good' },
-  { value: 5, label: '5 - Great' },
-];
+// Constants for prenatal visits are now in PrenatalVisitSection component
 
 // ============== MAIN COMPONENT ==============
 export default function ProviderClientDetail({ config }: ClientDetailProps) {
