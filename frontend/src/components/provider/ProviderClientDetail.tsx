@@ -84,17 +84,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
       const clientData = await apiRequest(`${config.endpoints.clients}/${clientId}`);
       setClient(clientData);
       
-      // Fetch prenatal visits for midwives
-      if (isMidwife) {
-        try {
-          const visitsData = await apiRequest(`/midwife/clients/${clientId}/prenatal-visits`);
-          setPrenatalVisits(visitsData || []);
-        } catch (e) {
-          console.log('No prenatal visits endpoint or error:', e);
-        }
-        
-        // Birth record is now handled by the BirthRecordSection component
-      }
+      // Prenatal visits and birth records are now fetched by their respective section components
     } catch (error: any) {
       console.error('Error fetching data:', error);
       Alert.alert('Error', 'Failed to load client details');
@@ -102,7 +92,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [clientId, config.endpoints.clients, isMidwife]);
+  }, [clientId, config.endpoints.clients]);
 
   useEffect(() => {
     fetchData();
