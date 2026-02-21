@@ -73,12 +73,32 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
   };
 
   const handleManageSubscription = () => {
-    const url = getSubscriptionManageUrl();
-    if (url) {
-      Linking.openURL(url);
-    } else {
-      Alert.alert('Manage Subscription', 'Please contact support to manage your subscription.');
-    }
+    // Navigate to subscription management or show options
+    Alert.alert(
+      'Manage Subscription',
+      'What would you like to do?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Contact Support', 
+          onPress: () => Linking.openURL('https://truejoybirthing.com/contact/')
+        },
+        {
+          text: 'Cancel Subscription',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Cancel Subscription',
+              'To cancel your subscription, please contact our support team. We\'re here to help!',
+              [
+                { text: 'OK' },
+                { text: 'Contact Support', onPress: () => Linking.openURL('https://truejoybirthing.com/contact/') }
+              ]
+            );
+          }
+        }
+      ]
+    );
   };
 
   const formatDate = (dateStr: string | null) => {
