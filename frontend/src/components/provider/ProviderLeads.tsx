@@ -37,6 +37,14 @@ interface Lead {
   message?: string;
   edd?: string;
   planned_birth_setting?: string;
+  number_of_children?: number;
+  // Birth plan details
+  birth_plan_completion?: number;
+  birth_plan_due_date?: string;
+  birth_plan_location?: string;
+  birth_plan_hospital_name?: string;
+  previous_birth_experience?: string;
+  // Consultation info
   consultation_date?: string;
   consultation_time?: string;
   consultation_appointment_id?: string;
