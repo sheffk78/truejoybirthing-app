@@ -297,7 +297,7 @@ export default function MarketplaceScreen() {
     if (status === 'consultation_scheduled') return 'Scheduled';
     if (status === 'consultation_completed') return 'Completed';
     if (status === 'converted_to_client') return 'Client';
-    return 'Request Consultation';
+    return 'Request Consult';
   };
   
   const getConsultationButtonDisabled = (providerId: string) => {

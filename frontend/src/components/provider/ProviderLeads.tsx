@@ -325,10 +325,12 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
                 </View>
               )}
               {lead.birth_plan_location && (
-                <View style={styles.keyDetailItem}>
-                  <Icon name="home-outline" size={14} color={COLORS.textSecondary} />
-                  <Text style={styles.keyDetailLabel}>Birth Location:</Text>
-                  <Text style={styles.keyDetailValue}>{lead.birth_plan_location}</Text>
+                <View style={[styles.keyDetailItem, styles.keyDetailItemColumn]}>
+                  <View style={styles.keyDetailLabelRow}>
+                    <Icon name="home-outline" size={14} color={COLORS.textSecondary} />
+                    <Text style={styles.keyDetailLabel}>Birth Location:</Text>
+                  </View>
+                  <Text style={styles.keyDetailValueBlock}>{lead.birth_plan_location}</Text>
                 </View>
               )}
               {lead.birth_plan_hospital_name && (
@@ -649,6 +651,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
     minWidth: '45%',
+  },
+  keyDetailItemColumn: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    minWidth: '100%',
+    marginTop: SIZES.xs,
+  },
+  keyDetailLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  keyDetailValueBlock: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: COLORS.textPrimary,
+    marginLeft: 18,
+    marginTop: 2,
   },
   keyDetailLabel: {
     fontSize: SIZES.fontXs,

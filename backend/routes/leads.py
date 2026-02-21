@@ -359,23 +359,18 @@ async def convert_lead_to_client(
     
     now = get_now()
     
-    # Determine the client collection based on provider role
-    if user.role == "DOULA":
-        clients_collection = db.doula_clients
-        client_id_prefix = "dc_"
-    else:
-        clients_collection = db.midwife_clients
-        client_id_prefix = "mc_"
+    # Use unified clients collection (same as provider_unified.py reads from)
+    client_id_prefix = "client_"
     
-    # Check if client already exists
-    existing_client = await clients_collection.find_one({
-        "mom_user_id": lead["mom_user_id"],
+    # Check if client already exists in unified clients collection
+    existing_client = await db.clients.find_one({
+        "linked_mom_id": lead["mom_user_id"],
         "provider_id": user.user_id
     })
     
     if existing_client:
         # Update existing client to active
-        await clients_collection.update_one(
+        await db.clients.update_one(
             {"client_id": existing_client["client_id"]},
             {"$set": {"is_active": True, "status": data.initial_status or "Active", "updated_at": now}}
         )
@@ -391,12 +386,12 @@ async def convert_lead_to_client(
             {"_id": 0}
         )
         
-        # Create new client record
+        # Create new client record in unified clients collection
         client_id = f"{client_id_prefix}{uuid.uuid4().hex[:12]}"
         
         client_doc = {
             "client_id": client_id,
-            "mom_user_id": lead["mom_user_id"],
+            "linked_mom_id": lead["mom_user_id"],
             "provider_id": user.user_id,
             "name": mom.get("full_name") if mom else lead["mom_name"],
             "email": mom.get("email") if mom else lead.get("mom_email"),
@@ -404,15 +399,15 @@ async def convert_lead_to_client(
             "edd": mom_profile.get("due_date") or mom_profile.get("edd") if mom_profile else None,
             "due_date": mom_profile.get("due_date") or mom_profile.get("edd") if mom_profile else None,
             "planned_birth_setting": mom_profile.get("planned_birth_setting") if mom_profile else None,
-            "status": data.initial_status or ("Lead" if user.role == "DOULA" else "Prenatal"),
+            "status": data.initial_status or "Active",
             "is_active": True,
-            "source": "consultation",
+            "source": "lead_conversion",
             "lead_id": lead_id,
             "created_at": now,
             "updated_at": now
         }
         
-        await clients_collection.insert_one(client_doc)
+        await db.clients.insert_one(client_doc)
     
     # Update lead status
     await db.leads.update_one(

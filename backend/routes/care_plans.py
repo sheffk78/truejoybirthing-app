@@ -198,9 +198,16 @@ async def update_birth_plan_section(
         if section["section_id"] == section_id:
             section["data"] = data
             section["notes_to_provider"] = notes_to_provider
-            section["status"] = "Complete" if data else "In progress"
+            # Only mark complete if data has meaningful content
+            has_data = data and any(v for v in data.values() if v is not None and v != "" and v != [])
+            section["status"] = "Complete" if has_data else ("In progress" if data else "Not started")
             section_found = True
-        if section.get("status") == "Complete":
+        # Recalculate completion based on actual data presence, not just status
+        section_data = section.get("data", {})
+        has_meaningful_data = section_data and any(
+            v for v in section_data.values() if v is not None and v != "" and v != []
+        )
+        if has_meaningful_data:
             completed_count += 1
     
     if not section_found:
