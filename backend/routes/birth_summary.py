@@ -3,7 +3,7 @@ Birth Summary Report Routes
 Generates a comprehensive PDF combining Labor Records + Birth Record
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from io import BytesIO
 from datetime import datetime
@@ -15,9 +15,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
-from models.user import User
-from config.auth import check_role
-from config.db import db
+from .dependencies import db, check_role, User
 
 router = APIRouter()
 
