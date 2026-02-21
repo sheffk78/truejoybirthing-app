@@ -79,6 +79,20 @@ class IAPService {
   private onPurchaseError: ((error: any) => void) | null = null;
 
   /**
+   * Check if running in Expo Go (where native modules aren't available)
+   */
+  private isExpoGo(): boolean {
+    try {
+      // In Expo Go, Constants.appOwnership is 'expo'
+      // In standalone/dev builds, it's 'standalone' or 'guest'
+      const Constants = require('expo-constants').default;
+      return Constants.appOwnership === 'expo';
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Initialize the IAP connection
    * Call this when the app starts or user enters subscription flow
    */
@@ -87,20 +101,38 @@ class IAPService {
     
     // Skip IAP on web
     if (Platform.OS === 'web') {
-      console.log('[IAP] Web platform - IAP not available');
+      console.log('[IAP] Web platform - using backend subscription management');
+      return false;
+    }
+
+    // Skip IAP in Expo Go (native modules not available)
+    if (this.isExpoGo()) {
+      console.log('[IAP] Running in Expo Go - IAP not available. Use a development build for IAP testing.');
       return false;
     }
 
     try {
-      // Dynamically require react-native-iap only on native
+      // Dynamically require react-native-iap only on native builds
       this.RNIap = require('react-native-iap');
+      
+      // Check if the module is properly linked
+      if (!this.RNIap || !this.RNIap.initConnection) {
+        console.log('[IAP] react-native-iap not properly linked');
+        return false;
+      }
+      
       const result = await this.RNIap.initConnection();
       console.log('[IAP] Connection initialized:', result);
       this.isInitialized = true;
       this.setupListeners();
       return true;
-    } catch (error) {
-      console.error('[IAP] Failed to initialize:', error);
+    } catch (error: any) {
+      // Handle the case where native module isn't available
+      if (error.message?.includes('NitroModules') || error.message?.includes('initConnection')) {
+        console.log('[IAP] Native IAP module not available - using backend subscription management');
+      } else {
+        console.error('[IAP] Failed to initialize:', error);
+      }
       return false;
     }
   }
