@@ -697,7 +697,31 @@ const styles = StyleSheet.create({
   // Subscription styles
   subscriptionInfo: { flexDirection: 'row', alignItems: 'center' },
   subscriptionText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary, marginLeft: SIZES.sm },
-  subscriptionSubtext: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary, marginLeft: 36, marginTop: SIZES.xs },
+  subscriptionDetails: { marginTop: SIZES.sm, marginLeft: 36 },
+  daysRemainingBadge: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    paddingHorizontal: SIZES.sm, 
+    paddingVertical: SIZES.xs, 
+    borderRadius: SIZES.radiusSm,
+    alignSelf: 'flex-start',
+  },
+  daysRemainingText: { 
+    fontSize: SIZES.fontSm, 
+    fontFamily: FONTS.bodyMedium, 
+    marginLeft: SIZES.xs 
+  },
+  autoRenewRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginTop: SIZES.xs 
+  },
+  autoRenewText: { 
+    fontSize: SIZES.fontXs, 
+    fontFamily: FONTS.body, 
+    color: COLORS.textSecondary, 
+    marginLeft: SIZES.xs 
+  },
   
   // Logout styles
   logoutButton: { 
