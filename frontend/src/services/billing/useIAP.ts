@@ -2,7 +2,7 @@
  * useIAP Hook
  * 
  * React hook for handling In-App Purchases with Apple/Google stores.
- * Integrates iapService with the subscription store for seamless purchase flow.
+ * Web-safe: Returns mock data on web platforms.
  * 
  * Usage:
  * const { products, purchase, restore, isLoading, error } = useIAP();
@@ -10,36 +10,73 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Platform, Alert } from 'react-native';
-import { iapService, IAPProduct, PurchaseResult } from './iapService';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
-import type { SubscriptionPurchase, PurchaseError } from 'react-native-iap';
+import { SUBSCRIPTION_PRODUCTS } from './subscriptionConfig';
+
+// Types
+export interface IAPProduct {
+  productId: string;
+  title: string;
+  description: string;
+  price: string;
+  localizedPrice: string;
+  currency: string;
+  isMonthly: boolean;
+  subscriptionPeriod: string;
+}
+
+export interface PurchaseResult {
+  success: boolean;
+  transactionId?: string;
+  productId?: string;
+  error?: string;
+}
 
 export interface UseIAPReturn {
-  /** Available products from the store */
   products: IAPProduct[];
-  /** Whether IAP is currently loading/processing */
   isLoading: boolean;
-  /** Whether IAP is available on this platform */
   isAvailable: boolean;
-  /** Error message if any */
   error: string | null;
-  /** Purchase a subscription by product ID */
   purchase: (productId: string, offerToken?: string) => Promise<PurchaseResult>;
-  /** Restore previous purchases */
   restore: () => Promise<PurchaseResult>;
-  /** Refresh products from store */
   refreshProducts: () => Promise<void>;
 }
 
+// Mock products for web
+const MOCK_PRODUCTS: IAPProduct[] = [
+  {
+    productId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_MONTHLY,
+    title: 'True Joy Pro – Monthly',
+    description: 'Full access to all Pro features',
+    price: '29.00',
+    localizedPrice: '$29.00',
+    currency: 'USD',
+    isMonthly: true,
+    subscriptionPeriod: 'P1M',
+  },
+  {
+    productId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_ANNUAL,
+    title: 'True Joy Pro – Annual',
+    description: 'Full access to all Pro features. Save $72!',
+    price: '276.00',
+    localizedPrice: '$276.00',
+    currency: 'USD',
+    isMonthly: false,
+    subscriptionPeriod: 'P1Y',
+  },
+];
+
+// Web-safe hook - returns mock data on web
 export function useIAP(): UseIAPReturn {
-  const [products, setProducts] = useState<IAPProduct[]>([]);
+  const [products, setProducts] = useState<IAPProduct[]>(MOCK_PRODUCTS);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAvailable, setIsAvailable] = useState(false);
+  const [iapService, setIapService] = useState<any>(null);
   
   const { fetchStatus, validateReceipt } = useSubscriptionStore();
 
-  // Initialize IAP on mount
+  // Initialize IAP on mount - only on native
   useEffect(() => {
     let mounted = true;
 
@@ -47,32 +84,41 @@ export function useIAP(): UseIAPReturn {
       // IAP not available on web
       if (Platform.OS === 'web') {
         setIsAvailable(false);
+        setProducts(MOCK_PRODUCTS);
         return;
       }
 
       setIsLoading(true);
       try {
-        const initialized = await iapService.initialize();
+        // Dynamically import iapService only on native
+        const { iapService: service } = await import('./iapService');
+        if (!mounted) return;
+        
+        setIapService(service);
+        
+        const initialized = await service.initialize();
         if (!mounted) return;
         
         setIsAvailable(initialized);
         
         if (initialized) {
           // Set up purchase callbacks
-          iapService.setCallbacks(
-            handlePurchaseSuccess,
+          service.setCallbacks(
+            (purchase: any) => handlePurchaseSuccess(purchase, service),
             handlePurchaseError
           );
           
           // Load products
-          const storeProducts = await iapService.getProducts();
+          const storeProducts = await service.getProducts();
           if (mounted) {
             setProducts(storeProducts);
           }
         }
       } catch (err: any) {
+        console.warn('[useIAP] IAP not available:', err.message);
         if (mounted) {
-          setError(err.message || 'Failed to initialize IAP');
+          setIsAvailable(false);
+          setProducts(MOCK_PRODUCTS);
         }
       } finally {
         if (mounted) {
@@ -85,15 +131,16 @@ export function useIAP(): UseIAPReturn {
 
     return () => {
       mounted = false;
-      iapService.cleanup();
+      if (iapService) {
+        iapService.cleanup();
+      }
     };
   }, []);
 
   // Handle successful purchase
-  const handlePurchaseSuccess = useCallback(async (purchase: SubscriptionPurchase) => {
+  const handlePurchaseSuccess = useCallback(async (purchase: any, service: any) => {
     console.log('[useIAP] Purchase successful:', purchase.productId);
     
-    // Validate with backend
     if (purchase.transactionReceipt) {
       const validated = await validateReceipt(
         purchase.transactionReceipt,
@@ -101,14 +148,12 @@ export function useIAP(): UseIAPReturn {
       );
       
       if (validated) {
-        // Refresh subscription status
         await fetchStatus();
         
-        // Show success message
         if (Platform.OS !== 'web') {
           Alert.alert(
             'Purchase Complete',
-            'Thank you for subscribing to True Joy Pro! Your subscription is now active.',
+            'Thank you for subscribing to True Joy Pro!',
             [{ text: 'OK' }]
           );
         }
@@ -119,23 +164,14 @@ export function useIAP(): UseIAPReturn {
   }, [validateReceipt, fetchStatus]);
 
   // Handle purchase error
-  const handlePurchaseError = useCallback((purchaseError: PurchaseError) => {
+  const handlePurchaseError = useCallback((purchaseError: any) => {
     console.warn('[useIAP] Purchase error:', purchaseError);
     
-    // User cancelled is not really an error
     if (purchaseError.code === 'E_USER_CANCELLED') {
       return;
     }
     
     setError(purchaseError.message || 'Purchase failed');
-    
-    if (Platform.OS !== 'web') {
-      Alert.alert(
-        'Purchase Failed',
-        purchaseError.message || 'Unable to complete purchase. Please try again.',
-        [{ text: 'OK' }]
-      );
-    }
   }, []);
 
   // Purchase a subscription
@@ -143,7 +179,7 @@ export function useIAP(): UseIAPReturn {
     productId: string,
     offerToken?: string
   ): Promise<PurchaseResult> => {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === 'web' || !iapService) {
       return { success: false, error: 'IAP not available on web' };
     }
 
@@ -152,7 +188,6 @@ export function useIAP(): UseIAPReturn {
     
     try {
       const result = await iapService.purchaseSubscription(productId, offerToken);
-      // Note: Actual success/failure will come through callbacks
       return result;
     } catch (err: any) {
       setError(err.message);
@@ -160,11 +195,11 @@ export function useIAP(): UseIAPReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [iapService]);
 
   // Restore purchases
   const restore = useCallback(async (): Promise<PurchaseResult> => {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === 'web' || !iapService) {
       return { success: false, error: 'Restore not available on web' };
     }
 
@@ -176,16 +211,7 @@ export function useIAP(): UseIAPReturn {
       
       if (result.success) {
         await fetchStatus();
-        
-        if (Platform.OS !== 'web') {
-          Alert.alert(
-            'Restore Complete',
-            'Your subscription has been restored successfully.',
-            [{ text: 'OK' }]
-          );
-        }
-      } else if (result.error !== 'No previous purchases found') {
-        setError(result.error || 'Restore failed');
+        Alert.alert('Restore Complete', 'Your subscription has been restored.');
       }
       
       return result;
@@ -195,11 +221,14 @@ export function useIAP(): UseIAPReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [fetchStatus]);
+  }, [iapService, fetchStatus]);
 
   // Refresh products
   const refreshProducts = useCallback(async () => {
-    if (Platform.OS === 'web') return;
+    if (Platform.OS === 'web' || !iapService) {
+      setProducts(MOCK_PRODUCTS);
+      return;
+    }
     
     setIsLoading(true);
     try {
@@ -210,7 +239,7 @@ export function useIAP(): UseIAPReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [iapService]);
 
   return {
     products,
