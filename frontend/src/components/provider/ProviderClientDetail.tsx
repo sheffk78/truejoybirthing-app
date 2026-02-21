@@ -49,35 +49,7 @@ interface Client {
   };
 }
 
-interface PrenatalVisit {
-  prenatal_visit_id: string;
-  client_id: string;
-  visit_date: string;
-  summary: string;
-  urinalysis?: string;
-  urinalysis_note?: string;
-  blood_pressure?: string;
-  fetal_heart_rate?: number;
-  fundal_height?: number;
-  weight?: number;
-  weight_unit?: string;
-  eating_score?: number;
-  eating_note?: string;
-  water_score?: number;
-  water_note?: string;
-  emotional_score?: number;
-  emotional_note?: string;
-  physical_score?: number;
-  physical_note?: string;
-  mental_score?: number;
-  mental_note?: string;
-  spiritual_score?: number;
-  spiritual_note?: string;
-  general_notes?: string;
-  created_at: string;
-}
-
-// BirthRecord is now handled by the BirthRecordSection component
+// PrenatalVisit and BirthRecord are now handled by dedicated section components
 
 interface ClientDetailProps {
   config: ProviderConfig;
