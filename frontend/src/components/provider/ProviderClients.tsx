@@ -275,11 +275,6 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
             <Text style={[styles.filterText, clientFilter === 'inactive' && { color: COLORS.white }]}>Inactive</Text>
           </TouchableOpacity>
         </View>
-            data-testid="filter-leads"
-          >
-            <Text style={[styles.filterText, clientFilter === 'leads' && { color: COLORS.white }]}>Leads</Text>
-          </TouchableOpacity>
-        </View>
         
         {/* Pending Requests Section */}
         {pendingRequests.length > 0 && (
