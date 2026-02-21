@@ -524,17 +524,13 @@ export default function MomProfileScreen() {
         </TouchableOpacity>
         
         {/* Logout */}
-        <TouchableOpacity
+        <TouchableOpacity 
+          style={styles.logoutButton} 
           onPress={handleLogout}
-          activeOpacity={0.8}
+          data-testid="logout-btn"
         >
-          <Card style={styles.logoutCard}>
-            <View style={styles.menuRow}>
-              <Icon name="log-out-outline" size={24} color={COLORS.error} />
-              <Text style={styles.logoutText}>Log Out</Text>
-              <Icon name="chevron-forward" size={20} color={COLORS.error} />
-            </View>
-          </Card>
+          <Icon name="log-out-outline" size={20} color={COLORS.error} />
+          <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
         
         {/* Legal Links - App Store Compliance */}
