@@ -28,15 +28,21 @@ interface SubscriptionPageProps {
 
 export default function SubscriptionPage({ primaryColor, role }: SubscriptionPageProps) {
   const router = useRouter();
-  const { status, pricing, isLoading, fetchStatus, fetchPricing, startTrial, activateSubscription, getSubscriptionManageUrl } = useSubscriptionStore();
+  const { status, pricing, isLoading, fetchStatus, fetchPricing, startTrial, activateSubscription, cancelSubscription, getSubscriptionManageUrl } = useSubscriptionStore();
   const { products, purchase, restore, isLoading: iapLoading, isAvailable: iapAvailable, error: iapError } = useIAP();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   useEffect(() => {
     fetchStatus();
     fetchPricing();
   }, []);
+
+  // Determine if user can upgrade (monthly to annual)
+  const canUpgradeToAnnual = status?.has_pro_access && 
+                             status?.subscription_status === 'active' && 
+                             status?.plan_type === 'monthly';
 
   // Get the product ID for the selected plan
   const getProductIdForPlan = (planType: string) => {
