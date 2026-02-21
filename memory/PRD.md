@@ -91,6 +91,10 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - Fixed `ProviderProfile.tsx` to use `subscriptionData?.has_pro_access` instead of status string
   - Now correctly shows "Pro Plan Active" or "Free Trial Active" based on actual subscription state
   - Auto-renew status displayed when applicable
+- [x] **ENHANCEMENT: Days Remaining Badge** (COMPLETED - 2026-02-21)
+  - Added visual "X days remaining" badge with calendar icon
+  - Separate "Auto-renews annually" or "Expires, no auto-renew" status row
+  - Color-coded: Trial uses warning color, Pro uses primary color
 - [x] **Testing** - Frontend building successfully, routes accessible, subscription status VERIFIED via screenshot
 
 ### ✅ RECENTLY COMPLETED (2026-02-21) - Provider UI/UX Improvements
