@@ -549,6 +549,16 @@ const styles = StyleSheet.create({
   requestName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: COLORS.textPrimary },
   requestSubtext: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
   requestDate: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: COLORS.textLight, marginTop: 4 },
+  // Request key details
+  requestKeyDetails: { marginTop: SIZES.sm, paddingTop: SIZES.sm, borderTopWidth: 1, borderTopColor: COLORS.border },
+  requestDetailsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.xs },
+  requestDetailChip: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: COLORS.background, paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusFull },
+  requestDetailText: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: COLORS.textSecondary },
+  requestPreviousExp: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: COLORS.textSecondary, fontStyle: 'italic', marginTop: SIZES.xs },
+  requestCompletionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: SIZES.xs },
+  requestCompletionLabel: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: COLORS.textLight },
+  requestCompletionBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 2, borderRadius: SIZES.radiusFull },
+  requestCompletionText: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyMedium },
   
   // Client cards
   clientCard: { marginBottom: SIZES.sm },
