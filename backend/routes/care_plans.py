@@ -162,12 +162,31 @@ async def get_birth_plan(user: User = Depends(check_role(["MOM"]))):
         now = get_now()
         
         # Pre-fill about_me section with known info
+        # Use exact field names that match frontend form (BirthPlanForms.tsx)
         about_me_data = {}
         if mom_user:
-            about_me_data["full_name"] = mom_user.get("full_name", "")
+            about_me_data["motherName"] = mom_user.get("full_name", "")
         if mom_profile:
-            about_me_data["due_date"] = mom_profile.get("due_date", "")
-            about_me_data["birthLocation"] = mom_profile.get("planned_birth_setting", "")
+            # dueDate field expects ISO date string format
+            due_date = mom_profile.get("due_date", "")
+            if due_date:
+                about_me_data["dueDate"] = due_date
+            # birthLocation expects: "Hospital", "Birth Center", "Home Birth", "Not sure yet"
+            planned_setting = mom_profile.get("planned_birth_setting", "")
+            if planned_setting:
+                # Map profile values to form options
+                location_map = {
+                    "hospital": "Hospital",
+                    "birth_center": "Birth Center",
+                    "home": "Home Birth",
+                    "undecided": "Not sure yet",
+                    # Also handle already formatted values
+                    "Hospital": "Hospital",
+                    "Birth Center": "Birth Center",
+                    "Home Birth": "Home Birth",
+                    "Not sure yet": "Not sure yet",
+                }
+                about_me_data["birthLocation"] = location_map.get(planned_setting, planned_setting)
         
         plan = {
             "plan_id": f"plan_{uuid.uuid4().hex[:12]}",
