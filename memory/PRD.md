@@ -3,6 +3,24 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
+## Latest Session (2026-03-02 - Bug Fixes)
+
+**Marketplace Button Bug - FIXED:**
+- **Issue**: When Mom is logged in, the marketplace "Request Consult" button was showing incorrectly for providers where the Mom is already a client
+- **Root Cause**: When a provider had multiple lead statuses (e.g., `converted_to_client` and `declined`), the sorting logic was not correctly prioritizing the highest status
+- **Fix**: Updated `frontend/app/(mom)/marketplace.tsx` to use a more robust status prioritization algorithm that groups requests by provider and keeps only the highest priority status
+- **Verified**: Emily Thompson (MIDWIFE) now correctly shows "Client" button instead of "Request Consult"
+
+**Birth Plan Pre-fill - IMPLEMENTED:**
+- **Feature**: Automatically pre-fills birth plan with known user information when a new birth plan is created
+- **Pre-filled fields**:
+  - `motherName` - from user's full_name
+  - `emailAddress` - from user's email
+  - `dueDate` - from mom_profile's due_date
+  - `birthLocation` - from mom_profile's planned_birth_setting (with proper mapping to form options)
+- **Location**: `backend/routes/care_plans.py` - get_birth_plan endpoint
+- **Mapping**: Profile values like "hospital", "birth_center", "home", "undecided" are mapped to form options "Hospital", "Birth Center", "Home Birth", "Not sure yet"
+
 ## Brand Identity (Updated 2026-02-16)
 - **Logo**: Lavender pregnant silhouette + Pink cursive "True Joy Birthing"
 - **Primary Color**: Soft Lavender (#9F83B6)
