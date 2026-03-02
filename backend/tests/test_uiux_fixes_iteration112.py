@@ -17,7 +17,7 @@ import os
 from datetime import datetime, timedelta
 
 # Get base URL from environment - using the public URL
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://joy-birthing-fix.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://tjb-preview-stable.preview.emergentagent.com')
 
 # Test credentials
 DOULA_CREDS = {"email": "demo.doula@truejoybirthing.com", "password": "DemoScreenshot2024!"}

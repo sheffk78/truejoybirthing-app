@@ -57,7 +57,7 @@
     "frontend": "100%"
   },
   "test_credentials": {
-    "test_contract_url": "https://joy-birthing-fix.preview.emergentagent.com/sign-contract?contractId=contract_6cc57257d974"
+    "test_contract_url": "https://tjb-preview-stable.preview.emergentagent.com/sign-contract?contractId=contract_6cc57257d974"
   },
   "seed_data_creation": "",
   "retest_needed": false,
