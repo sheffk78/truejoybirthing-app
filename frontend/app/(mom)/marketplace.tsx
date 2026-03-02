@@ -103,20 +103,25 @@ export default function MarketplaceScreen() {
           // Priority order - higher index = higher priority
           const priorityOrder = ['declined', 'not_a_fit', 'removed_from_team', 'consultation_requested', 'consultation_scheduled', 'consultation_completed', 'converted_to_client'];
           
-          // Sort by priority descending (highest priority first)
-          const sortedRequests = [...consultationRequests].sort((a, b) => {
-            const aIndex = priorityOrder.indexOf(a.status);
-            const bIndex = priorityOrder.indexOf(b.status);
-            // If not found, use -1, then sort descending
-            return bIndex - aIndex;
-          });
+          // Group requests by provider_id and keep only highest priority
+          const providerMap: Record<string, { status: string; priority: number }> = {};
           
-          sortedRequests.forEach((req: any) => {
-            // Only set if not already set with a higher priority status
-            if (!consultMap[req.provider_id]) {
-              consultMap[req.provider_id] = req.status;
+          consultationRequests.forEach((req: any) => {
+            const priority = priorityOrder.indexOf(req.status);
+            const existing = providerMap[req.provider_id];
+            
+            // Set if no existing entry OR new status has higher priority
+            if (!existing || priority > existing.priority) {
+              providerMap[req.provider_id] = { status: req.status, priority };
             }
           });
+          
+          // Build final consultMap
+          Object.entries(providerMap).forEach(([providerId, data]) => {
+            consultMap[providerId] = data.status;
+          });
+          
+          console.log('Consultation status map:', consultMap);
         }
         
         setConsultationStatus(consultMap);
