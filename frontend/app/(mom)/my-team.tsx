@@ -201,6 +201,7 @@ export default function MyTeamScreen() {
             </Text>
             {allTeamProviders.map((member) => (
               <Card key={member.id} style={styles.teamCard}>
+                {/* Provider Header */}
                 <View style={styles.teamRow}>
                   {member.provider_picture ? (
                     <Image 
@@ -236,13 +237,65 @@ export default function MyTeamScreen() {
                         </Text>
                       </View>
                     </View>
-                    {member.share_request && (
-                      <Text style={styles.accessText}>
-                        Has access to your birth plan
-                      </Text>
-                    )}
                   </View>
                 </View>
+
+                {/* Provider Details */}
+                {member.profile && (
+                  <View style={styles.providerDetails}>
+                    {/* Location & Experience */}
+                    <View style={styles.detailsRow}>
+                      {(member.profile.location_city || member.profile.location_state) && (
+                        <View style={styles.detailItem}>
+                          <Icon name="location-outline" size={14} color={COLORS.textSecondary} />
+                          <Text style={styles.detailText}>
+                            {[member.profile.location_city, member.profile.location_state].filter(Boolean).join(', ')}
+                          </Text>
+                        </View>
+                      )}
+                      {(member.profile.years_in_practice || member.profile.experience_years) && (
+                        <View style={styles.detailItem}>
+                          <Icon name="ribbon-outline" size={14} color={COLORS.textSecondary} />
+                          <Text style={styles.detailText}>
+                            {member.profile.years_in_practice || member.profile.experience_years} years experience
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+
+                    {/* Bio snippet */}
+                    {member.profile.bio && (
+                      <Text style={styles.bioText} numberOfLines={2}>
+                        {member.profile.bio}
+                      </Text>
+                    )}
+
+                    {/* Services */}
+                    {member.profile.services_offered && member.profile.services_offered.length > 0 && (
+                      <View style={styles.servicesRow}>
+                        {member.profile.services_offered.slice(0, 3).map((service: string, idx: number) => (
+                          <View key={idx} style={styles.serviceTag}>
+                            <Text style={styles.serviceTagText}>{service}</Text>
+                          </View>
+                        ))}
+                        {member.profile.services_offered.length > 3 && (
+                          <Text style={styles.moreServices}>
+                            +{member.profile.services_offered.length - 3} more
+                          </Text>
+                        )}
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                {/* Birth Plan Access */}
+                {member.share_request && (
+                  <View style={styles.accessRow}>
+                    <Icon name="document-text-outline" size={14} color={COLORS.success} />
+                    <Text style={styles.accessText}>Has access to your birth plan</Text>
+                  </View>
+                )}
+
                 {/* Quick Actions */}
                 <View style={styles.quickActions}>
                   <TouchableOpacity
@@ -260,6 +313,14 @@ export default function MyTeamScreen() {
                   >
                     <Icon name="calendar-outline" size={18} color={COLORS.primary} />
                     <Text style={styles.quickActionText}>Schedule</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.quickActionBtn}
+                    onPress={() => router.push(`/provider-detail?providerId=${member.provider_id}`)}
+                    data-testid={`profile-btn-${member.id}`}
+                  >
+                    <Icon name="person-outline" size={18} color={COLORS.primary} />
+                    <Text style={styles.quickActionText}>View Profile</Text>
                   </TouchableOpacity>
                 </View>
               </Card>
