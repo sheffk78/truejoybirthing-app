@@ -300,7 +300,7 @@ export default function MyTeamScreen() {
                 <View style={styles.quickActionsContainer}>
                   <View style={styles.quickActionsRow}>
                     <TouchableOpacity
-                      style={styles.quickActionBtn}
+                      style={[styles.quickActionBtn, { flex: 1 }]}
                       onPress={() => router.push(`/(mom)/messages?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
                       data-testid={`message-btn-${member.id}`}
                     >
@@ -308,7 +308,7 @@ export default function MyTeamScreen() {
                       <Text style={styles.quickActionText}>Message</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.quickActionBtn}
+                      style={[styles.quickActionBtn, { flex: 1 }]}
                       onPress={() => router.push(`/(mom)/appointments?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
                       data-testid={`schedule-btn-${member.id}`}
                     >
@@ -316,7 +316,7 @@ export default function MyTeamScreen() {
                       <Text style={styles.quickActionText}>Schedule</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.quickActionBtn}
+                      style={[styles.quickActionBtn, { flex: 1 }]}
                       onPress={() => router.push(`/provider-detail?providerId=${member.provider_id}`)}
                       data-testid={`profile-btn-${member.id}`}
                     >
