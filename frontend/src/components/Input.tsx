@@ -126,8 +126,7 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
   },
   leftIcon: {
-    marginLeft: SIZES.md,
-    marginRight: 12,
+    // No extra margins - gap handles spacing
   },
   inputWithLeftIcon: {
     paddingLeft: 0,
