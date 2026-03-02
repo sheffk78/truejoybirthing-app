@@ -125,10 +125,10 @@ const styles = StyleSheet.create({
   },
   leftIcon: {
     marginLeft: SIZES.md,
-    marginRight: SIZES.md,
+    marginRight: SIZES.sm,
   },
   inputWithLeftIcon: {
-    paddingLeft: SIZES.xs,
+    paddingLeft: 0,
   },
   rightIcon: {
     padding: SIZES.sm,
