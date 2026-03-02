@@ -3,7 +3,7 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-02 - Bug Fixes)
+## Latest Session (2026-03-02 - Bug Fixes & Enhancements)
 
 **Marketplace Button Bug - FIXED:**
 - **Issue**: When Mom is logged in, the marketplace "Request Consult" button was showing incorrectly for providers where the Mom is already a client
@@ -20,6 +20,21 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
   - `birthLocation` - from mom_profile's planned_birth_setting (with proper mapping to form options)
 - **Location**: `backend/routes/care_plans.py` - get_birth_plan endpoint
 - **Mapping**: Profile values like "hospital", "birth_center", "home", "undecided" are mapped to form options "Hospital", "Birth Center", "Home Birth", "Not sure yet"
+
+**My Team / Birth Team Summary - ENHANCED:**
+- **Issue**: "My Team" page was showing "No Team Members Yet" even though the Mom had active client relationships
+- **Root Cause**: The backend `/mom/team` endpoint only looked at `share_requests` collection, missing providers from `clients` and `leads` collections
+- **Fix**: Updated `backend/routes/mom.py` to query all three collections:
+  1. `share_requests` with status "accepted"
+  2. `clients` with status "Active"
+  3. `leads` with status "converted_to_client"
+- **Frontend Enhancement**: Updated `frontend/app/(mom)/my-team.tsx` to display enhanced provider cards with:
+  - Provider location (city, state)
+  - Years of experience
+  - Bio snippet
+  - Services offered (up to 3 tags)
+  - Quick actions: Message, Schedule, View Profile
+- **Verified**: Emily Thompson now appears in My Team with full profile details
 
 ## Brand Identity (Updated 2026-02-16)
 - **Logo**: Lavender pregnant silhouette + Pink cursive "True Joy Birthing"
