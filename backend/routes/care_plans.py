@@ -166,6 +166,10 @@ async def get_birth_plan(user: User = Depends(check_role(["MOM"]))):
         about_me_data = {}
         if mom_user:
             about_me_data["motherName"] = mom_user.get("full_name", "")
+            # Also pre-fill email address
+            email = mom_user.get("email", "")
+            if email:
+                about_me_data["emailAddress"] = email
         if mom_profile:
             # dueDate field expects ISO date string format
             due_date = mom_profile.get("due_date", "")
