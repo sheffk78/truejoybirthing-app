@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
   },
   leftIcon: {
     marginLeft: SIZES.md,
+    marginRight: SIZES.sm,
   },
   rightIcon: {
     padding: SIZES.sm,
