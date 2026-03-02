@@ -165,41 +165,110 @@ async def get_mom_midwife_visits(user: User = Depends(check_role(["MOM"]))):
 
 @router.get("/team")
 async def get_mom_team(user: User = Depends(check_role(["MOM"]))):
-    """Get mom's care team (connected providers)"""
-    # Get accepted share requests
+    """Get mom's care team (connected providers) - Birth Team Summary
+    
+    This endpoint returns all providers connected to the mom through:
+    1. Accepted share requests (birth plan sharing)
+    2. Active client relationships (from clients collection)
+    3. Converted leads (consultation requests that became client relationships)
+    """
+    team = []
+    seen_provider_ids = set()
+    
+    # 1. Get accepted share requests
     share_requests = await db.share_requests.find(
         {"mom_user_id": user.user_id, "status": "accepted"},
         {"_id": 0}
     ).to_list(20)
     
-    team = []
     for req in share_requests:
+        provider_id = req["provider_id"]
+        if provider_id in seen_provider_ids:
+            continue
+        seen_provider_ids.add(provider_id)
+        
         provider = await db.users.find_one(
-            {"user_id": req["provider_id"]},
+            {"user_id": provider_id},
             {"_id": 0, "password_hash": 0}
         )
         if provider:
-            # Get provider profile based on role
-            if provider.get("role") == "DOULA":
-                profile = await db.doula_profiles.find_one(
-                    {"user_id": req["provider_id"]},
-                    {"_id": 0}
-                )
-            elif provider.get("role") == "MIDWIFE":
-                profile = await db.midwife_profiles.find_one(
-                    {"user_id": req["provider_id"]},
-                    {"_id": 0}
-                )
-            else:
-                profile = None
-            
+            profile = await _get_provider_profile(provider_id, provider.get("role"))
             team.append({
                 "provider": provider,
                 "profile": profile,
-                "share_request": req
+                "share_request": req,
+                "relationship_type": "birth_plan_shared",
+                "connection_status": "Active"
+            })
+    
+    # 2. Get providers from clients collection (where this mom is a client)
+    client_records = await db.clients.find(
+        {"linked_mom_id": user.user_id, "status": "Active"},
+        {"_id": 0}
+    ).to_list(20)
+    
+    for client in client_records:
+        provider_id = client.get("provider_id")
+        if not provider_id or provider_id in seen_provider_ids:
+            continue
+        seen_provider_ids.add(provider_id)
+        
+        provider = await db.users.find_one(
+            {"user_id": provider_id},
+            {"_id": 0, "password_hash": 0}
+        )
+        if provider:
+            profile = await _get_provider_profile(provider_id, provider.get("role"))
+            team.append({
+                "provider": provider,
+                "profile": profile,
+                "client_record": client,
+                "relationship_type": "active_client",
+                "connection_status": "Active"
+            })
+    
+    # 3. Get providers from converted leads
+    converted_leads = await db.leads.find(
+        {"mom_user_id": user.user_id, "status": "converted_to_client"},
+        {"_id": 0}
+    ).to_list(20)
+    
+    for lead in converted_leads:
+        provider_id = lead.get("provider_id")
+        if not provider_id or provider_id in seen_provider_ids:
+            continue
+        seen_provider_ids.add(provider_id)
+        
+        provider = await db.users.find_one(
+            {"user_id": provider_id},
+            {"_id": 0, "password_hash": 0}
+        )
+        if provider:
+            profile = await _get_provider_profile(provider_id, provider.get("role"))
+            team.append({
+                "provider": provider,
+                "profile": profile,
+                "lead_record": lead,
+                "relationship_type": "converted_lead",
+                "connection_status": "Active"
             })
     
     return team
+
+
+async def _get_provider_profile(provider_id: str, role: str):
+    """Helper to get provider profile based on role"""
+    if role == "DOULA":
+        return await db.doula_profiles.find_one(
+            {"user_id": provider_id},
+            {"_id": 0}
+        )
+    elif role == "MIDWIFE":
+        return await db.midwife_profiles.find_one(
+            {"user_id": provider_id},
+            {"_id": 0}
+        )
+    return None
 
 
 @router.get("/team-providers")
