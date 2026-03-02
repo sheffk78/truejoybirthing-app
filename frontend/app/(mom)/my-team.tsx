@@ -418,7 +418,7 @@ export default function MyTeamScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
-  scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
+  scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl, overflow: 'visible' },
   title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: COLORS.textPrimary },
   subtitle: { fontSize: SIZES.fontMd, color: COLORS.textSecondary, marginBottom: SIZES.lg },
   addButton: { 
