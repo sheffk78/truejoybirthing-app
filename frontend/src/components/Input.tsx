@@ -47,13 +47,16 @@ export default function Input({
         ]}
       >
         {leftIcon && (
-          <View style={[styles.leftIcon, { paddingRight: 10 }]}>
-            <Icon
-              name={leftIcon}
-              size={20}
-              color={COLORS.textSecondary}
-            />
-          </View>
+          <>
+            <View style={styles.leftIcon}>
+              <Icon
+                name={leftIcon}
+                size={20}
+                color={COLORS.textSecondary}
+              />
+            </View>
+            <View style={{ width: 8 }} />
+          </>
         )}
         <TextInput
           style={[styles.input, leftIcon && styles.inputWithLeftIcon]}
