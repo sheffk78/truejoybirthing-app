@@ -55,7 +55,7 @@ export default function Input({
                 color={COLORS.textSecondary}
               />
             </View>
-            <View style={{ width: 8 }} />
+            <View style={{ width: 12 }} />
           </>
         )}
         <TextInput
