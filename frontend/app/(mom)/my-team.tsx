@@ -297,31 +297,33 @@ export default function MyTeamScreen() {
                 )}
 
                 {/* Quick Actions */}
-                <View style={styles.quickActions}>
-                  <TouchableOpacity
-                    style={styles.quickActionBtn}
-                    onPress={() => router.push(`/(mom)/messages?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
-                    data-testid={`message-btn-${member.id}`}
-                  >
-                    <Icon name="chatbubble-outline" size={18} color={COLORS.primary} />
-                    <Text style={styles.quickActionText}>Message</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.quickActionBtn}
-                    onPress={() => router.push(`/(mom)/appointments?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
-                    data-testid={`schedule-btn-${member.id}`}
-                  >
-                    <Icon name="calendar-outline" size={18} color={COLORS.primary} />
-                    <Text style={styles.quickActionText}>Schedule</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.quickActionBtn}
-                    onPress={() => router.push(`/provider-detail?providerId=${member.provider_id}`)}
-                    data-testid={`profile-btn-${member.id}`}
-                  >
-                    <Icon name="person-outline" size={18} color={COLORS.primary} />
-                    <Text style={styles.quickActionText}>View Profile</Text>
-                  </TouchableOpacity>
+                <View style={styles.quickActionsContainer}>
+                  <View style={styles.quickActionsRow}>
+                    <TouchableOpacity
+                      style={styles.quickActionBtn}
+                      onPress={() => router.push(`/(mom)/messages?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
+                      data-testid={`message-btn-${member.id}`}
+                    >
+                      <Icon name="chatbubble-outline" size={16} color={COLORS.primary} />
+                      <Text style={styles.quickActionText}>Message</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.quickActionBtn}
+                      onPress={() => router.push(`/(mom)/appointments?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
+                      data-testid={`schedule-btn-${member.id}`}
+                    >
+                      <Icon name="calendar-outline" size={16} color={COLORS.primary} />
+                      <Text style={styles.quickActionText}>Schedule</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.quickActionBtn}
+                      onPress={() => router.push(`/provider-detail?providerId=${member.provider_id}`)}
+                      data-testid={`profile-btn-${member.id}`}
+                    >
+                      <Icon name="person-outline" size={16} color={COLORS.primary} />
+                      <Text style={styles.quickActionText}>Profile</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </Card>
             ))}
