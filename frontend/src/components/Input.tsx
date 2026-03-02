@@ -47,7 +47,7 @@ export default function Input({
         ]}
       >
         {leftIcon && (
-          <View style={styles.leftIcon}>
+          <View style={[styles.leftIcon, { paddingRight: 10 }]}>
             <Icon
               name={leftIcon}
               size={20}
