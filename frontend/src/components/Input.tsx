@@ -108,7 +108,8 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     borderRadius: SIZES.radiusMd,
     minHeight: SIZES.touchMin + 4,
-    gap: 8,
+    paddingLeft: SIZES.md,
+    gap: 12,
   },
   inputFocused: {
     borderColor: COLORS.primary,
