@@ -152,23 +152,70 @@ async def notify_providers_birth_plan_complete(mom_user_id: str, mom_name: str):
 async def get_birth_plan(user: User = Depends(check_role(["MOM"]))):
     """Get user's birth plan"""
     plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
+    
+    # Get mom's profile for pre-filling
+    mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
+    mom_user = await db.users.find_one({"user_id": user.user_id}, {"_id": 0, "full_name": 1})
+    
     if not plan:
-        # Create default plan
+        # Create default plan with pre-filled data from profile
         now = get_now()
+        
+        # Pre-fill about_me section with known info
+        about_me_data = {}
+        if mom_user:
+            about_me_data["full_name"] = mom_user.get("full_name", "")
+        if mom_profile:
+            about_me_data["due_date"] = mom_profile.get("due_date", "")
+            about_me_data["birthLocation"] = mom_profile.get("planned_birth_setting", "")
+        
         plan = {
             "plan_id": f"plan_{uuid.uuid4().hex[:12]}",
             "user_id": user.user_id,
             "sections": [
-                {"section_id": s["section_id"], "title": s["title"], "status": "Not started", "data": {}, "discussion_notes": []}
+                {
+                    "section_id": s["section_id"], 
+                    "title": s["title"], 
+                    "status": "Complete" if s["section_id"] == "about_me" and about_me_data else "Not started", 
+                    "data": about_me_data if s["section_id"] == "about_me" else {}, 
+                    "discussion_notes": []
+                }
                 for s in BIRTH_PLAN_SECTIONS
             ],
-            "completion_percentage": 0.0,
-            "birth_plan_status": "not_started",
+            "completion_percentage": (1 / len(BIRTH_PLAN_SECTIONS) * 100) if about_me_data else 0.0,
+            "birth_plan_status": "in_progress" if about_me_data else "not_started",
             "created_at": now,
             "updated_at": now
         }
         await db.birth_plans.insert_one(plan)
         plan.pop("_id", None)
+    else:
+        # Recalculate completion based on actual data presence
+        sections = plan.get("sections", [])
+        completed_count = 0
+        for section in sections:
+            section_data = section.get("data", {})
+            has_meaningful_data = section_data and any(
+                v for v in section_data.values() if v is not None and v != "" and v != []
+            )
+            if has_meaningful_data:
+                completed_count += 1
+                # Update section status based on actual data
+                section["status"] = "Complete"
+            else:
+                section["status"] = "Not started"
+        
+        plan["completion_percentage"] = (completed_count / len(sections)) * 100 if sections else 0
+        
+        # Update the stored plan with recalculated values
+        await db.birth_plans.update_one(
+            {"user_id": user.user_id},
+            {"$set": {
+                "completion_percentage": plan["completion_percentage"],
+                "sections": sections
+            }}
+        )
+    
     return plan
 
 
