@@ -307,6 +307,7 @@ export default function MarketplaceScreen() {
   
   const getConsultationButtonText = (providerId: string) => {
     const status = consultationStatus[providerId];
+    console.log('getConsultationButtonText:', providerId, status);
     if (status === 'consultation_requested') return 'Requested';
     if (status === 'consultation_scheduled') return 'Scheduled';
     if (status === 'consultation_completed') return 'Completed';
