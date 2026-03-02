@@ -100,8 +100,19 @@ export default function MarketplaceScreen() {
         const consultMap: Record<string, string> = {};
         
         if (Array.isArray(consultationRequests)) {
-          consultationRequests.forEach((req: any) => {
-            consultMap[req.provider_id] = req.status;
+          // Sort to prioritize converted_to_client status
+          const priorityOrder = ['converted_to_client', 'consultation_scheduled', 'consultation_requested', 'consultation_completed'];
+          const sortedRequests = [...consultationRequests].sort((a, b) => {
+            const aIndex = priorityOrder.indexOf(a.status);
+            const bIndex = priorityOrder.indexOf(b.status);
+            return aIndex - bIndex;
+          });
+          
+          sortedRequests.forEach((req: any) => {
+            // Only set if not already set with a higher priority status
+            if (!consultMap[req.provider_id]) {
+              consultMap[req.provider_id] = req.status;
+            }
           });
         }
         
