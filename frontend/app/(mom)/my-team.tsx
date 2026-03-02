@@ -317,7 +317,7 @@ export default function MyTeamScreen() {
         )}
 
         {/* Empty State */}
-        {acceptedProviders.length === 0 && pendingProviders.length === 0 && (
+        {allTeamProviders.length === 0 && pendingProviders.length === 0 && (
           <Card style={styles.emptyCard}>
             <View style={styles.emptyIcon}>
               <Icon name="people" size={48} color={COLORS.textLight} />
