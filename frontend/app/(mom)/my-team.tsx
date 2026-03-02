@@ -190,68 +190,71 @@ export default function MyTeamScreen() {
           <Icon name="chevron-forward" size={16} color={COLORS.white} />
         </TouchableOpacity>
 
-        {/* Active Team Members */}
-        {acceptedProviders.length > 0 && (
+        {/* Birth Team Summary */}
+        {allTeamProviders.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Your Team</Text>
-            {acceptedProviders.map((request) => (
-              <Card key={request.request_id} style={styles.teamCard}>
+            <Text style={styles.sectionTitle}>Your Birth Team</Text>
+            <Text style={styles.sectionSubtitle}>
+              Your care providers who are helping you on your birthing journey
+            </Text>
+            {allTeamProviders.map((member) => (
+              <Card key={member.id} style={styles.teamCard}>
                 <View style={styles.teamRow}>
-                  {request.provider_picture ? (
+                  {member.provider_picture ? (
                     <Image 
-                      source={{ uri: request.provider_picture }} 
+                      source={{ uri: member.provider_picture }} 
                       style={styles.avatarImage}
                     />
                   ) : (
                     <View style={styles.avatar}>
                       <Icon 
-                        name={getProviderIcon(request.provider_role)} 
+                        name={getProviderIcon(member.provider_role)} 
                         size={24} 
                         color={COLORS.white} 
                       />
                     </View>
                   )}
                   <View style={styles.teamInfo}>
-                    <Text style={styles.teamName}>{request.provider_name}</Text>
+                    <Text style={styles.teamName}>{member.provider_name}</Text>
                     <View style={styles.roleRow}>
                       <View style={[
                         styles.roleBadge,
-                        { backgroundColor: request.provider_role === 'DOULA' ? COLORS.primary + '20' : COLORS.success + '20' }
+                        { backgroundColor: member.provider_role === 'DOULA' ? COLORS.primary + '20' : COLORS.success + '20' }
                       ]}>
                         <Text style={[
                           styles.roleText,
-                          { color: request.provider_role === 'DOULA' ? COLORS.primary : COLORS.success }
+                          { color: member.provider_role === 'DOULA' ? COLORS.primary : COLORS.success }
                         ]}>
-                          {request.provider_role}
+                          {member.provider_role}
+                        </Text>
+                      </View>
+                      <View style={[styles.statusBadge, { backgroundColor: COLORS.success + '15' }]}>
+                        <Text style={[styles.statusText, { color: COLORS.success }]}>
+                          {getRelationshipLabel(member.relationship_type)}
                         </Text>
                       </View>
                     </View>
-                    <Text style={styles.accessText}>
-                      Has access to your birth plan
-                    </Text>
+                    {member.share_request && (
+                      <Text style={styles.accessText}>
+                        Has access to your birth plan
+                      </Text>
+                    )}
                   </View>
-                  <TouchableOpacity
-                    style={styles.removeBtn}
-                    onPress={() => revokeAccess(request.request_id, request.provider_name)}
-                    data-testid={`remove-btn-${request.request_id}`}
-                  >
-                    <Icon name="close-circle" size={24} color={COLORS.error} />
-                  </TouchableOpacity>
                 </View>
                 {/* Quick Actions */}
                 <View style={styles.quickActions}>
                   <TouchableOpacity
                     style={styles.quickActionBtn}
-                    onPress={() => router.push(`/(mom)/messages?providerId=${request.provider_id}&providerName=${encodeURIComponent(request.provider_name)}`)}
-                    data-testid={`message-btn-${request.request_id}`}
+                    onPress={() => router.push(`/(mom)/messages?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
+                    data-testid={`message-btn-${member.id}`}
                   >
                     <Icon name="chatbubble-outline" size={18} color={COLORS.primary} />
                     <Text style={styles.quickActionText}>Message</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.quickActionBtn}
-                    onPress={() => router.push(`/(mom)/appointments?providerId=${request.provider_id}&providerName=${encodeURIComponent(request.provider_name)}`)}
-                    data-testid={`schedule-btn-${request.request_id}`}
+                    onPress={() => router.push(`/(mom)/appointments?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
+                    data-testid={`schedule-btn-${member.id}`}
                   >
                     <Icon name="calendar-outline" size={18} color={COLORS.primary} />
                     <Text style={styles.quickActionText}>Schedule</Text>
