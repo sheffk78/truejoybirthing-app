@@ -111,8 +111,58 @@ export default function MyTeamScreen() {
     return role === 'DOULA' ? 'people' : 'medkit';
   };
 
-  const acceptedProviders = shareRequests.filter(r => r.status === 'accepted');
+  const getRelationshipLabel = (type: string) => {
+    switch(type) {
+      case 'active_client': return 'Active Client';
+      case 'converted_lead': return 'Active Client';
+      case 'birth_plan_shared': return 'Birth Plan Shared';
+      default: return 'Connected';
+    }
+  };
+
   const pendingProviders = shareRequests.filter(r => r.status === 'pending');
+  
+  // Combine team members with accepted share requests, avoiding duplicates
+  const seenProviderIds = new Set<string>();
+  const allTeamProviders: any[] = [];
+  
+  // First add team members from the API (clients, converted leads)
+  teamMembers.forEach(member => {
+    if (member.provider && !seenProviderIds.has(member.provider.user_id)) {
+      seenProviderIds.add(member.provider.user_id);
+      allTeamProviders.push({
+        id: member.provider.user_id,
+        provider_id: member.provider.user_id,
+        provider_name: member.provider.full_name,
+        provider_role: member.provider.role,
+        provider_picture: member.provider.picture,
+        relationship_type: member.relationship_type,
+        connection_status: member.connection_status,
+        profile: member.profile,
+        share_request: member.share_request,
+        source: 'team_api'
+      });
+    }
+  });
+  
+  // Then add accepted share requests not already in the list
+  const acceptedProviders = shareRequests.filter(r => r.status === 'accepted');
+  acceptedProviders.forEach(request => {
+    if (!seenProviderIds.has(request.provider_id)) {
+      seenProviderIds.add(request.provider_id);
+      allTeamProviders.push({
+        id: request.request_id,
+        provider_id: request.provider_id,
+        provider_name: request.provider_name,
+        provider_role: request.provider_role,
+        provider_picture: request.provider_picture,
+        relationship_type: 'birth_plan_shared',
+        connection_status: 'Active',
+        share_request: request,
+        source: 'share_request'
+      });
+    }
+  });
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
