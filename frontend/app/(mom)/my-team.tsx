@@ -18,6 +18,22 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES } from '../../src/constants/theme';
 
+interface TeamMemberResponse {
+  provider: {
+    user_id: string;
+    full_name: string;
+    email: string;
+    role: string;
+    picture?: string;
+  };
+  profile?: any;
+  share_request?: any;
+  client_record?: any;
+  lead_record?: any;
+  relationship_type: string;
+  connection_status: string;
+}
+
 interface TeamMember {
   user_id: string;
   full_name: string;
