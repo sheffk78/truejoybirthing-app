@@ -51,7 +51,8 @@
         {
           "paymentProvider": "both"
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true
