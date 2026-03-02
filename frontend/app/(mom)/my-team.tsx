@@ -55,7 +55,7 @@ interface ShareRequest {
 
 export default function MyTeamScreen() {
   const router = useRouter();
-  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMemberResponse[]>([]);
   const [shareRequests, setShareRequests] = useState<ShareRequest[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -65,7 +65,7 @@ export default function MyTeamScreen() {
         apiRequest(API_ENDPOINTS.MOM_TEAM),
         apiRequest(API_ENDPOINTS.BIRTH_PLAN_SHARE_REQUESTS),
       ]);
-      setTeam(teamData || []);
+      setTeamMembers(teamData || []);
       setShareRequests(requestsData.requests || []);
     } catch (error) {
       console.error('Error fetching team data:', error);
