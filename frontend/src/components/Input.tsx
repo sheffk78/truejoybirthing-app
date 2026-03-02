@@ -56,7 +56,7 @@ export default function Input({
           </View>
         )}
         <TextInput
-          style={[styles.input, leftIcon && { paddingLeft: 0 }]}
+          style={[styles.input, leftIcon && styles.inputWithLeftIcon]}
           placeholderTextColor={COLORS.textLight}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
