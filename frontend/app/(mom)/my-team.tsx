@@ -542,26 +542,27 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusMd 
   },
   cancelBtnText: { color: COLORS.textSecondary, fontWeight: '600', fontSize: SIZES.fontSm },
-  quickActions: { 
-    flexDirection: 'row', 
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start', 
+  quickActionsContainer: { 
     marginTop: SIZES.md, 
     paddingTop: SIZES.md, 
     borderTopWidth: 1, 
     borderTopColor: COLORS.border,
-    gap: 8,
+  },
+  quickActionsRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between',
   },
   quickActionBtn: { 
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'center',
     backgroundColor: COLORS.primary + '10', 
-    paddingVertical: 6, 
-    paddingHorizontal: 10, 
+    paddingVertical: 8, 
+    paddingHorizontal: 12, 
     borderRadius: SIZES.radiusMd,
     gap: 4,
-    minWidth: 80,
+    flex: 1,
+    marginHorizontal: 4,
   },
   quickActionText: { 
     fontSize: SIZES.fontSm, 
