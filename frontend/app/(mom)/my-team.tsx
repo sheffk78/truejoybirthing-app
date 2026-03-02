@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
   section: { marginBottom: SIZES.lg },
   sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary, marginBottom: SIZES.xs },
   sectionSubtitle: { fontSize: SIZES.fontSm, color: COLORS.textSecondary, marginBottom: SIZES.md },
-  teamCard: { marginBottom: SIZES.sm },
+  teamCard: { marginBottom: SIZES.sm, overflow: 'visible' },
   pendingCard: { borderStyle: 'dashed', borderWidth: 1, borderColor: COLORS.warning },
   teamRow: { flexDirection: 'row', alignItems: 'center' },
   avatar: { 
