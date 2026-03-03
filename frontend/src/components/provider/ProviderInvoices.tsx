@@ -113,7 +113,8 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   };
 
   const resetInvoiceForm = () => {
-    setSelectedClientId('');
+    // Preserve client selection in client-scoped mode
+    setSelectedClientId(isClientScoped && params.clientId ? params.clientId : '');
     setDescription('');
     setAmount('');
     setIssueDate(new Date().toISOString().split('T')[0]);

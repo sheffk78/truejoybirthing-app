@@ -281,7 +281,12 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               if (client.linked_mom_id) {
                 router.push({ 
                   pathname: (config.routes.clientBirthPlans || config.routes.clients) as any, 
-                  params: { momUserId: client.linked_mom_id, clientName: client?.name || clientName } 
+                  params: { 
+                    momUserId: client.linked_mom_id, 
+                    clientName: client?.name || clientName,
+                    clientId: clientId,
+                    returnTo: config.routes.clientDetail
+                  } 
                 });
               } else {
                 Alert.alert('Not Available', 'This client is not linked to a registered user yet.');

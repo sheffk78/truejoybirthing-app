@@ -63,6 +63,7 @@ export default function ClientBirthPlansScreen() {
   const router = useRouter();
   const momUserId = params.momUserId as string | undefined;
   const clientName = params.clientName as string | undefined;
+  const clientId = params.clientId as string | undefined;
   const returnTo = params.returnTo as string | undefined;
   
   const [pendingRequests, setPendingRequests] = useState<ShareRequest[]>([]);
@@ -275,7 +276,20 @@ export default function ClientBirthPlansScreen() {
           </TouchableOpacity>
           <Text style={styles.breadcrumbSeparator}>›</Text>
           <TouchableOpacity 
-            onPress={handleBack}
+            onPress={() => {
+              // Navigate to client detail page using the clientId param
+              if (returnTo && returnTo.includes('midwife')) {
+                router.push({ 
+                  pathname: '/(midwife)/client-detail' as any, 
+                  params: { clientId: clientId, clientName: clientName } 
+                });
+              } else {
+                router.push({ 
+                  pathname: '/(doula)/client-detail' as any, 
+                  params: { clientId: clientId, clientName: clientName } 
+                });
+              }
+            }}
             style={styles.breadcrumbItem}
           >
             <Text style={styles.breadcrumbLink}>{clientName}</Text>
