@@ -63,9 +63,12 @@ export const SECTION_VIDEOS: Record<string, {
     duration: '1:07 min',
     title: 'How to fill out this section',
   },
-  // Remaining sections without videos yet:
-  // about_me: { embedUrl: '...', duration: '...', title: '...' },
-  // newborn_care: { embedUrl: '...', duration: '...', title: '...' },
+  newborn_care: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/d2c3362c-948a-454b-ab9d-05d3b24aca15?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '3:59 min',
+    title: 'How to fill out this section',
+  },
+  // No video for about_me section
 };
 
 export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuideProps) {
