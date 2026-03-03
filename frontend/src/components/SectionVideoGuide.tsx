@@ -30,7 +30,7 @@ export const SECTION_VIDEOS: Record<string, {
 }> = {
   labor_delivery: {
     embedUrl: 'https://iframe.mediadelivery.net/embed/602267/a3436e3f-6adb-4f95-b90b-8893ddf930a6?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
-    duration: '2 min',
+    duration: '5:54 min',
     title: 'How to fill out this section',
   },
   pain_management: {
@@ -38,8 +38,34 @@ export const SECTION_VIDEOS: Record<string, {
     duration: '2:14 min',
     title: 'How to fill out this section',
   },
-  // Add more sections here as videos are provided
-  // monitoring_iv: { embedUrl: '...', duration: '...', title: '...' },
+  monitoring_iv: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/1bc38c88-fcbe-4dea-be10-f33ce4c7fb7d?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '3:05 min',
+    title: 'How to fill out this section',
+  },
+  induction_interventions: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/46c2f0bb-5f5e-4381-847d-933c551302fb?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '1:24 min',
+    title: 'How to fill out this section',
+  },
+  pushing_safe_word: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/6edeb988-f28f-4ea8-ade5-9350f0044c10?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '4:31 min',
+    title: 'How to fill out this section',
+  },
+  post_delivery: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/17f016ce-aa4c-4db9-97ba-4e1a422cd807?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '5:24 min',
+    title: 'How to fill out this section',
+  },
+  other_considerations: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/534e5643-625f-42cf-bfea-fee26c996c61?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '1:07 min',
+    title: 'How to fill out this section',
+  },
+  // Remaining sections without videos yet:
+  // about_me: { embedUrl: '...', duration: '...', title: '...' },
+  // newborn_care: { embedUrl: '...', duration: '...', title: '...' },
 };
 
 export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuideProps) {
