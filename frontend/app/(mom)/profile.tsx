@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -44,6 +44,9 @@ export default function MomProfileScreen() {
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
   const [numberOfChildren, setNumberOfChildren] = useState<number>(0);
+  
+  // Ref for hidden file input (web only)
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const fetchData = async () => {
     try {
@@ -207,31 +210,72 @@ export default function MomProfileScreen() {
     }
   };
 
-  const pickImage = async () => {
-    // Alert.alert doesn't work on web
-    if (Platform.OS === 'web') {
-      // On web, directly open file picker
-      launchLibrary();
-    } else {
-      Alert.alert(
-        'Update Profile Photo',
-        'Choose how you want to add your photo',
-        [
-          {
-            text: 'Take Photo',
-            onPress: () => launchCamera(),
-          },
-          {
-            text: 'Choose from Library',
-            onPress: () => launchLibrary(),
-          },
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-        ]
-      );
+  // Handle web file input change
+  const handleWebFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    setUploadingPhoto(true);
+    try {
+      // Read file as base64
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64Image = e.target?.result as string;
+        
+        await apiRequest(API_ENDPOINTS.AUTH_UPDATE_PROFILE, {
+          method: 'PUT',
+          body: { picture: base64Image },
+        });
+        
+        if (updateUser) {
+          updateUser({ picture: base64Image });
+        }
+        
+        window.alert('Profile photo updated!');
+        setUploadingPhoto(false);
+      };
+      reader.onerror = () => {
+        window.alert('Failed to read image file');
+        setUploadingPhoto(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (error: any) {
+      window.alert(`Error: ${error.message || 'Failed to upload photo'}`);
+      setUploadingPhoto(false);
     }
+    
+    // Reset file input
+    if (event.target) {
+      event.target.value = '';
+    }
+  };
+
+  const pickImage = async () => {
+    // On web, use native file input for reliability
+    if (Platform.OS === 'web') {
+      fileInputRef.current?.click();
+      return;
+    }
+    
+    // Native: show options menu
+    Alert.alert(
+      'Update Profile Photo',
+      'Choose how you want to add your photo',
+      [
+        {
+          text: 'Take Photo',
+          onPress: () => launchCamera(),
+        },
+        {
+          text: 'Choose from Library',
+          onPress: () => launchLibrary(),
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ]
+    );
   };
 
   const launchCamera = async () => {
@@ -309,25 +353,43 @@ export default function MomProfileScreen() {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Hidden file input for web */}
+      {Platform.OS === 'web' && (
+        <input
+          ref={fileInputRef as any}
+          type="file"
+          accept="image/*"
+          onChange={handleWebFileChange as any}
+          style={{ display: 'none' }}
+        />
+      )}
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.avatarContainer} onPress={pickImage} data-testid="avatar-button">
+          <TouchableOpacity 
+            style={styles.avatarContainer} 
+            onPress={pickImage} 
+            data-testid="avatar-button"
+            activeOpacity={0.7}
+          >
             {uploadingPhoto ? (
               <View style={styles.avatarPlaceholder}>
                 <ActivityIndicator size="large" color={COLORS.primary} />
               </View>
             ) : user?.picture ? (
-              <Image source={{ uri: user.picture }} style={styles.avatarImage} />
+              <Image 
+                source={{ uri: user.picture }} 
+                style={[styles.avatarImage, { pointerEvents: 'none' }]} 
+              />
             ) : (
               <View style={styles.avatarPlaceholder}>
                 <Icon name="person" size={40} color={COLORS.primary} />
               </View>
             )}
-            <View style={styles.editAvatarBadge}>
+            <View style={[styles.editAvatarBadge, { pointerEvents: 'none' }]}>
               <Icon name="camera" size={14} color={COLORS.white} />
             </View>
           </TouchableOpacity>

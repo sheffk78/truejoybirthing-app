@@ -1,5 +1,5 @@
 // Shared Profile Screen for Doula and Midwife
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -60,6 +60,9 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  
+  // Ref for hidden file input (web only)
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Common form state
   const [practiceName, setPracticeName] = useState('');
@@ -134,15 +137,54 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
     }
   }, [videoIntroUrl]);
 
+  // Handle web file input change
+  const handleWebFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    setUploadingPhoto(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64Image = e.target?.result as string;
+        
+        setProfilePicture(base64Image);
+        
+        await apiRequest(config.endpoints.profile, {
+          method: 'PUT',
+          body: { picture: base64Image },
+        });
+        
+        window.alert('Profile photo updated!');
+        setUploadingPhoto(false);
+      };
+      reader.onerror = () => {
+        window.alert('Failed to read image file');
+        setUploadingPhoto(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (error: any) {
+      window.alert(`Error: ${error.message || 'Failed to upload photo'}`);
+      setUploadingPhoto(false);
+    }
+    
+    // Reset file input
+    if (event.target) {
+      event.target.value = '';
+    }
+  };
+
   const handlePickImage = async () => {
+    // On web, use native file input for reliability
+    if (Platform.OS === 'web') {
+      fileInputRef.current?.click();
+      return;
+    }
+    
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        if (Platform.OS === 'web') {
-          window.alert('Please allow access to your photo library.');
-        } else {
-          Alert.alert('Permission Required', 'Please allow access to your photo library.');
-        }
+        Alert.alert('Permission Required', 'Please allow access to your photo library.');
         return;
       }
 
@@ -158,23 +200,22 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         await uploadProfilePhoto(result.assets[0]);
       }
     } catch (error) {
-      if (Platform.OS === 'web') {
-        window.alert('Failed to pick image.');
-      } else {
-        Alert.alert('Error', 'Failed to pick image.');
-      }
+      console.error('Image picker error:', error);
+      Alert.alert('Error', 'Failed to pick image.');
     }
   };
 
   const handleTakePhoto = async () => {
     try {
+      // Camera not available on web
+      if (Platform.OS === 'web') {
+        window.alert('Camera is not available on web. Please use "Choose from Library".');
+        return;
+      }
+      
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
-        if (Platform.OS === 'web') {
-          window.alert('Please allow access to your camera.');
-        } else {
-          Alert.alert('Permission Required', 'Please allow access to your camera.');
-        }
+        Alert.alert('Permission Required', 'Please allow access to your camera.');
         return;
       }
 
@@ -189,11 +230,8 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         await uploadProfilePhoto(result.assets[0]);
       }
     } catch (error) {
-      if (Platform.OS === 'web') {
-        window.alert('Failed to take photo.');
-      } else {
-        Alert.alert('Error', 'Failed to take photo.');
-      }
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to take photo.');
     }
   };
 
@@ -233,6 +271,12 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   };
 
   const showPhotoOptions = () => {
+    // On web, directly trigger file picker
+    if (Platform.OS === 'web') {
+      handlePickImage();
+      return;
+    }
+    
     Alert.alert('Update Profile Photo', 'Choose an option', [
       { text: 'Take Photo', onPress: handleTakePhoto },
       { text: 'Choose from Library', onPress: handlePickImage },
@@ -310,6 +354,16 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']} data-testid={`${config.role.toLowerCase()}-profile-screen`}>
+      {/* Hidden file input for web */}
+      {Platform.OS === 'web' && (
+        <input
+          ref={fileInputRef as any}
+          type="file"
+          accept="image/*"
+          onChange={handleWebFileChange as any}
+          style={{ display: 'none' }}
+        />
+      )}
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Header with Profile Photo */}
         <View style={styles.header}>
