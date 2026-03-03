@@ -36,6 +36,9 @@ class DoulaProfileUpdate(BaseModel):
     more_about_me: Optional[str] = None
     in_marketplace: Optional[bool] = None
     accepting_new_clients: Optional[bool] = None
+    practice_name: Optional[str] = None
+    years_in_practice: Optional[int] = None
+    picture: Optional[str] = None  # Profile photo URL or base64
 
 
 class ContractDefaultsUpdate(BaseModel):
@@ -131,6 +134,13 @@ async def update_doula_profile(profile_data: DoulaProfileUpdate, user: User = De
     """Update doula profile"""
     update_data = {k: v for k, v in profile_data.dict().items() if v is not None}
     update_data["updated_at"] = get_now()
+    
+    # If picture is being updated, also update in users collection
+    if profile_data.picture is not None:
+        await db.users.update_one(
+            {"user_id": user.user_id},
+            {"$set": {"picture": profile_data.picture, "updated_at": get_now()}}
+        )
     
     await db.doula_profiles.update_one(
         {"user_id": user.user_id},

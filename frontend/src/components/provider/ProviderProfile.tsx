@@ -53,7 +53,7 @@ interface ProviderProfileProps {
 
 export default function ProviderProfile({ config }: ProviderProfileProps) {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, logout, updateUser } = useAuthStore();
   const { status: subscriptionData, fetchStatus: fetchSubscriptionStatus } = useSubscriptionStore();
   
   const [profile, setProfile] = useState<any>(null);
@@ -156,6 +156,9 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           body: { picture: base64Image },
         });
         
+        // Update auth store so Dashboard and other screens show the new picture
+        updateUser({ picture: base64Image });
+        
         window.alert('Profile photo updated!');
         setUploadingPhoto(false);
       };
@@ -253,6 +256,9 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         method: 'PUT',
         body: { picture: imageUrl },
       });
+      
+      // Update auth store so Dashboard and other screens show the new picture
+      updateUser({ picture: imageUrl });
       
       if (Platform.OS === 'web') {
         window.alert('Profile photo updated!');
