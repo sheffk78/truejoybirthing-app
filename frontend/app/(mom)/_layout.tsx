@@ -124,6 +124,12 @@ export default function MomLayout() {
           href: null,  // Hide from tab bar, accessible from birth-plan
         }}
       />
+      <Tabs.Screen
+        name="provider-detail"
+        options={{
+          href: null,  // Hide from tab bar, accessible from my-team
+        }}
+      />
     </Tabs>
   );
 }
