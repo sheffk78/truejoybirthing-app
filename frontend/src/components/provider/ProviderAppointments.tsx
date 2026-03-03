@@ -208,32 +208,48 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
   };
 
   const handleCancelAppointment = async (appointmentId: string) => {
-    Alert.alert(
-      'Cancel Appointment',
-      'Are you sure you want to cancel this appointment?',
-      [
-        { text: 'No', style: 'cancel' },
-        {
-          text: 'Yes, Cancel',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await apiRequest(`/appointments/${appointmentId}`, { method: 'DELETE' });
-              setAppointments(prev =>
-                prev.map(apt =>
-                  apt.appointment_id === appointmentId
-                    ? { ...apt, status: 'cancelled' }
-                    : apt
-                )
-              );
-              Alert.alert('Success', 'Appointment cancelled');
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to cancel appointment');
-            }
+    const doCancel = async () => {
+      try {
+        await apiRequest(`/appointments/${appointmentId}`, { method: 'DELETE' });
+        setAppointments(prev =>
+          prev.map(apt =>
+            apt.appointment_id === appointmentId
+              ? { ...apt, status: 'cancelled' }
+              : apt
+          )
+        );
+        if (Platform.OS === 'web') {
+          window.alert('Appointment cancelled');
+        } else {
+          Alert.alert('Success', 'Appointment cancelled');
+        }
+      } catch (error: any) {
+        if (Platform.OS === 'web') {
+          window.alert(`Error: ${error.message || 'Failed to cancel appointment'}`);
+        } else {
+          Alert.alert('Error', error.message || 'Failed to cancel appointment');
+        }
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm('Are you sure you want to cancel this appointment?')) {
+        doCancel();
+      }
+    } else {
+      Alert.alert(
+        'Cancel Appointment',
+        'Are you sure you want to cancel this appointment?',
+        [
+          { text: 'No', style: 'cancel' },
+          {
+            text: 'Yes, Cancel',
+            style: 'destructive',
+            onPress: doCancel,
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
   // Handle Accept/Decline pending appointments from moms

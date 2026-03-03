@@ -48,6 +48,7 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
   
   // Form state
   const [selectedClientId, setSelectedClientId] = useState(params.clientId || '');
+  const [showClientPicker, setShowClientPicker] = useState(false);
   const [noteType, setNoteType] = useState('General');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -289,25 +290,40 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
             >
               {/* Client Selection */}
               <Text style={styles.fieldLabel}>Client</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.clientSelector}>
-                {clients.filter(c => c.is_active !== false).map((client) => (
-                  <TouchableOpacity
-                    key={client.client_id}
-                    style={[
-                      styles.clientOption,
-                      selectedClientId === client.client_id && { backgroundColor: primaryColor, borderColor: primaryColor }
-                    ]}
-                    onPress={() => setSelectedClientId(client.client_id)}
-                  >
-                    <Text style={[
-                      styles.clientOptionText,
-                      selectedClientId === client.client_id && { color: COLORS.white }
-                    ]}>
-                      {client.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+              <TouchableOpacity
+                style={styles.selectButton}
+                onPress={() => setShowClientPicker(!showClientPicker)}
+              >
+                <Text style={selectedClientId ? styles.selectText : styles.selectPlaceholder}>
+                  {selectedClientId 
+                    ? clients.find(c => c.client_id === selectedClientId)?.name || 'Select a client'
+                    : 'Select a client'}
+                </Text>
+                <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+
+              {showClientPicker && (
+                <View style={styles.pickerContainer}>
+                  {clients.filter(c => c.is_active !== false).map((client) => (
+                    <TouchableOpacity
+                      key={client.client_id}
+                      style={[
+                        styles.pickerItem,
+                        selectedClientId === client.client_id && { backgroundColor: primaryColor + '10' }
+                      ]}
+                      onPress={() => {
+                        setSelectedClientId(client.client_id);
+                        setShowClientPicker(false);
+                      }}
+                    >
+                      <Text style={styles.pickerItemText}>{client.name}</Text>
+                      {selectedClientId === client.client_id && (
+                        <Icon name="checkmark" size={20} color={primaryColor} />
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
               
               {/* Note Type */}
               <Text style={styles.fieldLabel}>Type</Text>
@@ -454,4 +470,34 @@ const styles = StyleSheet.create({
   
   textInput: { backgroundColor: COLORS.white, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary, borderWidth: 1, borderColor: COLORS.border },
   textArea: { minHeight: 120, textAlignVertical: 'top' },
+  
+  selectButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.white, 
+    borderRadius: SIZES.radiusMd, 
+    padding: SIZES.md, 
+    borderWidth: 1, 
+    borderColor: COLORS.border 
+  },
+  selectText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary },
+  selectPlaceholder: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textLight },
+  pickerContainer: { 
+    backgroundColor: COLORS.white, 
+    borderRadius: SIZES.radiusMd, 
+    borderWidth: 1, 
+    borderColor: COLORS.border,
+    marginTop: SIZES.xs,
+    maxHeight: 200,
+  },
+  pickerItem: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between',
+    padding: SIZES.md, 
+    borderBottomWidth: 1, 
+    borderBottomColor: COLORS.border 
+  },
+  pickerItemText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary },
 });

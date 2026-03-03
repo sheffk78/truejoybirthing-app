@@ -12,6 +12,7 @@ import {
   Alert,
   Image,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -299,9 +300,19 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             style={styles.actionButton}
             onPress={() => {
               if (client.linked_mom_id) {
-                router.push({ pathname: config.routes.messages as any, params: { userId: client.linked_mom_id } });
+                router.push({ 
+                  pathname: config.routes.messages as any, 
+                  params: { 
+                    clientUserId: client.linked_mom_id,
+                    clientName: client.name 
+                  } 
+                });
               } else {
-                Alert.alert('Not Available', 'This client is not linked to a registered user yet.');
+                if (Platform.OS === 'web') {
+                  window.alert('This client is not linked to a registered user yet.');
+                } else {
+                  Alert.alert('Not Available', 'This client is not linked to a registered user yet.');
+                }
               }
             }}
             data-testid="action-messages"
