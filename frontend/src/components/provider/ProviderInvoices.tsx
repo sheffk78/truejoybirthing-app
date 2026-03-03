@@ -144,9 +144,31 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
     setShowInvoiceModal(true);
   };
 
+  // Helper for web-compatible alerts
+  const showAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
+  const showConfirm = (title: string, message: string, onConfirm: () => void) => {
+    if (Platform.OS === 'web') {
+      if (window.confirm(`${title}\n\n${message}`)) {
+        onConfirm();
+      }
+    } else {
+      Alert.alert(title, message, [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Confirm', onPress: onConfirm },
+      ]);
+    }
+  };
+
   const handleSaveInvoice = async () => {
     if (!selectedClientId || !description.trim() || !amount) {
-      Alert.alert('Error', 'Please fill in Client, Description, and Amount');
+      showAlert('Error', 'Please fill in Client, Description, and Amount');
       return;
     }
 
@@ -167,44 +189,38 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
           method: 'PUT',
           body: invoiceData,
         });
-        Alert.alert('Success', 'Invoice updated');
+        showAlert('Success', 'Invoice updated');
       } else {
         await apiRequest(invoicesEndpoint, {
           method: 'POST',
           body: invoiceData,
         });
-        Alert.alert('Success', 'Invoice created');
+        showAlert('Success', 'Invoice created');
       }
 
       await fetchData();
       setShowInvoiceModal(false);
       resetInvoiceForm();
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to save invoice');
+      showAlert('Error', error.message || 'Failed to save invoice');
     } finally {
       setSaving(false);
     }
   };
 
   const handleSendInvoice = async (invoiceId: string) => {
-    Alert.alert(
+    showConfirm(
       'Send Invoice',
       'This will send the invoice to the client via email and in-app notification.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Send',
-          onPress: async () => {
-            try {
-              await apiRequest(`${invoicesEndpoint}/${invoiceId}/send`, { method: 'POST' });
-              await fetchData();
-              Alert.alert('Sent', 'Invoice has been sent to client');
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to send invoice');
-            }
-          },
-        },
-      ]
+      async () => {
+        try {
+          await apiRequest(`${invoicesEndpoint}/${invoiceId}/send`, { method: 'POST' });
+          await fetchData();
+          showAlert('Sent', 'Invoice has been sent to client');
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to send invoice');
+        }
+      }
     );
   };
 
@@ -212,102 +228,76 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
     try {
       await apiRequest(`${invoicesEndpoint}/${invoiceId}/mark-paid`, { method: 'POST' });
       await fetchData();
-      Alert.alert('Success', 'Invoice marked as paid');
+      showAlert('Success', 'Invoice marked as paid');
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to mark invoice as paid');
+      showAlert('Error', error.message || 'Failed to mark invoice as paid');
     }
   };
 
   const handleMarkUnpaid = async (invoiceId: string) => {
-    Alert.alert(
+    showConfirm(
       'Mark as Unpaid',
       'Are you sure you want to mark this invoice as unpaid? This will change the status back to "Sent".',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Mark Unpaid',
-          onPress: async () => {
-            try {
-              await apiRequest(`${invoicesEndpoint}/${invoiceId}`, { 
-                method: 'PUT',
-                body: { status: 'Sent' }
-              });
-              await fetchData();
-              Alert.alert('Success', 'Invoice status changed to Sent');
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to update invoice status');
-            }
-          },
-        },
-      ]
+      async () => {
+        try {
+          await apiRequest(`${invoicesEndpoint}/${invoiceId}`, { 
+            method: 'PUT',
+            body: { status: 'Sent' }
+          });
+          await fetchData();
+          showAlert('Success', 'Invoice status changed to Sent');
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to update invoice status');
+        }
+      }
     );
   };
 
   const handleCancelInvoice = async (invoiceId: string) => {
-    Alert.alert(
+    showConfirm(
       'Cancel Invoice',
       'Are you sure you want to cancel this invoice?',
-      [
-        { text: 'No', style: 'cancel' },
-        {
-          text: 'Yes, Cancel',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await apiRequest(`${invoicesEndpoint}/${invoiceId}/cancel`, { method: 'POST' });
-              await fetchData();
-              Alert.alert('Cancelled', 'Invoice has been cancelled');
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to cancel invoice');
-            }
-          },
-        },
-      ]
+      async () => {
+        try {
+          await apiRequest(`${invoicesEndpoint}/${invoiceId}/cancel`, { method: 'POST' });
+          await fetchData();
+          showAlert('Cancelled', 'Invoice has been cancelled');
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to cancel invoice');
+        }
+      }
     );
   };
 
   const handleSendReminder = async (invoiceId: string) => {
-    Alert.alert(
+    showConfirm(
       'Send Payment Reminder',
       'This will send a payment reminder email and in-app notification to the client.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Send Reminder',
-          onPress: async () => {
-            try {
-              await apiRequest(`${invoicesEndpoint}/${invoiceId}/send-reminder`, { method: 'POST' });
-              await fetchData();
-              Alert.alert('Reminder Sent', 'Payment reminder has been sent to the client');
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to send reminder');
-            }
-          },
-        },
-      ]
+      async () => {
+        try {
+          await apiRequest(`${invoicesEndpoint}/${invoiceId}/send-reminder`, { method: 'POST' });
+          await fetchData();
+          showAlert('Reminder Sent', 'Payment reminder has been sent to the client');
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to send reminder');
+        }
+      }
     );
   };
 
   const handleDeleteInvoice = async (invoiceId: string) => {
-    Alert.alert(
+    showConfirm(
       'Delete Invoice',
       'Are you sure you want to delete this draft invoice?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await apiRequest(`${invoicesEndpoint}/${invoiceId}`, { method: 'DELETE' });
-              await fetchData();
-              Alert.alert('Deleted', 'Invoice has been deleted');
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to delete invoice');
-            }
-          },
-        },
-      ]
+      async () => {
+        try {
+          await apiRequest(`${invoicesEndpoint}/${invoiceId}`, { method: 'DELETE' });
+          await fetchData();
+          showAlert('Deleted', 'Invoice has been deleted');
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to delete invoice');
+        }
+      }
     );
   };
 
@@ -451,7 +441,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
           <TouchableOpacity
             style={[styles.addButton, { backgroundColor: primaryColor }]}
             onPress={openCreateInvoice}
-            testID="new-invoice-btn"
+            data-testid="new-invoice-btn"
           >
             <Ionicons name="add" size={24} color="#fff" />
           </TouchableOpacity>

@@ -1,5 +1,5 @@
 // Shared Dashboard Screen for Doula and Midwife
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
 import Card from '../Card';
@@ -61,6 +62,13 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   useEffect(() => {
     fetchData();
   }, []);
+  
+  // Re-fetch when screen comes back into focus (e.g., after updating profile)
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
   
   const onRefresh = async () => {
     setRefreshing(true);
@@ -135,10 +143,11 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
           <TouchableOpacity 
             style={[styles.avatarContainer, { backgroundColor: primaryColor + '20' }]}
             onPress={() => router.push(config.routes.profile as any)}
-            testID="profile-avatar-btn"
+            data-testid="profile-avatar-btn"
           >
             {profile?.picture || user?.picture ? (
               <Image 
+                key={profile?.picture || user?.picture} 
                 source={{ uri: profile?.picture || user?.picture }} 
                 style={styles.avatarImage} 
               />
