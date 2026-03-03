@@ -37,6 +37,7 @@ export interface ContractsConfig {
   clientsEndpoint: string;
   routes: {
     clients: string;
+    clientDetail: string;
   };
 }
 
@@ -145,6 +146,7 @@ export const DOULA_CONTRACTS_CONFIG: ContractsConfig = {
   clientsEndpoint: '/doula/clients',
   routes: {
     clients: '/(doula)/clients',
+    clientDetail: '/(doula)/client-detail',
   },
 };
 
@@ -258,6 +260,7 @@ export const MIDWIFE_CONTRACTS_CONFIG: ContractsConfig = {
   clientsEndpoint: '/midwife/clients',
   routes: {
     clients: '/(midwife)/clients',
+    clientDetail: '/(midwife)/client-detail',
   },
 };
 

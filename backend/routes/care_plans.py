@@ -1094,18 +1094,24 @@ async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDW
 @router.get("/provider/shared-birth-plan/{mom_user_id}")
 async def get_shared_birth_plan_detail(mom_user_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Get a specific shared birth plan with provider notes (read-only view)"""
-    # Verify access and permissions
+    # Verify access via share request OR client relationship
     share_request = await db.share_requests.find_one({
         "mom_user_id": mom_user_id,
         "provider_id": user.user_id,
         "status": "accepted"
     })
     
-    if not share_request:
+    # Also check if they have a client with this linked_mom_id
+    client = await db.clients.find_one({
+        "provider_id": user.user_id,
+        "linked_mom_id": mom_user_id
+    })
+    
+    if not share_request and not client:
         raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
     
-    # Check if provider has permission to view birth plan
-    if not share_request.get("can_view_birth_plan", True):
+    # Only check view permission if there's an explicit share_request
+    if share_request and not share_request.get("can_view_birth_plan", True):
         raise HTTPException(status_code=403, detail="You do not have permission to view this birth plan")
     
     plan = await db.birth_plans.find_one({"user_id": mom_user_id}, {"_id": 0})

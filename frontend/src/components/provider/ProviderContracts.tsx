@@ -161,6 +161,28 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
     setFormData(prev => ({ ...prev, [fieldId]: value }));
   };
 
+  // Fetch client's birth plan data and pre-fill birth setting
+  const fetchClientBirthPlanData = async (client: Client) => {
+    if (!client.linked_mom_id) return;
+    
+    try {
+      const birthPlanData = await apiRequest(`/provider/shared-birth-plan/${client.linked_mom_id}`);
+      
+      // Pre-fill birth setting from mom's profile
+      if (birthPlanData?.mom_profile?.planned_birth_setting) {
+        updateFormField('birth_setting', birthPlanData.mom_profile.planned_birth_setting);
+      }
+      
+      // Also try to get birthLocation from birth plan if available
+      if (birthPlanData?.plan?.birthLocation) {
+        updateFormField('birth_setting', birthPlanData.plan.birthLocation);
+      }
+    } catch (error) {
+      // Silently fail - birth plan data is optional for contract
+      console.log('Could not fetch birth plan data for pre-fill:', error);
+    }
+  };
+
   const calculateRemainingBalance = () => {
     const total = parseFloat(formData.total_fee) || 0;
     const retainer = parseFloat(formData.retainer_amount) || 0;
@@ -224,27 +246,41 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
   };
 
   const handleSendContract = async (contract: Contract) => {
-    Alert.alert(
-      'Send Contract',
-      `Send this agreement to ${contract.client_name}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Send',
-          onPress: async () => {
-            try {
-              await apiRequest(config.endpoints.send(contract.contract_id), {
-                method: 'POST',
-              });
-              Alert.alert('Success', 'Contract sent to client for signature!');
-              loadData();
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to send contract');
-            }
-          },
-        },
-      ]
-    );
+    const doSend = async () => {
+      try {
+        await apiRequest(config.endpoints.send(contract.contract_id), {
+          method: 'POST',
+        });
+        if (Platform.OS === 'web') {
+          window.alert('Contract sent to client for signature!');
+        } else {
+          Alert.alert('Success', 'Contract sent to client for signature!');
+        }
+        loadData();
+      } catch (error: any) {
+        const errorMsg = error.message || 'Failed to send contract';
+        if (Platform.OS === 'web') {
+          window.alert(`Error: ${errorMsg}`);
+        } else {
+          Alert.alert('Error', errorMsg);
+        }
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm(`Send this agreement to ${contract.client_name}?`)) {
+        doSend();
+      }
+    } else {
+      Alert.alert(
+        'Send Contract',
+        `Send this agreement to ${contract.client_name}?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Send', onPress: doSend },
+        ]
+      );
+    }
   };
 
   const handleDuplicateContract = async (contract: Contract) => {
@@ -494,7 +530,10 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
             <>
               <Text style={styles.breadcrumbSeparator}>›</Text>
               <TouchableOpacity 
-                onPress={() => router.back()}
+                onPress={() => router.push({ 
+                  pathname: config.routes.clientDetail as any, 
+                  params: { clientId: params.clientId, clientName: clientName } 
+                })}
                 style={styles.breadcrumbItem}
               >
                 <Text style={styles.breadcrumbLink}>{clientName}</Text>
@@ -651,6 +690,8 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                           if (client.edd) {
                             updateFormField('estimated_due_date', client.edd);
                           }
+                          // Fetch and pre-fill birth setting from client's birth plan
+                          fetchClientBirthPlanData(client);
                         }}
                       >
                         <Text style={[

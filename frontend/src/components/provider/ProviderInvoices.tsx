@@ -429,7 +429,10 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             <>
               <Text style={styles.breadcrumbSeparator}>›</Text>
               <TouchableOpacity 
-                onPress={() => router.back()}
+                onPress={() => router.push({ 
+                  pathname: config.routes.clientDetail as any, 
+                  params: { clientId: params.clientId, clientName: clientName } 
+                })}
                 style={styles.breadcrumbItem}
               >
                 <Text style={styles.breadcrumbLink}>{clientName}</Text>
@@ -524,8 +527,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             <TouchableOpacity 
               key={invoice.invoice_id} 
               style={styles.invoiceCard}
-              onPress={() => invoice.status === 'Draft' && openEditInvoice(invoice)}
-              disabled={invoice.status !== 'Draft'}
+              onPress={() => openEditInvoice(invoice)}
             >
               <View style={styles.invoiceHeader}>
                 <View style={styles.invoiceInfo}>

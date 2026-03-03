@@ -175,7 +175,10 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
             <>
               <Text style={styles.breadcrumbSeparator}>›</Text>
               <TouchableOpacity 
-                onPress={() => router.back()}
+                onPress={() => router.push({ 
+                  pathname: config.routes.clientDetail as any, 
+                  params: { clientId: params.clientId, clientName: clientName } 
+                })}
                 style={styles.breadcrumbItem}
                 data-testid="back-button"
               >

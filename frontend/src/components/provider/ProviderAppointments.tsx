@@ -121,13 +121,11 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
       const linkedClients = (clientsData || []).filter((c: Client) => c.linked_mom_id);
       setClients(linkedClients);
       
-      // Auto-select client if coming from client detail
-      if (preSelectedClientId && linkedClients.length > 0) {
+      // Auto-select client if coming from client detail (only on initial load)
+      if (preSelectedClientId && linkedClients.length > 0 && !selectedClient) {
         const matchingClient = linkedClients.find((c: Client) => c.client_id === preSelectedClientId);
         if (matchingClient) {
           setSelectedClient(matchingClient);
-          // Auto-open create modal if coming from client detail
-          setShowCreateModal(true);
         }
       }
     } catch (error: any) {
@@ -436,7 +434,10 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
             <>
               <Text style={styles.breadcrumbSeparator}>›</Text>
               <TouchableOpacity 
-                onPress={handleBack}
+                onPress={() => router.push({ 
+                  pathname: config.routes.clientDetail as any, 
+                  params: { clientId: preSelectedClientId, clientName: preSelectedClientName } 
+                })}
                 style={styles.breadcrumbItem}
                 data-testid="back-btn"
               >
