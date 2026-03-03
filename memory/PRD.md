@@ -3,7 +3,22 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-03 - Bug Fixes Session 2)
+## Latest Session (2026-03-03 - Client Photo Sync Fix)
+
+**Client Profile Picture Sync Bug - COMPLETED (Testing Agent Verified 100%):**
+
+- **Issue**: When a provider (Doula/Midwife) converts a lead to a client, the Mom's profile picture shown in "My Clients" displays an outdated DiceBear avatar instead of the Mom's actual current profile picture.
+- **Root Cause**: The client record stored a snapshot of the Mom's picture at conversion time. If the Mom updated their picture later, the stale picture remained in the clients collection.
+- **Fix Applied**:
+  1. `backend/routes/doula.py` - `get_doula_clients()` now fetches latest picture from linked mom's user record
+  2. `backend/routes/midwife.py` - `get_midwife_clients()` now fetches latest picture from linked mom's user record
+  3. `backend/routes/provider_unified.py` - `get_clients()` and client detail endpoint now fetch latest picture from linked mom
+  4. `backend/routes/appointments.py` - Appointments with clients now show correct picture from linked mom
+  5. `backend/routes/doula.py` - `get_doula_client()` detail endpoint now fetches latest picture
+  6. `backend/routes/midwife.py` - `get_midwife_client()` detail endpoint now fetches latest picture
+- **Logic Change**: Previously only fetched mom's picture if client had NO picture. Now ALWAYS fetches from linked mom's user record if `linked_mom_id` exists, ensuring pictures stay in sync.
+
+## Previous Session (2026-03-03 - Bug Fixes Session 2)
 
 **Web Button Click Fixes - ALL COMPLETED (Testing Agent Verified 100%):**
 

@@ -337,6 +337,15 @@ async def get_midwife_client(client_id: str, user: User = Depends(check_role(["M
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
+    # Enrich client with latest picture from linked mom
+    if client.get("linked_mom_id"):
+        mom = await db.users.find_one(
+            {"user_id": client["linked_mom_id"]},
+            {"_id": 0, "picture": 1}
+        )
+        if mom and mom.get("picture"):
+            client["picture"] = mom["picture"]
+    
     # Get related data
     contracts = await db.contracts.find({"client_id": client_id}, {"_id": 0}).to_list(100)
     invoices = await db.invoices.find({"client_id": client_id}, {"_id": 0}).to_list(100)
