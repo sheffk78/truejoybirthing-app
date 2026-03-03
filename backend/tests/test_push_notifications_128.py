@@ -15,7 +15,7 @@ import os
 from datetime import datetime
 
 # Base URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://care-plan-test.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://joy-platform-qa.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_MOM_EMAIL = "demo.mom@truejoybirthing.com"

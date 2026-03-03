@@ -9,9 +9,9 @@ import {
   RefreshControl,
   Alert,
   Image,
+  Platform,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
+import { useRouter, usePathname } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
 import Card from '../Card';
@@ -64,11 +64,25 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   }, []);
   
   // Re-fetch when screen comes back into focus (e.g., after updating profile)
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
+  // Web-compatible approach using visibility change detection
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          fetchData();
+        }
+      };
+      const handleFocus = () => {
+        fetchData();
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('focus', handleFocus);
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('focus', handleFocus);
+      };
+    }
+  }, []);
   
   const onRefresh = async () => {
     setRefreshing(true);

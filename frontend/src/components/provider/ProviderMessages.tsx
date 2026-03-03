@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Pressable,
   RefreshControl,
   TextInput,
   KeyboardAvoidingView,
@@ -231,13 +232,19 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
             <Text style={styles.title}>Messages</Text>
             <Text style={styles.subtitle}>Connect with your clients</Text>
           </View>
-          <TouchableOpacity 
-            style={[styles.newMessageButton, { backgroundColor: primaryColor }]}
+          <Pressable 
+            style={({ pressed }) => [
+              styles.newMessageButton, 
+              { backgroundColor: primaryColor },
+              pressed && { opacity: 0.7 }
+            ]}
             onPress={openNewMessageModal}
-            data-testid="new-message-btn"
+            testID="new-message-btn"
+            accessibilityLabel="Start new conversation"
+            accessibilityRole="button"
           >
             <Icon name="add" size={24} color={COLORS.white} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
         
         {conversations.length === 0 ? (

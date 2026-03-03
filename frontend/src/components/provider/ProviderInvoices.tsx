@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Pressable,
   RefreshControl,
   Modal,
   Alert,
@@ -418,15 +419,18 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
           {isClientScoped && (
             <>
               <Text style={styles.breadcrumbSeparator}>›</Text>
-              <TouchableOpacity 
-                onPress={() => router.push({ 
-                  pathname: config.routes.clientDetail as any, 
-                  params: { clientId: params.clientId, clientName: clientName } 
-                })}
+              <Pressable 
+                onPress={() => {
+                  console.log('Breadcrumb client clicked');
+                  router.push({ 
+                    pathname: config.routes.clientDetail as any, 
+                    params: { clientId: params.clientId, clientName: clientName } 
+                  });
+                }}
                 style={styles.breadcrumbItem}
               >
                 <Text style={styles.breadcrumbLink}>{clientName}</Text>
-              </TouchableOpacity>
+              </Pressable>
             </>
           )}
           <Text style={styles.breadcrumbSeparator}>›</Text>
@@ -438,13 +442,22 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               <Ionicons name="settings-outline" size={22} color={primaryColor} />
             </TouchableOpacity>
           )}
-          <TouchableOpacity
-            style={[styles.addButton, { backgroundColor: primaryColor }]}
-            onPress={openCreateInvoice}
-            data-testid="new-invoice-btn"
+          <Pressable
+            style={({ pressed }) => [
+              styles.addButton, 
+              { backgroundColor: primaryColor },
+              pressed && { opacity: 0.7 }
+            ]}
+            onPress={() => {
+              console.log('Create Invoice button pressed');
+              openCreateInvoice();
+            }}
+            testID="new-invoice-btn"
+            accessibilityLabel="Create new invoice"
+            accessibilityRole="button"
           >
             <Ionicons name="add" size={24} color="#fff" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 

@@ -28,11 +28,11 @@ print('User ID: ' + userId);
 ## Step 2: Test Backend API
 ```bash
 # Test auth endpoint
-curl -X GET "https://care-plan-test.preview.emergentagent.com/api/auth/me" \
+curl -X GET "https://joy-platform-qa.preview.emergentagent.com/api/auth/me" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 
 # Test protected endpoints
-curl -X GET "https://care-plan-test.preview.emergentagent.com/api/users/profile" \
+curl -X GET "https://joy-platform-qa.preview.emergentagent.com/api/users/profile" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 ```
 
@@ -48,7 +48,7 @@ await page.context.add_cookies([{
     "secure": true,
     "sameSite": "None"
 }]);
-await page.goto("https://care-plan-test.preview.emergentagent.com");
+await page.goto("https://joy-platform-qa.preview.emergentagent.com");
 ```
 
 ## Quick Debug

@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Pressable,
   RefreshControl,
   Alert,
   ActivityIndicator,
@@ -464,14 +465,19 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
           <Text style={styles.breadcrumbSeparator}>›</Text>
           <Text style={styles.breadcrumbCurrent}>Appointments</Text>
         </View>
-        <TouchableOpacity
-          style={styles.addButton}
+        <Pressable
+          style={({ pressed }) => [
+            styles.addButton,
+            pressed && { opacity: 0.7 }
+          ]}
           onPress={() => setShowCreateModal(true)}
           disabled={clients.length === 0}
-          data-testid="add-appointment-btn"
+          testID="add-appointment-btn"
+          accessibilityLabel="Add new appointment"
+          accessibilityRole="button"
         >
           <Icon name="add-circle" size={28} color={clients.length > 0 ? primaryColor : COLORS.textLight} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Filter Tabs - Only shown for Midwife */}
