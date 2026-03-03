@@ -317,7 +317,7 @@ export default function MyTeamScreen() {
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.quickActionBtn, { flex: 1 }]}
-                      onPress={() => router.push(`/provider-detail?providerId=${member.provider_id}`)}
+                      onPress={() => router.push(`/(mom)/provider-detail?providerId=${member.provider_id}`)}
                       data-testid={`profile-btn-${member.id}`}
                     >
                       <Icon name="person-outline" size={16} color={COLORS.primary} />

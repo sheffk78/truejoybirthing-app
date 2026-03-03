@@ -56,24 +56,33 @@ export const showSubscriptionAlert = (
 ): void => {
   const actionName = ACTION_MESSAGES[action] || action;
   
-  Alert.alert(
-    'Subscription Required',
-    `You need an active subscription to ${actionName.toLowerCase()}.\n\nUpgrade now to unlock all features and grow your practice.`,
-    [
-      {
-        text: 'Maybe Later',
-        style: 'cancel',
-      },
-      {
-        text: 'View Plans',
-        onPress: () => {
-          if (onNavigate) {
-            onNavigate();
-          }
+  if (Platform.OS === 'web') {
+    const confirmed = window.confirm(
+      `Subscription Required\n\nYou need an active subscription to ${actionName.toLowerCase()}.\n\nUpgrade now to unlock all features and grow your practice.\n\nClick OK to view plans.`
+    );
+    if (confirmed && onNavigate) {
+      onNavigate();
+    }
+  } else {
+    Alert.alert(
+      'Subscription Required',
+      `You need an active subscription to ${actionName.toLowerCase()}.\n\nUpgrade now to unlock all features and grow your practice.`,
+      [
+        {
+          text: 'Maybe Later',
+          style: 'cancel',
         },
-      },
-    ]
-  );
+        {
+          text: 'View Plans',
+          onPress: () => {
+            if (onNavigate) {
+              onNavigate();
+            }
+          },
+        },
+      ]
+    );
+  }
 };
 
 /**

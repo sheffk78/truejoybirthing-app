@@ -16,6 +16,7 @@ import {
   Alert,
   ActivityIndicator,
   Image,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -154,58 +155,81 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
   };
 
   const handleDecline = async (lead: Lead) => {
-    Alert.alert(
-      'Decline Lead',
-      `Are you sure you want to decline the consultation request from ${lead.mom_name}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Decline',
-          style: 'destructive',
-          onPress: async () => {
-            setProcessingLead(lead.lead_id);
-            try {
-              await apiRequest(`/leads/${lead.lead_id}/status`, {
-                method: 'PUT',
-                body: { status: 'declined' }
-              });
-              fetchLeads();
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to decline lead');
-            } finally {
-              setProcessingLead(null);
-            }
-          }
+    const performDecline = async () => {
+      setProcessingLead(lead.lead_id);
+      try {
+        await apiRequest(`/leads/${lead.lead_id}/status`, {
+          method: 'PUT',
+          body: { status: 'declined' }
+        });
+        fetchLeads();
+      } catch (error: any) {
+        if (Platform.OS === 'web') {
+          window.alert(error.message || 'Failed to decline lead');
+        } else {
+          Alert.alert('Error', error.message || 'Failed to decline lead');
         }
-      ]
-    );
+      } finally {
+        setProcessingLead(null);
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(
+        `Are you sure you want to decline the consultation request from ${lead.mom_name}?`
+      );
+      if (confirmed) {
+        await performDecline();
+      }
+    } else {
+      Alert.alert(
+        'Decline Lead',
+        `Are you sure you want to decline the consultation request from ${lead.mom_name}?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Decline', style: 'destructive', onPress: performDecline }
+        ]
+      );
+    }
   };
 
   const handleMarkNotAFit = async (lead: Lead) => {
-    Alert.alert(
-      'Mark as Not a Fit',
-      `This will indicate that after consultation, you've decided not to work with ${lead.mom_name}. Continue?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Confirm',
-          onPress: async () => {
-            setProcessingLead(lead.lead_id);
-            try {
-              await apiRequest(`/leads/${lead.lead_id}/status`, {
-                method: 'PUT',
-                body: { status: 'not_a_fit' }
-              });
-              fetchLeads();
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to update lead');
-            } finally {
-              setProcessingLead(null);
-            }
-          }
+    const performMarkNotAFit = async () => {
+      setProcessingLead(lead.lead_id);
+      try {
+        await apiRequest(`/leads/${lead.lead_id}/status`, {
+          method: 'PUT',
+          body: { status: 'not_a_fit' }
+        });
+        fetchLeads();
+      } catch (error: any) {
+        if (Platform.OS === 'web') {
+          window.alert(error.message || 'Failed to update lead');
+        } else {
+          Alert.alert('Error', error.message || 'Failed to update lead');
         }
-      ]
-    );
+      } finally {
+        setProcessingLead(null);
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(
+        `This will indicate that after consultation, you've decided not to work with ${lead.mom_name}. Continue?`
+      );
+      if (confirmed) {
+        await performMarkNotAFit();
+      }
+    } else {
+      Alert.alert(
+        'Mark as Not a Fit',
+        `This will indicate that after consultation, you've decided not to work with ${lead.mom_name}. Continue?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Confirm', onPress: performMarkNotAFit }
+        ]
+      );
+    }
   };
 
   const handleMarkConsultationCompleted = async (lead: Lead) => {
@@ -216,9 +240,17 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
         body: { status: 'consultation_completed' }
       });
       fetchLeads();
-      Alert.alert('Success', 'Consultation marked as completed');
+      if (Platform.OS === 'web') {
+        window.alert('Consultation marked as completed');
+      } else {
+        Alert.alert('Success', 'Consultation marked as completed');
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to update lead');
+      if (Platform.OS === 'web') {
+        window.alert(error.message || 'Failed to update lead');
+      } else {
+        Alert.alert('Error', error.message || 'Failed to update lead');
+      }
     } finally {
       setProcessingLead(null);
     }
@@ -230,31 +262,47 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
       return;
     }
     
-    Alert.alert(
-      'Add as Client',
-      `Would you like to add ${lead.mom_name} as a client? This will give them full access to your services.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Add as Client',
-          onPress: async () => {
-            setProcessingLead(lead.lead_id);
-            try {
-              await apiRequest(`/leads/${lead.lead_id}/convert-to-client`, {
-                method: 'POST',
-                body: { initial_status: config.role === 'DOULA' ? 'Active' : 'Prenatal' }
-              });
-              fetchLeads();
-              Alert.alert('Success', `${lead.mom_name} is now a client!`);
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to convert lead');
-            } finally {
-              setProcessingLead(null);
-            }
-          }
+    const confirmConvert = async () => {
+      setProcessingLead(lead.lead_id);
+      try {
+        await apiRequest(`/leads/${lead.lead_id}/convert-to-client`, {
+          method: 'POST',
+          body: { initial_status: config.role === 'DOULA' ? 'Active' : 'Prenatal' }
+        });
+        fetchLeads();
+        if (Platform.OS === 'web') {
+          window.alert(`${lead.mom_name} is now a client!`);
+        } else {
+          Alert.alert('Success', `${lead.mom_name} is now a client!`);
         }
-      ]
-    );
+      } catch (error: any) {
+        if (Platform.OS === 'web') {
+          window.alert(error.message || 'Failed to convert lead');
+        } else {
+          Alert.alert('Error', error.message || 'Failed to convert lead');
+        }
+      } finally {
+        setProcessingLead(null);
+      }
+    };
+    
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(
+        `Would you like to add ${lead.mom_name} as a client? This will give them full access to your services.`
+      );
+      if (confirmed) {
+        await confirmConvert();
+      }
+    } else {
+      Alert.alert(
+        'Add as Client',
+        `Would you like to add ${lead.mom_name} as a client? This will give them full access to your services.`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Add as Client', onPress: confirmConvert }
+        ]
+      );
+    }
   };
 
   const formatDate = (dateStr: string) => {
