@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   Image,
+  ImageBackground,
   Platform,
   Linking,
   Pressable,
@@ -16,6 +17,9 @@ import { Icon } from '../../src/components/Icon';
 import { COLORS, SIZES, FONTS, BRAND } from '../../src/constants/theme';
 
 const { width, height } = Dimensions.get('window');
+
+// Beautiful birth photo - newborn sleeping on mother
+const HERO_IMAGE = 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/nubpbqis_IMG_9108.jpg';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -31,74 +35,63 @@ export default function WelcomeScreen() {
   };
   
   return (
-    <LinearGradient
-      colors={['#FEFCFF', '#F9F5FA', '#F3EBF6', '#EDE3F0']}
-      locations={[0, 0.3, 0.6, 1]}
-      style={styles.container}
-    >
+    <View style={styles.container}>
+      {/* Hero Image Background */}
+      <ImageBackground
+        source={{ uri: HERO_IMAGE }}
+        style={styles.heroImage}
+        resizeMode="cover"
+      >
+        {/* Soft lavender/rose tint overlay */}
+        <LinearGradient
+          colors={[
+            'rgba(159, 131, 182, 0.3)',  // Soft lavender tint
+            'rgba(212, 165, 165, 0.4)',  // Dusty rose tint
+            'rgba(254, 252, 255, 0.85)', // Fade to background
+            '#FEFCFF'
+          ]}
+          locations={[0, 0.3, 0.65, 0.9]}
+          style={styles.gradientOverlay}
+        />
+      </ImageBackground>
+      
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-        {/* Top Section - Logo & Illustration */}
-        <View style={styles.topSection}>
-          {/* Logo */}
+        {/* Logo at top */}
+        <View style={styles.logoContainer}>
           <Image
             source={{ uri: BRAND.logoJpg }}
             style={styles.logo}
             resizeMode="contain"
           />
-          
-          {/* Decorative Icons */}
-          <View style={styles.iconGrid}>
-            <View style={[styles.floatingIcon, styles.iconTopLeft]}>
-              <LinearGradient
-                colors={[COLORS.secondary, COLORS.secondaryLight]}
-                style={styles.iconCircle}
-              >
-                <Icon name="heart" size={28} color="#FFFFFF" />
-              </LinearGradient>
-            </View>
-            <View style={[styles.floatingIcon, styles.iconTopRight]}>
-              <LinearGradient
-                colors={[COLORS.primary, COLORS.primaryLight]}
-                style={styles.iconCircle}
-              >
-                <Icon name="people" size={28} color="#FFFFFF" />
-              </LinearGradient>
-            </View>
-            <View style={[styles.floatingIcon, styles.iconBottomCenter]}>
-              <LinearGradient
-                colors={[COLORS.accent, COLORS.accentLight]}
-                style={styles.iconCircle}
-              >
-                <Icon name="document-text" size={28} color="#FFFFFF" />
-              </LinearGradient>
-            </View>
-          </View>
         </View>
         
-        {/* Bottom Section - Content */}
-        <View style={styles.bottomSection}>
+        {/* Spacer */}
+        <View style={styles.spacer} />
+        
+        {/* Bottom Content Card */}
+        <View style={styles.bottomCard}>
           {/* Headline */}
           <Text style={styles.headline}>
             Your Birth Journey,{'\n'}Supported Every Step
           </Text>
           
           <Text style={styles.subtitle}>
-            Create your birth plan, connect with doulas and midwives, and track your pregnancy wellness.
+            Create your birth plan, connect with doulas and midwives, and experience the birth you envision.
           </Text>
           
-          {/* Feature List */}
-          <View style={styles.featureList}>
-            <View style={styles.featureItem}>
-              <View style={[styles.featureDot, { backgroundColor: COLORS.secondary }]} />
-              <Text style={styles.featureText}>Personalized birth plan builder</Text>
+          {/* Feature Pills */}
+          <View style={styles.featurePills}>
+            <View style={[styles.pill, { backgroundColor: COLORS.secondary + '25' }]}>
+              <Icon name="document-text" size={14} color={COLORS.secondary} />
+              <Text style={[styles.pillText, { color: COLORS.secondaryDark }]}>Birth Plan</Text>
             </View>
-            <View style={styles.featureItem}>
-              <View style={[styles.featureDot, { backgroundColor: COLORS.primary }]} />
-              <Text style={styles.featureText}>Find & message care providers</Text>
+            <View style={[styles.pill, { backgroundColor: COLORS.primary + '25' }]}>
+              <Icon name="people" size={14} color={COLORS.primary} />
+              <Text style={[styles.pillText, { color: COLORS.primaryDark }]}>Your Team</Text>
             </View>
-            <View style={styles.featureItem}>
-              <View style={[styles.featureDot, { backgroundColor: COLORS.accent }]} />
-              <Text style={styles.featureText}>Weekly tips & wellness tracking</Text>
+            <View style={[styles.pill, { backgroundColor: COLORS.accent + '25' }]}>
+              <Icon name="heart" size={14} color={COLORS.accent} />
+              <Text style={[styles.pillText, { color: COLORS.accentDark }]}>Support</Text>
             </View>
           </View>
           
@@ -167,80 +160,58 @@ export default function WelcomeScreen() {
           </Text>
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  heroImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: height * 0.55,
+  },
+  gradientOverlay: {
+    flex: 1,
   },
   safeArea: {
     flex: 1,
   },
-  topSection: {
-    flex: 1,
+  logoContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: SIZES.xl,
+    paddingTop: SIZES.lg,
   },
   logo: {
-    width: 240,
-    height: 85,
-    marginBottom: SIZES.lg,
+    width: 180,
+    height: 65,
   },
-  iconGrid: {
-    width: 200,
-    height: 140,
-    position: 'relative',
+  spacer: {
+    flex: 1,
   },
-  floatingIcon: {
-    position: 'absolute',
-  },
-  iconTopLeft: {
-    left: 0,
-    top: 20,
-  },
-  iconTopRight: {
-    right: 0,
-    top: 20,
-  },
-  iconBottomCenter: {
-    left: '50%',
-    marginLeft: -30,
-    bottom: 0,
-  },
-  iconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#4A3B4E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  bottomSection: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+  bottomCard: {
+    backgroundColor: COLORS.background,
     paddingHorizontal: SIZES.lg,
     paddingTop: SIZES.xl,
-    paddingBottom: SIZES.lg,
+    paddingBottom: SIZES.md,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     shadowColor: '#4A3B4E',
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
     elevation: 8,
   },
   headline: {
-    fontSize: 28,
+    fontSize: 30,
     fontFamily: FONTS.heading,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    lineHeight: 36,
+    lineHeight: 38,
     marginBottom: SIZES.sm,
   },
   subtitle: {
@@ -250,24 +221,24 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: SIZES.md,
   },
-  featureList: {
+  featurePills: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SIZES.sm,
     marginBottom: SIZES.lg,
   },
-  featureItem: {
+  pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SIZES.xs + 2,
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.xs + 2,
+    borderRadius: SIZES.radiusFull,
+    gap: 6,
   },
-  featureDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: SIZES.sm,
-  },
-  featureText: {
+  pillText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: '600',
   },
   primaryButton: {
     borderRadius: SIZES.radiusFull,

@@ -8,12 +8,13 @@ import {
   FlatList,
   Animated,
   Platform,
+  ImageBackground,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from './Icon';
 import { COLORS, SIZES, FONTS } from '../constants/theme';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 interface OnboardingStep {
   id: string;
@@ -21,12 +22,22 @@ interface OnboardingStep {
   description: string;
   icon: string;
   color: string;
+  image: string;
 }
 
 interface OnboardingWalkthroughProps {
   role: 'MOM' | 'DOULA' | 'MIDWIFE';
   onComplete: () => void;
 }
+
+// Birth photos from user
+const BIRTH_PHOTOS = {
+  skinToSkin: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/vp8xh1cu_IMG_0160.jpg',
+  waterBirth1: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/xzxgnokb_IMG_8612.jpg',
+  waterBirth2: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/9z5rmv0g_IMG_8613.jpg',
+  familyMoment: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/fg673ifm_IMG_8684.jpg',
+  newbornSleeping: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/nubpbqis_IMG_9108.jpg',
+};
 
 const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
   MOM: [
@@ -36,6 +47,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Build a personalized birth plan that captures your preferences, values, and wishes for your special day.',
       icon: 'document-text',
       color: COLORS.secondary,
+      image: BIRTH_PHOTOS.newbornSleeping,
     },
     {
       id: '2',
@@ -43,13 +55,15 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Find and connect with experienced doulas and midwives in your area who align with your vision.',
       icon: 'people-circle',
       color: COLORS.primary,
+      image: BIRTH_PHOTOS.waterBirth2, // Shows support from multiple hands
     },
     {
       id: '3',
-      title: 'Track Your Journey',
-      description: 'Monitor your wellness, track milestones, and stay connected with your care team throughout pregnancy.',
+      title: 'Experience Your Journey',
+      description: 'Track your wellness, celebrate milestones, and stay connected with your care team throughout pregnancy.',
       icon: 'heart-circle',
       color: COLORS.accent,
+      image: BIRTH_PHOTOS.skinToSkin,
     },
   ],
   DOULA: [
@@ -59,6 +73,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Showcase your experience, certifications, and philosophy to help moms find the perfect match.',
       icon: 'person-circle',
       color: COLORS.primary,
+      image: BIRTH_PHOTOS.waterBirth2,
     },
     {
       id: '2',
@@ -66,13 +81,15 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Keep track of your clients, appointments, contracts, and invoices all in one place.',
       icon: 'briefcase',
       color: COLORS.secondary,
+      image: BIRTH_PHOTOS.familyMoment,
     },
     {
       id: '3',
-      title: 'Collaborate on Birth Plans',
+      title: 'Support Birth Plans',
       description: 'Review and contribute to your clients\' birth plans, adding your professional insights.',
       icon: 'document-text',
       color: COLORS.accent,
+      image: BIRTH_PHOTOS.skinToSkin,
     },
   ],
   MIDWIFE: [
@@ -82,6 +99,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Add your credentials, services, and availability so expecting families can find you.',
       icon: 'medkit',
       color: COLORS.accent,
+      image: BIRTH_PHOTOS.waterBirth1,
     },
     {
       id: '2',
@@ -89,13 +107,15 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Log prenatal visits, monitor health metrics, and maintain comprehensive care records.',
       icon: 'clipboard',
       color: COLORS.primary,
+      image: BIRTH_PHOTOS.familyMoment,
     },
     {
       id: '3',
-      title: 'Support Birth Plans',
+      title: 'Guide Birth Journeys',
       description: 'Review birth preferences and help clients make informed decisions about their care.',
       icon: 'heart-half',
       color: COLORS.secondary,
+      image: BIRTH_PHOTOS.newbornSleeping,
     },
   ],
 };
@@ -122,32 +142,48 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
   
   const renderStep = ({ item, index }: { item: OnboardingStep; index: number }) => (
     <View style={styles.stepContainer}>
-      {/* Icon Circle */}
-      <View style={[styles.iconCircle, { backgroundColor: item.color + '20' }]}>
-        <LinearGradient
-          colors={[item.color, item.color + 'CC']}
-          style={styles.iconInner}
+      {/* Photo with gradient overlay */}
+      <View style={styles.photoContainer}>
+        <ImageBackground
+          source={{ uri: item.image }}
+          style={styles.stepImage}
+          resizeMode="cover"
         >
-          <Icon name={item.icon as any} size={48} color="#FFFFFF" />
-        </LinearGradient>
+          <LinearGradient
+            colors={[
+              `${item.color}40`,
+              `${item.color}20`,
+              'rgba(254,252,255,0.9)',
+              COLORS.background,
+            ]}
+            locations={[0, 0.3, 0.7, 1]}
+            style={styles.photoGradient}
+          />
+        </ImageBackground>
       </View>
       
-      {/* Step Number */}
-      <View style={styles.stepBadge}>
-        <Text style={styles.stepBadgeText}>Step {index + 1} of {steps.length}</Text>
+      {/* Content */}
+      <View style={styles.stepContent}>
+        {/* Step Badge */}
+        <View style={[styles.stepBadge, { backgroundColor: item.color + '20' }]}>
+          <Icon name={item.icon as any} size={16} color={item.color} />
+          <Text style={[styles.stepBadgeText, { color: item.color }]}>
+            Step {index + 1} of {steps.length}
+          </Text>
+        </View>
+        
+        {/* Title */}
+        <Text style={styles.stepTitle}>{item.title}</Text>
+        
+        {/* Description */}
+        <Text style={styles.stepDescription}>{item.description}</Text>
       </View>
-      
-      {/* Title */}
-      <Text style={styles.stepTitle}>{item.title}</Text>
-      
-      {/* Description */}
-      <Text style={styles.stepDescription}>{item.description}</Text>
     </View>
   );
   
   const renderDots = () => (
     <View style={styles.dotsContainer}>
-      {steps.map((_, index) => {
+      {steps.map((step, index) => {
         const inputRange = [
           (index - 1) * width,
           index * width,
@@ -262,37 +298,36 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     width: width,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1,
+  },
+  photoContainer: {
+    height: height * 0.45,
+  },
+  stepImage: {
+    flex: 1,
+  },
+  photoGradient: {
+    flex: 1,
+  },
+  stepContent: {
+    flex: 1,
     paddingHorizontal: SIZES.xl,
-    paddingTop: 100,
-  },
-  iconCircle: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    paddingTop: SIZES.lg,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: SIZES.xl,
-  },
-  iconInner: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   stepBadge: {
-    backgroundColor: COLORS.subtle,
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.xs,
     borderRadius: SIZES.radiusFull,
     marginBottom: SIZES.md,
+    gap: SIZES.xs,
   },
   stepBadgeText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: '600',
   },
   stepTitle: {
     fontSize: 28,
@@ -300,7 +335,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.textPrimary,
     textAlign: 'center',
-    marginBottom: SIZES.md,
+    marginBottom: SIZES.sm,
   },
   stepDescription: {
     fontSize: SIZES.fontMd,
@@ -308,14 +343,14 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 26,
-    paddingHorizontal: SIZES.md,
+    paddingHorizontal: SIZES.sm,
   },
   dotsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: SIZES.xs,
-    marginBottom: SIZES.xl,
+    marginBottom: SIZES.lg,
   },
   dot: {
     height: 8,

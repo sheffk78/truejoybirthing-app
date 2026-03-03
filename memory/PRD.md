@@ -3,7 +3,32 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-03 - Design Refresh v2 + Onboarding Integration)
+## Latest Session (2026-03-03 - Design Refresh with Custom Birth Photos)
+
+**Custom Birth Photography Integration - COMPLETED:**
+
+User provided 5 beautiful black & white birth photos. These were integrated throughout the auth experience:
+
+- **Welcome Page**: Hero photo (newborn sleeping on mother - IMG_9108) with soft lavender/rose tint overlay
+- **Login Page**: Split-screen layout with left side showing intimate mother-newborn photo (IMG_0160) with gradient, right side clean login form
+- **Onboarding Walkthrough**: Different birth photos for each of the 3 steps:
+  - Step 1 (Birth Plan): Newborn sleeping on mother
+  - Step 2 (Build Team): Water birth with multiple supporting hands
+  - Step 3 (Journey): Skin-to-skin moment
+
+**Photo URLs Stored**:
+- IMG_0160.jpg (Mother holding newborn): https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/vp8xh1cu_IMG_0160.jpg
+- IMG_8612.jpg (Water birth 1): https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/xzxgnokb_IMG_8612.jpg
+- IMG_8613.jpg (Water birth 2 - multiple hands): https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/9z5rmv0g_IMG_8613.jpg
+- IMG_8684.jpg (Family moment): https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/fg673ifm_IMG_8684.jpg
+- IMG_9108.jpg (Newborn sleeping): https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/nubpbqis_IMG_9108.jpg
+
+**Files Modified**:
+- `frontend/app/(auth)/welcome.tsx` - Hero photo with gradient overlay
+- `frontend/app/(auth)/login.tsx` - Responsive split-screen layout (wide screens) / stacked with photo background (mobile)
+- `frontend/src/components/OnboardingWalkthrough.tsx` - Photo carousel with role-specific images
+
+## Previous Session (2026-03-03 - Design Refresh v2)
 
 **Welcome Page Redesign v2 - COMPLETED:**
 
