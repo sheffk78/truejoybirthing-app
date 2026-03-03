@@ -11,22 +11,22 @@ Created collapsible video guide component that appears at the top of each birth 
 
 - **Component**: `frontend/src/components/SectionVideoGuide.tsx`
 - **UX**: Option B - Section Header Video
-  - Collapsed: Shows play button, title "How to fill out this section", duration "2 min"
+  - Collapsed: Shows play button, title "How to fill out this section", duration
   - Expanded: Inline video player using Bunny.net iframe embed
 - **Integration**: Added to `frontend/app/(mom)/birth-plan.tsx` - shows after section description
 
-**Current Videos Configured:**
-- Labor & Delivery Preferences (`labor_delivery`): https://iframe.mediadelivery.net/embed/602267/a3436e3f-6adb-4f95-b90b-8893ddf930a6
-
-**To Add More Videos** - Edit `SECTION_VIDEOS` in `SectionVideoGuide.tsx`:
-```typescript
-export const SECTION_VIDEOS = {
-  labor_delivery: { embedUrl: '...', duration: '2 min', title: 'How to fill out this section' },
-  pain_management: { embedUrl: '...', duration: '...', title: '...' },
-  // Section IDs: about_me, labor_delivery, pain_management, monitoring_iv, 
-  // induction_interventions, pushing_safe_word, post_delivery, newborn_care, other_considerations
-};
-```
+**All Videos Configured (8 sections, ~27 min total content):**
+| Section | ID | Duration |
+|---------|-----|----------|
+| About Me & My Preferences | about_me | No video |
+| Labor & Delivery Preferences | labor_delivery | 5:54 min |
+| Pain Management | pain_management | 2:14 min |
+| Labor Environment & Comfort | monitoring_iv | 3:05 min |
+| Induction & Birth Interventions | induction_interventions | 1:24 min |
+| Pushing, Delivery & Safe Word | pushing_safe_word | 4:31 min |
+| Post-Delivery Preferences | post_delivery | 5:24 min |
+| Newborn Care Preferences | newborn_care | 3:59 min |
+| Other Important Considerations | other_considerations | 1:07 min |
 
 **Custom Birth Photography Integration - COMPLETED:**
 
