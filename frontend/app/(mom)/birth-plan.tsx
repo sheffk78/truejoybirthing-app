@@ -19,6 +19,7 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { SECTION_FORMS, renderField } from '../../src/components/BirthPlanForms';
+import SectionVideoGuide from '../../src/components/SectionVideoGuide';
 import { apiRequest, getApiBaseUrl } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
@@ -409,6 +410,12 @@ export default function BirthPlanScreen() {
                   {getSectionDescription()}
                 </Text>
               </View>
+              
+              {/* Video Guide (if available for this section) */}
+              <SectionVideoGuide 
+                sectionId={selectedSection?.section_id} 
+                sectionTitle={selectedSection?.title}
+              />
               
               {/* Section Fields */}
               {renderSectionContent()}

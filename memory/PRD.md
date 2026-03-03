@@ -3,7 +3,30 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-03 - Design Refresh with Custom Birth Photos)
+## Latest Session (2026-03-03 - Birth Plan Video Guides + Design Refresh)
+
+**Birth Plan Section Video Guides - COMPLETED:**
+
+Created collapsible video guide component that appears at the top of each birth plan section (when video is available).
+
+- **Component**: `frontend/src/components/SectionVideoGuide.tsx`
+- **UX**: Option B - Section Header Video
+  - Collapsed: Shows play button, title "How to fill out this section", duration "2 min"
+  - Expanded: Inline video player using Bunny.net iframe embed
+- **Integration**: Added to `frontend/app/(mom)/birth-plan.tsx` - shows after section description
+
+**Current Videos Configured:**
+- Labor & Delivery Preferences (`labor_delivery`): https://iframe.mediadelivery.net/embed/602267/a3436e3f-6adb-4f95-b90b-8893ddf930a6
+
+**To Add More Videos** - Edit `SECTION_VIDEOS` in `SectionVideoGuide.tsx`:
+```typescript
+export const SECTION_VIDEOS = {
+  labor_delivery: { embedUrl: '...', duration: '2 min', title: 'How to fill out this section' },
+  pain_management: { embedUrl: '...', duration: '...', title: '...' },
+  // Section IDs: about_me, labor_delivery, pain_management, monitoring_iv, 
+  // induction_interventions, pushing_safe_word, post_delivery, newborn_care, other_considerations
+};
+```
 
 **Custom Birth Photography Integration - COMPLETED:**
 
