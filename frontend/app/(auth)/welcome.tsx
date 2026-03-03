@@ -56,13 +56,21 @@ export default function WelcomeScreen() {
       </ImageBackground>
       
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-        {/* Logo at top */}
+        {/* Logo at top - using transparent icon on photo background */}
         <View style={styles.logoContainer}>
-          <Image
-            source={{ uri: BRAND.logoJpg }}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          {Platform.OS === 'web' ? (
+            <img 
+              src={BRAND.logoIcon} 
+              alt="True Joy Birthing"
+              style={{ width: 120, height: 120, objectFit: 'contain' }}
+            />
+          ) : (
+            <Image
+              source={{ uri: BRAND.logoIcon }}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          )}
         </View>
         
         {/* Spacer */}

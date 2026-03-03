@@ -88,11 +88,19 @@ export default function LoginScreen() {
               style={styles.imageOverlay}
             >
               <SafeAreaView style={styles.imageContent}>
+                {Platform.OS === 'web' ? (
+                <img 
+                  src={BRAND.logoIcon} 
+                  alt="True Joy Birthing"
+                  style={{ width: 160, height: 55, objectFit: 'contain' }}
+                />
+              ) : (
                 <Image
-                  source={{ uri: BRAND.logoJpg }}
+                  source={{ uri: BRAND.logoIcon }}
                   style={styles.splitLogo}
                   resizeMode="contain"
                 />
+              )}
                 <View style={styles.imageTextContainer}>
                   <Text style={styles.imageHeadline}>
                     Welcome back to your birth journey
