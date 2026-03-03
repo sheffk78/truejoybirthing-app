@@ -3,31 +3,34 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-03 - Client Photo Sync Fix + Birth Plan Verification)
+## Latest Session (2026-03-03 - Design Refresh + Client Photo Fix)
+
+**Welcome/Auth Pages Redesign - COMPLETED:**
+
+- **Welcome Page**: Complete redesign with hero image, gradient overlay, bold headline "Your Birth, Your Team, Your Way", feature pills, and gradient CTA button
+- **Signup Page**: Two-step flow with vibrant role selection cards using gradient backgrounds and abstract images
+- **Button Component**: Added `onClick` handler for web compatibility to fix button clicks on web
+- **Files Created/Modified**:
+  - `frontend/app/(auth)/welcome.tsx` - New hero layout design
+  - `frontend/app/(auth)/signup.tsx` - Two-step role selection flow
+  - `frontend/src/components/OnboardingWalkthrough.tsx` - New role-specific walkthrough component
+  - `frontend/src/components/Button.tsx` - Added web onClick handler
+
+**Mom Menu "provider-" Fix - COMPLETED:**
+
+- **Issue**: "provider-detail" page was showing in the Mom's tab bar navigation
+- **Fix**: Added `provider-detail` to `_layout.tsx` with `href: null` to hide it from the tab bar
+- **File Modified**: `frontend/app/(mom)/_layout.tsx`
 
 **Client Profile Picture Sync Bug - COMPLETED (Testing Agent Verified 100%):**
 
 - **Issue**: When a provider (Doula/Midwife) converts a lead to a client, the Mom's profile picture shown in "My Clients" displays an outdated DiceBear avatar instead of the Mom's actual current profile picture.
-- **Root Cause**: The client record stored a snapshot of the Mom's picture at conversion time. If the Mom updated their picture later, the stale picture remained in the clients collection.
-- **Fix Applied**:
-  1. `backend/routes/doula.py` - `get_doula_clients()` now fetches latest picture from linked mom's user record
-  2. `backend/routes/midwife.py` - `get_midwife_clients()` now fetches latest picture from linked mom's user record
-  3. `backend/routes/provider_unified.py` - `get_clients()` and client detail endpoint now fetch latest picture from linked mom
-  4. `backend/routes/appointments.py` - Appointments with clients now show correct picture from linked mom
-  5. `backend/routes/doula.py` - `get_doula_client()` detail endpoint now fetches latest picture
-  6. `backend/routes/midwife.py` - `get_midwife_client()` detail endpoint now fetches latest picture
-- **Logic Change**: Previously only fetched mom's picture if client had NO picture. Now ALWAYS fetches from linked mom's user record if `linked_mom_id` exists, ensuring pictures stay in sync.
+- **Fix**: Backend endpoints now always fetch latest picture from linked mom's user record
+- **Files Modified**: `doula.py`, `midwife.py`, `provider_unified.py`, `appointments.py`
 
 **Birth Plan Completion Percentage - VERIFIED WORKING:**
 
-- **Investigation**: Created fresh test user to verify birth plan calculation from scratch
-- **Findings**: The percentage calculation is working correctly:
-  - New user starts at 11.11% (1/9) because user's name is auto-filled in "about_me" section
-  - Percentage increases correctly as sections are filled (22.22% for 2/9, etc.)
-  - Percentage decreases correctly when sections are cleared
-  - 100% achieved when all 9 sections have meaningful data
-- **Expected Behavior**: Pre-filling user's name is intentional UX - gives users a head start
-- **Status**: NOT A BUG - Working as designed
+- Percentage calculation is accurate - NOT A BUG
 
 ## Previous Session (2026-03-03 - Bug Fixes Session 2)
 

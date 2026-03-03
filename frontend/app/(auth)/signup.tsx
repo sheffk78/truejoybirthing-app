@@ -4,46 +4,64 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
-  Alert,
+  Pressable,
   KeyboardAvoidingView,
   Platform,
+  ImageBackground,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
-import Card from '../../src/components/Card';
 import { useAuthStore } from '../../src/store/authStore';
-import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
 
 type RoleOption = 'MOM' | 'DOULA' | 'MIDWIFE';
 
-const ROLE_OPTIONS: { value: RoleOption; label: string; description: string; icon: keyof typeof Ionicons.glyphMap; pricing: string; pricingColor: string }[] = [
+interface RoleData {
+  value: RoleOption;
+  label: string;
+  subtitle: string;
+  icon: string;
+  color: string;
+  colorLight: string;
+  pricing: string;
+  bgImage: string;
+}
+
+const ROLE_OPTIONS: RoleData[] = [
   {
     value: 'MOM',
-    label: "I'm pregnant / planning a baby",
-    description: 'Create your birth plan and connect with your care team',
-    icon: 'heart-outline',
-    pricing: 'Free',
-    pricingColor: COLORS.success,
+    label: "I'm Expecting",
+    subtitle: 'Create your birth plan & build your team',
+    icon: 'heart',
+    color: COLORS.secondary,
+    colorLight: COLORS.secondaryLight,
+    pricing: 'Free Forever',
+    bgImage: 'https://images.unsplash.com/photo-1771814535949-53fd6188f5f2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGZsdWlkJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyNTE4MDI0fDA&ixlib=rb-4.1.0&q=85',
   },
   {
     value: 'DOULA',
-    label: "I'm a doula",
-    description: 'Manage clients, contracts, and collaborate on birth plans',
-    icon: 'people-outline',
-    pricing: 'Paid subscription',
-    pricingColor: COLORS.primary,
+    label: "I'm a Doula",
+    subtitle: 'Manage clients & grow your practice',
+    icon: 'people',
+    color: COLORS.primary,
+    colorLight: COLORS.primaryLight,
+    pricing: 'Pro Features',
+    bgImage: 'https://images.unsplash.com/photo-1771814536150-fa5677cfca01?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGZsdWlkJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyNTE4MDI0fDA&ixlib=rb-4.1.0&q=85',
   },
   {
     value: 'MIDWIFE',
-    label: "I'm a midwife",
-    description: 'Track clients, visits, and birth summaries',
-    icon: 'medkit-outline',
-    pricing: 'Paid subscription',
-    pricingColor: COLORS.primary,
+    label: "I'm a Midwife",
+    subtitle: 'Track visits & support birthing families',
+    icon: 'medkit',
+    color: COLORS.accent,
+    colorLight: COLORS.accentLight,
+    pricing: 'Pro Features',
+    bgImage: 'https://images.unsplash.com/photo-1771814567353-4be8ac21cfb4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGZsdWlkJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyNTE4MDI0fDA&ixlib=rb-4.1.0&q=85',
   },
 ];
 
@@ -51,6 +69,7 @@ export default function SignupScreen() {
   const router = useRouter();
   const { register, isLoading } = useAuthStore();
   
+  const [step, setStep] = useState<'role' | 'details'>('role');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -81,12 +100,13 @@ export default function SignupScreen() {
       newErrors.confirmPassword = 'Passwords do not match';
     }
     
-    if (!selectedRole) {
-      newErrors.role = 'Please select who you are';
-    }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+  
+  const handleRoleSelect = (role: RoleOption) => {
+    setSelectedRole(role);
+    setStep('details');
   };
   
   const handleSignup = async () => {
@@ -94,12 +114,99 @@ export default function SignupScreen() {
     
     try {
       await register(email, password, fullName, selectedRole!);
-      // Navigation will be handled by the root layout
     } catch (error: any) {
-      Alert.alert('Registration Failed', error.message || 'Please try again.');
+      if (Platform.OS === 'web') {
+        window.alert(error.message || 'Registration failed. Please try again.');
+      } else {
+        Alert.alert('Registration Failed', error.message || 'Please try again.');
+      }
     }
   };
   
+  const selectedRoleData = ROLE_OPTIONS.find(r => r.value === selectedRole);
+  
+  // Step 1: Role Selection
+  if (step === 'role') {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <ScrollView
+          contentContainerStyle={styles.roleScrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <Pressable
+            style={styles.backButton}
+            onPress={() => router.back()}
+            data-testid="signup-back-btn"
+          >
+            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+          </Pressable>
+          
+          <View style={styles.roleHeaderSection}>
+            <Text style={styles.roleTitle}>Welcome!</Text>
+            <Text style={styles.roleSubtitle}>Tell us who you are to get started</Text>
+          </View>
+          
+          {/* Role Cards */}
+          <View style={styles.roleCardsContainer}>
+            {ROLE_OPTIONS.map((option, index) => (
+              <Pressable
+                key={option.value}
+                style={({ pressed }) => [
+                  styles.roleCard,
+                  pressed && styles.roleCardPressed,
+                ]}
+                onPress={() => handleRoleSelect(option.value)}
+                data-testid={`role-card-${option.value.toLowerCase()}`}
+              >
+                <ImageBackground
+                  source={{ uri: option.bgImage }}
+                  style={styles.roleCardBg}
+                  imageStyle={styles.roleCardBgImage}
+                >
+                  <LinearGradient
+                    colors={[option.color + '90', option.color + 'E0']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.roleCardGradient}
+                  >
+                    {/* Icon */}
+                    <View style={styles.roleIconCircle}>
+                      <Icon name={option.icon as any} size={32} color={option.color} />
+                    </View>
+                    
+                    {/* Text */}
+                    <Text style={styles.roleCardLabel}>{option.label}</Text>
+                    <Text style={styles.roleCardSubtitle}>{option.subtitle}</Text>
+                    
+                    {/* Pricing Badge */}
+                    <View style={styles.pricingBadge}>
+                      <Text style={styles.pricingText}>{option.pricing}</Text>
+                    </View>
+                    
+                    {/* Arrow */}
+                    <View style={styles.roleCardArrow}>
+                      <Icon name="arrow-forward" size={20} color="#FFFFFF" />
+                    </View>
+                  </LinearGradient>
+                </ImageBackground>
+              </Pressable>
+            ))}
+          </View>
+          
+          {/* Login Link */}
+          <View style={styles.loginSection}>
+            <Text style={styles.loginText}>Already have an account? </Text>
+            <Pressable onPress={() => router.push('/(auth)/login')} data-testid="signup-login-link">
+              <Text style={styles.loginLink}>Log In</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+  
+  // Step 2: Account Details
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
@@ -112,16 +219,30 @@ export default function SignupScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
-          <TouchableOpacity
+          <Pressable
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={() => setStep('role')}
+            data-testid="details-back-btn"
           >
             <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
-          </TouchableOpacity>
+          </Pressable>
+          
+          {/* Selected Role Badge */}
+          {selectedRoleData && (
+            <View style={[styles.selectedRoleBadge, { backgroundColor: selectedRoleData.color + '20' }]}>
+              <Icon name={selectedRoleData.icon as any} size={16} color={selectedRoleData.color} />
+              <Text style={[styles.selectedRoleText, { color: selectedRoleData.color }]}>
+                {selectedRoleData.label}
+              </Text>
+              <Pressable onPress={() => setStep('role')} data-testid="change-role-btn">
+                <Text style={[styles.changeRoleText, { color: selectedRoleData.color }]}>Change</Text>
+              </Pressable>
+            </View>
+          )}
           
           <View style={styles.headerSection}>
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join True Joy Birthing today</Text>
+            <Text style={styles.subtitle}>Fill in your details to get started</Text>
           </View>
           
           {/* Form */}
@@ -134,6 +255,7 @@ export default function SignupScreen() {
               autoCapitalize="words"
               leftIcon="person-outline"
               error={errors.fullName}
+              testID="input-fullname"
             />
             
             <Input
@@ -146,6 +268,7 @@ export default function SignupScreen() {
               autoComplete="email"
               leftIcon="mail-outline"
               error={errors.email}
+              testID="input-email"
             />
             
             <Input
@@ -157,6 +280,7 @@ export default function SignupScreen() {
               autoCapitalize="none"
               leftIcon="lock-closed-outline"
               error={errors.password}
+              testID="input-password"
             />
             
             <Input
@@ -168,81 +292,39 @@ export default function SignupScreen() {
               autoCapitalize="none"
               leftIcon="lock-closed-outline"
               error={errors.confirmPassword}
+              testID="input-confirm-password"
             />
           </View>
           
-          {/* Role Selection */}
-          <View style={styles.roleSection}>
-            <Text style={styles.roleLabel}>Who are you?</Text>
-            {errors.role && <Text style={styles.errorText}>{errors.role}</Text>}
-            
-            {ROLE_OPTIONS.map((option) => (
-              <TouchableOpacity
-                key={option.value}
-                onPress={() => setSelectedRole(option.value)}
-                activeOpacity={0.8}
-              >
-                <Card
-                  style={[
-                    styles.roleCard,
-                    selectedRole === option.value && styles.roleCardSelected,
-                  ]}
-                >
-                  <View style={styles.roleCardContent}>
-                    <View
-                      style={[
-                        styles.roleIcon,
-                        selectedRole === option.value && styles.roleIconSelected,
-                      ]}
-                    >
-                      <Icon
-                        name={option.icon}
-                        size={24}
-                        color={selectedRole === option.value ? COLORS.white : COLORS.primary}
-                      />
-                    </View>
-                    <View style={styles.roleText}>
-                      <View style={styles.roleTitleRow}>
-                        <Text
-                          style={[
-                            styles.roleTitle,
-                            selectedRole === option.value && styles.roleTitleSelected,
-                          ]}
-                        >
-                          {option.label}
-                        </Text>
-                        <View style={[styles.pricingBadge, { backgroundColor: option.pricingColor + '20' }]}>
-                          <Text style={[styles.pricingText, { color: option.pricingColor }]}>
-                            {option.pricing}
-                          </Text>
-                        </View>
-                      </View>
-                      <Text style={styles.roleDescription}>{option.description}</Text>
-                    </View>
-                    {selectedRole === option.value && (
-                      <Icon name="checkmark-circle" size={24} color={COLORS.primary} />
-                    )}
-                  </View>
-                </Card>
-              </TouchableOpacity>
-            ))}
-          </View>
-          
           {/* Submit Button */}
-          <Button
-            title="Create Account"
+          <Pressable
+            style={({ pressed }) => [
+              styles.submitButton,
+              { backgroundColor: selectedRoleData?.color || COLORS.primary },
+              pressed && styles.buttonPressed,
+            ]}
             onPress={handleSignup}
-            loading={isLoading}
-            fullWidth
-            style={styles.submitButton}
-          />
+            disabled={isLoading}
+            data-testid="create-account-btn"
+          >
+            {isLoading ? (
+              <Text style={styles.submitButtonText}>Creating Account...</Text>
+            ) : (
+              <>
+                <Text style={styles.submitButtonText}>Create Account</Text>
+                <Icon name="arrow-forward" size={20} color="#FFFFFF" />
+              </>
+            )}
+          </Pressable>
           
           {/* Login Link */}
           <View style={styles.loginSection}>
             <Text style={styles.loginText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-              <Text style={styles.loginLink}>Log In</Text>
-            </TouchableOpacity>
+            <Pressable onPress={() => router.push('/(auth)/login')}>
+              <Text style={[styles.loginLink, { color: selectedRoleData?.color || COLORS.primary }]}>
+                Log In
+              </Text>
+            </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -258,6 +340,12 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
+  roleScrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: SIZES.lg,
+    paddingTop: SIZES.md,
+    paddingBottom: SIZES.xl,
+  },
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: SIZES.lg,
@@ -270,12 +358,123 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: SIZES.md,
   },
+  roleHeaderSection: {
+    marginBottom: SIZES.xl,
+  },
+  roleTitle: {
+    fontSize: 32,
+    fontFamily: FONTS.heading,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    marginBottom: SIZES.xs,
+  },
+  roleSubtitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
+  },
+  roleCardsContainer: {
+    gap: SIZES.md,
+    marginBottom: SIZES.xl,
+  },
+  roleCard: {
+    borderRadius: SIZES.radiusXl,
+    overflow: 'hidden',
+    elevation: 4,
+    shadowColor: '#4A3B4E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+  },
+  roleCardPressed: {
+    opacity: 0.95,
+    transform: [{ scale: 0.98 }],
+  },
+  roleCardBg: {
+    width: '100%',
+  },
+  roleCardBgImage: {
+    borderRadius: SIZES.radiusXl,
+  },
+  roleCardGradient: {
+    padding: SIZES.lg,
+    minHeight: 140,
+  },
+  roleIconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.md,
+  },
+  roleCardLabel: {
+    fontSize: 22,
+    fontFamily: FONTS.heading,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  roleCardSubtitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: 'rgba(255,255,255,0.9)',
+    marginBottom: SIZES.sm,
+  },
+  pricingBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: 4,
+    borderRadius: SIZES.radiusFull,
+  },
+  pricingText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  roleCardArrow: {
+    position: 'absolute',
+    right: SIZES.lg,
+    top: '50%',
+    marginTop: -10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectedRoleBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.xs,
+    borderRadius: SIZES.radiusFull,
+    gap: SIZES.xs,
+    marginBottom: SIZES.md,
+  },
+  selectedRoleText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: '600',
+  },
+  changeRoleText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    textDecorationLine: 'underline',
+    marginLeft: SIZES.xs,
+  },
   headerSection: {
     marginBottom: SIZES.lg,
   },
   title: {
     fontSize: SIZES.fontTitle,
     fontFamily: FONTS.heading,
+    fontWeight: '700',
     color: COLORS.textPrimary,
     marginBottom: SIZES.xs,
   },
@@ -287,77 +486,24 @@ const styles = StyleSheet.create({
   formSection: {
     marginBottom: SIZES.lg,
   },
-  roleSection: {
-    marginBottom: SIZES.lg,
-  },
-  roleLabel: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-    marginBottom: SIZES.sm,
-  },
-  errorText: {
-    fontSize: SIZES.fontXs,
-    color: COLORS.error,
-    marginBottom: SIZES.sm,
-  },
-  roleCard: {
-    marginBottom: SIZES.sm,
-  },
-  roleCardSelected: {
-    borderWidth: 2,
-    borderColor: COLORS.primary,
-  },
-  roleCardContent: {
+  submitButton: {
     flexDirection: 'row',
-    alignItems: 'center',
-  },
-  roleIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: COLORS.primaryLight + '30',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: SIZES.md,
-  },
-  roleIconSelected: {
-    backgroundColor: COLORS.primary,
-  },
-  roleText: {
-    flex: 1,
-  },
-  roleTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: SIZES.xs,
-    marginBottom: 2,
-  },
-  roleTitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
-  },
-  roleTitleSelected: {
-    color: COLORS.primary,
-  },
-  pricingBadge: {
-    paddingHorizontal: SIZES.xs,
-    paddingVertical: 2,
-    borderRadius: SIZES.radiusSm,
-  },
-  pricingText: {
-    fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
-  },
-  roleDescription: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
-  },
-  submitButton: {
+    paddingVertical: SIZES.md + 2,
+    borderRadius: SIZES.radiusFull,
+    gap: SIZES.sm,
     marginBottom: SIZES.lg,
+  },
+  submitButtonText: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  buttonPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
   },
   loginSection: {
     flexDirection: 'row',
@@ -366,11 +512,12 @@ const styles = StyleSheet.create({
   },
   loginText: {
     fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
     color: COLORS.textSecondary,
   },
   loginLink: {
     fontSize: SIZES.fontMd,
-    color: COLORS.primary,
+    fontFamily: FONTS.bodyBold,
     fontWeight: '600',
   },
 });

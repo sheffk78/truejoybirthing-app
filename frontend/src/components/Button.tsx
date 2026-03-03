@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   ViewStyle,
   TextStyle,
+  Platform,
 } from 'react-native';
 import { COLORS, SIZES, SHADOWS, FONTS } from '../constants/theme';
 
@@ -128,6 +129,8 @@ export default function Button({
       disabled={disabled || loading}
       testID={testID}
       data-testid={testID}
+      // @ts-ignore - onClick for web compatibility
+      onClick={Platform.OS === 'web' ? onPress : undefined}
       style={({ pressed }) => [
         getButtonStyle(),
         SHADOWS.sm,
