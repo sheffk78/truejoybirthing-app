@@ -7,6 +7,7 @@ import {
   Pressable,
   FlatList,
   Animated,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from './Icon';
@@ -185,7 +186,13 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
   return (
     <View style={styles.container}>
       {/* Skip Button */}
-      <Pressable style={styles.skipButton} onPress={handleSkip} data-testid="onboarding-skip-btn">
+      <Pressable 
+        style={styles.skipButton} 
+        onPress={handleSkip} 
+        // @ts-ignore - onClick for web compatibility
+        onClick={Platform.OS === 'web' ? handleSkip : undefined}
+        data-testid="onboarding-skip-btn"
+      >
         <Text style={styles.skipText}>Skip</Text>
       </Pressable>
       
@@ -221,6 +228,8 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
             pressed && styles.buttonPressed,
           ]}
           onPress={handleNext}
+          // @ts-ignore - onClick for web compatibility
+          onClick={Platform.OS === 'web' ? handleNext : undefined}
           data-testid="onboarding-continue-btn"
         >
           <Text style={styles.continueText}>

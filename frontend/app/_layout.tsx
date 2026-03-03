@@ -59,14 +59,15 @@ export default function RootLayout() {
     } else if (isAuthenticated && user) {
       // Check if onboarding is needed
       if (!user.onboarding_completed) {
-        // Redirect to onboarding based on role
-        if (user.role === 'MOM' && currentScreen !== 'mom-onboarding') {
-          router.replace('/(auth)/mom-onboarding');
-        } else if (user.role === 'DOULA' && currentScreen !== 'doula-onboarding') {
-          router.replace('/(auth)/doula-onboarding');
-        } else if (user.role === 'MIDWIFE' && currentScreen !== 'midwife-onboarding') {
-          router.replace('/(auth)/midwife-onboarding');
+        // First show intro walkthrough, then role-specific profile setup
+        const isOnIntro = currentScreen === 'onboarding-intro';
+        const isOnProfileSetup = ['mom-onboarding', 'doula-onboarding', 'midwife-onboarding'].includes(currentScreen);
+        
+        if (!isOnIntro && !isOnProfileSetup) {
+          // Start with the intro walkthrough
+          router.replace('/(auth)/onboarding-intro');
         }
+        // If already on intro or profile setup, let them continue
       } else if (inAuthGroup) {
         // Already authenticated and onboarded, redirect to appropriate dashboard
         if (user.role === 'MOM') {

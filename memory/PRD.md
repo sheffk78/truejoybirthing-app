@@ -3,36 +3,42 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-03 - Design Refresh + Client Photo Fix)
+## Latest Session (2026-03-03 - Design Refresh v2 + Onboarding Integration)
 
-**Welcome/Auth Pages Redesign - COMPLETED:**
+**Welcome Page Redesign v2 - COMPLETED:**
 
-- **Welcome Page**: Complete redesign with hero image, gradient overlay, bold headline "Your Birth, Your Team, Your Way", feature pills, and gradient CTA button
-- **Signup Page**: Two-step flow with vibrant role selection cards using gradient backgrounds and abstract images
-- **Button Component**: Added `onClick` handler for web compatibility to fix button clicks on web
-- **Files Created/Modified**:
-  - `frontend/app/(auth)/welcome.tsx` - New hero layout design
-  - `frontend/app/(auth)/signup.tsx` - Two-step role selection flow
-  - `frontend/src/components/OnboardingWalkthrough.tsx` - New role-specific walkthrough component
-  - `frontend/src/components/Button.tsx` - Added web onClick handler
+- Removed busy hero photo that conflicted with logo
+- New clean design with soft gradient background (#FEFCFF to #EDE3F0)
+- Three floating gradient icons representing key features (heart, people, document)
+- Feature bullet list with colored dots
+- All buttons have web-compatible onClick handlers
 
-**Mom Menu "provider-" Fix - COMPLETED:**
+**Signup Page with Role Cards - COMPLETED:**
 
-- **Issue**: "provider-detail" page was showing in the Mom's tab bar navigation
-- **Fix**: Added `provider-detail` to `_layout.tsx` with `href: null` to hide it from the tab bar
-- **File Modified**: `frontend/app/(mom)/_layout.tsx`
+- Two-step flow: role selection → account details
+- Vibrant gradient role cards with abstract pastel backgrounds
+- Clear pricing indicators (Free Forever for Moms, Pro Features for providers)
+- Role badge on account details form with "Change" option
+- All buttons have web-compatible onClick handlers
 
-**Client Profile Picture Sync Bug - COMPLETED (Testing Agent Verified 100%):**
+**Onboarding Walkthrough - INTEGRATED:**
 
-- **Issue**: When a provider (Doula/Midwife) converts a lead to a client, the Mom's profile picture shown in "My Clients" displays an outdated DiceBear avatar instead of the Mom's actual current profile picture.
-- **Fix**: Backend endpoints now always fetch latest picture from linked mom's user record
-- **Files Modified**: `doula.py`, `midwife.py`, `provider_unified.py`, `appointments.py`
+- New `OnboardingWalkthrough` component with role-specific 3-step carousel
+- Created `onboarding-intro.tsx` page that shows walkthrough before profile setup
+- Updated `_layout.tsx` to show onboarding intro first, then redirect to profile setup
+- Skip button and Continue button both work on web
+- Animated dots indicator for progress
 
-**Birth Plan Completion Percentage - VERIFIED WORKING:**
+**Mom Menu Fix - COMPLETED:**
 
-- Percentage calculation is accurate - NOT A BUG
+- Removed "provider-detail" from tab bar navigation
 
-## Previous Session (2026-03-03 - Bug Fixes Session 2)
+**Web Button Compatibility - EXPANDED:**
+
+- Added onClick handlers to `Button.tsx`, `welcome.tsx`, `signup.tsx`, `OnboardingWalkthrough.tsx`
+- Pattern: `onClick={Platform.OS === 'web' ? handler : undefined}`
+
+## Previous Session (2026-03-03 - Bug Fixes Session)
 
 **Web Button Click Fixes - ALL COMPLETED (Testing Agent Verified 100%):**
 

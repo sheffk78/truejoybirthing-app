@@ -157,6 +157,8 @@ export default function SignupScreen() {
                   pressed && styles.roleCardPressed,
                 ]}
                 onPress={() => handleRoleSelect(option.value)}
+                // @ts-ignore - onClick for web compatibility
+                onClick={Platform.OS === 'web' ? () => handleRoleSelect(option.value) : undefined}
                 data-testid={`role-card-${option.value.toLowerCase()}`}
               >
                 <ImageBackground

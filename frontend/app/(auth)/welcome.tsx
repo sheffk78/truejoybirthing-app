@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Image,
-  ImageBackground,
   Platform,
   Linking,
   Pressable,
@@ -17,8 +16,6 @@ import { Icon } from '../../src/components/Icon';
 import { COLORS, SIZES, FONTS, BRAND } from '../../src/constants/theme';
 
 const { width, height } = Dimensions.get('window');
-
-const HERO_IMAGE = 'https://images.unsplash.com/photo-1752240879764-97bb683bf0d5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwyfHxwcmVnbmFudCUyMHdvbWFuJTIwaGFwcHklMjBkb3VsYSUyMGJpcnRoJTIwbWlkd2lmZXxlbnwwfHx8fDE3NzI1MTgwMTl8MA&ixlib=rb-4.1.0&q=85';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -34,59 +31,74 @@ export default function WelcomeScreen() {
   };
   
   return (
-    <View style={styles.container}>
-      {/* Hero Background */}
-      <ImageBackground
-        source={{ uri: HERO_IMAGE }}
-        style={styles.heroBackground}
-        resizeMode="cover"
-      >
-        {/* Gradient Overlay */}
-        <LinearGradient
-          colors={['transparent', 'rgba(254,252,255,0.4)', 'rgba(254,252,255,0.95)', '#FEFCFF']}
-          locations={[0, 0.3, 0.6, 0.85]}
-          style={styles.gradientOverlay}
-        />
-      </ImageBackground>
-      
-      {/* Content */}
-      <SafeAreaView style={styles.content} edges={['top', 'bottom']}>
-        {/* Logo at top */}
-        <View style={styles.logoSection}>
+    <LinearGradient
+      colors={['#FEFCFF', '#F9F5FA', '#F3EBF6', '#EDE3F0']}
+      locations={[0, 0.3, 0.6, 1]}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        {/* Top Section - Logo & Illustration */}
+        <View style={styles.topSection}>
+          {/* Logo */}
           <Image
             source={{ uri: BRAND.logoJpg }}
             style={styles.logo}
             resizeMode="contain"
           />
+          
+          {/* Decorative Icons */}
+          <View style={styles.iconGrid}>
+            <View style={[styles.floatingIcon, styles.iconTopLeft]}>
+              <LinearGradient
+                colors={[COLORS.secondary, COLORS.secondaryLight]}
+                style={styles.iconCircle}
+              >
+                <Icon name="heart" size={28} color="#FFFFFF" />
+              </LinearGradient>
+            </View>
+            <View style={[styles.floatingIcon, styles.iconTopRight]}>
+              <LinearGradient
+                colors={[COLORS.primary, COLORS.primaryLight]}
+                style={styles.iconCircle}
+              >
+                <Icon name="people" size={28} color="#FFFFFF" />
+              </LinearGradient>
+            </View>
+            <View style={[styles.floatingIcon, styles.iconBottomCenter]}>
+              <LinearGradient
+                colors={[COLORS.accent, COLORS.accentLight]}
+                style={styles.iconCircle}
+              >
+                <Icon name="document-text" size={28} color="#FFFFFF" />
+              </LinearGradient>
+            </View>
+          </View>
         </View>
         
-        {/* Spacer to push content down */}
-        <View style={styles.spacer} />
-        
-        {/* Bottom Content Card */}
-        <View style={styles.bottomCard}>
+        {/* Bottom Section - Content */}
+        <View style={styles.bottomSection}>
           {/* Headline */}
           <Text style={styles.headline}>
-            Your Birth,{'\n'}Your Team,{'\n'}Your Way.
+            Your Birth Journey,{'\n'}Supported Every Step
           </Text>
           
           <Text style={styles.subtitle}>
-            Connect with doulas and midwives.{'\n'}Create your perfect birth plan.
+            Create your birth plan, connect with doulas and midwives, and track your pregnancy wellness.
           </Text>
           
-          {/* Feature Pills */}
-          <View style={styles.featurePills}>
-            <View style={[styles.pill, { backgroundColor: COLORS.secondary + '30' }]}>
-              <Icon name="document-text" size={14} color={COLORS.secondary} />
-              <Text style={[styles.pillText, { color: COLORS.secondaryDark }]}>Birth Plan</Text>
+          {/* Feature List */}
+          <View style={styles.featureList}>
+            <View style={styles.featureItem}>
+              <View style={[styles.featureDot, { backgroundColor: COLORS.secondary }]} />
+              <Text style={styles.featureText}>Personalized birth plan builder</Text>
             </View>
-            <View style={[styles.pill, { backgroundColor: COLORS.primary + '30' }]}>
-              <Icon name="people" size={14} color={COLORS.primary} />
-              <Text style={[styles.pillText, { color: COLORS.primaryDark }]}>Your Team</Text>
+            <View style={styles.featureItem}>
+              <View style={[styles.featureDot, { backgroundColor: COLORS.primary }]} />
+              <Text style={styles.featureText}>Find & message care providers</Text>
             </View>
-            <View style={[styles.pill, { backgroundColor: COLORS.accent + '30' }]}>
-              <Icon name="heart" size={14} color={COLORS.accent} />
-              <Text style={[styles.pillText, { color: COLORS.accentDark }]}>Wellness</Text>
+            <View style={styles.featureItem}>
+              <View style={[styles.featureDot, { backgroundColor: COLORS.accent }]} />
+              <Text style={styles.featureText}>Weekly tips & wellness tracking</Text>
             </View>
           </View>
           
@@ -97,6 +109,8 @@ export default function WelcomeScreen() {
               pressed && styles.buttonPressed
             ]}
             onPress={() => router.push('/(auth)/signup')}
+            // @ts-ignore - onClick for web compatibility
+            onClick={Platform.OS === 'web' ? () => router.push('/(auth)/signup') : undefined}
             data-testid="get-started-btn"
           >
             <LinearGradient
@@ -105,7 +119,7 @@ export default function WelcomeScreen() {
               end={{ x: 1, y: 1 }}
               style={styles.buttonGradient}
             >
-              <Text style={styles.primaryButtonText}>Get Started</Text>
+              <Text style={styles.primaryButtonText}>Get Started Free</Text>
               <Icon name="arrow-forward" size={20} color="#FFFFFF" />
             </LinearGradient>
           </Pressable>
@@ -116,6 +130,8 @@ export default function WelcomeScreen() {
               pressed && styles.buttonPressed
             ]}
             onPress={() => router.push('/(auth)/login')}
+            // @ts-ignore - onClick for web compatibility
+            onClick={Platform.OS === 'web' ? () => router.push('/(auth)/login') : undefined}
             data-testid="login-btn"
           >
             <Text style={styles.secondaryButtonText}>I already have an account</Text>
@@ -135,6 +151,8 @@ export default function WelcomeScreen() {
               pressed && styles.buttonPressed
             ]}
             onPress={handleGoogleLogin}
+            // @ts-ignore - onClick for web compatibility
+            onClick={Platform.OS === 'web' ? handleGoogleLogin : undefined}
             data-testid="google-login-btn"
           >
             <Icon name="logo-google" size={18} color={COLORS.textPrimary} />
@@ -149,51 +167,80 @@ export default function WelcomeScreen() {
           </Text>
         </View>
       </SafeAreaView>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
-  heroBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: height * 0.55,
-  },
-  gradientOverlay: {
+  safeArea: {
     flex: 1,
   },
-  content: {
+  topSection: {
     flex: 1,
-  },
-  logoSection: {
     alignItems: 'center',
-    paddingTop: SIZES.lg,
+    justifyContent: 'center',
+    paddingTop: SIZES.xl,
   },
   logo: {
+    width: 240,
+    height: 85,
+    marginBottom: SIZES.lg,
+  },
+  iconGrid: {
     width: 200,
-    height: 70,
+    height: 140,
+    position: 'relative',
   },
-  spacer: {
-    flex: 1,
+  floatingIcon: {
+    position: 'absolute',
   },
-  bottomCard: {
-    backgroundColor: COLORS.background,
+  iconTopLeft: {
+    left: 0,
+    top: 20,
+  },
+  iconTopRight: {
+    right: 0,
+    top: 20,
+  },
+  iconBottomCenter: {
+    left: '50%',
+    marginLeft: -30,
+    bottom: 0,
+  },
+  iconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#4A3B4E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  bottomSection: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
     paddingHorizontal: SIZES.lg,
     paddingTop: SIZES.xl,
     paddingBottom: SIZES.lg,
+    shadowColor: '#4A3B4E',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 8,
   },
   headline: {
-    fontSize: 34,
+    fontSize: 28,
     fontFamily: FONTS.heading,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    lineHeight: 42,
+    lineHeight: 36,
     marginBottom: SIZES.sm,
   },
   subtitle: {
@@ -203,24 +250,24 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: SIZES.md,
   },
-  featurePills: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SIZES.sm,
-    marginBottom: SIZES.xl,
+  featureList: {
+    marginBottom: SIZES.lg,
   },
-  pill: {
+  featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.xs + 2,
-    borderRadius: SIZES.radiusFull,
-    gap: 6,
+    marginBottom: SIZES.xs + 2,
   },
-  pillText: {
+  featureDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: SIZES.sm,
+  },
+  featureText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
-    fontWeight: '600',
+    fontFamily: FONTS.body,
+    color: COLORS.textSecondary,
   },
   primaryButton: {
     borderRadius: SIZES.radiusFull,
@@ -244,7 +291,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     alignItems: 'center',
     paddingVertical: SIZES.md,
-    marginBottom: SIZES.sm,
+    marginBottom: SIZES.xs,
   },
   secondaryButtonText: {
     fontSize: SIZES.fontMd,
