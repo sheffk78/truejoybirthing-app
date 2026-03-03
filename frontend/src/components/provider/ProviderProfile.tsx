@@ -109,6 +109,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
       setPracticeName(data.practice_name || '');
       setLocationCity(data.location_city || '');
       setLocationState(data.location_state || '');
+      setZipCode(data.zip_code || '');
       setYearsInPractice(data.years_in_practice?.toString() || '');
       setVideoIntroUrl(data.video_intro_url || '');
       setMoreAboutMe(data.more_about_me || '');
@@ -291,6 +292,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         practice_name: practiceName,
         location_city: locationCity,
         location_state: locationState,
+        zip_code: zipCode || null,
         years_in_practice: yearsInPractice ? parseInt(yearsInPractice) : null,
         video_intro_url: videoIntroUrl || null,
         more_about_me: moreAboutMe || null,
@@ -310,9 +312,18 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
       
       await fetchProfile();
       setIsEditing(false);
-      Alert.alert('Saved', 'Your profile has been updated.');
+      
+      if (Platform.OS === 'web') {
+        window.alert('Your profile has been updated.');
+      } else {
+        Alert.alert('Saved', 'Your profile has been updated.');
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to save profile');
+      if (Platform.OS === 'web') {
+        window.alert(`Error: ${error.message || 'Failed to save profile'}`);
+      } else {
+        Alert.alert('Error', error.message || 'Failed to save profile');
+      }
     } finally {
       setSaving(false);
     }
@@ -423,24 +434,20 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
                 />
               )}
               
-              {/* Doula: Zip code lookup */}
-              {!isMidwife && (
-                <>
-                  <Input
-                    label="Zip Code"
-                    placeholder="Enter 5-digit zip code"
-                    value={zipCode}
-                    onChangeText={handleZipChange}
-                    keyboardType="number-pad"
-                    maxLength={5}
-                  />
-                  {lookingUpZip && (
-                    <View style={styles.zipLookupStatus}>
-                      <ActivityIndicator size="small" color={primaryColor} />
-                      <Text style={styles.zipLookupText}>Looking up location...</Text>
-                    </View>
-                  )}
-                </>
+              {/* Zip code lookup - for both Doula and Midwife */}
+              <Input
+                label="Zip Code"
+                placeholder="Enter 5-digit zip code"
+                value={zipCode}
+                onChangeText={handleZipChange}
+                keyboardType="number-pad"
+                maxLength={5}
+              />
+              {lookingUpZip && (
+                <View style={styles.zipLookupStatus}>
+                  <ActivityIndicator size="small" color={primaryColor} />
+                  <Text style={styles.zipLookupText}>Looking up location...</Text>
+                </View>
               )}
               
               <View style={styles.locationRow}>
@@ -450,7 +457,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
                   value={locationCity}
                   onChangeText={setLocationCity}
                   containerStyle={styles.cityInput}
-                  editable={isMidwife}
+                  editable={false}
                 />
                 <Input
                   label="State"
@@ -458,7 +465,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
                   value={locationState}
                   onChangeText={setLocationState}
                   containerStyle={styles.stateInput}
-                  editable={isMidwife}
+                  editable={false}
                 />
               </View>
               
