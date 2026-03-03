@@ -229,7 +229,7 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
   dashboard: {
     title: 'Midwife Dashboard',
     statsCards: [
-      { key: 'prenatal_clients', label: 'Prenatal Clients', colorKey: 'primary' },
+      { key: 'active_clients', label: 'Active Clients', colorKey: 'primary' },
       { key: 'upcoming_appointments', label: 'Upcoming Appts', colorKey: 'warning' },
       { key: 'visits_this_month', label: 'Visits This Month', colorKey: 'accent' },
       { key: 'births_this_month', label: 'Births This Month', colorKey: 'success' },

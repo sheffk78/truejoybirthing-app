@@ -48,6 +48,7 @@ export default function RootLayout() {
     const inAuthGroup = segments[0] === '(auth)';
     const currentScreen = segments[1];
     const currentPath = segments.join('/');
+    const currentRoleGroup = segments[0]; // e.g., '(mom)', '(doula)', '(midwife)', '(admin)'
     
     // Allow public routes without auth
     const isPublicRoute = segments[0] === 'sign-contract' || segments[0] === 'auth-callback' || segments[0] === 'sign-midwife-contract' || segments[0] === 'plans-pricing' || segments[0] === 'pro-feedback';
@@ -76,6 +77,24 @@ export default function RootLayout() {
           router.replace('/(midwife)/dashboard');
         } else if (user.role === 'ADMIN') {
           router.replace('/(admin)/content');
+        }
+      } else {
+        // Check if user is in wrong role group and redirect to correct one
+        const userRoleGroup = `(${user.role.toLowerCase()})`;
+        const roleGroups = ['(mom)', '(doula)', '(midwife)', '(admin)'];
+        
+        if (roleGroups.includes(currentRoleGroup) && currentRoleGroup !== userRoleGroup) {
+          // User is in wrong role group, redirect to correct dashboard
+          console.log(`Role mismatch: user is ${user.role} but on ${currentRoleGroup} route. Redirecting...`);
+          if (user.role === 'MOM') {
+            router.replace('/(mom)/home');
+          } else if (user.role === 'DOULA') {
+            router.replace('/(doula)/dashboard');
+          } else if (user.role === 'MIDWIFE') {
+            router.replace('/(midwife)/dashboard');
+          } else if (user.role === 'ADMIN') {
+            router.replace('/(admin)/content');
+          }
         }
       }
     }
