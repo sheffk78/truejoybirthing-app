@@ -394,6 +394,7 @@ async def convert_lead_to_client(
             "client_id": client_id,
             "linked_mom_id": lead["mom_user_id"],
             "provider_id": user.user_id,
+            "provider_type": user.role,  # DOULA or MIDWIFE - required for client list filtering
             "name": mom.get("full_name") if mom else lead["mom_name"],
             "email": mom.get("email") if mom else lead.get("mom_email"),
             "picture": mom.get("picture") if mom else None,

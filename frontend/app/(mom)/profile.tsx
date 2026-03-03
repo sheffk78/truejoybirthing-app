@@ -208,24 +208,30 @@ export default function MomProfileScreen() {
   };
 
   const pickImage = async () => {
-    Alert.alert(
-      'Update Profile Photo',
-      'Choose how you want to add your photo',
-      [
-        {
-          text: 'Take Photo',
-          onPress: () => launchCamera(),
-        },
-        {
-          text: 'Choose from Library',
-          onPress: () => launchLibrary(),
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-      ]
-    );
+    // Alert.alert doesn't work on web
+    if (Platform.OS === 'web') {
+      // On web, directly open file picker
+      launchLibrary();
+    } else {
+      Alert.alert(
+        'Update Profile Photo',
+        'Choose how you want to add your photo',
+        [
+          {
+            text: 'Take Photo',
+            onPress: () => launchCamera(),
+          },
+          {
+            text: 'Choose from Library',
+            onPress: () => launchLibrary(),
+          },
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+        ]
+      );
+    }
   };
 
   const launchCamera = async () => {
@@ -284,9 +290,18 @@ export default function MomProfileScreen() {
         updateUser({ picture: base64Image });
       }
       
-      Alert.alert('Success', 'Profile photo updated!');
+      if (Platform.OS === 'web') {
+        window.alert('Profile photo updated!');
+      } else {
+        Alert.alert('Success', 'Profile photo updated!');
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to upload photo');
+      const errorMsg = error.message || 'Failed to upload photo';
+      if (Platform.OS === 'web') {
+        window.alert(`Error: ${errorMsg}`);
+      } else {
+        Alert.alert('Error', errorMsg);
+      }
     } finally {
       setUploadingPhoto(false);
     }

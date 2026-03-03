@@ -138,7 +138,11 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Please allow access to your photo library.');
+        if (Platform.OS === 'web') {
+          window.alert('Please allow access to your photo library.');
+        } else {
+          Alert.alert('Permission Required', 'Please allow access to your photo library.');
+        }
         return;
       }
 
@@ -147,13 +151,18 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        await uploadProfilePhoto(result.assets[0].uri);
+        await uploadProfilePhoto(result.assets[0]);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick image.');
+      if (Platform.OS === 'web') {
+        window.alert('Failed to pick image.');
+      } else {
+        Alert.alert('Error', 'Failed to pick image.');
+      }
     }
   };
 
@@ -161,7 +170,11 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
     try {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Please allow access to your camera.');
+        if (Platform.OS === 'web') {
+          window.alert('Please allow access to your camera.');
+        } else {
+          Alert.alert('Permission Required', 'Please allow access to your camera.');
+        }
         return;
       }
 
@@ -169,20 +182,32 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
+        base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        await uploadProfilePhoto(result.assets[0].uri);
+        await uploadProfilePhoto(result.assets[0]);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to take photo.');
+      if (Platform.OS === 'web') {
+        window.alert('Failed to take photo.');
+      } else {
+        Alert.alert('Error', 'Failed to take photo.');
+      }
     }
   };
 
-  const uploadProfilePhoto = async (uri: string) => {
+  const uploadProfilePhoto = async (asset: ImagePicker.ImagePickerAsset) => {
     setUploadingPhoto(true);
     try {
-      const imageUrl = await uploadImage(uri, 'profile');
+      // For web, use base64 directly; for native, use uploadImage utility
+      let imageUrl: string;
+      if (Platform.OS === 'web' && asset.base64) {
+        imageUrl = `data:image/jpeg;base64,${asset.base64}`;
+      } else {
+        imageUrl = await uploadImage(asset.uri, 'profile');
+      }
+      
       setProfilePicture(imageUrl);
       
       await apiRequest(config.endpoints.profile, {
@@ -190,9 +215,18 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         body: { picture: imageUrl },
       });
       
-      Alert.alert('Success', 'Profile photo updated!');
+      if (Platform.OS === 'web') {
+        window.alert('Profile photo updated!');
+      } else {
+        Alert.alert('Success', 'Profile photo updated!');
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to upload photo.');
+      const errorMsg = error.message || 'Failed to upload photo.';
+      if (Platform.OS === 'web') {
+        window.alert(`Error: ${errorMsg}`);
+      } else {
+        Alert.alert('Error', errorMsg);
+      }
     } finally {
       setUploadingPhoto(false);
     }

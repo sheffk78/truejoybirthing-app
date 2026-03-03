@@ -5,31 +5,34 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 ## Latest Session (2026-03-03 - Bug Fixes & Testing)
 
+**Profile Photo Upload Fix - COMPLETED:**
+- **Issue**: Profile photo upload didn't work on web for Mom, Doula, and Midwife accounts
+- **Root Cause**: `Alert.alert()` from React Native doesn't work on web - the photo picker menu never appeared
+- **Fix Applied To**:
+  1. `frontend/app/(mom)/profile.tsx` - Mom profile uses `window.alert()` on web
+  2. `frontend/src/components/provider/ProviderProfile.tsx` - Doula/Midwife profiles use `window.alert()` on web
+- **Changes**: 
+  - On web, directly call `launchLibrary()` instead of showing Alert menu
+  - Use `base64` encoding for image upload on web
+  - Use `window.alert()` for success/error feedback on web
+
+**Converted Leads to Active Clients Fix - COMPLETED:**
+- **Issue**: When a lead was converted to client, they didn't appear in the provider's client list
+- **Root Cause**: The lead conversion was not setting the `provider_type` field on the client record, but the `/clients` endpoint filters by `provider_type`
+- **Fix**: Added `provider_type: user.role` to the client document creation in `backend/routes/leads.py`
+- **Data Migration**: Updated 2 existing clients that were missing the `provider_type` field
+- **Verified**: Emma Johnson now appears in Midwife's Active Clients list
+
 **Logout Button Fix - COMPLETED:**
 - **Issue**: Logout button on Mom profile page didn't work on web
-- **Root Cause**: `Alert.alert()` from React Native doesn't work on web platform - silently fails
-- **Fix**: Updated `frontend/app/(mom)/profile.tsx` to use `Platform.OS === 'web'` check and call `window.confirm()` for web, keeping `Alert.alert()` for native
+- **Root Cause**: `Alert.alert()` from React Native doesn't work on web platform
+- **Fix**: Use `Platform.OS === 'web'` check and call `window.confirm()` for web
 - **Verified**: Logout now shows confirmation dialog and redirects to welcome page
 
 **Birth Plan Completion - VERIFIED WORKING:**
 - **User Report**: Birth plan shows 100% even when "empty"
 - **Investigation**: The demo user's birth plan has ALL 9 sections populated with seed data
-- **Conclusion**: NOT A BUG - the calculation is correct. Demo user sees 100% because seed data filled all sections with test values
-- **Logic**: Completion counts sections where `any(v for v in data.values() if v is not None and v != "" and v != [])`
-
-**My Team / Birth Team Summary - COMPLETED:**
-- Backend now queries clients, share_requests, AND leads collections
-- Frontend displays provider details: location, experience, bio, services
-- Action buttons (Message, Schedule, Profile) fit properly on mobile
-
-**Marketplace Button - VERIFIED WORKING:**
-- Emily Thompson correctly shows "Client" status
-- Sarah Mitchell correctly shows "Requested" status
-
-**Testing Agent Results (iteration_142):**
-- Backend: 16/16 tests passed (100%)
-- Frontend: All features working after logout fix
-- Test file: `/app/backend/tests/test_critical_bugs_142.py`
+- **Conclusion**: NOT A BUG - the calculation is correct
 
 ## Brand Identity (Updated 2026-02-16)
 - **Logo**: Lavender pregnant silhouette + Pink cursive "True Joy Birthing"
