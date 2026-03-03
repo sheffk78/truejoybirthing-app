@@ -1,107 +1,139 @@
 <analysis>**original_problem_statement**: The user wants to build a full-stack application named True Joy Birthing.
 
-Recent user requests being addressed:
-1.  **Marketplace Button Logic**: When logged in as a Mom, the marketplace Request Consult button for a provider (Emily Thompson) is not working correctly. It should show Client status as the Mom is already a client, but it shows Request Consult.
-2.  **Birth Plan Completion**: The Mom's birth plan shows 100% complete, but the user claims it's mostly empty. The calculation needs to be verified.
-3.  **Birth Plan Pre-fill**: The user wants the birth plan to be automatically pre-filled with information the system already knows, like the user's name and due date.
+The agent has been addressing a series of user-reported bugs. The most recent set of issues reported by the user are:
+1.  When a demo doula accepts a demo mom as a client, the mom's profile picture is an old, incorrect one in the My Clients section.
+2.  The Create Invoice button shows an error please fill in client, description and amount even when the fields are filled. (FIXED)
+3.  The client's name in the Birth Plan breadcrumbs takes the provider to the Dashboard instead of the client's detail page. (FIXED)
+4.  When a Mom views a provider's profile from her Birth Team, it shows an Unmatched Route error. (FIXED)
+5.  On the Leads page for providers, the Accept button does nothing. (FIXED)
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack platform for True Joy Birthing. In this session, the agent fixed numerous critical bugs, including the core logic for converting leads to active clients, data consistency issues when a Mom removes a provider, and a crashing bug related to profile photo uploads. A comprehensive email notification system for user lifecycle events was also implemented. Critically, the agent implemented a robust workaround for persistent environment instability with the Expo/ngrok tunnel by switching the frontend preview to a static web build served by an Express server, making the preview URL stable.
+The True Joy Birthing application is a full-stack platform for Moms, Doulas, and Midwives. The agent has just completed a major bug-fixing session, resolving numerous critical issues across the provider (Doula/Midwife) and Mom-facing sections of the application. Key functionalities like invoice creation, messaging, provider-client navigation, and lead management have been repaired and verified for both Doula and Midwife roles. The app is significantly more stable, but a new bug related to profile picture synchronization during lead conversion has been identified.
 
 **Last working item**:
--   **Last item agent was working**: The agent was debugging the marketplace button logic in . It was identified that when a provider has multiple lead statuses (e.g.,  and ), the logic to determine the button text and state was flawed. The agent attempted a fix by re-prioritizing the status list, but the issue persists.
+-   **Last item agent was working**: The agent was investigating a new bug reported by the user: After a provider accepts a lead, the new client's profile picture shown in the provider's My Clients list is an old, incorrect default avatar, not the Mom's current profile picture.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: Frontend testing agent to verify the marketplace UI changes after the fix.
+-   **Which testing method agent to use?**: backend testing agent
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Marketplace button shows Request Consult instead of Client (P0, HIGHEST)**
-    -   **Attempted fixes**: The agent tried to fix the sorting logic that prioritizes lead statuses in . The initial fix had a logical error with , and a subsequent correction still did not resolve the UI bug. The root cause is likely in how the component state handles multiple statuses for the same provider.
+-   **Issue 1: Incorrect client profile picture after lead conversion (P0, HIGHEST)**
+
+**Issues Detail**:
+-   **Issue 1: Incorrect client profile picture after lead conversion**
+    -   **Attempted fixes**: The agent identified that the  collection in the database stores an incorrect DiceBear URL for the  field instead of the Mom's actual profile picture when a lead is converted. The investigation was pointing towards the backend lead conversion logic.
     -   **Next debug checklist**:
-        1.  In , use  to inspect the  object after it is populated to verify which status is being stored for the provider .
-        2.  Analyze the sorting function again, specifically how it handles statuses that might not be in the  array. An unhandled status could be disrupting the sort.
-        3.  Ensure the latest code is deployed by running yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. in  and then frontend: ERROR (no such process)
-frontend: ERROR (no such process).
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a core UX flaw that creates a confusing and broken experience for the Mom user, preventing them from understanding their current relationship with providers.
+        1.  Examine the backend route  in .
+        2.  Trace where the  is sourced from during the conversion process.
+        3.  The logic should fetch the latest profile picture from the Mom's corresponding  document, not generate a default one.
+        4.  Update the code to pull the correct picture URL and save it to the new client document.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a visual bug that breaks user experience and data consistency, making the app feel unpolished. Fixing it will ensure provider's see the correct, up-to-date photo for their clients.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on other issue**: None
 
 **In progress Task List**:
 -   None.
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks**:
-    *   **P1: Pre-fill Birth Plan with Known User Info**: Implement logic to automatically populate fields in the birth plan (like name and due date) from the Mom's user profile when the birth plan is first created. This was requested by the user but has not been started.
-        -   **Files to modify**: . Update the  endpoint to fetch user data from the  collection and use it to populate a new birth plan document if one doesn't exist.
+    *   **P1**: Resolve the Birth Plan Completion Percentage Accuracy issue by creating a fresh user account to test the calculation logic from scratch.
 *   **Future Tasks**:
-    *   **P1: Complete Apple/Google IAP Integration**: The structure is in place and crash-proofed for Expo Go, but it needs to be fully implemented and tested on real devices.
-    *   **P2: Stripe Integration**: May be required for web-based subscriptions.
-    *   **P2: Admin Panel**: Build out a full administrative UI for managing users and application data.
+    *   **P1**: Complete Apple/Google IAP Integration.
+    *   **P2**: Stripe Integration for web-based subscriptions.
+    *   **P2**: Admin Panel for user and application management.
 
 **Completed work in this session**
--   **Accept Lead Logic Fix (DONE)**: Fixed the bug where accepting a lead didn't make the Mom an active client by unifying the database collections used.
--   **Data Cleanup on Provider Removal (DONE)**: Implemented logic to correctly update  and  statuses when a Mom removes a provider, allowing them to re-request a consultation later.
--   **Email Notification System (DONE)**: Integrated Resend to send transactional emails for welcome, trial start, subscription activation, upgrades, and cancellations.
--   **Profile Photo Upload (DONE)**: Created a backend endpoint and frontend function to fix the crashing profile picture upload feature.
--   **Infrastructure Stability Workaround (DONE)**: Switched the frontend preview from a failing Expo/ngrok tunnel to a stable static web build served by Express.
--   **IAP Crash Fix (DONE)**: Prevented the app from crashing on the subscription page in Expo Go by conditionally importing the  module.
--   **UI Fixes (DONE)**: Added appropriate spacing to the icons on the login screen's input fields.
--   **Birth Plan Recalculation (DONE)**: Updated the backend to always recalculate the birth plan completion percentage on fetch, ensuring it accurately reflects the data.
+-   **Dashboard Crash Fix**: Replaced  from  with a web-compatible  hook in  to prevent a crash on web.
+-   **Create Invoice & Messages Button Fix**: Replaced  with  in  and  to fix non-functional buttons on the web.
+-   **Breadcrumb Navigation Fix**: Corrected navigation logic in , , and  to ensure breadcrumb links navigate to the correct client detail page instead of the dashboard.  was also used here.
+-   **Invoice Creation Validation Fix**: Modified  in  to preserve the  when creating an invoice from a client's page, fixing a validation error.
+-   **Birth Plan Navigation Fix**: Updated  to pass the  to the birth plan page, allowing the breadcrumb to navigate back to the correct client detail page.
+-   **Leads Accept Button Fix**: Replaced non-functional  calls with web-compatible  dialogues in  and the  utility. This fixed the bug where the Accept button did nothing, now correctly showing a subscription prompt.
+-   **Mom's View Provider Profile Fix**: Created a new route  and fixed the backend API endpoint URL to correctly display provider profiles when viewed from the Mom's My Team page.
+-   **Comprehensive Role Verification**: Manually tested and verified all fixes for both **Doula** and **Midwife** roles by manipulating database state to create valid test scenarios.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: Birth Plan Completion Percentage Accuracy**
+    -   **Debug checklist**: The initial handoff suggested creating a brand new Mom user (not a demo account) to verify if the percentage calculation works correctly with an empty plan. This was not performed in this session.
+    -   **Why to solve this issue and what will be achieved with this?**: To resolve a long-standing point of user confusion and build trust in the feature.
+    -   **Should Test frontend/backend/both after fix**: Both
+    -   **Is recurring issue?**: Y
 
 **Known issue recurrence from previous fork**
--   **Ngrok Tunnel Instability**: This was a major blocker during the session. The issue was traced to an incompatibility between the Expo CLI's bundled ngrok version (v2) and the user's v3 authtoken. The agent implemented a successful workaround by serving a static build, bypassing the tunnel entirely. The root environment issue remains.
+-   **Birth Plan Percentage Accuracy**: This issue was pending and remains unverified.
+-   **Profile Photo Upload**: This was a recurring issue. Multiple fixes have been applied, but the latest bug shows data synchronization is still a problem area, specifically during lead conversion.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Static Web Serving**: The frontend preview now uses a static build () served by a custom Express.js server () to provide a stable URL, bypassing Expo's unreliable ngrok tunnel.
--   **Conditional Module Import**: Resolved a native module crash in Expo Go by checking for the Expo environment before requiring the  library.
--   **Database Consistency Logic**: Implemented cleanup tasks on the backend. When a Mom removes a provider, the  and  collections are now correctly updated to allow the workflow to be re-initiated.
+-   **React Native Web Compatibility**: A major theme was fixing components that work on native but fail on web.
+    -    was unreliable and replaced with  for critical buttons.
+    -    fails silently on web and was replaced with  wrapped in a  check.
+-   **Expo Router Navigation**: Debugged and fixed navigation issues related to dynamic routes, parameter passing (, ), and ensuring component groups like  are correctly handled in path definitions.
+-   **State Management & Data Flow**: Debugged issues where frontend state ( in invoices) was being incorrectly reset, and where data passed between pages (from Client Detail to Birth Plan) was missing necessary parameters ().
+-   **Backend Data Integrity**: The current bug highlights the importance of ensuring the correct data is pulled and saved during backend operations, specifically fetching the user's current profile picture during lead-to-client conversion.
+
+**key DB schema**
+-   **clients**: Contains provider-client relationship data. The  field is the source of the current bug. It also contains  and  fields that determine visibility in the UI.
+-   **users**: The source of truth for user data, including the correct  URL for all user types (Mom, Doula, Midwife).
 
 **All files of reference**
--   : Contains the flawed button logic that is the highest priority to fix.
--   : Target file for implementing the Pre-fill Birth Plan feature.
--   : The Express server that now serves the frontend preview.
--   : Supervisor configuration pointing to the new Express server.
+-    (Next file to investigate)
+-    (Client detail page, entry point for many fixed flows)
+-    (Invoice creation fix)
+-    (Birth plan breadcrumb fix)
+-    (Leads Accept button fix)
+-    (Mom view provider profile fix)
+
+**Areas that need refactoring**:
+-   The pattern of checking  for alerts has been implemented in multiple places (, ). This could be abstracted into a single, reusable  utility function to centralize cross-platform alert logic.
+
+**key api endpoints**
+-   : The endpoint responsible for converting a lead to a client. This is the primary endpoint to investigate for the current bug.
+-   : The corrected endpoint used to fetch provider details for the Mom's view.
+-   , : Used to fetch the list of active clients for providers.
 
 **Critical Info for New Agent**
--   **Your immediate priority is the Marketplace button bug**. The user cannot correctly see their relationship with providers. The issue is in . Focus your debugging on the logic that populates the  state, as it seems to be failing when a provider has multiple statuses.
--   **Frontend Changes Require a Manual Build Step**. Due to the workaround for the unstable environment, any changes to the frontend code will not be visible on the preview URL until you manually run yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. inside the  directory and then restart the service with frontend: ERROR (no such process)
-frontend: ERROR (no such process).
--   **Next Task**: After fixing the marketplace bug, implement the Pre-fill Birth Plan feature as requested by the user. This is a backend task located in .
+-   Your immediate priority is the bug where a Mom's profile picture is not correctly saved when a provider converts them from a lead to a client. Start by investigating the  endpoint in . The logic is likely using a default avatar instead of fetching the Mom's current picture from the  collection.
+-   Many UI bugs in this project stem from React Native components not working as expected on the web.  and  are known culprits. When debugging UI, immediately consider  and  as more reliable alternatives for web.
+-   The demo Doula and Midwife accounts may not have pro subscriptions. Features like converting a lead to a client are gated. The expected behavior is a subscription prompt, not a silent failure.
+
+**documents and test reports created in this job**
+-   
+-   
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **User**: I'm logged in as Mom and I see a few issues: in the Marketplace, I'm not able to request consult. I click the button on Emily Thompson but nothing happens. Also my birth plan shows as 100% complete but mostly nothing is filled out. We need to make that area smart so that if someone deletes information the system shows that it's not undone. Can we make it so that information that the system already knows is in place in the birth plan such as name and due date (IN PROGRESS)
--   **User**: On the login screen, there is little to no space between the email envelop icon and where you enter your email address. I think there needs to be a little space from a design perspective. This goes for the Password as well. (RESOLVED)
--   **User**: I'm still not getting the preview to work (RESOLVED)
--   **User**: I'm getting another error when trying to load the app in Expo Go. Please do a review of the code... (RESOLVED)
--   **User**: I setup an ngrok account and here's my Authtoken... (ATTEMPTED/WORKAROUND)
--   **User**: I get this error...  (RESOLVED)
--   **User**: It's contact.truejoybirthing.com. For the Midwife and Doula side, they still show there's a Converted lead that doesn't show up in Active clients... (RESOLVED)
--   **User**: Yes please add a welcome email flow. Also do the suggested email for when a Midwife or Doula sign up for a paid account, upgrades to annual, downgrades, or cancels. (RESOLVED)
+1.  **User**: Reported that when a doula accepts a mom, the mom's profile picture is outdated. (Status: IN PROGRESS)
+2.  **User**: Asked agent to verify fixes for Doula where testing was previously marked N/A. (Status: COMPLETED)
+3.  **User**: Confirmed all P0 tasks were verified. (Status: ADDRESSED)
+4.  **User**: Requested agent to work on P0 tasks. (Status: COMPLETED)
+5.  **User**: Reported two new bugs: (1) Mom viewing provider profile gets Unmatched Route, (2) Provider Accept lead button does nothing. (Status: COMPLETED - Both fixed)
+6.  **User**: Reported two new bugs after the last fix batch: (1) Invoice creation fails validation even with fields filled, (2) Birth plan breadcrumb navigates to dashboard. (Status: COMPLETED - Both fixed)
 
 **Project Health Check:**
--   **Broken**: The marketplace button logic is incorrect for Moms viewing providers with whom they have a complex history, causing a confusing user experience.
--   **Mocked**: In-App Purchases (IAP) are gracefully disabled in the Expo Go environment to prevent the app from crashing. Full functionality requires testing on a physical device.
+-   **Broken**: The profile picture synchronization during lead-to-client conversion is broken.
+-   **Mocked**: In-App Purchases (IAP) functionality and subscription-gated features are present. The gating now correctly shows a web-compatible alert, but the demo users do not have subscriptions to bypass it.
 
 **3rd Party Integrations**
--   **Resend**: Used for transactional emails. The sending domain  needs to be verified by the user in their Resend account for emails to be delivered successfully.
--   : Integrated for handling In-App Purchases on iOS and Android. Conditionally disabled in Expo Go.
--   : Used for icons.
--   : Used for state management.
+-   **Resend**: For transactional emails.
+-   **react-native-iap**: For In-App Purchases (conditionally disabled).
+-   **lucide-react-native**: For icons.
+-   **zustand**: For state management.
+-   **zippopotam.us**: Free API used for zipcode-to-city/state lookups.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES
--   **Troubleshoot agent used after agent stuck in loop**: YES
--   **Test files created**: None
--   **Known regressions**: None.
+-   **Testing agent used after significant changes**: YES (Used once, then followed by extensive manual testing).
+-   **Troubleshoot agent used after agent stuck in loop**: NO
+-   **Test files created**: None.
+-   **Known regressions**: The general area of profile picture synchronization has been a recurring problem. While dashboard-profile sync was fixed, the issue has reappeared in the lead conversion workflow.
 
 **Credentials to test flow:**
 -   **Doula**:  / 
@@ -109,4 +141,4 @@ frontend: ERROR (no such process).
 -   **Mom**:  / 
 
 **What agent forgot to execute**
--   The agent has not yet implemented the user's request to pre-fill birth plan with known info such as name and due date. This is pending after the current marketplace bug is fixed.</analysis>
+-   The definitive test for the long-standing Birth Plan Percentage issue (creating a brand new, non-demo Mom user to check the calculation from 0%) was mentioned in the initial handoff but was not performed. All focus was shifted to fixing the more critical, user-reported functional bugs.</analysis>

@@ -9,7 +9,7 @@ import time
 import json
 
 # Use the preview URL for testing
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://joy-platform-qa.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://client-photo-sync.preview.emergentagent.com')
 BASE_URL = BASE_URL.rstrip('/')
 
 class TestAuthEndpoints:

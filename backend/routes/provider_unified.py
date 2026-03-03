@@ -48,8 +48,9 @@ async def get_provider_clients(
     for client in clients:
         client["is_active"] = is_client_active(client)
         
-        # Add picture from linked mom if not present
-        if client.get("linked_mom_id") and not client.get("picture"):
+        # Always fetch the latest picture from linked mom's user record
+        # This ensures the picture stays in sync if mom updates their profile
+        if client.get("linked_mom_id"):
             mom = await db.users.find_one(
                 {"user_id": client["linked_mom_id"]},
                 {"_id": 0, "picture": 1}
@@ -281,9 +282,9 @@ async def get_client_timeline(client_id: str, user: User = Depends(check_role(["
     
     timeline.sort(key=get_sort_date, reverse=True)
     
-    # Enrich client with linked mom's picture if available
+    # Always fetch the latest picture from linked mom's user record
     enriched_client = calculate_client_active_status(client)
-    if client.get("linked_mom_id") and not enriched_client.get("picture"):
+    if client.get("linked_mom_id"):
         mom = await db.users.find_one(
             {"user_id": client["linked_mom_id"]},
             {"_id": 0, "picture": 1}

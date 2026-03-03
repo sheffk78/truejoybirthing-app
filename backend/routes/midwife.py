@@ -273,6 +273,17 @@ async def get_midwife_clients(user: User = Depends(check_role(["MIDWIFE"]))):
         {"provider_id": user.user_id, "provider_type": "MIDWIFE"},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
+    
+    # Enrich clients with latest picture from linked mom
+    for client in clients:
+        if client.get("linked_mom_id"):
+            mom = await db.users.find_one(
+                {"user_id": client["linked_mom_id"]},
+                {"_id": 0, "picture": 1}
+            )
+            if mom and mom.get("picture"):
+                client["picture"] = mom["picture"]
+    
     return clients
 
 

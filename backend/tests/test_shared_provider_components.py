@@ -14,7 +14,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://joy-platform-qa.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://client-photo-sync.preview.emergentagent.com')
 
 class TestAuthHelpers:
     """Helper methods for authentication"""

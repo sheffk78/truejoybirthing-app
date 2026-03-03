@@ -12,7 +12,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://joy-platform-qa.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://client-photo-sync.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 MIDWIFE_EMAIL = "demo.midwife@truejoybirthing.com"

@@ -99,13 +99,13 @@ async def get_appointments(user: User = Depends(get_current_user)):
                 )
                 if client:
                     appt["client_name"] = client.get("name")
-                    # Get picture from linked mom if not on client
-                    if not client.get("picture") and client.get("linked_mom_id"):
+                    # Always fetch the latest picture from linked mom's user record
+                    if client.get("linked_mom_id"):
                         mom = await db.users.find_one(
                             {"user_id": client["linked_mom_id"]},
                             {"_id": 0, "picture": 1}
                         )
-                        appt["client_picture"] = mom.get("picture") if mom else None
+                        appt["client_picture"] = mom.get("picture") if mom else client.get("picture")
                     else:
                         appt["client_picture"] = client.get("picture")
     
