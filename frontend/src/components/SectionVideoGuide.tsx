@@ -33,8 +33,12 @@ export const SECTION_VIDEOS: Record<string, {
     duration: '2 min',
     title: 'How to fill out this section',
   },
+  pain_management: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/f790096b-28cc-4d47-9316-03c3859db4c0?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '2:14 min',
+    title: 'How to fill out this section',
+  },
   // Add more sections here as videos are provided
-  // pain_management: { embedUrl: '...', duration: '...', title: '...' },
   // monitoring_iv: { embedUrl: '...', duration: '...', title: '...' },
 };
 
