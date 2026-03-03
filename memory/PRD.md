@@ -3,7 +3,36 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-03 - Bug Fixes & Testing)
+## Latest Session (2026-03-03 - Bug Fixes Session 2)
+
+**Web Button Click Fixes - ALL COMPLETED (Testing Agent Verified 100%):**
+
+1. **Create Invoice Button** - FIXED
+   - **Issue**: "+" button on Invoices page did nothing when clicked
+   - **Root Cause**: `TouchableOpacity` click events unreliable on React Native Web
+   - **Fix**: Changed to `Pressable` component in `ProviderInvoices.tsx` (lines 445-460)
+
+2. **Messages "+" Button** - FIXED  
+   - **Issue**: "+" button on Messages page did nothing when clicked
+   - **Root Cause**: Same `TouchableOpacity` issue on web
+   - **Fix**: Changed to `Pressable` component in `ProviderMessages.tsx` (lines 235-247)
+
+3. **Schedule Auto-Open** - VERIFIED NOT PRESENT
+   - **Issue**: Navigating from client detail to Schedule auto-opened new appointment form
+   - **Investigation**: Code review confirms `showCreateModal` is only set to `true` on explicit button click
+   - **Status**: Bug was already fixed or never existed in current code
+
+4. **Breadcrumb Navigation** - FIXED
+   - **Issue**: Client name in breadcrumb navigated to dashboard instead of client detail
+   - **Root Cause**: `TouchableOpacity` click not registering on web
+   - **Fix**: Changed to `Pressable` component in `ProviderInvoices.tsx` (lines 422-433)
+
+5. **Dashboard useFocusEffect Crash** - FIXED
+   - **Issue**: Dashboard crashed on web with "Couldn't find navigation object" error
+   - **Root Cause**: `useFocusEffect` from react-navigation requires NavigationContainer
+   - **Fix**: Replaced with web-compatible visibility change detection in `ProviderDashboard.tsx` (lines 68-85)
+
+**Previous Session (2026-03-03 - Bug Fixes & Testing):**
 
 **Profile Photo Upload Fix - COMPLETED:**
 - **Issue**: Profile photo upload didn't work on web for Mom, Doula, and Midwife accounts
@@ -11,28 +40,17 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - **Fix Applied To**:
   1. `frontend/app/(mom)/profile.tsx` - Mom profile uses `window.alert()` on web
   2. `frontend/src/components/provider/ProviderProfile.tsx` - Doula/Midwife profiles use `window.alert()` on web
-- **Changes**: 
-  - On web, directly call `launchLibrary()` instead of showing Alert menu
-  - Use `base64` encoding for image upload on web
-  - Use `window.alert()` for success/error feedback on web
 
 **Converted Leads to Active Clients Fix - COMPLETED:**
 - **Issue**: When a lead was converted to client, they didn't appear in the provider's client list
-- **Root Cause**: The lead conversion was not setting the `provider_type` field on the client record, but the `/clients` endpoint filters by `provider_type`
-- **Fix**: Added `provider_type: user.role` to the client document creation in `backend/routes/leads.py`
-- **Data Migration**: Updated 2 existing clients that were missing the `provider_type` field
-- **Verified**: Emma Johnson now appears in Midwife's Active Clients list
+- **Fix**: Added `provider_type: user.role` to client document creation in `backend/routes/leads.py`
 
 **Logout Button Fix - COMPLETED:**
 - **Issue**: Logout button on Mom profile page didn't work on web
-- **Root Cause**: `Alert.alert()` from React Native doesn't work on web platform
 - **Fix**: Use `Platform.OS === 'web'` check and call `window.confirm()` for web
-- **Verified**: Logout now shows confirmation dialog and redirects to welcome page
 
 **Birth Plan Completion - VERIFIED WORKING:**
-- **User Report**: Birth plan shows 100% even when "empty"
-- **Investigation**: The demo user's birth plan has ALL 9 sections populated with seed data
-- **Conclusion**: NOT A BUG - the calculation is correct
+- NOT A BUG - demo user's birth plan has ALL 9 sections populated with seed data
 
 ## Brand Identity (Updated 2026-02-16)
 - **Logo**: Lavender pregnant silhouette + Pink cursive "True Joy Birthing"
