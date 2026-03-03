@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://tjb-preview-stable.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://care-plan-test.preview.emergentagent.com')
 
 class TestExportPDFAndRevokeInvitation:
     """Test Export PDF and Cancel Invitation features"""

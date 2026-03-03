@@ -11,7 +11,7 @@ import sys
 from datetime import datetime, timezone
 
 # Backend URL from frontend .env (EXPO_PUBLIC_BACKEND_URL + /api)
-BACKEND_URL = "https://tjb-preview-stable.preview.emergentagent.com/api"
+BACKEND_URL = "https://care-plan-test.preview.emergentagent.com/api"
 
 class TestResults:
     def __init__(self):
