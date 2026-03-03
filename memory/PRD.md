@@ -3,38 +3,33 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-02 - Bug Fixes & Enhancements)
+## Latest Session (2026-03-03 - Bug Fixes & Testing)
 
-**Marketplace Button Bug - FIXED:**
-- **Issue**: When Mom is logged in, the marketplace "Request Consult" button was showing incorrectly for providers where the Mom is already a client
-- **Root Cause**: When a provider had multiple lead statuses (e.g., `converted_to_client` and `declined`), the sorting logic was not correctly prioritizing the highest status
-- **Fix**: Updated `frontend/app/(mom)/marketplace.tsx` to use a more robust status prioritization algorithm that groups requests by provider and keeps only the highest priority status
-- **Verified**: Emily Thompson (MIDWIFE) now correctly shows "Client" button instead of "Request Consult"
+**Logout Button Fix - COMPLETED:**
+- **Issue**: Logout button on Mom profile page didn't work on web
+- **Root Cause**: `Alert.alert()` from React Native doesn't work on web platform - silently fails
+- **Fix**: Updated `frontend/app/(mom)/profile.tsx` to use `Platform.OS === 'web'` check and call `window.confirm()` for web, keeping `Alert.alert()` for native
+- **Verified**: Logout now shows confirmation dialog and redirects to welcome page
 
-**Birth Plan Pre-fill - IMPLEMENTED:**
-- **Feature**: Automatically pre-fills birth plan with known user information when a new birth plan is created
-- **Pre-filled fields**:
-  - `motherName` - from user's full_name
-  - `emailAddress` - from user's email
-  - `dueDate` - from mom_profile's due_date
-  - `birthLocation` - from mom_profile's planned_birth_setting (with proper mapping to form options)
-- **Location**: `backend/routes/care_plans.py` - get_birth_plan endpoint
-- **Mapping**: Profile values like "hospital", "birth_center", "home", "undecided" are mapped to form options "Hospital", "Birth Center", "Home Birth", "Not sure yet"
+**Birth Plan Completion - VERIFIED WORKING:**
+- **User Report**: Birth plan shows 100% even when "empty"
+- **Investigation**: The demo user's birth plan has ALL 9 sections populated with seed data
+- **Conclusion**: NOT A BUG - the calculation is correct. Demo user sees 100% because seed data filled all sections with test values
+- **Logic**: Completion counts sections where `any(v for v in data.values() if v is not None and v != "" and v != [])`
 
-**My Team / Birth Team Summary - ENHANCED:**
-- **Issue**: "My Team" page was showing "No Team Members Yet" even though the Mom had active client relationships
-- **Root Cause**: The backend `/mom/team` endpoint only looked at `share_requests` collection, missing providers from `clients` and `leads` collections
-- **Fix**: Updated `backend/routes/mom.py` to query all three collections:
-  1. `share_requests` with status "accepted"
-  2. `clients` with status "Active"
-  3. `leads` with status "converted_to_client"
-- **Frontend Enhancement**: Updated `frontend/app/(mom)/my-team.tsx` to display enhanced provider cards with:
-  - Provider location (city, state)
-  - Years of experience
-  - Bio snippet
-  - Services offered (up to 3 tags)
-  - Quick actions: Message, Schedule, View Profile
-- **Verified**: Emily Thompson now appears in My Team with full profile details
+**My Team / Birth Team Summary - COMPLETED:**
+- Backend now queries clients, share_requests, AND leads collections
+- Frontend displays provider details: location, experience, bio, services
+- Action buttons (Message, Schedule, Profile) fit properly on mobile
+
+**Marketplace Button - VERIFIED WORKING:**
+- Emily Thompson correctly shows "Client" status
+- Sarah Mitchell correctly shows "Requested" status
+
+**Testing Agent Results (iteration_142):**
+- Backend: 16/16 tests passed (100%)
+- Frontend: All features working after logout fix
+- Test file: `/app/backend/tests/test_critical_bugs_142.py`
 
 ## Brand Identity (Updated 2026-02-16)
 - **Logo**: Lavender pregnant silhouette + Pink cursive "True Joy Birthing"

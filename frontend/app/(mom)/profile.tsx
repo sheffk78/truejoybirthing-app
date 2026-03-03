@@ -181,21 +181,30 @@ export default function MomProfileScreen() {
   };
   
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to log out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            await logout();
-            router.replace('/(auth)/welcome');
+    // Alert.alert doesn't work on web, use window.confirm instead
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Are you sure you want to log out?');
+      if (confirmed) {
+        logout();
+        router.replace('/(auth)/welcome');
+      }
+    } else {
+      Alert.alert(
+        'Logout',
+        'Are you sure you want to log out?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Logout',
+            style: 'destructive',
+            onPress: async () => {
+              await logout();
+              router.replace('/(auth)/welcome');
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
   const pickImage = async () => {
