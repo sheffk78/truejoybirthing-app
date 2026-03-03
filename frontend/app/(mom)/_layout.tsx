@@ -130,6 +130,12 @@ export default function MomLayout() {
           href: null,  // Hide from tab bar, accessible from my-team
         }}
       />
+      <Tabs.Screen
+        name="getting-started"
+        options={{
+          href: null,  // Hide from tab bar, accessible from profile
+        }}
+      />
     </Tabs>
   );
 }

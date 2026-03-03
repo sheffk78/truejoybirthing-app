@@ -3,7 +3,24 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-03 - Birth Plan Video Guides + Design Refresh)
+## Latest Session (2026-03-03 - Birth Plan Video Guides + Getting Started Page)
+
+**Getting Started Help Page - COMPLETED:**
+
+Created accessible help page at `/(mom)/getting-started` with:
+- Hero photo header with soft gradient overlay
+- Personalized greeting ("Hi, Emma!")
+- **Quick Start** section with 3 actionable steps:
+  1. Create Your Birth Plan → navigates to birth plan
+  2. Find Your Birth Team → navigates to marketplace
+  3. Share Your Plan → navigates to share page
+- **Pro Tips** section with helpful hints
+- **Need More Help** section with App Tour and Contact Support links
+
+**Files Created/Modified:**
+- `frontend/app/(mom)/getting-started.tsx` - New help page
+- `frontend/app/(mom)/_layout.tsx` - Hide from tab bar
+- `frontend/app/(mom)/profile.tsx` - Added "Getting Started" menu link
 
 **Birth Plan Section Video Guides - COMPLETED:**
 

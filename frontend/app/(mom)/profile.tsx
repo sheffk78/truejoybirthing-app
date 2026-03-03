@@ -594,6 +594,21 @@ export default function MomProfileScreen() {
           )}
         </Card>
         
+        {/* Getting Started */}
+        <TouchableOpacity 
+          activeOpacity={0.8}
+          onPress={() => router.push('/(mom)/getting-started')}
+          data-testid="getting-started-btn"
+        >
+          <Card style={styles.menuCard}>
+            <View style={styles.menuRow}>
+              <Icon name="help-circle-outline" size={24} color={COLORS.primary} />
+              <Text style={styles.menuText}>Getting Started</Text>
+              <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+            </View>
+          </Card>
+        </TouchableOpacity>
+        
         {/* App Tutorial */}
         <TouchableOpacity 
           activeOpacity={0.8}
