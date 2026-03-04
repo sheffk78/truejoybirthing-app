@@ -1460,6 +1460,7 @@ from routes import feedback as feedback_routes
 from routes import labor as labor_routes
 from routes import birth_summary as birth_summary_routes
 from routes import uploads as uploads_routes
+from routes import newborn_exam as newborn_exam_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1484,6 +1485,7 @@ api_router.include_router(feedback_routes.router)
 api_router.include_router(labor_routes.router)
 api_router.include_router(birth_summary_routes.router)
 api_router.include_router(uploads_routes.router)
+api_router.include_router(newborn_exam_routes.router)
 
 # ============== AUTH ROUTES ==============
 # MIGRATED TO: routes/auth.py

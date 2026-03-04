@@ -17,7 +17,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://client-photo-sync.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://exam-intake-form.preview.emergentagent.com').rstrip('/')
 
 class TestAuth:
     """Authentication helpers"""

@@ -14,7 +14,7 @@ from datetime import datetime
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = 'https://client-photo-sync.preview.emergentagent.com'
+    BASE_URL = 'https://exam-intake-form.preview.emergentagent.com'
 
 # Test data prefixes
 TEST_PREFIX = "TEST_MSG_"

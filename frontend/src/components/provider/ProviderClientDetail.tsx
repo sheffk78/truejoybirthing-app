@@ -22,7 +22,7 @@ import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { COLORS, SIZES, FONTS, SHADOWS } from '../../constants/theme';
 import { ProviderConfig } from './config/providerConfig';
-import { LaborSection, BirthRecordSection, PrenatalVisitSection } from '../midwife';
+import { LaborSection, BirthRecordSection, PrenatalVisitSection, NewbornExamSection } from '../midwife';
 
 // ============== TYPES ==============
 interface Client {
@@ -365,7 +365,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
           {!isMidwife && <View style={styles.actionButton} />}
         </View>
 
-        {/* Third row of actions - Midwife only for Labor tracking */}
+        {/* Third row of actions - Midwife only for Labor tracking and Newborn Exam */}
         {isMidwife && (
           <View style={[styles.actionsRow, { justifyContent: 'flex-start' }]}>
             {/* Labor Records Quick Access */}
@@ -380,6 +380,20 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
                 <Icon name="pulse-outline" size={20} color={COLORS.warning} />
               </View>
               <Text style={styles.actionLabel}>Labor Log</Text>
+            </TouchableOpacity>
+
+            {/* Newborn Exam Quick Access */}
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => {
+                // Scroll to Newborn Exam section
+              }}
+              data-testid="action-newborn-exam"
+            >
+              <View style={[styles.actionIcon, { backgroundColor: COLORS.secondary + '15' }]}>
+                <Icon name="clipboard-outline" size={20} color={COLORS.secondary} />
+              </View>
+              <Text style={styles.actionLabel}>Newborn Exam</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -405,6 +419,15 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
         {/* Birth Record Section - Midwife Only */}
         {isMidwife && (
           <BirthRecordSection
+            clientId={clientId}
+            primaryColor={primaryColor}
+            onRefresh={fetchData}
+          />
+        )}
+
+        {/* Newborn Exam Section - Midwife Only */}
+        {isMidwife && (
+          <NewbornExamSection
             clientId={clientId}
             primaryColor={primaryColor}
             onRefresh={fetchData}

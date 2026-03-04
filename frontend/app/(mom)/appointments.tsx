@@ -584,23 +584,23 @@ export default function AppointmentsScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Date Picker - Platform specific */}
+            {/* Date Picker - Always use modal for better mobile experience */}
             {showDatePicker && (
-              Platform.OS === 'web' ? (
-                <Modal
-                  visible={showDatePicker}
-                  transparent
-                  animationType="fade"
-                  onRequestClose={() => setShowDatePicker(false)}
-                >
-                  <View style={styles.dateModalOverlay}>
-                    <View style={styles.dateModalContent}>
-                      <View style={styles.dateModalHeader}>
-                        <Text style={styles.dateModalTitle}>Select Date</Text>
-                        <TouchableOpacity onPress={() => setShowDatePicker(false)}>
-                          <Icon name="close" size={24} color={COLORS.textPrimary} />
-                        </TouchableOpacity>
-                      </View>
+              <Modal
+                visible={showDatePicker}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setShowDatePicker(false)}
+              >
+                <View style={styles.dateModalOverlay}>
+                  <View style={styles.dateModalContent}>
+                    <View style={styles.dateModalHeader}>
+                      <Text style={styles.dateModalTitle}>Select Date</Text>
+                      <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                        <Icon name="close" size={24} color={COLORS.textPrimary} />
+                      </TouchableOpacity>
+                    </View>
+                    {Platform.OS === 'web' ? (
                       <View style={styles.webCalendarWrapper}>
                         <input
                           type="date"
@@ -622,53 +622,48 @@ export default function AppointmentsScreen() {
                           }}
                         />
                       </View>
-                      <Button
-                        title="Done"
-                        onPress={() => setShowDatePicker(false)}
-                        fullWidth
-                        style={{ marginTop: 16 }}
-                      />
-                    </View>
+                    ) : (
+                      <View style={styles.nativeTimePickerWrapper}>
+                        <DateTimePicker
+                          value={appointmentDate}
+                          mode="date"
+                          display="spinner"
+                          minimumDate={new Date()}
+                          onChange={(event, date) => {
+                            if (date) setAppointmentDate(date);
+                          }}
+                          style={{ width: '100%', height: 200 }}
+                        />
+                      </View>
+                    )}
+                    <Button
+                      title="Done"
+                      onPress={() => setShowDatePicker(false)}
+                      fullWidth
+                      style={{ marginTop: 16 }}
+                    />
                   </View>
-                </Modal>
-              ) : (
-                <DateTimePicker
-                  value={appointmentDate}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  minimumDate={new Date()}
-                  onChange={(event, date) => {
-                    // On Android, always hide the picker after selection
-                    if (Platform.OS === 'android') {
-                      setShowDatePicker(false);
-                    }
-                    // On iOS, keep it open for spinner mode
-                    if (Platform.OS === 'ios' && event.type === 'dismissed') {
-                      setShowDatePicker(false);
-                    }
-                    if (date) setAppointmentDate(date);
-                  }}
-                />
-              )
+                </View>
+              </Modal>
             )}
 
-            {/* Time Picker - Platform specific */}
+            {/* Time Picker - Always use modal for better mobile experience */}
             {showTimePicker && (
-              Platform.OS === 'web' ? (
-                <Modal
-                  visible={showTimePicker}
-                  transparent
-                  animationType="fade"
-                  onRequestClose={() => setShowTimePicker(false)}
-                >
-                  <View style={styles.dateModalOverlay}>
-                    <View style={styles.dateModalContent}>
-                      <View style={styles.dateModalHeader}>
-                        <Text style={styles.dateModalTitle}>Select Time</Text>
-                        <TouchableOpacity onPress={() => setShowTimePicker(false)}>
-                          <Icon name="close" size={24} color={COLORS.textPrimary} />
-                        </TouchableOpacity>
-                      </View>
+              <Modal
+                visible={showTimePicker}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setShowTimePicker(false)}
+              >
+                <View style={styles.dateModalOverlay}>
+                  <View style={styles.dateModalContent}>
+                    <View style={styles.dateModalHeader}>
+                      <Text style={styles.dateModalTitle}>Select Time</Text>
+                      <TouchableOpacity onPress={() => setShowTimePicker(false)}>
+                        <Icon name="close" size={24} color={COLORS.textPrimary} />
+                      </TouchableOpacity>
+                    </View>
+                    {Platform.OS === 'web' ? (
                       <View style={styles.webCalendarWrapper}>
                         <input
                           type="time"
@@ -692,33 +687,28 @@ export default function AppointmentsScreen() {
                           }}
                         />
                       </View>
-                      <Button
-                        title="Done"
-                        onPress={() => setShowTimePicker(false)}
-                        fullWidth
-                        style={{ marginTop: 16 }}
-                      />
-                    </View>
+                    ) : (
+                      <View style={styles.nativeTimePickerWrapper}>
+                        <DateTimePicker
+                          value={appointmentTime}
+                          mode="time"
+                          display="spinner"
+                          onChange={(event, date) => {
+                            if (date) setAppointmentTime(date);
+                          }}
+                          style={{ width: '100%', height: 200 }}
+                        />
+                      </View>
+                    )}
+                    <Button
+                      title="Done"
+                      onPress={() => setShowTimePicker(false)}
+                      fullWidth
+                      style={{ marginTop: 16 }}
+                    />
                   </View>
-                </Modal>
-              ) : (
-                <DateTimePicker
-                  value={appointmentTime}
-                  mode="time"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onChange={(event, date) => {
-                    // On Android, always hide the picker after selection
-                    if (Platform.OS === 'android') {
-                      setShowTimePicker(false);
-                    }
-                    // On iOS, keep it open for spinner mode
-                    if (Platform.OS === 'ios' && event.type === 'dismissed') {
-                      setShowTimePicker(false);
-                    }
-                    if (date) setAppointmentTime(date);
-                  }}
-                />
-              )
+                </View>
+              </Modal>
             )}
 
             {/* Appointment Type */}
@@ -867,12 +857,13 @@ const styles = StyleSheet.create({
   dateTimeButton: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: COLORS.white, borderRadius: SIZES.radiusMd, gap: SIZES.sm },
   dateTimeText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary },
   
-  // Date Modal (web)
+  // Date Modal (web & native)
   dateModalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center', padding: SIZES.lg },
   dateModalContent: { backgroundColor: COLORS.white, borderRadius: SIZES.radiusLg, padding: SIZES.lg, width: '100%', maxWidth: 400 },
   dateModalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.lg },
   dateModalTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: COLORS.textPrimary },
   webCalendarWrapper: { marginVertical: SIZES.md },
+  nativeTimePickerWrapper: { alignItems: 'center', justifyContent: 'center', marginVertical: SIZES.md },
   
   // Type Options
   typeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.sm },

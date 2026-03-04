@@ -235,9 +235,6 @@ export default function GettingStartedScreen() {
             <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
           </Pressable>
         </View>
-        
-        {/* Bottom Spacing */}
-        <View style={{ height: 100 }} />
       </ScrollView>
     </View>
   );
@@ -271,6 +268,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SIZES.md,
+    paddingBottom: 120,
   },
   header: {
     marginBottom: SIZES.xl,

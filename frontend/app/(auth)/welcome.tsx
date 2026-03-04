@@ -29,7 +29,7 @@ export default function WelcomeScreen() {
       const redirectUrl = window.location.origin + '/auth-callback';
       window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
     } else {
-      const redirectUrl = 'https://client-photo-sync.preview.emergentagent.com/auth-callback';
+      const redirectUrl = 'https://exam-intake-form.preview.emergentagent.com/auth-callback';
       Linking.openURL(`https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`);
     }
   };
