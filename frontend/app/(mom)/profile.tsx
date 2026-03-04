@@ -602,7 +602,7 @@ export default function MomProfileScreen() {
         >
           <Card style={styles.menuCard}>
             <View style={styles.menuRow}>
-              <Icon name="help-circle-outline" size={24} color={COLORS.primary} />
+              <Icon name="rocket-outline" size={24} color={COLORS.primary} />
               <Text style={styles.menuText}>Getting Started</Text>
               <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
             </View>

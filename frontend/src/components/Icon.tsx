@@ -255,6 +255,56 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   'paper-plane-outline': 'Send',
   'send': 'Send',
   'send-outline': 'Send',
+  
+  // Help
+  'help': 'HelpCircle',
+  'help-outline': 'HelpCircle',
+  'help-circle': 'HelpCircle',
+  'help-circle-outline': 'HelpCircle',
+  
+  // Rocket
+  'rocket': 'Rocket',
+  'rocket-outline': 'Rocket',
+  
+  // Resize
+  'resize': 'Maximize2',
+  'resize-outline': 'Maximize2',
+  
+  // Thermometer
+  'thermometer': 'Thermometer',
+  'thermometer-outline': 'Thermometer',
+  
+  // Scale/Weight
+  'scale': 'Scale',
+  'scale-outline': 'Scale',
+  
+  // Walk
+  'walk': 'Footprints',
+  'walk-outline': 'Footprints',
+  
+  // Barbell
+  'barbell': 'Dumbbell',
+  'barbell-outline': 'Dumbbell',
+  
+  // Flash
+  'flash': 'Zap',
+  'flash-outline': 'Zap',
+  
+  // Restaurant/Food
+  'restaurant': 'UtensilsCrossed',
+  'restaurant-outline': 'UtensilsCrossed',
+  
+  // Radio button
+  'radio-button-on': 'Circle',
+  'radio-button-on-outline': 'CircleDot',
+  
+  // Ear
+  'ear': 'Ear',
+  'ear-outline': 'Ear',
+  
+  // Nutrition
+  'nutrition': 'Apple',
+  'nutrition-outline': 'Apple',
 };
 
 interface IconProps {
