@@ -3,7 +3,61 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-03 - Birth Plan Video Guides + Getting Started Page)
+## Latest Session (2026-03-04 - Newborn Exam Feature + Bug Fixes)
+
+**Mobile Time Picker Bug Fix - COMPLETED:**
+- Fixed critical usability issue where the time picker would disappear too quickly on mobile web
+- Now uses a modal wrapper for all platforms (both date and time pickers)
+- Modal includes a "Done" button to confirm selection
+- Works consistently across web, iOS, and Android
+
+**Files Modified:**
+- `frontend/app/(mom)/appointments.tsx` - Lines 640-720, modal wrapper for date/time pickers
+- Added `nativeTimePickerWrapper` style for native platform display within modal
+
+**Getting Started Page Scroll Fix - COMPLETED:**
+- Added proper bottom padding (120px) to ensure all content is scrollable
+- Removed duplicate bottom spacing view
+- All sections including "Need More Help?" are now accessible
+
+**Files Modified:**
+- `frontend/app/(mom)/getting-started.tsx` - scrollContent style padding fix
+
+**Newborn Exam Form Feature - COMPLETED:**
+- Built comprehensive newborn physical exam form for Midwife users
+- Form includes 8 collapsible sections:
+  1. Header & Basics (baby name, DOB, place of birth, examiner info)
+  2. Birth & Risk Summary (gestational age, type of birth, risk flags)
+  3. Vital Signs (temperature, heart rate, respiratory rate, O2 sat, perfusion)
+  4. Measurements & Growth (weight, length, head circumference)
+  5. General Appearance (color, tone, activity, breathing effort)
+  6. System-by-System Exam (13 body systems with Normal/Abnormal/N/A toggles)
+  7. Feeding & Elimination (feeding method/quality, voids/stools, parent concerns)
+  8. Assessment & Plan (overall assessment, red flags, education given, plan notes)
+
+**Files Created:**
+- `frontend/src/components/midwife/NewbornExamSection.tsx` - Main form component (~1600 lines)
+
+**Files Modified:**
+- `frontend/src/components/midwife/index.ts` - Export new component
+- `frontend/src/components/provider/ProviderClientDetail.tsx` - Added Newborn Exam section for Midwife users with quick action button
+
+**Backend API (Already created in previous session):**
+- `POST /api/newborn-exam` - Create new exam
+- `GET /api/newborn-exam/client/{client_id}` - Get all exams for a client
+- `GET /api/newborn-exam/{exam_id}` - Get single exam
+- `PUT /api/newborn-exam/{exam_id}` - Update exam
+- `DELETE /api/newborn-exam/{exam_id}` - Delete exam
+- `POST /api/newborn-exam/{exam_id}/finalize` - Finalize exam (mark as non-draft)
+
+**Testing:**
+- All API tests passed (12/12)
+- Frontend UI tests passed
+- Time picker modal verified on mobile web
+- Getting Started scroll verified
+- Newborn Exam CRUD functionality verified
+
+## Previous Session (2026-03-03 - Birth Plan Video Guides + Getting Started Page)
 
 **Getting Started Help Page - COMPLETED:**
 
