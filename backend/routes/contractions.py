@@ -198,7 +198,7 @@ async def notify_team_session_start(mom_id: str, mom_name: str, session: dict):
             if provider_role == "DOULA" and session.get("is_shared_with_doula"):
                 await create_notification(
                     user_id=provider_id,
-                    notification_type="contraction_session_started",
+                    notif_type="contraction_session_started",
                     title="Client Started Timing Contractions",
                     message=f"{mom_name} has started timing contractions.",
                     data={"mom_id": mom_id, "session_id": session.get("session_id")}
@@ -206,7 +206,7 @@ async def notify_team_session_start(mom_id: str, mom_name: str, session: dict):
             elif provider_role == "MIDWIFE" and session.get("is_shared_with_midwife"):
                 await create_notification(
                     user_id=provider_id,
-                    notification_type="contraction_session_started",
+                    notif_type="contraction_session_started",
                     title="Client Started Timing Contractions",
                     message=f"{mom_name} has started timing contractions.",
                     data={"mom_id": mom_id, "session_id": session.get("session_id")}
@@ -234,20 +234,18 @@ async def notify_team_511_reached(mom_id: str, mom_name: str, session_id: str):
             if provider_role == "DOULA" and session.get("is_shared_with_doula"):
                 await create_notification(
                     user_id=provider_id,
-                    notification_type="contraction_511_reached",
+                    notif_type="contraction_511_reached",
                     title="5-1-1 Pattern Reached",
                     message=f"{mom_name}'s contractions are in a 5-1-1 pattern.",
-                    data={"mom_id": mom_id, "session_id": session_id},
-                    priority="high"
+                    data={"mom_id": mom_id, "session_id": session_id}
                 )
             elif provider_role == "MIDWIFE" and session.get("is_shared_with_midwife"):
                 await create_notification(
                     user_id=provider_id,
-                    notification_type="contraction_511_reached",
+                    notif_type="contraction_511_reached",
                     title="5-1-1 Pattern Reached",
                     message=f"{mom_name}'s contractions are in a 5-1-1 pattern.",
-                    data={"mom_id": mom_id, "session_id": session_id},
-                    priority="high"
+                    data={"mom_id": mom_id, "session_id": session_id}
                 )
     except Exception as e:
         print(f"Error notifying team of 5-1-1: {e}")
