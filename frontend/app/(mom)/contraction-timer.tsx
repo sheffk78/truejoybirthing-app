@@ -13,6 +13,7 @@ import {
   Share,
   Animated,
   Easing,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
@@ -20,6 +21,7 @@ import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
 import { useRouter } from 'expo-router';
+import { VictoryLine, VictoryChart, VictoryAxis, VictoryScatter, VictoryTheme } from 'victory-native';
 
 // Types
 interface Contraction {
@@ -45,6 +47,11 @@ interface Session {
   average_duration_seconds: number;
   average_interval_seconds: number;
   pattern_511_reached: boolean;
+  // Phase 2 fields
+  water_broke_at?: string | null;
+  water_broke_note?: string | null;
+  session_notes?: string | null;
+  is_primary_labor_session?: boolean;
 }
 
 interface Stats {
@@ -60,12 +67,40 @@ interface PatternStatus {
   status: string;
   message: string;
   pattern_duration_minutes?: number;
+  threshold_type?: string;
+}
+
+interface TimerPreferences {
+  birth_word: 'contractions' | 'surges' | 'waves';
+  alert_threshold: '5-1-1' | '4-1-1' | '3-1-1' | 'custom' | 'none';
+  custom_interval_minutes?: number;
+  custom_duration_seconds?: number;
+  custom_sustained_minutes?: number;
+}
+
+interface ChartData {
+  duration_data: Array<{ x: number; y: number; timestamp: string }>;
+  interval_data: Array<{ x: number; y: number; timestamp: string }>;
+  intensity_data: Array<{ x: number; y: number; intensity: string }>;
 }
 
 const INTENSITIES = [
   { value: 'MILD', label: 'Mild', color: '#8BC34A' },
   { value: 'MODERATE', label: 'Moderate', color: '#FF9800' },
   { value: 'STRONG', label: 'Strong', color: '#F44336' },
+];
+
+const BIRTH_WORDS = [
+  { value: 'contractions', label: 'Contractions' },
+  { value: 'surges', label: 'Surges' },
+  { value: 'waves', label: 'Waves' },
+];
+
+const ALERT_THRESHOLDS = [
+  { value: '5-1-1', label: '5-1-1 (Standard)', description: '5 min apart, 1 min long, 1 hour' },
+  { value: '4-1-1', label: '4-1-1 (Earlier)', description: '4 min apart, 1 min long, 1 hour' },
+  { value: '3-1-1', label: '3-1-1 (Closer)', description: '3 min apart, 1 min long, 1 hour' },
+  { value: 'none', label: 'No Alert', description: 'Track only, no alerts' },
 ];
 
 // Format seconds to mm:ss
@@ -98,6 +133,13 @@ export default function ContractionTimerScreen() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [patternStatus, setPatternStatus] = useState<PatternStatus | null>(null);
   
+  // Phase 2: Preferences
+  const [preferences, setPreferences] = useState<TimerPreferences>({
+    birth_word: 'contractions',
+    alert_threshold: '5-1-1'
+  });
+  const [chartData, setChartData] = useState<ChartData | null>(null);
+  
   // Timer state
   const [isContracting, setIsContracting] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -111,6 +153,10 @@ export default function ContractionTimerScreen() {
   const [showManualModal, setShowManualModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showWaterBrokeModal, setShowWaterBrokeModal] = useState(false);
+  const [showChartsModal, setShowChartsModal] = useState(false);
+  const [showNotesModal, setShowNotesModal] = useState(false);
   
   // Sharing preferences
   const [shareWithDoula, setShareWithDoula] = useState(false);
@@ -123,8 +169,16 @@ export default function ContractionTimerScreen() {
   const [manualIntensity, setManualIntensity] = useState<string | null>(null);
   const [manualNotes, setManualNotes] = useState('');
   
+  // Phase 2: Water breaking & notes
+  const [waterBrokeNote, setWaterBrokeNote] = useState('');
+  const [sessionNotes, setSessionNotes] = useState('');
+  
   // Animation
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  
+  // Helper to get the user's preferred term
+  const birthWord = preferences?.birth_word || 'contractions';
+  const birthWordCapitalized = birthWord.charAt(0).toUpperCase() + birthWord.slice(1);
   
   // Pulse animation when contracting
   useEffect(() => {
@@ -191,6 +245,16 @@ export default function ContractionTimerScreen() {
       setStats(data.stats);
       setPatternStatus(data.pattern_status);
       
+      // Load preferences (Phase 2)
+      if (data.preferences) {
+        setPreferences(data.preferences);
+      }
+      
+      // Load session notes if available
+      if (data.session?.session_notes) {
+        setSessionNotes(data.session.session_notes);
+      }
+      
       // Check if there's a running contraction
       if (data.contractions?.length > 0) {
         const running = data.contractions.find((c: Contraction) => c.end_time === null);
@@ -201,10 +265,67 @@ export default function ContractionTimerScreen() {
           setTimerSeconds(Math.floor((now - startTime) / 1000));
         }
       }
+      
+      // Load chart data if session exists and has contractions
+      if (data.session?.session_id && data.contractions?.length > 0) {
+        fetchChartData(data.session.session_id);
+      }
     } catch (error) {
       console.error('Error fetching session:', error);
     } finally {
       setLoading(false);
+    }
+  };
+  
+  const fetchChartData = async (sessionId: string) => {
+    try {
+      const data = await apiRequest(`/contractions/session/${sessionId}/chart-data`);
+      setChartData(data);
+    } catch (error) {
+      console.error('Error fetching chart data:', error);
+    }
+  };
+  
+  const updatePreferences = async (newPrefs: Partial<TimerPreferences>) => {
+    try {
+      const data = await apiRequest('/contractions/preferences', {
+        method: 'PUT',
+        body: newPrefs,
+      });
+      setPreferences(data.preferences);
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to update preferences');
+    }
+  };
+  
+  const recordWaterBreaking = async () => {
+    if (!session) return;
+    
+    try {
+      const data = await apiRequest(`/contractions/session/${session.session_id}/water-broke`, {
+        method: 'POST',
+        body: {
+          water_broke_note: waterBrokeNote || null,
+        },
+      });
+      setSession(data.session);
+      setShowWaterBrokeModal(false);
+      Alert.alert('Recorded', 'Water breaking has been recorded and your care team has been notified.');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to record water breaking');
+    }
+  };
+  
+  const saveSessionNotes = async () => {
+    if (!session) return;
+    
+    try {
+      await apiRequest(`/contractions/session/${session.session_id}/notes?notes=${encodeURIComponent(sessionNotes)}`, {
+        method: 'PUT',
+      });
+      setShowNotesModal(false);
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to save notes');
     }
   };
   
@@ -590,6 +711,25 @@ export default function ContractionTimerScreen() {
   // Active session - main timer UI
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Header with Settings */}
+      <View style={styles.headerRow}>
+        <Text style={styles.headerTitle}>{birthWordCapitalized} Timer</Text>
+        <Pressable style={styles.settingsBtn} onPress={() => setShowSettingsModal(true)}>
+          <Icon name="settings-outline" size={24} color={COLORS.text} />
+        </Pressable>
+      </View>
+      
+      {/* Water Broke Banner (if recorded) */}
+      {session?.water_broke_at && (
+        <View style={styles.waterBrokeBanner}>
+          <Icon name="water-outline" size={20} color="#1976D2" />
+          <Text style={styles.waterBrokeText}>
+            Water broke at {new Date(session.water_broke_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+            {session.water_broke_note ? ` - ${session.water_broke_note}` : ''}
+          </Text>
+        </View>
+      )}
+      
       {/* Header Stats Strip */}
       <View style={styles.statsStrip}>
         <View style={styles.statItem}>
@@ -619,7 +759,7 @@ export default function ContractionTimerScreen() {
             )}
           </Text>
           <Text style={styles.timerLabel}>
-            {isContracting ? 'Contracting...' : (
+            {isContracting ? `${birthWordCapitalized.slice(0, -1)}ing...` : (
               session?.status === 'ACTIVE' && contractions.length > 0 
                 ? 'Resting...'
                 : 'Ready'
@@ -637,12 +777,12 @@ export default function ContractionTimerScreen() {
           data-testid="main-timer-btn"
         >
           <Text style={styles.mainButtonText}>
-            {isContracting ? 'Stop Contraction' : 'Start Contraction'}
+            {isContracting ? `Stop ${birthWordCapitalized.slice(0, -1)}` : `Start ${birthWordCapitalized.slice(0, -1)}`}
           </Text>
         </Pressable>
       </View>
       
-      {/* 5-1-1 Status */}
+      {/* Pattern Status */}
       <View style={[styles.patternStatus, { borderColor: getPatternStatusColor() }]}>
         <Icon 
           name={patternStatus?.pattern_reached ? "alert-circle" : "information-circle-outline"} 
@@ -683,6 +823,28 @@ export default function ContractionTimerScreen() {
         </Pressable>
       </View>
       
+      {/* Phase 2: Secondary Actions Row */}
+      <View style={styles.secondaryActionsRow}>
+        {!session?.water_broke_at && (
+          <Pressable style={styles.secondaryActionBtn} onPress={() => setShowWaterBrokeModal(true)}>
+            <Icon name="water-outline" size={20} color={COLORS.primary} />
+            <Text style={styles.secondaryActionText}>Water Broke</Text>
+          </Pressable>
+        )}
+        
+        <Pressable style={styles.secondaryActionBtn} onPress={() => setShowNotesModal(true)}>
+          <Icon name="create-outline" size={20} color={COLORS.primary} />
+          <Text style={styles.secondaryActionText}>Notes</Text>
+        </Pressable>
+        
+        {(chartData?.duration_data?.length || 0) >= 3 && (
+          <Pressable style={styles.secondaryActionBtn} onPress={() => setShowChartsModal(true)}>
+            <Icon name="stats-chart-outline" size={20} color={COLORS.primary} />
+            <Text style={styles.secondaryActionText}>Charts</Text>
+          </Pressable>
+        )}
+      </View>
+      
       {/* Intensity Selection Modal */}
       <Modal
         visible={showIntensityModal}
@@ -692,7 +854,7 @@ export default function ContractionTimerScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>How intense was that contraction?</Text>
+            <Text style={styles.modalTitle}>How intense was that {birthWord.slice(0, -1)}?</Text>
             
             <View style={styles.intensityOptions}>
               {INTENSITIES.map((intensity) => (
@@ -727,7 +889,7 @@ export default function ContractionTimerScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { maxHeight: '80%' }]}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Contraction History</Text>
+              <Text style={styles.modalTitle}>{birthWordCapitalized} History</Text>
               <Pressable onPress={() => setShowHistoryModal(false)}>
                 <Icon name="close" size={24} color={COLORS.text} />
               </Pressable>
@@ -735,7 +897,7 @@ export default function ContractionTimerScreen() {
             
             <ScrollView style={styles.historyList}>
               {contractions.length === 0 ? (
-                <Text style={styles.emptyHistoryText}>No contractions recorded yet</Text>
+                <Text style={styles.emptyHistoryText}>No {birthWord} recorded yet</Text>
               ) : (
                 contractions.map((c, index) => (
                   <View key={c.contraction_id} style={styles.historyItem}>
@@ -852,6 +1014,233 @@ export default function ContractionTimerScreen() {
               onPress={addManualContraction}
               style={{ marginTop: 16 }}
             />
+          </View>
+        </View>
+      </Modal>
+      
+      {/* Phase 2: Settings Modal */}
+      <Modal
+        visible={showSettingsModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowSettingsModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxHeight: '80%' }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Timer Settings</Text>
+              <Pressable onPress={() => setShowSettingsModal(false)}>
+                <Icon name="close" size={24} color={COLORS.text} />
+              </Pressable>
+            </View>
+            
+            <ScrollView>
+              <View style={styles.settingsSection}>
+                <Text style={styles.settingsLabel}>What do you call them?</Text>
+                <Text style={styles.settingsHint}>Choose the term you prefer</Text>
+                <View style={styles.settingsOptions}>
+                  {BIRTH_WORDS.map((option) => (
+                    <Pressable
+                      key={option.value}
+                      style={[
+                        styles.settingsOption,
+                        preferences.birth_word === option.value && styles.settingsOptionActive
+                      ]}
+                      onPress={() => updatePreferences({ birth_word: option.value as any })}
+                    >
+                      <Text style={[
+                        styles.settingsOptionText,
+                        preferences.birth_word === option.value && styles.settingsOptionTextActive
+                      ]}>{option.label}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+              
+              <View style={styles.settingsSection}>
+                <Text style={styles.settingsLabel}>When should I alert you?</Text>
+                <Text style={styles.settingsHint}>Choose your preferred alert threshold</Text>
+                {ALERT_THRESHOLDS.map((option) => (
+                  <Pressable
+                    key={option.value}
+                    style={[
+                      styles.alertOption,
+                      preferences.alert_threshold === option.value && styles.alertOptionActive
+                    ]}
+                    onPress={() => updatePreferences({ alert_threshold: option.value as any })}
+                  >
+                    <View style={styles.alertOptionLeft}>
+                      <Icon 
+                        name={preferences.alert_threshold === option.value ? "radio-button-on" : "radio-button-off"} 
+                        size={20} 
+                        color={preferences.alert_threshold === option.value ? COLORS.primary : COLORS.textLight} 
+                      />
+                      <View style={{ marginLeft: 12 }}>
+                        <Text style={styles.alertOptionTitle}>{option.label}</Text>
+                        <Text style={styles.alertOptionDesc}>{option.description}</Text>
+                      </View>
+                    </View>
+                  </Pressable>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+      
+      {/* Phase 2: Water Broke Modal */}
+      <Modal
+        visible={showWaterBrokeModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowWaterBrokeModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Record Water Breaking</Text>
+              <Pressable onPress={() => setShowWaterBrokeModal(false)}>
+                <Icon name="close" size={24} color={COLORS.text} />
+              </Pressable>
+            </View>
+            
+            <Text style={styles.waterBrokeHint}>
+              Your care team will be notified. Please note any details about the fluid (color, amount, clarity).
+            </Text>
+            
+            <View style={styles.formGroup}>
+              <Text style={styles.formLabel}>Notes (optional)</Text>
+              <TextInput
+                style={[styles.formInput, { height: 100 }]}
+                value={waterBrokeNote}
+                onChangeText={setWaterBrokeNote}
+                placeholder="e.g., Clear fluid, moderate amount..."
+                multiline
+              />
+            </View>
+            
+            <Button
+              title="Record Water Breaking"
+              onPress={recordWaterBreaking}
+              style={{ marginTop: 16 }}
+            />
+          </View>
+        </View>
+      </Modal>
+      
+      {/* Phase 2: Notes Modal */}
+      <Modal
+        visible={showNotesModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowNotesModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Session Notes</Text>
+              <Pressable onPress={() => setShowNotesModal(false)}>
+                <Icon name="close" size={24} color={COLORS.text} />
+              </Pressable>
+            </View>
+            
+            <View style={styles.formGroup}>
+              <TextInput
+                style={[styles.formInput, { height: 150 }]}
+                value={sessionNotes}
+                onChangeText={setSessionNotes}
+                placeholder="Add notes about this labor session..."
+                multiline
+              />
+            </View>
+            
+            <Button
+              title="Save Notes"
+              onPress={saveSessionNotes}
+            />
+          </View>
+        </View>
+      </Modal>
+      
+      {/* Phase 2: Charts Modal */}
+      <Modal
+        visible={showChartsModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowChartsModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxHeight: '90%' }]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{birthWordCapitalized} Charts</Text>
+              <Pressable onPress={() => setShowChartsModal(false)}>
+                <Icon name="close" size={24} color={COLORS.text} />
+              </Pressable>
+            </View>
+            
+            <ScrollView>
+              {chartData && chartData.duration_data.length >= 3 && (
+                <>
+                  <View style={styles.chartSection}>
+                    <Text style={styles.chartTitle}>Duration Over Time (seconds)</Text>
+                    <VictoryChart
+                      theme={VictoryTheme.material}
+                      height={200}
+                      padding={{ top: 20, bottom: 40, left: 50, right: 20 }}
+                    >
+                      <VictoryAxis
+                        tickFormat={(x) => `#${x}`}
+                        style={{ tickLabels: { fontSize: 10 } }}
+                      />
+                      <VictoryAxis
+                        dependentAxis
+                        tickFormat={(y) => `${y}s`}
+                        style={{ tickLabels: { fontSize: 10 } }}
+                      />
+                      <VictoryLine
+                        data={chartData.duration_data}
+                        style={{ data: { stroke: COLORS.primary } }}
+                      />
+                      <VictoryScatter
+                        data={chartData.duration_data}
+                        size={5}
+                        style={{ data: { fill: COLORS.primary } }}
+                      />
+                    </VictoryChart>
+                  </View>
+                  
+                  {chartData.interval_data.length >= 2 && (
+                    <View style={styles.chartSection}>
+                      <Text style={styles.chartTitle}>Interval Over Time (minutes)</Text>
+                      <VictoryChart
+                        theme={VictoryTheme.material}
+                        height={200}
+                        padding={{ top: 20, bottom: 40, left: 50, right: 20 }}
+                      >
+                        <VictoryAxis
+                          tickFormat={(x) => `#${x}`}
+                          style={{ tickLabels: { fontSize: 10 } }}
+                        />
+                        <VictoryAxis
+                          dependentAxis
+                          tickFormat={(y) => `${y}m`}
+                          style={{ tickLabels: { fontSize: 10 } }}
+                        />
+                        <VictoryLine
+                          data={chartData.interval_data}
+                          style={{ data: { stroke: COLORS.secondary } }}
+                        />
+                        <VictoryScatter
+                          data={chartData.interval_data}
+                          size={5}
+                          style={{ data: { fill: COLORS.secondary } }}
+                        />
+                      </VictoryChart>
+                    </View>
+                  )}
+                </>
+              )}
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -1303,5 +1692,159 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     paddingHorizontal: 20,
+  },
+  
+  // Phase 2 Styles
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.white,
+  },
+  settingsBtn: {
+    padding: 8,
+  },
+  waterBrokeBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E3F2FD',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginHorizontal: 16,
+    marginTop: 8,
+    borderRadius: 8,
+  },
+  waterBrokeText: {
+    fontSize: 13,
+    fontFamily: FONTS.body,
+    color: '#1976D2',
+    marginLeft: 8,
+    flex: 1,
+  },
+  secondaryActionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 16,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    backgroundColor: COLORS.background,
+  },
+  secondaryActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  secondaryActionText: {
+    fontSize: 13,
+    fontFamily: FONTS.body,
+    color: COLORS.primary,
+    marginLeft: 6,
+  },
+  
+  // Settings Modal
+  settingsSection: {
+    marginBottom: 24,
+  },
+  settingsLabel: {
+    fontSize: 16,
+    fontFamily: FONTS.heading,
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  settingsHint: {
+    fontSize: 13,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    marginBottom: 12,
+  },
+  settingsOptions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  settingsOption: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+  },
+  settingsOptionActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  settingsOptionText: {
+    fontSize: 14,
+    fontFamily: FONTS.body,
+    color: COLORS.text,
+  },
+  settingsOptionTextActive: {
+    color: COLORS.white,
+  },
+  alertOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: 8,
+  },
+  alertOptionActive: {
+    borderColor: COLORS.primary,
+    backgroundColor: `${COLORS.primary}10`,
+  },
+  alertOptionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  alertOptionTitle: {
+    fontSize: 14,
+    fontFamily: FONTS.body,
+    color: COLORS.text,
+  },
+  alertOptionDesc: {
+    fontSize: 12,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    marginTop: 2,
+  },
+  
+  // Water Broke Modal
+  waterBrokeHint: {
+    fontSize: 14,
+    fontFamily: FONTS.body,
+    color: COLORS.textLight,
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  
+  // Charts
+  chartSection: {
+    marginBottom: 24,
+    backgroundColor: COLORS.white,
+    borderRadius: 12,
+    padding: 16,
+  },
+  chartTitle: {
+    fontSize: 14,
+    fontFamily: FONTS.heading,
+    color: COLORS.text,
+    marginBottom: 8,
+    textAlign: 'center',
   },
 });

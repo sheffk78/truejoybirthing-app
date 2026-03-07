@@ -1,8 +1,8 @@
 """
 Contraction Timer Routes
-MVP Phase 1 - Contraction timing for Moms with team sharing
+Phase 1 + Phase 2 - Contraction timing for Moms with team sharing
 
-Features:
+Phase 1 Features:
 - Start/stop contraction timing
 - Session management (active, paused, ended)
 - History with edit/delete capability
@@ -10,6 +10,14 @@ Features:
 - 5-1-1 rule detection
 - Team sharing opt-in
 - Exportable summary
+
+Phase 2 Features:
+- Birth-plan-aware language (contractions/surges/waves)
+- Custom alert thresholds (5-1-1, 4-1-1, etc.)
+- Water breaking tracking
+- Enhanced notes (per contraction & session level)
+- Primary labor session marking
+- Visual charts (frontend)
 """
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -26,6 +34,29 @@ from .dependencies import (
 router = APIRouter(prefix="/contractions", tags=["contractions"])
 
 # ============== DATA MODELS ==============
+
+# Phase 2: Timer Preferences
+class TimerPreferences(BaseModel):
+    """Mom's contraction timer preferences"""
+    birth_word: Literal["contractions", "surges", "waves"] = "contractions"
+    alert_threshold: Literal["5-1-1", "4-1-1", "3-1-1", "custom", "none"] = "5-1-1"
+    custom_interval_minutes: Optional[int] = None  # For custom threshold
+    custom_duration_seconds: Optional[int] = None  # For custom threshold
+    custom_sustained_minutes: Optional[int] = None  # For custom threshold
+
+class TimerPreferencesUpdate(BaseModel):
+    """Update timer preferences"""
+    birth_word: Optional[Literal["contractions", "surges", "waves"]] = None
+    alert_threshold: Optional[Literal["5-1-1", "4-1-1", "3-1-1", "custom", "none"]] = None
+    custom_interval_minutes: Optional[int] = None
+    custom_duration_seconds: Optional[int] = None
+    custom_sustained_minutes: Optional[int] = None
+
+# Phase 2: Water Breaking
+class WaterBreakingRecord(BaseModel):
+    """Record water breaking event"""
+    water_broke_at: Optional[str] = None  # ISO datetime
+    water_broke_note: Optional[str] = None  # Color, amount, clarity
 
 class ContractionBase(BaseModel):
     """Individual contraction record"""
@@ -52,10 +83,15 @@ class ContractionSessionCreate(BaseModel):
     is_shared_with_midwife: bool = False
 
 class ContractionSessionUpdate(BaseModel):
-    """Update session sharing preferences"""
+    """Update session sharing preferences and Phase 2 fields"""
     status: Optional[Literal["ACTIVE", "PAUSED", "ENDED"]] = None
     is_shared_with_doula: Optional[bool] = None
     is_shared_with_midwife: Optional[bool] = None
+    # Phase 2 fields
+    session_notes: Optional[str] = None
+    is_primary_labor_session: Optional[bool] = None
+    water_broke_at: Optional[str] = None
+    water_broke_note: Optional[str] = None
 
 class SharingPreferences(BaseModel):
     """Sharing preferences for contraction data"""
@@ -64,6 +100,39 @@ class SharingPreferences(BaseModel):
 
 
 # ============== HELPER FUNCTIONS ==============
+
+async def get_mom_timer_preferences(mom_id: str) -> dict:
+    """Get Mom's timer preferences (birth word, alert threshold)"""
+    prefs = await db.timer_preferences.find_one({"user_id": mom_id})
+    if prefs:
+        prefs.pop("_id", None)
+        return prefs
+    # Return defaults
+    return {
+        "user_id": mom_id,
+        "birth_word": "contractions",
+        "alert_threshold": "5-1-1",
+        "custom_interval_minutes": None,
+        "custom_duration_seconds": None,
+        "custom_sustained_minutes": None
+    }
+
+def get_threshold_params(threshold: str, prefs: dict = None) -> tuple:
+    """Get interval, duration, sustained time for a threshold"""
+    thresholds = {
+        "5-1-1": (5 * 60, 60, 60),   # 5 min apart, 1 min duration, 1 hour sustained
+        "4-1-1": (4 * 60, 60, 60),   # 4 min apart, 1 min duration, 1 hour sustained
+        "3-1-1": (3 * 60, 60, 60),   # 3 min apart, 1 min duration, 1 hour sustained
+    }
+    if threshold in thresholds:
+        return thresholds[threshold]
+    if threshold == "custom" and prefs:
+        return (
+            (prefs.get("custom_interval_minutes") or 5) * 60,
+            prefs.get("custom_duration_seconds") or 60,
+            (prefs.get("custom_sustained_minutes") or 60)
+        )
+    return thresholds["5-1-1"]  # Default to 5-1-1
 
 def calculate_duration_seconds(start_time: str, end_time: str) -> int:
     """Calculate duration in seconds between two ISO datetime strings"""
@@ -85,20 +154,38 @@ def format_duration(seconds: int) -> str:
     secs = seconds % 60
     return f"{minutes:02d}:{secs:02d}"
 
-def check_511_pattern(contractions: List[dict]) -> dict:
+def check_511_pattern(contractions: List[dict], prefs: dict = None, birth_word: str = "contractions") -> dict:
     """
-    Check for 5-1-1 pattern:
-    - Contractions ≤ 5 minutes apart
-    - Each lasting ≥ 60 seconds
-    - Pattern sustained for at least 60 minutes
+    Check for pattern based on threshold (5-1-1, 4-1-1, 3-1-1, or custom)
+    
+    Args:
+        contractions: List of contraction records
+        prefs: Timer preferences with threshold settings
+        birth_word: The user's preferred term for contractions
     
     Returns dict with pattern status and details
     """
+    # Get threshold parameters
+    threshold = "5-1-1"
+    if prefs:
+        threshold = prefs.get("alert_threshold", "5-1-1")
+    
+    if threshold == "none":
+        return {
+            "pattern_reached": False,
+            "status": "tracking_only",
+            "message": f"Keep timing {birth_word}",
+            "threshold_type": "none"
+        }
+    
+    interval_max, duration_min, sustained_min = get_threshold_params(threshold, prefs)
+    
     if len(contractions) < 3:
         return {
             "pattern_reached": False,
             "status": "early_labor",
-            "message": "Keep timing contractions"
+            "message": f"Keep timing {birth_word}",
+            "threshold_type": threshold
         }
     
     # Sort by start time (newest first in our data, so reverse)
@@ -111,7 +198,8 @@ def check_511_pattern(contractions: List[dict]) -> dict:
         return {
             "pattern_reached": False,
             "status": "early_labor",
-            "message": "Keep timing contractions"
+            "message": f"Keep timing {birth_word}",
+            "threshold_type": threshold
         }
     
     # Check last 90 minutes of contractions
@@ -125,10 +213,11 @@ def check_511_pattern(contractions: List[dict]) -> dict:
         return {
             "pattern_reached": False,
             "status": "early_labor",
-            "message": "Keep timing contractions"
+            "message": f"Keep timing {birth_word}",
+            "threshold_type": threshold
         }
     
-    # Count contractions meeting 5-1-1 criteria
+    # Count contractions meeting criteria
     qualifying_count = 0
     pattern_start_time = None
     
@@ -136,8 +225,7 @@ def check_511_pattern(contractions: List[dict]) -> dict:
         duration = c.get('duration_seconds', 0) or 0
         interval = c.get('interval_seconds_to_previous', 999) or 999
         
-        # 5 min = 300 seconds, 1 min = 60 seconds
-        if duration >= 60 and interval <= 300:
+        if duration >= duration_min and interval <= interval_max:
             qualifying_count += 1
             if pattern_start_time is None:
                 pattern_start_time = c['start_time']
@@ -146,24 +234,35 @@ def check_511_pattern(contractions: List[dict]) -> dict:
             qualifying_count = 0
             pattern_start_time = None
     
-    # Check if pattern sustained for 60 minutes
+    # Check if pattern sustained for required time
     if qualifying_count >= 4 and pattern_start_time:
         pattern_start = datetime.fromisoformat(pattern_start_time.replace('Z', '+00:00'))
         pattern_duration = (datetime.now(timezone.utc) - pattern_start).total_seconds() / 60
         
-        if pattern_duration >= 60:
+        if pattern_duration >= sustained_min:
+            # Generate personalized message
+            interval_mins = interval_max // 60
+            duration_mins = duration_min // 60
+            
+            if threshold == "custom":
+                message = f"Your {birth_word} are meeting your custom alert criteria. It may be time to call your care provider."
+            else:
+                message = f"Your {birth_word} have been about {interval_mins} minutes apart, lasting around {duration_mins} minute, for about an hour. It may be time to consider heading to your birth place or calling your provider."
+            
             return {
                 "pattern_reached": True,
-                "status": "511_reached",
-                "message": "Your contractions have been about 5 minutes apart, lasting around 1 minute, for about an hour. It may be time to consider heading to your birth place or calling your provider.",
-                "pattern_duration_minutes": int(pattern_duration)
+                "status": f"{threshold.replace('-', '')}_reached",
+                "message": message,
+                "pattern_duration_minutes": int(pattern_duration),
+                "threshold_type": threshold
             }
         else:
             return {
                 "pattern_reached": False,
                 "status": "progressing",
                 "message": f"Pattern progressing ({int(pattern_duration)} minutes). Keep monitoring.",
-                "pattern_duration_minutes": int(pattern_duration)
+                "pattern_duration_minutes": int(pattern_duration),
+                "threshold_type": threshold
             }
     
     # Check if progressing (some qualifying contractions)
@@ -171,14 +270,54 @@ def check_511_pattern(contractions: List[dict]) -> dict:
         return {
             "pattern_reached": False,
             "status": "progressing",
-            "message": "Contractions are getting closer. Keep timing."
+            "message": f"Your {birth_word} are getting closer. Keep timing.",
+            "threshold_type": threshold
         }
     
     return {
         "pattern_reached": False,
         "status": "early_labor",
-        "message": "Early labor. Rest when you can."
+        "message": f"Early labor. Rest when you can.",
+        "threshold_type": threshold
     }
+
+
+async def notify_team_water_broke(mom_id: str, mom_name: str, session_id: str, water_note: str = None):
+    """Send notifications to team when mom's water breaks"""
+    try:
+        session = await db.contraction_sessions.find_one({"session_id": session_id})
+        if not session:
+            return
+            
+        share_requests = await db.share_requests.find({
+            "mom_id": mom_id,
+            "status": "accepted"
+        }).to_list(100)
+        
+        note_part = f" Note: {water_note}" if water_note else ""
+        
+        for request in share_requests:
+            provider_id = request.get("provider_id")
+            provider_role = request.get("provider_role", "").upper()
+            
+            if provider_role == "DOULA" and session.get("is_shared_with_doula"):
+                await create_notification(
+                    user_id=provider_id,
+                    notif_type="water_broke",
+                    title="Client's Water Broke",
+                    message=f"{mom_name}'s water has broken.{note_part}",
+                    data={"mom_id": mom_id, "session_id": session_id}
+                )
+            elif provider_role == "MIDWIFE" and session.get("is_shared_with_midwife"):
+                await create_notification(
+                    user_id=provider_id,
+                    notif_type="water_broke",
+                    title="Client's Water Broke",
+                    message=f"{mom_name}'s water has broken.{note_part}",
+                    data={"mom_id": mom_id, "session_id": session_id}
+                )
+    except Exception as e:
+        print(f"Error notifying team of water breaking: {e}")
 
 
 async def notify_team_session_start(mom_id: str, mom_name: str, session: dict):
@@ -264,8 +403,18 @@ async def get_active_session(user: User = Depends(get_current_user())):
         "status": {"$in": ["ACTIVE", "PAUSED"]}
     }, {"_id": 0})
     
+    # Get preferences for pattern checking and UI
+    prefs = await get_mom_timer_preferences(user.user_id)
+    birth_word = prefs.get("birth_word", "contractions")
+    
     if not session:
-        return {"session": None, "contractions": [], "stats": None, "pattern_status": None}
+        return {
+            "session": None, 
+            "contractions": [], 
+            "stats": None, 
+            "pattern_status": None,
+            "preferences": prefs
+        }
     
     # Get all contractions for this session
     contractions = await db.contractions.find({
@@ -275,14 +424,15 @@ async def get_active_session(user: User = Depends(get_current_user())):
     # Calculate stats
     stats = calculate_session_stats(contractions)
     
-    # Check 5-1-1 pattern
-    pattern_status = check_511_pattern(contractions)
+    # Check pattern with user's threshold preference
+    pattern_status = check_511_pattern(contractions, prefs, birth_word)
     
     return {
         "session": session,
         "contractions": contractions,
         "stats": stats,
-        "pattern_status": pattern_status
+        "pattern_status": pattern_status,
+        "preferences": prefs
     }
 
 
@@ -716,6 +866,53 @@ async def recalculate_intervals(session_id: str, from_time: str):
                 {"$set": {"interval_seconds_to_previous": interval}}
             )
 
+
+# ============== PHASE 2: PREFERENCES (MUST BE BEFORE WILDCARD ROUTES) ==============
+
+@router.get("/preferences")
+async def get_timer_preferences(user: User = Depends(get_current_user())):
+    """Get Mom's contraction timer preferences"""
+    if user.role != "MOM":
+        raise HTTPException(status_code=403, detail="Only moms can access timer preferences")
+    
+    prefs = await get_mom_timer_preferences(user.user_id)
+    return {"preferences": prefs}
+
+
+@router.put("/preferences")
+async def update_timer_preferences(
+    data: TimerPreferencesUpdate,
+    user: User = Depends(get_current_user())
+):
+    """Update Mom's contraction timer preferences"""
+    if user.role != "MOM":
+        raise HTTPException(status_code=403, detail="Only moms can update timer preferences")
+    
+    now = get_now().isoformat()
+    update_data = {"user_id": user.user_id, "updated_at": now}
+    
+    if data.birth_word is not None:
+        update_data["birth_word"] = data.birth_word
+    if data.alert_threshold is not None:
+        update_data["alert_threshold"] = data.alert_threshold
+    if data.custom_interval_minutes is not None:
+        update_data["custom_interval_minutes"] = data.custom_interval_minutes
+    if data.custom_duration_seconds is not None:
+        update_data["custom_duration_seconds"] = data.custom_duration_seconds
+    if data.custom_sustained_minutes is not None:
+        update_data["custom_sustained_minutes"] = data.custom_sustained_minutes
+    
+    await db.timer_preferences.update_one(
+        {"user_id": user.user_id},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    prefs = await get_mom_timer_preferences(user.user_id)
+    return {"preferences": prefs, "message": "Preferences updated"}
+
+
+# ============== CONTRACTION CRUD (WILDCARD ROUTE - MUST BE AFTER SPECIFIC ROUTES) ==============
 
 @router.put("/{contraction_id}")
 async def update_contraction(
@@ -1157,4 +1354,245 @@ async def get_client_session_history(
         "sessions": sessions,
         "mom": {"full_name": mom.get("full_name") if mom else None},
         "total_sessions": len(sessions)
+    }
+
+
+# ============== PHASE 2: WATER BREAKING ENDPOINTS ==============
+
+@router.post("/session/{session_id}/water-broke")
+async def record_water_breaking(
+    session_id: str,
+    data: WaterBreakingRecord,
+    user: User = Depends(get_current_user())
+):
+    """Record that Mom's water has broken"""
+    if user.role != "MOM":
+        raise HTTPException(status_code=403, detail="Only moms can record water breaking")
+    
+    session = await db.contraction_sessions.find_one({
+        "session_id": session_id,
+        "mom_id": user.user_id
+    })
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    now = get_now().isoformat()
+    water_broke_at = data.water_broke_at or now
+    
+    await db.contraction_sessions.update_one(
+        {"session_id": session_id},
+        {"$set": {
+            "water_broke_at": water_broke_at,
+            "water_broke_note": data.water_broke_note,
+            "updated_at": now
+        }}
+    )
+    
+    # Notify team if sharing is enabled
+    if session.get("is_shared_with_doula") or session.get("is_shared_with_midwife"):
+        await notify_team_water_broke(
+            user.user_id, 
+            user.full_name, 
+            session_id, 
+            data.water_broke_note
+        )
+    
+    updated = await db.contraction_sessions.find_one(
+        {"session_id": session_id},
+        {"_id": 0}
+    )
+    
+    return {
+        "session": updated,
+        "message": "Water breaking recorded. Your care team has been notified."
+    }
+
+
+@router.delete("/session/{session_id}/water-broke")
+async def clear_water_breaking(
+    session_id: str,
+    user: User = Depends(get_current_user())
+):
+    """Clear water breaking record (if recorded by mistake)"""
+    if user.role != "MOM":
+        raise HTTPException(status_code=403, detail="Only moms can update their sessions")
+    
+    session = await db.contraction_sessions.find_one({
+        "session_id": session_id,
+        "mom_id": user.user_id
+    })
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    now = get_now().isoformat()
+    
+    await db.contraction_sessions.update_one(
+        {"session_id": session_id},
+        {"$set": {
+            "water_broke_at": None,
+            "water_broke_note": None,
+            "updated_at": now
+        }}
+    )
+    
+    updated = await db.contraction_sessions.find_one(
+        {"session_id": session_id},
+        {"_id": 0}
+    )
+    
+    return {"session": updated, "message": "Water breaking record cleared"}
+
+
+# ============== PHASE 2: SESSION NOTES ENDPOINTS ==============
+
+@router.put("/session/{session_id}/notes")
+async def update_session_notes(
+    session_id: str,
+    notes: str,
+    user: User = Depends(get_current_user())
+):
+    """Update session-level notes"""
+    if user.role != "MOM":
+        raise HTTPException(status_code=403, detail="Only moms can update their sessions")
+    
+    session = await db.contraction_sessions.find_one({
+        "session_id": session_id,
+        "mom_id": user.user_id
+    })
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    now = get_now().isoformat()
+    
+    await db.contraction_sessions.update_one(
+        {"session_id": session_id},
+        {"$set": {
+            "session_notes": notes,
+            "updated_at": now
+        }}
+    )
+    
+    updated = await db.contraction_sessions.find_one(
+        {"session_id": session_id},
+        {"_id": 0}
+    )
+    
+    return {"session": updated}
+
+
+@router.put("/session/{session_id}/mark-primary")
+async def mark_as_primary_labor_session(
+    session_id: str,
+    is_primary: bool = True,
+    user: User = Depends(get_current_user())
+):
+    """Mark this session as THE primary labor session (for birth records)"""
+    if user.role != "MOM":
+        raise HTTPException(status_code=403, detail="Only moms can update their sessions")
+    
+    session = await db.contraction_sessions.find_one({
+        "session_id": session_id,
+        "mom_id": user.user_id
+    })
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    now = get_now().isoformat()
+    
+    # If marking as primary, unmark any other primary sessions
+    if is_primary:
+        await db.contraction_sessions.update_many(
+            {"mom_id": user.user_id, "is_primary_labor_session": True},
+            {"$set": {"is_primary_labor_session": False, "updated_at": now}}
+        )
+    
+    await db.contraction_sessions.update_one(
+        {"session_id": session_id},
+        {"$set": {
+            "is_primary_labor_session": is_primary,
+            "updated_at": now
+        }}
+    )
+    
+    updated = await db.contraction_sessions.find_one(
+        {"session_id": session_id},
+        {"_id": 0}
+    )
+    
+    return {
+        "session": updated,
+        "message": "Session marked as primary labor session" if is_primary else "Primary labor session unmarked"
+    }
+
+
+# ============== PHASE 2: CHART DATA ENDPOINT ==============
+
+@router.get("/session/{session_id}/chart-data")
+async def get_chart_data(
+    session_id: str,
+    user: User = Depends(get_current_user())
+):
+    """Get data formatted for duration/interval charts"""
+    if user.role != "MOM":
+        raise HTTPException(status_code=403, detail="Only moms can access chart data")
+    
+    session = await db.contraction_sessions.find_one({
+        "session_id": session_id,
+        "mom_id": user.user_id
+    }, {"_id": 0})
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Get all completed contractions for this session
+    contractions = await db.contractions.find({
+        "session_id": session_id,
+        "end_time": {"$ne": None}
+    }, {"_id": 0}).sort("start_time", 1).to_list(1000)
+    
+    # Format for charts
+    duration_data = []
+    interval_data = []
+    intensity_data = []
+    
+    for i, c in enumerate(contractions):
+        timestamp = c.get("start_time")
+        duration = c.get("duration_seconds", 0) or 0
+        interval = c.get("interval_seconds_to_previous")
+        intensity = c.get("intensity")
+        
+        duration_data.append({
+            "x": i + 1,
+            "y": duration,
+            "timestamp": timestamp,
+            "label": f"#{i+1}"
+        })
+        
+        if interval:
+            interval_data.append({
+                "x": i + 1,
+                "y": interval // 60,  # Convert to minutes for readability
+                "timestamp": timestamp,
+                "label": f"#{i+1}"
+            })
+        
+        if intensity:
+            intensity_value = {"MILD": 1, "MODERATE": 2, "STRONG": 3}.get(intensity, 0)
+            intensity_data.append({
+                "x": i + 1,
+                "y": intensity_value,
+                "intensity": intensity,
+                "timestamp": timestamp
+            })
+    
+    return {
+        "session_id": session_id,
+        "duration_data": duration_data,
+        "interval_data": interval_data,
+        "intensity_data": intensity_data,
+        "total_contractions": len(contractions)
     }
