@@ -20,10 +20,12 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
+import AppearanceSettings from '../../src/components/AppearanceSettings';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function MomProfileScreen() {
   const router = useRouter();
@@ -592,6 +594,11 @@ export default function MomProfileScreen() {
               </View>
             </View>
           )}
+        </Card>
+        
+        {/* Appearance Settings */}
+        <Card style={styles.menuCard}>
+          <AppearanceSettings showLabel={true} />
         </Card>
         
         {/* Getting Started */}
