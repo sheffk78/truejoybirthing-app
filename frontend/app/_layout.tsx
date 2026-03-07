@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { Platform, StatusBar } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {
@@ -100,7 +100,7 @@ function ThemedLayout() {
   }
   
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
       {/* Set status bar style based on theme */}
       <StatusBar 
         barStyle={isDark ? 'light-content' : 'dark-content'} 
@@ -123,7 +123,7 @@ function ThemedLayout() {
         <Stack.Screen name="pro-feedback" />
         <Stack.Screen name="index" />
       </Stack>
-    </>
+    </View>
   );
 }
 

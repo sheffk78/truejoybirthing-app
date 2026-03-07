@@ -1,0 +1,94 @@
+{
+  "summary": "Theme Switching Visual Test: FAILED. The View wrapper fix in _layout.tsx is NOT fully resolving the gray background issue. Dark mode is not visually applied - when selecting Dark theme, background remains rgb(254, 252, 255) (light) instead of changing to rgb(26, 21, 32) (dark). Gray wrapper rgb(242, 242, 242) still present at div index 5, overriding the themed content at index 7.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Theme Switching - Dark Mode Visual Application",
+        "issue": "Dark mode (#1A1520 / rgb(26,21,32)) is NOT being applied visually. When Dark is selected, background colors remain: rgb(242, 242, 242) at div[5] and rgb(254, 252, 255) at div[7]. Expected: Dark background should show rgb(26, 21, 32).",
+        "affected_selectors": ["div[5] - gray wrapper", "div[7] - themed content"],
+        "priority": "HIGH"
+      },
+      {
+        "flow": "Gray Wrapper Background Override",
+        "issue": "Gray wrapper div (rgb(242, 242, 242) / #F2F2F2) at index 5 is still blocking theme visibility. The View wrapper added in _layout.tsx at line 103 is rendered at a lower z-index/later position than the gray wrapper.",
+        "affected_selectors": ["SafeAreaProvider wrapper divs"],
+        "priority": "HIGH"
+      }
+    ],
+    "design_issues": []
+  },
+  "test_results": {
+    "login": "PASS - Successfully logged in as demo.mom@truejoybirthing.com",
+    "profile_navigation": "PASS - Navigated to Profile page via bottom nav",
+    "appearance_section_visible": "PASS - Appearance section renders with all 3 options (System, Light, Dark)",
+    "theme_selection_ui": "PASS - Click events on theme options work, checkmark appears to move",
+    "dark_mode_visual_change": "FAIL - Dark background (#1A1520) NOT visible when Dark mode selected",
+    "light_mode_visual_change": "PASS - Light background (#FEFCFF) visible (but also visible in Dark mode)",
+    "gray_wrapper_removed": "FAIL - Gray wrapper (rgb(242,242,242)) still present at div[5]"
+  },
+  "debug_findings": {
+    "dark_mode_div_backgrounds": [
+      {"div_index": 5, "bg": "rgb(242, 242, 242)", "note": "Gray wrapper - NOT from theme constants"},
+      {"div_index": 7, "bg": "rgb(254, 252, 255)", "note": "LIGHT theme color, should be DARK #1A1520"},
+      {"div_index": 12, "bg": "rgb(242, 242, 242)", "note": "Gray wrapper repeated"},
+      {"div_index": 14, "bg": "rgb(254, 252, 255)", "note": "Light theme - incorrect for Dark mode"}
+    ],
+    "light_mode_div_backgrounds": [
+      {"div_index": 5, "bg": "rgb(242, 242, 242)", "note": "Gray wrapper"},
+      {"div_index": 7, "bg": "rgb(254, 252, 255)", "note": "Light theme - correct"}
+    ],
+    "expected_dark_color": "rgb(26, 21, 32) / #1A1520",
+    "expected_light_color": "rgb(254, 252, 255) / #FEFCFF",
+    "gray_wrapper_color": "rgb(242, 242, 242) / #F2F2F2",
+    "root_cause": "The View wrapper in ThemedLayout (_layout.tsx line 103) applies backgroundColor but: 1) Gray wrapper at div[5] still renders BEFORE the themed View, 2) Theme state may not be updating the actual rendered colors correctly"
+  },
+  "code_changes_made": {
+    "_layout.tsx_line_103": "View with style={{ flex: 1, backgroundColor: theme.colors.background.primary }}",
+    "effectiveness": "NOT working - gray wrapper still overriding themed content"
+  },
+  "test_report_links": ["/app/test_reports/iteration_156.json"],
+  "action_items": [
+    "PRIORITY 1 (CRITICAL): The View wrapper is NOT fixing the gray background. Need to identify WHERE the gray rgb(242,242,242) div comes from and apply theme there.",
+    "PRIORITY 2: Check if SafeAreaProvider itself needs a backgroundColor style prop",
+    "PRIORITY 3: Consider adding CSS override for web platform to set body/html background to theme color",
+    "PRIORITY 4: Debug why Dark theme state is selected but rgb(26,21,32) is not appearing in ANY div - possible state/context issue"
+  ],
+  "critical_code_review_comments": [
+    "The _layout.tsx View wrapper at line 103 has backgroundColor: theme.colors.background.primary but this is NOT overriding the gray wrapper",
+    "The gray wrapper (rgb(242,242,242)) appears at div index 5, BEFORE the themed content at index 7",
+    "When Dark mode is selected, the themed content divs still show rgb(254,252,255) (light color) instead of rgb(26,21,32) (dark color)",
+    "This suggests either: a) Theme context state is not updating components, or b) Components are not re-rendering with new theme colors"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only test)",
+    "frontend": "40% - Theme UI works but visual application fails completely"
+  },
+  "test_credentials": {
+    "mom": "demo.mom@truejoybirthing.com / DemoScreenshot2024!"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Theme switching is NOT working visually. The gray wrapper (rgb(242,242,242)) from previous iteration is STILL present. Even more critically, when Dark mode is selected, the themed content divs show rgb(254,252,255) (LIGHT color) not rgb(26,21,32) (DARK color). This suggests either: 1) Theme context state is not propagating correctly, 2) SafeAreaProvider or parent wrappers need explicit backgroundColor, or 3) Components need to force re-render on theme change. The View wrapper fix alone is insufficient.",
+  "verified_working_features": [
+    "Login flow works correctly",
+    "Profile page loads with all content",
+    "Appearance section UI renders with 3 options",
+    "Theme option clicks are registering"
+  ],
+  "failed_features": [
+    "Dark mode visual application - background stays light",
+    "Gray wrapper removal - still present blocking theme"
+  ],
+  "comparison_with_previous_iteration": {
+    "iteration_155_status": "Gray wrapper blocking theme visuals",
+    "iteration_156_status": "SAME - Gray wrapper still present, PLUS dark theme colors not applying at all",
+    "improvement": "NONE - Issue persists despite View wrapper addition"
+  }
+}
