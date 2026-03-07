@@ -7,64 +7,99 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 
 **Contraction Timer - Phase 2 Enhancements - FULLY IMPLEMENTED & TESTED:**
 
-**TESTING COMPLETE (2026-03-07):**
+**COMPREHENSIVE TESTING COMPLETE (2026-03-07):**
 - Backend API tests: 24/24 (100%)
-- Frontend UI tests: 95% (all Phase 2 features working)
-- Test report: `/app/test_reports/iteration_151.json`
+- Frontend UI tests: 100% (all Phase 2 features working)
+- Test report: `/app/test_reports/iteration_152.json`
 
 **Phase 2 Features Verified Working:**
+
 1. **Birth-plan awareness (birth word preference)** ✅
    - Mom can choose: "contractions", "surges", or "waves"
-   - UI dynamically uses preferred term throughout timer (header, buttons, modals)
+   - UI dynamically uses preferred term throughout timer:
+     - Header: "Surges Timer"
+     - Buttons: "Start Surge" / "Stop Surge"
+     - Modals: "Surges History", "Surges Charts"
+     - Timer state: "Surgeing..."
+   - Export uses birth word ("SURGES TIMING SUMMARY", "Total Surges", "SURGES LOG")
    - API: GET/PUT /api/contractions/preferences
 
 2. **Custom alert thresholds** ✅
    - Options: 5-1-1 (standard), 4-1-1 (earlier), 3-1-1 (closer), or "none"
-   - Pattern detection uses selected threshold
+   - Pattern detection correctly uses selected threshold
    - Messages personalized with birth word preference
+   - Export shows which threshold was used: "ALERT STATUS (5-1-1)"
 
 3. **Water breaking tracking** ✅
-   - Record when water breaks with optional notes (color, amount)
-   - Team notification sent to Doula/Midwife
-   - Banner displayed in timer UI showing time and note
+   - Record when water breaks with optional notes (color, amount, clarity)
+   - Team notification sent to Doula/Midwife (verified in notifications)
+   - Blue banner displayed in timer UI showing time and note
+   - Export includes WATER BREAKING section with time and notes
    - API: POST/DELETE /api/contractions/session/{id}/water-broke
 
 4. **Session & per-contraction notes** ✅
    - Session-level notes for overall labor observations
-   - Notes modal with save functionality
+   - Per-contraction notes visible in History modal
+   - Doula can see all notes (read-only via team/client endpoint)
+   - Export includes SESSION NOTES section
+   - Export includes contraction notes in log (truncated to 50 chars)
    - API: PUT /api/contractions/session/{id}/notes
 
-5. **Chart data with react-native-chart-kit** ✅
+5. **Enhanced Summary & Export** ✅
+   - Uses birth word throughout (SURGES instead of CONTRACTIONS)
+   - Header includes: Mom name, Due date, Session date
+   - Key stats: Total count, Avg Duration, Avg Interval
+   - WATER BREAKING section with time and notes
+   - ALERT STATUS showing which threshold used and pattern status
+   - SESSION NOTES section
+   - SURGES LOG with time, duration, interval, intensity, and notes
+   - No internal IDs exposed (no contr_, sess_, user_id)
+   - API: GET /api/contractions/session/{id}/export
+
+6. **Charts with react-native-chart-kit** ✅
    - Duration over time (line chart) - seconds
    - Interval over time (line chart) - minutes
    - Charts modal appears after 3+ contractions
+   - Tested with 15+ contractions with varied durations/intensities
+   - Renders bezier curves with data point markers
    - API: GET /api/contractions/session/{id}/chart-data
 
-6. **Primary labor session marking** ✅
+7. **Primary labor session marking** ✅
    - Mark one session as THE primary labor session
+   - Only one session can be primary (others auto-unmarked)
    - Useful for birth records post-delivery
    - API: PUT /api/contractions/session/{id}/mark-primary
 
-**New Backend Endpoints:**
+**Phase 1 Regression Tests Passed:**
+- ✅ Start/Stop contraction timing
+- ✅ Session states (ACTIVE, PAUSED, ENDED)
+- ✅ Edit/Delete contractions
+- ✅ Default 5-1-1 pattern detection
+- ✅ Team sharing and doula visibility
+- ✅ Intensity selection (Mild/Moderate/Strong)
+- ✅ Manual contraction entry
+
+**Backend Endpoints:**
 - GET/PUT /api/contractions/preferences
 - POST/DELETE /api/contractions/session/{id}/water-broke
 - PUT /api/contractions/session/{id}/notes
 - PUT /api/contractions/session/{id}/mark-primary
 - GET /api/contractions/session/{id}/chart-data
+- GET /api/contractions/session/{id}/export (ENHANCED)
 
-**New Database Collections:**
+**Database Collections:**
 - `timer_preferences` - Birth word and alert threshold settings
 
 **Files Modified:**
-- `backend/routes/contractions.py` - Added Phase 2 endpoints and custom threshold logic
-- `frontend/app/(mom)/contraction-timer.tsx` - Added settings modal, water broke UI, notes modal, charts modal
+- `backend/routes/contractions.py` - Added Phase 2 endpoints, custom threshold logic, enhanced export
+- `frontend/app/(mom)/contraction-timer.tsx` - Settings modal, water broke UI, notes modal, charts modal
 
-**Dependencies Used:**
+**Dependencies:**
 - react-native-chart-kit (replaced victory-native for better web support)
 
 **Test Reports:**
-- `/app/test_reports/iteration_151.json` - Comprehensive Phase 2 testing (LATEST)
-- `/app/test_reports/iteration_150.json` - Initial Phase 2 implementation
+- `/app/test_reports/iteration_152.json` - Final comprehensive Phase 2 testing
+- `/app/test_reports/iteration_151.json` - Previous comprehensive test
 
 ## Previous Session (2026-03-07 - Contraction Timer Feature MVP)
 

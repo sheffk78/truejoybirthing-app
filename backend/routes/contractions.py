@@ -1117,12 +1117,28 @@ async def export_session_summary(
         "end_time": {"$ne": None}
     }, {"_id": 0}).sort("start_time", 1).to_list(1000)
     
-    stats = calculate_session_stats(contractions)
-    pattern_status = check_511_pattern(contractions)
+    # Get mom's preferences for threshold info
+    prefs = await get_mom_timer_preferences(user.user_id)
+    birth_word = prefs.get("birth_word", "contractions")
+    alert_threshold = prefs.get("alert_threshold", "5-1-1")
     
-    # Get mom's name
+    stats = calculate_session_stats(contractions)
+    pattern_status = check_511_pattern(contractions, prefs, birth_word)
+    
+    # Get mom's name and due date
     mom = await db.users.find_one({"user_id": user.user_id})
     mom_name = mom.get("full_name", "Mom") if mom else "Mom"
+    
+    # Get due date from profile
+    mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id})
+    due_date = mom_profile.get("due_date") if mom_profile else None
+    due_date_str = ""
+    if due_date:
+        try:
+            due_dt = datetime.fromisoformat(due_date.replace('Z', '+00:00'))
+            due_date_str = due_dt.strftime("%B %d, %Y")
+        except:
+            due_date_str = str(due_date)
     
     # Format times
     started_at = session.get("started_at", "")
@@ -1131,8 +1147,10 @@ async def export_session_summary(
     if started_at:
         started_dt = datetime.fromisoformat(started_at.replace('Z', '+00:00'))
         started_formatted = started_dt.strftime("%B %d, %Y at %I:%M %p")
+        session_date = started_dt.strftime("%B %d, %Y")
     else:
         started_formatted = "N/A"
+        session_date = "N/A"
     
     if ended_at:
         ended_dt = datetime.fromisoformat(ended_at.replace('Z', '+00:00'))
@@ -1140,24 +1158,49 @@ async def export_session_summary(
     else:
         ended_formatted = "Still active"
     
+    # Format water breaking info
+    water_broke_section = ""
+    if session.get("water_broke_at"):
+        water_dt = datetime.fromisoformat(session["water_broke_at"].replace('Z', '+00:00'))
+        water_time_str = water_dt.strftime("%I:%M %p")
+        water_note = session.get("water_broke_note", "")
+        water_broke_section = f"""
+WATER BREAKING
+• Time: {water_time_str}
+• Notes: {water_note if water_note else 'No notes'}
+"""
+    
+    # Format session notes
+    session_notes_section = ""
+    if session.get("session_notes"):
+        session_notes_section = f"""
+SESSION NOTES
+{session.get("session_notes")}
+"""
+    
+    # Capitalize birth word for display
+    birth_word_title = birth_word.title()
+    
     # Build summary text
     summary_text = f"""
-CONTRACTION TIMING SUMMARY
+{birth_word_title.upper()} TIMING SUMMARY
 {mom_name}
+{"Due Date: " + due_date_str if due_date_str else ""}
+Session Date: {session_date}
 
 Session Started: {started_formatted}
 Session Ended: {ended_formatted}
 
 SUMMARY STATISTICS
-• Total Contractions: {stats['contraction_count']}
+• Total {birth_word_title}: {stats['contraction_count']}
 • Average Duration: {stats['average_duration_formatted']}
 • Average Interval: {stats['average_interval_formatted']}
-
-5-1-1 STATUS
+{water_broke_section}
+ALERT STATUS ({alert_threshold})
 • Pattern Reached: {'Yes' if pattern_status['pattern_reached'] else 'No'}
 • Status: {pattern_status['status'].replace('_', ' ').title()}
-
-CONTRACTION LOG
+{session_notes_section}
+{birth_word_title.upper()} LOG
 """
     
     for i, c in enumerate(contractions, 1):
@@ -1166,8 +1209,12 @@ CONTRACTION LOG
         duration = format_duration(c.get('duration_seconds', 0))
         interval = format_duration(c.get('interval_seconds_to_previous', 0)) if c.get('interval_seconds_to_previous') else "--:--"
         intensity = c.get('intensity', 'Not set')
+        notes = c.get('notes', '')
         
-        summary_text += f"{i}. {time_str} | Duration: {duration} | Interval: {interval} | Intensity: {intensity}\n"
+        line = f"{i}. {time_str} | Duration: {duration} | Interval: {interval} | Intensity: {intensity}"
+        if notes:
+            line += f" | Notes: {notes[:50]}"
+        summary_text += line + "\n"
     
     summary_text += f"""
 ---
