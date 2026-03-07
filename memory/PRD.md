@@ -3,7 +3,64 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-07 - Contraction Timer Feature MVP)
+## Latest Session (2026-03-07 - Contraction Timer Phase 2 Enhancements)
+
+**Contraction Timer - Phase 2 Enhancements - COMPLETED:**
+
+**Phase 2 Features Implemented:**
+1. **Birth-plan awareness (birth word preference)**
+   - Mom can choose: "contractions", "surges", or "waves"
+   - UI dynamically uses preferred term throughout timer
+   - API: GET/PUT /api/contractions/preferences
+
+2. **Custom alert thresholds**
+   - Options: 5-1-1 (standard), 4-1-1 (earlier), 3-1-1 (closer), or "none"
+   - Pattern detection uses selected threshold
+   - Messages personalized with birth word preference
+
+3. **Water breaking tracking**
+   - Record when water breaks with optional notes (color, amount)
+   - Team notification sent to Doula/Midwife
+   - Banner displayed in timer UI
+   - API: POST/DELETE /api/contractions/session/{id}/water-broke
+
+4. **Session & per-contraction notes**
+   - Session-level notes for overall labor observations
+   - Per-contraction notes elevated in UI
+   - API: PUT /api/contractions/session/{id}/notes
+
+5. **Chart data endpoint**
+   - Duration over time (line chart)
+   - Interval over time (line chart)
+   - Using react-native-chart-kit for web compatibility
+   - API: GET /api/contractions/session/{id}/chart-data
+
+6. **Primary labor session marking**
+   - Mark one session as THE primary labor session
+   - Useful for birth records post-delivery
+   - API: PUT /api/contractions/session/{id}/mark-primary
+
+**New Backend Endpoints:**
+- GET/PUT /api/contractions/preferences
+- POST/DELETE /api/contractions/session/{id}/water-broke
+- PUT /api/contractions/session/{id}/notes
+- PUT /api/contractions/session/{id}/mark-primary
+- GET /api/contractions/session/{id}/chart-data
+
+**New Database Collections:**
+- `timer_preferences` - Birth word and alert threshold settings
+
+**Files Modified:**
+- `backend/routes/contractions.py` - Added Phase 2 endpoints and custom threshold logic
+- `frontend/app/(mom)/contraction-timer.tsx` - Added settings modal, water broke UI, notes modal, charts modal
+
+**Dependencies Added:**
+- react-native-chart-kit (replaced victory-native for better web support)
+
+**Test Report:**
+- `/app/test_reports/iteration_150.json` - Backend 24/24 tests passed
+
+## Previous Session (2026-03-07 - Contraction Timer Feature MVP)
 
 **Contraction Timer - Phase 1 (MVP) - COMPLETED:**
 Built a comprehensive contraction timer feature for Mom users with the following capabilities:

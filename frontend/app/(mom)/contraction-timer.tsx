@@ -21,7 +21,7 @@ import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
 import { useRouter } from 'expo-router';
-import { VictoryLine, VictoryChart, VictoryAxis, VictoryScatter, VictoryTheme } from 'victory-native';
+import { LineChart } from 'react-native-chart-kit';
 
 // Types
 interface Contraction {
@@ -1183,59 +1183,53 @@ export default function ContractionTimerScreen() {
                 <>
                   <View style={styles.chartSection}>
                     <Text style={styles.chartTitle}>Duration Over Time (seconds)</Text>
-                    <VictoryChart
-                      theme={VictoryTheme.material}
-                      height={200}
-                      padding={{ top: 20, bottom: 40, left: 50, right: 20 }}
-                    >
-                      <VictoryAxis
-                        tickFormat={(x) => `#${x}`}
-                        style={{ tickLabels: { fontSize: 10 } }}
-                      />
-                      <VictoryAxis
-                        dependentAxis
-                        tickFormat={(y) => `${y}s`}
-                        style={{ tickLabels: { fontSize: 10 } }}
-                      />
-                      <VictoryLine
-                        data={chartData.duration_data}
-                        style={{ data: { stroke: COLORS.primary } }}
-                      />
-                      <VictoryScatter
-                        data={chartData.duration_data}
-                        size={5}
-                        style={{ data: { fill: COLORS.primary } }}
-                      />
-                    </VictoryChart>
+                    <LineChart
+                      data={{
+                        labels: chartData.duration_data.map((d: any) => `#${d.x}`).slice(-8),
+                        datasets: [{ data: chartData.duration_data.map((d: any) => d.y).slice(-8) }]
+                      }}
+                      width={Dimensions.get('window').width - 80}
+                      height={180}
+                      yAxisSuffix="s"
+                      chartConfig={{
+                        backgroundColor: '#fff',
+                        backgroundGradientFrom: '#fff',
+                        backgroundGradientTo: '#fff',
+                        decimalPlaces: 0,
+                        color: (opacity = 1) => `rgba(156, 125, 97, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        style: { borderRadius: 8 },
+                        propsForDots: { r: '4', strokeWidth: '2', stroke: COLORS.primary }
+                      }}
+                      bezier
+                      style={{ borderRadius: 8 }}
+                    />
                   </View>
                   
                   {chartData.interval_data.length >= 2 && (
                     <View style={styles.chartSection}>
                       <Text style={styles.chartTitle}>Interval Over Time (minutes)</Text>
-                      <VictoryChart
-                        theme={VictoryTheme.material}
-                        height={200}
-                        padding={{ top: 20, bottom: 40, left: 50, right: 20 }}
-                      >
-                        <VictoryAxis
-                          tickFormat={(x) => `#${x}`}
-                          style={{ tickLabels: { fontSize: 10 } }}
-                        />
-                        <VictoryAxis
-                          dependentAxis
-                          tickFormat={(y) => `${y}m`}
-                          style={{ tickLabels: { fontSize: 10 } }}
-                        />
-                        <VictoryLine
-                          data={chartData.interval_data}
-                          style={{ data: { stroke: COLORS.secondary } }}
-                        />
-                        <VictoryScatter
-                          data={chartData.interval_data}
-                          size={5}
-                          style={{ data: { fill: COLORS.secondary } }}
-                        />
-                      </VictoryChart>
+                      <LineChart
+                        data={{
+                          labels: chartData.interval_data.map((d: any) => `#${d.x}`).slice(-8),
+                          datasets: [{ data: chartData.interval_data.map((d: any) => d.y).slice(-8) }]
+                        }}
+                        width={Dimensions.get('window').width - 80}
+                        height={180}
+                        yAxisSuffix="m"
+                        chartConfig={{
+                          backgroundColor: '#fff',
+                          backgroundGradientFrom: '#fff',
+                          backgroundGradientTo: '#fff',
+                          decimalPlaces: 0,
+                          color: (opacity = 1) => `rgba(97, 125, 156, ${opacity})`,
+                          labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                          style: { borderRadius: 8 },
+                          propsForDots: { r: '4', strokeWidth: '2', stroke: COLORS.secondary }
+                        }}
+                        bezier
+                        style={{ borderRadius: 8 }}
+                      />
                     </View>
                   )}
                 </>
