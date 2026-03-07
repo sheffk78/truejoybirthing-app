@@ -8,7 +8,7 @@ import os
 import uuid
 import time
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://birthing-app-qa.preview.emergentagent.com")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://labor-session-qa.preview.emergentagent.com")
 
 # Test credentials from requirements
 MIDWIFE_EMAIL = "testmidwife@test.com"
