@@ -23,19 +23,6 @@ function ThemedLayout() {
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
   
-  // Set document background color for web platform
-  useEffect(() => {
-    if (Platform.OS === 'web' && typeof document !== 'undefined') {
-      document.body.style.backgroundColor = theme.colors.background.primary;
-      document.documentElement.style.backgroundColor = theme.colors.background.primary;
-      // Also set on all direct children to override react-native-web defaults
-      const rootElement = document.getElementById('root');
-      if (rootElement) {
-        rootElement.style.backgroundColor = theme.colors.background.primary;
-      }
-    }
-  }, [theme.colors.background.primary]);
-  
   // Initialize the app
   useEffect(() => {
     async function prepare() {

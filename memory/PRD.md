@@ -3,7 +3,70 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-07 - Contraction Timer Phase 2 FULLY TESTED)
+## Latest Session (2026-03-07 - Light/Dark Mode Implementation)
+
+**Light/Dark Mode Theme System - IN PROGRESS:**
+
+**What's Implemented:**
+1. ✅ **Theme Token System** (`/app/frontend/src/constants/themeTokens.ts`)
+   - Complete color palettes for LIGHT and DARK modes
+   - Background, text, accent, border, status, role, mood colors
+   - Shadow tokens for both modes
+   - Type-safe Theme interface
+
+2. ✅ **Theme Store** (`/app/frontend/src/store/themeStore.ts`)
+   - Zustand-based state management
+   - AsyncStorage persistence for user preference
+   - Three options: SYSTEM (follows device), LIGHT, DARK
+   - System theme change listener
+
+3. ✅ **Theme Context & Provider** (`/app/frontend/src/contexts/ThemeContext.tsx`)
+   - React context for theme distribution
+   - Individual Zustand selectors for proper re-renders
+   - useTheme, useThemeColors, useIsDarkMode hooks
+   - Web document.body background update on theme change
+
+4. ✅ **AppearanceSettings Component** (`/app/frontend/src/components/AppearanceSettings.tsx`)
+   - UI for selecting Light/Dark/System theme
+   - Radio-style selection with icons and descriptions
+   - Compact AppearanceToggle variant available
+
+5. ✅ **Root Layout Integration** (`/app/frontend/app/_layout.tsx`)
+   - ThemeProvider wrapping the app
+   - ThemedLayout component with dynamic View wrapper
+   - StatusBar updates based on theme
+
+6. ✅ **Profile Page Updated** (`/app/frontend/app/(mom)/profile.tsx`)
+   - AppearanceSettings section added
+   - SafeAreaView using dynamic theme.colors.background.primary
+   - Key text elements using dynamic colors
+
+**Testing Status:**
+- Theme selection UI: ✅ WORKING
+- Theme state persistence: ✅ WORKING
+- React component re-renders on theme change: ✅ WORKING (div backgrounds update)
+- Full visual dark mode: ⚠️ PARTIAL (internal divs update, gray wrapper from react-native-web still visible)
+
+**Test Reports:**
+- `/app/test_reports/iteration_157.json` - Theme context fixes
+- `/app/test_reports/iteration_156.json` - Initial theme testing
+
+**Remaining Work for Full Dark Mode:**
+1. **P0**: Fix gray wrapper (rgb(242,242,242)) from react-native-web/SafeAreaProvider
+2. **P1**: Update all screens to use dynamic `theme.colors` instead of static `COLORS`
+3. **P2**: Update shared components (Card, Button, Input) to be theme-aware
+4. **P3**: Add theme-aware styling to Doula and Midwife dashboards
+
+**Files Created:**
+- `/app/frontend/src/constants/themeTokens.ts` - Color palettes and theme types
+- `/app/frontend/src/store/themeStore.ts` - Zustand theme store
+- `/app/frontend/src/contexts/ThemeContext.tsx` - React context and hooks
+- `/app/frontend/src/contexts/index.ts` - Context exports
+- `/app/frontend/src/components/AppearanceSettings.tsx` - Theme selection UI
+
+---
+
+## Previous Session (2026-03-07 - Contraction Timer Phase 2 FULLY TESTED)
 
 **Contraction Timer - Phase 2 Enhancements - FULLY IMPLEMENTED & TESTED:**
 

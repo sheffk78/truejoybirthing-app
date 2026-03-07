@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, ReactNode } from 'react';
+import { Platform } from 'react-native';
 import { useThemeStore, ThemePreference, ThemeName } from '../store/themeStore';
 import { Theme, getTheme } from '../constants/themeTokens';
 
@@ -43,6 +44,19 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   // Get the full theme object based on effective theme
   const theme = getTheme(effectiveTheme);
+  
+  // Update web document background on theme change
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      const bgColor = theme.colors.background.primary;
+      // Set on multiple elements to ensure coverage
+      document.body.style.backgroundColor = bgColor;
+      document.documentElement.style.backgroundColor = bgColor;
+      // Also add a CSS class for potential CSS-based overrides
+      document.body.setAttribute('data-theme', effectiveTheme.toLowerCase());
+      document.documentElement.setAttribute('data-theme', effectiveTheme.toLowerCase());
+    }
+  }, [effectiveTheme, theme.colors.background.primary]);
   
   const value: ThemeContextType = {
     theme,
