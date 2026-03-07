@@ -17,6 +17,7 @@ import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { useColors } from '../../src/hooks/useThemedStyles';
 
 interface PendingContract {
   contract_id: string;
@@ -37,6 +38,7 @@ interface PendingInvoice {
 export default function MomHomeScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
+  const colors = useColors();
   
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [timeline, setTimeline] = useState<any>(null);
@@ -106,20 +108,20 @@ export default function MomHomeScreen() {
   const firstName = user?.full_name?.split(' ')[0] || 'there';
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Hello, {firstName}</Text>
+            <Text style={[styles.greeting, { color: colors.text }]}>Hello, {firstName}</Text>
             {timeline?.current_week && (
-              <Text style={styles.weekText}>Week {timeline.current_week} of pregnancy</Text>
+              <Text style={[styles.weekText, { color: colors.textSecondary }]}>Week {timeline.current_week} of pregnancy</Text>
             )}
           </View>
           <TouchableOpacity 
@@ -130,7 +132,7 @@ export default function MomHomeScreen() {
             {user?.picture ? (
               <Image source={{ uri: user.picture }} style={styles.avatarImage} />
             ) : (
-              <Icon name="person-circle-outline" size={44} color={COLORS.primary} />
+              <Icon name="person-circle-outline" size={44} color={colors.primary} />
             )}
           </TouchableOpacity>
         </View>

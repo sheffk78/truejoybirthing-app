@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from '../../src/components/Icon';
 import { COLORS, SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { useColors } from '../../src/hooks/useThemedStyles';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +24,7 @@ const HERO_IMAGE = 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const colors = useColors();
   
   const handleGoogleLogin = () => {
     if (Platform.OS === 'web') {
@@ -35,7 +37,7 @@ export default function WelcomeScreen() {
   };
   
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Hero Image Background */}
       <ImageBackground
         source={{ uri: HERO_IMAGE }}
@@ -47,8 +49,8 @@ export default function WelcomeScreen() {
           colors={[
             'rgba(159, 131, 182, 0.3)',  // Soft lavender tint
             'rgba(212, 165, 165, 0.4)',  // Dusty rose tint
-            'rgba(254, 252, 255, 0.85)', // Fade to background
-            '#FEFCFF'
+            colors.background + 'D9',     // Fade to background (85% opacity)
+            colors.background
           ]}
           locations={[0, 0.3, 0.65, 0.9]}
           style={styles.gradientOverlay}
@@ -77,29 +79,29 @@ export default function WelcomeScreen() {
         <View style={styles.spacer} />
         
         {/* Bottom Content Card */}
-        <View style={styles.bottomCard}>
+        <View style={[styles.bottomCard, { backgroundColor: colors.background }]}>
           {/* Headline */}
-          <Text style={styles.headline}>
+          <Text style={[styles.headline, { color: colors.text }]}>
             Your Birth Journey,{'\n'}Supported Every Step
           </Text>
           
-          <Text style={styles.subtitle}>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Create your birth plan, connect with doulas and midwives, and experience the birth you envision.
           </Text>
           
           {/* Feature Pills */}
           <View style={styles.featurePills}>
-            <View style={[styles.pill, { backgroundColor: COLORS.secondary + '25' }]}>
-              <Icon name="document-text" size={14} color={COLORS.secondary} />
-              <Text style={[styles.pillText, { color: COLORS.secondaryDark }]}>Birth Plan</Text>
+            <View style={[styles.pill, { backgroundColor: colors.secondary + '25' }]}>
+              <Icon name="document-text" size={14} color={colors.secondary} />
+              <Text style={[styles.pillText, { color: colors._theme.accent.secondaryDark }]}>Birth Plan</Text>
             </View>
-            <View style={[styles.pill, { backgroundColor: COLORS.primary + '25' }]}>
-              <Icon name="people" size={14} color={COLORS.primary} />
-              <Text style={[styles.pillText, { color: COLORS.primaryDark }]}>Your Team</Text>
+            <View style={[styles.pill, { backgroundColor: colors.primary + '25' }]}>
+              <Icon name="people" size={14} color={colors.primary} />
+              <Text style={[styles.pillText, { color: colors.primaryDark }]}>Your Team</Text>
             </View>
-            <View style={[styles.pill, { backgroundColor: COLORS.accent + '25' }]}>
-              <Icon name="heart" size={14} color={COLORS.accent} />
-              <Text style={[styles.pillText, { color: COLORS.accentDark }]}>Support</Text>
+            <View style={[styles.pill, { backgroundColor: colors.accent + '25' }]}>
+              <Icon name="heart" size={14} color={colors.accent} />
+              <Text style={[styles.pillText, { color: colors.accent }]}>Support</Text>
             </View>
           </View>
           

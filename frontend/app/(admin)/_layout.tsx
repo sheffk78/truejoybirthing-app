@@ -1,19 +1,21 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { useColors, SIZES } from '../../src/hooks/useThemedStyles';
 import { Platform } from 'react-native';
 
 export default function AdminLayout() {
+  const colors = useColors();
+  
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: COLORS.roleAdmin,
-        tabBarInactiveTintColor: COLORS.textLight,
+        tabBarActiveTintColor: colors._theme.role.admin,
+        tabBarInactiveTintColor: colors.textLight,
         tabBarStyle: {
-          backgroundColor: COLORS.white,
-          borderTopColor: COLORS.border,
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           height: Platform.OS === 'ios' ? 88 : 64,
           paddingBottom: Platform.OS === 'ios' ? 28 : 8,
           paddingTop: 8,

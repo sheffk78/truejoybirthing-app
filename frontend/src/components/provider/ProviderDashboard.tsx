@@ -19,6 +19,7 @@ import { useAuthStore } from '../../store/authStore';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
 import { COLORS, SIZES, SHADOWS, FONTS } from '../../constants/theme';
+import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
 interface ShareRequest {
@@ -36,6 +37,7 @@ interface ProviderDashboardProps {
 export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   const router = useRouter();
   const { user } = useAuthStore();
+  const colors = useColors();
   
   const [stats, setStats] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -140,7 +142,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   };
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']} data-testid={`${config.role.toLowerCase()}-dashboard`}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']} data-testid={`${config.role.toLowerCase()}-dashboard`}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -151,7 +153,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Hello, {firstName}</Text>
+            <Text style={[styles.greeting, { color: colors.text }]}>Hello, {firstName}</Text>
             <Text style={[styles.subtitle, { color: primaryColor }]}>{config.dashboard.title}</Text>
           </View>
           <TouchableOpacity 

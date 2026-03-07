@@ -20,6 +20,7 @@ import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { useColors } from '../../src/hooks/useThemedStyles';
 import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-chart-kit';
 
@@ -127,6 +128,7 @@ const formatInterval = (seconds: number | null): string => {
 
 export default function ContractionTimerScreen() {
   const router = useRouter();
+  const colors = useColors();
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [contractions, setContractions] = useState<Contraction[]>([]);
@@ -710,12 +712,12 @@ export default function ContractionTimerScreen() {
 
   // Active session - main timer UI
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header with Settings */}
       <View style={styles.headerRow}>
-        <Text style={styles.headerTitle}>{birthWordCapitalized} Timer</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{birthWordCapitalized} Timer</Text>
         <Pressable style={styles.settingsBtn} onPress={() => setShowSettingsModal(true)}>
-          <Icon name="settings-outline" size={24} color={COLORS.text} />
+          <Icon name="settings-outline" size={24} color={colors.text} />
         </Pressable>
       </View>
       

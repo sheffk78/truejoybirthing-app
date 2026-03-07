@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { useColors, SIZES } from '../../src/hooks/useThemedStyles';
 import { Platform } from 'react-native';
 
 /**
@@ -17,15 +17,17 @@ import { Platform } from 'react-native';
  * are accessed through Clients → Client Detail → Tool
  */
 export default function MidwifeLayout() {
+  const colors = useColors();
+  
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: COLORS.roleMidwife,
-        tabBarInactiveTintColor: COLORS.textLight,
+        tabBarActiveTintColor: colors.midwifePrimary,
+        tabBarInactiveTintColor: colors.textLight,
         tabBarStyle: {
-          backgroundColor: COLORS.white,
-          borderTopColor: COLORS.border,
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           height: Platform.OS === 'ios' ? 88 : 64,
           paddingBottom: Platform.OS === 'ios' ? 28 : 8,
           paddingTop: 8,
