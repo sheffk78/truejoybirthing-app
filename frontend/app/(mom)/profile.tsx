@@ -30,6 +30,8 @@ import { useTheme } from '../../src/contexts/ThemeContext';
 export default function MomProfileScreen() {
   const router = useRouter();
   const { user, logout, updateUser } = useAuthStore();
+  const { theme, isDark } = useTheme();
+  const colors = theme.colors;
   
   const [profile, setProfile] = useState<any>(null);
   const [birthPlan, setBirthPlan] = useState<any>(null);
@@ -354,7 +356,7 @@ export default function MomProfileScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]} edges={['top']}>
       {/* Hidden file input for web */}
       {Platform.OS === 'web' && (
         <input
@@ -395,9 +397,9 @@ export default function MomProfileScreen() {
               <Icon name="camera" size={14} color={COLORS.white} />
             </View>
           </TouchableOpacity>
-          <Text style={styles.userName}>{user?.full_name}</Text>
-          <Text style={styles.userEmail}>{user?.email}</Text>
-          <Text style={styles.tapToEdit}>Tap photo to update</Text>
+          <Text style={[styles.userName, { color: colors.text.primary }]}>{user?.full_name}</Text>
+          <Text style={[styles.userEmail, { color: colors.text.secondary }]}>{user?.email}</Text>
+          <Text style={[styles.tapToEdit, { color: colors.text.muted }]}>Tap photo to update</Text>
         </View>
         
         {/* Profile Info */}

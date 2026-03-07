@@ -1,0 +1,79 @@
+{
+  "summary": "Theme Switching Visual Test: PARTIAL SUCCESS. The profile.tsx now uses dynamic theme colors (colors.background.primary, colors.text.primary/secondary/muted) from useTheme() hook. Theme selection UI works correctly with checkmarks moving between options. Theme IS internally applied - detected different background colors in inner divs when switching themes (Dark: rgb(26, 21, 32) = #1A1520, Light: rgb(254, 252, 255) = #FEFCFF). However, a parent wrapper div with hardcoded gray background rgb(242, 242, 242) is overlaying the themed content, preventing the visual theme change from being visible to users.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Theme Switching Visual Appearance",
+        "issue": "A parent wrapper div (likely from SafeAreaProvider or react-native-web defaults) has hardcoded background color rgb(242, 242, 242) that overlays the correctly-themed SafeAreaView background. The theme system is working internally but the visual result is hidden.",
+        "affected_selectors": ["SafeAreaProvider", "Root layout wrapper divs"],
+        "priority": "MEDIUM"
+      }
+    ],
+    "design_issues": []
+  },
+  "test_results": {
+    "login": "PASS - Successfully logged in as demo.mom@truejoybirthing.com",
+    "profile_navigation": "PASS - Navigated to Profile page via bottom nav",
+    "appearance_section_visible": "PASS - Appearance section renders with all 3 options",
+    "theme_selection_ui": "PASS - Checkmarks correctly move between selected options",
+    "theme_internal_application": "PASS - Inner div shows correct themed colors (Dark: #1A1520, Light: #FEFCFF)",
+    "theme_visual_change": "FAIL - Parent wrapper with gray background covers themed content"
+  },
+  "debug_findings": {
+    "dark_mode_inner_bg": "rgb(26, 21, 32) = #1A1520 (correct DARK_COLORS.background.primary)",
+    "light_mode_inner_bg": "rgb(254, 252, 255) = #FEFCFF (correct LIGHT_COLORS.background.primary)",
+    "wrapper_div_bg": "rgb(242, 242, 242) = #F2F2F2 (not in theme constants - likely react-native-web default)",
+    "root_cause": "Multiple nested divs with first large div (idx 5) having hardcoded gray background that sits on top of/before the themed div (idx 7)"
+  },
+  "code_review": {
+    "profile_tsx_dynamic_styles": [
+      "Line 359: SafeAreaView correctly uses { backgroundColor: colors.background.primary }",
+      "Line 400: userName correctly uses { color: colors.text.primary }",
+      "Line 401: userEmail correctly uses { color: colors.text.secondary }",
+      "Line 402: tapToEdit correctly uses { color: colors.text.muted }"
+    ],
+    "remaining_static_colors": "Most other styles in profile.tsx still use static COLORS import from theme.ts (e.g., Card backgrounds, button colors, icon colors)"
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_155.json"
+  ],
+  "action_items": [
+    "PRIORITY 1: Fix parent wrapper background - Either update SafeAreaProvider/root layout to use theme colors, or set body/html background via useEffect + theme context",
+    "PRIORITY 2: Consider adding CSS for web to override react-native-web defaults: body { background-color: var(--bg-primary) } with CSS variables updated by theme",
+    "PRIORITY 3: Update remaining static COLORS usages in profile.tsx to use theme.colors for complete dark mode support"
+  ],
+  "critical_code_review_comments": [
+    "The theme system infrastructure is correctly implemented - the issue is purely visual/CSS layering",
+    "SafeAreaProvider from react-native-safe-area-context may need style prop for background color",
+    "Root _layout.tsx line 112 sets contentStyle but react-native-web may add additional wrapper divs"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only test)",
+    "frontend": "75% - Theme system works internally, only visual display is blocked by parent wrapper"
+  },
+  "test_credentials": {
+    "mom": "demo.mom@truejoybirthing.com / DemoScreenshot2024!"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Theme system IS working correctly under the hood. The issue is a gray wrapper div (rgb(242, 242, 242)) overlaying the themed content. Debug showed inner div correctly applying #1A1520 (dark) and #FEFCFF (light) backgrounds. Need to trace where the gray wrapper comes from - likely SafeAreaProvider or react-native-web defaults. After fixing wrapper, theme visual switching should work immediately.",
+  "verified_features": [
+    "Profile page uses useTheme() hook and colors object",
+    "SafeAreaView applies dynamic backgroundColor: colors.background.primary",
+    "Username/email text uses dynamic theme colors",
+    "Theme selection UI with 3 options (System/Light/Dark)",
+    "Checkmark moves correctly on theme selection",
+    "Theme context correctly returns different colors for LIGHT vs DARK"
+  ],
+  "partial_success_evidence": {
+    "dark_mode_detected": "Inner div shows rgb(26, 21, 32) which equals #1A1520 from DARK_COLORS.background.primary",
+    "light_mode_detected": "Inner div shows rgb(254, 252, 255) which equals #FEFCFF from LIGHT_COLORS.background.primary"
+  }
+}
