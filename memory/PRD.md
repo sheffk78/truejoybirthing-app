@@ -19,16 +19,16 @@ Built a comprehensive contraction timer feature for Mom users with the following
 - Exportable summary for healthcare providers
 - Team sharing opt-in (Doula/Midwife)
 
-**User Interface:**
-- New "Timer" tab in Mom's bottom navigation (between Birth Plan and My Team)
-- Stats strip showing avg duration, avg interval, and count
-- Large timer circle with animated pulse during contractions
-- Full-width Start/Stop button
-- 5-1-1 pattern status indicator
-- Bottom action bar: History, Add Manual, Share, End
+**Edge Case Testing Completed (2026-03-07):**
+- Session boundary validation added (prevents editing outside session bounds)
+- Double-start prevention working (error returned, no data pollution)
+- Long timer handling verified (editable via History)
+- Manual entry interval recalculation verified
+- Pause vs End behavior validated
+- Provider historical session view endpoint added
 
 **Files Created:**
-- `backend/routes/contractions.py` - Full API implementation (~1079 lines)
+- `backend/routes/contractions.py` - Full API implementation (~1155 lines)
 - `frontend/app/(mom)/contraction-timer.tsx` - Timer UI component (~950 lines)
 
 **Files Modified:**
@@ -41,24 +41,26 @@ Built a comprehensive contraction timer feature for Mom users with the following
 - `POST /api/contractions/start` - Start timing a contraction
 - `POST /api/contractions/stop?intensity=X` - Stop with optional intensity
 - `POST /api/contractions/manual` - Add manual contraction
-- `PUT /api/contractions/{id}` - Update contraction
+- `PUT /api/contractions/{id}` - Update contraction (with boundary validation)
 - `DELETE /api/contractions/{id}` - Delete contraction
-- `PUT /api/contractions/session/{id}` - Update session sharing
+- `PUT /api/contractions/session/{id}` - Update session sharing/status
 - `POST /api/contractions/session/{id}/end` - End session
 - `GET /api/contractions/sessions/history` - Get past sessions
 - `GET /api/contractions/session/{id}/summary` - Get session summary
 - `GET /api/contractions/session/{id}/export` - Export shareable text
 - `GET /api/contractions/team/active-clients` - Provider dashboard card
 - `GET /api/contractions/team/client/{mom_id}` - Provider view of client data
+- `GET /api/contractions/team/client/{mom_id}/history` - Provider view of session history (NEW)
 
-**Database Collections:**
-- `contraction_sessions` - Session data with sharing preferences
-- `contractions` - Individual contraction records
+**Design Decisions Documented:**
+1. **Retroactive Sync**: When sharing re-enabled, full session history shared (not just post-enable)
+2. **Double-Start**: Returns error, no zero-duration contraction created
+3. **Sharing Modal**: Currently always shows (recommendation: store preference)
 
-**Testing:**
-- All 27 backend API tests passed (100%)
-- All frontend UI flows verified (100%)
-- Test report: /app/test_reports/iteration_149.json
+**Test Reports:**
+- `/app/test_reports/iteration_149.json` - Initial implementation tests
+- `/app/test_reports/e2e_contraction_timer_report.md` - E2E labor scenario
+- `/app/test_reports/edge_case_test_report.md` - Edge case validation
 
 ## Previous Session (2026-03-04 - Newborn Exam Feature + Bug Fixes)
 

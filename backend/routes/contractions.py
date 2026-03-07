@@ -735,6 +735,46 @@ async def update_contraction(
     if not contraction:
         raise HTTPException(status_code=404, detail="Contraction not found")
     
+    # Get the session to validate boundaries
+    session = await db.contraction_sessions.find_one({
+        "session_id": contraction["session_id"]
+    })
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Validate timestamp boundaries
+    session_start = datetime.fromisoformat(session["started_at"].replace('Z', '+00:00'))
+    session_end = None
+    if session.get("ended_at"):
+        session_end = datetime.fromisoformat(session["ended_at"].replace('Z', '+00:00'))
+    
+    if data.start_time is not None:
+        new_start = datetime.fromisoformat(data.start_time.replace('Z', '+00:00'))
+        if new_start < session_start:
+            raise HTTPException(
+                status_code=400, 
+                detail="Contraction start time cannot be before session start time"
+            )
+        if session_end and new_start > session_end:
+            raise HTTPException(
+                status_code=400,
+                detail="Contraction start time cannot be after session end time"
+            )
+    
+    if data.end_time is not None:
+        new_end = datetime.fromisoformat(data.end_time.replace('Z', '+00:00'))
+        if new_end < session_start:
+            raise HTTPException(
+                status_code=400,
+                detail="Contraction end time cannot be before session start time"
+            )
+        if session_end and new_end > session_end:
+            raise HTTPException(
+                status_code=400,
+                detail="Contraction end time cannot be after session end time"
+            )
+    
     update_data = {"updated_at": get_now().isoformat()}
     
     if data.start_time is not None:
@@ -1074,3 +1114,47 @@ async def get_clients_with_active_sessions(
         })
     
     return {"active_clients": result}
+
+
+
+@router.get("/team/client/{mom_id}/history")
+async def get_client_session_history(
+    mom_id: str,
+    limit: int = 10,
+    user: User = Depends(get_current_user())
+):
+    """Get historical contraction sessions for a specific client (for team members)"""
+    if user.role not in ["DOULA", "MIDWIFE"]:
+        raise HTTPException(status_code=403, detail="Only providers can access client data")
+    
+    # Verify provider has access to this client
+    share_request = await db.share_requests.find_one({
+        "mom_id": mom_id,
+        "provider_id": user.user_id,
+        "status": "accepted"
+    })
+    
+    if not share_request:
+        raise HTTPException(status_code=403, detail="You don't have access to this client's data")
+    
+    provider_role = user.role.upper()
+    share_field = f"is_shared_with_{provider_role.lower()}"
+    
+    # Get sessions that were shared with this provider type
+    sessions = await db.contraction_sessions.find({
+        "mom_id": mom_id,
+        share_field: True
+    }, {"_id": 0}).sort("started_at", -1).limit(limit).to_list(limit)
+    
+    # Get mom info
+    mom = await db.users.find_one({"user_id": mom_id})
+    if mom:
+        mom.pop("_id", None)
+        mom.pop("password", None)
+        mom.pop("password_hash", None)
+    
+    return {
+        "sessions": sessions,
+        "mom": {"full_name": mom.get("full_name") if mom else None},
+        "total_sessions": len(sessions)
+    }
