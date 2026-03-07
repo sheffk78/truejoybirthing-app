@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from './Icon';
-import { COLORS, SIZES, FONTS } from '../constants/theme';
+import { SIZES, FONTS } from '../constants/theme';
+import { useColors } from '../hooks/useThemedStyles';
 import Button from './Button';
+
+// Types for colors object
+type ColorsType = ReturnType<typeof useColors>;
 
 // Component for text input fields
 const TextInputField = ({
@@ -13,6 +17,7 @@ const TextInputField = ({
   placeholder,
   multiline = false,
   numberOfLines = 1,
+  colors,
 }: {
   label: string;
   value: string;
@@ -20,15 +25,20 @@ const TextInputField = ({
   placeholder?: string;
   multiline?: boolean;
   numberOfLines?: number;
+  colors: ColorsType;
 }) => (
   <View style={styles.fieldContainer}>
-    <Text style={styles.fieldLabel}>{label}</Text>
+    <Text style={[styles.fieldLabel, { color: colors.text }]}>{label}</Text>
     <TextInput
-      style={[styles.textInput, multiline && styles.textArea]}
+      style={[
+        styles.textInput, 
+        { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text },
+        multiline && styles.textArea
+      ]}
       value={value || ''}
       onChangeText={onChange}
       placeholder={placeholder}
-      placeholderTextColor={COLORS.textLight}
+      placeholderTextColor={colors.textLight}
       multiline={multiline}
       numberOfLines={numberOfLines}
     />
@@ -41,11 +51,13 @@ const DateInputField = ({
   value,
   onChange,
   placeholder,
+  colors,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  colors: ColorsType;
 }) => {
   const [showPicker, setShowPicker] = useState(false);
   const dateValue = value ? new Date(value) : new Date();
@@ -73,16 +85,16 @@ const DateInputField = ({
 
   return (
     <View style={styles.fieldContainer}>
-      <Text style={styles.fieldLabel}>{label}</Text>
+      <Text style={[styles.fieldLabel, { color: colors.text }]}>{label}</Text>
       <TouchableOpacity 
-        style={styles.datePickerButton}
+        style={[styles.datePickerButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
         onPress={() => setShowPicker(true)}
       >
-        <Icon name="calendar" size={20} color={COLORS.primary} />
-        <Text style={[styles.datePickerText, !value && styles.datePickerPlaceholder]}>
+        <Icon name="calendar" size={20} color={colors.primary} />
+        <Text style={[styles.datePickerText, { color: colors.text }, !value && { color: colors.textLight }]}>
           {value ? formatDisplayDate(value) : (placeholder || 'Select a date')}
         </Text>
-        <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
+        <Icon name="chevron-down" size={20} color={colors.textSecondary} />
       </TouchableOpacity>
 
       {showPicker && (
@@ -94,11 +106,11 @@ const DateInputField = ({
             onRequestClose={() => setShowPicker(false)}
           >
             <View style={styles.dateModalOverlay}>
-              <View style={styles.dateModalContent}>
+              <View style={[styles.dateModalContent, { backgroundColor: colors.surface }]}>
                 <View style={styles.dateModalHeader}>
-                  <Text style={styles.dateModalTitle}>Select {label}</Text>
+                  <Text style={[styles.dateModalTitle, { color: colors.text }]}>Select {label}</Text>
                   <TouchableOpacity onPress={() => setShowPicker(false)}>
-                    <Icon name="close" size={24} color={COLORS.textPrimary} />
+                    <Icon name="close" size={24} color={colors.text} />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.webCalendarWrapper}>
@@ -112,10 +124,12 @@ const DateInputField = ({
                       width: '100%',
                       padding: 16,
                       fontSize: 18,
-                      border: `2px solid ${COLORS.primary}`,
+                      border: `2px solid ${colors.primary}`,
                       borderRadius: 12,
                       outline: 'none',
                       cursor: 'pointer',
+                      backgroundColor: colors.surface,
+                      color: colors.text,
                     }}
                   />
                 </View>
@@ -129,7 +143,7 @@ const DateInputField = ({
             </View>
           </Modal>
         ) : (
-          <View style={styles.nativeDatePickerContainer}>
+          <View style={[styles.nativeDatePickerContainer, { backgroundColor: colors.background }]}>
             <DateTimePicker
               value={dateValue}
               mode="date"
@@ -157,11 +171,13 @@ const MultiSelectField = ({
   value,
   onChange,
   options,
+  colors,
 }: {
   label: string;
   value: string[];
   onChange: (value: string[]) => void;
   options: string[];
+  colors: ColorsType;
 }) => {
   const selectedValues = Array.isArray(value) ? value : [];
   
@@ -175,19 +191,23 @@ const MultiSelectField = ({
   
   return (
     <View style={styles.fieldContainer}>
-      <Text style={styles.fieldLabel}>{label}</Text>
+      <Text style={[styles.fieldLabel, { color: colors.text }]}>{label}</Text>
       {options.map((option) => (
         <TouchableOpacity
           key={option}
           style={styles.checkboxRow}
           onPress={() => toggleOption(option)}
         >
-          <View style={[styles.checkbox, selectedValues.includes(option) && styles.checkboxChecked]}>
+          <View style={[
+            styles.checkbox, 
+            { borderColor: colors.border },
+            selectedValues.includes(option) && { backgroundColor: colors.primary, borderColor: colors.primary }
+          ]}>
             {selectedValues.includes(option) && (
-              <Icon name="checkmark" size={16} color={COLORS.white} />
+              <Icon name="checkmark" size={16} color={colors.white} />
             )}
           </View>
-          <Text style={styles.checkboxLabel}>{option}</Text>
+          <Text style={[styles.checkboxLabel, { color: colors.text }]}>{option}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -200,24 +220,30 @@ const SingleSelectField = ({
   value,
   onChange,
   options,
+  colors,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
+  colors: ColorsType;
 }) => (
   <View style={styles.fieldContainer}>
-    <Text style={styles.fieldLabel}>{label}</Text>
+    <Text style={[styles.fieldLabel, { color: colors.text }]}>{label}</Text>
     {options.map((option) => (
       <TouchableOpacity
         key={option}
         style={styles.radioRow}
         onPress={() => onChange(option)}
       >
-        <View style={[styles.radio, value === option && styles.radioSelected]}>
-          {value === option && <View style={styles.radioInner} />}
+        <View style={[
+          styles.radio, 
+          { borderColor: colors.border },
+          value === option && { borderColor: colors.primary }
+        ]}>
+          {value === option && <View style={[styles.radioInner, { backgroundColor: colors.primary }]} />}
         </View>
-        <Text style={styles.radioLabel}>{option}</Text>
+        <Text style={[styles.radioLabel, { color: colors.text }]}>{option}</Text>
       </TouchableOpacity>
     ))}
   </View>
@@ -237,14 +263,16 @@ const BirthLocationSelectField = ({
   value,
   onChange,
   options,
+  colors,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
+  colors: ColorsType;
 }) => (
   <View style={styles.fieldContainer}>
-    <Text style={styles.fieldLabel}>{label}</Text>
+    <Text style={[styles.fieldLabel, { color: colors.text }]}>{label}</Text>
     <View style={styles.birthLocationGrid}>
       {options.map((option) => (
         <TouchableOpacity
@@ -255,22 +283,24 @@ const BirthLocationSelectField = ({
         >
           <View style={[
             styles.birthLocationInner,
-            value === option && styles.birthLocationSelected,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+            value === option && { borderWidth: 2, borderColor: colors.primary, backgroundColor: colors.primaryLight },
           ]}>
             <Icon
               name={(BIRTH_LOCATION_ICONS[option] || 'help-circle') as any}
               size={32}
-              color={value === option ? COLORS.primary : COLORS.textSecondary}
+              color={value === option ? colors.primary : colors.textSecondary}
             />
             <Text style={[
               styles.birthLocationLabel,
-              value === option && styles.birthLocationLabelSelected,
+              { color: colors.textSecondary },
+              value === option && { color: colors.primary, fontFamily: FONTS.bodyBold },
             ]}>
               {option}
             </Text>
             {value === option && (
-              <View style={styles.birthLocationCheck}>
-                <Icon name="checkmark" size={14} color={COLORS.white} />
+              <View style={[styles.birthLocationCheck, { backgroundColor: colors.primary }]}>
+                <Icon name="checkmark" size={14} color={colors.white} />
               </View>
             )}
           </View>
@@ -975,11 +1005,36 @@ export const SECTION_FORMS: Record<string, {
   },
 };
 
-// Render field based on type
-export const renderField = (
+// Wrapper component that provides colors context
+export const BirthPlanFormRenderer = ({
+  sectionId,
+  data,
+  onChange,
+}: {
+  sectionId: string;
+  data: Record<string, any>;
+  onChange: (key: string, value: any) => void;
+}) => {
+  const colors = useColors();
+  const section = SECTION_FORMS[sectionId];
+  
+  if (!section) return null;
+  
+  return (
+    <View>
+      {section.fields.map((field) => 
+        renderFieldWithColors(field, data, onChange, colors)
+      )}
+    </View>
+  );
+};
+
+// Render field based on type (internal function with colors)
+const renderFieldWithColors = (
   field: typeof SECTION_FORMS[string]['fields'][number],
   data: Record<string, any>,
-  onChange: (key: string, value: any) => void
+  onChange: (key: string, value: any) => void,
+  colors: ColorsType
 ) => {
   const { key, type, label, placeholder, options } = field;
   const value = data[key];
@@ -993,6 +1048,7 @@ export const renderField = (
           value={value}
           onChange={(v) => onChange(key, v)}
           placeholder={placeholder}
+          colors={colors}
         />
       );
     case 'textarea':
@@ -1005,6 +1061,7 @@ export const renderField = (
           placeholder={placeholder}
           multiline
           numberOfLines={4}
+          colors={colors}
         />
       );
     case 'date':
@@ -1015,6 +1072,7 @@ export const renderField = (
           value={value}
           onChange={(v) => onChange(key, v)}
           placeholder={placeholder}
+          colors={colors}
         />
       );
     case 'multiselect':
@@ -1025,6 +1083,7 @@ export const renderField = (
           value={value}
           onChange={(v) => onChange(key, v)}
           options={options || []}
+          colors={colors}
         />
       );
     case 'singleselect':
@@ -1037,6 +1096,7 @@ export const renderField = (
             value={value}
             onChange={(v) => onChange(key, v)}
             options={options || []}
+            colors={colors}
           />
         );
       }
@@ -1047,11 +1107,28 @@ export const renderField = (
           value={value}
           onChange={(v) => onChange(key, v)}
           options={options || []}
+          colors={colors}
         />
       );
     default:
       return null;
   }
+};
+
+// Legacy render function - now requires colors parameter
+export const renderField = (
+  field: typeof SECTION_FORMS[string]['fields'][number],
+  data: Record<string, any>,
+  onChange: (key: string, value: any) => void,
+  colors?: ColorsType
+) => {
+  // For backwards compatibility, if colors not provided, use a default light theme approximation
+  // But this should not happen in properly migrated code
+  if (!colors) {
+    console.warn('renderField called without colors - this is deprecated');
+    return null;
+  }
+  return renderFieldWithColors(field, data, onChange, colors);
 };
 
 const styles = StyleSheet.create({
@@ -1061,18 +1138,14 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
     marginBottom: SIZES.sm,
   },
   textInput: {
-    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
   },
   textArea: {
     minHeight: 100,
@@ -1081,18 +1154,14 @@ const styles = StyleSheet.create({
   dateInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
   },
   datePickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     minHeight: 52,
@@ -1100,11 +1169,7 @@ const styles = StyleSheet.create({
   datePickerText: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
     marginLeft: SIZES.sm,
-  },
-  datePickerPlaceholder: {
-    color: COLORS.textLight,
   },
   dateModalOverlay: {
     flex: 1,
@@ -1114,7 +1179,6 @@ const styles = StyleSheet.create({
     padding: SIZES.lg,
   },
   dateModalContent: {
-    backgroundColor: COLORS.white,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.lg,
     width: '100%',
@@ -1129,13 +1193,11 @@ const styles = StyleSheet.create({
   dateModalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
   },
   webCalendarWrapper: {
     marginVertical: SIZES.md,
   },
   nativeDatePickerContainer: {
-    backgroundColor: COLORS.background,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     marginTop: SIZES.sm,
@@ -1151,19 +1213,13 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: COLORS.border,
     marginRight: SIZES.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkboxChecked: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
   checkboxLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
     flex: 1,
   },
   radioRow: {
@@ -1177,24 +1233,18 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: COLORS.border,
     marginRight: SIZES.sm,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  radioSelected: {
-    borderColor: COLORS.primary,
   },
   radioInner: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: COLORS.primary,
   },
   radioLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
     flex: 1,
   },
   // Birth location grid styles
@@ -1208,31 +1258,19 @@ const styles = StyleSheet.create({
     padding: SIZES.xs,
   },
   birthLocationInner: {
-    backgroundColor: COLORS.white,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: COLORS.border,
     padding: SIZES.md,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 100,
     position: 'relative',
   },
-  birthLocationSelected: {
-    borderWidth: 2,
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.primaryLight,
-  },
   birthLocationLabel: {
     marginTop: SIZES.sm,
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
     textAlign: 'center',
-  },
-  birthLocationLabelSelected: {
-    color: COLORS.primary,
-    fontFamily: FONTS.bodyBold,
   },
   birthLocationCheck: {
     position: 'absolute',
@@ -1241,7 +1279,6 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },

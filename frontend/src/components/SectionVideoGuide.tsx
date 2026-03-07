@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from './Icon';
-import { COLORS, SIZES, FONTS } from '../constants/theme';
+import { SIZES, FONTS } from '../constants/theme';
+import { useColors } from '../hooks/useThemedStyles';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -74,6 +75,7 @@ export const SECTION_VIDEOS: Record<string, {
 export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuideProps) {
   const [expanded, setExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const colors = useColors();
   
   const videoConfig = SECTION_VIDEOS[sectionId];
   
@@ -104,15 +106,15 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
         data-testid={`video-guide-${sectionId}`}
       >
         <LinearGradient
-          colors={[COLORS.primary + '15', COLORS.secondary + '10']}
+          colors={[colors.primary + '15', colors.secondary + '10']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradientBg}
         >
           {/* Play Button Circle */}
-          <View style={styles.playButtonContainer}>
+          <View style={[styles.playButtonContainer, { shadowColor: colors.primary }]}>
             <LinearGradient
-              colors={[COLORS.primary, COLORS.primaryDark]}
+              colors={[colors.primary, colors.primaryDark]}
               style={styles.playButton}
             >
               <Icon name="play" size={20} color="#FFFFFF" />
@@ -121,11 +123,11 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
           
           {/* Text Content */}
           <View style={styles.textContent}>
-            <Text style={styles.videoTitle}>
+            <Text style={[styles.videoTitle, { color: colors.text }]}>
               {videoConfig.title || 'Watch Guide'}
             </Text>
-            <Text style={styles.videoDuration}>
-              <Icon name="time-outline" size={12} color={COLORS.textSecondary} />
+            <Text style={[styles.videoDuration, { color: colors.textSecondary }]}>
+              <Icon name="time-outline" size={12} color={colors.textSecondary} />
               {' '}{videoConfig.duration || 'Short video'}
             </Text>
           </View>
@@ -134,7 +136,7 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
           <Icon 
             name={expanded ? "chevron-up" : "chevron-down"} 
             size={20} 
-            color={COLORS.primary} 
+            color={colors.primary} 
           />
         </LinearGradient>
       </Pressable>
@@ -143,21 +145,21 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
   
   // Expanded state - inline video player (web)
   return (
-    <View style={styles.expandedContainer}>
+    <View style={[styles.expandedContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* Collapse Header */}
       <Pressable
-        style={styles.collapseHeader}
+        style={[styles.collapseHeader, { backgroundColor: colors.primary + '10' }]}
         onPress={handlePress}
         // @ts-ignore
         onClick={Platform.OS === 'web' ? handlePress : undefined}
       >
         <View style={styles.collapseHeaderContent}>
-          <Icon name="videocam" size={18} color={COLORS.primary} />
-          <Text style={styles.videoTitleExpanded}>
+          <Icon name="videocam" size={18} color={colors.primary} />
+          <Text style={[styles.videoTitleExpanded, { color: colors.primary }]}>
             {videoConfig.title || 'Video Guide'}
           </Text>
         </View>
-        <Icon name="chevron-up" size={20} color={COLORS.primary} />
+        <Icon name="chevron-up" size={20} color={colors.primary} />
       </Pressable>
       
       {/* Video Player */}
@@ -175,9 +177,9 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
             allowFullScreen
           />
         ) : (
-          <View style={styles.nativeVideoPlaceholder}>
-            <Icon name="play-circle" size={48} color={COLORS.primary} />
-            <Text style={styles.nativeVideoText}>Tap to watch in fullscreen</Text>
+          <View style={[styles.nativeVideoPlaceholder, { backgroundColor: colors.backgroundSecondary }]}>
+            <Icon name="play-circle" size={48} color={colors.primary} />
+            <Text style={[styles.nativeVideoText, { color: colors.textSecondary }]}>Tap to watch in fullscreen</Text>
           </View>
         )}
       </View>
@@ -202,7 +204,6 @@ const styles = StyleSheet.create({
     gap: SIZES.md,
   },
   playButtonContainer: {
-    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -222,20 +223,16 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: COLORS.textPrimary,
     marginBottom: 2,
   },
   videoDuration: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
   },
   expandedContainer: {
     marginBottom: SIZES.md,
     borderRadius: SIZES.radiusLg,
-    backgroundColor: COLORS.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
     overflow: 'hidden',
   },
   collapseHeader: {
@@ -243,7 +240,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: COLORS.primary + '10',
   },
   collapseHeaderContent: {
     flexDirection: 'row',
@@ -254,7 +250,6 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: COLORS.primary,
   },
   videoWrapper: {
     width: '100%',
@@ -265,12 +260,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.subtle,
   },
   nativeVideoText: {
     marginTop: SIZES.sm,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
   },
 });

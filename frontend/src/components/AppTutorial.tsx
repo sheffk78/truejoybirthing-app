@@ -12,7 +12,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from './Icon';
 import Button from './Button';
-import { COLORS, SIZES, FONTS } from '../constants/theme';
+import { SIZES, FONTS } from '../constants/theme';
+import { useColors } from '../hooks/useThemedStyles';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -37,12 +38,16 @@ export default function AppTutorial({
   steps,
   onComplete,
   onSkip,
-  roleColor = COLORS.primary,
+  roleColor,
   roleName = 'User',
 }: AppTutorialProps) {
+  const colors = useColors();
   const [currentStep, setCurrentStep] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
+  
+  // Use provided roleColor or default to primary
+  const activeRoleColor = roleColor || colors.primary;
 
   const goToStep = (index: number) => {
     Animated.sequence([
@@ -85,12 +90,12 @@ export default function AppTutorial({
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Welcome Tour</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Welcome Tour</Text>
         <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
-          <Text style={styles.skipText}>Skip</Text>
+          <Text style={[styles.skipText, { color: colors.textSecondary }]}>Skip</Text>
         </TouchableOpacity>
       </View>
 
@@ -102,7 +107,8 @@ export default function AppTutorial({
             onPress={() => goToStep(index)}
             style={[
               styles.progressDot,
-              index === currentStep && { backgroundColor: roleColor, width: 24 },
+              { backgroundColor: colors.border },
+              index === currentStep && { backgroundColor: activeRoleColor, width: 24 },
             ]}
           />
         ))}
@@ -123,24 +129,24 @@ export default function AppTutorial({
             key={step.id}
             style={[styles.stepContainer, { opacity: index === currentStep ? fadeAnim : 0.7 }]}
           >
-            <View style={[styles.iconCircle, { backgroundColor: (step.iconColor || roleColor) + '20' }]}>
+            <View style={[styles.iconCircle, { backgroundColor: (step.iconColor || activeRoleColor) + '20' }]}>
               <Icon
                 name={step.icon as any}
                 size={64}
-                color={step.iconColor || roleColor}
+                color={step.iconColor || activeRoleColor}
               />
             </View>
 
-            <Text style={styles.stepTitle}>{step.title}</Text>
-            <Text style={styles.stepDescription}>{step.description}</Text>
+            <Text style={[styles.stepTitle, { color: colors.text }]}>{step.title}</Text>
+            <Text style={[styles.stepDescription, { color: colors.textSecondary }]}>{step.description}</Text>
 
             {step.tips && step.tips.length > 0 && (
-              <View style={styles.tipsContainer}>
-                <Text style={styles.tipsHeader}>Quick Tips:</Text>
+              <View style={[styles.tipsContainer, { backgroundColor: colors.surface }]}>
+                <Text style={[styles.tipsHeader, { color: colors.text }]}>Quick Tips:</Text>
                 {step.tips.map((tip, tipIndex) => (
                   <View key={tipIndex} style={styles.tipRow}>
-                    <Icon name="checkmark-circle" size={18} color={roleColor} />
-                    <Text style={styles.tipText}>{tip}</Text>
+                    <Icon name="checkmark-circle" size={18} color={activeRoleColor} />
+                    <Text style={[styles.tipText, { color: colors.textSecondary }]}>{tip}</Text>
                   </View>
                 ))}
               </View>
@@ -150,34 +156,38 @@ export default function AppTutorial({
       </ScrollView>
 
       {/* Navigation Buttons */}
-      <View style={styles.navigationContainer}>
+      <View style={[styles.navigationContainer, { borderTopColor: colors.border }]}>
         <TouchableOpacity
           onPress={handlePrevious}
-          style={[styles.navButton, currentStep === 0 && styles.navButtonDisabled]}
+          style={[
+            styles.navButton, 
+            { backgroundColor: colors.surface, borderColor: colors.border },
+            currentStep === 0 && styles.navButtonDisabled
+          ]}
           disabled={currentStep === 0}
         >
           <Icon
             name="chevron-back"
             size={24}
-            color={currentStep === 0 ? COLORS.textLight : COLORS.textPrimary}
+            color={currentStep === 0 ? colors.textLight : colors.text}
           />
         </TouchableOpacity>
 
         <View style={styles.stepIndicator}>
-          <Text style={styles.stepIndicatorText}>
+          <Text style={[styles.stepIndicatorText, { color: colors.textSecondary }]}>
             {currentStep + 1} of {steps.length}
           </Text>
         </View>
 
         {currentStep < steps.length - 1 ? (
-          <TouchableOpacity onPress={handleNext} style={styles.navButton}>
-            <Icon name="chevron-forward" size={24} color={COLORS.textPrimary} />
+          <TouchableOpacity onPress={handleNext} style={[styles.navButton, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Icon name="chevron-forward" size={24} color={colors.text} />
           </TouchableOpacity>
         ) : (
           <Button
             title="Get Started"
             onPress={onComplete}
-            style={[styles.getStartedButton, { backgroundColor: roleColor }]}
+            style={[styles.getStartedButton, { backgroundColor: activeRoleColor }]}
             textStyle={styles.getStartedText}
           />
         )}
@@ -189,7 +199,6 @@ export default function AppTutorial({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   header: {
     flexDirection: 'row',
@@ -201,7 +210,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
   },
   skipButton: {
     padding: SIZES.sm,
@@ -209,7 +217,6 @@ const styles = StyleSheet.create({
   skipText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
   },
   progressContainer: {
     flexDirection: 'row',
@@ -222,7 +229,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: COLORS.border,
   },
   scrollView: {
     flex: 1,
@@ -244,21 +250,18 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: SIZES.fontXxl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
     textAlign: 'center',
     marginBottom: SIZES.md,
   },
   stepDescription: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     paddingHorizontal: SIZES.md,
   },
   tipsContainer: {
     marginTop: SIZES.xl,
-    backgroundColor: COLORS.white,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.md,
     width: '100%',
@@ -266,7 +269,6 @@ const styles = StyleSheet.create({
   tipsHeader: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
     marginBottom: SIZES.sm,
   },
   tipRow: {
@@ -278,7 +280,6 @@ const styles = StyleSheet.create({
   tipText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
     flex: 1,
   },
   navigationContainer: {
@@ -288,17 +289,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.lg,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
   },
   navButton: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   navButtonDisabled: {
     opacity: 0.5,
@@ -310,7 +308,6 @@ const styles = StyleSheet.create({
   stepIndicatorText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
   },
   getStartedButton: {
     paddingHorizontal: SIZES.lg,

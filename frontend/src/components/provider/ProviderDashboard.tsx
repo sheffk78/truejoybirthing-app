@@ -18,8 +18,8 @@ import Card from '../Card';
 import { useAuthStore } from '../../store/authStore';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { COLORS, SIZES, SHADOWS, FONTS } from '../../constants/theme';
-import { useColors } from '../../hooks/useThemedStyles';
+import { SIZES, SHADOWS, FONTS } from '../../constants/theme';
+import { useColors, useShadows } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
 interface ShareRequest {
@@ -38,6 +38,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   const router = useRouter();
   const { user } = useAuthStore();
   const colors = useColors();
+  const shadows = useShadows();
   
   const [stats, setStats] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -134,9 +135,9 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   
   const getStatColor = (colorKey?: string) => {
     switch (colorKey) {
-      case 'accent': return COLORS.accent;
-      case 'warning': return COLORS.warning;
-      case 'success': return COLORS.success;
+      case 'accent': return colors.accent;
+      case 'warning': return colors.warning;
+      case 'success': return colors.success;
       default: return primaryColor;
     }
   };
@@ -184,7 +185,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
                 <Text style={[styles.statNumber, { color: getStatColor(stat.colorKey) }]}>
                   {displayValue}
                 </Text>
-                <Text style={styles.statLabel}>{stat.label}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stat.label}</Text>
               </Card>
             );
           })}
@@ -193,7 +194,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
         {/* Lead Insights Card */}
         {stats?.lead_insights && (stats.lead_insights.total_leads > 0 || stats.lead_insights.active_leads > 0) && (
           <TouchableOpacity 
-            style={styles.leadInsightsCard}
+            style={[styles.leadInsightsCard, { backgroundColor: colors.surface }, shadows.sm]}
             onPress={() => router.push(config.routes.leads as any)}
             activeOpacity={0.8}
             data-testid="lead-insights-card"
@@ -202,29 +203,29 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
               <View style={[styles.leadInsightsIcon, { backgroundColor: primaryColor + '20' }]}>
                 <Icon name="disc-outline" size={20} color={primaryColor} />
               </View>
-              <Text style={styles.leadInsightsTitle}>Lead Insights</Text>
-              <Icon name="chevron-forward" size={20} color={COLORS.textSecondary} />
+              <Text style={[styles.leadInsightsTitle, { color: colors.text }]}>Lead Insights</Text>
+              <Icon name="chevron-forward" size={20} color={colors.textSecondary} />
             </View>
-            <View style={styles.leadInsightsStats}>
+            <View style={[styles.leadInsightsStats, { borderTopColor: colors.border }]}>
               <View style={styles.leadInsightsStat}>
-                <Text style={[styles.leadInsightsValue, { color: COLORS.warning }]}>
+                <Text style={[styles.leadInsightsValue, { color: colors.warning }]}>
                   {stats.lead_insights.active_leads}
                 </Text>
-                <Text style={styles.leadInsightsLabel}>Open</Text>
+                <Text style={[styles.leadInsightsLabel, { color: colors.textSecondary }]}>Open</Text>
               </View>
-              <View style={styles.leadInsightsDivider} />
+              <View style={[styles.leadInsightsDivider, { backgroundColor: colors.border }]} />
               <View style={styles.leadInsightsStat}>
-                <Text style={[styles.leadInsightsValue, { color: COLORS.success }]}>
+                <Text style={[styles.leadInsightsValue, { color: colors.success }]}>
                   {stats.lead_insights.converted_leads}
                 </Text>
-                <Text style={styles.leadInsightsLabel}>Converted</Text>
+                <Text style={[styles.leadInsightsLabel, { color: colors.textSecondary }]}>Converted</Text>
               </View>
-              <View style={styles.leadInsightsDivider} />
+              <View style={[styles.leadInsightsDivider, { backgroundColor: colors.border }]} />
               <View style={styles.leadInsightsStat}>
                 <Text style={[styles.leadInsightsValue, { color: primaryColor }]}>
                   {stats.lead_insights.conversion_rate}%
                 </Text>
-                <Text style={styles.leadInsightsLabel}>Rate</Text>
+                <Text style={[styles.leadInsightsLabel, { color: colors.textSecondary }]}>Rate</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -233,40 +234,40 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
         {/* Pending Share Requests */}
         {shareRequests.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
               <Icon name="heart" size={18} color={primaryColor} /> New Connection Requests
             </Text>
             {shareRequests.map((request) => (
               <Card key={request.request_id} style={styles.requestCard}>
                 <View style={styles.requestHeader}>
-                  <View style={styles.requestAvatar}>
-                    <Icon name="person" size={24} color={COLORS.primary} />
+                  <View style={[styles.requestAvatar, { backgroundColor: colors.primary + '20' }]}>
+                    <Icon name="person" size={24} color={colors.primary} />
                   </View>
                   <View style={styles.requestInfo}>
-                    <Text style={styles.requestName}>{request.mom_name}</Text>
-                    <Text style={styles.requestSubtext}>
+                    <Text style={[styles.requestName, { color: colors.text }]}>{request.mom_name}</Text>
+                    <Text style={[styles.requestSubtext, { color: colors.textSecondary }]}>
                       Wants to share their birth plan with you
                     </Text>
-                    <Text style={styles.requestDate}>
+                    <Text style={[styles.requestDate, { color: colors.textLight }]}>
                       {new Date(request.created_at).toLocaleDateString()}
                     </Text>
                   </View>
                 </View>
                 <View style={styles.requestActions}>
                   <TouchableOpacity
-                    style={styles.declineButton}
+                    style={[styles.declineButton, { borderColor: colors.border }]}
                     onPress={() => handleDeclineRequest(request.request_id)}
                     data-testid={`decline-request-${request.request_id}`}
                   >
-                    <Text style={styles.declineButtonText}>Decline</Text>
+                    <Text style={[styles.declineButtonText, { color: colors.textSecondary }]}>Decline</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.acceptButton, { backgroundColor: primaryColor }]}
                     onPress={() => handleAcceptRequest(request.request_id)}
                     data-testid={`accept-request-${request.request_id}`}
                   >
-                    <Icon name="checkmark" size={16} color={COLORS.white} />
-                    <Text style={styles.acceptButtonText}>Accept</Text>
+                    <Icon name="checkmark" size={16} color={colors.white} />
+                    <Text style={[styles.acceptButtonText, { color: colors.white }]}>Accept</Text>
                   </TouchableOpacity>
                 </View>
               </Card>
@@ -275,12 +276,12 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
         )}
         
         {/* Quick Actions */}
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
         <View style={styles.actionsContainer}>
           {config.dashboard.quickActions.map((action, index) => (
             <TouchableOpacity
               key={action.route}
-              style={styles.actionCard}
+              style={[styles.actionCard, { backgroundColor: colors.surface }, shadows.sm]}
               onPress={() => router.push(action.route as any)}
               activeOpacity={0.8}
               data-testid={`action-${action.label.toLowerCase().replace(/\s/g, '-')}`}
@@ -288,7 +289,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
               <View style={[styles.actionIcon, { backgroundColor: getStatColor(action.colorKey) + '30' }]}>
                 <Icon name={action.icon as any} size={24} color={getStatColor(action.colorKey)} />
               </View>
-              <Text style={styles.actionTitle}>{action.label}</Text>
+              <Text style={[styles.actionTitle, { color: colors.text }]}>{action.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -297,9 +298,9 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
         <Card style={[styles.tipCard, { backgroundColor: primaryColor + '15' }]}>
           <View style={styles.tipHeader}>
             <Icon name="information-circle" size={20} color={primaryColor} />
-            <Text style={styles.tipTitle}>{config.dashboard.tipTitle}</Text>
+            <Text style={[styles.tipTitle, { color: colors.text }]}>{config.dashboard.tipTitle}</Text>
           </View>
-          <Text style={styles.tipText}>{config.dashboard.tipText}</Text>
+          <Text style={[styles.tipText, { color: colors.textSecondary }]}>{config.dashboard.tipText}</Text>
         </Card>
       </ScrollView>
     </SafeAreaView>
@@ -309,7 +310,6 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -324,7 +324,6 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: SIZES.fontXxl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
@@ -364,14 +363,12 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
     marginBottom: SIZES.md,
   },
   actionsContainer: {
@@ -382,12 +379,10 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     width: '48%',
-    backgroundColor: COLORS.white,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     margin: '1%',
     alignItems: 'center',
-    ...SHADOWS.sm,
   },
   actionIcon: {
     width: 48,
@@ -400,7 +395,6 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
     textAlign: 'center',
   },
   tipCard: {},
@@ -412,13 +406,11 @@ const styles = StyleSheet.create({
   tipTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
     marginLeft: SIZES.sm,
   },
   tipText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
     lineHeight: 20,
   },
   // Share Request Styles
@@ -435,7 +427,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: COLORS.primary + '20',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -446,18 +437,15 @@ const styles = StyleSheet.create({
   requestName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
   },
   requestSubtext: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
     marginTop: 2,
   },
   requestDate: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
     marginTop: 4,
   },
   requestActions: {
@@ -470,12 +458,10 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   declineButtonText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
   },
   acceptButton: {
     flexDirection: 'row',
@@ -488,15 +474,12 @@ const styles = StyleSheet.create({
   acceptButtonText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.white,
   },
   // Lead Insights Card Styles
   leadInsightsCard: {
-    backgroundColor: COLORS.white,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     marginBottom: SIZES.md,
-    ...SHADOWS.sm,
   },
   leadInsightsHeader: {
     flexDirection: 'row',
@@ -515,7 +498,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
   },
   leadInsightsStats: {
     flexDirection: 'row',
@@ -523,7 +505,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
   },
   leadInsightsStat: {
     alignItems: 'center',
@@ -536,12 +517,10 @@ const styles = StyleSheet.create({
   leadInsightsLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
     marginTop: 2,
   },
   leadInsightsDivider: {
     width: 1,
     height: 30,
-    backgroundColor: COLORS.border,
   },
 });

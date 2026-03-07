@@ -8,7 +8,8 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity, Text, Modal, Dimensions, Linking } from 'react-native';
 import { Icon } from './Icon';
-import { COLORS, SIZES, FONTS } from '../constants/theme';
+import { SIZES, FONTS } from '../constants/theme';
+import { useColors } from '../hooks/useThemedStyles';
 
 interface YouTubePlayerProps {
   videoId: string;
@@ -65,6 +66,8 @@ export function YouTubePlayer({
   height = 200,
   onClose 
 }: YouTubePlayerProps) {
+  const colors = useColors();
+  
   // For web, use iframe
   if (Platform.OS === 'web') {
     return <WebVideoPlayer videoId={videoId} height={height} autoPlay={autoPlay} />;
@@ -77,8 +80,8 @@ export function YouTubePlayer({
       style={[styles.playerContainer, styles.nativeFallback, { height }]}
       onPress={() => Linking.openURL(`https://www.youtube.com/watch?v=${videoId}`)}
     >
-      <Icon name="play-circle" size={48} color={COLORS.white} />
-      <Text style={styles.fallbackText}>Tap to watch video</Text>
+      <Icon name="play-circle" size={48} color={colors.white} />
+      <Text style={[styles.fallbackText, { color: colors.white }]}>Tap to watch video</Text>
     </TouchableOpacity>
   );
 }
@@ -92,6 +95,7 @@ interface VideoPlayerModalProps {
 }
 
 export function VideoPlayerModal({ visible, videoId, onClose, title }: VideoPlayerModalProps) {
+  const colors = useColors();
   const screenWidth = Dimensions.get('window').width;
   const playerHeight = Math.min((screenWidth - 32) * (9 / 16), 300); // 16:9 aspect ratio with max height
 
@@ -103,19 +107,19 @@ export function VideoPlayerModal({ visible, videoId, onClose, title }: VideoPlay
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+        <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
           {/* Header */}
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle} numberOfLines={1}>
+          <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]} numberOfLines={1}>
               {title || 'Video Introduction'}
             </Text>
             <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
           </View>
           
           {/* Video Player */}
-          <View style={styles.videoWrapper}>
+          <View style={[styles.videoWrapper, { backgroundColor: colors.text }]}>
             {Platform.OS === 'web' ? (
               <iframe
                 width="100%"
@@ -134,19 +138,19 @@ export function VideoPlayerModal({ visible, videoId, onClose, title }: VideoPlay
                   onClose();
                 }}
               >
-                <Icon name="play-circle" size={64} color={COLORS.white} />
-                <Text style={styles.fallbackText}>Tap to open in YouTube</Text>
+                <Icon name="play-circle" size={64} color={colors.white} />
+                <Text style={[styles.fallbackText, { color: colors.white }]}>Tap to open in YouTube</Text>
               </TouchableOpacity>
             )}
           </View>
           
           {/* Footer */}
-          <View style={styles.modalFooter}>
+          <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
             <TouchableOpacity 
-              style={styles.closeModalButton}
+              style={[styles.closeModalButton, { backgroundColor: colors.primary }]}
               onPress={onClose}
             >
-              <Text style={styles.closeModalButtonText}>Close</Text>
+              <Text style={[styles.closeModalButtonText, { color: colors.white }]}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -159,7 +163,7 @@ const styles = StyleSheet.create({
   playerContainer: {
     borderRadius: SIZES.radiusMd,
     overflow: 'hidden',
-    backgroundColor: COLORS.textPrimary,
+    backgroundColor: '#1a1a1a',
   },
   nativeFallback: {
     alignItems: 'center',
@@ -167,7 +171,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a1a',
   },
   fallbackText: {
-    color: COLORS.white,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
     marginTop: SIZES.sm,
@@ -181,7 +184,6 @@ const styles = StyleSheet.create({
     padding: SIZES.md,
   },
   modalContent: {
-    backgroundColor: COLORS.white,
     borderRadius: SIZES.radiusLg,
     width: '100%',
     maxWidth: 500,
@@ -193,34 +195,28 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
     flex: 1,
   },
   modalCloseBtn: {
     padding: SIZES.xs,
   },
   videoWrapper: {
-    backgroundColor: COLORS.textPrimary,
   },
   modalFooter: {
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
   },
   closeModalButton: {
-    backgroundColor: COLORS.primary,
     paddingVertical: SIZES.sm,
     paddingHorizontal: SIZES.lg,
     borderRadius: SIZES.radiusMd,
     alignItems: 'center',
   },
   closeModalButtonText: {
-    color: COLORS.white,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
   },

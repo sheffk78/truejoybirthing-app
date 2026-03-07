@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from './Icon';
-import { COLORS, SIZES, FONTS } from '../constants/theme';
+import { SIZES, FONTS } from '../constants/theme';
+import { useColors } from '../hooks/useThemedStyles';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,7 +22,7 @@ interface OnboardingStep {
   title: string;
   description: string;
   icon: string;
-  color: string;
+  colorKey: 'secondary' | 'primary' | 'accent';
   image: string;
 }
 
@@ -46,7 +47,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       title: 'Create Your Birth Plan',
       description: 'Build a personalized birth plan that captures your preferences, values, and wishes for your special day.',
       icon: 'document-text',
-      color: COLORS.secondary,
+      colorKey: 'secondary',
       image: BIRTH_PHOTOS.newbornSleeping,
     },
     {
@@ -54,15 +55,15 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       title: 'Build Your Birth Team',
       description: 'Find and connect with experienced doulas and midwives in your area who align with your vision.',
       icon: 'people-circle',
-      color: COLORS.primary,
-      image: BIRTH_PHOTOS.waterBirth2, // Shows support from multiple hands
+      colorKey: 'primary',
+      image: BIRTH_PHOTOS.waterBirth2,
     },
     {
       id: '3',
       title: 'Experience Your Journey',
       description: 'Track your wellness, celebrate milestones, and stay connected with your care team throughout pregnancy.',
       icon: 'heart-circle',
-      color: COLORS.accent,
+      colorKey: 'accent',
       image: BIRTH_PHOTOS.skinToSkin,
     },
   ],
@@ -72,7 +73,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       title: 'Complete Your Profile',
       description: 'Showcase your experience, certifications, and philosophy to help moms find the perfect match.',
       icon: 'person-circle',
-      color: COLORS.primary,
+      colorKey: 'primary',
       image: BIRTH_PHOTOS.waterBirth2,
     },
     {
@@ -80,7 +81,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       title: 'Manage Your Clients',
       description: 'Keep track of your clients, appointments, contracts, and invoices all in one place.',
       icon: 'briefcase',
-      color: COLORS.secondary,
+      colorKey: 'secondary',
       image: BIRTH_PHOTOS.familyMoment,
     },
     {
@@ -88,7 +89,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       title: 'Support Birth Plans',
       description: 'Review and contribute to your clients\' birth plans, adding your professional insights.',
       icon: 'document-text',
-      color: COLORS.accent,
+      colorKey: 'accent',
       image: BIRTH_PHOTOS.skinToSkin,
     },
   ],
@@ -98,7 +99,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       title: 'Set Up Your Practice',
       description: 'Add your credentials, services, and availability so expecting families can find you.',
       icon: 'medkit',
-      color: COLORS.accent,
+      colorKey: 'accent',
       image: BIRTH_PHOTOS.waterBirth1,
     },
     {
@@ -106,7 +107,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       title: 'Track Client Care',
       description: 'Log prenatal visits, monitor health metrics, and maintain comprehensive care records.',
       icon: 'clipboard',
-      color: COLORS.primary,
+      colorKey: 'primary',
       image: BIRTH_PHOTOS.familyMoment,
     },
     {
@@ -114,7 +115,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       title: 'Guide Birth Journeys',
       description: 'Review birth preferences and help clients make informed decisions about their care.',
       icon: 'heart-half',
-      color: COLORS.secondary,
+      colorKey: 'secondary',
       image: BIRTH_PHOTOS.newbornSleeping,
     },
   ],
@@ -124,8 +125,19 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
+  const colors = useColors();
   
   const steps = STEPS_BY_ROLE[role] || STEPS_BY_ROLE.MOM;
+  
+  // Map colorKey to actual colors
+  const getStepColor = (colorKey: 'secondary' | 'primary' | 'accent') => {
+    switch(colorKey) {
+      case 'secondary': return colors.secondary;
+      case 'primary': return colors.primary;
+      case 'accent': return colors.accent;
+      default: return colors.primary;
+    }
+  };
   
   const handleNext = () => {
     if (currentIndex < steps.length - 1) {
@@ -140,46 +152,50 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
     onComplete();
   };
   
-  const renderStep = ({ item, index }: { item: OnboardingStep; index: number }) => (
-    <View style={styles.stepContainer}>
-      {/* Photo with gradient overlay */}
-      <View style={styles.photoContainer}>
-        <ImageBackground
-          source={{ uri: item.image }}
-          style={styles.stepImage}
-          resizeMode="cover"
-        >
-          <LinearGradient
-            colors={[
-              `${item.color}40`,
-              `${item.color}20`,
-              'rgba(254,252,255,0.9)',
-              COLORS.background,
-            ]}
-            locations={[0, 0.3, 0.7, 1]}
-            style={styles.photoGradient}
-          />
-        </ImageBackground>
-      </View>
-      
-      {/* Content */}
-      <View style={styles.stepContent}>
-        {/* Step Badge */}
-        <View style={[styles.stepBadge, { backgroundColor: item.color + '20' }]}>
-          <Icon name={item.icon as any} size={16} color={item.color} />
-          <Text style={[styles.stepBadgeText, { color: item.color }]}>
-            Step {index + 1} of {steps.length}
-          </Text>
+  const renderStep = ({ item, index }: { item: OnboardingStep; index: number }) => {
+    const stepColor = getStepColor(item.colorKey);
+    
+    return (
+      <View style={styles.stepContainer}>
+        {/* Photo with gradient overlay */}
+        <View style={styles.photoContainer}>
+          <ImageBackground
+            source={{ uri: item.image }}
+            style={styles.stepImage}
+            resizeMode="cover"
+          >
+            <LinearGradient
+              colors={[
+                `${stepColor}40`,
+                `${stepColor}20`,
+                'rgba(254,252,255,0.9)',
+                colors.background,
+              ]}
+              locations={[0, 0.3, 0.7, 1]}
+              style={styles.photoGradient}
+            />
+          </ImageBackground>
         </View>
         
-        {/* Title */}
-        <Text style={styles.stepTitle}>{item.title}</Text>
-        
-        {/* Description */}
-        <Text style={styles.stepDescription}>{item.description}</Text>
+        {/* Content */}
+        <View style={styles.stepContent}>
+          {/* Step Badge */}
+          <View style={[styles.stepBadge, { backgroundColor: stepColor + '20' }]}>
+            <Icon name={item.icon as any} size={16} color={stepColor} />
+            <Text style={[styles.stepBadgeText, { color: stepColor }]}>
+              Step {index + 1} of {steps.length}
+            </Text>
+          </View>
+          
+          {/* Title */}
+          <Text style={[styles.stepTitle, { color: colors.text }]}>{item.title}</Text>
+          
+          {/* Description */}
+          <Text style={[styles.stepDescription, { color: colors.textSecondary }]}>{item.description}</Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
   
   const renderDots = () => (
     <View style={styles.dotsContainer}>
@@ -210,7 +226,7 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
               {
                 width: dotWidth,
                 opacity,
-                backgroundColor: steps[currentIndex]?.color || COLORS.primary,
+                backgroundColor: getStepColor(steps[currentIndex]?.colorKey || 'primary'),
               },
             ]}
           />
@@ -220,7 +236,7 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
   );
   
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Skip Button */}
       <Pressable 
         style={styles.skipButton} 
@@ -229,7 +245,7 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
         onClick={Platform.OS === 'web' ? handleSkip : undefined}
         data-testid="onboarding-skip-btn"
       >
-        <Text style={styles.skipText}>Skip</Text>
+        <Text style={[styles.skipText, { color: colors.textSecondary }]}>Skip</Text>
       </Pressable>
       
       {/* Steps Carousel */}
@@ -260,7 +276,7 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
         <Pressable
           style={({ pressed }) => [
             styles.continueButton,
-            { backgroundColor: steps[currentIndex]?.color || COLORS.primary },
+            { backgroundColor: getStepColor(steps[currentIndex]?.colorKey || 'primary') },
             pressed && styles.buttonPressed,
           ]}
           onPress={handleNext}
@@ -281,7 +297,6 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   skipButton: {
     position: 'absolute',
@@ -294,7 +309,6 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: COLORS.textSecondary,
   },
   stepContainer: {
     width: width,
@@ -333,14 +347,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: COLORS.textPrimary,
     textAlign: 'center',
     marginBottom: SIZES.sm,
   },
   stepDescription: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 26,
     paddingHorizontal: SIZES.sm,
