@@ -29,18 +29,17 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const { 
-    themePreference, 
-    effectiveTheme, 
-    isHydrated,
-    initializeTheme, 
-    setThemePreference 
-  } = useThemeStore();
+  // Use individual selectors to ensure re-renders on state changes
+  const themePreference = useThemeStore((state) => state.themePreference);
+  const effectiveTheme = useThemeStore((state) => state.effectiveTheme);
+  const isHydrated = useThemeStore((state) => state.isHydrated);
+  const initializeTheme = useThemeStore((state) => state.initializeTheme);
+  const setThemePreference = useThemeStore((state) => state.setThemePreference);
 
   // Initialize theme on mount
   useEffect(() => {
     initializeTheme();
-  }, []);
+  }, [initializeTheme]);
 
   // Get the full theme object based on effective theme
   const theme = getTheme(effectiveTheme);

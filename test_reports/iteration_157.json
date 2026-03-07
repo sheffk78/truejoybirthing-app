@@ -1,0 +1,106 @@
+{
+  "summary": "Theme Switching Test: PARTIAL SUCCESS. The Zustand selector fix IS working - React components now correctly update background colors when theme changes (div[7] changes from rgb(254,252,255) to rgb(26,21,32)). HOWEVER, the document.body/html useEffect fix is NOT executing - body.style.backgroundColor remains empty despite the useEffect code being present in _layout.tsx.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "critical": [
+      {
+        "component": "_layout.tsx ThemedLayout useEffect",
+        "issue": "useEffect to set document.body.style.backgroundColor is NOT executing on web platform. Despite code being present at lines 27-37, body.style.backgroundColor and html.style.backgroundColor remain empty ('') after theme changes.",
+        "selector": "document.body.style.backgroundColor",
+        "priority": "HIGH"
+      }
+    ],
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Theme Switching - Body Background",
+        "issue": "document.body and document.documentElement background colors are not being set. The useEffect dependency [theme.colors.background.primary] may not be triggering re-execution properly.",
+        "affected_selectors": ["document.body", "document.documentElement", "#root"],
+        "priority": "HIGH"
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Profile Page",
+        "issues": ["Gray wrapper (rgb(242,242,242)) at div index 5 still visible - comes from SafeAreaProvider or react-native-web defaults"]
+      }
+    ]
+  },
+  "test_results": {
+    "login_flow": "PASS",
+    "profile_navigation": "PASS",
+    "appearance_section_visible": "PASS",
+    "theme_option_clicks": "PASS - Checkmarks move correctly",
+    "zustand_selector_fix_working": "PASS - Individual selectors causing proper re-renders",
+    "react_component_theme_update": "PASS - div[7] background changes correctly (dark: rgb(26,21,32), light: rgb(254,252,255))",
+    "visual_change_in_appearance_section": "PASS - Background of theme options area changes visually",
+    "document_body_background_set": "FAIL - body.style.backgroundColor is empty",
+    "document_html_background_set": "FAIL - html.style.backgroundColor is empty",
+    "root_element_background_set": "FAIL - #root backgroundColor is rgba(0,0,0,0)",
+    "gray_wrapper_removed": "FAIL - div[5] still shows rgb(242,242,242)"
+  },
+  "debug_findings": {
+    "dark_mode_divs": [
+      {"index": 5, "bg": "rgb(242, 242, 242)", "note": "Gray wrapper - NOT from theme"},
+      {"index": 7, "bg": "rgb(26, 21, 32)", "note": "CORRECT dark theme color from View in ThemedLayout"}
+    ],
+    "light_mode_divs": [
+      {"index": 5, "bg": "rgb(242, 242, 242)", "note": "Gray wrapper persists"},
+      {"index": 7, "bg": "rgb(254, 252, 255)", "note": "CORRECT light theme color"}
+    ],
+    "body_style_always_empty": true,
+    "html_style_always_empty": true,
+    "useEffect_not_executing": "The useEffect at _layout.tsx lines 27-37 with Platform.OS === 'web' check is NOT setting document styles"
+  },
+  "fixes_applied_by_main_agent": {
+    "fix_1_zustand_selectors": {
+      "file": "/app/frontend/src/contexts/ThemeContext.tsx",
+      "change": "Changed from destructuring to individual selectors: useThemeStore((state) => state.themePreference)",
+      "result": "WORKING - Components re-render on theme change"
+    },
+    "fix_2_body_background_useEffect": {
+      "file": "/app/frontend/app/_layout.tsx lines 27-37",
+      "change": "Added useEffect to set document.body.style.backgroundColor on web",
+      "result": "NOT WORKING - useEffect not executing or changes being overridden"
+    }
+  },
+  "test_report_links": ["/app/test_reports/iteration_157.json"],
+  "action_items": [
+    "CRITICAL: Debug why useEffect at _layout.tsx lines 27-37 is not setting document.body.style.backgroundColor",
+    "Add console.log inside the useEffect to verify it's being called with correct theme color",
+    "Check if something else is resetting document.body styles after the useEffect runs",
+    "Consider using CSS variables or inline styles on a global wrapper instead of document.body manipulation",
+    "Alternative: Add a global CSS file that sets body background based on a CSS class that React can toggle"
+  ],
+  "critical_code_review_comments": [
+    "The useEffect has correct dependency [theme.colors.background.primary] but may not be re-executing on theme changes",
+    "Platform.OS === 'web' check should be correct for Expo web builds",
+    "Consider adding a console.log to debug if the useEffect is firing at all"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only test)",
+    "frontend": "60% - Theme switching works at component level, but body background not set"
+  },
+  "test_credentials": {
+    "mom": "demo.mom@truejoybirthing.com / DemoScreenshot2024!"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Theme switching IS working at React component level - the View in ThemedLayout correctly updates its backgroundColor. The issue is the useEffect that sets document.body.style.backgroundColor is NOT executing or not persisting. Verify by adding console.log to the useEffect to see if it fires on theme changes. The gray wrapper (rgb(242,242,242)) at div[5] is separate issue from SafeAreaProvider.",
+  "comparison_with_previous_iteration": {
+    "iteration_156_status": "Theme not switching visually at all",
+    "iteration_157_status": "Theme switching WORKING at React level, but document.body not being set",
+    "improvement": "SIGNIFICANT - Zustand selector fix is working, components re-render correctly"
+  },
+  "recommended_debug_steps": [
+    "1. Add console.log('Setting body background to:', theme.colors.background.primary) inside the useEffect",
+    "2. Check if useEffect fires on initial mount and on theme changes",
+    "3. If useEffect fires but styles reset, check for competing CSS or other useEffects",
+    "4. Consider moving the document.body manipulation to the ThemeProvider itself"
+  ]
+}
