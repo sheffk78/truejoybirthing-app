@@ -21,10 +21,12 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import Input from '../Input';
+import AppearanceSettings from '../AppearanceSettings';
 import { useAuthStore } from '../../store/authStore';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { apiRequest, uploadImage } from '../../utils/api';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
 const MAX_BIO_LENGTH = 800;
@@ -55,6 +57,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   const router = useRouter();
   const { user, logout, updateUser } = useAuthStore();
   const { status: subscriptionData, fetchStatus: fetchSubscriptionStatus } = useSubscriptionStore();
+  const colors = useColors();
   
   const [profile, setProfile] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -370,7 +373,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   const videoId = getYouTubeVideoId(videoIntroUrl);
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']} data-testid={`${config.role.toLowerCase()}-profile-screen`}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']} data-testid={`${config.role.toLowerCase()}-profile-screen`}>
       {/* Hidden file input for web */}
       {Platform.OS === 'web' && (
         <input
@@ -391,24 +394,29 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
             data-testid="profile-photo-btn"
           >
             {uploadingPhoto ? (
-              <ActivityIndicator size="large" color={COLORS.white} />
+              <ActivityIndicator size="large" color={colors.white} />
             ) : profilePicture ? (
               <Image source={{ uri: profilePicture }} style={styles.avatarImage} />
             ) : (
-              <Icon name="person" size={40} color={COLORS.white} />
+              <Icon name="person" size={40} color={colors.white} />
             )}
             <View style={[styles.cameraIconOverlay, { backgroundColor: primaryColor }]}>
-              <Icon name="camera" size={16} color={COLORS.white} />
+              <Icon name="camera" size={16} color={colors.white} />
             </View>
           </TouchableOpacity>
           <Text style={styles.photoHint}>Tap to change photo</Text>
-          <Text style={styles.userName}>{user?.full_name}</Text>
-          <Text style={styles.userEmail}>{user?.email}</Text>
+          <Text style={[styles.userName, { color: colors.text }]}>{user?.full_name}</Text>
+          <Text style={[styles.userEmail, { color: colors.textSecondary }]}>{user?.email}</Text>
           <View style={[styles.roleBadge, { backgroundColor: primaryColor }]}>
-            <Icon name={roleIcon as any} size={14} color={COLORS.white} />
+            <Icon name={roleIcon as any} size={14} color={colors.white} />
             <Text style={styles.roleText}>{config.roleLabel}</Text>
           </View>
         </View>
+        
+        {/* Appearance Settings */}
+        <Card style={styles.profileCard}>
+          <AppearanceSettings showLabel={true} />
+        </Card>
         
         {/* Profile Info Card */}
         <Card style={styles.profileCard}>

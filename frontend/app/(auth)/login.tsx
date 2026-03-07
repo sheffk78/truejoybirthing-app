@@ -21,6 +21,7 @@ import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { useAuthStore } from '../../src/store/authStore';
 import { COLORS, SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { useColors } from '../../src/hooks/useThemedStyles';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -32,6 +33,7 @@ export default function LoginScreen() {
   const { login, isLoading } = useAuthStore();
   const { width } = useWindowDimensions();
   const isWideScreen = width > 768;
+  const colors = useColors();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -71,7 +73,7 @@ export default function LoginScreen() {
   // Wide screen: Split layout
   if (isWideScreen) {
     return (
-      <View style={styles.splitContainer}>
+      <View style={[styles.splitContainer, { backgroundColor: colors.background }]}>
         {/* Left side - Image */}
         <View style={styles.imageSection}>
           <ImageBackground

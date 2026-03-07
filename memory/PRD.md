@@ -60,10 +60,47 @@ The gray wrapper (rgb(242,242,242)) from SafeAreaProvider has been fixed by inje
 - Uses !important to override react-native-web defaults
 - Updates automatically when theme changes
 
+**P1 Progress - Dynamic Theme Colors:**
+
+**Screens Updated (15 files):**
+1. ✅ Auth Layout - `/app/frontend/app/(auth)/_layout.tsx`
+2. ✅ Mom Layout - `/app/frontend/app/(mom)/_layout.tsx`
+3. ✅ Doula Layout - `/app/frontend/app/(doula)/_layout.tsx`
+4. ✅ Midwife Layout - `/app/frontend/app/(midwife)/_layout.tsx`
+5. ✅ Provider Layout - `/app/frontend/app/(provider)/_layout.tsx`
+6. ✅ Admin Layout - `/app/frontend/app/(admin)/_layout.tsx`
+7. ✅ Welcome Screen - `/app/frontend/app/(auth)/welcome.tsx`
+8. ✅ Login Screen - `/app/frontend/app/(auth)/login.tsx`
+9. ✅ Mom Home - `/app/frontend/app/(mom)/home.tsx`
+10. ✅ Mom Profile - `/app/frontend/app/(mom)/profile.tsx`
+11. ✅ Contraction Timer - `/app/frontend/app/(mom)/contraction-timer.tsx`
+12. ✅ Provider Dashboard (shared) - `/app/frontend/src/components/provider/ProviderDashboard.tsx`
+13. ✅ Provider Profile (shared) - `/app/frontend/src/components/provider/ProviderProfile.tsx`
+
+**New Utility Created:**
+- `/app/frontend/src/hooks/useThemedStyles.ts` - Provides `useColors()` hook with backward-compatible color mapping
+
+**Test Results (iteration_159.json):**
+- ✅ Mom Profile - Dark background applied
+- ✅ Mom Home - Dark background working
+- ✅ Mom Contraction Timer - Dark background working
+- ✅ Tab bar uses dark surface colors
+- ✅ Doula/Midwife Profile - AppearanceSettings added
+
+**Remaining Work (32 files still using static COLORS):**
+- Mom screens: team.tsx, messages.tsx, birth-plan.tsx, getting-started.tsx, etc.
+- Provider screens: clients.tsx, client-detail.tsx, messages.tsx, etc.
+- Admin screens: content.tsx, users.tsx, settings.tsx
+
+**Migration Pattern Established:**
+1. Import `useColors` from `../../src/hooks/useThemedStyles`
+2. Call `const colors = useColors()` in component
+3. Add `{ backgroundColor: colors.background }` to SafeAreaView style
+4. Replace `COLORS.text` with `colors.text`, etc.
+
 **Remaining Work:**
-1. **P1**: Update all screens to use dynamic `theme.colors` instead of static `COLORS`
-2. **P2**: Update shared components (Card, Button, Input) to be theme-aware
-3. **P3**: Add theme-aware styling to Doula and Midwife dashboards
+1. **P2**: Update remaining 32 screens with dynamic colors
+2. **P3**: Update shared components (Card, Button, Input) to be theme-aware
 
 **Files Created:**
 - `/app/frontend/src/constants/themeTokens.ts` - Color palettes and theme types
