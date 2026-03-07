@@ -45,17 +45,25 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 - Theme selection UI: ✅ WORKING
 - Theme state persistence: ✅ WORKING
 - React component re-renders on theme change: ✅ WORKING (div backgrounds update)
-- Full visual dark mode: ⚠️ PARTIAL (internal divs update, gray wrapper from react-native-web still visible)
+- Full visual dark mode: ✅ WORKING (P0 gray wrapper fixed)
+- CSS injection for web: ✅ WORKING (style tag id='theme-override-styles')
 
 **Test Reports:**
+- `/app/test_reports/iteration_158.json` - P0 gray wrapper fix VERIFIED (ALL 6 TESTS PASSED)
 - `/app/test_reports/iteration_157.json` - Theme context fixes
 - `/app/test_reports/iteration_156.json` - Initial theme testing
 
-**Remaining Work for Full Dark Mode:**
-1. **P0**: Fix gray wrapper (rgb(242,242,242)) from react-native-web/SafeAreaProvider
-2. **P1**: Update all screens to use dynamic `theme.colors` instead of static `COLORS`
-3. **P2**: Update shared components (Card, Button, Input) to be theme-aware
-4. **P3**: Add theme-aware styling to Doula and Midwife dashboards
+**P0 Fix Details (Gray Wrapper):**
+The gray wrapper (rgb(242,242,242)) from SafeAreaProvider has been fixed by injecting CSS via a dynamic style tag in ThemeContext:
+- Style tag id: 'theme-override-styles'
+- CSS rules override: html, body, #root, SafeAreaProvider wrapper
+- Uses !important to override react-native-web defaults
+- Updates automatically when theme changes
+
+**Remaining Work:**
+1. **P1**: Update all screens to use dynamic `theme.colors` instead of static `COLORS`
+2. **P2**: Update shared components (Card, Button, Input) to be theme-aware
+3. **P3**: Add theme-aware styling to Doula and Midwife dashboards
 
 **Files Created:**
 - `/app/frontend/src/constants/themeTokens.ts` - Color palettes and theme types
