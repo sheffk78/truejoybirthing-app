@@ -17,6 +17,7 @@ import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { COLORS, SIZES } from '../../src/constants/theme';
+import { useColors } from '../../src/hooks/useThemedStyles';
 
 interface TeamMemberResponse {
   provider: {
@@ -55,6 +56,7 @@ interface ShareRequest {
 
 export default function MyTeamScreen() {
   const router = useRouter();
+  const colors = useColors();
   const [teamMembers, setTeamMembers] = useState<TeamMemberResponse[]>([]);
   const [shareRequests, setShareRequests] = useState<ShareRequest[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -167,36 +169,36 @@ export default function MyTeamScreen() {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <Text style={styles.title}>My Care Team</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.title, { color: colors.text }]}>My Care Team</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
           Complete your birth plan before inviting your care team. Doulas and midwives will first see key details to consider working together, then your full plan after you approve them.
         </Text>
 
         {/* Browse Marketplace Button */}
         <TouchableOpacity
-          style={styles.marketplaceButton}
+          style={[styles.marketplaceButton, { backgroundColor: colors.primary }]}
           onPress={() => router.push('/marketplace')}
           data-testid="browse-marketplace-btn"
         >
-          <Icon name="search" size={20} color={COLORS.white} />
+          <Icon name="search" size={20} color={colors.white} />
           <Text style={styles.marketplaceButtonText}>Browse Provider Marketplace</Text>
-          <Icon name="chevron-forward" size={16} color={COLORS.white} />
+          <Icon name="chevron-forward" size={16} color={colors.white} />
         </TouchableOpacity>
 
         {/* Birth Team Summary */}
         {allTeamProviders.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Your Birth Team</Text>
-            <Text style={styles.sectionSubtitle}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Birth Team</Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
               Your care providers who are helping you on your birthing journey
             </Text>
             {allTeamProviders.map((member) => (

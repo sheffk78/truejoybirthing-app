@@ -98,9 +98,49 @@ The gray wrapper (rgb(242,242,242)) from SafeAreaProvider has been fixed by inje
 3. Add `{ backgroundColor: colors.background }` to SafeAreaView style
 4. Replace `COLORS.text` with `colors.text`, etc.
 
-**Remaining Work:**
-1. **P2**: Update remaining 32 screens with dynamic colors
-2. **P3**: Update shared components (Card, Button, Input) to be theme-aware
+**P2 Progress - Shared Components & Screens Updated:**
+
+**Core Shared Components Updated (4):**
+- ✅ `/app/frontend/src/components/Card.tsx` - Uses `useColors()`, `useShadows()`
+- ✅ `/app/frontend/src/components/Button.tsx` - Uses `useColors()`, `useShadows()`
+- ✅ `/app/frontend/src/components/Input.tsx` - Uses `useColors()`
+- ✅ `/app/frontend/src/components/LoadingScreen.tsx` - Uses `useColors()`
+
+**Provider Components Updated (3):**
+- ✅ `/app/frontend/src/components/provider/ProviderDashboard.tsx` - Shared by Doula/Midwife
+- ✅ `/app/frontend/src/components/provider/ProviderProfile.tsx` - With AppearanceSettings
+- ✅ `/app/frontend/src/components/provider/ProviderClients.tsx` - Clients list screen
+
+**App Screens Updated (11):**
+- Auth: _layout.tsx, welcome.tsx, login.tsx
+- Mom: _layout.tsx, home.tsx, profile.tsx, contraction-timer.tsx, my-team.tsx
+- Doula: _layout.tsx
+- Midwife: _layout.tsx
+- Provider: _layout.tsx
+- Admin: _layout.tsx
+
+**Test Results (iteration_160.json):**
+- ✅ 100% frontend test pass rate
+- ✅ Dark mode working on Mom Profile/Home/Contraction Timer
+- ✅ Card, Button, Input components themed
+- ✅ Doula/Midwife Profile with AppearanceSettings
+- ✅ Tab bar uses dark surface colors
+
+**Remaining Screens (~30 files):**
+- Mom: messages.tsx, birth-plan.tsx, appointments.tsx, invoices.tsx, marketplace.tsx, wellness.tsx, etc.
+- Provider: messages.tsx, client-detail.tsx, etc.
+- Admin: content.tsx, users.tsx, settings.tsx
+
+**Migration Status:**
+- Infrastructure: ✅ Complete
+- Core Components: ✅ Complete
+- Provider Components: ✅ Partially Complete
+- App Screens: ~40% Complete
+
+**Next Steps:**
+1. Continue updating remaining Mom screens
+2. Update remaining provider screens
+3. Update admin screens
 
 **Files Created:**
 - `/app/frontend/src/constants/themeTokens.ts` - Color palettes and theme types
