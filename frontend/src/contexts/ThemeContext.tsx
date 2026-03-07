@@ -49,14 +49,67 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   useEffect(() => {
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       const bgColor = theme.colors.background.primary;
+      const textColor = theme.colors.text.primary;
+      
       // Set on multiple elements to ensure coverage
       document.body.style.backgroundColor = bgColor;
       document.documentElement.style.backgroundColor = bgColor;
-      // Also add a CSS class for potential CSS-based overrides
+      
+      // Add a CSS class for potential CSS-based overrides
       document.body.setAttribute('data-theme', effectiveTheme.toLowerCase());
       document.documentElement.setAttribute('data-theme', effectiveTheme.toLowerCase());
+      
+      // Inject CSS to override react-native-web's default gray backgrounds
+      const styleId = 'theme-override-styles';
+      let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+      
+      if (!styleElement) {
+        styleElement = document.createElement('style');
+        styleElement.id = styleId;
+        document.head.appendChild(styleElement);
+      }
+      
+      // CSS to override all react-native-web wrapper backgrounds
+      styleElement.textContent = `
+        /* Override react-native-web default backgrounds */
+        html, body, #root, #root > div, #__next {
+          background-color: ${bgColor} !important;
+        }
+        
+        /* Override SafeAreaProvider wrapper */
+        [data-testid="safe-area-provider"],
+        div[style*="background-color: rgb(242, 242, 242)"],
+        div[style*="background-color:rgb(242, 242, 242)"],
+        div[style*="background: rgb(242, 242, 242)"] {
+          background-color: ${bgColor} !important;
+          background: ${bgColor} !important;
+        }
+        
+        /* Target react-native-web View wrappers with gray backgrounds */
+        body > div > div,
+        #root > div > div {
+          background-color: transparent !important;
+        }
+        
+        /* Ensure the main themed wrapper is visible */
+        #root > div > div > div[style*="flex: 1"] {
+          background-color: ${bgColor} !important;
+        }
+        
+        /* Fix for any inline gray styles */
+        .r-backgroundColor-14lw9ot {
+          background-color: ${bgColor} !important;
+        }
+        
+        /* Dark mode specific text color fixes */
+        ${effectiveTheme === 'DARK' ? `
+          body, #root {
+            color: ${textColor};
+          }
+        ` : ''}
+      `;
     }
-  }, [effectiveTheme, theme.colors.background.primary]);
+  }, [effectiveTheme, theme.colors.background.primary, theme.colors.text.primary]);
   
   const value: ThemeContextType = {
     theme,
