@@ -20,6 +20,7 @@ import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
 import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { useSubscriptionGate } from '../../utils/subscriptionGate';
 
@@ -83,6 +84,7 @@ interface ProviderClientsProps {
 
 export default function ProviderClients({ config }: ProviderClientsProps) {
   const router = useRouter();
+  const colors = useColors();
   const [pendingRequests, setPendingRequests] = useState<ShareRequest[]>([]);
   const [connectedClients, setConnectedClients] = useState<ConnectedClient[]>([]);
   const [clientAppointments, setClientAppointments] = useState<Record<string, boolean>>({});
@@ -244,7 +246,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   }
   
   return (
-    <SafeAreaView style={styles.container} edges={['top']} data-testid={`${config.role.toLowerCase()}-clients-screen`}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']} data-testid={`${config.role.toLowerCase()}-clients-screen`}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -254,32 +256,32 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>My Clients</Text>
-          <Text style={styles.subtitle}>Manage your client relationships</Text>
+          <Text style={[styles.title, { color: colors.text }]}>My Clients</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Manage your client relationships</Text>
         </View>
         
         {/* Active/Inactive Filter Toggle */}
         <View style={styles.filterContainer}>
           <TouchableOpacity
-            style={[styles.filterButton, clientFilter === 'active' && { backgroundColor: primaryColor }]}
+            style={[styles.filterButton, { backgroundColor: colors.surface }, clientFilter === 'active' && { backgroundColor: primaryColor }]}
             onPress={() => setClientFilter('active')}
             data-testid="filter-active"
           >
-            <Text style={[styles.filterText, clientFilter === 'active' && { color: COLORS.white }]}>Active</Text>
+            <Text style={[styles.filterText, { color: colors.text }, clientFilter === 'active' && { color: colors.white }]}>Active</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.filterButton, clientFilter === 'inactive' && { backgroundColor: primaryColor }]}
+            style={[styles.filterButton, { backgroundColor: colors.surface }, clientFilter === 'inactive' && { backgroundColor: primaryColor }]}
             onPress={() => setClientFilter('inactive')}
             data-testid="filter-inactive"
           >
-            <Text style={[styles.filterText, clientFilter === 'inactive' && { color: COLORS.white }]}>Inactive</Text>
+            <Text style={[styles.filterText, { color: colors.text }, clientFilter === 'inactive' && { color: colors.white }]}>Inactive</Text>
           </TouchableOpacity>
         </View>
         
         {/* Pending Requests Section */}
         {pendingRequests.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
               <Icon name="heart" size={18} color={primaryColor} /> Pending Requests ({pendingRequests.length})
             </Text>
             {pendingRequests.map((request) => (

@@ -9,7 +9,8 @@ import {
   TextInputProps,
 } from 'react-native';
 import { Icon } from './Icon';
-import { COLORS, SIZES } from '../constants/theme';
+import { SIZES } from '../constants/theme';
+import { useColors } from '../hooks/useThemedStyles';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -32,18 +33,20 @@ export default function Input({
 }: InputProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const colors = useColors();
   
   const isPassword = secureTextEntry !== undefined;
   const showPassword = isPassword && isPasswordVisible;
   
   return (
     <View style={[styles.container, containerStyle]}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && <Text style={[styles.label, { color: colors.text }]}>{label}</Text>}
       <View
         style={[
           styles.inputContainer,
-          isFocused && styles.inputFocused,
-          error && styles.inputError,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+          isFocused && { borderColor: colors.primary, borderWidth: 2 },
+          error && { borderColor: colors.error },
         ]}
       >
         {leftIcon && (
@@ -52,15 +55,15 @@ export default function Input({
               <Icon
                 name={leftIcon}
                 size={20}
-                color={COLORS.textSecondary}
+                color={colors.textSecondary}
               />
             </View>
             <View style={{ width: 12 }} />
           </>
         )}
         <TextInput
-          style={[styles.input, leftIcon && styles.inputWithLeftIcon]}
-          placeholderTextColor={COLORS.textLight}
+          style={[styles.input, { color: colors.text }, leftIcon && styles.inputWithLeftIcon]}
+          placeholderTextColor={colors.textLight}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           secureTextEntry={isPassword && !showPassword}
@@ -74,7 +77,7 @@ export default function Input({
             <Icon
               name={showPassword ? 'eye-off-outline' : 'eye-outline'}
               size={20}
-              color={COLORS.textSecondary}
+              color={colors.textSecondary}
             />
           </TouchableOpacity>
         )}
@@ -84,11 +87,11 @@ export default function Input({
             style={styles.rightIcon}
             disabled={!onRightIconPress}
           >
-            <Icon name={rightIcon} size={20} color={COLORS.textSecondary} />
+            <Icon name={rightIcon} size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         )}
       </View>
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>}
     </View>
   );
 }
@@ -100,32 +103,21 @@ const styles = StyleSheet.create({
   label: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
-    color: COLORS.textPrimary,
     marginBottom: SIZES.xs,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: SIZES.radiusMd,
     minHeight: SIZES.touchMin + 4,
     paddingLeft: SIZES.md,
-  },
-  inputFocused: {
-    borderColor: COLORS.primary,
-    borderWidth: 2,
-  },
-  inputError: {
-    borderColor: COLORS.error,
   },
   input: {
     flex: 1,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
   },
   leftIcon: {
     marginRight: 12,
@@ -139,7 +131,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: SIZES.fontXs,
-    color: COLORS.error,
     marginTop: SIZES.xs,
   },
 });

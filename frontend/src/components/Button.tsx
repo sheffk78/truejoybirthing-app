@@ -8,7 +8,8 @@ import {
   TextStyle,
   Platform,
 } from 'react-native';
-import { COLORS, SIZES, SHADOWS, FONTS } from '../constants/theme';
+import { SIZES, FONTS } from '../constants/theme';
+import { useColors, useShadows } from '../hooks/useThemedStyles';
 
 interface ButtonProps {
   title: string;
@@ -37,6 +38,9 @@ export default function Button({
   icon,
   testID,
 }: ButtonProps) {
+  const colors = useColors();
+  const shadows = useShadows();
+  
   const getButtonStyle = (): ViewStyle => {
     const base: ViewStyle = {
       flexDirection: 'row',
@@ -64,18 +68,18 @@ export default function Button({
     // Variant styles
     switch (variant) {
       case 'secondary':
-        base.backgroundColor = COLORS.secondary;
+        base.backgroundColor = colors.secondary;
         break;
       case 'outline':
-        base.backgroundColor = COLORS.subtle;
+        base.backgroundColor = colors._theme.background.subtle;
         base.borderWidth = 1.5;
-        base.borderColor = COLORS.primaryLight;
+        base.borderColor = colors.primaryLight;
         break;
       case 'ghost':
         base.backgroundColor = 'transparent';
         break;
       default:
-        base.backgroundColor = COLORS.primary;
+        base.backgroundColor = colors.primary;
     }
     
     if (disabled || loading) {
@@ -111,13 +115,13 @@ export default function Button({
     switch (variant) {
       case 'outline':
       case 'ghost':
-        base.color = COLORS.primary;
+        base.color = colors.primary;
         break;
       case 'secondary':
-        base.color = COLORS.white;
+        base.color = colors.white;
         break;
       default:
-        base.color = COLORS.textOnPrimary;
+        base.color = colors._theme.text.onAccent;
     }
     
     return base;
@@ -133,14 +137,14 @@ export default function Button({
       onClick={Platform.OS === 'web' ? onPress : undefined}
       style={({ pressed }) => [
         getButtonStyle(),
-        SHADOWS.sm,
+        shadows.sm,
         style,
         pressed && { opacity: 0.8 }
       ]}
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'outline' || variant === 'ghost' ? COLORS.primary : COLORS.white}
+          color={variant === 'outline' || variant === 'ghost' ? colors.primary : colors.white}
           size="small"
         />
       ) : (
