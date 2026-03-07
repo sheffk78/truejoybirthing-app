@@ -3,7 +3,64 @@
 ## Original Problem Statement
 Build a full-stack application named "True Joy Birthing" for web, iOS, and Android. The app serves three main user roles: MOM, DOULA, and MIDWIFE, plus an ADMIN role.
 
-## Latest Session (2026-03-04 - Newborn Exam Feature + Bug Fixes)
+## Latest Session (2026-03-07 - Contraction Timer Feature MVP)
+
+**Contraction Timer - Phase 1 (MVP) - COMPLETED:**
+Built a comprehensive contraction timer feature for Mom users with the following capabilities:
+
+**Core Features:**
+- One-tap start/stop contraction timing
+- Automatic calculation of duration, frequency, and intervals
+- Session management (start, pause, end)
+- History view with edit/delete capability
+- Manual contraction entry for missed timings
+- Intensity tracking (Mild/Moderate/Strong)
+- 5-1-1 rule detection and alert
+- Exportable summary for healthcare providers
+- Team sharing opt-in (Doula/Midwife)
+
+**User Interface:**
+- New "Timer" tab in Mom's bottom navigation (between Birth Plan and My Team)
+- Stats strip showing avg duration, avg interval, and count
+- Large timer circle with animated pulse during contractions
+- Full-width Start/Stop button
+- 5-1-1 pattern status indicator
+- Bottom action bar: History, Add Manual, Share, End
+
+**Files Created:**
+- `backend/routes/contractions.py` - Full API implementation (~1079 lines)
+- `frontend/app/(mom)/contraction-timer.tsx` - Timer UI component (~950 lines)
+
+**Files Modified:**
+- `backend/server.py` - Added contractions_routes import and router registration
+- `frontend/app/(mom)/_layout.tsx` - Added Timer tab to navigation
+
+**Backend API Endpoints:**
+- `GET /api/contractions/session/active` - Get active session with contractions
+- `POST /api/contractions/session/start` - Start new timing session
+- `POST /api/contractions/start` - Start timing a contraction
+- `POST /api/contractions/stop?intensity=X` - Stop with optional intensity
+- `POST /api/contractions/manual` - Add manual contraction
+- `PUT /api/contractions/{id}` - Update contraction
+- `DELETE /api/contractions/{id}` - Delete contraction
+- `PUT /api/contractions/session/{id}` - Update session sharing
+- `POST /api/contractions/session/{id}/end` - End session
+- `GET /api/contractions/sessions/history` - Get past sessions
+- `GET /api/contractions/session/{id}/summary` - Get session summary
+- `GET /api/contractions/session/{id}/export` - Export shareable text
+- `GET /api/contractions/team/active-clients` - Provider dashboard card
+- `GET /api/contractions/team/client/{mom_id}` - Provider view of client data
+
+**Database Collections:**
+- `contraction_sessions` - Session data with sharing preferences
+- `contractions` - Individual contraction records
+
+**Testing:**
+- All 27 backend API tests passed (100%)
+- All frontend UI flows verified (100%)
+- Test report: /app/test_reports/iteration_149.json
+
+## Previous Session (2026-03-04 - Newborn Exam Feature + Bug Fixes)
 
 **Mobile Time Picker Bug Fix - COMPLETED:**
 - Fixed critical usability issue where the time picker would disappear too quickly on mobile web
