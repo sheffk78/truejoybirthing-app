@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://exam-intake-form.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://birthing-app-qa.preview.emergentagent.com')
 
 # Test credentials
 MIDWIFE_EMAIL = "midwife@test.com"

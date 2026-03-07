@@ -43,6 +43,15 @@ export default function MomLayout() {
         }}
       />
       <Tabs.Screen
+        name="contraction-timer"
+        options={{
+          title: 'Timer',
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="timer-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="timeline"
         options={{
           href: null,  // Hidden - accessible from home

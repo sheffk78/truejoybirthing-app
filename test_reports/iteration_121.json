@@ -52,8 +52,8 @@
     "frontend": "100%"
   },
   "test_credentials": {
-    "test_contract_url": "https://exam-intake-form.preview.emergentagent.com/sign-contract?contractId=contract_6cc57257d974",
-    "pdf_download_url": "https://exam-intake-form.preview.emergentagent.com/api/contracts/contract_6cc57257d974/pdf"
+    "test_contract_url": "https://birthing-app-qa.preview.emergentagent.com/sign-contract?contractId=contract_6cc57257d974",
+    "pdf_download_url": "https://birthing-app-qa.preview.emergentagent.com/api/contracts/contract_6cc57257d974/pdf"
   },
   "seed_data_creation": "",
   "retest_needed": false,

@@ -16,7 +16,7 @@ import os
 from datetime import datetime, timedelta
 
 # Base URL from environment
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://exam-intake-form.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://birthing-app-qa.preview.emergentagent.com')
 
 # Expected sections in contract template
 EXPECTED_SECTIONS = [
