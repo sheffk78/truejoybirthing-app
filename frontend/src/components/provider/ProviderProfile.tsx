@@ -25,7 +25,7 @@ import AppearanceSettings from '../AppearanceSettings';
 import { useAuthStore } from '../../store/authStore';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { apiRequest, uploadImage } from '../../utils/api';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
@@ -505,7 +505,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           ) : (
             <View>
               <View style={styles.infoRow}>
-                <Icon name="medical-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="medical-outline" size={20} color={colors.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Practice Name</Text>
                   <Text style={styles.infoValue}>{profile?.practice_name || 'Not set'}</Text>
@@ -514,7 +514,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
               
               {isMidwife && (
                 <View style={styles.infoRow}>
-                  <Icon name="ribbon-outline" size={20} color={COLORS.textSecondary} />
+                  <Icon name="ribbon-outline" size={20} color={colors.textSecondary} />
                   <View style={styles.infoText}>
                     <Text style={styles.infoLabel}>Credentials</Text>
                     <Text style={styles.infoValue}>{profile?.credentials || 'Not set'}</Text>
@@ -523,7 +523,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
               )}
               
               <View style={styles.infoRow}>
-                <Icon name="location-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="location-outline" size={20} color={colors.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Location</Text>
                   <Text style={styles.infoValue}>
@@ -535,7 +535,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
               </View>
               
               <View style={styles.infoRow}>
-                <Icon name="time-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="time-outline" size={20} color={colors.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Years in Practice</Text>
                   <Text style={styles.infoValue}>
@@ -545,7 +545,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
               </View>
               
               <View style={styles.infoRow}>
-                <Icon name="checkmark-circle-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="checkmark-circle-outline" size={20} color={colors.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Accepting Clients</Text>
                   <Text style={styles.infoValue}>
@@ -569,7 +569,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
               <TextInput
                 style={[styles.videoInput, videoError && styles.videoInputError]}
                 placeholder="https://www.youtube.com/watch?v=..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={videoIntroUrl}
                 onChangeText={setVideoIntroUrl}
                 autoCapitalize="none"
@@ -589,12 +589,12 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
             >
               <Image source={{ uri: getYouTubeThumbnail(videoId) }} style={styles.videoThumbnail} />
               <View style={styles.playIconOverlay}>
-                <Icon name="play-circle" size={48} color={COLORS.white} />
+                <Icon name="play-circle" size={48} color={colors.white} />
               </View>
             </TouchableOpacity>
           ) : (
             <View style={styles.noVideoContainer}>
-              <Icon name="videocam-outline" size={32} color={COLORS.textLight} />
+              <Icon name="videocam-outline" size={32} color={colors.textLight} />
               <Text style={styles.noVideoText}>No video added yet</Text>
             </View>
           )}
@@ -612,7 +612,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
               <TextInput
                 style={styles.bioInput}
                 placeholder={`Share your story, philosophy, and what makes you unique as a ${config.roleLabel.toLowerCase()}...`}
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={moreAboutMe}
                 onChangeText={(text) => setMoreAboutMe(text.slice(0, MAX_BIO_LENGTH))}
                 multiline
@@ -651,7 +651,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
             <Icon 
               name={subscriptionData?.has_pro_access ? 'checkmark-circle' : 'alert-circle'} 
               size={24} 
-              color={subscriptionData?.has_pro_access ? COLORS.success : COLORS.warning} 
+              color={subscriptionData?.has_pro_access ? colors.success : colors.warning} 
             />
             <Text style={styles.subscriptionText}>
               {subscriptionData?.has_pro_access 
@@ -662,13 +662,13 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           {subscriptionData?.has_pro_access && subscriptionData?.days_remaining !== null && (
             <View style={styles.subscriptionDetails}>
               {/* Days Remaining Badge */}
-              <View style={[styles.daysRemainingBadge, { backgroundColor: subscriptionData.is_trial ? COLORS.warning + '20' : primaryColor + '15' }]}>
+              <View style={[styles.daysRemainingBadge, { backgroundColor: subscriptionData.is_trial ? colors.warning + '20' : primaryColor + '15' }]}>
                 <Icon 
                   name="calendar-outline" 
                   size={16} 
-                  color={subscriptionData.is_trial ? COLORS.warning : primaryColor} 
+                  color={subscriptionData.is_trial ? colors.warning : primaryColor} 
                 />
-                <Text style={[styles.daysRemainingText, { color: subscriptionData.is_trial ? COLORS.warning : primaryColor }]}>
+                <Text style={[styles.daysRemainingText, { color: subscriptionData.is_trial ? colors.warning : primaryColor }]}>
                   {subscriptionData.days_remaining} days {subscriptionData.is_trial ? 'left in trial' : 'remaining'}
                 </Text>
               </View>
@@ -678,7 +678,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
                   <Icon 
                     name={subscriptionData.auto_renewing ? 'refresh-outline' : 'time-outline'} 
                     size={14} 
-                    color={COLORS.textSecondary} 
+                    color={colors.textSecondary} 
                   />
                   <Text style={styles.autoRenewText}>
                     {subscriptionData.auto_renewing ? 'Auto-renews annually' : 'Expires, no auto-renew'}
@@ -704,7 +704,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
               onPress={() => Linking.openURL('https://truejoybirthing.com/contact/')}
               data-testid="feedback-btn"
             >
-              <Icon name="star-outline" size={16} color={COLORS.white} />
+              <Icon name="star-outline" size={16} color={colors.white} />
               <Text style={styles.feedbackButtonText}>Leave Feedback</Text>
             </TouchableOpacity>
           </Card>
@@ -722,7 +722,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           accessibilityRole="button"
           accessibilityLabel="Log out of your account"
         >
-          <Icon name="log-out-outline" size={20} color={COLORS.error} />
+          <Icon name="log-out-outline" size={20} color={colors.error} />
           <Text style={styles.logoutText}>Log Out</Text>
         </Pressable>
         
@@ -768,7 +768,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1 },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
   
   // Header styles
@@ -782,80 +782,80 @@ const styles = StyleSheet.create({
     position: 'absolute', bottom: 0, right: 0, 
     width: 32, height: 32, borderRadius: 16, 
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: COLORS.white 
+    borderWidth: 2, borderColor: '#FFFFFF' 
   },
-  photoHint: { fontSize: SIZES.fontXs, color: COLORS.textLight, marginTop: SIZES.xs },
-  userName: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading, color: COLORS.textPrimary, marginTop: SIZES.sm },
-  userEmail: { fontSize: SIZES.fontSm, color: COLORS.textSecondary },
+  photoHint: { fontSize: SIZES.fontXs, marginTop: SIZES.xs },
+  userName: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading, marginTop: SIZES.sm },
+  userEmail: { fontSize: SIZES.fontSm },
   roleBadge: { 
     flexDirection: 'row', alignItems: 'center', 
     paddingHorizontal: SIZES.md, paddingVertical: SIZES.xs, 
     borderRadius: SIZES.radiusFull, marginTop: SIZES.sm 
   },
-  roleText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium, color: COLORS.white, marginLeft: 4 },
+  roleText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium, color: '#FFFFFF', marginLeft: 4 },
   
   // Card styles
   profileCard: { marginBottom: SIZES.md },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.md },
-  cardTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.subheading, color: COLORS.textPrimary },
+  cardTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.subheading },
   editButton: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium },
   
   // Info display styles
   infoRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: SIZES.sm },
   infoText: { marginLeft: SIZES.md, flex: 1 },
-  infoLabel: { fontSize: SIZES.fontXs, color: COLORS.textLight },
-  infoValue: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary },
+  infoLabel: { fontSize: SIZES.fontXs },
+  infoValue: { fontSize: SIZES.fontMd, fontFamily: FONTS.body },
   
   // Form styles
   locationRow: { flexDirection: 'row', gap: SIZES.sm },
   cityInput: { flex: 2 },
   stateInput: { flex: 1 },
   zipLookupStatus: { flexDirection: 'row', alignItems: 'center', marginVertical: SIZES.xs },
-  zipLookupText: { fontSize: SIZES.fontSm, color: COLORS.textSecondary, marginLeft: SIZES.xs },
+  zipLookupText: { fontSize: SIZES.fontSm, marginLeft: SIZES.xs },
   
   // Toggle styles
   toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: SIZES.md },
-  toggleLabel: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary },
+  toggleLabel: { fontSize: SIZES.fontMd, fontFamily: FONTS.body },
   toggle: { 
     width: 50, height: 28, borderRadius: 14, 
-    backgroundColor: COLORS.border, justifyContent: 'center', padding: 2 
+    justifyContent: 'center', padding: 2 
   },
   toggleDot: { 
     width: 24, height: 24, borderRadius: 12, 
-    backgroundColor: COLORS.white 
+    backgroundColor: '#FFFFFF' 
   },
   toggleDotActive: { alignSelf: 'flex-end' },
   
   // Video styles
-  fieldDescription: { fontSize: SIZES.fontSm, color: COLORS.textSecondary, marginBottom: SIZES.md },
+  fieldDescription: { fontSize: SIZES.fontSm, marginBottom: SIZES.md },
   videoInput: { 
-    backgroundColor: COLORS.background, borderWidth: 1, borderColor: COLORS.border, 
-    borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd, color: COLORS.textPrimary 
+    borderWidth: 1, 
+    borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd 
   },
-  videoInputError: { borderColor: COLORS.error },
-  errorText: { fontSize: SIZES.fontSm, color: COLORS.error, marginTop: SIZES.xs },
+  videoInputError: {},
+  errorText: { fontSize: SIZES.fontSm, marginTop: SIZES.xs },
   videoPreview: { borderRadius: SIZES.radiusMd, overflow: 'hidden', position: 'relative' },
-  videoThumbnail: { width: '100%', height: 180, backgroundColor: COLORS.textLight },
+  videoThumbnail: { width: '100%', height: 180 },
   playIconOverlay: { 
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, 
     alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.3)' 
   },
   noVideoContainer: { alignItems: 'center', paddingVertical: SIZES.lg },
-  noVideoText: { fontSize: SIZES.fontMd, color: COLORS.textLight, marginTop: SIZES.sm },
+  noVideoText: { fontSize: SIZES.fontMd, marginTop: SIZES.sm },
   
   // Bio styles
   bioInput: { 
-    backgroundColor: COLORS.background, borderWidth: 1, borderColor: COLORS.border, 
+    borderWidth: 1, 
     borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd, 
-    color: COLORS.textPrimary, minHeight: 120, textAlignVertical: 'top' 
+    minHeight: 120, textAlignVertical: 'top' 
   },
-  charCount: { fontSize: SIZES.fontXs, color: COLORS.textLight, textAlign: 'right', marginTop: SIZES.xs },
-  bioText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary, lineHeight: 22 },
-  noBioText: { fontSize: SIZES.fontMd, color: COLORS.textLight, fontStyle: 'italic' },
+  charCount: { fontSize: SIZES.fontXs, textAlign: 'right', marginTop: SIZES.xs },
+  bioText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, lineHeight: 22 },
+  noBioText: { fontSize: SIZES.fontMd, fontStyle: 'italic' },
   
   // Subscription styles
   subscriptionInfo: { flexDirection: 'row', alignItems: 'center' },
-  subscriptionText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textPrimary, marginLeft: SIZES.sm },
+  subscriptionText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, marginLeft: SIZES.sm },
   subscriptionDetails: { marginTop: SIZES.sm, marginLeft: 36 },
   daysRemainingBadge: { 
     flexDirection: 'row', 
@@ -878,7 +878,6 @@ const styles = StyleSheet.create({
   autoRenewText: { 
     fontSize: SIZES.fontXs, 
     fontFamily: FONTS.body, 
-    color: COLORS.textSecondary, 
     marginLeft: SIZES.xs 
   },
   
@@ -892,7 +891,6 @@ const styles = StyleSheet.create({
   feedbackDescription: { 
     fontSize: SIZES.fontSm, 
     fontFamily: FONTS.body, 
-    color: COLORS.textSecondary, 
     marginBottom: SIZES.sm,
     marginLeft: 30,
   },
@@ -907,7 +905,7 @@ const styles = StyleSheet.create({
   feedbackButtonText: { 
     fontSize: SIZES.fontSm, 
     fontFamily: FONTS.bodyMedium, 
-    color: COLORS.white 
+    color: '#FFFFFF' 
   },
   
   // Logout styles
@@ -915,14 +913,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', 
     paddingVertical: SIZES.md, marginTop: SIZES.md 
   },
-  logoutText: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium, color: COLORS.error, marginLeft: SIZES.sm },
+  logoutText: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium, marginLeft: SIZES.sm },
   
   // Legal Links styles
   legalSection: {
     marginTop: SIZES.lg,
     paddingTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
     alignItems: 'center',
   },
   legalLinks: {
@@ -938,10 +935,8 @@ const styles = StyleSheet.create({
   legalLinkText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
   },
   legalSeparator: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
   },
 });
