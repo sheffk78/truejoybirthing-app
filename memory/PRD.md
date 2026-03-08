@@ -6,34 +6,42 @@ Build a full-stack application named "True Joy Birthing" for web, iOS, and Andro
 ## Latest Session (2026-03-08 - Light/Dark Mode Migration Continuation)
 
 **Session Summary:**
-- Continued migrating components from static COLORS to dynamic useColors() hook
-- Updated 10 shared components: YouTubePlayer, SectionVideoGuide, AppTutorial, OnboardingWalkthrough, BirthPlanForms, ProviderDashboard, ProviderClients, ProviderProfile
-- Verified dark mode working via screenshots - dark backgrounds, light text, proper contrast
-- Progress: Reduced src/components from ~26 to ~17 files still needing migration
+- Created `createThemedStyles()` utility function to simplify migrations
+- Continued migrating provider components to dynamic theme system
+- Updated: ProviderMessages, ProviderLeads, ProviderNotes (3 more components)
+- Progress: Provider components 10 → 8, Total src files 17 → 15
+
+**createThemedStyles Utility Created:**
+```tsx
+// Usage pattern:
+const getStyles = createThemedStyles((colors) => ({
+  container: { backgroundColor: colors.background },
+  title: { color: colors.text },
+}));
+
+// In component:
+const colors = useColors();
+const styles = getStyles(colors);
+```
 
 **Components Updated This Session:**
-- `YouTubePlayer.tsx` - Modal and player now theme-aware ✅
-- `SectionVideoGuide.tsx` - Video guide cards theme-aware ✅
-- `AppTutorial.tsx` - Tutorial walkthrough theme-aware ✅
-- `OnboardingWalkthrough.tsx` - Onboarding screens theme-aware ✅
-- `BirthPlanForms.tsx` - All form fields (text, date, select) now accept colors prop ✅
-- `ProviderDashboard.tsx` - Complete rewrite with inline theme colors ✅
-- `ProviderClients.tsx` - Full theme migration with STATUS_COLORS as functions ✅
-- `ProviderProfile.tsx` - Complete theme migration (49 COLORS → 0) ✅
+- `ProviderMessages.tsx` - Full theme migration ✅
+- `ProviderLeads.tsx` - Full theme migration with dynamic STATUS_CONFIG ✅  
+- `ProviderNotes.tsx` - Full theme migration ✅
 
-**Remaining Provider Components to Migrate:**
+**Remaining Provider Components to Migrate (8):**
 - LaborSection.tsx, ProviderAppointments.tsx, ProviderClientDetail.tsx
 - ProviderContractTemplates.tsx, ProviderContracts.tsx, ProviderInvoices.tsx
-- ProviderLeads.tsx, ProviderMessages.tsx, ProviderNotes.tsx, SubscriptionPage.tsx
+- ProviderPublicProfile.tsx, SubscriptionPage.tsx
 
-**Remaining Files Summary:**
-- 10 provider components
-- 4 midwife components  
-- ~41 app screens
+**Remaining Midwife Components (4):**
+- BirthRecordSection.tsx, MidwifeDashboardTab.tsx, NewbornExamSection.tsx, PrenatalVisitSection.tsx
+
+**App Screens:** ~41 still need migration
 
 ---
 
-## Previous Session (2026-03-07 - Light/Dark Mode Implementation)
+## Previous Session (Components Updated)
 
 **Light/Dark Mode Theme System - INFRASTRUCTURE COMPLETE:**
 

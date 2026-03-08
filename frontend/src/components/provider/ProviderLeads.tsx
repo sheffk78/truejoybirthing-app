@@ -24,7 +24,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { useSubscriptionGate } from '../../utils/subscriptionGate';
 
@@ -63,14 +64,15 @@ interface LeadStats {
   converted_to_client: number;
 }
 
-const LEAD_STATUS_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-  'consultation_requested': { label: 'Consultation Requested', color: COLORS.warning, icon: 'time-outline' },
-  'consultation_scheduled': { label: 'Consultation Scheduled', color: COLORS.info, icon: 'calendar-outline' },
-  'consultation_completed': { label: 'Consultation Completed', color: COLORS.success, icon: 'checkmark-circle-outline' },
-  'converted_to_client': { label: 'Converted to Client', color: COLORS.primary, icon: 'person-add-outline' },
-  'declined': { label: 'Declined', color: COLORS.textLight, icon: 'close-circle-outline' },
-  'not_a_fit': { label: 'Not a Fit', color: COLORS.textLight, icon: 'remove-circle-outline' },
-};
+// Dynamic status config that uses theme colors
+const getLeadStatusConfig = (colors: ThemeColors): Record<string, { label: string; color: string; icon: string }> => ({
+  'consultation_requested': { label: 'Consultation Requested', color: colors.warning, icon: 'time-outline' },
+  'consultation_scheduled': { label: 'Consultation Scheduled', color: colors.info || colors.primary, icon: 'calendar-outline' },
+  'consultation_completed': { label: 'Consultation Completed', color: colors.success, icon: 'checkmark-circle-outline' },
+  'converted_to_client': { label: 'Converted to Client', color: colors.primary, icon: 'person-add-outline' },
+  'declined': { label: 'Declined', color: colors.textLight, icon: 'close-circle-outline' },
+  'not_a_fit': { label: 'Not a Fit', color: colors.textLight, icon: 'remove-circle-outline' },
+});
 
 interface ProviderLeadsProps {
   config: ProviderConfig;
@@ -78,6 +80,9 @@ interface ProviderLeadsProps {
 
 export default function ProviderLeads({ config }: ProviderLeadsProps) {
   const router = useRouter();
+  const colors = useColors();
+  const styles = getStyles(colors);
+  const LEAD_STATUS_CONFIG = getLeadStatusConfig(colors);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [stats, setStats] = useState<LeadStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -314,7 +319,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
   };
 
   const renderLeadCard = (lead: Lead) => {
-    const statusConfig = LEAD_STATUS_CONFIG[lead.status] || { label: lead.status, color: COLORS.textLight, icon: 'help-outline' };
+    const statusConfig = LEAD_STATUS_CONFIG[lead.status] || { label: lead.status, color: colors.textLight, icon: 'help-outline' };
     const isProcessing = processingLead === lead.lead_id;
     const momInitial = lead.mom_name?.charAt(0).toUpperCase() || 'M';
 
@@ -360,14 +365,14 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
             <View style={styles.keyDetailsGrid}>
               {lead.number_of_children !== undefined && (
                 <View style={styles.keyDetailItem}>
-                  <Icon name="people-outline" size={14} color={COLORS.textSecondary} />
+                  <Icon name="people-outline" size={14} color={colors.textSecondary} />
                   <Text style={styles.keyDetailLabel}>Children:</Text>
                   <Text style={styles.keyDetailValue}>{lead.number_of_children}</Text>
                 </View>
               )}
               {(lead.birth_plan_due_date || lead.edd) && (
                 <View style={styles.keyDetailItem}>
-                  <Icon name="calendar-outline" size={14} color={COLORS.textSecondary} />
+                  <Icon name="calendar-outline" size={14} color={colors.textSecondary} />
                   <Text style={styles.keyDetailLabel}>Due Date:</Text>
                   <Text style={styles.keyDetailValue}>{formatDate(lead.birth_plan_due_date || lead.edd || '')}</Text>
                 </View>
@@ -375,7 +380,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
               {lead.birth_plan_location && (
                 <View style={[styles.keyDetailItem, styles.keyDetailItemColumn]}>
                   <View style={styles.keyDetailLabelRow}>
-                    <Icon name="home-outline" size={14} color={COLORS.textSecondary} />
+                    <Icon name="home-outline" size={14} color={colors.textSecondary} />
                     <Text style={styles.keyDetailLabel}>Birth Location:</Text>
                   </View>
                   <Text style={styles.keyDetailValueBlock}>{lead.birth_plan_location}</Text>
@@ -383,7 +388,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
               )}
               {lead.birth_plan_hospital_name && (
                 <View style={styles.keyDetailItem}>
-                  <Icon name="business-outline" size={14} color={COLORS.textSecondary} />
+                  <Icon name="business-outline" size={14} color={colors.textSecondary} />
                   <Text style={styles.keyDetailLabel}>Facility:</Text>
                   <Text style={styles.keyDetailValue}>{lead.birth_plan_hospital_name}</Text>
                 </View>
@@ -400,8 +405,8 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
             {lead.birth_plan_completion !== undefined && (
               <View style={styles.planCompletionRow}>
                 <Text style={styles.planCompletionLabel}>Birth Plan:</Text>
-                <View style={[styles.planCompletionBadge, { backgroundColor: lead.birth_plan_completion >= 80 ? COLORS.success + '20' : COLORS.warning + '20' }]}>
-                  <Text style={[styles.planCompletionText, { color: lead.birth_plan_completion >= 80 ? COLORS.success : COLORS.warning }]}>
+                <View style={[styles.planCompletionBadge, { backgroundColor: lead.birth_plan_completion >= 80 ? colors.success + '20' : colors.warning + '20' }]}>
+                  <Text style={[styles.planCompletionText, { color: lead.birth_plan_completion >= 80 ? colors.success : colors.warning }]}>
                     {lead.birth_plan_completion}% Complete
                   </Text>
                 </View>
@@ -413,7 +418,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
         {/* Consultation Info */}
         {lead.consultation_date && (
           <View style={styles.consultationInfo}>
-            <Icon name="calendar" size={16} color={COLORS.info} />
+            <Icon name="calendar" size={16} color={colors.info} />
             <Text style={styles.consultationText}>
               Consultation: {formatDate(lead.consultation_date)} at {lead.consultation_time}
             </Text>
@@ -424,7 +429,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
         <View style={styles.infoRow}>
           {lead.planned_birth_setting && (
             <View style={styles.infoChip}>
-              <Icon name="location-outline" size={14} color={COLORS.textSecondary} />
+              <Icon name="location-outline" size={14} color={colors.textSecondary} />
               <Text style={styles.infoChipText}>{lead.planned_birth_setting}</Text>
             </View>
           )}
@@ -444,21 +449,21 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
                   style={[styles.actionButton, { backgroundColor: primaryColor }]}
                   onPress={() => handleScheduleConsultation(lead)}
                 >
-                  <Icon name="calendar-outline" size={16} color={COLORS.white} />
+                  <Icon name="calendar-outline" size={16} color={colors.white} />
                   <Text style={styles.actionButtonText}>Schedule</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: COLORS.success }]}
+                  style={[styles.actionButton, { backgroundColor: colors.success }]}
                   onPress={() => handleConvertToClient(lead)}
                 >
-                  <Icon name="checkmark" size={16} color={COLORS.white} />
+                  <Icon name="checkmark" size={16} color={colors.white} />
                   <Text style={styles.actionButtonText}>Accept</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.actionButton, styles.actionButtonGhost]}
                   onPress={() => handleDecline(lead)}
                 >
-                  <Icon name="close" size={16} color={COLORS.error} />
+                  <Icon name="close" size={16} color={colors.error} />
                 </TouchableOpacity>
               </>
             )}
@@ -466,10 +471,10 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
             {lead.status === 'consultation_scheduled' && (
               <>
                 <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: COLORS.success }]}
+                  style={[styles.actionButton, { backgroundColor: colors.success }]}
                   onPress={() => handleMarkConsultationCompleted(lead)}
                 >
-                  <Icon name="checkmark" size={16} color={COLORS.white} />
+                  <Icon name="checkmark" size={16} color={colors.white} />
                   <Text style={styles.actionButtonText}>Mark Complete</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
@@ -488,14 +493,14 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
                   style={[styles.actionButton, { backgroundColor: primaryColor }]}
                   onPress={() => handleConvertToClient(lead)}
                 >
-                  <Icon name="person-add" size={16} color={COLORS.white} />
+                  <Icon name="person-add" size={16} color={colors.white} />
                   <Text style={styles.actionButtonText}>Add as Client</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.actionButton, styles.actionButtonOutline]}
                   onPress={() => handleMarkNotAFit(lead)}
                 >
-                  <Icon name="close-circle-outline" size={16} color={COLORS.textLight} />
+                  <Icon name="close-circle-outline" size={16} color={colors.textLight} />
                   <Text style={[styles.actionButtonText, { color: COLORS.textLight }]}>Not a Fit</Text>
                 </TouchableOpacity>
               </>
@@ -568,7 +573,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
       >
         {filteredLeads.length === 0 ? (
           <View style={styles.emptyState}>
-            <Icon name="people-outline" size={48} color={COLORS.textLight} />
+            <Icon name="people-outline" size={48} color={colors.textLight} />
             <Text style={styles.emptyTitle}>No {statusFilter === 'active' ? 'open' : statusFilter} leads</Text>
             <Text style={styles.emptySubtitle}>
               {statusFilter === 'active' 
@@ -586,8 +591,9 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+// Themed styles using createThemedStyles
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: { 
     flexDirection: 'row', 
@@ -595,27 +601,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: SIZES.md, 
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
   },
-  title: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading, color: COLORS.textPrimary },
+  title: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading },
   statsBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusFull },
   statsText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium },
   filterTabs: { 
     flexDirection: 'row', 
     paddingHorizontal: SIZES.md, 
     paddingVertical: SIZES.sm,
-    backgroundColor: COLORS.white,
     gap: SIZES.xs,
   },
   filterTab: { 
     paddingHorizontal: SIZES.md, 
     paddingVertical: SIZES.xs, 
     borderRadius: SIZES.radiusFull,
-    backgroundColor: COLORS.background,
   },
-  filterTabText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary },
+  filterTabText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body },
   scrollView: { flex: 1 },
   scrollContent: { padding: SIZES.md },
   leadCard: { marginBottom: SIZES.md, padding: SIZES.md },
@@ -626,32 +628,31 @@ const styles = StyleSheet.create({
     width: 48, height: 48, borderRadius: 24, marginRight: SIZES.sm,
     alignItems: 'center', justifyContent: 'center',
   },
-  momAvatarText: { color: COLORS.white, fontSize: SIZES.fontLg, fontFamily: FONTS.heading },
+  momAvatarText: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading },
   momDetails: { flex: 1 },
-  momName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: COLORS.textPrimary },
-  momEdd: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary, marginTop: 2 },
+  momName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold },
+  momEdd: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, marginTop: 2 },
   statusBadge: { 
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusFull,
   },
   statusText: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyMedium },
   messageBox: { 
-    backgroundColor: COLORS.background, 
     padding: SIZES.sm, 
     borderRadius: SIZES.radiusSm,
     marginBottom: SIZES.sm,
   },
-  messageLabel: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyMedium, color: COLORS.textSecondary, marginBottom: 4 },
-  messageText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textPrimary, fontStyle: 'italic' },
+  messageLabel: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyMedium, marginBottom: 4 },
+  messageText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, fontStyle: 'italic' },
   consultationInfo: { 
     flexDirection: 'row', alignItems: 'center', gap: SIZES.xs,
     marginBottom: SIZES.sm, 
   },
-  consultationText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.info },
+  consultationText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body },
   infoRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SIZES.sm },
   infoChip: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  infoChipText: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: COLORS.textSecondary },
-  dateText: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: COLORS.textLight },
+  infoChipText: { fontSize: SIZES.fontXs, fontFamily: FONTS.body },
+  dateText: { fontSize: SIZES.fontXs, fontFamily: FONTS.body },
   processingContainer: { paddingVertical: SIZES.md, alignItems: 'center' },
   actionsRow: { flexDirection: 'row', gap: SIZES.xs, flexWrap: 'wrap' },
   actionButton: { 
@@ -662,29 +663,24 @@ const styles = StyleSheet.create({
   actionButtonOutline: { 
     backgroundColor: 'transparent', 
     borderWidth: 1, 
-    borderColor: COLORS.border,
   },
   actionButtonGhost: { 
     backgroundColor: 'transparent',
     paddingHorizontal: SIZES.sm,
   },
-  actionButtonText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium, color: COLORS.white },
+  actionButtonText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium },
   emptyState: { alignItems: 'center', justifyContent: 'center', paddingVertical: SIZES.xxl },
-  emptyTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: COLORS.textPrimary, marginTop: SIZES.md },
-  emptySubtitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: COLORS.textSecondary, textAlign: 'center', marginTop: SIZES.xs },
-  // Key Details Section styles
+  emptyTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, marginTop: SIZES.md },
+  emptySubtitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, textAlign: 'center', marginTop: SIZES.xs },
   keyDetailsSection: {
-    backgroundColor: COLORS.background,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.sm,
     marginBottom: SIZES.sm,
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.primary,
   },
   keyDetailsTitle: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.subheading,
-    color: COLORS.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: SIZES.xs,
@@ -714,37 +710,31 @@ const styles = StyleSheet.create({
   keyDetailValueBlock: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
     marginLeft: 18,
     marginTop: 2,
   },
   keyDetailLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
   },
   keyDetailValue: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
     flex: 1,
   },
   previousExperienceBox: {
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
   },
   previousExperienceLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
     marginBottom: 4,
   },
   previousExperienceText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
     fontStyle: 'italic',
   },
   planCompletionRow: {
@@ -754,12 +744,10 @@ const styles = StyleSheet.create({
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
   },
   planCompletionLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
   },
   planCompletionBadge: {
     paddingHorizontal: SIZES.sm,
@@ -770,4 +758,4 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyMedium,
   },
-});
+}));

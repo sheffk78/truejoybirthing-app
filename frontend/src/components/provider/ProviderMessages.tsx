@@ -1,4 +1,6 @@
 // Shared Messages Screen for Doula and Midwife
+// MIGRATED to use createThemedStyles for dynamic theming
+
 import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
@@ -19,15 +21,36 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { COLORS, SIZES } from '../../constants/theme';
-import { ProviderConfig } from '../config/providerConfig';
-import { Conversation, Message } from '../types/provider';
+import { SIZES } from '../../constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
+import { ProviderConfig } from './config/providerConfig';
+
+interface Conversation {
+  conversation_id: string;
+  other_user_id: string;
+  other_user_name: string;
+  other_user_role: string;
+  last_message?: string;
+  last_message_time?: string;
+  unread_count: number;
+}
+
+interface Message {
+  message_id: string;
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+  sent_at: string;
+  read: boolean;
+}
 
 interface ProviderMessagesProps {
   config: ProviderConfig;
 }
 
 export default function ProviderMessages({ config }: ProviderMessagesProps) {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const params = useLocalSearchParams<{ clientId?: string; clientName?: string; clientUserId?: string }>();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [clients, setClients] = useState<any[]>([]);
@@ -88,10 +111,8 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
       if (params.clientUserId) {
         const existingConvo = convos.find((c: Conversation) => c.other_user_id === params.clientUserId);
         if (existingConvo) {
-          // Open existing conversation
           openConversation(existingConvo);
         } else {
-          // Find client and open new message modal
           const client = clientsList.find((c: any) => c.linked_mom_id === params.clientUserId);
           if (client) {
             setSelectedClientForNewMessage(client);
@@ -110,13 +131,11 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
     setRefreshing(false);
   };
   
-  // Start a new conversation with a client
   const startNewConversation = async () => {
     if (!selectedClientForNewMessage || !newConversationMessage.trim() || startingConversation) return;
     
     setStartingConversation(true);
     try {
-      // Send first message to create conversation
       await apiRequest(API_ENDPOINTS.MESSAGES, {
         method: 'POST',
         body: {
@@ -125,7 +144,6 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
         },
       });
       
-      // Refresh conversations and open the new one
       const convos = await fetchConversations();
       const newConvo = convos.find((c: Conversation) => c.other_user_id === selectedClientForNewMessage.linked_mom_id);
       
@@ -213,13 +231,18 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
   };
   
   const getRoleColor = (role: string) => {
-    return role === 'MOM' ? COLORS.primary : role === 'MIDWIFE' ? COLORS.roleMidwife : COLORS.roleDoula;
+    return role === 'MOM' ? colors.primary : role === 'MIDWIFE' ? colors.roleMidwife : colors.roleDoula;
   };
 
   const primaryColor = config.primaryColor;
   
+  // Get clients that don't already have a conversation
+  const clientsWithoutConversation = clients.filter(client => 
+    client.linked_mom_id && !conversations.some(c => c.other_user_id === client.linked_mom_id)
+  );
+  
   return (
-    <SafeAreaView style={styles.container} edges={['top']} data-testid={`${config.role.toLowerCase()}-messages-screen`}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']} data-testid={`${config.role.toLowerCase()}-messages-screen`}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -229,8 +252,8 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
       >
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Messages</Text>
-            <Text style={styles.subtitle}>Connect with your clients</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Messages</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Connect with your clients</Text>
           </View>
           <Pressable 
             style={({ pressed }) => [
@@ -243,52 +266,56 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
             accessibilityLabel="Start new conversation"
             accessibilityRole="button"
           >
-            <Icon name="add" size={24} color={COLORS.white} />
+            <Icon name="add" size={24} color={colors.white} />
           </Pressable>
         </View>
         
         {conversations.length === 0 ? (
           <Card style={styles.emptyCard}>
-            <Icon name="chatbubbles-outline" size={48} color={COLORS.textLight} />
-            <Text style={styles.emptyText}>No messages yet</Text>
-            <Text style={styles.emptySubtext}>
-              Messages from clients will appear here
+            <Icon name="chatbubbles-outline" size={48} color={colors.textLight} />
+            <Text style={[styles.emptyText, { color: colors.text }]}>No Conversations Yet</Text>
+            <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
+              Start messaging your clients to provide support and updates.
             </Text>
           </Card>
         ) : (
-          conversations.map((conv) => (
+          conversations.map(conversation => (
             <TouchableOpacity
-              key={conv.other_user_id}
-              onPress={() => openConversation(conv)}
-              data-testid={`conversation-${conv.other_user_id}`}
+              key={conversation.conversation_id}
+              onPress={() => openConversation(conversation)}
+              data-testid={`conversation-${conversation.conversation_id}`}
             >
-              <Card style={[styles.conversationCard, conv.unread_count > 0 && { borderLeftWidth: 3, borderLeftColor: primaryColor }]}>
+              <Card style={styles.conversationCard}>
                 <View style={styles.conversationRow}>
-                  <View style={[styles.avatar, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
+                  <View style={[styles.avatar, { backgroundColor: getRoleColor(conversation.other_user_role) + '20' }]}>
                     <Icon 
-                      name="person"
+                      name="person" 
                       size={24} 
-                      color={getRoleColor(conv.other_user_role)} 
+                      color={getRoleColor(conversation.other_user_role)} 
                     />
                   </View>
                   <View style={styles.conversationInfo}>
                     <View style={styles.nameRow}>
-                      <Text style={styles.userName}>{conv.other_user_name}</Text>
-                      <View style={[styles.roleBadge, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
-                        <Text style={[styles.roleText, { color: getRoleColor(conv.other_user_role) }]}>
-                          {conv.other_user_role}
+                      <Text style={[styles.userName, { color: colors.text }]}>{conversation.other_user_name}</Text>
+                      <View style={[styles.roleBadge, { backgroundColor: getRoleColor(conversation.other_user_role) + '20' }]}>
+                        <Text style={[styles.roleText, { color: getRoleColor(conversation.other_user_role) }]}>
+                          {conversation.other_user_role}
                         </Text>
                       </View>
                     </View>
-                    <Text style={styles.lastMessage} numberOfLines={1}>
-                      {conv.is_sender ? 'You: ' : ''}{conv.last_message_content}
+                    <Text style={[styles.lastMessage, { color: colors.textSecondary }]} numberOfLines={1}>
+                      {conversation.last_message || 'No messages yet'}
                     </Text>
                   </View>
                   <View style={styles.metaColumn}>
-                    <Text style={styles.timeText}>{formatTime(conv.last_message_time)}</Text>
-                    {conv.unread_count > 0 && (
+                    {conversation.last_message_time && (
+                      <Text style={[styles.timeText, { color: colors.textLight }]}>
+                        {formatTime(conversation.last_message_time)}
+                      </Text>
+                    )}
+                    {conversation.unread_count > 0 && (
                       <View style={[styles.unreadBadge, { backgroundColor: primaryColor }]}>
-                        <Text style={styles.unreadText}>{conv.unread_count}</Text>
+                        <Text style={[styles.unreadText, { color: colors.white }]}>{conversation.unread_count}</Text>
                       </View>
                     )}
                   </View>
@@ -303,75 +330,78 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
       <Modal
         visible={!!selectedConversation}
         animationType="slide"
-        presentationStyle="pageSheet"
+        presentationStyle="fullScreen"
         onRequestClose={() => setSelectedConversation(null)}
       >
-        <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.chatHeader}>
-            <TouchableOpacity onPress={() => setSelectedConversation(null)} data-testid="close-chat-btn">
-              <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+        <SafeAreaView style={[styles.modalContainer, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+          {/* Chat Header */}
+          <View style={[styles.chatHeader, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
+            <TouchableOpacity onPress={() => setSelectedConversation(null)} style={{ padding: SIZES.xs }}>
+              <Icon name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>
-              <Text style={styles.chatHeaderName}>{selectedConversation?.other_user_name}</Text>
-              <Text style={styles.chatHeaderRole}>{selectedConversation?.other_user_role}</Text>
+              <Text style={[styles.chatHeaderName, { color: colors.text }]}>{selectedConversation?.other_user_name}</Text>
+              <View style={[styles.roleBadge, { backgroundColor: getRoleColor(selectedConversation?.other_user_role || '') + '20' }]}>
+                <Text style={[styles.roleText, { color: getRoleColor(selectedConversation?.other_user_role || '') }]}>
+                  {selectedConversation?.other_user_role}
+                </Text>
+              </View>
             </View>
-            <View style={{ width: 24 }} />
+            <View style={{ width: 40 }} />
           </View>
           
+          {/* Messages */}
           <KeyboardAvoidingView 
-            style={styles.chatContent}
+            style={{ flex: 1 }} 
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+            keyboardVerticalOffset={0}
           >
-            <ScrollView 
+            <ScrollView
               ref={scrollViewRef}
-              style={styles.messagesContainer}
-              contentContainerStyle={styles.messagesContent}
+              contentContainerStyle={styles.messagesContainer}
               onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: false })}
             >
-              {messages.map((msg) => {
-                const isMe = msg.sender_id === currentUserId;
+              {messages.map(message => {
+                const isMe = message.sender_id === currentUserId;
                 return (
-                  <View 
-                    key={msg.message_id} 
-                    style={[styles.messageWrapper, isMe && styles.messageWrapperMe]}
+                  <View
+                    key={message.message_id}
+                    style={[
+                      styles.messageBubble,
+                      isMe ? [styles.messageBubbleMe, { backgroundColor: primaryColor }] : [styles.messageBubbleOther, { backgroundColor: colors.surface }],
+                    ]}
                   >
-                    <View style={[
-                      styles.messageBubble, 
-                      isMe ? [styles.messageBubbleMe, { backgroundColor: primaryColor }] : styles.messageBubbleOther
-                    ]}>
-                      <Text style={[styles.messageText, isMe && styles.messageTextMe]}>{msg.content}</Text>
-                      <Text style={[styles.messageTime, isMe && styles.messageTimeMe]}>
-                        {formatTime(msg.created_at)}
-                      </Text>
-                    </View>
+                    <Text style={[styles.messageText, isMe ? { color: colors.white } : { color: colors.text }]}>
+                      {message.content}
+                    </Text>
+                    <Text style={[styles.messageTime, isMe && styles.messageTimeMe, !isMe && { color: colors.textLight }]}>
+                      {formatTime(message.sent_at)}
+                    </Text>
                   </View>
                 );
               })}
             </ScrollView>
             
-            <View style={styles.inputContainer}>
+            {/* Input */}
+            <View style={[styles.inputContainer, { borderTopColor: colors.border, backgroundColor: colors.surface }]}>
               <TextInput
-                style={styles.messageInput}
+                style={[styles.messageInput, { backgroundColor: colors.background, color: colors.text }]}
                 value={newMessage}
                 onChangeText={setNewMessage}
                 placeholder="Type a message..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 multiline
-                maxLength={1000}
-                data-testid="message-input"
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[
-                  styles.sendButton, 
+                  styles.sendButton,
                   { backgroundColor: primaryColor },
-                  (!newMessage.trim() || sending) && styles.sendButtonDisabled
+                  (!newMessage.trim() || sending) && { backgroundColor: colors.textLight }
                 ]}
                 onPress={sendMessage}
                 disabled={!newMessage.trim() || sending}
-                data-testid="send-message-btn"
               >
-                <Icon name="paper-plane" size={20} color={COLORS.white} />
+                <Icon name="send" size={20} color={colors.white} />
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
@@ -385,70 +415,72 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
         presentationStyle="pageSheet"
         onRequestClose={() => setShowNewMessageModal(false)}
       >
-        <SafeAreaView style={styles.modalContainer}>
-          <View style={styles.chatHeader}>
-            <TouchableOpacity onPress={() => setShowNewMessageModal(false)} data-testid="close-new-message-btn">
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+        <SafeAreaView style={[styles.modalContainer, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+          <View style={[styles.chatHeader, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
+            <TouchableOpacity onPress={() => setShowNewMessageModal(false)} style={{ padding: SIZES.xs }}>
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text style={styles.chatHeaderName}>New Message</Text>
-            <View style={{ width: 24 }} />
+            <View style={styles.chatHeaderInfo}>
+              <Text style={[styles.chatHeaderName, { color: colors.text }]}>New Message</Text>
+            </View>
+            <View style={{ width: 40 }} />
           </View>
           
           <ScrollView style={styles.newMessageContent}>
-            {/* Client Selection */}
-            <Text style={styles.newMessageLabel}>Select Client</Text>
-            <View style={styles.clientList}>
-              {clients.filter(c => c.linked_mom_id).length === 0 ? (
-                <Text style={styles.noClientsText}>No clients with linked accounts available</Text>
-              ) : (
-                clients.filter(c => c.linked_mom_id).map((client) => (
+            <Text style={[styles.newMessageLabel, { color: colors.text }]}>Select Client</Text>
+            
+            {clientsWithoutConversation.length === 0 ? (
+              <Text style={[styles.noClientsText, { color: colors.textLight }]}>
+                All your clients already have conversations or no connected clients yet.
+              </Text>
+            ) : (
+              <View style={styles.clientList}>
+                {clientsWithoutConversation.map(client => (
                   <TouchableOpacity
                     key={client.client_id}
                     style={[
                       styles.clientSelectItem,
-                      selectedClientForNewMessage?.client_id === client.client_id && { 
-                        backgroundColor: primaryColor + '10', 
-                        borderColor: primaryColor 
-                      }
+                      { backgroundColor: colors.surface, borderColor: colors.border },
+                      selectedClientForNewMessage?.client_id === client.client_id && { borderColor: primaryColor, borderWidth: 2 }
                     ]}
                     onPress={() => setSelectedClientForNewMessage(client)}
-                    data-testid={`select-client-${client.client_id}`}
                   >
-                    <View style={[styles.clientAvatar, { backgroundColor: COLORS.primary + '20' }]}>
-                      <Icon name="person" size={20} color={COLORS.primary} />
+                    <View style={[styles.clientAvatar, { backgroundColor: colors.primary + '20' }]}>
+                      <Icon name="person" size={20} color={colors.primary} />
                     </View>
                     <View style={styles.clientSelectInfo}>
-                      <Text style={styles.clientSelectName}>{client.name}</Text>
-                      {client.edd && <Text style={styles.clientSelectEdd}>Due: {client.edd}</Text>}
+                      <Text style={[styles.clientSelectName, { color: colors.text }]}>{client.name}</Text>
+                      {client.edd && (
+                        <Text style={[styles.clientSelectEdd, { color: colors.textSecondary }]}>
+                          Due: {new Date(client.edd).toLocaleDateString()}
+                        </Text>
+                      )}
                     </View>
                     {selectedClientForNewMessage?.client_id === client.client_id && (
                       <Icon name="checkmark-circle" size={24} color={primaryColor} />
                     )}
                   </TouchableOpacity>
-                ))
-              )}
-            </View>
+                ))}
+              </View>
+            )}
             
-            {/* Message Input */}
             {selectedClientForNewMessage && (
               <>
-                <Text style={styles.newMessageLabel}>Message</Text>
+                <Text style={[styles.newMessageLabel, { color: colors.text }]}>Message</Text>
                 <TextInput
-                  style={styles.newMessageInput}
-                  placeholder="Type your message..."
-                  placeholderTextColor={COLORS.textLight}
+                  style={[styles.newMessageInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
                   value={newConversationMessage}
                   onChangeText={setNewConversationMessage}
+                  placeholder="Type your message..."
+                  placeholderTextColor={colors.textLight}
                   multiline
                   numberOfLines={4}
-                  data-testid="new-conversation-input"
                 />
               </>
             )}
           </ScrollView>
           
-          {/* Send Button */}
-          <View style={styles.newMessageFooter}>
+          <View style={[styles.newMessageFooter, { borderTopColor: colors.border, backgroundColor: colors.surface }]}>
             <TouchableOpacity
               style={[
                 styles.startConversationButton,
@@ -460,7 +492,7 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
               disabled={!selectedClientForNewMessage || !newConversationMessage.trim() || startingConversation}
               data-testid="start-conversation-btn"
             >
-              <Text style={styles.startConversationText}>
+              <Text style={[styles.startConversationText, { color: colors.white }]}>
                 {startingConversation ? 'Sending...' : 'Start Conversation'}
               </Text>
             </TouchableOpacity>
@@ -471,297 +503,56 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  scrollContent: {
-    padding: SIZES.md,
-    paddingBottom: SIZES.xxl,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: SIZES.lg,
-  },
-  title: {
-    fontSize: SIZES.fontXxl,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  subtitle: {
-    fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-  },
-  newMessageButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyCard: {
-    alignItems: 'center',
-    paddingVertical: SIZES.xl,
-  },
-  emptyText: {
-    fontSize: SIZES.fontLg,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginTop: SIZES.md,
-  },
-  emptySubtext: {
-    fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
-    marginTop: SIZES.xs,
-    textAlign: 'center',
-    paddingHorizontal: SIZES.lg,
-  },
-  conversationCard: {
-    marginBottom: SIZES.sm,
-  },
-  conversationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SIZES.md,
-  },
-  conversationInfo: {
-    flex: 1,
-  },
-  nameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  userName: {
-    fontSize: SIZES.fontMd,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginRight: SIZES.sm,
-  },
-  roleBadge: {
-    paddingHorizontal: SIZES.xs,
-    paddingVertical: 2,
-    borderRadius: SIZES.radiusSm,
-  },
-  roleText: {
-    fontSize: SIZES.fontXs,
-    fontWeight: '600',
-  },
-  lastMessage: {
-    fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
-  },
-  metaColumn: {
-    alignItems: 'flex-end',
-  },
-  timeText: {
-    fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
-    marginBottom: 4,
-  },
-  unreadBadge: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  unreadText: {
-    fontSize: SIZES.fontXs,
-    color: COLORS.white,
-    fontWeight: '600',
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  chatHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SIZES.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
-  },
-  chatHeaderInfo: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  chatHeaderName: {
-    fontSize: SIZES.fontMd,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-  },
-  chatHeaderRole: {
-    fontSize: SIZES.fontXs,
-    color: COLORS.textSecondary,
-  },
-  chatContent: {
-    flex: 1,
-  },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
-    padding: SIZES.md,
-    paddingBottom: SIZES.lg,
-  },
-  messageWrapper: {
-    marginBottom: SIZES.sm,
-    flexDirection: 'row',
-  },
-  messageWrapperMe: {
-    justifyContent: 'flex-end',
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    padding: SIZES.md,
-    borderRadius: SIZES.radiusLg,
-  },
-  messageBubbleMe: {
-    borderBottomRightRadius: 4,
-  },
-  messageBubbleOther: {
-    backgroundColor: COLORS.white,
-    borderBottomLeftRadius: 4,
-  },
-  messageText: {
-    fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
-    lineHeight: 20,
-  },
-  messageTextMe: {
-    color: COLORS.white,
-  },
-  messageTime: {
-    fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
-    marginTop: 4,
-    alignSelf: 'flex-end',
-  },
-  messageTimeMe: {
-    color: 'rgba(255,255,255,0.7)',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    padding: SIZES.md,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.white,
-  },
-  messageInput: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    borderRadius: SIZES.radiusMd,
-    paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.sm,
-    fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
-    maxHeight: 100,
-    marginRight: SIZES.sm,
-  },
-  sendButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sendButtonDisabled: {
-    backgroundColor: COLORS.textLight,
-  },
-  // New Message Modal styles
-  newMessageContent: {
-    flex: 1,
-    padding: SIZES.md,
-  },
-  newMessageLabel: {
-    fontSize: SIZES.fontMd,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: SIZES.sm,
-    marginTop: SIZES.md,
-  },
-  clientList: {
-    gap: SIZES.sm,
-  },
-  noClientsText: {
-    fontSize: SIZES.fontMd,
-    color: COLORS.textLight,
-    textAlign: 'center',
-    padding: SIZES.xl,
-  },
-  clientSelectItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SIZES.md,
-    backgroundColor: COLORS.white,
-    borderRadius: SIZES.radiusMd,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  clientAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SIZES.md,
-  },
-  clientSelectInfo: {
-    flex: 1,
-  },
-  clientSelectName: {
-    fontSize: SIZES.fontMd,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-  },
-  clientSelectEdd: {
-    fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  newMessageInput: {
-    backgroundColor: COLORS.white,
-    borderRadius: SIZES.radiusMd,
-    padding: SIZES.md,
-    fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  newMessageFooter: {
-    padding: SIZES.md,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.white,
-  },
-  startConversationButton: {
-    borderRadius: SIZES.radiusMd,
-    padding: SIZES.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  startConversationButtonDisabled: {
-    opacity: 0.5,
-  },
-  startConversationText: {
-    fontSize: SIZES.fontMd,
-    fontWeight: '600',
-    color: COLORS.white,
-  },
-});
+// Themed styles using createThemedStyles
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1 },
+  scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.lg },
+  title: { fontSize: SIZES.fontXxl, fontWeight: '700' },
+  subtitle: { fontSize: SIZES.fontMd, marginTop: 4 },
+  newMessageButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  emptyCard: { alignItems: 'center', paddingVertical: SIZES.xl },
+  emptyText: { fontSize: SIZES.fontLg, fontWeight: '600', marginTop: SIZES.md },
+  emptySubtext: { fontSize: SIZES.fontSm, marginTop: SIZES.xs, textAlign: 'center', paddingHorizontal: SIZES.lg },
+  conversationCard: { marginBottom: SIZES.sm },
+  conversationRow: { flexDirection: 'row', alignItems: 'center' },
+  avatar: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.md },
+  conversationInfo: { flex: 1 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  userName: { fontSize: SIZES.fontMd, fontWeight: '600', marginRight: SIZES.sm },
+  roleBadge: { paddingHorizontal: SIZES.xs, paddingVertical: 2, borderRadius: SIZES.radiusSm },
+  roleText: { fontSize: SIZES.fontXs, fontWeight: '600' },
+  lastMessage: { fontSize: SIZES.fontSm },
+  metaColumn: { alignItems: 'flex-end' },
+  timeText: { fontSize: SIZES.fontXs, marginBottom: 4 },
+  unreadBadge: { width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  unreadText: { fontSize: SIZES.fontXs, fontWeight: '600' },
+  modalContainer: { flex: 1 },
+  chatHeader: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, borderBottomWidth: 1 },
+  chatHeaderInfo: { flex: 1, alignItems: 'center' },
+  chatHeaderName: { fontSize: SIZES.fontLg, fontWeight: '600' },
+  messagesContainer: { padding: SIZES.md, paddingBottom: SIZES.xl },
+  messageBubble: { maxWidth: '80%', padding: SIZES.md, borderRadius: SIZES.radiusMd, marginBottom: SIZES.sm },
+  messageBubbleMe: { alignSelf: 'flex-end', borderBottomRightRadius: 4 },
+  messageBubbleOther: { alignSelf: 'flex-start', borderBottomLeftRadius: 4 },
+  messageText: { fontSize: SIZES.fontMd, lineHeight: 22 },
+  messageTime: { fontSize: SIZES.fontXs, marginTop: 4, alignSelf: 'flex-end' },
+  messageTimeMe: { color: 'rgba(255,255,255,0.7)' },
+  inputContainer: { flexDirection: 'row', alignItems: 'flex-end', padding: SIZES.md, borderTopWidth: 1 },
+  messageInput: { flex: 1, borderRadius: SIZES.radiusMd, paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, fontSize: SIZES.fontMd, maxHeight: 100, marginRight: SIZES.sm },
+  sendButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  newMessageContent: { flex: 1, padding: SIZES.md },
+  newMessageLabel: { fontSize: SIZES.fontMd, fontWeight: '600', marginBottom: SIZES.sm, marginTop: SIZES.md },
+  clientList: { gap: SIZES.sm },
+  noClientsText: { fontSize: SIZES.fontMd, textAlign: 'center', padding: SIZES.xl },
+  clientSelectItem: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, borderRadius: SIZES.radiusMd, borderWidth: 1 },
+  clientAvatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.md },
+  clientSelectInfo: { flex: 1 },
+  clientSelectName: { fontSize: SIZES.fontMd, fontWeight: '600' },
+  clientSelectEdd: { fontSize: SIZES.fontSm, marginTop: 2 },
+  newMessageInput: { borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, borderWidth: 1, minHeight: 100, textAlignVertical: 'top' },
+  newMessageFooter: { padding: SIZES.md, borderTopWidth: 1 },
+  startConversationButton: { borderRadius: SIZES.radiusMd, padding: SIZES.md, alignItems: 'center', justifyContent: 'center' },
+  startConversationButtonDisabled: { opacity: 0.5 },
+  startConversationText: { fontSize: SIZES.fontMd, fontWeight: '600' },
+}));
