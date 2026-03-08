@@ -24,7 +24,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
 const DateTimePicker = Platform.OS === 'web' ? null : require('@react-native-community/datetimepicker').default;
@@ -65,10 +66,10 @@ const APPOINTMENT_TYPES = [
 ];
 
 const STATUS_COLORS: Record<string, string> = {
-  pending: COLORS.warning,
-  accepted: COLORS.success,
-  declined: COLORS.error,
-  cancelled: COLORS.textLight,
+  pending: colors.warning,
+  accepted: colors.success,
+  declined: colors.error,
+  cancelled: colors.textLight,
 };
 
 type FilterTab = 'all' | 'prenatal' | 'postpartum';
@@ -79,6 +80,8 @@ interface ProviderAppointmentsProps {
 
 export default function ProviderAppointments({ config }: ProviderAppointmentsProps) {
   const router = useRouter();
+  const colors = useColors();
+  const styles = getStyles(colors);
   const params = useLocalSearchParams();
   const preSelectedClientId = params.clientId as string | undefined;
   const preSelectedClientName = params.clientName as string | undefined;
@@ -363,8 +366,8 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
               </Text>
             </View>
           </View>
-          <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[appointment.status] || COLORS.textLight) + '20' }]}>
-            <Text style={[styles.statusText, { color: STATUS_COLORS[appointment.status] || COLORS.textLight }]}>
+          <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[appointment.status] || colors.textLight) + '20' }]}>
+            <Text style={[styles.statusText, { color: STATUS_COLORS[appointment.status] || colors.textLight }]}>
               {isPending ? 'Awaiting Response' : appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
             </Text>
           </View>
@@ -372,14 +375,14 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
 
         <View style={styles.appointmentDetails}>
           <View style={styles.detailRow}>
-            <Icon name="calendar" size={16} color={COLORS.textSecondary} />
+            <Icon name="calendar" size={16} color={colors.textSecondary} />
             <Text style={styles.detailText}>{formatDate(appointment.appointment_date)}</Text>
-            <Icon name="time" size={16} color={COLORS.textSecondary} style={{ marginLeft: SIZES.md }} />
+            <Icon name="time" size={16} color={colors.textSecondary} style={{ marginLeft: SIZES.md }} />
             <Text style={styles.detailText}>{formatTime(appointment.appointment_time)}</Text>
           </View>
           {appointment.location && (
             <View style={styles.detailRow}>
-              <Icon name={appointment.is_virtual ? 'videocam' : 'location'} size={16} color={COLORS.textSecondary} />
+              <Icon name={appointment.is_virtual ? 'videocam' : 'location'} size={16} color={colors.textSecondary} />
               <Text style={styles.detailText}>{appointment.location}</Text>
             </View>
           )}
@@ -418,7 +421,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
             style={styles.cancelButton}
             onPress={() => handleCancelAppointment(appointment.appointment_id)}
           >
-            <Icon name="close-circle-outline" size={18} color={COLORS.error} />
+            <Icon name="close-circle-outline" size={18} color={colors.error} />
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         )}
@@ -476,7 +479,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
           accessibilityLabel="Add new appointment"
           accessibilityRole="button"
         >
-          <Icon name="add-circle" size={28} color={clients.length > 0 ? primaryColor : COLORS.textLight} />
+          <Icon name="add-circle" size={28} color={clients.length > 0 ? primaryColor : colors.textLight} />
         </Pressable>
       </View>
 
@@ -516,7 +519,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
       >
         {filteredAppointments.length === 0 ? (
           <View style={styles.emptyState}>
-            <Icon name="calendar-outline" size={64} color={COLORS.border} />
+            <Icon name="calendar-outline" size={64} color={colors.border} />
             <Text style={styles.emptyTitle}>
               No {showFilterTabs && activeTab !== 'all' ? activeTab : ''} Appointments
             </Text>
@@ -574,7 +577,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                 handleBack();
               }
             }} data-testid="modal-close-btn">
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>New Appointment</Text>
             <View style={{ width: 24 }} />
@@ -595,7 +598,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                 <Text style={selectedClient ? styles.selectText : styles.selectPlaceholder}>
                   {selectedClient?.name || 'Select a client'}
                 </Text>
-                <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
+                <Icon name="chevron-down" size={20} color={colors.textSecondary} />
               </TouchableOpacity>
 
               {showClientPicker && (
@@ -636,7 +639,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                     <Icon
                       name={type.icon as any}
                       size={24}
-                      color={appointmentType === type.value ? primaryColor : COLORS.textSecondary}
+                      color={appointmentType === type.value ? primaryColor : colors.textSecondary}
                     />
                     <Text style={[
                       styles.typeLabel,
@@ -679,8 +682,8 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                         padding: 12,
                         fontSize: 16,
                         borderRadius: 8,
-                        border: `1px solid ${COLORS.border}`,
-                        backgroundColor: COLORS.white,
+                        border: `1px solid ${colors.border}`,
+                        backgroundColor: colors.white,
                       }}
                     />
                   </View>
@@ -728,8 +731,8 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                         padding: 12,
                         fontSize: 16,
                         borderRadius: 8,
-                        border: `1px solid ${COLORS.border}`,
-                        backgroundColor: COLORS.white,
+                        border: `1px solid ${colors.border}`,
+                        backgroundColor: colors.white,
                       }}
                     />
                   </View>
@@ -767,7 +770,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                   <TextInput
                     style={styles.textInput}
                     placeholder="Enter appointment location"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     value={location}
                     onChangeText={setLocation}
                   />
@@ -779,7 +782,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
               <TextInput
                 style={[styles.textInput, styles.textArea]}
                 placeholder="Add notes for yourself..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={privateNotes}
                 onChangeText={setPrivateNotes}
                 multiline
@@ -792,7 +795,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                 loading={isCreating}
                 disabled={!selectedClient || !appointmentType}
                 fullWidth
-                style={[styles.createButton, { backgroundColor: !selectedClient || !appointmentType ? COLORS.border : primaryColor }]}
+                style={[styles.createButton, { backgroundColor: !selectedClient || !appointmentType ? colors.border : primaryColor }]}
               />
               
               {/* Extra padding for keyboard */}
@@ -805,14 +808,15 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
   );
 }
 
-const styles = StyleSheet.create({
+// Themed styles using createThemedStyles
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   webDatePickerContainer: {
     marginVertical: SIZES.sm,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusMd,
     overflow: 'visible',
     zIndex: 1000,
@@ -824,9 +828,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   breadcrumb: { 
     flexDirection: 'row', 
@@ -836,17 +840,17 @@ const styles = StyleSheet.create({
   breadcrumbItem: { paddingVertical: 4 },
   breadcrumbLink: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.primary, 
+    color: colors.primary, 
     fontWeight: '500' 
   },
   breadcrumbSeparator: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.textLight, 
+    color: colors.textLight, 
     marginHorizontal: SIZES.sm 
   },
   breadcrumbCurrent: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.textPrimary, 
+    color: colors.text, 
     fontWeight: '600' 
   },
   header: {
@@ -855,9 +859,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   backButton: {
     padding: SIZES.xs,
@@ -865,18 +869,18 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   addButton: {
     padding: SIZES.xs,
   },
   tabsContainer: {
     flexDirection: 'row',
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     paddingHorizontal: SIZES.lg,
     paddingBottom: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   tab: {
     flex: 1,
@@ -884,15 +888,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: SIZES.radiusSm,
     marginHorizontal: SIZES.xs,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   tabText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   tabTextActive: {
-    color: COLORS.white,
+    color: colors.white,
     fontFamily: FONTS.bodyBold,
   },
   scrollContent: {
@@ -911,7 +915,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.lg,
     marginBottom: SIZES.sm,
     textTransform: 'capitalize',
@@ -919,7 +923,7 @@ const styles = StyleSheet.create({
   emptySubtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: SIZES.xl,
   },
@@ -929,7 +933,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.md,
   },
   appointmentCard: {
@@ -961,19 +965,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   clientAvatarText: {
-    color: COLORS.white,
+    color: colors.white,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
   },
   clientName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   appointmentType: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   statusBadge: {
     paddingHorizontal: SIZES.sm,
@@ -995,11 +999,11 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginLeft: SIZES.xs,
   },
   notesSection: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.sm,
     marginTop: SIZES.sm,
@@ -1007,13 +1011,13 @@ const styles = StyleSheet.create({
   notesLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.xs,
   },
   notesText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   cancelButton: {
     flexDirection: 'row',
@@ -1021,13 +1025,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     marginTop: SIZES.sm,
   },
   cancelText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.error,
+    color: colors.error,
     marginLeft: SIZES.xs,
   },
   actionButtons: {
@@ -1036,19 +1040,19 @@ const styles = StyleSheet.create({
     marginTop: SIZES.md,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     gap: SIZES.sm,
   },
   declineButton: {
     flex: 1,
-    borderColor: COLORS.error,
+    borderColor: colors.error,
   },
   acceptButton: {
     flex: 1,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1057,12 +1061,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalContent: {
     flex: 1,
@@ -1071,7 +1075,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
   },
@@ -1079,29 +1083,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     padding: SIZES.md,
   },
   selectText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     flex: 1,
     marginLeft: SIZES.sm,
   },
   selectPlaceholder: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   pickerContainer: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     marginTop: SIZES.xs,
   },
   pickerItem: {
@@ -1110,12 +1114,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   pickerItemText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   typeGrid: {
     flexDirection: 'row',
@@ -1125,17 +1129,17 @@ const styles = StyleSheet.create({
   typeCard: {
     width: '48%',
     margin: '1%',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     padding: SIZES.md,
     alignItems: 'center',
   },
   typeLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.sm,
     textAlign: 'center',
   },
@@ -1153,34 +1157,34 @@ const styles = StyleSheet.create({
   toggleLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginLeft: SIZES.sm,
   },
   toggle: {
     width: 52,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     padding: 2,
   },
   toggleKnob: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
   },
   toggleKnobActive: {
     transform: [{ translateX: 20 }],
   },
   textInput: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   textArea: {
     height: 100,
@@ -1190,4 +1194,4 @@ const styles = StyleSheet.create({
     marginTop: SIZES.xl,
     marginBottom: SIZES.xl,
   },
-});
+}));

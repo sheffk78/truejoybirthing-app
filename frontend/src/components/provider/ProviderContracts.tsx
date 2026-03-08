@@ -23,7 +23,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { apiRequest } from '../../utils/api';
 import useAuthStore from '../../store/authStore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ContractsConfig, ContractSection } from './config/contractsConfig';
 
 interface Contract {
@@ -56,6 +57,8 @@ interface ProviderContractsProps {
 }
 
 export default function ProviderContracts({ config }: ProviderContractsProps) {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const { user, backendUrl } = useAuthStore();
   const router = useRouter();
   const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
@@ -379,10 +382,10 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Draft': return COLORS.textSecondary;
-      case 'Sent': return COLORS.warning;
-      case 'Signed': return COLORS.success;
-      default: return COLORS.textSecondary;
+      case 'Draft': return colors.textSecondary;
+      case 'Sent': return colors.warning;
+      case 'Signed': return colors.success;
+      default: return colors.textSecondary;
     }
   };
 
@@ -401,7 +404,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
             value={value}
             onChangeText={(text) => updateFormField(field.id, text)}
             placeholder={field.placeholder}
-            placeholderTextColor={COLORS.textLight}
+            placeholderTextColor={colors.textLight}
             multiline
             numberOfLines={4}
           />
@@ -411,7 +414,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
             value={value}
             onChangeText={(text) => updateFormField(field.id, text)}
             placeholder="YYYY-MM-DD"
-            placeholderTextColor={COLORS.textLight}
+            placeholderTextColor={colors.textLight}
           />
         ) : field.type === 'number' ? (
           <TextInput
@@ -419,7 +422,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
             value={value.toString()}
             onChangeText={(text) => updateFormField(field.id, text)}
             placeholder={field.placeholder}
-            placeholderTextColor={COLORS.textLight}
+            placeholderTextColor={colors.textLight}
             keyboardType="numeric"
           />
         ) : (
@@ -428,7 +431,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
             value={value}
             onChangeText={(text) => updateFormField(field.id, text)}
             placeholder={field.placeholder}
-            placeholderTextColor={COLORS.textLight}
+            placeholderTextColor={colors.textLight}
           />
         )}
       </View>
@@ -481,14 +484,14 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
               style={[styles.actionButton, styles.actionButtonOutline]}
               onPress={() => handleDeleteContract(contract)}
             >
-              <Ionicons name="trash-outline" size={16} color={COLORS.error} />
+              <Ionicons name="trash-outline" size={16} color={colors.error} />
             </TouchableOpacity>
           </>
         )}
         {contract.status === 'Sent' && (
-          <View style={[styles.actionButton, { backgroundColor: COLORS.warning + '20', paddingHorizontal: 12 }]}>
-            <Ionicons name="time-outline" size={16} color={COLORS.warning} />
-            <Text style={[styles.actionButtonTextSmall, { color: COLORS.warning, marginLeft: 4 }]}>Awaiting Mom's Signature</Text>
+          <View style={[styles.actionButton, { backgroundColor: colors.warning + '20', paddingHorizontal: 12 }]}>
+            <Ionicons name="time-outline" size={16} color={colors.warning} />
+            <Text style={[styles.actionButtonTextSmall, { color: colors.warning, marginLeft: 4 }]}>Awaiting Mom's Signature</Text>
           </View>
         )}
         {contract.status === 'Signed' && (
@@ -558,7 +561,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
       >
         {contracts.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="document-text-outline" size={64} color={COLORS.border} />
+            <Ionicons name="document-text-outline" size={64} color={colors.border} />
             <Text style={styles.emptyTitle}>
               {isClientScoped ? 'No Contracts for This Client' : 'No Contracts Yet'}
             </Text>
@@ -584,7 +587,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowCreateModal(false)}>
-                <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>New Service Agreement</Text>
               <View style={{ width: 24 }} />
@@ -638,7 +641,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                         setFormData({ ...defaultValues });
                       }}
                     >
-                      <Ionicons name="document-outline" size={16} color={selectedTemplateId === '' ? primaryColor : COLORS.textSecondary} />
+                      <Ionicons name="document-outline" size={16} color={selectedTemplateId === '' ? primaryColor : colors.textSecondary} />
                       <Text style={[
                         styles.templateOptionText,
                         selectedTemplateId === '' && { color: primaryColor }
@@ -656,7 +659,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                           applyTemplate(template.template_id);
                         }}
                       >
-                        <Ionicons name="copy-outline" size={16} color={selectedTemplateId === template.template_id ? primaryColor : COLORS.textSecondary} />
+                        <Ionicons name="copy-outline" size={16} color={selectedTemplateId === template.template_id ? primaryColor : colors.textSecondary} />
                         <Text style={[
                           styles.templateOptionText,
                           selectedTemplateId === template.template_id && { color: primaryColor }
@@ -743,7 +746,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                 onPress={goToPreviousSection}
                 disabled={currentSection === 0}
               >
-                <Ionicons name="arrow-back" size={20} color={currentSection === 0 ? COLORS.border : primaryColor} />
+                <Ionicons name="arrow-back" size={20} color={currentSection === 0 ? colors.border : primaryColor} />
                 <Text style={[styles.navButtonText, currentSection === 0 && styles.navButtonTextDisabled]}>
                   Previous
                 </Text>
@@ -781,7 +784,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowPreviewModal(false)}>
-                <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Contract Details</Text>
               {selectedContract?.status === 'Draft' && !isQuickEditMode && (
@@ -888,10 +891,10 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -905,9 +908,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   breadcrumb: { 
     flexDirection: 'row', 
@@ -917,17 +920,17 @@ const styles = StyleSheet.create({
   breadcrumbItem: { paddingVertical: 4 },
   breadcrumbLink: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.primary, 
+    color: colors.primary, 
     fontWeight: '500' 
   },
   breadcrumbSeparator: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.textLight, 
+    color: colors.textLight, 
     marginHorizontal: SIZES.sm 
   },
   breadcrumbCurrent: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.textPrimary, 
+    color: colors.text, 
     fontWeight: '600' 
   },
   header: {
@@ -936,9 +939,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   backButton: {
     padding: SIZES.xs,
@@ -946,12 +949,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   addButton: {
     width: 40,
@@ -971,18 +974,18 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.lg,
     marginBottom: SIZES.sm,
   },
   emptyText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   contractCard: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.lg,
     marginBottom: SIZES.md,
@@ -1001,12 +1004,12 @@ const styles = StyleSheet.create({
   clientName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   contractDate: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   statusBadge: {
@@ -1024,12 +1027,12 @@ const styles = StyleSheet.create({
   feeText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   signedDate: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.success,
+    color: colors.success,
     marginTop: 2,
   },
   cardActions: {
@@ -1037,7 +1040,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     paddingTop: SIZES.sm,
     marginTop: SIZES.sm,
   },
@@ -1052,12 +1055,12 @@ const styles = StyleSheet.create({
   actionButtonOutline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   actionButtonText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.white,
+    color: colors.white,
   },
   actionButtonTextSmall: {
     fontSize: SIZES.fontXs,
@@ -1070,7 +1073,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderTopLeftRadius: SIZES.radiusLg,
     borderTopRightRadius: SIZES.radiusLg,
     maxHeight: '90%',
@@ -1082,12 +1085,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   progressContainer: {
     flexDirection: 'row',
@@ -1104,22 +1107,22 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
   progressNumber: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   progressNumberActive: {
-    color: COLORS.white,
+    color: colors.white,
   },
   progressLine: {
     width: 20,
     height: 2,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
   },
   modalBody: {
     padding: SIZES.lg,
@@ -1131,18 +1134,18 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   input: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   textArea: {
     height: 100,
@@ -1160,13 +1163,13 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     gap: SIZES.xs,
   },
   templateOptionText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   defaultLabel: {
     paddingHorizontal: SIZES.xs,
@@ -1176,7 +1179,7 @@ const styles = StyleSheet.create({
   defaultLabelText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.white,
+    color: colors.white,
   },
   clientGrid: {
     gap: SIZES.sm,
@@ -1185,24 +1188,24 @@ const styles = StyleSheet.create({
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderColor: colors.border,
+    backgroundColor: colors.white,
   },
   clientOptionText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   clientDueDate: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   noClientsText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     padding: SIZES.lg,
   },
@@ -1213,18 +1216,18 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.lg,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   sectionTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   balanceContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginTop: SIZES.md,
@@ -1232,12 +1235,12 @@ const styles = StyleSheet.create({
   balanceLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   balanceValue: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.success,
+    color: colors.success,
   },
   modalFooter: {
     flexDirection: 'row',
@@ -1246,7 +1249,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   navButton: {
     flexDirection: 'row',
@@ -1261,10 +1264,10 @@ const styles = StyleSheet.create({
   navButtonText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   navButtonTextDisabled: {
-    color: COLORS.border,
+    color: colors.border,
   },
   submitButton: {
     flexDirection: 'row',
@@ -1280,7 +1283,7 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.white,
+    color: colors.white,
   },
   previewSection: {
     marginBottom: SIZES.md,
@@ -1288,21 +1291,21 @@ const styles = StyleSheet.create({
   previewLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 2,
   },
   previewValue: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   quickEditInput: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     padding: SIZES.sm,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
   },
-});
+}));

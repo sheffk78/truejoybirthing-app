@@ -19,7 +19,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/authStore';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
 interface ContractTemplate {
@@ -46,6 +47,8 @@ interface ProviderContractTemplatesProps {
 }
 
 export default function ProviderContractTemplates({ config }: ProviderContractTemplatesProps) {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const { user } = useAuthStore();
   const [templates, setTemplates] = useState<ContractTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -253,10 +256,10 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
         )}
 
         <TouchableOpacity
-          style={[styles.actionBtn, { borderColor: COLORS.error }]}
+          style={[styles.actionBtn, { borderColor: colors.error }]}
           onPress={() => handleDelete(template)}
         >
-          <Ionicons name="trash-outline" size={16} color={COLORS.error} />
+          <Ionicons name="trash-outline" size={16} color={colors.error} />
         </TouchableOpacity>
       </View>
     </View>
@@ -293,7 +296,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
       >
         {templates.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="document-text-outline" size={64} color={COLORS.border} />
+            <Ionicons name="document-text-outline" size={64} color={colors.border} />
             <Text style={styles.emptyTitle}>No Templates Yet</Text>
             <Text style={styles.emptyText}>
               Create reusable templates to quickly generate {roleLabel.toLowerCase()} contracts with pre-filled terms and fees.
@@ -317,7 +320,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowModal(false)}>
-                <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>
                 {editingTemplate ? 'Edit Template' : 'New Template'}
@@ -332,7 +335,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
                 value={templateName}
                 onChangeText={setTemplateName}
                 placeholder="e.g., Standard Package"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
               />
 
               <Text style={styles.inputLabel}>Description</Text>
@@ -341,7 +344,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
                 value={description}
                 onChangeText={setDescription}
                 placeholder="Brief description of this template"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 multiline
                 numberOfLines={2}
               />
@@ -354,7 +357,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
                     value={totalFee}
                     onChangeText={setTotalFee}
                     placeholder="0.00"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     keyboardType="decimal-pad"
                   />
                 </View>
@@ -365,7 +368,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
                     value={retainerAmount}
                     onChangeText={setRetainerAmount}
                     placeholder="0.00"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     keyboardType="decimal-pad"
                   />
                 </View>
@@ -380,7 +383,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
 Prenatal visits
 Labor support
 Postpartum visit"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 multiline
                 numberOfLines={4}
               />
@@ -391,7 +394,7 @@ Postpartum visit"
                 value={prenatalVisit}
                 onChangeText={setPrenatalVisit}
                 placeholder="Description of prenatal visits"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 multiline
                 numberOfLines={2}
               />
@@ -402,7 +405,7 @@ Postpartum visit"
                 value={onCallWindow}
                 onChangeText={setOnCallWindow}
                 placeholder="e.g., 38 to 42 weeks"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
               />
 
               <Text style={styles.inputLabel}>Postpartum Support</Text>
@@ -411,7 +414,7 @@ Postpartum visit"
                 value={postpartumVisit}
                 onChangeText={setPostpartumVisit}
                 placeholder="Description of postpartum visits"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 multiline
                 numberOfLines={2}
               />
@@ -422,7 +425,7 @@ Postpartum visit"
                 value={termsAndConditions}
                 onChangeText={setTermsAndConditions}
                 placeholder="Additional terms and conditions"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 multiline
                 numberOfLines={4}
               />
@@ -466,10 +469,10 @@ Postpartum visit"
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -482,14 +485,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   addButton: {
     width: 40,
@@ -509,14 +512,14 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.lg,
     marginBottom: SIZES.sm,
   },
   emptyText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: SIZES.xl,
     marginBottom: SIZES.lg,
@@ -532,10 +535,10 @@ const styles = StyleSheet.create({
   createBtnText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.white,
+    color: colors.white,
   },
   templateCard: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.lg,
     marginBottom: SIZES.md,
@@ -554,12 +557,12 @@ const styles = StyleSheet.create({
   templateName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   templateDescription: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   defaultBadge: {
@@ -573,23 +576,23 @@ const styles = StyleSheet.create({
   defaultBadgeText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.white,
+    color: colors.white,
   },
   templateFee: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   templateRetainer: {
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     fontFamily: FONTS.body,
   },
   templateActions: {
     flexDirection: 'row',
     gap: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     paddingTop: SIZES.sm,
     marginTop: SIZES.sm,
   },
@@ -612,7 +615,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderTopLeftRadius: SIZES.radiusLg,
     borderTopRightRadius: SIZES.radiusLg,
     maxHeight: '90%',
@@ -624,12 +627,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalBody: {
     padding: SIZES.lg,
@@ -638,19 +641,19 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
     marginTop: SIZES.md,
   },
   input: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   textArea: {
     minHeight: 80,
@@ -674,14 +677,14 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
   checkboxLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalFooter: {
     flexDirection: 'row',
@@ -690,7 +693,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   cancelBtn: {
     paddingHorizontal: SIZES.lg,
@@ -699,7 +702,7 @@ const styles = StyleSheet.create({
   cancelBtnText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   saveBtn: {
     paddingHorizontal: SIZES.xl,
@@ -712,6 +715,6 @@ const styles = StyleSheet.create({
   saveBtnText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.white,
+    color: colors.white,
   },
-});
+}));

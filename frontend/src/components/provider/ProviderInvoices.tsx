@@ -21,7 +21,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from '../config/providerConfig';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -38,6 +39,8 @@ interface ProviderInvoicesProps {
 }
 
 export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
   
@@ -519,7 +522,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         {/* Invoice List */}
         {filteredInvoices.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Ionicons name="receipt-outline" size={48} color={COLORS.textLight} />
+            <Ionicons name="receipt-outline" size={48} color={colors.textLight} />
             <Text style={styles.emptyText}>
               {statusFilter === 'All' 
                 ? 'No invoices yet. Create your first invoice to get started.'
@@ -588,8 +591,8 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                 )}
                 {invoice.status === 'Paid' && (
                   <TouchableOpacity style={styles.actionButton} onPress={() => handleMarkUnpaid(invoice.invoice_id)}>
-                    <Ionicons name="refresh-outline" size={18} color={COLORS.warning} />
-                    <Text style={[styles.actionText, { color: COLORS.warning }]}>Mark Unpaid</Text>
+                    <Ionicons name="refresh-outline" size={18} color={colors.warning} />
+                    <Text style={[styles.actionText, { color: colors.warning }]}>Mark Unpaid</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -613,7 +616,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
           <SafeAreaView style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowInvoiceModal(false)}>
-                <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>
                 {editingInvoice ? 'Edit Invoice' : 'New Invoice'}
@@ -644,13 +647,13 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     // Simple dropdown logic - show options
                   }}
                 >
-                  <Ionicons name="person-outline" size={18} color={selectedClientId ? primaryColor : COLORS.textLight} />
-                  <Text style={[styles.clientDropdownText, selectedClientId ? { color: COLORS.textPrimary } : { color: COLORS.textLight }]}>
+                  <Ionicons name="person-outline" size={18} color={selectedClientId ? primaryColor : colors.textLight} />
+                  <Text style={[styles.clientDropdownText, selectedClientId ? { color: colors.text } : { color: colors.textLight }]}>
                     {selectedClientId 
                       ? activeClients.find(c => c.client_id === selectedClientId)?.name || 'Select Client'
                       : 'Select a client'}
                   </Text>
-                  <Ionicons name="chevron-down" size={18} color={COLORS.textLight} />
+                  <Ionicons name="chevron-down" size={18} color={colors.textLight} />
                 </TouchableOpacity>
                 <View style={styles.clientOptions}>
                   {activeClients.map((client) => (
@@ -680,7 +683,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               value={description}
               onChangeText={setDescription}
               placeholder="e.g., Birth Doula Services - Final Payment"
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
             />
 
@@ -690,7 +693,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               value={amount}
               onChangeText={setAmount}
               placeholder="0.00"
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               keyboardType="decimal-pad"
             />
 
@@ -702,7 +705,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     type="date"
                     value={issueDate}
                     onChange={(e) => setIssueDate(e.target.value)}
-                    style={{ padding: 12, borderWidth: 1, borderColor: COLORS.border, borderRadius: 8, fontSize: 16 }}
+                    style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16 }}
                   />
                 ) : (
                   <TextInput
@@ -710,7 +713,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     value={issueDate}
                     onChangeText={setIssueDate}
                     placeholder="YYYY-MM-DD"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                   />
                 )}
               </View>
@@ -721,7 +724,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    style={{ padding: 12, borderWidth: 1, borderColor: COLORS.border, borderRadius: 8, fontSize: 16 }}
+                    style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16 }}
                   />
                 ) : (
                   <TextInput
@@ -729,7 +732,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     value={dueDate}
                     onChangeText={setDueDate}
                     placeholder="YYYY-MM-DD"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                   />
                 )}
               </View>
@@ -741,7 +744,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               value={paymentInstructions}
               onChangeText={setPaymentInstructions}
               placeholder="How should the client pay? (Venmo, Zelle, check, etc.)"
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={4}
             />
@@ -752,7 +755,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               value={notesForClient}
               onChangeText={setNotesForClient}
               placeholder="Any additional notes..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={3}
             />
@@ -787,7 +790,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowPaymentModal(false)}>
-              <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+              <Ionicons name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {editingTemplate ? 'Edit Template' : 'New Payment Template'}
@@ -808,7 +811,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               value={templateLabel}
               onChangeText={setTemplateLabel}
               placeholder="e.g., Venmo Payment"
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
             />
 
             <Text style={styles.fieldLabel}>Instructions *</Text>
@@ -817,7 +820,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               value={templateText}
               onChangeText={setTemplateText}
               placeholder="Payment instructions that will appear on invoices..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={6}
             />
@@ -829,7 +832,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               <Ionicons
                 name={templateIsDefault ? 'checkbox' : 'square-outline'}
                 size={24}
-                color={templateIsDefault ? primaryColor : COLORS.textLight}
+                color={templateIsDefault ? primaryColor : colors.textLight}
               />
               <Text style={styles.defaultToggleText}>Set as default for new invoices</Text>
             </TouchableOpacity>
@@ -854,8 +857,8 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1, backgroundColor: colors.background },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
   // Breadcrumb styles
@@ -865,9 +868,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   breadcrumb: { 
     flexDirection: 'row', 
@@ -877,17 +880,17 @@ const styles = StyleSheet.create({
   breadcrumbItem: { paddingVertical: 4 },
   breadcrumbLink: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.primary, 
+    color: colors.primary, 
     fontWeight: '500' 
   },
   breadcrumbSeparator: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.textLight, 
+    color: colors.textLight, 
     marginHorizontal: SIZES.sm 
   },
   breadcrumbCurrent: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.textPrimary, 
+    color: colors.text, 
     fontWeight: '600' 
   },
   mainHeader: { 
@@ -895,64 +898,64 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     paddingHorizontal: SIZES.md, 
     paddingVertical: SIZES.md, 
-    backgroundColor: COLORS.white, 
+    backgroundColor: colors.white, 
     borderBottomWidth: 1, 
-    borderBottomColor: COLORS.border 
+    borderBottomColor: colors.border 
   },
   backButton: { padding: SIZES.xs, marginRight: SIZES.sm },
-  mainTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: COLORS.textPrimary },
-  mainSubtitle: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: COLORS.textSecondary },
+  mainTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: colors.text },
+  mainSubtitle: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: colors.textSecondary },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.md },
-  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: COLORS.textPrimary },
+  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: colors.text },
   headerButtons: { flexDirection: 'row', alignItems: 'center', gap: SIZES.sm },
   settingsButton: { padding: SIZES.sm },
   addButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   section: { marginBottom: SIZES.md },
-  sectionTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: COLORS.textPrimary, marginBottom: SIZES.sm },
-  templateCard: { backgroundColor: COLORS.white, borderRadius: SIZES.radiusMd, padding: SIZES.md, marginRight: SIZES.sm, width: 200, borderWidth: 1, borderColor: COLORS.border },
+  sectionTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text, marginBottom: SIZES.sm },
+  templateCard: { backgroundColor: colors.white, borderRadius: SIZES.radiusMd, padding: SIZES.md, marginRight: SIZES.sm, width: 200, borderWidth: 1, borderColor: colors.border },
   templateHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.xs },
-  templateLabel: { fontSize: SIZES.fontSm, fontWeight: '600', color: COLORS.textPrimary },
+  templateLabel: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.text },
   defaultBadge: { paddingHorizontal: SIZES.xs, paddingVertical: 2, borderRadius: 4 },
   defaultBadgeText: { fontSize: 10, fontWeight: '600' },
-  templatePreview: { fontSize: SIZES.fontXs, color: COLORS.textSecondary },
-  addTemplateCard: { backgroundColor: COLORS.white, borderRadius: SIZES.radiusMd, padding: SIZES.md, width: 100, borderWidth: 1, borderColor: COLORS.border, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
+  templatePreview: { fontSize: SIZES.fontXs, color: colors.textSecondary },
+  addTemplateCard: { backgroundColor: colors.white, borderRadius: SIZES.radiusMd, padding: SIZES.md, width: 100, borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center' },
   addTemplateText: { fontSize: SIZES.fontXs, marginTop: SIZES.xs },
   filterContainer: { marginBottom: SIZES.md },
-  filterButton: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: COLORS.white, marginRight: SIZES.sm, borderWidth: 1, borderColor: COLORS.border },
-  filterText: { fontSize: SIZES.fontSm, color: COLORS.textSecondary },
-  filterTextActive: { color: COLORS.white, fontWeight: '600' },
-  emptyCard: { backgroundColor: COLORS.white, borderRadius: SIZES.radiusMd, padding: SIZES.xl, alignItems: 'center' },
-  emptyText: { fontSize: SIZES.fontMd, color: COLORS.textSecondary, textAlign: 'center', marginTop: SIZES.md },
-  invoiceCard: { backgroundColor: COLORS.white, borderRadius: SIZES.radiusMd, padding: SIZES.md, marginBottom: SIZES.sm, borderWidth: 1, borderColor: COLORS.border },
+  filterButton: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: colors.white, marginRight: SIZES.sm, borderWidth: 1, borderColor: colors.border },
+  filterText: { fontSize: SIZES.fontSm, color: colors.textSecondary },
+  filterTextActive: { color: colors.white, fontWeight: '600' },
+  emptyCard: { backgroundColor: colors.white, borderRadius: SIZES.radiusMd, padding: SIZES.xl, alignItems: 'center' },
+  emptyText: { fontSize: SIZES.fontMd, color: colors.textSecondary, textAlign: 'center', marginTop: SIZES.md },
+  invoiceCard: { backgroundColor: colors.white, borderRadius: SIZES.radiusMd, padding: SIZES.md, marginBottom: SIZES.sm, borderWidth: 1, borderColor: colors.border },
   invoiceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.sm },
   invoiceInfo: { flex: 1 },
-  invoiceNumber: { fontSize: SIZES.fontSm, fontWeight: '600', color: COLORS.textPrimary },
-  clientName: { fontSize: SIZES.fontMd, fontWeight: '500', color: COLORS.textSecondary, marginTop: 2 },
+  invoiceNumber: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.text },
+  clientName: { fontSize: SIZES.fontMd, fontWeight: '500', color: colors.textSecondary, marginTop: 2 },
   statusBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusSm },
   statusText: { fontSize: SIZES.fontXs, fontWeight: '600' },
-  description: { fontSize: SIZES.fontSm, color: COLORS.textSecondary, marginBottom: SIZES.sm },
+  description: { fontSize: SIZES.fontSm, color: colors.textSecondary, marginBottom: SIZES.sm },
   invoiceDetails: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.sm },
-  amountText: { fontSize: SIZES.fontLg, fontWeight: '700', color: COLORS.textPrimary },
+  amountText: { fontSize: SIZES.fontLg, fontWeight: '700', color: colors.text },
   dateInfo: { alignItems: 'flex-end' },
-  dateLabel: { fontSize: SIZES.fontXs, color: COLORS.textLight },
-  invoiceActions: { flexDirection: 'row', gap: SIZES.sm, borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: SIZES.sm },
-  actionButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusSm, borderWidth: 1, borderColor: COLORS.border },
+  dateLabel: { fontSize: SIZES.fontXs, color: colors.textLight },
+  invoiceActions: { flexDirection: 'row', gap: SIZES.sm, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: SIZES.sm },
+  actionButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusSm, borderWidth: 1, borderColor: colors.border },
   actionText: { fontSize: SIZES.fontSm, marginLeft: 4 },
-  modalContainer: { flex: 1, backgroundColor: COLORS.background },
-  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.md, borderBottomWidth: 1, borderBottomColor: COLORS.border, backgroundColor: COLORS.white },
-  modalTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary },
+  modalContainer: { flex: 1, backgroundColor: colors.background },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.md, borderBottomWidth: 1, borderBottomColor: colors.border, backgroundColor: colors.white },
+  modalTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text },
   modalContent: { flex: 1, padding: SIZES.md },
-  modalFooter: { padding: SIZES.md, borderTopWidth: 1, borderTopColor: COLORS.border, backgroundColor: COLORS.white },
-  fieldLabel: { fontSize: SIZES.fontSm, fontWeight: '600', color: COLORS.textSecondary, marginBottom: SIZES.xs, marginTop: SIZES.md },
-  input: { backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.border, borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd, color: COLORS.textPrimary },
+  modalFooter: { padding: SIZES.md, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.white },
+  fieldLabel: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.textSecondary, marginBottom: SIZES.xs, marginTop: SIZES.md },
+  input: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd, color: colors.text },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
   clientDropdownContainer: { marginBottom: SIZES.sm },
   clientDropdown: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: COLORS.white, 
+    backgroundColor: colors.white, 
     borderWidth: 1, 
-    borderColor: COLORS.border, 
+    borderColor: colors.border, 
     borderRadius: SIZES.radiusSm, 
     padding: SIZES.md,
     gap: SIZES.sm,
@@ -968,15 +971,15 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.sm, 
     borderRadius: SIZES.radiusSm, 
     borderWidth: 1, 
-    borderColor: COLORS.border, 
-    backgroundColor: COLORS.white 
+    borderColor: colors.border, 
+    backgroundColor: colors.white 
   },
-  clientOptionText: { fontSize: SIZES.fontSm, color: COLORS.textPrimary },
-  noClientsText: { fontSize: SIZES.fontSm, color: COLORS.textLight, fontStyle: 'italic' },
+  clientOptionText: { fontSize: SIZES.fontSm, color: colors.text },
+  noClientsText: { fontSize: SIZES.fontSm, color: colors.textLight, fontStyle: 'italic' },
   dateRow: { flexDirection: 'row', gap: SIZES.md },
   dateField: { flex: 1 },
   defaultToggle: { flexDirection: 'row', alignItems: 'center', marginTop: SIZES.md },
-  defaultToggleText: { fontSize: SIZES.fontMd, color: COLORS.textPrimary, marginLeft: SIZES.sm },
+  defaultToggleText: { fontSize: SIZES.fontMd, color: colors.text, marginLeft: SIZES.sm },
   saveButton: { paddingVertical: SIZES.md, borderRadius: SIZES.radiusMd, alignItems: 'center' },
   saveButtonText: { color: '#fff', fontSize: SIZES.fontMd, fontWeight: '600' },
-});
+}));

@@ -19,7 +19,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 
 // ============== TYPES ==============
 interface PrenatalVisit {
@@ -69,6 +70,8 @@ const WELLBEING_SCALE = [
 
 // ============== MAIN COMPONENT ==============
 export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh }: PrenatalVisitSectionProps) {
+  const colors = useColors();
+  const styles = getStyles(colors);
   // State
   const [prenatalVisits, setPrenatalVisits] = useState<PrenatalVisit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -303,7 +306,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
       <TextInput
         style={styles.noteInput}
         placeholder="Optional note..."
-        placeholderTextColor={COLORS.textLight}
+        placeholderTextColor={colors.textLight}
         value={note}
         onChangeText={onNoteChange}
       />
@@ -324,7 +327,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
           onPress={openAddVisit}
           data-testid="add-prenatal-visit-btn"
         >
-          <Icon name="add" size={22} color={COLORS.white} />
+          <Icon name="add" size={22} color={colors.white} />
         </TouchableOpacity>
       </View>
 
@@ -332,7 +335,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
         <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
       ) : prenatalVisits.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="document-text-outline" size={40} color={COLORS.textLight} />
+          <Icon name="document-text-outline" size={40} color={colors.textLight} />
           <Text style={styles.emptyTitle}>No prenatal visits yet</Text>
           <Text style={styles.emptyText}>
             Tap the + button above to record your first prenatal visit assessment.
@@ -351,7 +354,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                   <Icon name="calendar-outline" size={14} color={primaryColor} />
                   <Text style={[styles.visitDateText, { color: primaryColor }]}>{formatDate(visit.visit_date)}</Text>
                 </View>
-                <Icon name="chevron-forward" size={18} color={COLORS.textLight} />
+                <Icon name="chevron-forward" size={18} color={colors.textLight} />
               </View>
               <Text style={styles.visitSummary}>{visit.summary}</Text>
 
@@ -393,7 +396,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowVisitModal(false)}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {editingVisit ? 'Edit Prenatal Visit' : 'Add Prenatal Visit'}
@@ -413,18 +416,18 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                   style={{
                     padding: 14,
                     borderWidth: 1,
-                    borderColor: COLORS.border,
+                    borderColor: colors.border,
                     borderRadius: 10,
                     fontSize: 16,
                     width: '100%',
-                    backgroundColor: COLORS.white,
+                    backgroundColor: colors.white,
                   }}
                 />
               ) : (
                 <TextInput
                   style={styles.input}
                   placeholder="YYYY-MM-DD"
-                  placeholderTextColor={COLORS.textLight}
+                  placeholderTextColor={colors.textLight}
                   value={visitDate}
                   onChangeText={setVisitDate}
                 />
@@ -458,7 +461,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                 <TextInput
                   style={styles.input}
                   placeholder="Specify urinalysis result..."
-                  placeholderTextColor={COLORS.textLight}
+                  placeholderTextColor={colors.textLight}
                   value={urinalysisNote}
                   onChangeText={setUrinalysisNote}
                 />
@@ -468,7 +471,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 120/70"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={bloodPressure}
                 onChangeText={setBloodPressure}
               />
@@ -477,7 +480,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 140"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={fetalHeartRate}
                 onChangeText={setFetalHeartRate}
                 keyboardType="numeric"
@@ -487,7 +490,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 28"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={fundalHeight}
                 onChangeText={setFundalHeight}
                 keyboardType="decimal-pad"
@@ -498,7 +501,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                 <TextInput
                   style={[styles.input, { flex: 1 }]}
                   placeholder="e.g., 145"
-                  placeholderTextColor={COLORS.textLight}
+                  placeholderTextColor={colors.textLight}
                   value={weight}
                   onChangeText={setWeight}
                   keyboardType="decimal-pad"
@@ -539,7 +542,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Any additional observations or notes..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={generalNotes}
                 onChangeText={setGeneralNotes}
                 multiline
@@ -572,7 +575,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowVisitDetail(null)}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Prenatal Visit</Text>
             <TouchableOpacity onPress={() => showVisitDetail && openEditVisit(showVisitDetail)}>
@@ -672,7 +675,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                 style={styles.deleteButton}
                 onPress={() => handleDeleteVisit(showVisitDetail)}
               >
-                <Icon name="trash-outline" size={18} color={COLORS.error} />
+                <Icon name="trash-outline" size={18} color={colors.error} />
                 <Text style={styles.deleteButtonText}>Delete Visit</Text>
               </TouchableOpacity>
 
@@ -686,7 +689,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
 }
 
 // ============== STYLES ==============
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   section: {
     marginTop: SIZES.md,
     marginBottom: SIZES.lg,
@@ -704,13 +707,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginLeft: SIZES.sm,
   },
   visitCount: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginLeft: SIZES.xs,
   },
   addVisitButton: {
@@ -727,13 +730,13 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -762,7 +765,7 @@ const styles = StyleSheet.create({
   visitSummary: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   vitalsPreview: {
     flexDirection: 'row',
@@ -771,47 +774,47 @@ const styles = StyleSheet.create({
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   vitalChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     paddingHorizontal: SIZES.sm,
     paddingVertical: 4,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   vitalLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginRight: 4,
   },
   vitalValue: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalContent: {
     flex: 1,
@@ -819,9 +822,9 @@ const styles = StyleSheet.create({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   // Form styles
   formSection: {
@@ -830,31 +833,31 @@ const styles = StyleSheet.create({
   formSectionTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   formSectionSubtitle: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.md,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.xs,
     marginTop: SIZES.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
-    backgroundColor: COLORS.white,
+    color: colors.text,
+    backgroundColor: colors.white,
   },
   textArea: {
     minHeight: 100,
@@ -870,19 +873,19 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderColor: colors.border,
+    backgroundColor: colors.white,
   },
   urinalysisOptionSelected: {
-    borderColor: COLORS.primary,
+    borderColor: colors.primary,
   },
   urinalysisOptionText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   urinalysisOptionTextSelected: {
-    color: COLORS.white,
+    color: colors.white,
     fontFamily: FONTS.bodyMedium,
   },
   weightRow: {
@@ -893,37 +896,37 @@ const styles = StyleSheet.create({
   unitToggle: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusSm,
     overflow: 'hidden',
   },
   unitOption: {
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
   },
   unitOptionSelected: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
   },
   unitText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   unitTextSelected: {
-    color: COLORS.white,
+    color: colors.white,
     fontFamily: FONTS.bodyMedium,
   },
   wellbeingItem: {
     marginBottom: SIZES.md,
     paddingBottom: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   wellbeingLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   scoreRow: {
@@ -936,32 +939,32 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderColor: colors.border,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
   scoreButtonSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   scoreButtonText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   scoreButtonTextSelected: {
-    color: COLORS.white,
+    color: colors.white,
   },
   noteInput: {
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.sm,
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
-    backgroundColor: COLORS.white,
+    color: colors.text,
+    backgroundColor: colors.white,
   },
   // Detail modal styles
   detailDateHeader: {
@@ -982,11 +985,11 @@ const styles = StyleSheet.create({
   detailCardTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   detailInfoRow: {
     flexDirection: 'row',
@@ -996,17 +999,17 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   detailValue: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   noDataText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     fontStyle: 'italic',
     textAlign: 'center',
     paddingVertical: SIZES.md,
@@ -1014,7 +1017,7 @@ const styles = StyleSheet.create({
   wellbeingDetailRow: {
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   wellbeingDetailHeader: {
     flexDirection: 'row',
@@ -1033,14 +1036,14 @@ const styles = StyleSheet.create({
   wellbeingNote: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.xs,
     fontStyle: 'italic',
   },
   generalNotesText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 22,
   },
   deleteButton: {
@@ -1053,7 +1056,7 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.error,
+    color: colors.error,
     marginLeft: SIZES.xs,
   },
-});
+}));

@@ -20,7 +20,8 @@ import Button from '../Button';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { SUBSCRIPTION_PRODUCTS } from '../../services/billing/subscriptionConfig';
 import { useIAP } from '../../services/billing/useIAP';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 
 // Check if running in Expo Go
 const IS_EXPO_GO = Constants.appOwnership === 'expo';
@@ -31,6 +32,8 @@ interface SubscriptionPageProps {
 }
 
 export default function SubscriptionPage({ primaryColor, role }: SubscriptionPageProps) {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const { status, pricing, isLoading, fetchStatus, fetchPricing, startTrial, activateSubscription, cancelSubscription, getSubscriptionManageUrl } = useSubscriptionStore();
   const { products, purchase, restore, isLoading: iapLoading, isAvailable: iapAvailable, error: iapError } = useIAP();
@@ -295,11 +298,11 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
     if (!status) return null;
     
     const badges: Record<string, { color: string; bgColor: string; text: string }> = {
-      active: { color: COLORS.success, bgColor: COLORS.success + '20', text: 'Active' },
-      trial: { color: COLORS.warning, bgColor: COLORS.warning + '20', text: `Trial - ${status.days_remaining} days left` },
-      expired: { color: COLORS.error, bgColor: COLORS.error + '20', text: 'Expired' },
-      cancelled: { color: COLORS.textSecondary, bgColor: COLORS.border, text: 'Cancelled' },
-      none: { color: COLORS.textSecondary, bgColor: COLORS.border, text: 'No Subscription' },
+      active: { color: colors.success, bgColor: colors.success + '20', text: 'Active' },
+      trial: { color: colors.warning, bgColor: colors.warning + '20', text: `Trial - ${status.days_remaining} days left` },
+      expired: { color: colors.error, bgColor: colors.error + '20', text: 'Expired' },
+      cancelled: { color: colors.textSecondary, bgColor: colors.border, text: 'Cancelled' },
+      none: { color: colors.textSecondary, bgColor: colors.border, text: 'No Subscription' },
     };
     
     const badge = badges[status.subscription_status] || badges.none;
@@ -326,7 +329,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Subscription</Text>
         <View style={{ width: 40 }} />
@@ -346,7 +349,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
           {status?.has_pro_access ? (
             <View style={styles.statusDetails}>
               <View style={styles.statusRow}>
-                <Icon name="checkmark-circle" size={18} color={COLORS.success} />
+                <Icon name="checkmark-circle" size={18} color={colors.success} />
                 <Text style={styles.statusText}>Full access to all features</Text>
               </View>
               
@@ -357,7 +360,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                     <Text style={styles.progressLabel}>
                       {status.is_trial ? 'Trial Period' : 'Subscription Period'}
                     </Text>
-                    <Text style={[styles.progressDays, { color: status.is_trial ? COLORS.warning : primaryColor }]}>
+                    <Text style={[styles.progressDays, { color: status.is_trial ? colors.warning : primaryColor }]}>
                       {status.days_remaining} days remaining
                     </Text>
                   </View>
@@ -366,7 +369,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                       style={[
                         styles.progressBarFill, 
                         { 
-                          backgroundColor: status.is_trial ? COLORS.warning : primaryColor,
+                          backgroundColor: status.is_trial ? colors.warning : primaryColor,
                           width: `${Math.min(100, Math.max(5, (status.days_remaining / (status.is_trial ? 30 : 365)) * 100))}%`
                         }
                       ]} 
@@ -383,7 +386,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
               {status.subscription_end_date && (
                 <View style={styles.statusRow}>
-                  <Icon name="calendar-outline" size={18} color={COLORS.textSecondary} />
+                  <Icon name="calendar-outline" size={18} color={colors.textSecondary} />
                   <Text style={styles.statusText}>
                     {status.auto_renewing ? 'Renews' : 'Expires'}: {formatDate(status.subscription_end_date)}
                   </Text>
@@ -391,13 +394,13 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               )}
               {status.is_trial && status.trial_end_date && (
                 <View style={styles.statusRow}>
-                  <Icon name="time-outline" size={18} color={COLORS.warning} />
+                  <Icon name="time-outline" size={18} color={colors.warning} />
                   <Text style={styles.statusText}>Trial ends: {formatDate(status.trial_end_date)}</Text>
                 </View>
               )}
               {!status.is_trial && (
                 <View style={styles.statusRow}>
-                  <Icon name={status.auto_renewing ? 'refresh-outline' : 'time-outline'} size={18} color={COLORS.textSecondary} />
+                  <Icon name={status.auto_renewing ? 'refresh-outline' : 'time-outline'} size={18} color={colors.textSecondary} />
                   <Text style={styles.statusText}>
                     {status.auto_renewing ? 'Auto-renews annually' : 'No auto-renewal'}
                   </Text>
@@ -407,11 +410,11 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
           ) : (
             <View style={styles.statusDetails}>
               <View style={styles.statusRow}>
-                <Icon name="alert-circle-outline" size={18} color={COLORS.warning} />
+                <Icon name="alert-circle-outline" size={18} color={colors.warning} />
                 <Text style={styles.statusText}>Subscribe to accept new clients</Text>
               </View>
               <View style={styles.statusRow}>
-                <Icon name="lock-closed-outline" size={18} color={COLORS.textSecondary} />
+                <Icon name="lock-closed-outline" size={18} color={colors.textSecondary} />
                 <Text style={styles.statusText}>Limited access to features</Text>
               </View>
             </View>
@@ -432,27 +435,27 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               <Icon name="settings-outline" size={24} color={primaryColor} />
               <Text style={styles.managementTitle}>Manage Your Subscription</Text>
               <TouchableOpacity onPress={() => setShowCancelConfirm(false)}>
-                <Icon name="close" size={24} color={COLORS.textSecondary} />
+                <Icon name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
             {/* Upgrade Option */}
             {canUpgradeToAnnual && (
               <TouchableOpacity 
-                style={[styles.managementOption, { borderColor: COLORS.success }]}
+                style={[styles.managementOption, { borderColor: colors.success }]}
                 onPress={() => { setShowCancelConfirm(false); handleUpgradeToAnnual(); }}
                 disabled={processing}
               >
                 <View style={styles.managementOptionContent}>
-                  <View style={[styles.managementOptionIcon, { backgroundColor: COLORS.success + '20' }]}>
-                    <Icon name="trending-up" size={20} color={COLORS.success} />
+                  <View style={[styles.managementOptionIcon, { backgroundColor: colors.success + '20' }]}>
+                    <Icon name="trending-up" size={20} color={colors.success} />
                   </View>
                   <View style={styles.managementOptionText}>
                     <Text style={styles.managementOptionTitle}>Upgrade to Annual</Text>
                     <Text style={styles.managementOptionDesc}>Save $72/year - That's 2 months free!</Text>
                   </View>
                 </View>
-                <Icon name="chevron-forward" size={20} color={COLORS.success} />
+                <Icon name="chevron-forward" size={20} color={colors.success} />
               </TouchableOpacity>
             )}
 
@@ -470,22 +473,22 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                   <Text style={styles.managementOptionDesc}>Get help with billing or account issues</Text>
                 </View>
               </View>
-              <Icon name="chevron-forward" size={20} color={COLORS.textSecondary} />
+              <Icon name="chevron-forward" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
 
             {/* Cancel Subscription */}
             {(status?.subscription_status === 'active' || status?.is_trial) && (
               <TouchableOpacity 
-                style={[styles.managementOption, { borderColor: COLORS.error + '50' }]}
+                style={[styles.managementOption, { borderColor: colors.error + '50' }]}
                 onPress={() => { setShowCancelConfirm(false); handleCancelSubscription(); }}
                 disabled={processing}
               >
                 <View style={styles.managementOptionContent}>
-                  <View style={[styles.managementOptionIcon, { backgroundColor: COLORS.error + '20' }]}>
-                    <Icon name="close-circle-outline" size={20} color={COLORS.error} />
+                  <View style={[styles.managementOptionIcon, { backgroundColor: colors.error + '20' }]}>
+                    <Icon name="close-circle-outline" size={20} color={colors.error} />
                   </View>
                   <View style={styles.managementOptionText}>
-                    <Text style={[styles.managementOptionTitle, { color: COLORS.error }]}>
+                    <Text style={[styles.managementOptionTitle, { color: colors.error }]}>
                       {status?.is_trial ? 'End Trial Early' : 'Cancel Subscription'}
                     </Text>
                     <Text style={styles.managementOptionDesc}>
@@ -496,7 +499,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                     </Text>
                   </View>
                 </View>
-                <Icon name="chevron-forward" size={20} color={COLORS.error} />
+                <Icon name="chevron-forward" size={20} color={colors.error} />
               </TouchableOpacity>
             )}
           </Card>
@@ -504,10 +507,10 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
         {/* Upgrade to Annual Card - For active monthly subscribers */}
         {canUpgradeToAnnual && !showCancelConfirm && (
-          <Card style={[styles.upgradeCard, { borderColor: COLORS.success }]}>
+          <Card style={[styles.upgradeCard, { borderColor: colors.success }]}>
             <View style={styles.upgradeHeader}>
-              <View style={[styles.upgradeBadge, { backgroundColor: COLORS.success }]}>
-                <Icon name="star" size={14} color={COLORS.white} />
+              <View style={[styles.upgradeBadge, { backgroundColor: colors.success }]}>
+                <Icon name="star" size={14} color={colors.white} />
                 <Text style={styles.upgradeBadgeText}>SAVE $72/YEAR</Text>
               </View>
             </View>
@@ -520,10 +523,10 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                 <Text style={styles.upgradeComparisonLabel}>Monthly</Text>
                 <Text style={styles.upgradeComparisonOld}>$348/yr</Text>
               </View>
-              <Icon name="arrow-forward" size={20} color={COLORS.textSecondary} />
+              <Icon name="arrow-forward" size={20} color={colors.textSecondary} />
               <View style={styles.upgradeComparisonItem}>
                 <Text style={styles.upgradeComparisonLabel}>Annual</Text>
-                <Text style={[styles.upgradeComparisonNew, { color: COLORS.success }]}>$276/yr</Text>
+                <Text style={[styles.upgradeComparisonNew, { color: colors.success }]}>$276/yr</Text>
               </View>
             </View>
             <Button
@@ -531,7 +534,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               onPress={handleUpgradeToAnnual}
               loading={processing}
               fullWidth
-              style={{ backgroundColor: COLORS.success }}
+              style={{ backgroundColor: colors.success }}
             />
           </Card>
         )}
@@ -553,7 +556,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                   <Icon name={feature.icon} size={18} color={primaryColor} />
                 </View>
                 <Text style={styles.featureText}>{feature.text}</Text>
-                <Icon name="checkmark" size={18} color={COLORS.success} />
+                <Icon name="checkmark" size={18} color={colors.success} />
               </View>
             ))}
           </Card>
@@ -586,8 +589,8 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                     </View>
                   </View>
                   {plan.savings && (
-                    <View style={[styles.savingsBadge, { backgroundColor: COLORS.success + '20' }]}>
-                      <Text style={[styles.savingsText, { color: COLORS.success }]}>Save {plan.savings}%</Text>
+                    <View style={[styles.savingsBadge, { backgroundColor: colors.success + '20' }]}>
+                      <Text style={[styles.savingsText, { color: colors.success }]}>Save {plan.savings}%</Text>
                     </View>
                   )}
                   {plan.trial_days > 0 && (
@@ -595,7 +598,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                   )}
                   {selectedPlan === plan.id && (
                     <View style={[styles.selectedIndicator, { backgroundColor: primaryColor }]}>
-                      <Icon name="checkmark" size={16} color={COLORS.white} />
+                      <Icon name="checkmark" size={16} color={colors.white} />
                     </View>
                   )}
                 </Card>
@@ -668,7 +671,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               style={[styles.feedbackButton, { backgroundColor: primaryColor }]}
               onPress={() => Linking.openURL('https://truejoybirthing.com/feedback/')}
             >
-              <Icon name="star-outline" size={18} color={COLORS.white} />
+              <Icon name="star-outline" size={18} color={colors.white} />
               <Text style={styles.feedbackButtonText}>Leave Feedback</Text>
             </TouchableOpacity>
           </Card>
@@ -678,10 +681,10 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -692,7 +695,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   header: {
     flexDirection: 'row',
@@ -700,9 +703,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   backButton: {
     padding: SIZES.xs,
@@ -710,7 +713,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -731,7 +734,7 @@ const styles = StyleSheet.create({
   statusTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   statusBadge: {
@@ -747,7 +750,7 @@ const styles = StyleSheet.create({
   statusDetails: {
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     gap: SIZES.sm,
   },
   statusRow: {
@@ -758,7 +761,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   manageButton: {
     flexDirection: 'row',
@@ -767,7 +770,7 @@ const styles = StyleSheet.create({
     marginTop: SIZES.md,
     paddingTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   manageButtonText: {
     fontSize: SIZES.fontMd,
@@ -780,7 +783,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   featuresCard: {
@@ -803,7 +806,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   planCard: {
     marginBottom: SIZES.sm,
@@ -817,12 +820,12 @@ const styles = StyleSheet.create({
   planName: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   planPeriod: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   planPriceContainer: {
     flexDirection: 'row',
@@ -831,12 +834,12 @@ const styles = StyleSheet.create({
   planPrice: {
     fontSize: SIZES.fontXxl || 28,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   planPricePeriod: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   savingsBadge: {
     alignSelf: 'flex-start',
@@ -852,7 +855,7 @@ const styles = StyleSheet.create({
   trialText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.xs,
   },
   selectedIndicator: {
@@ -881,7 +884,7 @@ const styles = StyleSheet.create({
   termsText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textAlign: 'center',
     marginTop: SIZES.md,
     lineHeight: 18,
@@ -893,7 +896,7 @@ const styles = StyleSheet.create({
   supportTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.sm,
   },
   supportButton: {
@@ -907,7 +910,7 @@ const styles = StyleSheet.create({
   },
   // Progress Bar styles
   progressSection: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     padding: SIZES.md,
     borderRadius: SIZES.radiusSm,
     marginVertical: SIZES.sm,
@@ -921,7 +924,7 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   progressDays: {
     fontSize: SIZES.fontMd,
@@ -929,7 +932,7 @@ const styles = StyleSheet.create({
   },
   progressBarBg: {
     height: 8,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -940,7 +943,7 @@ const styles = StyleSheet.create({
   progressSubtext: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: SIZES.xs,
     textAlign: 'right',
   },
@@ -958,12 +961,12 @@ const styles = StyleSheet.create({
   feedbackTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   feedbackDescription: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.md,
     lineHeight: 20,
   },
@@ -978,12 +981,12 @@ const styles = StyleSheet.create({
   feedbackButtonText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.white,
+    color: colors.white,
   },
   // Management Panel styles
   managementPanel: {
     marginBottom: SIZES.md,
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
   },
   managementHeader: {
     flexDirection: 'row',
@@ -992,13 +995,13 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.md,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   managementTitle: {
     flex: 1,
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginLeft: SIZES.sm,
   },
   managementOption: {
@@ -1007,10 +1010,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     marginBottom: SIZES.sm,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   managementOptionContent: {
     flexDirection: 'row',
@@ -1031,19 +1034,19 @@ const styles = StyleSheet.create({
   managementOptionTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 2,
   },
   managementOptionDesc: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   // Upgrade Card styles
   upgradeCard: {
     marginBottom: SIZES.md,
     borderWidth: 2,
-    backgroundColor: COLORS.success + '08',
+    backgroundColor: colors.success + '08',
   },
   upgradeHeader: {
     marginBottom: SIZES.sm,
@@ -1060,18 +1063,18 @@ const styles = StyleSheet.create({
   upgradeBadgeText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.white,
+    color: colors.white,
   },
   upgradeTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   upgradeDescription: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.md,
     lineHeight: 20,
   },
@@ -1079,7 +1082,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     padding: SIZES.md,
     borderRadius: SIZES.radiusSm,
     marginBottom: SIZES.md,
@@ -1091,17 +1094,17 @@ const styles = StyleSheet.create({
   upgradeComparisonLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   upgradeComparisonOld: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textDecorationLine: 'line-through',
   },
   upgradeComparisonNew: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
   },
-});
+}));

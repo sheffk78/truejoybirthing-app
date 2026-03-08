@@ -58,6 +58,8 @@ interface ClientDetailProps {
 
 // ============== MAIN COMPONENT ==============
 export default function ProviderClientDetail({ config }: ClientDetailProps) {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const params = useLocalSearchParams();
   const clientId = params.clientId as string;
@@ -147,7 +149,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.errorContainer}>
-          <Icon name="alert-circle" size={48} color={COLORS.error} />
+          <Icon name="alert-circle" size={48} color={colors.error} />
           <Text style={styles.errorText}>Client not found</Text>
           <Button title="Go Back" onPress={() => router.back()} />
         </View>
@@ -207,18 +209,18 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
           
           <View style={styles.profileDetails}>
             <View style={styles.detailRow}>
-              <Icon name="mail-outline" size={16} color={COLORS.textSecondary} />
+              <Icon name="mail-outline" size={16} color={colors.textSecondary} />
               <Text style={styles.detailText}>{client?.email || 'No email'}</Text>
             </View>
             {client?.phone && (
               <View style={styles.detailRow}>
-                <Icon name="call-outline" size={16} color={COLORS.textSecondary} />
+                <Icon name="call-outline" size={16} color={colors.textSecondary} />
                 <Text style={styles.detailText}>{client.phone}</Text>
               </View>
             )}
             {client?.planned_birth_setting && (
               <View style={styles.detailRow}>
-                <Icon name="location-outline" size={16} color={COLORS.textSecondary} />
+                <Icon name="location-outline" size={16} color={colors.textSecondary} />
                 <Text style={styles.detailText}>{client.planned_birth_setting}</Text>
               </View>
             )}
@@ -243,8 +245,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             onPress={() => router.push({ pathname: config.routes.invoices as any, params: { clientId, clientName: client?.name || clientName } })}
             data-testid="action-invoice"
           >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.success + '15' }]}>
-              <Icon name="cash-outline" size={20} color={COLORS.success} />
+            <View style={[styles.actionIcon, { backgroundColor: colors.success + '15' }]}>
+              <Icon name="cash-outline" size={20} color={colors.success} />
             </View>
             <Text style={styles.actionLabel}>Invoice</Text>
           </TouchableOpacity>
@@ -254,8 +256,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             onPress={() => router.push({ pathname: config.routes.appointments as any, params: { clientId, clientName: client?.name || clientName } })}
             data-testid="action-schedule"
           >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '15' }]}>
-              <Icon name="calendar-outline" size={20} color={COLORS.warning} />
+            <View style={[styles.actionIcon, { backgroundColor: colors.warning + '15' }]}>
+              <Icon name="calendar-outline" size={20} color={colors.warning} />
             </View>
             <Text style={styles.actionLabel}>Schedule</Text>
           </TouchableOpacity>
@@ -265,8 +267,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             onPress={() => router.push({ pathname: config.routes.notes as any, params: { clientId, clientName: client?.name || clientName } })}
             data-testid="action-notes"
           >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.primary + '15' }]}>
-              <Icon name="create-outline" size={20} color={COLORS.primary} />
+            <View style={[styles.actionIcon, { backgroundColor: colors.primary + '15' }]}>
+              <Icon name="create-outline" size={20} color={colors.primary} />
             </View>
             <Text style={styles.actionLabel}>Notes</Text>
           </TouchableOpacity>
@@ -294,8 +296,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             }}
             data-testid="action-birthplan"
           >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.roleDoula + '15' }]}>
-              <Icon name="heart-outline" size={20} color={COLORS.roleDoula} />
+            <View style={[styles.actionIcon, { backgroundColor: colors.roleDoula + '15' }]}>
+              <Icon name="heart-outline" size={20} color={colors.roleDoula} />
             </View>
             <Text style={styles.actionLabel}>Birth Plan</Text>
           </TouchableOpacity>
@@ -322,8 +324,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             }}
             data-testid="action-messages"
           >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.accent + '15' }]}>
-              <Icon name="chatbubbles-outline" size={20} color={COLORS.accent} />
+            <View style={[styles.actionIcon, { backgroundColor: colors.accent + '15' }]}>
+              <Icon name="chatbubbles-outline" size={20} color={colors.accent} />
             </View>
             <Text style={styles.actionLabel}>Messages</Text>
           </TouchableOpacity>
@@ -337,8 +339,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               }}
               data-testid="action-visit"
             >
-              <View style={[styles.actionIcon, { backgroundColor: COLORS.roleMidwife + '15' }]}>
-                <Icon name="clipboard-outline" size={20} color={COLORS.roleMidwife} />
+              <View style={[styles.actionIcon, { backgroundColor: colors.roleMidwife + '15' }]}>
+                <Icon name="clipboard-outline" size={20} color={colors.roleMidwife} />
               </View>
               <Text style={styles.actionLabel}>Prenatal</Text>
             </TouchableOpacity>
@@ -353,8 +355,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               }}
               data-testid="action-birth"
             >
-              <View style={[styles.actionIcon, { backgroundColor: COLORS.primary + '15' }]}>
-                <Icon name="heart-outline" size={20} color={COLORS.primary} />
+              <View style={[styles.actionIcon, { backgroundColor: colors.primary + '15' }]}>
+                <Icon name="heart-outline" size={20} color={colors.primary} />
               </View>
               <Text style={styles.actionLabel}>Birth Record</Text>
             </TouchableOpacity>
@@ -376,8 +378,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               }}
               data-testid="action-labor"
             >
-              <View style={[styles.actionIcon, { backgroundColor: COLORS.warning + '15' }]}>
-                <Icon name="pulse-outline" size={20} color={COLORS.warning} />
+              <View style={[styles.actionIcon, { backgroundColor: colors.warning + '15' }]}>
+                <Icon name="pulse-outline" size={20} color={colors.warning} />
               </View>
               <Text style={styles.actionLabel}>Labor Log</Text>
             </TouchableOpacity>
@@ -390,8 +392,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               }}
               data-testid="action-newborn-exam"
             >
-              <View style={[styles.actionIcon, { backgroundColor: COLORS.secondary + '15' }]}>
-                <Icon name="clipboard-outline" size={20} color={COLORS.secondary} />
+              <View style={[styles.actionIcon, { backgroundColor: colors.secondary + '15' }]}>
+                <Icon name="clipboard-outline" size={20} color={colors.secondary} />
               </View>
               <Text style={styles.actionLabel}>Newborn Exam</Text>
             </TouchableOpacity>
@@ -442,10 +444,10 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
 
 // ============== STYLES ==============
 // Note: Modal, form, and detail styles moved to PrenatalVisitSection component
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -460,14 +462,14 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: SIZES.fontLg,
-    color: COLORS.error,
+    color: colors.error,
   },
   breadcrumbHeader: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   breadcrumb: {
     flexDirection: 'row',
@@ -483,12 +485,12 @@ const styles = StyleSheet.create({
   breadcrumbSeparator: {
     marginHorizontal: SIZES.xs,
     fontSize: SIZES.fontMd,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   breadcrumbCurrent: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -519,7 +521,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: SIZES.fontXl,
     fontFamily: FONTS.heading,
-    color: COLORS.white,
+    color: colors.white,
   },
   profileInfo: {
     flex: 1,
@@ -527,7 +529,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   statusRow: {
@@ -548,7 +550,7 @@ const styles = StyleSheet.create({
   eddText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   daysUntilText: {
     fontSize: SIZES.fontXs,
@@ -560,7 +562,7 @@ const styles = StyleSheet.create({
     marginTop: SIZES.md,
     paddingTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   detailRow: {
     flexDirection: 'row',
@@ -570,13 +572,13 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginLeft: SIZES.sm,
   },
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.sm,
@@ -598,6 +600,6 @@ const styles = StyleSheet.create({
   actionLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
-});
+}));

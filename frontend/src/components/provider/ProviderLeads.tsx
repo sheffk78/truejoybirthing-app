@@ -501,7 +501,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
                   onPress={() => handleMarkNotAFit(lead)}
                 >
                   <Icon name="close-circle-outline" size={16} color={colors.textLight} />
-                  <Text style={[styles.actionButtonText, { color: COLORS.textLight }]}>Not a Fit</Text>
+                  <Text style={[styles.actionButtonText, { color: colors.textLight }]}>Not a Fit</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -543,7 +543,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
           style={[styles.filterTab, statusFilter === 'active' && { backgroundColor: primaryColor }]}
           onPress={() => setStatusFilter('active')}
         >
-          <Text style={[styles.filterTabText, statusFilter === 'active' && { color: COLORS.white }]}>
+          <Text style={[styles.filterTabText, statusFilter === 'active' && { color: colors.white }]}>
             Open ({stats?.active_leads || 0})
           </Text>
         </TouchableOpacity>
@@ -551,7 +551,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
           style={[styles.filterTab, statusFilter === 'converted' && { backgroundColor: primaryColor }]}
           onPress={() => setStatusFilter('converted')}
         >
-          <Text style={[styles.filterTabText, statusFilter === 'converted' && { color: COLORS.white }]}>
+          <Text style={[styles.filterTabText, statusFilter === 'converted' && { color: colors.white }]}>
             Converted ({stats?.converted_to_client || 0})
           </Text>
         </TouchableOpacity>
@@ -559,7 +559,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
           style={[styles.filterTab, statusFilter === 'closed' && { backgroundColor: primaryColor }]}
           onPress={() => setStatusFilter('closed')}
         >
-          <Text style={[styles.filterTabText, statusFilter === 'closed' && { color: COLORS.white }]}>
+          <Text style={[styles.filterTabText, statusFilter === 'closed' && { color: colors.white }]}>
             Closed
           </Text>
         </TouchableOpacity>

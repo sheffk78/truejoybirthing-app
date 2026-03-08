@@ -20,7 +20,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest, getApiBaseUrl } from '../../utils/api';
-import { COLORS, SIZES, FONTS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { useAuthStore } from '../../store/authStore';
 
 // ============== TYPES ==============
@@ -138,6 +139,8 @@ const TRANSFER_WHO_OPTIONS = [
 
 // ============== MAIN COMPONENT ==============
 export default function BirthRecordSection({ clientId, primaryColor, onRefresh }: BirthRecordSectionProps) {
+  const colors = useColors();
+  const styles = getStyles(colors);
   // State
   const [birthRecord, setBirthRecord] = useState<BirthRecord | null>(null);
   const [loading, setLoading] = useState(true);
@@ -465,7 +468,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               onPress={openReportPreview}
               data-testid="download-birth-report-btn"
             >
-              <Icon name="document-text-outline" size={18} color={COLORS.white} />
+              <Icon name="document-text-outline" size={18} color={colors.white} />
               <Text style={styles.downloadButtonText}>Report</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -485,7 +488,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
       ) : !birthRecord ? (
         // Empty state - No birth record yet
         <Card style={styles.emptyCard}>
-          <Icon name="heart-outline" size={48} color={COLORS.textLight} />
+          <Icon name="heart-outline" size={48} color={colors.textLight} />
           <Text style={styles.emptyTitle}>No Birth Record Yet</Text>
           <Text style={styles.emptyText}>
             Create a birth record to document the birth outcomes for this client.
@@ -521,9 +524,9 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
           <Card style={styles.summaryCard}>
             <Text style={styles.cardTitle}>Newborn</Text>
             {birthRecord.baby_name && (
-              <View style={[styles.highlightRow, { backgroundColor: COLORS.success + '15' }]}>
-                <Icon name="person" size={18} color={COLORS.success} />
-                <Text style={[styles.highlightText, { color: COLORS.success }]}>
+              <View style={[styles.highlightRow, { backgroundColor: colors.success + '15' }]}>
+                <Icon name="person" size={18} color={colors.success} />
+                <Text style={[styles.highlightText, { color: colors.success }]}>
                   {birthRecord.baby_name}
                 </Text>
               </View>
@@ -577,11 +580,11 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <View style={styles.statusRow}>
                 <View style={[
                   styles.statusBadge, 
-                  { backgroundColor: birthRecord.maternal_status === 'stable' ? COLORS.success + '20' : COLORS.warning + '20' }
+                  { backgroundColor: birthRecord.maternal_status === 'stable' ? colors.success + '20' : colors.warning + '20' }
                 ]}>
                   <Text style={[
                     styles.statusBadgeText,
-                    { color: birthRecord.maternal_status === 'stable' ? COLORS.success : COLORS.warning }
+                    { color: birthRecord.maternal_status === 'stable' ? colors.success : colors.warning }
                   ]}>
                     Mom: {getLabel(MATERNAL_STATUS_OPTIONS, birthRecord.maternal_status)}
                   </Text>
@@ -593,8 +596,8 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
             )}
             {birthRecord.baby_status && (
               <View style={[styles.statusRow, { marginTop: SIZES.sm }]}>
-                <View style={[styles.statusBadge, { backgroundColor: COLORS.primary + '20' }]}>
-                  <Text style={[styles.statusBadgeText, { color: COLORS.primary }]}>
+                <View style={[styles.statusBadge, { backgroundColor: colors.primary + '20' }]}>
+                  <Text style={[styles.statusBadgeText, { color: colors.primary }]}>
                     Baby: {getLabel(BABY_STATUS_OPTIONS, birthRecord.baby_status)}
                   </Text>
                 </View>
@@ -607,10 +610,10 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
 
           {/* Transfer of Care */}
           {birthRecord.transfer_occurred && (
-            <Card style={[styles.summaryCard, { borderColor: COLORS.warning, borderWidth: 1 }]}>
+            <Card style={[styles.summaryCard, { borderColor: colors.warning, borderWidth: 1 }]}>
               <View style={styles.transferHeader}>
-                <Icon name="ambulance-outline" size={20} color={COLORS.warning} />
-                <Text style={[styles.cardTitle, { color: COLORS.warning, marginLeft: SIZES.xs }]}>
+                <Icon name="ambulance-outline" size={20} color={colors.warning} />
+                <Text style={[styles.cardTitle, { color: colors.warning, marginLeft: SIZES.xs }]}>
                   Transfer of Care
                 </Text>
               </View>
@@ -645,7 +648,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowModal(false)}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {birthRecord ? 'Edit Birth Record' : 'Create Birth Record'}
@@ -662,7 +665,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 2024-03-15 08:30"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={fullDilationDatetime}
                 onChangeText={setFullDilationDatetime}
               />
@@ -671,7 +674,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 2024-03-15 10:00"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={pushingStartDatetime}
                 onChangeText={setPushingStartDatetime}
               />
@@ -680,7 +683,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 2024-03-15 11:23"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={birthDatetime}
                 onChangeText={setBirthDatetime}
               />
@@ -705,7 +708,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={styles.input}
                 placeholder="Enter baby's name"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={babyName}
                 onChangeText={setBabyName}
               />
@@ -719,7 +722,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={styles.input}
                     placeholder="e.g., 7"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     value={babyWeightLbs}
                     onChangeText={setBabyWeightLbs}
                     keyboardType="decimal-pad"
@@ -730,7 +733,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={styles.input}
                     placeholder="e.g., 8"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     value={babyWeightOz}
                     onChangeText={setBabyWeightOz}
                     keyboardType="decimal-pad"
@@ -742,7 +745,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 20.5"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={babyLengthInches}
                 onChangeText={setBabyLengthInches}
                 keyboardType="decimal-pad"
@@ -760,7 +763,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Additional notes about newborn condition..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={newbornConditionNotes}
                 onChangeText={setNewbornConditionNotes}
                 multiline
@@ -773,7 +776,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={styles.input}
                     placeholder="0-10"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     value={apgar1min}
                     onChangeText={setApgar1min}
                     keyboardType="number-pad"
@@ -784,7 +787,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={styles.input}
                     placeholder="0-10"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     value={apgar5min}
                     onChangeText={setApgar5min}
                     keyboardType="number-pad"
@@ -801,7 +804,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 300"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={estimatedBloodLoss}
                 onChangeText={setEstimatedBloodLoss}
                 keyboardType="number-pad"
@@ -816,7 +819,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={[styles.input, styles.textArea]}
                     placeholder="Describe repairs performed..."
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     value={repairsNotes}
                     onChangeText={setRepairsNotes}
                     multiline
@@ -837,7 +840,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Notes about mother's status..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={maternalStatusNotes}
                 onChangeText={setMaternalStatusNotes}
                 multiline
@@ -851,7 +854,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Notes about baby's status..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={babyStatusNotes}
                 onChangeText={setBabyStatusNotes}
                 multiline
@@ -871,7 +874,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                   styles.toggleBox,
                   transferOccurred && { backgroundColor: primaryColor, borderColor: primaryColor }
                 ]}>
-                  {transferOccurred && <Icon name="checkmark" size={16} color={COLORS.white} />}
+                  {transferOccurred && <Icon name="checkmark" size={16} color={colors.white} />}
                 </View>
                 <Text style={styles.toggleLabel}>Transfer occurred during birth or postpartum</Text>
               </TouchableOpacity>
@@ -885,7 +888,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={styles.input}
                     placeholder="e.g., City Hospital"
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     value={transferDestination}
                     onChangeText={setTransferDestination}
                   />
@@ -894,7 +897,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={[styles.input, styles.textArea]}
                     placeholder="Explain the reason for transfer..."
-                    placeholderTextColor={COLORS.textLight}
+                    placeholderTextColor={colors.textLight}
                     value={transferReason}
                     onChangeText={setTransferReason}
                     multiline
@@ -911,7 +914,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <TextInput
                 style={[styles.input, styles.textAreaLarge]}
                 placeholder="Document the birth story, special moments, or any additional notes..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 value={birthStoryNotes}
                 onChangeText={setBirthStoryNotes}
                 multiline
@@ -964,21 +967,21 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <View style={styles.previewSection}>
                 <Text style={styles.previewSectionTitle}>Birth Details</Text>
                 <View style={styles.previewRow}>
-                  <Icon name="time-outline" size={16} color={COLORS.textSecondary} />
+                  <Icon name="time-outline" size={16} color={colors.textSecondary} />
                   <Text style={styles.previewLabel}>Born:</Text>
                   <Text style={styles.previewValue}>
                     {formatDateTimeDisplay(birthRecord?.birth_datetime) || 'Not recorded'}
                   </Text>
                 </View>
                 <View style={styles.previewRow}>
-                  <Icon name="home-outline" size={16} color={COLORS.textSecondary} />
+                  <Icon name="home-outline" size={16} color={colors.textSecondary} />
                   <Text style={styles.previewLabel}>Place:</Text>
                   <Text style={styles.previewValue}>
                     {getPlaceOfBirthLabel(birthRecord?.place_of_birth) || 'Not recorded'}
                   </Text>
                 </View>
                 <View style={styles.previewRow}>
-                  <Icon name="heart-outline" size={16} color={COLORS.textSecondary} />
+                  <Icon name="heart-outline" size={16} color={colors.textSecondary} />
                   <Text style={styles.previewLabel}>Mode:</Text>
                   <Text style={styles.previewValue}>
                     {getModeOfBirthLabel(birthRecord?.mode_of_birth) || 'Not recorded'}
@@ -1037,28 +1040,28 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
               <View style={styles.previewSection}>
                 <Text style={styles.previewSectionTitle}>Status</Text>
                 <View style={styles.previewRow}>
-                  <Icon name="woman-outline" size={16} color={COLORS.textSecondary} />
+                  <Icon name="woman-outline" size={16} color={colors.textSecondary} />
                   <Text style={styles.previewLabel}>Mother:</Text>
                   <View style={[
                     styles.previewStatusBadge,
-                    { backgroundColor: birthRecord?.maternal_status === 'stable' ? COLORS.success + '20' : COLORS.warning + '20' }
+                    { backgroundColor: birthRecord?.maternal_status === 'stable' ? colors.success + '20' : colors.warning + '20' }
                   ]}>
                     <Text style={[
                       styles.previewStatusText,
-                      { color: birthRecord?.maternal_status === 'stable' ? COLORS.success : COLORS.warning }
+                      { color: birthRecord?.maternal_status === 'stable' ? colors.success : colors.warning }
                     ]}>
                       {birthRecord?.maternal_status?.charAt(0).toUpperCase() + birthRecord?.maternal_status?.slice(1) || 'Unknown'}
                     </Text>
                   </View>
                 </View>
                 <View style={styles.previewRow}>
-                  <Icon name="happy-outline" size={16} color={COLORS.textSecondary} />
+                  <Icon name="happy-outline" size={16} color={colors.textSecondary} />
                   <Text style={styles.previewLabel}>Baby:</Text>
                   <View style={[
                     styles.previewStatusBadge,
-                    { backgroundColor: COLORS.success + '20' }
+                    { backgroundColor: colors.success + '20' }
                   ]}>
-                    <Text style={[styles.previewStatusText, { color: COLORS.success }]}>
+                    <Text style={[styles.previewStatusText, { color: colors.success }]}>
                       {birthRecord?.baby_status?.replace(/_/g, ' ')?.charAt(0).toUpperCase() + 
                        birthRecord?.baby_status?.replace(/_/g, ' ')?.slice(1) || 'Unknown'}
                     </Text>
@@ -1084,10 +1087,10 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                 disabled={downloading}
               >
                 {downloading ? (
-                  <ActivityIndicator size="small" color={COLORS.white} />
+                  <ActivityIndicator size="small" color={colors.white} />
                 ) : (
                   <>
-                    <Icon name="download-outline" size={20} color={COLORS.white} />
+                    <Icon name="download-outline" size={20} color={colors.white} />
                     <Text style={styles.previewDownloadText}>Download PDF</Text>
                   </>
                 )}
@@ -1101,7 +1104,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
 }
 
 // ============== STYLES ==============
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   section: {
     marginTop: SIZES.md,
     marginBottom: SIZES.lg,
@@ -1119,7 +1122,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginLeft: SIZES.sm,
   },
   headerButtons: {
@@ -1137,7 +1140,7 @@ const styles = StyleSheet.create({
   downloadButtonText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.white,
+    color: colors.white,
     marginLeft: 4,
   },
   editButton: {
@@ -1160,13 +1163,13 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -1180,7 +1183,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   highlightRow: {
@@ -1203,17 +1206,17 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   infoValue: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   noteText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     fontStyle: 'italic',
     marginTop: SIZES.xs,
   },
@@ -1226,20 +1229,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: SIZES.sm,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   apgarLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   apgarValue: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   statusRow: {
     flexDirection: 'row',
@@ -1264,27 +1267,27 @@ const styles = StyleSheet.create({
   storyText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 22,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalContent: {
     flex: 1,
@@ -1292,9 +1295,9 @@ const styles = StyleSheet.create({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   // Form styles
   formSection: {
@@ -1303,25 +1306,25 @@ const styles = StyleSheet.create({
   formSectionTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.xs,
     marginTop: SIZES.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
-    backgroundColor: COLORS.white,
+    color: colors.text,
+    backgroundColor: colors.white,
   },
   textArea: {
     minHeight: 70,
@@ -1348,20 +1351,20 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderColor: colors.border,
+    backgroundColor: colors.white,
     marginBottom: SIZES.xs,
   },
   optionButtonSelected: {
-    borderColor: COLORS.primary,
+    borderColor: colors.primary,
   },
   optionButtonText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   optionButtonTextSelected: {
-    color: COLORS.white,
+    color: colors.white,
     fontFamily: FONTS.bodyMedium,
   },
   toggleRow: {
@@ -1374,7 +1377,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.sm,
@@ -1382,7 +1385,7 @@ const styles = StyleSheet.create({
   toggleLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     flex: 1,
   },
   // Preview Modal Styles
@@ -1394,7 +1397,7 @@ const styles = StyleSheet.create({
     padding: SIZES.md,
   },
   previewContainer: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusLg,
     width: '100%',
     maxWidth: 420,
@@ -1407,20 +1410,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
     gap: SIZES.sm,
   },
   previewTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   previewContent: {
     padding: SIZES.md,
     maxHeight: 400,
   },
   previewCard: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     marginBottom: SIZES.md,
@@ -1429,7 +1432,7 @@ const styles = StyleSheet.create({
   previewCardTitle: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: SIZES.xs,
@@ -1437,12 +1440,12 @@ const styles = StyleSheet.create({
   previewBabyName: {
     fontSize: SIZES.fontXl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   previewSubtext: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   previewSection: {
@@ -1451,7 +1454,7 @@ const styles = StyleSheet.create({
   previewSectionTitle: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   previewRow: {
@@ -1463,13 +1466,13 @@ const styles = StyleSheet.create({
   previewLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginLeft: SIZES.xs,
   },
   previewValue: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
     flex: 1,
     textAlign: 'right',
   },
@@ -1482,20 +1485,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: SIZES.md,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
   },
   previewStatValue: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.xs,
   },
   previewStatLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: 2,
   },
   previewApgarBox: {
@@ -1511,7 +1514,7 @@ const styles = StyleSheet.create({
   previewApgarLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   previewStatusBadge: {
@@ -1528,7 +1531,7 @@ const styles = StyleSheet.create({
   previewNote: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: SIZES.sm,
@@ -1538,7 +1541,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     gap: SIZES.sm,
   },
   previewCancelButton: {
@@ -1547,12 +1550,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   previewCancelText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   previewDownloadButton: {
     flex: 2,
@@ -1566,6 +1569,6 @@ const styles = StyleSheet.create({
   previewDownloadText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.white,
+    color: colors.white,
   },
-});
+}));
