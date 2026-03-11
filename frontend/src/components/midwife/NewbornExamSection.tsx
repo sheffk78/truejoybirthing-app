@@ -186,7 +186,7 @@ const BREATHING_OPTIONS = [
   { value: 'distress', label: 'Distress' },
 ];
 
-const EXAM_STATUS_OPTIONS = [
+const getExamStatusOptions = (colors: ThemeColors) => [
   { value: 'normal', label: 'Normal', color: colors.success },
   { value: 'abnormal', label: 'Abnormal', color: colors.error },
   { value: 'not_assessed', label: 'N/A', color: colors.textLight },
@@ -221,7 +221,7 @@ const FEEDING_QUALITY_OPTIONS = [
   { value: 'major_concerns', label: 'Major Concerns' },
 ];
 
-const ASSESSMENT_OPTIONS = [
+const getAssessmentOptions = (colors: ThemeColors) => [
   { value: 'healthy', label: 'Healthy Newborn', color: colors.success },
   { value: 'routine_followup', label: 'Routine Follow-up Needed', color: colors.warning },
   { value: 'urgent_followup', label: 'Urgent Follow-up Needed', color: colors.error },
@@ -242,6 +242,11 @@ const EDUCATION_OPTIONS = [
 export default function NewbornExamSection({ clientId, primaryColor, onRefresh }: NewbornExamSectionProps) {
   const colors = useColors();
   const styles = getStyles(colors);
+  
+  // Get color-dependent options
+  const EXAM_STATUS_OPTIONS = getExamStatusOptions(colors);
+  const ASSESSMENT_OPTIONS = getAssessmentOptions(colors);
+  
   // State
   const [exams, setExams] = useState<NewbornExam[]>([]);
   const [loading, setLoading] = useState(true);

@@ -20,7 +20,8 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface Milestone {
   week: number;
@@ -40,6 +41,8 @@ interface CustomEvent {
 }
 
 export default function TimelineScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const [timeline, setTimeline] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -140,7 +143,7 @@ export default function TimelineScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -164,7 +167,7 @@ export default function TimelineScreen() {
           onPress={() => router.push('/(mom)/appointments')} 
           data-testid="schedule-btn"
         >
-          <Icon name="calendar" size={20} color={COLORS.white} />
+          <Icon name="calendar" size={20} color={colors.white} />
           <Text style={styles.addButtonText}>Schedule with Provider</Text>
         </TouchableOpacity>
 
@@ -175,11 +178,11 @@ export default function TimelineScreen() {
             {timeline.custom_events.map((event: CustomEvent) => (
               <Card key={event.event_id} style={styles.eventCard}>
                 <View style={styles.eventRow}>
-                  <View style={[styles.eventIcon, { backgroundColor: COLORS.primary + '20' }]}>
+                  <View style={[styles.eventIcon, { backgroundColor: colors.primary + '20' }]}>
                     <Icon 
                       name={event.event_type === 'appointment' ? 'calendar' : 'bookmark'} 
                       size={18} 
-                      color={COLORS.primary} 
+                      color={colors.primary} 
                     />
                   </View>
                   <View style={styles.eventInfo}>
@@ -190,7 +193,7 @@ export default function TimelineScreen() {
                     )}
                   </View>
                   <TouchableOpacity onPress={() => deleteEvent(event.event_id)}>
-                    <Icon name="trash" size={18} color={COLORS.error} />
+                    <Icon name="trash" size={18} color={colors.error} />
                   </TouchableOpacity>
                 </View>
               </Card>
@@ -211,7 +214,7 @@ export default function TimelineScreen() {
                     milestone.is_past && styles.timelineDotPast,
                   ]}>
                     {milestone.is_current && (
-                      <Icon name="heart" size={12} color={COLORS.white} />
+                      <Icon name="heart" size={12} color={colors.white} />
                     )}
                   </View>
                   {index < (timeline?.milestones?.length || 0) - 1 && (
@@ -254,7 +257,7 @@ export default function TimelineScreen() {
                 value={newEvent.title}
                 onChangeText={(text) => setNewEvent({ ...newEvent, title: text })}
                 placeholder="e.g., Prenatal Checkup"
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 data-testid="event-title-input"
               />
               
@@ -264,11 +267,11 @@ export default function TimelineScreen() {
                 onPress={() => setShowDatePicker(true)}
                 data-testid="event-date-picker-btn"
               >
-                <Icon name="calendar" size={20} color={COLORS.primary} />
+                <Icon name="calendar" size={20} color={colors.primary} />
                 <Text style={[styles.dateButtonText, !newEvent.event_date && styles.dateButtonPlaceholder]}>
                   {newEvent.event_date ? formatDisplayDate(newEvent.event_date) : 'Select appointment date'}
                 </Text>
-                <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
+                <Icon name="chevron-down" size={20} color={colors.textSecondary} />
               </TouchableOpacity>
               
               <Text style={styles.inputLabel}>Description</Text>
@@ -277,7 +280,7 @@ export default function TimelineScreen() {
                 value={newEvent.description}
                 onChangeText={(text) => setNewEvent({ ...newEvent, description: text })}
                 placeholder="Optional notes..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 multiline
                 numberOfLines={3}
               />
@@ -312,7 +315,7 @@ export default function TimelineScreen() {
                 <View style={styles.dateModalHeader}>
                   <Text style={styles.dateModalTitle}>Select Date</Text>
                   <TouchableOpacity onPress={() => setShowDatePicker(false)}>
-                    <Icon name="close" size={24} color={COLORS.textPrimary} />
+                    <Icon name="close" size={24} color={colors.text} />
                   </TouchableOpacity>
                 </View>
                 <View style={styles.webCalendarWrapper}>
@@ -329,7 +332,7 @@ export default function TimelineScreen() {
                       width: '100%',
                       padding: 16,
                       fontSize: 18,
-                      border: `2px solid ${COLORS.primary}`,
+                      border: `2px solid ${colors.primary}`,
                       borderRadius: 12,
                       outline: 'none',
                       cursor: 'pointer',
@@ -358,77 +361,77 @@ export default function TimelineScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1, backgroundColor: colors.background },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SIZES.xs },
-  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: COLORS.textPrimary },
-  weekBadge: { backgroundColor: COLORS.primary, paddingHorizontal: SIZES.md, paddingVertical: SIZES.xs, borderRadius: SIZES.radiusFull },
-  weekBadgeText: { color: COLORS.white, fontWeight: '600', fontSize: SIZES.fontSm },
-  dueDate: { fontSize: SIZES.fontMd, color: COLORS.textSecondary, marginBottom: SIZES.lg },
-  addButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.primary, padding: SIZES.md, borderRadius: SIZES.radiusMd, marginBottom: SIZES.lg, gap: SIZES.xs },
-  addButtonText: { color: COLORS.white, fontWeight: '600', fontSize: SIZES.fontMd },
+  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: colors.text },
+  weekBadge: { backgroundColor: colors.primary, paddingHorizontal: SIZES.md, paddingVertical: SIZES.xs, borderRadius: SIZES.radiusFull },
+  weekBadgeText: { color: colors.white, fontWeight: '600', fontSize: SIZES.fontSm },
+  dueDate: { fontSize: SIZES.fontMd, color: colors.textSecondary, marginBottom: SIZES.lg },
+  addButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, padding: SIZES.md, borderRadius: SIZES.radiusMd, marginBottom: SIZES.lg, gap: SIZES.xs },
+  addButtonText: { color: colors.white, fontWeight: '600', fontSize: SIZES.fontMd },
   section: { marginBottom: SIZES.lg },
-  sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary, marginBottom: SIZES.md },
+  sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text, marginBottom: SIZES.md },
   eventCard: { marginBottom: SIZES.sm },
   eventRow: { flexDirection: 'row', alignItems: 'flex-start' },
   eventIcon: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.md },
   eventInfo: { flex: 1 },
-  eventTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: COLORS.textPrimary },
-  eventDate: { fontSize: SIZES.fontSm, color: COLORS.primary },
-  eventDesc: { fontSize: SIZES.fontSm, color: COLORS.textSecondary, marginTop: 2 },
+  eventTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text },
+  eventDate: { fontSize: SIZES.fontSm, color: colors.primary },
+  eventDesc: { fontSize: SIZES.fontSm, color: colors.textSecondary, marginTop: 2 },
   timelineContainer: { marginLeft: SIZES.md },
   milestoneRow: { flexDirection: 'row', minHeight: 100 },
   timelineLeft: { width: 30, alignItems: 'center' },
-  timelineDot: { width: 16, height: 16, borderRadius: 8, backgroundColor: COLORS.border, alignItems: 'center', justifyContent: 'center', zIndex: 1 },
-  timelineDotCurrent: { backgroundColor: COLORS.primary, width: 24, height: 24, borderRadius: 12 },
-  timelineDotPast: { backgroundColor: COLORS.success },
-  timelineLine: { flex: 1, width: 2, backgroundColor: COLORS.border },
-  timelineLinePast: { backgroundColor: COLORS.success },
+  timelineDot: { width: 16, height: 16, borderRadius: 8, backgroundColor: colors.border, alignItems: 'center', justifyContent: 'center', zIndex: 1 },
+  timelineDotCurrent: { backgroundColor: colors.primary, width: 24, height: 24, borderRadius: 12 },
+  timelineDotPast: { backgroundColor: colors.success },
+  timelineLine: { flex: 1, width: 2, backgroundColor: colors.border },
+  timelineLinePast: { backgroundColor: colors.success },
   milestoneCard: { flex: 1, marginLeft: SIZES.sm, marginBottom: SIZES.md },
-  milestoneCardCurrent: { borderWidth: 2, borderColor: COLORS.primary },
+  milestoneCardCurrent: { borderWidth: 2, borderColor: colors.primary },
   milestoneHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: SIZES.xs },
-  milestoneWeek: { fontSize: SIZES.fontSm, fontWeight: '600', color: COLORS.primary },
-  milestoneDate: { fontSize: SIZES.fontSm, color: COLORS.textLight },
-  milestoneTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 4 },
-  milestoneDesc: { fontSize: SIZES.fontSm, color: COLORS.textSecondary },
+  milestoneWeek: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.primary },
+  milestoneDate: { fontSize: SIZES.fontSm, color: colors.textLight },
+  milestoneTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text, marginBottom: 4 },
+  milestoneDesc: { fontSize: SIZES.fontSm, color: colors.textSecondary },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: COLORS.white, borderTopLeftRadius: SIZES.radiusLg, borderTopRightRadius: SIZES.radiusLg, padding: SIZES.lg, paddingBottom: SIZES.xxl, maxHeight: '80%' },
+  modalContent: { backgroundColor: colors.white, borderTopLeftRadius: SIZES.radiusLg, borderTopRightRadius: SIZES.radiusLg, padding: SIZES.lg, paddingBottom: SIZES.xxl, maxHeight: '80%' },
   modalScroll: { maxHeight: 350 },
-  modalTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary, marginBottom: SIZES.lg, textAlign: 'center' },
-  inputLabel: { fontSize: SIZES.fontSm, fontWeight: '600', color: COLORS.textSecondary, marginBottom: SIZES.xs },
-  input: { backgroundColor: COLORS.background, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, color: COLORS.textPrimary, marginBottom: SIZES.md, borderWidth: 1, borderColor: COLORS.border },
-  datePickerWrapper: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.background, borderRadius: SIZES.radiusMd, padding: SIZES.md, marginBottom: SIZES.md, borderWidth: 1, borderColor: COLORS.border },
+  modalTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text, marginBottom: SIZES.lg, textAlign: 'center' },
+  inputLabel: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.textSecondary, marginBottom: SIZES.xs },
+  input: { backgroundColor: colors.background, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, color: colors.text, marginBottom: SIZES.md, borderWidth: 1, borderColor: colors.border },
+  datePickerWrapper: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.background, borderRadius: SIZES.radiusMd, padding: SIZES.md, marginBottom: SIZES.md, borderWidth: 1, borderColor: colors.border },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
   typeButtons: { flexDirection: 'row', gap: SIZES.sm, marginBottom: SIZES.lg },
-  typeButton: { flex: 1, padding: SIZES.sm, borderRadius: SIZES.radiusMd, borderWidth: 1, borderColor: COLORS.border, alignItems: 'center' },
-  typeButtonActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
-  typeButtonText: { color: COLORS.textSecondary, fontWeight: '600' },
-  typeButtonTextActive: { color: COLORS.white },
+  typeButton: { flex: 1, padding: SIZES.sm, borderRadius: SIZES.radiusMd, borderWidth: 1, borderColor: colors.border, alignItems: 'center' },
+  typeButtonActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  typeButtonText: { color: colors.textSecondary, fontWeight: '600' },
+  typeButtonTextActive: { color: colors.white },
   modalActions: { flexDirection: 'row', gap: SIZES.md },
-  cancelBtn: { flex: 1, padding: SIZES.md, borderRadius: SIZES.radiusMd, backgroundColor: COLORS.border, alignItems: 'center' },
-  cancelBtnText: { color: COLORS.textSecondary, fontWeight: '600' },
-  saveBtn: { flex: 1, padding: SIZES.md, borderRadius: SIZES.radiusMd, backgroundColor: COLORS.primary, alignItems: 'center' },
-  saveBtnText: { color: COLORS.white, fontWeight: '600' },
+  cancelBtn: { flex: 1, padding: SIZES.md, borderRadius: SIZES.radiusMd, backgroundColor: colors.border, alignItems: 'center' },
+  cancelBtnText: { color: colors.textSecondary, fontWeight: '600' },
+  saveBtn: { flex: 1, padding: SIZES.md, borderRadius: SIZES.radiusMd, backgroundColor: colors.primary, alignItems: 'center' },
+  saveBtnText: { color: colors.white, fontWeight: '600' },
   datePickerButton: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: COLORS.background, 
+    backgroundColor: colors.background, 
     borderRadius: SIZES.radiusMd, 
     padding: SIZES.md, 
     marginBottom: SIZES.md, 
     borderWidth: 1, 
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     minHeight: 52,
   },
   dateButtonText: { 
     flex: 1, 
     fontSize: SIZES.fontMd, 
-    color: COLORS.textPrimary, 
+    color: colors.text, 
     marginLeft: SIZES.sm 
   },
   dateButtonPlaceholder: { 
-    color: COLORS.textLight 
+    color: colors.textLight 
   },
   dateModalOverlay: { 
     flex: 1, 
@@ -438,7 +441,7 @@ const styles = StyleSheet.create({
     padding: SIZES.lg 
   },
   dateModalContent: { 
-    backgroundColor: COLORS.white, 
+    backgroundColor: colors.white, 
     borderRadius: SIZES.radiusLg, 
     padding: SIZES.lg, 
     width: '100%', 
@@ -453,9 +456,9 @@ const styles = StyleSheet.create({
   dateModalTitle: { 
     fontSize: SIZES.fontLg, 
     fontFamily: FONTS.heading, 
-    color: COLORS.textPrimary 
+    color: colors.text 
   },
   webCalendarWrapper: { 
     marginVertical: SIZES.md 
   },
-});
+}));

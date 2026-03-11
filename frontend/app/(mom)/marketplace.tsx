@@ -21,13 +21,16 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { VideoPlayerModal, getYouTubeVideoId, getYouTubeThumbnail } from '../../src/components/YouTubePlayer';
 import { apiRequest } from '../../src/utils/api';
-import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../src/constants/api';
 
 const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE'];
 
 export default function MarketplaceScreen() {
   const router = useRouter();
+  const colors = useColors();
+  const styles = getStyles(colors);
   const [providers, setProviders] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedType, setSelectedType] = useState('All');
@@ -338,7 +341,7 @@ export default function MarketplaceScreen() {
   };
   
   const getRoleColor = (role: string) => {
-    return role === 'DOULA' ? COLORS.roleDoula : COLORS.roleMidwife;
+    return role === 'DOULA' ? colors.roleDoula : colors.roleMidwife;
   };
   
   const getRoleIcon = (role: string) => {
@@ -350,7 +353,7 @@ export default function MarketplaceScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -364,19 +367,19 @@ export default function MarketplaceScreen() {
         <Card style={styles.searchCard}>
           <View style={styles.searchRow}>
             <View style={styles.searchInputWrapper}>
-              <Icon name="search-outline" size={20} color={COLORS.textSecondary} />
+              <Icon name="search-outline" size={20} color={colors.textSecondary} />
               <TextInput
                 style={styles.searchInput}
                 value={searchCity}
                 onChangeText={setSearchCity}
                 placeholder="Search by name, city, state, or zip..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 onSubmitEditing={handleSearch}
                 data-testid="search-city-input"
               />
             </View>
             <TouchableOpacity style={styles.searchButton} onPress={handleSearch} data-testid="search-btn">
-              <Icon name="search" size={20} color={COLORS.white} />
+              <Icon name="search" size={20} color={colors.white} />
             </TouchableOpacity>
           </View>
           
@@ -414,7 +417,7 @@ export default function MarketplaceScreen() {
         
         {providers.length === 0 ? (
           <Card style={styles.emptyCard}>
-            <Icon name="search-outline" size={48} color={COLORS.textLight} />
+            <Icon name="search-outline" size={48} color={colors.textLight} />
             <Text style={styles.emptyText}>No providers found</Text>
             <Text style={styles.emptySubtext}>
               Try adjusting your search filters or check back later
@@ -440,7 +443,7 @@ export default function MarketplaceScreen() {
                   <View style={styles.providerInfo}>
                     <Text style={styles.providerName}>{provider.full_name}</Text>
                     <View style={styles.locationRow}>
-                      <Icon name="location-outline" size={14} color={COLORS.textSecondary} />
+                      <Icon name="location-outline" size={14} color={colors.textSecondary} />
                       <Text style={styles.locationText}>
                         {provider.profile?.location_city && provider.profile?.location_state
                           ? `${provider.profile.location_city}, ${provider.profile.location_state}`
@@ -483,14 +486,14 @@ export default function MarketplaceScreen() {
                 <View style={styles.statsRow}>
                   {provider.profile?.years_in_practice && (
                     <View style={styles.statItem}>
-                      <Icon name="time-outline" size={14} color={COLORS.textSecondary} />
+                      <Icon name="time-outline" size={14} color={colors.textSecondary} />
                       <Text style={styles.statText}>{provider.profile.years_in_practice} years</Text>
                     </View>
                   )}
                   {provider.profile?.accepting_new_clients && (
                     <View style={styles.statItem}>
-                      <Icon name="checkmark-circle" size={14} color={COLORS.success} />
-                      <Text style={[styles.statText, { color: COLORS.success }]}>Accepting Clients</Text>
+                      <Icon name="checkmark-circle" size={14} color={colors.success} />
+                      <Text style={[styles.statText, { color: colors.success }]}>Accepting Clients</Text>
                     </View>
                   )}
                 </View>
@@ -505,7 +508,7 @@ export default function MarketplaceScreen() {
                     }}
                     data-testid={`contact-btn-${provider.user_id}`}
                   >
-                    <Icon name="chatbubble-outline" size={16} color={COLORS.white} />
+                    <Icon name="chatbubble-outline" size={16} color={colors.white} />
                     <Text style={styles.cardActionBtnText}>Contact</Text>
                   </TouchableOpacity>
                   
@@ -525,7 +528,7 @@ export default function MarketplaceScreen() {
                     <Icon 
                       name={consultationStatus[provider.user_id] ? 'calendar' : 'calendar-outline'} 
                       size={16} 
-                      color={COLORS.white} 
+                      color={colors.white} 
                     />
                     <Text style={styles.cardActionBtnText}>
                       {getConsultationButtonText(provider.user_id)}
@@ -535,7 +538,7 @@ export default function MarketplaceScreen() {
                 
                 <View style={styles.viewProfile}>
                   <Text style={styles.viewProfileText}>View Profile</Text>
-                  <Icon name="chevron-forward" size={16} color={COLORS.primary} />
+                  <Icon name="chevron-forward" size={16} color={colors.primary} />
                 </View>
               </Card>
             </TouchableOpacity>
@@ -553,7 +556,7 @@ export default function MarketplaceScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setSelectedProvider(null)} data-testid="close-modal-btn">
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Provider Profile</Text>
             <View style={{ width: 24 }} />
@@ -671,10 +674,10 @@ export default function MarketplaceScreen() {
                           style={styles.videoThumbnail}
                         />
                         <View style={styles.playIconOverlay}>
-                          <Icon name="play-circle" size={48} color={COLORS.white} />
+                          <Icon name="play-circle" size={48} color={colors.white} />
                         </View>
                         <View style={styles.videoLabel}>
-                          <Icon name="videocam" size={14} color={COLORS.white} />
+                          <Icon name="videocam" size={14} color={colors.white} />
                           <Text style={styles.videoLabelText}>Watch Video</Text>
                         </View>
                       </Pressable>
@@ -690,11 +693,11 @@ export default function MarketplaceScreen() {
                   <Icon 
                     name={selectedProvider.profile?.accepting_new_clients ? "checkmark-circle" : "close-circle"} 
                     size={20} 
-                    color={selectedProvider.profile?.accepting_new_clients ? COLORS.success : COLORS.error} 
+                    color={selectedProvider.profile?.accepting_new_clients ? colors.success : colors.error} 
                   />
                   <Text style={[
                     styles.statusText, 
-                    { color: selectedProvider.profile?.accepting_new_clients ? COLORS.success : COLORS.error }
+                    { color: selectedProvider.profile?.accepting_new_clients ? colors.success : colors.error }
                   ]}>
                     {selectedProvider.profile?.accepting_new_clients ? 'Accepting New Clients' : 'Not Accepting New Clients'}
                   </Text>
@@ -712,10 +715,10 @@ export default function MarketplaceScreen() {
                 data-testid="contact-provider-btn"
               >
                 {contactingProvider ? (
-                  <ActivityIndicator size="small" color={COLORS.white} />
+                  <ActivityIndicator size="small" color={colors.white} />
                 ) : (
                   <>
-                    <Icon name="chatbubble-outline" size={20} color={COLORS.white} />
+                    <Icon name="chatbubble-outline" size={20} color={colors.white} />
                     <Text style={styles.footerButtonText}>Contact</Text>
                   </>
                 )}
@@ -732,13 +735,13 @@ export default function MarketplaceScreen() {
                 data-testid="request-consultation-btn"
               >
                 {requestingConsultation ? (
-                  <ActivityIndicator size="small" color={COLORS.white} />
+                  <ActivityIndicator size="small" color={colors.white} />
                 ) : (
                   <>
                     <Icon 
                       name={consultationStatus[selectedProvider?.user_id] ? 'calendar' : 'calendar-outline'} 
                       size={20} 
-                      color={COLORS.white} 
+                      color={colors.white} 
                     />
                     <Text style={styles.footerButtonText}>
                       {getConsultationButtonText(selectedProvider?.user_id)}
@@ -768,10 +771,10 @@ export default function MarketplaceScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -783,12 +786,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXxl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 4,
   },
   searchCard: {
@@ -803,7 +806,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     paddingHorizontal: SIZES.md,
     marginRight: SIZES.sm,
@@ -813,13 +816,13 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.sm,
     paddingHorizontal: SIZES.sm,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   searchButton: {
     width: 44,
     height: 44,
     borderRadius: SIZES.radiusMd,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -830,19 +833,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: SIZES.sm,
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     marginRight: SIZES.sm,
   },
   typeChipActive: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
   },
   typeChipText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   typeChipTextActive: {
-    color: COLORS.white,
+    color: colors.white,
     fontFamily: FONTS.bodyBold,
   },
   resultsHeader: {
@@ -851,7 +854,7 @@ const styles = StyleSheet.create({
   resultsTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   emptyCard: {
     alignItems: 'center',
@@ -860,13 +863,13 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.md,
   },
   emptySubtext: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
   },
@@ -898,7 +901,7 @@ const styles = StyleSheet.create({
   providerName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 2,
   },
   locationRow: {
@@ -907,7 +910,7 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginLeft: 4,
   },
   roleBadge: {
@@ -921,7 +924,7 @@ const styles = StyleSheet.create({
   },
   practiceName: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     fontStyle: 'italic',
     marginBottom: SIZES.sm,
   },
@@ -931,7 +934,7 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.sm,
   },
   tag: {
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     paddingHorizontal: SIZES.sm,
     paddingVertical: SIZES.xs,
     borderRadius: SIZES.radiusSm,
@@ -940,7 +943,7 @@ const styles = StyleSheet.create({
   },
   tagText: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   statsRow: {
     flexDirection: 'row',
@@ -953,7 +956,7 @@ const styles = StyleSheet.create({
   },
   statText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginLeft: 4,
   },
   cardActions: {
@@ -971,20 +974,20 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   cardContactBtn: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
   },
   cardAddBtn: {
-    backgroundColor: COLORS.success,
+    backgroundColor: colors.success,
   },
   cardConsultBtn: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: colors.accent,
   },
   cardDisabledBtn: {
-    backgroundColor: COLORS.textLight,
+    backgroundColor: colors.textLight,
     opacity: 0.7,
   },
   cardActionBtnText: {
-    color: COLORS.white,
+    color: colors.white,
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
   },
@@ -994,17 +997,17 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   viewProfileText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.primary,
+    color: colors.primary,
     marginRight: 4,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1012,13 +1015,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalContent: {
     flex: 1,
@@ -1045,7 +1048,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: SIZES.fontXl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   profileRoleBadge: {
@@ -1056,7 +1059,7 @@ const styles = StyleSheet.create({
   profileRoleText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.white,
+    color: colors.white,
   },
   profileSection: {
     marginBottom: SIZES.lg,
@@ -1064,13 +1067,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.xs,
   },
   sectionValue: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   profileTags: {
     flexDirection: 'row',
@@ -1090,7 +1093,7 @@ const styles = StyleSheet.create({
   bioText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 22,
   },
   videoThumbnailContainer: {
@@ -1127,7 +1130,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusSm,
   },
   videoLabelText: {
-    color: COLORS.white,
+    color: colors.white,
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
     marginLeft: 4,
@@ -1144,8 +1147,8 @@ const styles = StyleSheet.create({
   modalFooter: {
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderTopColor: colors.border,
+    backgroundColor: colors.white,
   },
   footerButtonsRow: {
     flexDirection: 'row',
@@ -1161,20 +1164,20 @@ const styles = StyleSheet.create({
     gap: SIZES.xs,
   },
   contactButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
   },
   addButton: {
-    backgroundColor: COLORS.success,
+    backgroundColor: colors.success,
   },
   consultButton: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: colors.accent,
   },
   disabledButton: {
-    backgroundColor: COLORS.textLight,
+    backgroundColor: colors.textLight,
     opacity: 0.7,
   },
   footerButtonText: {
-    color: COLORS.white,
+    color: colors.white,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
   },
@@ -1186,7 +1189,7 @@ const styles = StyleSheet.create({
     padding: SIZES.lg,
   },
   messageModalContent: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusLg,
     width: '100%',
     maxWidth: 400,
@@ -1197,27 +1200,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   messageModalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   messageTextArea: {
     margin: SIZES.md,
     padding: SIZES.md,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     minHeight: 120,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     textAlignVertical: 'top',
   },
   messageModalFooter: {
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
-});
+}));

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   TextInput,
@@ -17,18 +16,7 @@ import { useAuthStore } from '../src/store/authStore';
 import { useSubscriptionStore } from '../src/store/subscriptionStore';
 import { apiRequest } from '../src/utils/api';
 import { API_ENDPOINTS } from '../src/constants/api';
-
-const COLORS = {
-  primary: '#7c3aed',
-  secondary: '#059669',
-  background: '#faf8f5',
-  card: '#ffffff',
-  text: '#1f2937',
-  textSecondary: '#6b7280',
-  border: '#e5e7eb',
-  success: '#10b981',
-  error: '#ef4444',
-};
+import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
 const MAX_CHARACTERS = 800;
 
@@ -46,6 +34,8 @@ export default function ProFeedbackScreen() {
   const [feedbackTopic, setFeedbackTopic] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const colors = useColors();
+  const styles = getStyles(colors);
 
   useEffect(() => {
     fetchStatus();
@@ -91,19 +81,19 @@ export default function ProFeedbackScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.text} />
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Send Feedback</Text>
           <View style={{ width: 40 }} />
         </View>
         <View style={styles.accessDenied}>
-          <Ionicons name="lock-closed" size={48} color={COLORS.textSecondary} />
+          <Ionicons name="lock-closed" size={48} color={colors.textSecondary} />
           <Text style={styles.accessDeniedTitle}>Pro Feature</Text>
           <Text style={styles.accessDeniedText}>
             The feedback form is available for Pro subscribers only.
           </Text>
           <TouchableOpacity 
-            style={styles.upgradeButton}
+            style={[styles.upgradeButton, { backgroundColor: colors.primary }]}
             onPress={() => router.push('/plans-pricing')}
           >
             <Text style={styles.upgradeButtonText}>View Pro Plans</Text>
@@ -119,14 +109,14 @@ export default function ProFeedbackScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.successContainer}>
           <View style={styles.successIcon}>
-            <Ionicons name="checkmark-circle" size={64} color={COLORS.success} />
+            <Ionicons name="checkmark-circle" size={64} color={colors.success} />
           </View>
           <Text style={styles.successTitle}>Thank You!</Text>
           <Text style={styles.successText}>
             Your feedback was sent to the True Joy Birthing team.
           </Text>
           <TouchableOpacity 
-            style={styles.doneButton}
+            style={[styles.doneButton, { backgroundColor: colors.primary }]}
             onPress={() => router.back()}
           >
             <Text style={styles.doneButtonText}>Done</Text>
@@ -143,7 +133,7 @@ export default function ProFeedbackScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.text} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Send Feedback</Text>
         <View style={{ width: 40 }} />
@@ -151,7 +141,7 @@ export default function ProFeedbackScreen() {
 
       <ScrollView style={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.introCard}>
-          <Ionicons name="chatbubble-ellipses-outline" size={24} color={COLORS.primary} />
+          <Ionicons name="chatbubble-ellipses-outline" size={24} color={colors.primary} />
           <Text style={styles.introText}>
             Tell us what's working well, what's confusing, or what you'd love to see next. 
             This goes directly to the True Joy Birthing team.
@@ -167,18 +157,18 @@ export default function ProFeedbackScreen() {
                 key={topic.value}
                 style={[
                   styles.topicOption,
-                  feedbackTopic === topic.value && topic.value !== '' && styles.topicOptionSelected,
+                  feedbackTopic === topic.value && topic.value !== '' && { borderColor: colors.primary, backgroundColor: colors.primary + '10' },
                 ]}
                 onPress={() => setFeedbackTopic(topic.value)}
               >
                 <Text style={[
                   styles.topicOptionText,
-                  feedbackTopic === topic.value && topic.value !== '' && styles.topicOptionTextSelected,
+                  feedbackTopic === topic.value && topic.value !== '' && { color: colors.primary, fontWeight: '500' },
                 ]}>
                   {topic.label}
                 </Text>
                 {feedbackTopic === topic.value && topic.value !== '' && (
-                  <Ionicons name="checkmark" size={18} color={COLORS.primary} />
+                  <Ionicons name="checkmark" size={18} color={colors.primary} />
                 )}
               </TouchableOpacity>
             ))}
@@ -189,17 +179,17 @@ export default function ProFeedbackScreen() {
         <View style={styles.fieldContainer}>
           <Text style={styles.fieldLabel}>Your Feedback</Text>
           <TextInput
-            style={[styles.textInput, isOverLimit && styles.textInputError]}
+            style={[styles.textInput, isOverLimit && { borderColor: colors.error }]}
             multiline
             numberOfLines={6}
             placeholder="I'd love an easier way to see upcoming births..."
-            placeholderTextColor={COLORS.textSecondary}
+            placeholderTextColor={colors.textSecondary}
             value={feedbackText}
             onChangeText={setFeedbackText}
             textAlignVertical="top"
-            maxLength={MAX_CHARACTERS + 50} // Allow slight overflow for UX
+            maxLength={MAX_CHARACTERS + 50}
           />
-          <Text style={[styles.characterCount, isOverLimit && styles.characterCountError]}>
+          <Text style={[styles.characterCount, isOverLimit && { color: colors.error }]}>
             {charactersRemaining} characters remaining
           </Text>
         </View>
@@ -215,7 +205,8 @@ export default function ProFeedbackScreen() {
         <TouchableOpacity
           style={[
             styles.submitButton,
-            (!feedbackText.trim() || isOverLimit || isSubmitting) && styles.submitButtonDisabled
+            { backgroundColor: colors.primary },
+            (!feedbackText.trim() || isOverLimit || isSubmitting) && { backgroundColor: colors.textSecondary }
           ]}
           onPress={handleSubmit}
           disabled={!feedbackText.trim() || isOverLimit || isSubmitting}
@@ -236,8 +227,8 @@ export default function ProFeedbackScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -245,16 +236,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.card,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.surface,
   },
   backButton: { padding: 8 },
-  headerTitle: { fontSize: 18, fontWeight: '600', color: COLORS.text },
+  headerTitle: { fontSize: 18, fontWeight: '600', color: colors.text },
   content: { flex: 1, padding: 16 },
 
   introCard: {
     flexDirection: 'row',
-    backgroundColor: '#f5f3ff',
+    backgroundColor: colors.primary + '15',
     padding: 16,
     borderRadius: 12,
     marginBottom: 24,
@@ -264,7 +255,7 @@ const styles = StyleSheet.create({
   introText: {
     flex: 1,
     fontSize: 14,
-    color: COLORS.text,
+    color: colors.text,
     lineHeight: 20,
   },
 
@@ -272,7 +263,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 8,
   },
 
@@ -281,84 +272,66 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.card,
+    backgroundColor: colors.surface,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  topicOptionSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: '#f5f3ff',
+    borderColor: colors.border,
   },
   topicOptionText: {
     fontSize: 14,
-    color: COLORS.textSecondary,
-  },
-  topicOptionTextSelected: {
-    color: COLORS.primary,
-    fontWeight: '500',
+    color: colors.textSecondary,
   },
 
   textInput: {
-    backgroundColor: COLORS.card,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: 12,
     padding: 16,
     fontSize: 15,
-    color: COLORS.text,
+    color: colors.text,
     minHeight: 150,
     lineHeight: 22,
-  },
-  textInputError: {
-    borderColor: COLORS.error,
   },
   characterCount: {
     textAlign: 'right',
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 8,
-  },
-  characterCountError: {
-    color: COLORS.error,
   },
 
   userInfoCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: colors.surface,
     padding: 16,
     borderRadius: 12,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   userInfoLabel: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   userInfoName: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
   },
   userInfoEmail: {
     fontSize: 14,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
 
   submitButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary,
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
-  },
-  submitButtonDisabled: {
-    backgroundColor: COLORS.textSecondary,
   },
   submitButtonText: {
     color: '#fff',
@@ -376,18 +349,17 @@ const styles = StyleSheet.create({
   accessDeniedTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: COLORS.text,
+    color: colors.text,
     marginTop: 16,
     marginBottom: 8,
   },
   accessDeniedText: {
     fontSize: 14,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
   },
   upgradeButton: {
-    backgroundColor: COLORS.primary,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
@@ -410,17 +382,16 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 12,
   },
   successText: {
     fontSize: 16,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 32,
   },
   doneButton: {
-    backgroundColor: COLORS.primary,
     paddingVertical: 14,
     paddingHorizontal: 32,
     borderRadius: 10,
@@ -430,4 +401,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
-});
+}));

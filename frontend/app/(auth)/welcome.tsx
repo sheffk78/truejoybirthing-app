@@ -14,8 +14,8 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from '../../src/components/Icon';
-import { COLORS, SIZES, FONTS, BRAND } from '../../src/constants/theme';
-import { useColors } from '../../src/hooks/useThemedStyles';
+import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,13 +25,14 @@ const HERO_IMAGE = 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-
 export default function WelcomeScreen() {
   const router = useRouter();
   const colors = useColors();
+  const styles = getStyles(colors);
   
   const handleGoogleLogin = () => {
     if (Platform.OS === 'web') {
       const redirectUrl = window.location.origin + '/auth-callback';
       window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
     } else {
-      const redirectUrl = 'https://joy-colors-system.preview.emergentagent.com/auth-callback';
+      const redirectUrl = 'https://theme-unify-preview.preview.emergentagent.com/auth-callback';
       Linking.openURL(`https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`);
     }
   };
@@ -117,7 +118,7 @@ export default function WelcomeScreen() {
             data-testid="get-started-btn"
           >
             <LinearGradient
-              colors={[COLORS.primary, COLORS.primaryDark]}
+              colors={[colors.primary, colors.primaryDark]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.buttonGradient}
@@ -158,7 +159,7 @@ export default function WelcomeScreen() {
             onClick={Platform.OS === 'web' ? handleGoogleLogin : undefined}
             data-testid="google-login-btn"
           >
-            <Icon name="logo-google" size={18} color={COLORS.textPrimary} />
+            <Icon name="logo-google" size={18} color={colors.text} />
             <Text style={styles.googleButtonText}>Continue with Google</Text>
           </Pressable>
           
@@ -174,10 +175,10 @@ export default function WelcomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   heroImage: {
     position: 'absolute',
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomCard: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     paddingHorizontal: SIZES.lg,
     paddingTop: SIZES.xl,
     paddingBottom: SIZES.md,
@@ -220,14 +221,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 38,
     marginBottom: SIZES.sm,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 24,
     marginBottom: SIZES.md,
   },
@@ -278,7 +279,7 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: colors.primary,
   },
   buttonPressed: {
     opacity: 0.85,
@@ -292,21 +293,21 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
   },
   dividerText: {
     marginHorizontal: SIZES.md,
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusFull,
     paddingVertical: SIZES.md,
     gap: SIZES.sm,
@@ -315,17 +316,17 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   footerText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textAlign: 'center',
     marginTop: SIZES.md,
   },
   linkText: {
-    color: COLORS.primary,
+    color: colors.primary,
     textDecorationLine: 'underline',
   },
-});
+}));

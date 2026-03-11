@@ -24,14 +24,16 @@ import AppearanceSettings from '../../src/components/AppearanceSettings';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function MomProfileScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const { user, logout, updateUser } = useAuthStore();
-  const { theme, isDark } = useTheme();
-  const colors = theme.colors;
+  const { isDark } = useTheme();
   
   const [profile, setProfile] = useState<any>(null);
   const [birthPlan, setBirthPlan] = useState<any>(null);
@@ -381,7 +383,7 @@ export default function MomProfileScreen() {
           >
             {uploadingPhoto ? (
               <View style={styles.avatarPlaceholder}>
-                <ActivityIndicator size="large" color={COLORS.primary} />
+                <ActivityIndicator size="large" color={colors.primary} />
               </View>
             ) : user?.picture ? (
               <Image 
@@ -390,11 +392,11 @@ export default function MomProfileScreen() {
               />
             ) : (
               <View style={styles.avatarPlaceholder}>
-                <Icon name="person" size={40} color={COLORS.primary} />
+                <Icon name="person" size={40} color={colors.primary} />
               </View>
             )}
             <View style={[styles.editAvatarBadge, { pointerEvents: 'none' }]}>
-              <Icon name="camera" size={14} color={COLORS.white} />
+              <Icon name="camera" size={14} color={colors.white} />
             </View>
           </TouchableOpacity>
           <Text style={[styles.userName, { color: colors.text.primary }]}>{user?.full_name}</Text>
@@ -425,11 +427,11 @@ export default function MomProfileScreen() {
                   activeOpacity={0.7}
                   data-testid="due-date-picker-btn"
                 >
-                  <Icon name="calendar" size={20} color={COLORS.primary} />
+                  <Icon name="calendar" size={20} color={colors.primary} />
                   <Text style={[styles.datePickerText, !dueDate && styles.datePickerPlaceholder]}>
                     {dueDate ? formatDisplayDate(dueDate) : 'Tap to select your due date'}
                   </Text>
-                  <Icon name="chevron-down" size={20} color={COLORS.textSecondary} />
+                  <Icon name="chevron-down" size={20} color={colors.textSecondary} />
                 </TouchableOpacity>
               </View>
 
@@ -447,7 +449,7 @@ export default function MomProfileScreen() {
                         <View style={styles.dateModalHeader}>
                           <Text style={styles.dateModalTitle}>Select Due Date</Text>
                           <TouchableOpacity onPress={() => setShowDatePicker(false)}>
-                            <Icon name="close" size={24} color={COLORS.textPrimary} />
+                            <Icon name="close" size={24} color={colors.text} />
                           </TouchableOpacity>
                         </View>
                         <View style={styles.webCalendarWrapper}>
@@ -464,7 +466,7 @@ export default function MomProfileScreen() {
                               width: '100%',
                               padding: 16,
                               fontSize: 18,
-                              border: `2px solid ${COLORS.primary}`,
+                              border: `2px solid ${colors.primary}`,
                               borderRadius: 12,
                               outline: 'none',
                               cursor: 'pointer',
@@ -513,13 +515,13 @@ export default function MomProfileScreen() {
               />
               {lookingUpZip && (
                 <View style={styles.zipLookupRow}>
-                  <ActivityIndicator size="small" color={COLORS.primary} />
+                  <ActivityIndicator size="small" color={colors.primary} />
                   <Text style={styles.zipLookupText}>Looking up location...</Text>
                 </View>
               )}
               {locationCity && locationState && (
                 <View style={styles.locationDisplay}>
-                  <Icon name="checkmark-circle" size={16} color={COLORS.success} />
+                  <Icon name="checkmark-circle" size={16} color={colors.success} />
                   <Text style={styles.locationDisplayText}>{locationCity}, {locationState}</Text>
                 </View>
               )}
@@ -533,14 +535,14 @@ export default function MomProfileScreen() {
                     onPress={() => setNumberOfChildren(Math.max(0, numberOfChildren - 1))}
                     disabled={numberOfChildren === 0}
                   >
-                    <Icon name="remove" size={20} color={numberOfChildren === 0 ? COLORS.textLight : COLORS.primary} />
+                    <Icon name="remove" size={20} color={numberOfChildren === 0 ? colors.textLight : colors.primary} />
                   </TouchableOpacity>
                   <Text style={styles.childrenCount}>{numberOfChildren}</Text>
                   <TouchableOpacity 
                     style={styles.stepperButton}
                     onPress={() => setNumberOfChildren(numberOfChildren + 1)}
                   >
-                    <Icon name="add" size={20} color={COLORS.primary} />
+                    <Icon name="add" size={20} color={colors.primary} />
                   </TouchableOpacity>
                 </View>
                 <Text style={styles.childrenHint}>Including this pregnancy</Text>
@@ -557,14 +559,14 @@ export default function MomProfileScreen() {
           ) : (
             <View>
               <View style={styles.infoRow}>
-                <Icon name="calendar-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="calendar-outline" size={20} color={colors.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Due Date</Text>
                   <Text style={styles.infoValue}>{formatDueDate(profile?.due_date)}</Text>
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Icon name="location-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="location-outline" size={20} color={colors.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Location</Text>
                   <Text style={styles.infoValue}>
@@ -577,14 +579,14 @@ export default function MomProfileScreen() {
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Icon name="add-circle-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="add-circle-outline" size={20} color={colors.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Birth Setting</Text>
                   <Text style={styles.infoValue}>{getBirthSetting()}</Text>
                 </View>
               </View>
               <View style={styles.infoRow}>
-                <Icon name="people-outline" size={20} color={COLORS.textSecondary} />
+                <Icon name="people-outline" size={20} color={colors.textSecondary} />
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Children</Text>
                   <Text style={styles.infoValue}>
@@ -611,9 +613,9 @@ export default function MomProfileScreen() {
         >
           <Card style={styles.menuCard}>
             <View style={styles.menuRow}>
-              <Icon name="rocket-outline" size={24} color={COLORS.primary} />
+              <Icon name="rocket-outline" size={24} color={colors.primary} />
               <Text style={styles.menuText}>Getting Started</Text>
-              <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+              <Icon name="chevron-forward" size={20} color={colors.textLight} />
             </View>
           </Card>
         </TouchableOpacity>
@@ -626,9 +628,9 @@ export default function MomProfileScreen() {
         >
           <Card style={styles.menuCard}>
             <View style={styles.menuRow}>
-              <Icon name="eye-outline" size={24} color={COLORS.accent} />
+              <Icon name="eye-outline" size={24} color={colors.accent} />
               <Text style={styles.menuText}>View App Tour</Text>
-              <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+              <Icon name="chevron-forward" size={20} color={colors.textLight} />
             </View>
           </Card>
         </TouchableOpacity>
@@ -639,7 +641,7 @@ export default function MomProfileScreen() {
           onPress={handleLogout}
           data-testid="logout-btn"
         >
-          <Icon name="log-out-outline" size={20} color={COLORS.error} />
+          <Icon name="log-out-outline" size={20} color={colors.error} />
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
         
@@ -684,10 +686,10 @@ export default function MomProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -706,30 +708,30 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: COLORS.primary,
+    borderColor: colors.primary,
   },
   avatarPlaceholder: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: COLORS.primary + '20',
+    backgroundColor: colors.primary + '20',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 3,
-    borderColor: COLORS.primary,
+    borderColor: colors.primary,
   },
   editAvatarBadge: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     width: 32,
     height: 32,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: COLORS.white,
+    borderColor: colors.white,
   },
   dateInputContainer: {
     marginBottom: SIZES.md,
@@ -737,15 +739,15 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.xs,
   },
   datePickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: colors.cardBackground,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusMd,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.md,
@@ -754,14 +756,14 @@ const styles = StyleSheet.create({
   datePickerText: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginLeft: SIZES.sm,
   },
   datePickerPlaceholder: {
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   datePickerContainer: {
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: colors.cardBackground,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     marginBottom: SIZES.md,
@@ -774,7 +776,7 @@ const styles = StyleSheet.create({
     padding: SIZES.lg,
   },
   dateModalContent: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.lg,
     width: '100%',
@@ -789,7 +791,7 @@ const styles = StyleSheet.create({
   dateModalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   webCalendarWrapper: {
     marginVertical: SIZES.md,
@@ -797,9 +799,9 @@ const styles = StyleSheet.create({
   datePickerWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: colors.cardBackground,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusMd,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
@@ -808,16 +810,16 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: SIZES.fontXl,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   userEmail: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   tapToEdit: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: 4,
   },
   zipLookupRow: {
@@ -828,21 +830,21 @@ const styles = StyleSheet.create({
   },
   zipLookupText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   locationDisplay: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SIZES.xs,
     paddingHorizontal: SIZES.sm,
-    backgroundColor: COLORS.success + '15',
+    backgroundColor: colors.success + '15',
     borderRadius: SIZES.radiusSm,
     marginTop: SIZES.xs,
     gap: SIZES.xs,
   },
   locationDisplayText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.success,
+    color: colors.success,
     fontWeight: '500',
   },
   childrenInputContainer: {
@@ -859,26 +861,26 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: COLORS.primary,
+    borderColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   stepperButtonDisabled: {
-    borderColor: COLORS.textLight,
+    borderColor: colors.textLight,
     opacity: 0.5,
   },
   childrenCount: {
     fontSize: SIZES.fontXxl,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     minWidth: 40,
     textAlign: 'center',
   },
   childrenHint: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textAlign: 'center',
     marginTop: SIZES.xs,
   },
@@ -894,11 +896,11 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   editButton: {
     fontSize: SIZES.fontMd,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '500',
   },
   infoRow: {
@@ -906,7 +908,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   infoText: {
     marginLeft: SIZES.md,
@@ -914,11 +916,11 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   infoValue: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     fontWeight: '500',
   },
   locationRow: {
@@ -939,13 +941,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   teamIcon: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.md,
@@ -955,27 +957,27 @@ const styles = StyleSheet.create({
   },
   teamRole: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   teamName: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     fontWeight: '500',
   },
   teamEmpty: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textLight,
+    color: colors.textLight,
     fontStyle: 'italic',
   },
   connectButton: {
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.xs,
     borderRadius: SIZES.radiusSm,
-    backgroundColor: COLORS.primaryLight + '30',
+    backgroundColor: colors.primaryLight + '30',
   },
   connectText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '500',
   },
   menuCard: {
@@ -989,7 +991,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: SIZES.md,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   logoutButton: {
     flexDirection: 'row',
@@ -1001,14 +1003,14 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.error,
+    color: colors.error,
     marginLeft: SIZES.sm,
   },
   legalSection: {
     marginTop: SIZES.lg,
     paddingTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     alignItems: 'center',
   },
   legalLinks: {
@@ -1024,10 +1026,10 @@ const styles = StyleSheet.create({
   legalLinkText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   legalSeparator: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
-});
+}));

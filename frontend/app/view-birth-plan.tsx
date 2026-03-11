@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
@@ -15,8 +14,9 @@ import { Icon } from '../src/components/Icon';
 import Card from '../src/components/Card';
 import Button from '../src/components/Button';
 import { apiRequest, getApiBaseUrl } from '../src/utils/api';
-import { COLORS, SIZES, FONTS } from '../src/constants/theme';
+import { SIZES, FONTS } from '../src/constants/theme';
 import { useAuthStore } from '../src/store/authStore';
+import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
 export default function ViewBirthPlanScreen() {
   const router = useRouter();
@@ -26,6 +26,8 @@ export default function ViewBirthPlanScreen() {
   const [error, setError] = useState<string | null>(null);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const { sessionToken } = useAuthStore();
+  const colors = useColors();
+  const styles = getStyles(colors);
 
   useEffect(() => {
     fetchBirthPlan();
@@ -131,7 +133,7 @@ export default function ViewBirthPlanScreen() {
       <SafeAreaView style={styles.container}>
         <Stack.Screen options={{ title: 'Birth Plan', headerShown: true }} />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Loading birth plan...</Text>
         </View>
       </SafeAreaView>
@@ -143,7 +145,7 @@ export default function ViewBirthPlanScreen() {
       <SafeAreaView style={styles.container}>
         <Stack.Screen options={{ title: 'Birth Plan', headerShown: true }} />
         <View style={styles.errorContainer}>
-          <Icon name="alert-circle" size={48} color={COLORS.error} />
+          <Icon name="alert-circle" size={48} color={colors.error} />
           <Text style={styles.errorText}>{error}</Text>
           <Button
             title="Go Back"
@@ -194,10 +196,10 @@ export default function ViewBirthPlanScreen() {
             data-testid="download-birth-plan-pdf"
           >
             {downloadingPdf ? (
-              <ActivityIndicator size="small" color={COLORS.white} />
+              <ActivityIndicator size="small" color={colors.white} />
             ) : (
               <>
-                <Icon name="download-outline" size={18} color={COLORS.white} />
+                <Icon name="download-outline" size={18} color={colors.white} />
                 <Text style={styles.downloadButtonText}>Download PDF</Text>
               </>
             )}
@@ -210,12 +212,12 @@ export default function ViewBirthPlanScreen() {
             <View style={styles.sectionHeader}>
               <View style={[
                 styles.sectionIcon,
-                section.status === 'Complete' && styles.sectionIconComplete
+                section.status === 'Complete' && { backgroundColor: colors.success }
               ]}>
                 <Icon 
                   name={getSectionIcon(section.section_id)} 
                   size={20} 
-                  color={section.status === 'Complete' ? COLORS.white : COLORS.primary} 
+                  color={section.status === 'Complete' ? colors.white : colors.primary} 
                 />
               </View>
               <View style={styles.sectionInfo}>
@@ -224,11 +226,11 @@ export default function ViewBirthPlanScreen() {
                   <Icon 
                     name={section.status === 'Complete' ? 'checkmark-circle' : 'time'}
                     size={14}
-                    color={section.status === 'Complete' ? COLORS.success : COLORS.textLight}
+                    color={section.status === 'Complete' ? colors.success : colors.textLight}
                   />
                   <Text style={[
                     styles.statusText,
-                    { color: section.status === 'Complete' ? COLORS.success : COLORS.textLight }
+                    { color: section.status === 'Complete' ? colors.success : colors.textLight }
                   ]}>
                     {section.status || 'Not started'}
                   </Text>
@@ -241,8 +243,8 @@ export default function ViewBirthPlanScreen() {
             </View>
 
             {section.notes_to_provider && (
-              <View style={styles.notesSection}>
-                <Text style={styles.notesLabel}>Notes for You:</Text>
+              <View style={[styles.notesSection, { backgroundColor: colors.accent + '10' }]}>
+                <Text style={[styles.notesLabel, { color: colors.accent }]}>Notes for You:</Text>
                 <Text style={styles.notesText}>{section.notes_to_provider}</Text>
               </View>
             )}
@@ -255,10 +257,10 @@ export default function ViewBirthPlanScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
@@ -272,7 +274,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   errorContainer: {
     flex: 1,
@@ -283,7 +285,7 @@ const styles = StyleSheet.create({
   errorText: {
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
-    color: COLORS.error,
+    color: colors.error,
     textAlign: 'center',
   },
   header: {
@@ -292,12 +294,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 4,
   },
   progressContainer: {
@@ -305,32 +307,32 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 8,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     borderRadius: 4,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: COLORS.success,
+    backgroundColor: colors.success,
     borderRadius: 4,
   },
   progressText: {
     marginTop: SIZES.xs,
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   downloadButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     paddingVertical: SIZES.sm,
     paddingHorizontal: SIZES.lg,
     borderRadius: SIZES.radiusMd,
     marginTop: SIZES.md,
   },
   downloadButtonText: {
-    color: COLORS.white,
+    color: colors.white,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
     marginLeft: SIZES.sm,
@@ -344,19 +346,16 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.md,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   sectionIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.primary + '20',
+    backgroundColor: colors.primary + '20',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.md,
-  },
-  sectionIconComplete: {
-    backgroundColor: COLORS.success,
   },
   sectionInfo: {
     flex: 1,
@@ -364,7 +363,7 @@ const styles = StyleSheet.create({
   sectionName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   statusBadge: {
     flexDirection: 'row',
@@ -381,7 +380,7 @@ const styles = StyleSheet.create({
   noDataText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     fontStyle: 'italic',
   },
   fieldRow: {
@@ -390,34 +389,32 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 2,
   },
   fieldValue: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 22,
   },
   notesSection: {
     marginTop: SIZES.md,
     paddingTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.accent + '10',
+    borderTopColor: colors.border,
     padding: SIZES.sm,
     borderRadius: SIZES.radiusSm,
   },
   notesLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.accent,
     marginBottom: 4,
   },
   notesText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 20,
   },
-});
+}));

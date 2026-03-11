@@ -14,7 +14,8 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface WeekContent {
   week: number;
@@ -23,6 +24,8 @@ interface WeekContent {
 }
 
 export default function WeeklyTipsScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const [currentContent, setCurrentContent] = useState<any>(null);
   const [allContent, setAllContent] = useState<{ pregnancy: WeekContent[]; postpartum: WeekContent[] } | null>(null);
@@ -78,7 +81,7 @@ export default function WeeklyTipsScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Loading weekly content...</Text>
         </View>
       </SafeAreaView>
@@ -90,7 +93,7 @@ export default function WeeklyTipsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Weekly Tips & Affirmations</Text>
         <View style={{ width: 32 }} />
@@ -125,7 +128,7 @@ export default function WeeklyTipsScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} colors={[COLORS.primary]} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} colors={[colors.primary]} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -184,8 +187,8 @@ export default function WeeklyTipsScreen() {
         {displayContent?.tip && (
           <Card style={styles.contentCard}>
             <View style={styles.contentHeader}>
-              <View style={[styles.iconContainer, { backgroundColor: COLORS.primary + '20' }]}>
-                <Icon name="bulb" size={24} color={COLORS.primary} />
+              <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
+                <Icon name="bulb" size={24} color={colors.primary} />
               </View>
               <Text style={styles.contentLabel}>Weekly Tip</Text>
             </View>
@@ -197,8 +200,8 @@ export default function WeeklyTipsScreen() {
         {displayContent?.affirmation && (
           <Card style={[styles.contentCard, styles.affirmationCard]}>
             <View style={styles.contentHeader}>
-              <View style={[styles.iconContainer, { backgroundColor: COLORS.roleDoula + '20' }]}>
-                <Icon name="heart" size={24} color={COLORS.roleDoula} />
+              <View style={[styles.iconContainer, { backgroundColor: colors.roleDoula + '20' }]}>
+                <Icon name="heart" size={24} color={colors.roleDoula} />
               </View>
               <Text style={styles.contentLabel}>Weekly Affirmation</Text>
             </View>
@@ -208,7 +211,7 @@ export default function WeeklyTipsScreen() {
 
         {!displayContent?.tip && !displayContent?.affirmation && (
           <View style={styles.emptyState}>
-            <Icon name="document-text-outline" size={48} color={COLORS.border} />
+            <Icon name="document-text-outline" size={48} color={colors.border} />
             <Text style={styles.emptyText}>No content available for this week.</Text>
           </View>
         )}
@@ -217,10 +220,10 @@ export default function WeeklyTipsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -228,9 +231,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   backButton: {
     padding: SIZES.xs,
@@ -238,7 +241,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   loadingContainer: {
     flex: 1,
@@ -249,11 +252,11 @@ const styles = StyleSheet.create({
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     paddingHorizontal: SIZES.md,
     paddingBottom: SIZES.sm,
   },
@@ -265,16 +268,16 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabActive: {
-    borderBottomColor: COLORS.primary,
+    borderBottomColor: colors.primary,
   },
   tabText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   tabTextActive: {
     fontFamily: FONTS.bodyBold,
-    color: COLORS.primary,
+    color: colors.primary,
   },
   scrollContent: {
     padding: SIZES.lg,
@@ -283,7 +286,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.sm,
   },
   weekScrollContainer: {
@@ -296,29 +299,29 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     position: 'relative',
   },
   weekButtonSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   weekButtonCurrent: {
-    borderColor: COLORS.accent,
+    borderColor: colors.accent,
     borderWidth: 2,
   },
   weekButtonText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   weekButtonTextSelected: {
-    color: COLORS.white,
+    color: colors.white,
   },
   currentDot: {
     position: 'absolute',
@@ -326,7 +329,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: COLORS.accent,
+    backgroundColor: colors.accent,
   },
   selectedWeekHeader: {
     flexDirection: 'row',
@@ -336,11 +339,11 @@ const styles = StyleSheet.create({
   selectedWeekTitle: {
     fontSize: SIZES.fontXl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   currentBadge: {
     marginLeft: SIZES.sm,
-    backgroundColor: COLORS.accent + '20',
+    backgroundColor: colors.accent + '20',
     paddingHorizontal: SIZES.sm,
     paddingVertical: SIZES.xs / 2,
     borderRadius: SIZES.radiusSm,
@@ -348,7 +351,7 @@ const styles = StyleSheet.create({
   currentBadgeText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.accent,
+    color: colors.accent,
   },
   contentCard: {
     marginBottom: SIZES.md,
@@ -370,23 +373,23 @@ const styles = StyleSheet.create({
   contentLabel: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   tipText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 26,
   },
   affirmationCard: {
-    backgroundColor: COLORS.roleDoula + '08',
+    backgroundColor: colors.roleDoula + '08',
     borderLeftWidth: 4,
-    borderLeftColor: COLORS.roleDoula,
+    borderLeftColor: colors.roleDoula,
   },
   affirmationText: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 28,
     fontStyle: 'italic',
   },
@@ -398,6 +401,6 @@ const styles = StyleSheet.create({
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
-});
+}));

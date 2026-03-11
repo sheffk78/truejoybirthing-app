@@ -10,7 +10,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://joy-colors-system.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://theme-unify-preview.preview.emergentagent.com')
 
 # Test credentials for Doula user
 DOULA_EMAIL = "testdoula123@test.com"

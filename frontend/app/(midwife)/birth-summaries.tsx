@@ -17,12 +17,15 @@ import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const BIRTH_PLACES = ['Home', 'Birth Center', 'Transfer to Hospital'];
 const BIRTH_MODES = ['Spontaneous Vaginal', 'Assisted Vaginal', 'Cesarean', 'Other'];
 
 export default function MidwifeBirthSummariesScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const [summaries, setSummaries] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -127,10 +130,10 @@ export default function MidwifeBirthSummariesScreen() {
   
   const getPlaceColor = (place: string) => {
     switch (place) {
-      case 'Home': return COLORS.success;
-      case 'Birth Center': return COLORS.roleMidwife;
-      case 'Transfer to Hospital': return COLORS.warning;
-      default: return COLORS.textLight;
+      case 'Home': return colors.success;
+      case 'Birth Center': return colors.roleMidwife;
+      case 'Transfer to Hospital': return colors.warning;
+      default: return colors.textLight;
     }
   };
   
@@ -139,7 +142,7 @@ export default function MidwifeBirthSummariesScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.roleMidwife} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.roleMidwife} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -151,7 +154,7 @@ export default function MidwifeBirthSummariesScreen() {
             onPress={() => setModalVisible(true)}
             data-testid="add-summary-btn"
           >
-            <Icon name="add" size={24} color={COLORS.white} />
+            <Icon name="add" size={24} color={colors.white} />
           </TouchableOpacity>
         </View>
         
@@ -159,7 +162,7 @@ export default function MidwifeBirthSummariesScreen() {
         {summaries.length === 0 ? (
           <Card data-testid="empty-summaries-card">
             <View style={styles.emptyContent}>
-              <Icon name="heart" size={48} color={COLORS.roleMidwife + '40'} />
+              <Icon name="heart" size={48} color={colors.roleMidwife + '40'} />
               <Text style={styles.emptyText}>
                 No birth summaries yet.
               </Text>
@@ -201,12 +204,12 @@ export default function MidwifeBirthSummariesScreen() {
                 
                 <View style={styles.summaryDetails}>
                   <View style={styles.detailItem}>
-                    <Icon name="fitness-outline" size={16} color={COLORS.textSecondary} />
+                    <Icon name="fitness-outline" size={16} color={colors.textSecondary} />
                     <Text style={styles.detailText}>{summary.mode_of_birth}</Text>
                   </View>
                   {summary.newborn_details && (
                     <View style={styles.detailItem}>
-                      <Icon name="happy-outline" size={16} color={COLORS.textSecondary} />
+                      <Icon name="happy-outline" size={16} color={colors.textSecondary} />
                       <Text style={styles.detailText} numberOfLines={1}>
                         {summary.newborn_details}
                       </Text>
@@ -216,7 +219,7 @@ export default function MidwifeBirthSummariesScreen() {
                 
                 <View style={styles.viewMore}>
                   <Text style={styles.viewMoreText}>Tap to view details</Text>
-                  <Icon name="chevron-forward" size={16} color={COLORS.textLight} />
+                  <Icon name="chevron-forward" size={16} color={colors.textLight} />
                 </View>
               </Card>
             </TouchableOpacity>
@@ -234,7 +237,7 @@ export default function MidwifeBirthSummariesScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)} data-testid="close-modal-btn">
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>New Birth Summary</Text>
             <View style={{ width: 24 }} />
@@ -330,7 +333,7 @@ export default function MidwifeBirthSummariesScreen() {
               value={newbornDetails}
               onChangeText={setNewbornDetails}
               placeholder="e.g., 7 lbs 8 oz, APGARs 9/9, Female"
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               data-testid="newborn-details-input"
             />
             
@@ -340,7 +343,7 @@ export default function MidwifeBirthSummariesScreen() {
               value={complications}
               onChangeText={setComplications}
               placeholder="Document any complications during birth..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
@@ -353,7 +356,7 @@ export default function MidwifeBirthSummariesScreen() {
               value={summaryNote}
               onChangeText={setSummaryNote}
               placeholder="Additional notes about the birth..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={5}
               textAlignVertical="top"
@@ -383,7 +386,7 @@ export default function MidwifeBirthSummariesScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setViewingSummary(null)} data-testid="close-view-modal">
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Birth Summary</Text>
             <View style={{ width: 24 }} />
@@ -452,10 +455,10 @@ export default function MidwifeBirthSummariesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -470,13 +473,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXxl,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   addButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.roleMidwife,
+    backgroundColor: colors.roleMidwife,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -486,13 +489,13 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     fontWeight: '600',
     marginTop: SIZES.md,
   },
   emptySubtext: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.xs,
   },
   summaryCard: {
@@ -510,12 +513,12 @@ const styles = StyleSheet.create({
   clientName: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 2,
   },
   birthDate: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   placeBadge: {
     paddingHorizontal: SIZES.sm,
@@ -529,7 +532,7 @@ const styles = StyleSheet.create({
   summaryDetails: {
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   detailItem: {
     flexDirection: 'row',
@@ -538,7 +541,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginLeft: SIZES.sm,
     flex: 1,
   },
@@ -550,12 +553,12 @@ const styles = StyleSheet.create({
   },
   viewMoreText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginRight: SIZES.xs,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -563,13 +566,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalContent: {
     flex: 1,
@@ -578,7 +581,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
   },
@@ -589,21 +592,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     marginRight: SIZES.sm,
   },
   clientOptionSelected: {
-    backgroundColor: COLORS.roleMidwife,
-    borderColor: COLORS.roleMidwife,
+    backgroundColor: colors.roleMidwife,
+    borderColor: colors.roleMidwife,
   },
   clientOptionText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   clientOptionTextSelected: {
-    color: COLORS.white,
+    color: colors.white,
     fontWeight: '600',
   },
   optionGrid: {
@@ -615,32 +618,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusMd,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     marginRight: SIZES.sm,
     marginBottom: SIZES.sm,
   },
   optionButtonSelected: {
-    backgroundColor: COLORS.roleMidwife,
-    borderColor: COLORS.roleMidwife,
+    backgroundColor: colors.roleMidwife,
+    borderColor: colors.roleMidwife,
   },
   optionButtonText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   optionButtonTextSelected: {
-    color: COLORS.white,
+    color: colors.white,
     fontWeight: '600',
   },
   textInput: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.md,
   },
   textArea: {
@@ -654,20 +657,20 @@ const styles = StyleSheet.create({
   modalFooter: {
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderTopColor: colors.border,
+    backgroundColor: colors.white,
   },
   viewSection: {
     marginBottom: SIZES.lg,
   },
   viewLabel: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.xs,
   },
   viewValue: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     fontWeight: '500',
   },
   viewRow: {
@@ -684,10 +687,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   complicationCard: {
-    backgroundColor: COLORS.warning + '15',
+    backgroundColor: colors.warning + '15',
   },
   complicationText: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
-});
+}));

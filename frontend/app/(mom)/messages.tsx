@@ -18,8 +18,8 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
-import { useColors } from '../../src/hooks/useThemedStyles';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 import wsClient from '../../src/utils/websocket';
 
@@ -54,6 +54,8 @@ interface TeamMember {
 }
 
 export default function MessagesScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
@@ -289,7 +291,7 @@ export default function MessagesScreen() {
   };
   
   const getRoleColor = (role: string) => {
-    return role === 'DOULA' ? COLORS.roleDoula : role === 'MIDWIFE' ? COLORS.roleMidwife : COLORS.primary;
+    return role === 'DOULA' ? colors.roleDoula : role === 'MIDWIFE' ? colors.roleMidwife : colors.primary;
   };
   
   return (
@@ -297,7 +299,7 @@ export default function MessagesScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -312,7 +314,7 @@ export default function MessagesScreen() {
             onPress={openNewMessageModal}
             data-testid="new-message-btn"
           >
-            <Icon name="create-outline" size={20} color={COLORS.white} />
+            <Icon name="create-outline" size={20} color={colors.white} />
           </TouchableOpacity>
         </View>
         
@@ -320,7 +322,7 @@ export default function MessagesScreen() {
         {pendingInvoices.length > 0 && (
           <View style={styles.invoicesSection} data-testid="pending-invoices-section">
             <View style={styles.invoicesSectionHeader}>
-              <Icon name="receipt-outline" size={20} color={COLORS.warning} />
+              <Icon name="receipt-outline" size={20} color={colors.warning} />
               <Text style={styles.invoicesSectionTitle}>Pending Invoices</Text>
               <View style={styles.invoicesBadge}>
                 <Text style={styles.invoicesBadgeText}>{pendingInvoices.length}</Text>
@@ -347,11 +349,11 @@ export default function MessagesScreen() {
                   <View style={styles.invoiceMeta}>
                     <View style={[
                       styles.invoiceStatusBadge,
-                      { backgroundColor: invoice.status === 'sent' ? COLORS.warning + '20' : COLORS.primary + '20' }
+                      { backgroundColor: invoice.status === 'sent' ? colors.warning + '20' : colors.primary + '20' }
                     ]}>
                       <Text style={[
                         styles.invoiceStatusText,
-                        { color: invoice.status === 'sent' ? COLORS.warning : COLORS.primary }
+                        { color: invoice.status === 'sent' ? colors.warning : colors.primary }
                       ]}>
                         {invoice.status === 'sent' ? 'Awaiting Payment' : 'Pending'}
                       </Text>
@@ -380,7 +382,7 @@ export default function MessagesScreen() {
         {/* Conversations List */}
         {conversations.length === 0 ? (
           <Card style={styles.emptyCard}>
-            <Icon name="chatbubbles-outline" size={48} color={COLORS.textLight} />
+            <Icon name="chatbubbles-outline" size={48} color={colors.textLight} />
             <Text style={styles.emptyText}>No messages yet</Text>
             <Text style={styles.emptySubtext}>
               Tap the button above to message someone on your team
@@ -389,7 +391,7 @@ export default function MessagesScreen() {
               title="Start a Conversation"
               onPress={openNewMessageModal}
               style={{ marginTop: SIZES.md }}
-              icon={<Icon name="add" size={18} color={COLORS.white} />}
+              icon={<Icon name="add" size={18} color={colors.white} />}
             />
           </Card>
         ) : (
@@ -447,7 +449,7 @@ export default function MessagesScreen() {
           {/* Chat Header */}
           <View style={styles.chatHeader}>
             <TouchableOpacity onPress={() => setSelectedConversation(null)} data-testid="close-chat-btn">
-              <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+              <Icon name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>
               <Text style={styles.chatHeaderName}>{selectedConversation?.other_user_name}</Text>
@@ -493,7 +495,7 @@ export default function MessagesScreen() {
                 value={newMessage}
                 onChangeText={setNewMessage}
                 placeholder="Type a message..."
-                placeholderTextColor={COLORS.textLight}
+                placeholderTextColor={colors.textLight}
                 multiline
                 maxLength={1000}
                 data-testid="message-input"
@@ -504,7 +506,7 @@ export default function MessagesScreen() {
                 disabled={!newMessage.trim() || sending}
                 data-testid="send-message-btn"
               >
-                <Icon name="paper-plane" size={20} color={COLORS.white} />
+                <Icon name="paper-plane" size={20} color={colors.white} />
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
@@ -521,7 +523,7 @@ export default function MessagesScreen() {
         <SafeAreaView style={styles.modalContainer} edges={['top']}>
           <View style={styles.chatHeader}>
             <TouchableOpacity onPress={() => setShowNewMessageModal(false)}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.chatHeaderTitle}>New Message</Text>
             <View style={{ width: 24 }} />
@@ -532,11 +534,11 @@ export default function MessagesScreen() {
             
             {loadingTeam ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={COLORS.primary} />
+                <ActivityIndicator size="large" color={colors.primary} />
               </View>
             ) : teamMembers.length === 0 ? (
               <View style={styles.noTeamContainer}>
-                <Icon name="people-outline" size={48} color={COLORS.textLight} />
+                <Icon name="people-outline" size={48} color={colors.textLight} />
                 <Text style={styles.noTeamText}>No team members yet</Text>
                 <Text style={styles.noTeamSubtext}>
                   Share your birth plan with a doula or midwife to add them to your team
@@ -566,7 +568,7 @@ export default function MessagesScreen() {
                         </Text>
                       </View>
                     </View>
-                    <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+                    <Icon name="chevron-forward" size={20} color={colors.textLight} />
                   </TouchableOpacity>
                 ))}
               </ScrollView>
@@ -578,10 +580,10 @@ export default function MessagesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -596,16 +598,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXxl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 4,
   },
   newMessageButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     width: 44,
     height: 44,
     borderRadius: 22,
@@ -619,13 +621,13 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.md,
   },
   emptySubtext: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
     paddingHorizontal: SIZES.lg,
@@ -635,7 +637,7 @@ const styles = StyleSheet.create({
   },
   unreadCard: {
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.primary,
+    borderLeftColor: colors.primary,
   },
   conversationRow: {
     flexDirection: 'row',
@@ -660,7 +662,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginRight: SIZES.sm,
   },
   roleBadge: {
@@ -675,18 +677,18 @@ const styles = StyleSheet.create({
   lastMessage: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   metaColumn: {
     alignItems: 'flex-end',
   },
   timeText: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginBottom: 4,
   },
   unreadBadge: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     width: 20,
     height: 20,
     borderRadius: 10,
@@ -696,19 +698,19 @@ const styles = StyleSheet.create({
   unreadText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.white,
+    color: colors.white,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   chatHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   chatHeaderInfo: {
     flex: 1,
@@ -717,12 +719,12 @@ const styles = StyleSheet.create({
   chatHeaderName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   chatHeaderRole: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   chatContent: {
     flex: 1,
@@ -747,25 +749,25 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusLg,
   },
   messageBubbleMe: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4,
   },
   messageBubbleOther: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomLeftRadius: 4,
   },
   messageText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 20,
   },
   messageTextMe: {
-    color: COLORS.white,
+    color: colors.white,
   },
   messageTime: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: 4,
     alignSelf: 'flex-end',
   },
@@ -777,18 +779,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderTopColor: colors.border,
+    backgroundColor: colors.white,
   },
   messageInput: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     maxHeight: 100,
     marginRight: SIZES.sm,
   },
@@ -796,12 +798,12 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   sendButtonDisabled: {
-    backgroundColor: COLORS.textLight,
+    backgroundColor: colors.textLight,
   },
   // Team selection modal styles
   teamSelectionContent: {
@@ -811,7 +813,7 @@ const styles = StyleSheet.create({
   teamSelectionTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.md,
   },
   loadingContainer: {
@@ -828,25 +830,25 @@ const styles = StyleSheet.create({
   noTeamText: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.md,
   },
   noTeamSubtext: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
   },
   teamMemberCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   memberAvatar: {
     width: 48,
@@ -862,7 +864,7 @@ const styles = StyleSheet.create({
   memberName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   memberRoleBadge: {
     alignSelf: 'flex-start',
@@ -887,12 +889,12 @@ const styles = StyleSheet.create({
   invoicesSectionTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginLeft: SIZES.sm,
     flex: 1,
   },
   invoicesBadge: {
-    backgroundColor: COLORS.warning,
+    backgroundColor: colors.warning,
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -902,12 +904,12 @@ const styles = StyleSheet.create({
   invoicesBadgeText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.white,
+    color: colors.white,
   },
   invoiceCard: {
     marginBottom: SIZES.sm,
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.warning,
+    borderLeftColor: colors.warning,
   },
   invoiceRow: {
     flexDirection: 'row',
@@ -919,18 +921,18 @@ const styles = StyleSheet.create({
   invoiceAmount: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   invoiceDescription: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   invoiceFrom: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: 4,
   },
   invoiceMeta: {
@@ -948,33 +950,33 @@ const styles = StyleSheet.create({
   invoiceDueDate: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: 4,
   },
   paymentInstructions: {
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   paymentInstructionsLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   paymentInstructionsText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 18,
   },
   invoiceDisclaimer: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textAlign: 'center',
     marginTop: SIZES.sm,
     fontStyle: 'italic',
   },
-});
+}));

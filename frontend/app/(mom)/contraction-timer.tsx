@@ -19,8 +19,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
-import { useColors } from '../../src/hooks/useThemedStyles';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-chart-kit';
 
@@ -129,6 +129,7 @@ const formatInterval = (seconds: number | null): string => {
 export default function ContractionTimerScreen() {
   const router = useRouter();
   const colors = useColors();
+  const styles = getStyles(colors);
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [contractions, setContractions] = useState<Contraction[]>([]);
@@ -534,14 +535,14 @@ export default function ContractionTimerScreen() {
   };
   
   const getPatternStatusColor = () => {
-    if (!patternStatus) return COLORS.textLight;
+    if (!patternStatus) return colors.textLight;
     switch (patternStatus.status) {
       case '511_reached':
         return '#F44336';
       case 'progressing':
         return '#FF9800';
       default:
-        return COLORS.accent;
+        return colors.accent;
     }
   };
   
@@ -567,7 +568,7 @@ export default function ContractionTimerScreen() {
         
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconContainer}>
-            <Icon name="timer-outline" size={64} color={COLORS.primary} />
+            <Icon name="timer-outline" size={64} color={colors.primary} />
           </View>
           <Text style={styles.emptyTitle}>Ready to Time Contractions?</Text>
           <Text style={styles.emptyText}>
@@ -604,7 +605,7 @@ export default function ContractionTimerScreen() {
                   <Icon 
                     name={shareWithDoula ? "checkbox" : "square-outline"} 
                     size={24} 
-                    color={shareWithDoula ? COLORS.primary : COLORS.textLight} 
+                    color={shareWithDoula ? colors.primary : colors.textLight} 
                   />
                   <Text style={styles.sharingOptionText}>Share with my Doula</Text>
                 </Pressable>
@@ -616,7 +617,7 @@ export default function ContractionTimerScreen() {
                   <Icon 
                     name={shareWithMidwife ? "checkbox" : "square-outline"} 
                     size={24} 
-                    color={shareWithMidwife ? COLORS.primary : COLORS.textLight} 
+                    color={shareWithMidwife ? colors.primary : colors.textLight} 
                   />
                   <Text style={styles.sharingOptionText}>Share with my Midwife</Text>
                 </Pressable>
@@ -805,23 +806,23 @@ export default function ContractionTimerScreen() {
       {/* Bottom Actions */}
       <View style={styles.bottomActions}>
         <Pressable style={styles.actionBtn} onPress={() => setShowHistoryModal(true)}>
-          <Icon name="list-outline" size={24} color={COLORS.primary} />
+          <Icon name="list-outline" size={24} color={colors.primary} />
           <Text style={styles.actionBtnText}>History</Text>
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={() => setShowManualModal(true)}>
-          <Icon name="add-circle-outline" size={24} color={COLORS.primary} />
+          <Icon name="add-circle-outline" size={24} color={colors.primary} />
           <Text style={styles.actionBtnText}>Add Manual</Text>
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={exportSummary}>
-          <Icon name="share-outline" size={24} color={COLORS.primary} />
+          <Icon name="share-outline" size={24} color={colors.primary} />
           <Text style={styles.actionBtnText}>Share</Text>
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={endSession}>
-          <Icon name="stop-circle-outline" size={24} color={COLORS.error} />
-          <Text style={[styles.actionBtnText, { color: COLORS.error }]}>End</Text>
+          <Icon name="stop-circle-outline" size={24} color={colors.error} />
+          <Text style={[styles.actionBtnText, { color: colors.error }]}>End</Text>
         </Pressable>
       </View>
       
@@ -829,19 +830,19 @@ export default function ContractionTimerScreen() {
       <View style={styles.secondaryActionsRow}>
         {!session?.water_broke_at && (
           <Pressable style={styles.secondaryActionBtn} onPress={() => setShowWaterBrokeModal(true)}>
-            <Icon name="water-outline" size={20} color={COLORS.primary} />
+            <Icon name="water-outline" size={20} color={colors.primary} />
             <Text style={styles.secondaryActionText}>Water Broke</Text>
           </Pressable>
         )}
         
         <Pressable style={styles.secondaryActionBtn} onPress={() => setShowNotesModal(true)}>
-          <Icon name="create-outline" size={20} color={COLORS.primary} />
+          <Icon name="create-outline" size={20} color={colors.primary} />
           <Text style={styles.secondaryActionText}>Notes</Text>
         </Pressable>
         
         {(chartData?.duration_data?.length || 0) >= 3 && (
           <Pressable style={styles.secondaryActionBtn} onPress={() => setShowChartsModal(true)}>
-            <Icon name="stats-chart-outline" size={20} color={COLORS.primary} />
+            <Icon name="stats-chart-outline" size={20} color={colors.primary} />
             <Text style={styles.secondaryActionText}>Charts</Text>
           </Pressable>
         )}
@@ -893,7 +894,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{birthWordCapitalized} History</Text>
               <Pressable onPress={() => setShowHistoryModal(false)}>
-                <Icon name="close" size={24} color={COLORS.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
             
@@ -917,7 +918,7 @@ export default function ContractionTimerScreen() {
                           {c.intensity && (
                             <View style={[
                               styles.intensityBadge,
-                              { backgroundColor: INTENSITIES.find(i => i.value === c.intensity)?.color || COLORS.textLight }
+                              { backgroundColor: INTENSITIES.find(i => i.value === c.intensity)?.color || colors.textLight }
                             ]}>
                               <Text style={styles.intensityBadgeText}>{c.intensity}</Text>
                             </View>
@@ -929,7 +930,7 @@ export default function ContractionTimerScreen() {
                       style={styles.deleteBtn}
                       onPress={() => deleteContraction(c.contraction_id)}
                     >
-                      <Icon name="trash-outline" size={20} color={COLORS.error} />
+                      <Icon name="trash-outline" size={20} color={colors.error} />
                     </Pressable>
                   </View>
                 ))
@@ -951,7 +952,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Add Contraction Manually</Text>
               <Pressable onPress={() => setShowManualModal(false)}>
-                <Icon name="close" size={24} color={COLORS.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
             
@@ -1032,7 +1033,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Timer Settings</Text>
               <Pressable onPress={() => setShowSettingsModal(false)}>
-                <Icon name="close" size={24} color={COLORS.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
             
@@ -1075,7 +1076,7 @@ export default function ContractionTimerScreen() {
                       <Icon 
                         name={preferences.alert_threshold === option.value ? "radio-button-on" : "radio-button-off"} 
                         size={20} 
-                        color={preferences.alert_threshold === option.value ? COLORS.primary : COLORS.textLight} 
+                        color={preferences.alert_threshold === option.value ? colors.primary : colors.textLight} 
                       />
                       <View style={{ marginLeft: 12 }}>
                         <Text style={styles.alertOptionTitle}>{option.label}</Text>
@@ -1102,7 +1103,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Record Water Breaking</Text>
               <Pressable onPress={() => setShowWaterBrokeModal(false)}>
-                <Icon name="close" size={24} color={COLORS.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
             
@@ -1142,7 +1143,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Session Notes</Text>
               <Pressable onPress={() => setShowNotesModal(false)}>
-                <Icon name="close" size={24} color={COLORS.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
             
@@ -1176,7 +1177,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{birthWordCapitalized} Charts</Text>
               <Pressable onPress={() => setShowChartsModal(false)}>
-                <Icon name="close" size={24} color={COLORS.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
             
@@ -1201,7 +1202,7 @@ export default function ContractionTimerScreen() {
                         color: (opacity = 1) => `rgba(156, 125, 97, ${opacity})`,
                         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                         style: { borderRadius: 8 },
-                        propsForDots: { r: '4', strokeWidth: '2', stroke: COLORS.primary }
+                        propsForDots: { r: '4', strokeWidth: '2', stroke: colors.primary }
                       }}
                       bezier
                       style={{ borderRadius: 8 }}
@@ -1227,7 +1228,7 @@ export default function ContractionTimerScreen() {
                           color: (opacity = 1) => `rgba(97, 125, 156, ${opacity})`,
                           labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                           style: { borderRadius: 8 },
-                          propsForDots: { r: '4', strokeWidth: '2', stroke: COLORS.secondary }
+                          propsForDots: { r: '4', strokeWidth: '2', stroke: colors.secondary }
                         }}
                         bezier
                         style={{ borderRadius: 8 }}
@@ -1244,21 +1245,21 @@ export default function ContractionTimerScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   header: {
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontSize: 24,
     fontFamily: FONTS.heading,
-    color: COLORS.text,
+    color: colors.text,
   },
   scrollView: {
     flex: 1,
@@ -1278,7 +1279,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: `${COLORS.primary}15`,
+    backgroundColor: `${colors.primary}15`,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
@@ -1286,14 +1287,14 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 22,
     fontFamily: FONTS.heading,
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 12,
     textAlign: 'center',
   },
   emptyText: {
     fontSize: 16,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 32,
@@ -1306,11 +1307,11 @@ const styles = StyleSheet.create({
   // Stats Strip
   statsStrip: {
     flexDirection: 'row',
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   statItem: {
     flex: 1,
@@ -1319,17 +1320,17 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontFamily: FONTS.heading,
-    color: COLORS.primary,
+    color: colors.primary,
   },
   statLabel: {
     fontSize: 12,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: 4,
   },
   statDivider: {
     width: 1,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     marginVertical: 4,
   },
   
@@ -1344,10 +1345,10 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: COLORS.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -1357,12 +1358,12 @@ const styles = StyleSheet.create({
   timerText: {
     fontSize: 48,
     fontFamily: FONTS.heading,
-    color: COLORS.text,
+    color: colors.text,
   },
   timerLabel: {
     fontSize: 16,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: 4,
   },
   mainButton: {
@@ -1370,17 +1371,17 @@ const styles = StyleSheet.create({
     maxWidth: 300,
     paddingVertical: 20,
     borderRadius: 30,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   mainButtonActive: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: colors.secondary,
   },
   mainButtonText: {
     fontSize: 18,
     fontFamily: FONTS.heading,
-    color: COLORS.white,
+    color: colors.white,
   },
   
   // Pattern Status
@@ -1394,7 +1395,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderRadius: 8,
     borderWidth: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
   },
   patternStatusText: {
     fontSize: 14,
@@ -1422,8 +1423,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderTopColor: colors.border,
+    backgroundColor: colors.white,
   },
   actionBtn: {
     flex: 1,
@@ -1432,7 +1433,7 @@ const styles = StyleSheet.create({
   actionBtnText: {
     fontSize: 12,
     fontFamily: FONTS.body,
-    color: COLORS.primary,
+    color: colors.primary,
     marginTop: 4,
   },
   
@@ -1443,7 +1444,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
@@ -1458,13 +1459,13 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontFamily: FONTS.heading,
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 8,
   },
   modalSubtitle: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginBottom: 20,
     lineHeight: 20,
   },
@@ -1482,23 +1483,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     marginBottom: 8,
   },
   sharingOptionActive: {
-    backgroundColor: `${COLORS.primary}15`,
+    backgroundColor: `${colors.primary}15`,
   },
   sharingOptionText: {
     fontSize: 16,
     fontFamily: FONTS.body,
-    color: COLORS.text,
+    color: colors.text,
     marginLeft: 12,
   },
   sharingNote: {
     fontSize: 12,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -1516,7 +1517,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     borderRadius: 12,
     borderWidth: 2,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
   },
   intensityDot: {
     width: 24,
@@ -1527,7 +1528,7 @@ const styles = StyleSheet.create({
   intensityLabel: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.text,
+    color: colors.text,
   },
   skipIntensity: {
     alignItems: 'center',
@@ -1536,7 +1537,7 @@ const styles = StyleSheet.create({
   skipIntensityText: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   
   // History list
@@ -1546,7 +1547,7 @@ const styles = StyleSheet.create({
   emptyHistoryText: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textAlign: 'center',
     paddingVertical: 40,
   },
@@ -1556,7 +1557,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   historyItemLeft: {
     flexDirection: 'row',
@@ -1566,13 +1567,13 @@ const styles = StyleSheet.create({
   historyItemNumber: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     width: 40,
   },
   historyItemTime: {
     fontSize: 16,
     fontFamily: FONTS.heading,
-    color: COLORS.text,
+    color: colors.text,
   },
   historyItemDetails: {
     flexDirection: 'row',
@@ -1583,7 +1584,7 @@ const styles = StyleSheet.create({
   historyDetailText: {
     fontSize: 12,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginRight: 12,
   },
   intensityBadge: {
@@ -1594,7 +1595,7 @@ const styles = StyleSheet.create({
   intensityBadgeText: {
     fontSize: 10,
     fontFamily: FONTS.body,
-    color: COLORS.white,
+    color: colors.white,
     fontWeight: '600',
   },
   deleteBtn: {
@@ -1608,18 +1609,18 @@ const styles = StyleSheet.create({
   formLabel: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 8,
   },
   formInput: {
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
     fontFamily: FONTS.body,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
   },
   intensityRow: {
     flexDirection: 'row',
@@ -1630,18 +1631,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     alignItems: 'center',
   },
   intensityChipText: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.text,
+    color: colors.text,
   },
   
   // Summary styles
   summaryCard: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 24,
     marginBottom: 20,
@@ -1649,7 +1650,7 @@ const styles = StyleSheet.create({
   summaryTitle: {
     fontSize: 20,
     fontFamily: FONTS.heading,
-    color: COLORS.text,
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -1664,12 +1665,12 @@ const styles = StyleSheet.create({
   summaryStatValue: {
     fontSize: 28,
     fontFamily: FONTS.heading,
-    color: COLORS.primary,
+    color: colors.primary,
   },
   summaryStatLabel: {
     fontSize: 12,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: 4,
   },
   patternReachedBanner: {
@@ -1698,8 +1699,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   settingsBtn: {
     padding: 8,
@@ -1728,23 +1729,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 16,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.background,
+    borderTopColor: colors.border,
+    backgroundColor: colors.background,
   },
   secondaryActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   secondaryActionText: {
     fontSize: 13,
     fontFamily: FONTS.body,
-    color: COLORS.primary,
+    color: colors.primary,
     marginLeft: 6,
   },
   
@@ -1755,13 +1756,13 @@ const styles = StyleSheet.create({
   settingsLabel: {
     fontSize: 16,
     fontFamily: FONTS.heading,
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 4,
   },
   settingsHint: {
     fontSize: 13,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginBottom: 12,
   },
   settingsOptions: {
@@ -1774,20 +1775,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     alignItems: 'center',
   },
   settingsOptionActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   settingsOptionText: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.text,
+    color: colors.text,
   },
   settingsOptionTextActive: {
-    color: COLORS.white,
+    color: colors.white,
   },
   alertOption: {
     flexDirection: 'row',
@@ -1796,12 +1797,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     marginBottom: 8,
   },
   alertOptionActive: {
-    borderColor: COLORS.primary,
-    backgroundColor: `${COLORS.primary}10`,
+    borderColor: colors.primary,
+    backgroundColor: `${colors.primary}10`,
   },
   alertOptionLeft: {
     flexDirection: 'row',
@@ -1811,12 +1812,12 @@ const styles = StyleSheet.create({
   alertOptionTitle: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.text,
+    color: colors.text,
   },
   alertOptionDesc: {
     fontSize: 12,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: 2,
   },
   
@@ -1824,7 +1825,7 @@ const styles = StyleSheet.create({
   waterBrokeHint: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     lineHeight: 20,
     marginBottom: 16,
   },
@@ -1832,15 +1833,15 @@ const styles = StyleSheet.create({
   // Charts
   chartSection: {
     marginBottom: 24,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 16,
   },
   chartTitle: {
     fontSize: 14,
     fontFamily: FONTS.heading,
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 8,
     textAlign: 'center',
   },
-});
+}));

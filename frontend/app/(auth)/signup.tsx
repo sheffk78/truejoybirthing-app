@@ -17,7 +17,8 @@ import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { useAuthStore } from '../../src/store/authStore';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 type RoleOption = 'MOM' | 'DOULA' | 'MIDWIFE';
 
@@ -32,14 +33,14 @@ interface RoleData {
   bgImage: string;
 }
 
-const ROLE_OPTIONS: RoleData[] = [
+const getRoleOptions = (colors: ReturnType<typeof useColors>): RoleData[] => [
   {
     value: 'MOM',
     label: "I'm Expecting",
     subtitle: 'Create your birth plan & build your team',
     icon: 'heart',
-    color: COLORS.secondary,
-    colorLight: COLORS.secondaryLight,
+    color: colors.secondary,
+    colorLight: colors.secondaryLight,
     pricing: 'Free Forever',
     bgImage: 'https://images.unsplash.com/photo-1771814535949-53fd6188f5f2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGZsdWlkJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyNTE4MDI0fDA&ixlib=rb-4.1.0&q=85',
   },
@@ -48,8 +49,8 @@ const ROLE_OPTIONS: RoleData[] = [
     label: "I'm a Doula",
     subtitle: 'Manage clients & grow your practice',
     icon: 'people',
-    color: COLORS.primary,
-    colorLight: COLORS.primaryLight,
+    color: colors.primary,
+    colorLight: colors.primaryLight,
     pricing: 'Pro Features',
     bgImage: 'https://images.unsplash.com/photo-1771814536150-fa5677cfca01?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGZsdWlkJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyNTE4MDI0fDA&ixlib=rb-4.1.0&q=85',
   },
@@ -58,16 +59,21 @@ const ROLE_OPTIONS: RoleData[] = [
     label: "I'm a Midwife",
     subtitle: 'Track visits & support birthing families',
     icon: 'medkit',
-    color: COLORS.accent,
-    colorLight: COLORS.accentLight,
+    color: colors.accent,
+    colorLight: colors.accent + '40',
     pricing: 'Pro Features',
     bgImage: 'https://images.unsplash.com/photo-1771814567353-4be8ac21cfb4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGZsdWlkJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyNTE4MDI0fDA&ixlib=rb-4.1.0&q=85',
   },
 ];
 
 export default function SignupScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const { register, isLoading } = useAuthStore();
+  
+  // Get role options with colors
+  const roleOptions = getRoleOptions(colors);
   
   const [step, setStep] = useState<'role' | 'details'>('role');
   const [fullName, setFullName] = useState('');
@@ -123,7 +129,7 @@ export default function SignupScreen() {
     }
   };
   
-  const selectedRoleData = ROLE_OPTIONS.find(r => r.value === selectedRole);
+  const selectedRoleData = roleOptions.find(r => r.value === selectedRole);
   
   // Step 1: Role Selection
   if (step === 'role') {
@@ -139,7 +145,7 @@ export default function SignupScreen() {
             onPress={() => router.back()}
             data-testid="signup-back-btn"
           >
-            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Icon name="arrow-back" size={24} color={colors.text} />
           </Pressable>
           
           <View style={styles.roleHeaderSection}>
@@ -149,7 +155,7 @@ export default function SignupScreen() {
           
           {/* Role Cards */}
           <View style={styles.roleCardsContainer}>
-            {ROLE_OPTIONS.map((option, index) => (
+            {roleOptions.map((option, index) => (
               <Pressable
                 key={option.value}
                 style={({ pressed }) => [
@@ -226,7 +232,7 @@ export default function SignupScreen() {
             onPress={() => setStep('role')}
             data-testid="details-back-btn"
           >
-            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Icon name="arrow-back" size={24} color={colors.text} />
           </Pressable>
           
           {/* Selected Role Badge */}
@@ -302,7 +308,7 @@ export default function SignupScreen() {
           <Pressable
             style={({ pressed }) => [
               styles.submitButton,
-              { backgroundColor: selectedRoleData?.color || COLORS.primary },
+              { backgroundColor: selectedRoleData?.color || colors.primary },
               pressed && styles.buttonPressed,
             ]}
             onPress={handleSignup}
@@ -323,7 +329,7 @@ export default function SignupScreen() {
           <View style={styles.loginSection}>
             <Text style={styles.loginText}>Already have an account? </Text>
             <Pressable onPress={() => router.push('/(auth)/login')}>
-              <Text style={[styles.loginLink, { color: selectedRoleData?.color || COLORS.primary }]}>
+              <Text style={[styles.loginLink, { color: selectedRoleData?.color || colors.primary }]}>
                 Log In
               </Text>
             </Pressable>
@@ -334,10 +340,10 @@ export default function SignupScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   keyboardView: {
     flex: 1,
@@ -367,13 +373,13 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   roleSubtitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   roleCardsContainer: {
     gap: SIZES.md,
@@ -477,13 +483,13 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontTitle,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   formSection: {
     marginBottom: SIZES.lg,
@@ -515,11 +521,11 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   loginLink: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
   },
-});
+}));

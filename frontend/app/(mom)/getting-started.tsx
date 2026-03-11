@@ -13,7 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from '../../src/components/Icon';
 import { useAuthStore } from '../../src/store/authStore';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../src/hooks/useThemedStyles';
 
 // Birth photos
 const PHOTOS = {
@@ -32,13 +33,13 @@ interface QuickStartItem {
   route: string;
 }
 
-const MOM_QUICK_START: QuickStartItem[] = [
+const getMomQuickStart = (colors: ThemeColors): QuickStartItem[] => [
   {
     id: 'birth-plan',
     title: 'Create Your Birth Plan',
     description: 'Build a personalized plan that captures your preferences for labor, delivery, and postpartum care.',
     icon: 'document-text',
-    color: COLORS.secondary,
+    color: colors.secondary,
     action: 'Start My Plan',
     route: '/(mom)/birth-plan',
   },
@@ -47,7 +48,7 @@ const MOM_QUICK_START: QuickStartItem[] = [
     title: 'Find Your Birth Team',
     description: 'Search for experienced doulas and midwives in your area who align with your birth vision.',
     icon: 'people',
-    color: COLORS.primary,
+    color: colors.primary,
     action: 'Browse Providers',
     route: '/(mom)/marketplace',
   },
@@ -56,7 +57,7 @@ const MOM_QUICK_START: QuickStartItem[] = [
     title: 'Share Your Plan',
     description: 'Once your birth plan is ready, share it with your doula, midwife, or hospital for seamless communication.',
     icon: 'share-social',
-    color: COLORS.accent,
+    color: colors.accent,
     action: 'Share Plan',
     route: '/(mom)/share-birth-plan',
   },
@@ -81,6 +82,9 @@ const TIPS = [
 ];
 
 export default function GettingStartedScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
+  const MOM_QUICK_START = getMomQuickStart(colors);
   const router = useRouter();
   const { user } = useAuthStore();
   const [expandedTip, setExpandedTip] = useState<string | null>(null);
@@ -101,7 +105,7 @@ export default function GettingStartedScreen() {
           colors={[
             'rgba(159, 131, 182, 0.5)',
             'rgba(254, 252, 255, 0.9)',
-            COLORS.background,
+            colors.background,
           ]}
           locations={[0, 0.6, 1]}
           style={styles.heroGradient}
@@ -115,7 +119,7 @@ export default function GettingStartedScreen() {
               onClick={Platform.OS === 'web' ? () => router.back() : undefined}
               data-testid="back-btn"
             >
-              <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+              <Icon name="arrow-back" size={24} color={colors.text} />
             </Pressable>
           </SafeAreaView>
         </LinearGradient>
@@ -182,7 +186,7 @@ export default function GettingStartedScreen() {
             {TIPS.map((tip, index) => (
               <View key={index} style={styles.tipCard}>
                 <View style={styles.tipIconContainer}>
-                  <Icon name={tip.icon as any} size={20} color={COLORS.primary} />
+                  <Icon name={tip.icon as any} size={20} color={colors.primary} />
                 </View>
                 <View style={styles.tipContent}>
                   <Text style={styles.tipTitle}>{tip.title}</Text>
@@ -206,12 +210,12 @@ export default function GettingStartedScreen() {
             // @ts-ignore
             onClick={Platform.OS === 'web' ? () => router.push('/tutorial?role=MOM') : undefined}
           >
-            <Icon name="play-circle" size={32} color={COLORS.primary} />
+            <Icon name="play-circle" size={32} color={colors.primary} />
             <View style={styles.helpContent}>
               <Text style={styles.helpTitle}>Watch App Tour</Text>
               <Text style={styles.helpDescription}>A quick walkthrough of all the features</Text>
             </View>
-            <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+            <Icon name="chevron-forward" size={20} color={colors.textLight} />
           </Pressable>
           
           <Pressable
@@ -227,12 +231,12 @@ export default function GettingStartedScreen() {
             // @ts-ignore
             onClick={Platform.OS === 'web' ? () => window.open('mailto:support@truejoybirthing.com', '_blank') : undefined}
           >
-            <Icon name="mail" size={32} color={COLORS.accent} />
+            <Icon name="mail" size={32} color={colors.accent} />
             <View style={styles.helpContent}>
               <Text style={styles.helpTitle}>Contact Support</Text>
               <Text style={styles.helpDescription}>We're here to help with any questions</Text>
             </View>
-            <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+            <Icon name="chevron-forward" size={20} color={colors.textLight} />
           </Pressable>
         </View>
       </ScrollView>
@@ -240,10 +244,10 @@ export default function GettingStartedScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   heroSection: {
     height: 180,
@@ -276,20 +280,20 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   title: {
     fontSize: 32,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 24,
   },
   section: {
@@ -299,17 +303,17 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.md,
   },
   quickStartCard: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.md,
     marginBottom: SIZES.md,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     shadowColor: '#4A3B4E',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
@@ -346,12 +350,12 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   quickStartDescription: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 20,
     marginBottom: SIZES.sm,
   },
@@ -371,24 +375,24 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   tipsContainer: {
-    backgroundColor: COLORS.primary + '08',
+    backgroundColor: colors.primary + '08',
     borderRadius: SIZES.radiusLg,
     padding: SIZES.md,
     borderWidth: 1,
-    borderColor: COLORS.primary + '20',
+    borderColor: colors.primary + '20',
   },
   tipCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.primary + '15',
+    borderBottomColor: colors.primary + '15',
   },
   tipIconContainer: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: COLORS.primary + '15',
+    backgroundColor: colors.primary + '15',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.sm,
@@ -400,24 +404,24 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 2,
   },
   tipDescription: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   helpCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.md,
     marginBottom: SIZES.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   helpContent: {
     flex: 1,
@@ -427,11 +431,11 @@ const styles = StyleSheet.create({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   helpDescription: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
-});
+}));

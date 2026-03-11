@@ -13,7 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const STATUS_COLORS: Record<string, string> = {
   'Sent': '#FF9800',
@@ -22,6 +23,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function MomInvoicesScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -70,7 +73,7 @@ export default function MomInvoicesScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -80,7 +83,7 @@ export default function MomInvoicesScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -91,7 +94,7 @@ export default function MomInvoicesScreen() {
 
         {/* Disclaimer */}
         <View style={styles.disclaimerCard}>
-          <Ionicons name="information-circle" size={20} color={COLORS.primary} />
+          <Ionicons name="information-circle" size={20} color={colors.primary} />
           <Text style={styles.disclaimerText}>
             Payments are made directly to your provider using the instructions they provide. 
             True Joy Birthing does not process or guarantee payments between you and your provider.
@@ -101,7 +104,7 @@ export default function MomInvoicesScreen() {
         {/* Invoice List */}
         {invoices.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Ionicons name="receipt-outline" size={48} color={COLORS.textLight} />
+            <Ionicons name="receipt-outline" size={48} color={colors.textLight} />
             <Text style={styles.emptyTitle}>No Invoices Yet</Text>
             <Text style={styles.emptyText}>
               When your doula or midwife sends you an invoice, it will appear here.
@@ -141,7 +144,7 @@ export default function MomInvoicesScreen() {
                 <Text style={styles.amountText}>{formatCurrency(invoice.amount)}</Text>
                 <View style={styles.viewButton}>
                   <Text style={styles.viewButtonText}>View Details</Text>
-                  <Ionicons name="chevron-forward" size={16} color={COLORS.primary} />
+                  <Ionicons name="chevron-forward" size={16} color={colors.primary} />
                 </View>
               </View>
             </TouchableOpacity>
@@ -155,7 +158,7 @@ export default function MomInvoicesScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowDetailModal(false)}>
-                <Ionicons name="close" size={24} color={COLORS.textPrimary} />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Invoice Details</Text>
               <View style={{ width: 24 }} />
@@ -217,7 +220,7 @@ export default function MomInvoicesScreen() {
                   <View style={styles.detailSection}>
                     <Text style={styles.sectionTitle}>Payment Instructions</Text>
                     <View style={styles.paymentInstructionsBox}>
-                      <Ionicons name="card-outline" size={20} color={COLORS.primary} style={{ marginRight: 8 }} />
+                      <Ionicons name="card-outline" size={20} color={colors.primary} style={{ marginRight: 8 }} />
                       <Text style={styles.paymentInstructionsText}>
                         {selectedInvoice.payment_instructions_text}
                       </Text>
@@ -235,7 +238,7 @@ export default function MomInvoicesScreen() {
 
                 {/* Disclaimer */}
                 <View style={styles.modalDisclaimerCard}>
-                  <Ionicons name="shield-checkmark-outline" size={16} color={COLORS.textSecondary} />
+                  <Ionicons name="shield-checkmark-outline" size={16} color={colors.textSecondary} />
                   <Text style={styles.modalDisclaimerText}>
                     Payments are made directly to your provider. True Joy Birthing does not process 
                     or guarantee payments between you and your provider.
@@ -250,15 +253,15 @@ export default function MomInvoicesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1, backgroundColor: colors.background },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
   header: { marginBottom: SIZES.md },
-  title: { fontSize: 28, fontWeight: '700', color: COLORS.textPrimary },
+  title: { fontSize: 28, fontWeight: '700', color: colors.text },
   disclaimerCard: {
     flexDirection: 'row',
-    backgroundColor: COLORS.primary + '10',
+    backgroundColor: colors.primary + '10',
     borderRadius: 12,
     padding: SIZES.md,
     marginBottom: SIZES.lg,
@@ -267,7 +270,7 @@ const styles = StyleSheet.create({
   disclaimerText: {
     flex: 1,
     fontSize: 13,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   emptyCard: {
@@ -279,12 +282,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: 14,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: SIZES.sm,
   },
@@ -294,7 +297,7 @@ const styles = StyleSheet.create({
     padding: SIZES.md,
     marginBottom: SIZES.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   invoiceHeader: {
     flexDirection: 'row',
@@ -303,8 +306,8 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.xs,
   },
   providerInfo: { flex: 1 },
-  providerName: { fontSize: 16, fontWeight: '600', color: COLORS.textPrimary },
-  providerType: { fontSize: 12, color: COLORS.textSecondary },
+  providerName: { fontSize: 16, fontWeight: '600', color: colors.text },
+  providerType: { fontSize: 12, color: colors.textSecondary },
   statusBadge: {
     paddingHorizontal: SIZES.sm,
     paddingVertical: 4,
@@ -316,20 +319,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: SIZES.xs,
   },
-  invoiceNumber: { fontSize: 12, color: COLORS.primary, fontWeight: '500' },
-  dueDate: { fontSize: 12, color: COLORS.textSecondary },
-  description: { fontSize: 14, color: COLORS.textSecondary, marginBottom: SIZES.sm },
+  invoiceNumber: { fontSize: 12, color: colors.primary, fontWeight: '500' },
+  dueDate: { fontSize: 12, color: colors.textSecondary },
+  description: { fontSize: 14, color: colors.textSecondary, marginBottom: SIZES.sm },
   invoiceFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
-  amountText: { fontSize: 20, fontWeight: '700', color: COLORS.success },
+  amountText: { fontSize: 20, fontWeight: '700', color: colors.success },
   viewButton: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  viewButtonText: { fontSize: 14, color: COLORS.primary, fontWeight: '500' },
+  viewButtonText: { fontSize: 14, color: colors.primary, fontWeight: '500' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalContent: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%' },
   modalHeader: {
@@ -338,20 +341,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
-  modalTitle: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary },
+  modalTitle: { fontSize: 18, fontWeight: '600', color: colors.text },
   modalBody: { padding: SIZES.md },
   detailSection: {
     marginBottom: SIZES.lg,
     paddingBottom: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: colors.primary,
     marginBottom: SIZES.sm,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -362,46 +365,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  detailLabel: { fontSize: 14, color: COLORS.textSecondary },
-  detailValue: { fontSize: 14, fontWeight: '500', color: COLORS.textPrimary },
-  detailSubtext: { fontSize: 13, color: COLORS.textSecondary },
+  detailLabel: { fontSize: 14, color: colors.textSecondary },
+  detailValue: { fontSize: 14, fontWeight: '500', color: colors.text },
+  detailSubtext: { fontSize: 13, color: colors.textSecondary },
   descriptionFull: {
     fontSize: 15,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 22,
     marginBottom: SIZES.md,
   },
   amountBox: {
-    backgroundColor: COLORS.success + '10',
+    backgroundColor: colors.success + '10',
     borderRadius: 12,
     padding: SIZES.md,
     alignItems: 'center',
   },
-  amountLabel: { fontSize: 12, color: COLORS.textSecondary, marginBottom: 4 },
-  amountLarge: { fontSize: 28, fontWeight: '700', color: COLORS.success },
+  amountLabel: { fontSize: 12, color: colors.textSecondary, marginBottom: 4 },
+  amountLarge: { fontSize: 28, fontWeight: '700', color: colors.success },
   paymentInstructionsBox: {
     flexDirection: 'row',
-    backgroundColor: COLORS.primary + '08',
+    backgroundColor: colors.primary + '08',
     borderRadius: 12,
     padding: SIZES.md,
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.primary,
+    borderLeftColor: colors.primary,
   },
   paymentInstructionsText: {
     flex: 1,
     fontSize: 14,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 20,
   },
   notesText: {
     fontSize: 14,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 20,
     fontStyle: 'italic',
   },
   modalDisclaimerCard: {
     flexDirection: 'row',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: 8,
     padding: SIZES.sm,
     marginTop: SIZES.md,
@@ -410,7 +413,7 @@ const styles = StyleSheet.create({
   modalDisclaimerText: {
     flex: 1,
     fontSize: 11,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 16,
   },
-});
+}));

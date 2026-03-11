@@ -14,7 +14,8 @@ import { useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS, API_BASE } from '../../src/constants/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 
 const SECTION_LABELS: Record<string, string> = {
@@ -29,6 +30,8 @@ const SECTION_LABELS: Record<string, string> = {
 };
 
 export default function BirthPlanPreviewScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const { sessionToken } = useAuthStore();
   const [birthPlan, setBirthPlan] = useState<any>(null);
@@ -119,7 +122,7 @@ export default function BirthPlanPreviewScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Loading your birth plan...</Text>
         </View>
       </SafeAreaView>
@@ -131,15 +134,15 @@ export default function BirthPlanPreviewScreen() {
       {/* Header - Hidden on print */}
       <View style={styles.header} className="no-print">
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Birth Plan Preview</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={handlePrint} style={styles.actionButton}>
-            <Icon name="print-outline" size={22} color={COLORS.primary} />
+            <Icon name="print-outline" size={22} color={colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDownloadPDF} style={styles.actionButton}>
-            <Icon name="download-outline" size={22} color={COLORS.primary} />
+            <Icon name="download-outline" size={22} color={colors.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -234,7 +237,7 @@ export default function BirthPlanPreviewScreen() {
       {/* Action Bar - Hidden on print */}
       <View style={styles.actionBar} className="no-print">
         <TouchableOpacity style={styles.printButton} onPress={handlePrint}>
-          <Icon name="print" size={20} color={COLORS.white} />
+          <Icon name="print" size={20} color={colors.white} />
           <Text style={styles.printButtonText}>Print Birth Plan</Text>
         </TouchableOpacity>
       </View>
@@ -257,10 +260,10 @@ export default function BirthPlanPreviewScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -270,7 +273,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   header: {
     flexDirection: 'row',
@@ -279,8 +282,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   backButton: {
     padding: SIZES.xs,
@@ -288,7 +291,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   headerActions: {
     flexDirection: 'row',
@@ -305,7 +308,7 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   printableContent: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.lg,
     shadowColor: '#000',
@@ -319,28 +322,28 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.xl,
     paddingBottom: SIZES.lg,
     borderBottomWidth: 2,
-    borderBottomColor: COLORS.primary,
+    borderBottomColor: colors.primary,
   },
   documentTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: colors.primary,
     marginBottom: SIZES.xs,
   },
   documentSubtitle: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   documentDate: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: SIZES.sm,
   },
   providerMessage: {
     backgroundColor: '#f8f4f0',
     borderWidth: 1,
-    borderColor: COLORS.primary + '40',
+    borderColor: colors.primary + '40',
     borderRadius: SIZES.radiusMd,
     padding: SIZES.lg,
     marginBottom: SIZES.xl,
@@ -348,7 +351,7 @@ const styles = StyleSheet.create({
   providerMessageTitle: {
     fontSize: SIZES.fontMd,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: SIZES.md,
@@ -356,7 +359,7 @@ const styles = StyleSheet.create({
   },
   providerMessageText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 22,
     textAlign: 'justify',
   },
@@ -364,7 +367,7 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.lg,
     paddingBottom: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -375,25 +378,25 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     flex: 1,
   },
   statusBadge: {
     paddingHorizontal: SIZES.sm,
     paddingVertical: 4,
     borderRadius: 12,
-    backgroundColor: COLORS.textLight + '30',
+    backgroundColor: colors.textLight + '30',
   },
   statusComplete: {
-    backgroundColor: COLORS.success + '20',
+    backgroundColor: colors.success + '20',
   },
   statusProgress: {
-    backgroundColor: COLORS.warning + '20',
+    backgroundColor: colors.warning + '20',
   },
   statusText: {
     fontSize: SIZES.fontXs,
     fontWeight: '500',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   sectionContent: {
     paddingLeft: SIZES.sm,
@@ -406,60 +409,60 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: SIZES.fontSm,
     fontWeight: '500',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginRight: SIZES.xs,
     minWidth: 150,
   },
   fieldValue: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
     flex: 1,
   },
   notesContainer: {
     marginTop: SIZES.md,
     padding: SIZES.md,
-    backgroundColor: COLORS.primary + '10',
+    backgroundColor: colors.primary + '10',
     borderRadius: SIZES.radiusSm,
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.primary,
+    borderLeftColor: colors.primary,
   },
   notesLabel: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: colors.primary,
     marginBottom: SIZES.xs,
   },
   notesText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 20,
   },
   emptySection: {
     padding: SIZES.md,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusSm,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textLight,
+    color: colors.textLight,
     fontStyle: 'italic',
   },
   footer: {
     marginTop: SIZES.xl,
     paddingTop: SIZES.lg,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   footerText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: SIZES.lg,
     lineHeight: 20,
   },
   signatureLine: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.lg,
   },
   actionBar: {
@@ -468,15 +471,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   printButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     paddingVertical: SIZES.md,
     borderRadius: SIZES.radiusMd,
     gap: SIZES.sm,
@@ -484,6 +487,6 @@ const styles = StyleSheet.create({
   printButtonText: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.white,
+    color: colors.white,
   },
-});
+}));

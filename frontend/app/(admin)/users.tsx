@@ -13,16 +13,21 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../src/hooks/useThemedStyles';
 
-const ROLE_COLORS: Record<string, string> = {
-  'MOM': COLORS.roleMom,
-  'DOULA': COLORS.roleDoula,
-  'MIDWIFE': COLORS.roleMidwife,
-  'ADMIN': COLORS.roleAdmin,
-};
+// Dynamic role colors based on theme
+const getRoleColors = (colors: ThemeColors): Record<string, string> => ({
+  'MOM': colors.roleMom,
+  'DOULA': colors.roleDoula,
+  'MIDWIFE': colors.roleMidwife,
+  'ADMIN': colors.roleAdmin || colors.primary,
+});
 
 export default function AdminUsersScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
+  const ROLE_COLORS = getRoleColors(colors);
   const [users, setUsers] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
@@ -93,7 +98,7 @@ export default function AdminUsersScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.roleAdmin} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.roleAdmin} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -198,10 +203,10 @@ export default function AdminUsersScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -213,11 +218,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXxl,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 4,
   },
   filterContainer: {
@@ -227,26 +232,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     marginRight: SIZES.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   filterButtonActive: {
-    backgroundColor: COLORS.roleAdmin,
-    borderColor: COLORS.roleAdmin,
+    backgroundColor: colors.roleAdmin,
+    borderColor: colors.roleAdmin,
   },
   filterText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   filterTextActive: {
-    color: COLORS.white,
+    color: colors.white,
     fontWeight: '600',
   },
   emptyText: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   userCard: {
@@ -261,7 +266,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.roleAdmin + '30',
+    backgroundColor: colors.roleAdmin + '30',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.md,
@@ -269,7 +274,7 @@ const styles = StyleSheet.create({
   userInitial: {
     fontSize: SIZES.fontLg,
     fontWeight: '700',
-    color: COLORS.roleAdmin,
+    color: colors.roleAdmin,
   },
   userInfo: {
     flex: 1,
@@ -277,16 +282,16 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 2,
   },
   userEmail: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   userDetails: {
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     paddingTop: SIZES.sm,
   },
   detailRow: {
@@ -306,14 +311,14 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   changeRoleButton: {
     alignSelf: 'flex-start',
   },
   changeRoleText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.roleAdmin,
+    color: colors.roleAdmin,
     fontWeight: '500',
   },
-});
+}));

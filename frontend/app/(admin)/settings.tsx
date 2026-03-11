@@ -12,9 +12,12 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { useAuthStore } from '../../src/store/authStore';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function AdminSettingsScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const { user, logout } = useAuthStore();
   
@@ -44,12 +47,12 @@ export default function AdminSettingsScreen() {
       >
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
-            <Icon name="person-circle-outline" size={80} color={COLORS.roleAdmin} />
+            <Icon name="person-circle-outline" size={80} color={colors.roleAdmin} />
           </View>
           <Text style={styles.userName}>{user?.full_name}</Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
           <View style={styles.roleBadge}>
-            <Icon name="shield" size={14} color={COLORS.white} />
+            <Icon name="shield" size={14} color={colors.white} />
             <Text style={styles.roleText}>Admin</Text>
           </View>
         </View>
@@ -77,31 +80,31 @@ export default function AdminSettingsScreen() {
           <Text style={styles.cardTitle}>MVP Features</Text>
           
           <View style={styles.featureItem}>
-            <Icon name="checkmark-circle" size={20} color={COLORS.success} />
+            <Icon name="checkmark-circle" size={20} color={colors.success} />
             <Text style={styles.featureText}>User Authentication (Email + Google)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="checkmark-circle" size={20} color={COLORS.success} />
+            <Icon name="checkmark-circle" size={20} color={colors.success} />
             <Text style={styles.featureText}>Role-based Access Control</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="checkmark-circle" size={20} color={COLORS.success} />
+            <Icon name="checkmark-circle" size={20} color={colors.success} />
             <Text style={styles.featureText}>Birth Plan Builder (Mom)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="checkmark-circle" size={20} color={COLORS.success} />
+            <Icon name="checkmark-circle" size={20} color={colors.success} />
             <Text style={styles.featureText}>Client Management (Doula/Midwife)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="ellipse-outline" size={20} color={COLORS.warning} />
+            <Icon name="ellipse-outline" size={20} color={colors.warning} />
             <Text style={styles.featureText}>E-Signature (Mocked)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="ellipse-outline" size={20} color={COLORS.warning} />
+            <Icon name="ellipse-outline" size={20} color={colors.warning} />
             <Text style={styles.featureText}>PDF Export (Mocked)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="close-circle-outline" size={20} color={COLORS.textLight} />
+            <Icon name="close-circle-outline" size={20} color={colors.textLight} />
             <Text style={styles.featureText}>Payment Integration (Skipped for MVP)</Text>
           </View>
         </Card>
@@ -127,10 +130,10 @@ export default function AdminSettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -146,24 +149,24 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: SIZES.fontXl,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   userEmail: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   roleBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.roleAdmin,
+    backgroundColor: colors.roleAdmin,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.xs,
     borderRadius: SIZES.radiusFull,
     marginTop: SIZES.sm,
   },
   roleText: {
-    color: COLORS.white,
+    color: colors.white,
     fontSize: SIZES.fontSm,
     fontWeight: '600',
     marginLeft: SIZES.xs,
@@ -174,7 +177,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.md,
   },
   infoRow: {
@@ -183,15 +186,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   infoLabel: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   infoValue: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     fontWeight: '500',
   },
   featuresCard: {
@@ -205,18 +208,18 @@ const styles = StyleSheet.create({
   featureText: {
     marginLeft: SIZES.sm,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   placeholderCard: {
     marginBottom: SIZES.md,
-    backgroundColor: COLORS.roleAdmin + '10',
+    backgroundColor: colors.roleAdmin + '10',
   },
   placeholderText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   logoutButton: {
     marginTop: SIZES.lg,
   },
-});
+}));

@@ -7,9 +7,11 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OnboardingWalkthrough from '../../src/components/OnboardingWalkthrough';
 import { useAuthStore } from '../../src/store/authStore';
-import { COLORS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function OnboardingIntroScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const { user } = useAuthStore();
   
@@ -37,9 +39,9 @@ export default function OnboardingIntroScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
-});
+}));

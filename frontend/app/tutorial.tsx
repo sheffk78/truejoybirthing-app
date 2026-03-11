@@ -3,7 +3,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppTutorial from '../src/components/AppTutorial';
 import { useAuthStore } from '../src/store/authStore';
-import { COLORS } from '../src/constants/theme';
+import { useColors } from '../src/hooks/useThemedStyles';
 import {
   MOM_TUTORIAL_STEPS,
   DOULA_TUTORIAL_STEPS,
@@ -16,6 +16,7 @@ export default function TutorialScreen() {
   const router = useRouter();
   const { role } = useLocalSearchParams<{ role?: string }>();
   const { user } = useAuthStore();
+  const colors = useColors();
   
   const userRole = role || user?.role || 'MOM';
   
@@ -24,28 +25,28 @@ export default function TutorialScreen() {
       case 'MOM':
         return {
           steps: MOM_TUTORIAL_STEPS,
-          roleColor: COLORS.secondary,
+          roleColor: colors.secondary,
           roleName: 'Mom',
           homeRoute: '/(mom)/home',
         };
       case 'DOULA':
         return {
           steps: DOULA_TUTORIAL_STEPS,
-          roleColor: COLORS.roleDoula,
+          roleColor: colors.roleDoula,
           roleName: 'Doula',
           homeRoute: '/(doula)/dashboard',
         };
       case 'MIDWIFE':
         return {
           steps: MIDWIFE_TUTORIAL_STEPS,
-          roleColor: COLORS.roleMidwife,
+          roleColor: colors.roleMidwife,
           roleName: 'Midwife',
           homeRoute: '/(midwife)/dashboard',
         };
       default:
         return {
           steps: MOM_TUTORIAL_STEPS,
-          roleColor: COLORS.primary,
+          roleColor: colors.primary,
           roleName: 'User',
           homeRoute: '/(mom)/home',
         };

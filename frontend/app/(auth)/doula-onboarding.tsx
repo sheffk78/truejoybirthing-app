@@ -19,7 +19,8 @@ import Card from '../../src/components/Card';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const SERVICES = [
   { value: 'Birth Doula', icon: 'heart-outline' },
@@ -28,6 +29,8 @@ const SERVICES = [
 ];
 
 export default function DoulaOnboardingScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const { user, updateUser } = useAuthStore();
   
@@ -176,13 +179,13 @@ export default function DoulaOnboardingScreen() {
                 maxLength={5}
               />
               {isLookingUpZip && (
-                <ActivityIndicator size="small" color={COLORS.primary} style={styles.zipLoader} />
+                <ActivityIndicator size="small" color={colors.primary} style={styles.zipLoader} />
               )}
             </View>
             
             {locationCity && locationState && (
               <View style={styles.locationResult}>
-                <Icon name="checkmark-circle" size={20} color={COLORS.success} />
+                <Icon name="checkmark-circle" size={20} color={colors.success} />
                 <Text style={styles.locationResultText}>
                   {locationCity}, {locationState}
                 </Text>
@@ -211,7 +214,7 @@ export default function DoulaOnboardingScreen() {
                   <Icon
                     name={service.icon as any}
                     size={24}
-                    color={servicesOffered.includes(service.value) ? COLORS.primary : COLORS.textSecondary}
+                    color={servicesOffered.includes(service.value) ? colors.primary : colors.textSecondary}
                   />
                   <Text
                     style={[
@@ -223,7 +226,7 @@ export default function DoulaOnboardingScreen() {
                   </Text>
                   <View style={[styles.checkbox, servicesOffered.includes(service.value) && styles.checkboxSelected]}>
                     {servicesOffered.includes(service.value) && (
-                      <Icon name="checkmark" size={16} color={COLORS.white} />
+                      <Icon name="checkmark" size={16} color={colors.white} />
                     )}
                   </View>
                 </Card>
@@ -269,10 +272,10 @@ export default function DoulaOnboardingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   keyboardView: {
     flex: 1,
@@ -288,43 +291,43 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 4,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     borderRadius: 2,
     marginBottom: SIZES.lg,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: COLORS.roleDoula,
+    backgroundColor: colors.roleDoula,
     borderRadius: 2,
   },
   title: {
     fontSize: SIZES.fontTitle,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 24,
   },
   sectionLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   helperText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginBottom: SIZES.sm,
   },
   errorText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.error,
+    color: colors.error,
     marginBottom: SIZES.sm,
   },
   locationSection: {
@@ -349,7 +352,7 @@ const styles = StyleSheet.create({
   locationResultText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.success,
+    color: colors.success,
     marginLeft: SIZES.xs,
   },
   servicesSection: {
@@ -362,17 +365,17 @@ const styles = StyleSheet.create({
   },
   serviceCardSelected: {
     borderWidth: 2,
-    borderColor: COLORS.primary,
+    borderColor: colors.primary,
   },
   serviceLabel: {
     flex: 1,
     marginLeft: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   serviceLabelSelected: {
-    color: COLORS.primary,
+    color: colors.primary,
     fontFamily: FONTS.bodyBold,
   },
   checkbox: {
@@ -380,14 +383,14 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 6,
     borderWidth: 2,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderColor: colors.border,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   toggleRow: {
     flexDirection: 'row',
@@ -399,23 +402,23 @@ const styles = StyleSheet.create({
   toggleLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   toggle: {
     width: 52,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     padding: 2,
   },
   toggleActive: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
   },
   toggleKnob: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
   },
   toggleKnobActive: {
     transform: [{ translateX: 20 }],
@@ -423,4 +426,4 @@ const styles = StyleSheet.create({
   continueButton: {
     marginTop: SIZES.md,
   },
-});
+}));

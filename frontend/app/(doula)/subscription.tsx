@@ -1,7 +1,9 @@
 // Doula Subscription Page
 import SubscriptionPage from '../../src/components/provider/SubscriptionPage';
-import { COLORS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function DoulaSubscriptionScreen() {
-  return <SubscriptionPage primaryColor={COLORS.roleDoula} role="DOULA" />;
+  const colors = useColors();
+  const styles = getStyles(colors);
+  return <SubscriptionPage primaryColor={colors.roleDoula} role="DOULA" />;
 }

@@ -16,8 +16,8 @@ import Button from '../../src/components/Button';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
-import { useColors } from '../../src/hooks/useThemedStyles';
+import { SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface PendingContract {
   contract_id: string;
@@ -39,6 +39,7 @@ export default function MomHomeScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
   const colors = useColors();
+  const styles = getStyles(colors);
   
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [timeline, setTimeline] = useState<any>(null);
@@ -141,7 +142,7 @@ export default function MomHomeScreen() {
         <Card style={styles.mainCard}>
           <View style={styles.cardHeader}>
             <View style={styles.cardIcon}>
-              <Icon name="document-text" size={24} color={COLORS.white} />
+              <Icon name="document-text" size={24} color={colors.white} />
             </View>
             <Text style={styles.cardTitle}>Joyful Birth Plan</Text>
           </View>
@@ -162,7 +163,7 @@ export default function MomHomeScreen() {
           </View>
           
           <Text style={styles.nextStep}>
-            <Icon name="arrow-forward-circle" size={16} color={COLORS.primary} />
+            <Icon name="arrow-forward-circle" size={16} color={colors.primary} />
             {' '}{getNextStep()}
           </Text>
           
@@ -178,8 +179,8 @@ export default function MomHomeScreen() {
         {weeklyContent?.tip && (
           <Card style={styles.weeklyCard}>
             <View style={styles.weeklyHeader}>
-              <View style={[styles.weeklyIconContainer, { backgroundColor: COLORS.primary + '20' }]}>
-                <Icon name="bulb" size={22} color={COLORS.primary} />
+              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.primary + '20' }]}>
+                <Icon name="bulb" size={22} color={colors.primary} />
               </View>
               <View style={styles.weeklyHeaderText}>
                 <Text style={styles.weeklyLabel}>Weekly Tip</Text>
@@ -196,7 +197,7 @@ export default function MomHomeScreen() {
               onPress={() => router.push('/(mom)/weekly-tips')}
             >
               <Text style={styles.weeklyReadMoreText}>Read more</Text>
-              <Icon name="chevron-forward" size={16} color={COLORS.primary} />
+              <Icon name="chevron-forward" size={16} color={colors.primary} />
             </TouchableOpacity>
           </Card>
         )}
@@ -205,8 +206,8 @@ export default function MomHomeScreen() {
         {weeklyContent?.affirmation && (
           <Card style={[styles.weeklyCard, styles.affirmationCard]}>
             <View style={styles.weeklyHeader}>
-              <View style={[styles.weeklyIconContainer, { backgroundColor: COLORS.roleDoula + '20' }]}>
-                <Icon name="heart" size={22} color={COLORS.roleDoula} />
+              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.roleDoula + '20' }]}>
+                <Icon name="heart" size={22} color={colors.roleDoula} />
               </View>
               <View style={styles.weeklyHeaderText}>
                 <Text style={styles.weeklyLabel}>Weekly Affirmation</Text>
@@ -244,8 +245,8 @@ export default function MomHomeScreen() {
               >
                 <Card style={styles.actionRequiredCard}>
                   <View style={styles.actionRequiredHeader}>
-                    <View style={[styles.actionRequiredIcon, { backgroundColor: COLORS.warning + '20' }]}>
-                      <Icon name="document-text" size={24} color={COLORS.warning} />
+                    <View style={[styles.actionRequiredIcon, { backgroundColor: colors.warning + '20' }]}>
+                      <Icon name="document-text" size={24} color={colors.warning} />
                     </View>
                     <View style={styles.actionRequiredContent}>
                       <Text style={styles.actionRequiredTitle}>Contract to Sign</Text>
@@ -253,7 +254,7 @@ export default function MomHomeScreen() {
                         From {contract.provider_name} ({contract.provider_role})
                       </Text>
                     </View>
-                    <Icon name="chevron-forward" size={24} color={COLORS.textLight} />
+                    <Icon name="chevron-forward" size={24} color={colors.textLight} />
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -269,8 +270,8 @@ export default function MomHomeScreen() {
               >
                 <Card style={styles.actionRequiredCard}>
                   <View style={styles.actionRequiredHeader}>
-                    <View style={[styles.actionRequiredIcon, { backgroundColor: COLORS.roleDoula + '20' }]}>
-                      <Icon name="receipt" size={24} color={COLORS.roleDoula} />
+                    <View style={[styles.actionRequiredIcon, { backgroundColor: colors.roleDoula + '20' }]}>
+                      <Icon name="receipt" size={24} color={colors.roleDoula} />
                     </View>
                     <View style={styles.actionRequiredContent}>
                       <Text style={styles.actionRequiredTitle}>Invoice - ${invoice.amount}</Text>
@@ -279,7 +280,7 @@ export default function MomHomeScreen() {
                         {invoice.due_date ? ` • Due ${new Date(invoice.due_date).toLocaleDateString()}` : ''}
                       </Text>
                     </View>
-                    <Icon name="chevron-forward" size={24} color={COLORS.textLight} />
+                    <Icon name="chevron-forward" size={24} color={colors.textLight} />
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -295,8 +296,8 @@ export default function MomHomeScreen() {
             onPress={() => router.push('/(mom)/timeline')}
             activeOpacity={0.8}
           >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.accent + '30' }]}>
-              <Icon name="calendar" size={24} color={COLORS.accent} />
+            <View style={[styles.actionIcon, { backgroundColor: colors.accent + '30' }]}>
+              <Icon name="calendar" size={24} color={colors.accent} />
             </View>
             <Text style={styles.actionTitle}>Timeline</Text>
             <Text style={styles.actionSubtitle}>
@@ -309,8 +310,8 @@ export default function MomHomeScreen() {
             onPress={() => router.push('/(mom)/wellness')}
             activeOpacity={0.8}
           >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.success + '30' }]}>
-              <Icon name="heart" size={24} color={COLORS.success} />
+            <View style={[styles.actionIcon, { backgroundColor: colors.success + '30' }]}>
+              <Icon name="heart" size={24} color={colors.success} />
             </View>
             <Text style={styles.actionTitle}>Wellness</Text>
             <Text style={styles.actionSubtitle}>How are you feeling?</Text>
@@ -322,8 +323,8 @@ export default function MomHomeScreen() {
             activeOpacity={0.8}
             data-testid="key-action-schedule-provider"
           >
-            <View style={[styles.actionIcon, { backgroundColor: COLORS.primary + '30' }]}>
-              <Icon name="calendar-outline" size={24} color={COLORS.primary} />
+            <View style={[styles.actionIcon, { backgroundColor: colors.primary + '30' }]}>
+              <Icon name="calendar-outline" size={24} color={colors.primary} />
             </View>
             <Text style={styles.actionTitle}>Schedule</Text>
             <Text style={styles.actionSubtitle}>With your provider</Text>
@@ -334,10 +335,10 @@ export default function MomHomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -352,11 +353,11 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: SIZES.fontXxl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   weekText: {
     fontSize: SIZES.fontMd,
-    color: COLORS.primary,
+    color: colors.primary,
     fontFamily: FONTS.bodyMedium,
     marginTop: 2,
   },
@@ -364,7 +365,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.primaryLight + '30',
+    backgroundColor: colors.primaryLight + '30',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -387,7 +388,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.sm,
@@ -395,31 +396,31 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   progressContainer: {
     marginBottom: SIZES.md,
   },
   progressBar: {
     height: 8,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     borderRadius: 4,
     marginBottom: SIZES.xs,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     borderRadius: 4,
   },
   progressText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   nextStep: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.primary,
+    color: colors.primary,
     marginBottom: SIZES.md,
   },
   cardButton: {
@@ -428,7 +429,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.md,
   },
   actionsGrid: {
@@ -438,7 +439,7 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     marginHorizontal: SIZES.xs,
@@ -455,13 +456,13 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 2,
   },
   actionSubtitle: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   teamCard: {
     marginBottom: SIZES.md,
@@ -474,13 +475,13 @@ const styles = StyleSheet.create({
   teamTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginLeft: SIZES.sm,
   },
   teamText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.md,
     lineHeight: 20,
   },
@@ -508,17 +509,17 @@ const styles = StyleSheet.create({
   weeklyLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   weeklyWeek: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.primary,
+    color: colors.primary,
   },
   weeklyContent: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 22,
     marginBottom: SIZES.sm,
   },
@@ -529,17 +530,17 @@ const styles = StyleSheet.create({
   weeklyReadMoreText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.primary,
+    color: colors.primary,
   },
   affirmationCard: {
-    backgroundColor: COLORS.roleDoula + '08',
+    backgroundColor: colors.roleDoula + '08',
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.roleDoula,
+    borderLeftColor: colors.roleDoula,
   },
   affirmationContent: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyItalic || FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 24,
     fontStyle: 'italic',
   },
@@ -565,12 +566,12 @@ const styles = StyleSheet.create({
   actionRequiredTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 2,
   },
   actionRequiredSubtitle: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
-});
+}));

@@ -65,12 +65,13 @@ const APPOINTMENT_TYPES = [
   { value: 'consultation', label: 'Consultation', icon: 'chatbubbles', category: 'general' },
 ];
 
-const STATUS_COLORS: Record<string, string> = {
+// Dynamic status colors based on theme
+const getStatusColors = (colors: ReturnType<typeof useColors>): Record<string, string> => ({
   pending: colors.warning,
   accepted: colors.success,
   declined: colors.error,
   cancelled: colors.textLight,
-};
+});
 
 type FilterTab = 'all' | 'prenatal' | 'postpartum';
 
@@ -82,6 +83,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
   const router = useRouter();
   const colors = useColors();
   const styles = getStyles(colors);
+  const STATUS_COLORS = getStatusColors(colors);
   const params = useLocalSearchParams();
   const preSelectedClientId = params.clientId as string | undefined;
   const preSelectedClientName = params.clientName as string | undefined;

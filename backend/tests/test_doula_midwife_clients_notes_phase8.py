@@ -15,7 +15,7 @@ import uuid
 from datetime import datetime
 
 # Base URL from environment
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://joy-colors-system.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://theme-unify-preview.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 DOULA_EMAIL = "demo.doula@truejoybirthing.com"

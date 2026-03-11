@@ -1,7 +1,9 @@
 // Midwife Subscription Page
 import SubscriptionPage from '../../src/components/provider/SubscriptionPage';
-import { COLORS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function MidwifeSubscriptionScreen() {
-  return <SubscriptionPage primaryColor={COLORS.roleMidwife} role="MIDWIFE" />;
+  const colors = useColors();
+  const styles = getStyles(colors);
+  return <SubscriptionPage primaryColor={colors.roleMidwife} role="MIDWIFE" />;
 }

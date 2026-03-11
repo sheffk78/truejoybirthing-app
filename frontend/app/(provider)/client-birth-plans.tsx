@@ -18,7 +18,8 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, SHADOWS } from '../../src/constants/theme';
+import { SIZES, SHADOWS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface ShareRequest {
   request_id: string;
@@ -61,6 +62,8 @@ const SECTION_TITLES: Record<string, string> = {
 export default function ClientBirthPlansScreen() {
   const params = useLocalSearchParams();
   const router = useRouter();
+  const colors = useColors();
+  const styles = getStyles(colors);
   const momUserId = params.momUserId as string | undefined;
   const clientName = params.clientName as string | undefined;
   const clientId = params.clientId as string | undefined;
@@ -247,7 +250,7 @@ export default function ClientBirthPlansScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </SafeAreaView>
     );
@@ -302,7 +305,7 @@ export default function ClientBirthPlansScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -320,7 +323,7 @@ export default function ClientBirthPlansScreen() {
               <Card key={request.request_id} style={styles.requestCard}>
                 <View style={styles.requestInfo}>
                   <View style={styles.requestAvatar}>
-                    <Icon name="person" size={20} color={COLORS.white} />
+                    <Icon name="person" size={20} color={colors.white} />
                   </View>
                   <View style={styles.requestDetails}>
                     <Text style={styles.requestName}>{request.mom_name}</Text>
@@ -337,10 +340,10 @@ export default function ClientBirthPlansScreen() {
                     data-testid={`accept-btn-${request.request_id}`}
                   >
                     {respondingTo === request.request_id ? (
-                      <ActivityIndicator size="small" color={COLORS.white} />
+                      <ActivityIndicator size="small" color={colors.white} />
                     ) : (
                       <>
-                        <Icon name="checkmark" size={16} color={COLORS.white} />
+                        <Icon name="checkmark" size={16} color={colors.white} />
                         <Text style={styles.acceptButtonText}>Accept</Text>
                       </>
                     )}
@@ -351,7 +354,7 @@ export default function ClientBirthPlansScreen() {
                     disabled={respondingTo === request.request_id}
                     data-testid={`reject-btn-${request.request_id}`}
                   >
-                    <Icon name="close" size={16} color={COLORS.error} />
+                    <Icon name="close" size={16} color={colors.error} />
                     <Text style={styles.rejectButtonText}>Decline</Text>
                   </TouchableOpacity>
                 </View>
@@ -365,7 +368,7 @@ export default function ClientBirthPlansScreen() {
           <Text style={styles.sectionTitle}>Shared Birth Plans</Text>
           {sharedBirthPlans.length === 0 ? (
             <View style={styles.emptyState}>
-              <Icon name="document-text" size={48} color={COLORS.textLight} />
+              <Icon name="document-text" size={48} color={colors.textLight} />
               <Text style={styles.emptyTitle}>No Shared Birth Plans</Text>
               <Text style={styles.emptyText}>
                 When clients share their birth plans with you, they'll appear here.
@@ -381,7 +384,7 @@ export default function ClientBirthPlansScreen() {
                 <Card style={styles.planCard}>
                   <View style={styles.planHeader}>
                     <View style={styles.planAvatar}>
-                      <Icon name="person" size={24} color={COLORS.white} />
+                      <Icon name="person" size={24} color={colors.white} />
                     </View>
                     <View style={styles.planInfo}>
                       <Text style={styles.planName}>{plan.mom_name}</Text>
@@ -392,17 +395,17 @@ export default function ClientBirthPlansScreen() {
                         <Text style={styles.planSetting}>{plan.birth_setting}</Text>
                       )}
                     </View>
-                    <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+                    <Icon name="chevron-forward" size={20} color={colors.textLight} />
                   </View>
                   <View style={styles.planMeta}>
                     <View style={styles.metaItem}>
-                      <Icon name="document-text" size={14} color={COLORS.primary} />
+                      <Icon name="document-text" size={14} color={colors.primary} />
                       <Text style={styles.metaText}>
                         {plan.plan?.sections?.filter((s: any) => s.status === 'Complete').length || 0}/9 Complete
                       </Text>
                     </View>
                     <View style={styles.metaItem}>
-                      <Icon name="chatbubble" size={14} color={COLORS.primary} />
+                      <Icon name="chatbubble" size={14} color={colors.primary} />
                       <Text style={styles.metaText}>
                         {plan.provider_notes.length} Notes
                       </Text>
@@ -425,7 +428,7 @@ export default function ClientBirthPlansScreen() {
         <SafeAreaView style={styles.modalContainer} edges={['top']}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setPlanModalVisible(false)} style={styles.modalCloseBtn}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>{selectedPlan?.mom_name}'s Birth Plan</Text>
             <View style={{ width: 40 }} />
@@ -459,11 +462,11 @@ export default function ClientBirthPlansScreen() {
                         </Text>
                         <View style={[
                           styles.statusBadge,
-                          { backgroundColor: section.status === 'Complete' ? COLORS.success + '20' : COLORS.textLight + '20' }
+                          { backgroundColor: section.status === 'Complete' ? colors.success + '20' : colors.textLight + '20' }
                         ]}>
                           <Text style={[
                             styles.statusBadgeText,
-                            { color: section.status === 'Complete' ? COLORS.success : COLORS.textLight }
+                            { color: section.status === 'Complete' ? colors.success : colors.textLight }
                           ]}>
                             {section.status}
                           </Text>
@@ -508,7 +511,7 @@ export default function ClientBirthPlansScreen() {
                                 style={styles.editNoteBtn}
                                 data-testid={`edit-note-btn-${note.note_id}`}
                               >
-                                <Icon name="create-outline" size={16} color={COLORS.primary} />
+                                <Icon name="create-outline" size={16} color={colors.primary} />
                                 <Text style={styles.editNoteBtnText}>Edit</Text>
                               </TouchableOpacity>
                             </View>
@@ -524,7 +527,7 @@ export default function ClientBirthPlansScreen() {
                       onPress={() => openNoteModal(section.section_id)}
                       data-testid={`add-note-btn-${section.section_id}`}
                     >
-                      <Icon name="add-circle" size={18} color={COLORS.primary} />
+                      <Icon name="add-circle" size={18} color={colors.primary} />
                       <Text style={styles.addNoteBtnText}>
                         {sectionNotes.length > 0 ? 'Add Another Note' : 'Add Note'}
                       </Text>
@@ -558,7 +561,7 @@ export default function ClientBirthPlansScreen() {
               value={newNote}
               onChangeText={setNewNote}
               placeholder="Enter your professional notes, observations, or recommendations..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={6}
               textAlignVertical="top"
@@ -584,7 +587,7 @@ export default function ClientBirthPlansScreen() {
                 data-testid="save-note-btn"
               >
                 {savingNote ? (
-                  <ActivityIndicator size="small" color={COLORS.white} />
+                  <ActivityIndicator size="small" color={colors.white} />
                 ) : (
                   <Text style={styles.saveNoteBtnText}>Save Note</Text>
                 )}
@@ -597,18 +600,18 @@ export default function ClientBirthPlansScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   backHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   backButton: {
     flexDirection: 'row',
@@ -617,7 +620,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     fontWeight: '500',
   },
   loadingContainer: {
@@ -632,12 +635,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXxl,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.lg,
   },
   section: {
@@ -646,7 +649,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.md,
   },
   requestCard: {
@@ -661,7 +664,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -672,11 +675,11 @@ const styles = StyleSheet.create({
   requestName: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   requestDate: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   requestActions: {
     flexDirection: 'row',
@@ -687,13 +690,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.success,
+    backgroundColor: colors.success,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusMd,
     gap: 4,
   },
   acceptButtonText: {
-    color: COLORS.white,
+    color: colors.white,
     fontWeight: '600',
     fontSize: SIZES.fontSm,
   },
@@ -702,13 +705,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.error + '15',
+    backgroundColor: colors.error + '15',
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusMd,
     gap: 4,
   },
   rejectButtonText: {
-    color: COLORS.error,
+    color: colors.error,
     fontWeight: '600',
     fontSize: SIZES.fontSm,
   },
@@ -720,12 +723,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: SIZES.sm,
     paddingHorizontal: SIZES.xl,
@@ -741,7 +744,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -752,23 +755,23 @@ const styles = StyleSheet.create({
   planName: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   planDueDate: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   planSetting: {
     fontSize: SIZES.fontSm,
-    color: COLORS.primary,
+    color: colors.primary,
   },
   planMeta: {
     flexDirection: 'row',
     marginTop: SIZES.md,
     paddingTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     gap: SIZES.lg,
   },
   metaItem: {
@@ -778,11 +781,11 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -790,7 +793,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   modalCloseBtn: {
     padding: SIZES.xs,
@@ -798,7 +801,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalContent: {
     flex: 1,
@@ -806,7 +809,7 @@ const styles = StyleSheet.create({
   },
   momInfoCard: {
     marginBottom: SIZES.md,
-    backgroundColor: COLORS.primaryLight + '15',
+    backgroundColor: colors.primaryLight + '15',
   },
   momInfoRow: {
     flexDirection: 'row',
@@ -815,12 +818,12 @@ const styles = StyleSheet.create({
   },
   momInfoLabel: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   momInfoValue: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   sectionCard: {
     marginBottom: SIZES.md,
@@ -836,7 +839,7 @@ const styles = StyleSheet.create({
   sectionName: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     flex: 1,
   },
   statusBadge: {
@@ -849,7 +852,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   sectionDataPreview: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     padding: SIZES.sm,
     borderRadius: SIZES.radiusSm,
     marginBottom: SIZES.sm,
@@ -860,24 +863,24 @@ const styles = StyleSheet.create({
   },
   dataLabel: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textLight,
+    color: colors.textLight,
     width: 140,
     flexShrink: 0,
   },
   dataValue: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
     flex: 1,
     flexWrap: 'wrap',
   },
   moreData: {
     fontSize: SIZES.fontSm,
-    color: COLORS.primary,
+    color: colors.primary,
     fontStyle: 'italic',
     marginTop: SIZES.xs,
   },
   notesToProvider: {
-    backgroundColor: COLORS.warning + '15',
+    backgroundColor: colors.warning + '15',
     padding: SIZES.sm,
     borderRadius: SIZES.radiusSm,
     marginBottom: SIZES.sm,
@@ -885,15 +888,15 @@ const styles = StyleSheet.create({
   notesLabel: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
-    color: COLORS.warning,
+    color: colors.warning,
     marginBottom: 4,
   },
   notesContent: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   providerNotes: {
-    backgroundColor: COLORS.primary + '10',
+    backgroundColor: colors.primary + '10',
     padding: SIZES.sm,
     borderRadius: SIZES.radiusSm,
     marginBottom: SIZES.sm,
@@ -901,13 +904,13 @@ const styles = StyleSheet.create({
   providerNotesLabel: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: colors.primary,
     marginBottom: SIZES.xs,
   },
   noteItem: {
     marginBottom: SIZES.sm,
     padding: SIZES.sm,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusSm,
   },
   noteHeader: {
@@ -918,12 +921,12 @@ const styles = StyleSheet.create({
   },
   noteContent: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 20,
   },
   noteDate: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   editNoteBtn: {
     flexDirection: 'row',
@@ -934,7 +937,7 @@ const styles = StyleSheet.create({
   },
   editNoteBtnText: {
     fontSize: SIZES.fontXs,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '500',
   },
   addNoteBtn: {
@@ -946,7 +949,7 @@ const styles = StyleSheet.create({
   },
   addNoteBtnText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
   // Breadcrumb styles
@@ -955,24 +958,24 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   breadcrumbItem: { paddingVertical: 4 },
   breadcrumbLink: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.primary, 
+    color: colors.primary, 
     fontWeight: '500' 
   },
   breadcrumbSeparator: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.textLight, 
+    color: colors.textLight, 
     marginHorizontal: SIZES.sm 
   },
   breadcrumbCurrent: { 
     fontSize: SIZES.fontMd, 
-    color: COLORS.textPrimary, 
+    color: colors.text, 
     fontWeight: '600' 
   },
   noteModalOverlay: {
@@ -981,7 +984,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   noteModalContent: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderTopLeftRadius: SIZES.radiusLg,
     borderTopRightRadius: SIZES.radiusLg,
     padding: SIZES.lg,
@@ -990,23 +993,23 @@ const styles = StyleSheet.create({
   noteModalTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   noteModalSection: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.md,
   },
   noteInput: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     minHeight: 120,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   noteModalActions: {
     flexDirection: 'row',
@@ -1017,22 +1020,22 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: SIZES.md,
     borderRadius: SIZES.radiusMd,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     alignItems: 'center',
   },
   cancelNoteBtnText: {
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '600',
   },
   saveNoteBtn: {
     flex: 1,
     paddingVertical: SIZES.md,
     borderRadius: SIZES.radiusMd,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
   },
   saveNoteBtnText: {
-    color: COLORS.white,
+    color: colors.white,
     fontWeight: '600',
   },
-});
+}));

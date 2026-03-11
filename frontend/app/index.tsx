@@ -3,11 +3,13 @@ import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
-import { COLORS } from '../src/constants/theme';
+import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
 export default function Index() {
   const router = useRouter();
   const { isLoading, isAuthenticated, user } = useAuthStore();
+  const colors = useColors();
+  const styles = getStyles(colors);
   
   useEffect(() => {
     if (isLoading) return;
@@ -44,9 +46,9 @@ export default function Index() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
-});
+}));

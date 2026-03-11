@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -18,7 +17,8 @@ import Button from '../src/components/Button';
 import Input from '../src/components/Input';
 import { apiRequest } from '../src/utils/api';
 import { API_ENDPOINTS, API_BASE_URL } from '../src/constants/api';
-import { COLORS, SIZES, FONTS } from '../src/constants/theme';
+import { SIZES, FONTS } from '../src/constants/theme';
+import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
 interface MidwifeContractData {
   contract: {
@@ -67,6 +67,8 @@ export default function SignMidwifeContractScreen() {
   const [signing, setSigning] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const colors = useColors();
+  const styles = getStyles(colors);
   
   useEffect(() => {
     fetchContract();
@@ -142,7 +144,7 @@ export default function SignMidwifeContractScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.accent} />
+        <ActivityIndicator size="large" color={colors.accent} />
         <Text style={styles.loadingText}>Loading contract...</Text>
       </SafeAreaView>
     );
@@ -151,7 +153,7 @@ export default function SignMidwifeContractScreen() {
   if (error || !contractData) {
     return (
       <SafeAreaView style={styles.errorContainer}>
-        <Icon name="alert-circle-outline" size={64} color={COLORS.error} />
+        <Icon name="alert-circle-outline" size={64} color={colors.error} />
         <Text style={styles.errorText}>{error || 'Contract not found'}</Text>
         <Button title="Go Home" onPress={() => router.replace('/')} variant="outline" />
       </SafeAreaView>
@@ -164,14 +166,14 @@ export default function SignMidwifeContractScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']} data-testid="sign-midwife-contract-screen">
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.accent }]}>
         <Text style={styles.headerTitle}>Midwifery Services Agreement</Text>
       </View>
       
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         {/* Contract Header */}
         <Card style={styles.contractCard}>
-          <Text style={styles.contractTitle}>Midwifery Services Agreement</Text>
+          <Text style={[styles.contractTitle, { color: colors.accent }]}>Midwifery Services Agreement</Text>
           {contract.practice_name && (
             <Text style={styles.practiceName}>{contract.practice_name}</Text>
           )}
@@ -182,7 +184,7 @@ export default function SignMidwifeContractScreen() {
               <Text style={styles.partyName}>{midwife.full_name}</Text>
             </View>
             <View style={styles.partySeparator}>
-              <Icon name="swap-horizontal" size={24} color={COLORS.textLight} />
+              <Icon name="swap-horizontal" size={24} color={colors.textLight} />
             </View>
             <View style={styles.partyInfo}>
               <Text style={styles.partyLabel}>Client</Text>
@@ -196,7 +198,7 @@ export default function SignMidwifeContractScreen() {
         
         {/* Care Details */}
         <Card style={styles.detailsCard}>
-          <Text style={styles.sectionTitle}>Care Details</Text>
+          <Text style={[styles.sectionTitle, { color: colors.accent, borderBottomColor: colors.border }]}>Care Details</Text>
           
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Estimated Due Date:</Text>
@@ -214,11 +216,11 @@ export default function SignMidwifeContractScreen() {
         
         {/* Payment Details */}
         <Card style={styles.detailsCard}>
-          <Text style={styles.sectionTitle}>Payment Details</Text>
+          <Text style={[styles.sectionTitle, { color: colors.accent, borderBottomColor: colors.border }]}>Payment Details</Text>
           
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Total Fee:</Text>
-            <Text style={styles.feeAmount}>{formatCurrency(contract.total_fee)}</Text>
+            <Text style={[styles.feeAmount, { color: colors.accent }]}>{formatCurrency(contract.total_fee)}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Non-Refundable Deposit:</Text>
@@ -241,7 +243,7 @@ export default function SignMidwifeContractScreen() {
         {/* Contract Sections */}
         {contract.sections?.map((section) => (
           <Card key={section.id} style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
+            <Text style={[styles.sectionTitle, { color: colors.accent, borderBottomColor: colors.border }]}>{section.title}</Text>
             <Text style={styles.sectionContent}>{section.custom_content || section.content}</Text>
           </Card>
         ))}
@@ -249,23 +251,23 @@ export default function SignMidwifeContractScreen() {
         {/* Additional Terms */}
         {contract.additional_terms && (
           <Card style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Additional Terms</Text>
+            <Text style={[styles.sectionTitle, { color: colors.accent, borderBottomColor: colors.border }]}>Additional Terms</Text>
             <Text style={styles.sectionContent}>{contract.additional_terms}</Text>
           </Card>
         )}
         
         {/* Signature Section */}
         {isAlreadySigned ? (
-          <Card style={styles.signedCard}>
+          <Card style={[styles.signedCard, { backgroundColor: colors.success + '10', borderColor: colors.success }]}>
             <View style={styles.signedHeader}>
-              <Icon name="checkmark-circle" size={32} color={COLORS.success} />
-              <Text style={styles.signedTitle}>Contract Signed</Text>
+              <Icon name="checkmark-circle" size={32} color={colors.success} />
+              <Text style={[styles.signedTitle, { color: colors.success }]}>Contract Signed</Text>
             </View>
             <Text style={styles.signedInfo}>
               This agreement has been signed by both parties. A copy has been sent to your email.
             </Text>
             
-            <View style={styles.signatureDisplay}>
+            <View style={[styles.signatureDisplay, { borderTopColor: colors.success + '30' }]}>
               {contract.midwife_signature && (
                 <View style={styles.signatureItem}>
                   <Text style={styles.signatureLabel}>Midwife</Text>
@@ -284,7 +286,7 @@ export default function SignMidwifeContractScreen() {
             
             {/* Download PDF Button */}
             <TouchableOpacity 
-              style={styles.downloadButton}
+              style={[styles.downloadButton, { backgroundColor: colors.accent }]}
               onPress={() => {
                 const pdfUrl = `${API_BASE_URL}/api/midwife-contracts/${contractId}/pdf`;
                 if (Platform.OS === 'web') {
@@ -295,22 +297,22 @@ export default function SignMidwifeContractScreen() {
               }}
               data-testid="download-pdf-btn"
             >
-              <Icon name="download-outline" size={20} color={COLORS.white} />
+              <Icon name="download-outline" size={20} color={colors.white} />
               <Text style={styles.downloadButtonText}>Download Signed PDF</Text>
             </TouchableOpacity>
           </Card>
         ) : contract.status === 'Sent' ? (
           <Card style={styles.signatureCard}>
-            <Text style={styles.sectionTitle}>Sign Agreement</Text>
+            <Text style={[styles.sectionTitle, { color: colors.accent, borderBottomColor: colors.border }]}>Sign Agreement</Text>
             <Text style={styles.signatureInstructions}>
               Please review the agreement above carefully. By signing below, you acknowledge that you 
               have read, understood, and agree to all terms of this Midwifery Services Agreement.
             </Text>
             
             {contract.midwife_signature && (
-              <View style={styles.midwifeSignedBadge}>
-                <Icon name="checkmark-circle" size={18} color={COLORS.success} />
-                <Text style={styles.midwifeSignedText}>
+              <View style={[styles.midwifeSignedBadge, { backgroundColor: colors.success + '10' }]}>
+                <Icon name="checkmark-circle" size={18} color={colors.success} />
+                <Text style={[styles.midwifeSignedText, { color: colors.success }]}>
                   Signed by {contract.midwife_signature.signer_name} on {formatDate(contract.midwife_signature.signed_at)}
                 </Text>
               </View>
@@ -331,8 +333,8 @@ export default function SignMidwifeContractScreen() {
               onPress={() => setAgreed(!agreed)}
               data-testid="agreement-checkbox"
             >
-              <View style={[styles.checkbox, agreed && styles.checkboxChecked]}>
-                {agreed && <Icon name="checkmark" size={16} color={COLORS.white} />}
+              <View style={[styles.checkbox, agreed && { backgroundColor: colors.accent, borderColor: colors.accent }]}>
+                {agreed && <Icon name="checkmark" size={16} color={colors.white} />}
               </View>
               <Text style={styles.agreementText}>
                 I have read and agree to the terms of this Midwifery Services Agreement. By typing my name 
@@ -351,7 +353,7 @@ export default function SignMidwifeContractScreen() {
           </Card>
         ) : (
           <Card style={styles.pendingCard}>
-            <Icon name="time-outline" size={32} color={COLORS.textLight} />
+            <Icon name="time-outline" size={32} color={colors.textLight} />
             <Text style={styles.pendingText}>
               This contract is still being prepared. You will be notified when it's ready for signing.
             </Text>
@@ -362,28 +364,28 @@ export default function SignMidwifeContractScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   loadingText: {
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     padding: SIZES.xl,
   },
   errorText: {
@@ -391,21 +393,20 @@ const styles = StyleSheet.create({
     marginBottom: SIZES.lg,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.error,
+    color: colors.error,
     textAlign: 'center',
   },
   header: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: SIZES.md,
-    backgroundColor: COLORS.accent,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.white,
+    color: colors.white,
   },
   content: {
     flex: 1,
@@ -420,14 +421,13 @@ const styles = StyleSheet.create({
   contractTitle: {
     fontSize: SIZES.fontXl,
     fontFamily: FONTS.heading,
-    color: COLORS.accent,
     marginBottom: SIZES.xs,
     textAlign: 'center',
   },
   practiceName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: SIZES.lg,
   },
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   partyInfo: {
     flex: 1,
@@ -445,18 +445,18 @@ const styles = StyleSheet.create({
   partyLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   partyName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   partyDetail: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   partySeparator: {
@@ -468,11 +468,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.accent,
     marginBottom: SIZES.md,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
   },
   detailRow: {
     flexDirection: 'row',
@@ -482,20 +480,19 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     flex: 1,
   },
   detailValue: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     flex: 1,
     textAlign: 'right',
   },
   feeAmount: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.accent,
   },
   sectionCard: {
     marginBottom: SIZES.md,
@@ -503,12 +500,10 @@ const styles = StyleSheet.create({
   sectionContent: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 22,
   },
   signedCard: {
-    backgroundColor: COLORS.success + '10',
-    borderColor: COLORS.success,
     borderWidth: 1,
   },
   signedHeader: {
@@ -519,13 +514,12 @@ const styles = StyleSheet.create({
   signedTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.success,
     marginLeft: SIZES.sm,
   },
   signedInfo: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.md,
   },
   signatureDisplay: {
@@ -533,7 +527,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.success + '30',
   },
   signatureItem: {
     alignItems: 'center',
@@ -541,30 +534,29 @@ const styles = StyleSheet.create({
   signatureLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   signatureName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   signatureDate: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   downloadButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.accent,
     paddingVertical: SIZES.md,
     paddingHorizontal: SIZES.lg,
     borderRadius: SIZES.radiusMd,
     marginTop: SIZES.lg,
   },
   downloadButtonText: {
-    color: COLORS.white,
+    color: colors.white,
     fontSize: SIZES.fontMd,
     fontWeight: '600',
     marginLeft: SIZES.sm,
@@ -577,7 +569,7 @@ const styles = StyleSheet.create({
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   signatureCard: {
@@ -586,14 +578,13 @@ const styles = StyleSheet.create({
   signatureInstructions: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.lg,
     lineHeight: 20,
   },
   midwifeSignedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.success + '10',
     padding: SIZES.sm,
     borderRadius: SIZES.radiusSm,
     marginBottom: SIZES.lg,
@@ -601,7 +592,6 @@ const styles = StyleSheet.create({
   midwifeSignedText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.success,
     marginLeft: SIZES.xs,
   },
   agreementRow: {
@@ -615,23 +605,19 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     marginRight: SIZES.sm,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  checkboxChecked: {
-    backgroundColor: COLORS.accent,
-    borderColor: COLORS.accent,
   },
   agreementText: {
     flex: 1,
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   signButton: {
     marginTop: SIZES.sm,
   },
-});
+}));

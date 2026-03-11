@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -21,6 +20,7 @@ import {
   getStatusDisplayText,
   getProviderDisplayName 
 } from './config/subscriptionConfig';
+import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
 // Platform detection helpers
 const getCurrentPlatform = () => {
@@ -33,23 +33,13 @@ const isIAPAvailable = () => {
   return Platform.OS === 'ios' || Platform.OS === 'android';
 };
 
-const COLORS = {
-  primary: '#7c3aed',
-  secondary: '#059669',
-  background: '#faf8f5',
-  card: '#ffffff',
-  text: '#1f2937',
-  textSecondary: '#6b7280',
-  border: '#e5e7eb',
-  success: '#10b981',
-  warning: '#f59e0b',
-};
-
 export default function PlansPricingScreen() {
   const { user } = useAuthStore();
   const { status, pricing, isLoading, fetchStatus, fetchPricing, startTrial, activateSubscription } = useSubscriptionStore();
   const [selectedPlan, setSelectedPlan] = useState<string>('monthly');
   const [processingAction, setProcessingAction] = useState(false);
+  const colors = useColors();
+  const styles = getStyles(colors);
   
   // IAP state (for native platforms only)
   const iapAvailable = isIAPAvailable();
@@ -113,7 +103,7 @@ export default function PlansPricingScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Loading plans...</Text>
         </View>
       </SafeAreaView>
@@ -129,7 +119,7 @@ export default function PlansPricingScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.text} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Plans & Pricing</Text>
         <View style={{ width: 40 }} />
@@ -191,7 +181,7 @@ export default function PlansPricingScreen() {
         {/* PRO Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="briefcase" size={24} color={COLORS.primary} />
+            <Ionicons name="briefcase" size={24} color={colors.primary} />
             <Text style={styles.sectionTitle}>For Doulas & Midwives</Text>
           </View>
           <Text style={styles.proSubtitle}>
@@ -205,35 +195,35 @@ export default function PlansPricingScreen() {
                 key={plan.id}
                 style={[
                   styles.planOption,
-                  selectedPlan === plan.id && styles.planOptionSelected
+                  selectedPlan === plan.id && { borderColor: colors.primary, backgroundColor: colors.primary + '10' }
                 ]}
                 onPress={() => setSelectedPlan(plan.id)}
               >
                 {plan.id === 'annual' && (
-                  <View style={styles.savingsBadge}>
+                  <View style={[styles.savingsBadge, { backgroundColor: colors.success }]}>
                     <Text style={styles.savingsText}>Save ${plan.savings}</Text>
                   </View>
                 )}
                 <Text style={[
                   styles.planName,
-                  selectedPlan === plan.id && styles.planNameSelected
+                  selectedPlan === plan.id && { color: colors.primary }
                 ]}>
                   {plan.period === 'month' ? 'Monthly' : 'Annual'}
                 </Text>
                 <Text style={[
                   styles.planPrice,
-                  selectedPlan === plan.id && styles.planPriceSelected
+                  selectedPlan === plan.id && { color: colors.primary }
                 ]}>
                   ${plan.price}
                 </Text>
                 <Text style={[
                   styles.planPeriod,
-                  selectedPlan === plan.id && styles.planPeriodSelected
+                  selectedPlan === plan.id && { color: colors.primary }
                 ]}>
                   /{plan.period}
                 </Text>
                 {selectedPlan === plan.id && (
-                  <View style={styles.selectedIndicator}>
+                  <View style={[styles.selectedIndicator, { backgroundColor: colors.primary }]}>
                     <Ionicons name="checkmark" size={16} color="#fff" />
                   </View>
                 )}
@@ -247,7 +237,7 @@ export default function PlansPricingScreen() {
             <View style={styles.featureList}>
               {pricing?.plans[0]?.features.map((feature, index) => (
                 <View key={index} style={styles.featureItem}>
-                  <Ionicons name="checkmark-circle" size={20} color={COLORS.primary} />
+                  <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
                   <Text style={styles.featureText}>{feature}</Text>
                 </View>
               ))}
@@ -261,7 +251,7 @@ export default function PlansPricingScreen() {
                 <>
                   {/* Start Trial Button (uses mock for web, IAP for native) */}
                   <TouchableOpacity
-                    style={styles.trialButton}
+                    style={[styles.trialButton, { backgroundColor: colors.primary }]}
                     onPress={iapAvailable ? handleIAPPurchase : handleStartTrial}
                     disabled={processingAction || isPurchasing}
                   >
@@ -285,9 +275,9 @@ export default function PlansPricingScreen() {
                       disabled={isRestoring}
                     >
                       {isRestoring ? (
-                        <ActivityIndicator color={COLORS.primary} size="small" />
+                        <ActivityIndicator color={colors.primary} size="small" />
                       ) : (
-                        <Text style={styles.restoreButtonText}>Restore Purchases</Text>
+                        <Text style={[styles.restoreButtonText, { color: colors.primary }]}>Restore Purchases</Text>
                       )}
                     </TouchableOpacity>
                   )}
@@ -296,7 +286,7 @@ export default function PlansPricingScreen() {
               
               {(status?.subscription_status === 'expired' || status?.subscription_status === 'trial') && (
                 <TouchableOpacity
-                  style={styles.subscribeButton}
+                  style={[styles.subscribeButton, { backgroundColor: colors.secondary }]}
                   onPress={iapAvailable ? handleIAPPurchase : handleSubscribe}
                   disabled={processingAction || isPurchasing}
                 >
@@ -329,7 +319,7 @@ export default function PlansPricingScreen() {
           {/* Subscription Management Info for Active Subscribers */}
           {status?.has_pro_access && status?.subscription_provider && (
             <View style={styles.manageSubscriptionCard}>
-              <Ionicons name="settings-outline" size={20} color={COLORS.textSecondary} />
+              <Ionicons name="settings-outline" size={20} color={colors.textSecondary} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.manageTitle}>Manage Subscription</Text>
                 <Text style={styles.manageDescription}>
@@ -350,8 +340,8 @@ export default function PlansPricingScreen() {
                       Linking.openURL(url);
                     }}
                   >
-                    <Text style={styles.manageLinkText}>Open {getProviderDisplayName(status.subscription_provider)}</Text>
-                    <Ionicons name="open-outline" size={14} color={COLORS.primary} />
+                    <Text style={[styles.manageLinkText, { color: colors.primary }]}>Open {getProviderDisplayName(status.subscription_provider)}</Text>
+                    <Ionicons name="open-outline" size={14} color={colors.primary} />
                   </TouchableOpacity>
                 )}
               </View>
@@ -360,7 +350,7 @@ export default function PlansPricingScreen() {
 
           {isMom && (
             <View style={styles.momNote}>
-              <Ionicons name="information-circle" size={20} color={COLORS.textSecondary} />
+              <Ionicons name="information-circle" size={20} color={colors.textSecondary} />
               <Text style={styles.momNoteText}>
                 This plan is for doulas and midwives. As a mom, you have free access to all features designed for you!
               </Text>
@@ -374,8 +364,8 @@ export default function PlansPricingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -383,14 +373,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.card,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.surface,
   },
   backButton: { padding: 8 },
-  headerTitle: { fontSize: 18, fontWeight: '600', color: COLORS.text },
+  headerTitle: { fontSize: 18, fontWeight: '600', color: colors.text },
   content: { flex: 1, padding: 16 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { marginTop: 12, color: COLORS.textSecondary },
+  loadingText: { marginTop: 12, color: colors.textSecondary },
   
   statusBanner: {
     flexDirection: 'row',
@@ -402,14 +392,14 @@ const styles = StyleSheet.create({
   },
   statusActive: { backgroundColor: '#d1fae5' },
   statusInactive: { backgroundColor: '#fef3c7' },
-  statusText: { fontSize: 14, fontWeight: '500', color: COLORS.text },
+  statusText: { fontSize: 14, fontWeight: '500', color: colors.text },
   
   section: { marginBottom: 24 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
-  sectionTitle: { fontSize: 20, fontWeight: '700', color: COLORS.text },
+  sectionTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
   
   freeCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 20,
     borderWidth: 2,
@@ -424,11 +414,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   freeBadgeText: { color: '#ec4899', fontWeight: '700', fontSize: 12 },
-  freeDescription: { color: COLORS.textSecondary, lineHeight: 22, marginBottom: 16 },
+  freeDescription: { color: colors.textSecondary, lineHeight: 22, marginBottom: 16 },
   
   featureList: { gap: 10 },
   featureItem: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  featureText: { color: COLORS.text, fontSize: 14, flex: 1 },
+  featureText: { color: colors.text, fontSize: 14, flex: 1 },
   
   currentPlanBadge: {
     flexDirection: 'row',
@@ -442,43 +432,34 @@ const styles = StyleSheet.create({
   },
   currentPlanText: { color: '#fff', fontWeight: '600', fontSize: 14 },
   
-  proSubtitle: { color: COLORS.textSecondary, marginBottom: 16, lineHeight: 20 },
+  proSubtitle: { color: colors.textSecondary, marginBottom: 16, lineHeight: 20 },
   
   planSelector: { flexDirection: 'row', gap: 12, marginBottom: 20 },
   planOption: {
     flex: 1,
-    backgroundColor: COLORS.card,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     position: 'relative',
-  },
-  planOptionSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: '#f5f3ff',
   },
   savingsBadge: {
     position: 'absolute',
     top: -10,
-    backgroundColor: COLORS.success,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
   },
   savingsText: { color: '#fff', fontSize: 10, fontWeight: '700' },
-  planName: { fontSize: 14, fontWeight: '500', color: COLORS.textSecondary, marginBottom: 4 },
-  planNameSelected: { color: COLORS.primary },
-  planPrice: { fontSize: 28, fontWeight: '700', color: COLORS.text },
-  planPriceSelected: { color: COLORS.primary },
-  planPeriod: { fontSize: 14, color: COLORS.textSecondary },
-  planPeriodSelected: { color: COLORS.primary },
+  planName: { fontSize: 14, fontWeight: '500', color: colors.textSecondary, marginBottom: 4 },
+  planPrice: { fontSize: 28, fontWeight: '700', color: colors.text },
+  planPeriod: { fontSize: 14, color: colors.textSecondary },
   selectedIndicator: {
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: COLORS.primary,
     borderRadius: 10,
     width: 20,
     height: 20,
@@ -487,19 +468,18 @@ const styles = StyleSheet.create({
   },
   
   proFeaturesCard: {
-    backgroundColor: COLORS.card,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
   },
-  proFeaturesTitle: { fontSize: 16, fontWeight: '600', color: COLORS.text, marginBottom: 12 },
+  proFeaturesTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 12 },
   
   ctaContainer: { gap: 12 },
   trialButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary,
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
@@ -511,7 +491,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   restoreButtonText: {
-    color: COLORS.primary,
     fontWeight: '500',
     fontSize: 14,
     textDecorationLine: 'underline',
@@ -520,7 +499,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.secondary,
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
@@ -528,7 +506,7 @@ const styles = StyleSheet.create({
   subscribeButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
   disclaimer: {
     textAlign: 'center',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     fontSize: 12,
     marginTop: 4,
   },
@@ -536,12 +514,12 @@ const styles = StyleSheet.create({
   momNote: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.backgroundSecondary,
     padding: 12,
     borderRadius: 8,
     gap: 8,
   },
-  momNoteText: { flex: 1, color: COLORS.textSecondary, fontSize: 13, lineHeight: 18 },
+  momNoteText: { flex: 1, color: colors.textSecondary, fontSize: 13, lineHeight: 18 },
   
   // Subscription Management Card
   manageSubscriptionCard: {
@@ -558,12 +536,12 @@ const styles = StyleSheet.create({
   manageTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.text,
+    color: colors.text,
     marginBottom: 4,
   },
   manageDescription: {
     fontSize: 12,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   manageLink: {
@@ -573,8 +551,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   manageLinkText: {
-    color: COLORS.primary,
     fontSize: 13,
     fontWeight: '500',
   },
-});
+}));

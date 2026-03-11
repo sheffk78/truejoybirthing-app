@@ -15,7 +15,8 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const SELF_CARE_OPTIONS = [
   'Rest when baby sleeps', 'Short walks', 'Warm baths', 'Reading',
@@ -28,6 +29,8 @@ const WARNING_SIGNS = [
 ];
 
 export default function PostpartumScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const [plan, setPlan] = useState<any>({});
   const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -130,7 +133,7 @@ export default function PostpartumScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -145,14 +148,14 @@ export default function PostpartumScreen() {
             onPress={() => setEditMode(!editMode)}
             data-testid="edit-postpartum-btn"
           >
-            <Icon name={editMode ? 'close' : 'create'} size={20} color={COLORS.primary} />
+            <Icon name={editMode ? 'close' : 'create'} size={20} color={colors.primary} />
           </TouchableOpacity>
         </View>
 
         {/* Support People */}
         <Card style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="people" size={20} color={COLORS.primary} />
+            <Icon name="people" size={20} color={colors.primary} />
             <Text style={styles.sectionTitle}>Support Network</Text>
           </View>
           {editMode ? (
@@ -161,7 +164,7 @@ export default function PostpartumScreen() {
               value={supportPeople}
               onChangeText={setSupportPeople}
               placeholder="Who will help? (e.g., Partner, Mom, Sister)"
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
             />
           ) : (
             <Text style={styles.fieldValue}>
@@ -173,7 +176,7 @@ export default function PostpartumScreen() {
         {/* Meal Prep */}
         <Card style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="restaurant" size={20} color={COLORS.primary} />
+            <Icon name="restaurant" size={20} color={colors.primary} />
             <Text style={styles.sectionTitle}>Meal Prep Plans</Text>
           </View>
           {editMode ? (
@@ -182,7 +185,7 @@ export default function PostpartumScreen() {
               value={mealPrepPlans}
               onChangeText={setMealPrepPlans}
               placeholder="Freezer meals, meal train, delivery services..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={3}
             />
@@ -194,7 +197,7 @@ export default function PostpartumScreen() {
         {/* Baby Feeding */}
         <Card style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="heart" size={20} color={COLORS.primary} />
+            <Icon name="heart" size={20} color={colors.primary} />
             <Text style={styles.sectionTitle}>Baby Feeding Plan</Text>
           </View>
           {editMode ? (
@@ -203,7 +206,7 @@ export default function PostpartumScreen() {
               value={babyFeedingPlan}
               onChangeText={setBabyFeedingPlan}
               placeholder="Breastfeeding, formula, combo feeding plans..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={3}
             />
@@ -215,7 +218,7 @@ export default function PostpartumScreen() {
         {/* Recovery Goals */}
         <Card style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="fitness" size={20} color={COLORS.primary} />
+            <Icon name="fitness" size={20} color={colors.primary} />
             <Text style={styles.sectionTitle}>Recovery Goals</Text>
           </View>
           {editMode ? (
@@ -224,7 +227,7 @@ export default function PostpartumScreen() {
               value={recoveryGoals}
               onChangeText={setRecoveryGoals}
               placeholder="Rest, healing, taking it slow..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={3}
             />
@@ -236,7 +239,7 @@ export default function PostpartumScreen() {
         {/* Visitor Policy */}
         <Card style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="home" size={20} color={COLORS.primary} />
+            <Icon name="home" size={20} color={colors.primary} />
             <Text style={styles.sectionTitle}>Visitor Policy</Text>
           </View>
           {editMode ? (
@@ -245,7 +248,7 @@ export default function PostpartumScreen() {
               value={visitorPolicy}
               onChangeText={setVisitorPolicy}
               placeholder="When can visitors come? Any rules?"
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={3}
             />
@@ -257,7 +260,7 @@ export default function PostpartumScreen() {
         {/* Self Care Activities */}
         <Card style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="sunny" size={20} color={COLORS.primary} />
+            <Icon name="sunny" size={20} color={colors.primary} />
             <Text style={styles.sectionTitle}>Self-Care Activities</Text>
           </View>
           <View style={styles.chipContainer}>
@@ -284,10 +287,10 @@ export default function PostpartumScreen() {
         </Card>
 
         {/* Warning Signs */}
-        <Card style={[styles.section, { backgroundColor: COLORS.error + '08' }]}>
+        <Card style={[styles.section, { backgroundColor: colors.error + '08' }]}>
           <View style={styles.sectionHeader}>
-            <Icon name="warning" size={20} color={COLORS.error} />
-            <Text style={[styles.sectionTitle, { color: COLORS.error }]}>Warning Signs to Watch</Text>
+            <Icon name="warning" size={20} color={colors.error} />
+            <Text style={[styles.sectionTitle, { color: colors.error }]}>Warning Signs to Watch</Text>
           </View>
           <Text style={styles.warningText}>
             Seek medical help immediately if you experience any of these:
@@ -318,7 +321,7 @@ export default function PostpartumScreen() {
         {/* Emergency Contacts */}
         <Card style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="call" size={20} color={COLORS.primary} />
+            <Icon name="call" size={20} color={colors.primary} />
             <Text style={styles.sectionTitle}>Emergency Contacts</Text>
           </View>
           {editMode ? (
@@ -329,14 +332,14 @@ export default function PostpartumScreen() {
                   value={emergencyContact1.name}
                   onChangeText={(text) => setEmergencyContact1({ ...emergencyContact1, name: text })}
                   placeholder="Name"
-                  placeholderTextColor={COLORS.textLight}
+                  placeholderTextColor={colors.textLight}
                 />
                 <TextInput
                   style={[styles.input, styles.contactInput]}
                   value={emergencyContact1.phone}
                   onChangeText={(text) => setEmergencyContact1({ ...emergencyContact1, phone: text })}
                   placeholder="Phone"
-                  placeholderTextColor={COLORS.textLight}
+                  placeholderTextColor={colors.textLight}
                   keyboardType="phone-pad"
                 />
               </View>
@@ -346,14 +349,14 @@ export default function PostpartumScreen() {
                   value={emergencyContact2.name}
                   onChangeText={(text) => setEmergencyContact2({ ...emergencyContact2, name: text })}
                   placeholder="Name (optional)"
-                  placeholderTextColor={COLORS.textLight}
+                  placeholderTextColor={colors.textLight}
                 />
                 <TextInput
                   style={[styles.input, styles.contactInput]}
                   value={emergencyContact2.phone}
                   onChangeText={(text) => setEmergencyContact2({ ...emergencyContact2, phone: text })}
                   placeholder="Phone"
-                  placeholderTextColor={COLORS.textLight}
+                  placeholderTextColor={colors.textLight}
                   keyboardType="phone-pad"
                 />
               </View>
@@ -376,7 +379,7 @@ export default function PostpartumScreen() {
         {/* Additional Notes */}
         <Card style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="document-text" size={20} color={COLORS.primary} />
+            <Icon name="document-text" size={20} color={colors.primary} />
             <Text style={styles.sectionTitle}>Additional Notes</Text>
           </View>
           {editMode ? (
@@ -385,7 +388,7 @@ export default function PostpartumScreen() {
               value={notes}
               onChangeText={setNotes}
               placeholder="Any other important information..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={4}
             />
@@ -410,31 +413,31 @@ export default function PostpartumScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1, backgroundColor: colors.background },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.lg },
-  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: COLORS.textPrimary },
-  subtitle: { fontSize: SIZES.fontMd, color: COLORS.textSecondary },
-  editButton: { padding: SIZES.sm, backgroundColor: COLORS.primary + '15', borderRadius: SIZES.radiusMd },
+  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: colors.text },
+  subtitle: { fontSize: SIZES.fontMd, color: colors.textSecondary },
+  editButton: { padding: SIZES.sm, backgroundColor: colors.primary + '15', borderRadius: SIZES.radiusMd },
   section: { marginBottom: SIZES.md },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: SIZES.sm, gap: SIZES.sm },
-  sectionTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: COLORS.textPrimary },
-  input: { backgroundColor: COLORS.background, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, color: COLORS.textPrimary, borderWidth: 1, borderColor: COLORS.border },
+  sectionTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text },
+  input: { backgroundColor: colors.background, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, color: colors.text, borderWidth: 1, borderColor: colors.border },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
-  fieldValue: { fontSize: SIZES.fontMd, color: COLORS.textSecondary },
+  fieldValue: { fontSize: SIZES.fontMd, color: colors.textSecondary },
   chipContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.xs },
-  chip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.border },
-  chipActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+  chip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border },
+  chipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
   chipDisabled: { opacity: 0.7 },
-  chipText: { fontSize: SIZES.fontSm, color: COLORS.textSecondary },
-  chipTextActive: { color: COLORS.white },
-  warningText: { fontSize: SIZES.fontSm, color: COLORS.error, marginBottom: SIZES.sm },
-  warningChip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.error + '50' },
-  warningChipActive: { backgroundColor: COLORS.error, borderColor: COLORS.error },
-  warningChipText: { fontSize: SIZES.fontSm, color: COLORS.error },
-  warningChipTextActive: { color: COLORS.white },
+  chipText: { fontSize: SIZES.fontSm, color: colors.textSecondary },
+  chipTextActive: { color: colors.white },
+  warningText: { fontSize: SIZES.fontSm, color: colors.error, marginBottom: SIZES.sm },
+  warningChip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.error + '50' },
+  warningChipActive: { backgroundColor: colors.error, borderColor: colors.error },
+  warningChipText: { fontSize: SIZES.fontSm, color: colors.error },
+  warningChipTextActive: { color: colors.white },
   contactRow: { flexDirection: 'row', gap: SIZES.sm, marginBottom: SIZES.sm },
   contactInput: { flex: 1 },
   saveButton: { marginTop: SIZES.lg },
-});
+}));

@@ -1,15 +1,16 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
-import { COLORS } from '../src/constants/theme';
-import { Platform } from 'react-native';
+import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
 export default function AuthCallback() {
   const router = useRouter();
   const { loginWithGoogle } = useAuthStore();
   const hasProcessed = useRef(false);
+  const colors = useColors();
+  const styles = getStyles(colors);
   
   useEffect(() => {
     // Prevent double processing in StrictMode
@@ -55,9 +56,9 @@ export default function AuthCallback() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
-});
+}));

@@ -22,14 +22,15 @@ import { SECTION_FORMS, renderField } from '../../src/components/BirthPlanForms'
 import SectionVideoGuide from '../../src/components/SectionVideoGuide';
 import { apiRequest, getApiBaseUrl } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles, ThemeColors } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 
-const STATUS_COLORS: Record<string, string> = {
-  'Not started': COLORS.textLight,
-  'In progress': COLORS.warning,
-  'Complete': COLORS.success,
-};
+const getStatusColors = (colors: ThemeColors): Record<string, string> => ({
+  'Not started': colors.textLight,
+  'In progress': colors.warning,
+  'Complete': colors.success,
+});
 
 const STATUS_ICONS: Record<string, string> = {
   'Not started': 'ellipse-outline',
@@ -52,6 +53,9 @@ const SECTION_ICONS: Record<string, string> = {
 
 export default function BirthPlanScreen() {
   const router = useRouter();
+  const colors = useColors();
+  const styles = getStyles(colors);
+  const STATUS_COLORS = getStatusColors(colors);
   const { sessionToken: token } = useAuthStore();
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [shareRequests, setShareRequests] = useState<any[]>([]);
@@ -220,7 +224,7 @@ export default function BirthPlanScreen() {
             value={sectionData.preferences || ''}
             onChangeText={(text) => updateSectionData('preferences', text)}
             placeholder={`Enter your ${selectedSection.title.toLowerCase()} preferences...`}
-            placeholderTextColor={COLORS.textLight}
+            placeholderTextColor={colors.textLight}
             multiline
             numberOfLines={6}
           />
@@ -246,7 +250,7 @@ export default function BirthPlanScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -304,7 +308,7 @@ export default function BirthPlanScreen() {
                   <Icon 
                     name={SECTION_ICONS[section.section_id] || 'document'} 
                     size={20} 
-                    color={section.status === 'Complete' ? COLORS.white : COLORS.primary} 
+                    color={section.status === 'Complete' ? colors.white : colors.primary} 
                   />
                 </View>
                 <View style={styles.sectionInfo}>
@@ -325,7 +329,7 @@ export default function BirthPlanScreen() {
                     </Text>
                   </View>
                 </View>
-                <Icon name="chevron-forward" size={20} color={COLORS.textLight} />
+                <Icon name="chevron-forward" size={20} color={colors.textLight} />
               </View>
             </Card>
           </TouchableOpacity>
@@ -338,7 +342,7 @@ export default function BirthPlanScreen() {
             onPress={handleDownloadPDF}
             loading={exporting}
             fullWidth
-            icon={<Icon name="download" size={20} color={COLORS.white} />}
+            icon={<Icon name="download" size={20} color={colors.white} />}
             style={styles.shareButton}
             data-testid="download-pdf-btn"
           />
@@ -348,7 +352,7 @@ export default function BirthPlanScreen() {
           
           {/* Auto-share notice */}
           <View style={styles.autoShareNotice}>
-            <Icon name="information-circle" size={18} color={COLORS.primary} />
+            <Icon name="information-circle" size={18} color={colors.primary} />
             <View style={styles.autoShareTextContainer}>
               <Text style={styles.autoShareText}>
                 Your birth plan is automatically shared with team members.
@@ -388,7 +392,7 @@ export default function BirthPlanScreen() {
                 onPress={() => setModalVisible(false)}
                 style={styles.modalCloseButton}
               >
-                <Icon name="close" size={24} color={COLORS.textPrimary} />
+                <Icon name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle} numberOfLines={1}>
                 {selectedSection?.title}
@@ -405,7 +409,7 @@ export default function BirthPlanScreen() {
             >
               {/* Section Description */}
               <View style={styles.descriptionCard}>
-                <Icon name="information-circle" size={20} color={COLORS.primary} />
+                <Icon name="information-circle" size={20} color={colors.primary} />
                 <Text style={styles.modalDescription}>
                   {getSectionDescription()}
                 </Text>
@@ -423,14 +427,14 @@ export default function BirthPlanScreen() {
               {/* Notes to Provider */}
               <View style={styles.notesSection}>
                 <Text style={styles.notesLabel}>
-                  <Icon name="chatbubble" size={16} color={COLORS.primary} /> Notes to Your Care Team
+                  <Icon name="chatbubble" size={16} color={colors.primary} /> Notes to Your Care Team
                 </Text>
                 <TextInput
                   style={[styles.textInput, styles.textArea]}
                   value={notesToProvider}
                   onChangeText={setNotesToProvider}
                   placeholder="Any additional notes or context for your healthcare providers..."
-                  placeholderTextColor={COLORS.textLight}
+                  placeholderTextColor={colors.textLight}
                   multiline
                   numberOfLines={4}
                   onFocus={() => {
@@ -452,7 +456,7 @@ export default function BirthPlanScreen() {
                 onPress={saveSection}
                 loading={saving}
                 fullWidth
-                icon={!saving ? <Icon name="checkmark" size={20} color={COLORS.white} /> : undefined}
+                icon={!saving ? <Icon name="checkmark" size={20} color={colors.white} /> : undefined}
                 data-testid="save-section-btn"
               />
             </View>
@@ -463,10 +467,10 @@ export default function BirthPlanScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -478,12 +482,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXxl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 4,
   },
   progressCard: {
@@ -499,47 +503,47 @@ const styles = StyleSheet.create({
   progressTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   progressSubtext: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   progressCircle: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   progressPercent: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.white,
+    color: colors.white,
   },
   progressBar: {
     height: 8,
-    backgroundColor: COLORS.border,
+    backgroundColor: colors.border,
     borderRadius: 4,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     borderRadius: 4,
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   sectionSubtitle: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.md,
   },
   sectionCard: {
@@ -553,13 +557,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.primaryLight + '30',
+    backgroundColor: colors.primaryLight + '30',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.md,
   },
   sectionIconComplete: {
-    backgroundColor: COLORS.success,
+    backgroundColor: colors.success,
   },
   sectionInfo: {
     flex: 1,
@@ -567,7 +571,7 @@ const styles = StyleSheet.create({
   sectionName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 4,
   },
   statusRow: {
@@ -595,13 +599,13 @@ const styles = StyleSheet.create({
   exportHint: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     textAlign: 'center',
   },
   autoShareNotice: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: COLORS.primary + '10',
+    backgroundColor: colors.primary + '10',
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginTop: SIZES.md,
@@ -613,25 +617,25 @@ const styles = StyleSheet.create({
   autoShareText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   sharedWithText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.success,
+    color: colors.success,
     marginTop: 4,
   },
   notSharedText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
     fontStyle: 'italic',
     marginTop: 4,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -639,8 +643,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   modalCloseButton: {
     width: 44,
@@ -652,7 +656,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
     textAlign: 'center',
   },
   modalContent: {
@@ -661,7 +665,7 @@ const styles = StyleSheet.create({
   },
   descriptionCard: {
     flexDirection: 'row',
-    backgroundColor: COLORS.primaryLight + '20',
+    backgroundColor: colors.primaryLight + '20',
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.lg,
@@ -670,7 +674,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 22,
     marginLeft: SIZES.sm,
   },
@@ -678,30 +682,30 @@ const styles = StyleSheet.create({
     marginTop: SIZES.md,
     paddingTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   notesLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
   },
   textInput: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   textArea: {
     minHeight: 100,
@@ -710,7 +714,7 @@ const styles = StyleSheet.create({
   modalFooter: {
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderTopColor: colors.border,
+    backgroundColor: colors.white,
   },
-});
+}));

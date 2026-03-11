@@ -17,7 +17,8 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface Provider {
   user_id: string;
@@ -41,6 +42,8 @@ interface ShareRequest {
 }
 
 export default function ShareBirthPlanScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Provider[]>([]);
@@ -139,10 +142,10 @@ export default function ShareBirthPlanScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'accepted': return COLORS.success;
-      case 'pending': return COLORS.warning;
-      case 'rejected': return COLORS.error;
-      default: return COLORS.textLight;
+      case 'accepted': return colors.success;
+      case 'pending': return colors.warning;
+      case 'rejected': return colors.error;
+      default: return colors.textLight;
     }
   };
 
@@ -163,7 +166,7 @@ export default function ShareBirthPlanScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -171,7 +174,7 @@ export default function ShareBirthPlanScreen() {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Icon name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.title}>Share Birth Plan</Text>
         </View>
@@ -184,18 +187,18 @@ export default function ShareBirthPlanScreen() {
         <Card style={styles.searchCard}>
           <Text style={styles.sectionTitle}>Find Provider</Text>
           <View style={styles.searchContainer}>
-            <Icon name="search" size={20} color={COLORS.textLight} />
+            <Icon name="search" size={20} color={colors.textLight} />
             <TextInput
               style={styles.searchInput}
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholder="Search by name or email..."
-              placeholderTextColor={COLORS.textLight}
+              placeholderTextColor={colors.textLight}
               autoCapitalize="none"
               autoCorrect={false}
               data-testid="search-provider-input"
             />
-            {searching && <ActivityIndicator size="small" color={COLORS.primary} />}
+            {searching && <ActivityIndicator size="small" color={colors.primary} />}
           </View>
 
           {/* Search Results */}
@@ -207,7 +210,7 @@ export default function ShareBirthPlanScreen() {
                     <Icon 
                       name={provider.role === 'DOULA' ? 'people' : 'medkit'} 
                       size={20} 
-                      color={COLORS.white} 
+                      color={colors.white} 
                     />
                   </View>
                   <View style={styles.providerInfo}>
@@ -229,10 +232,10 @@ export default function ShareBirthPlanScreen() {
                       data-testid={`share-btn-${provider.user_id}`}
                     >
                       {sending === provider.user_id ? (
-                        <ActivityIndicator size="small" color={COLORS.white} />
+                        <ActivityIndicator size="small" color={colors.white} />
                       ) : (
                         <>
-                          <Icon name="share-social" size={16} color={COLORS.white} />
+                          <Icon name="share-social" size={16} color={colors.white} />
                           <Text style={styles.shareButtonText}>Share</Text>
                         </>
                       )}
@@ -262,7 +265,7 @@ export default function ShareBirthPlanScreen() {
                     <Icon 
                       name={request.provider_role === 'DOULA' ? 'people' : 'medkit'} 
                       size={20} 
-                      color={COLORS.primary} 
+                      color={colors.primary} 
                     />
                   </View>
                   <View style={styles.requestInfo}>
@@ -301,27 +304,27 @@ export default function ShareBirthPlanScreen() {
             {pendingRequests.map((request) => (
               <Card key={request.request_id} style={styles.requestCard}>
                 <View style={styles.requestRow}>
-                  <View style={[styles.requestIcon, { backgroundColor: COLORS.warning + '20' }]}>
+                  <View style={[styles.requestIcon, { backgroundColor: colors.warning + '20' }]}>
                     <Icon 
                       name={request.provider_role === 'DOULA' ? 'people' : 'medkit'} 
                       size={20} 
-                      color={COLORS.warning} 
+                      color={colors.warning} 
                     />
                   </View>
                   <View style={styles.requestInfo}>
                     <Text style={styles.requestName}>{request.provider_name}</Text>
                     <View style={styles.statusRow}>
-                      <Icon name="time" size={14} color={COLORS.warning} />
-                      <Text style={[styles.statusText, { color: COLORS.warning }]}>
+                      <Icon name="time" size={14} color={colors.warning} />
+                      <Text style={[styles.statusText, { color: colors.warning }]}>
                         Pending
                       </Text>
                     </View>
                   </View>
                   <TouchableOpacity
-                    style={[styles.revokeButton, { backgroundColor: COLORS.textLight + '20' }]}
+                    style={[styles.revokeButton, { backgroundColor: colors.textLight + '20' }]}
                     onPress={() => revokeShare(request.request_id, request.provider_name)}
                   >
-                    <Text style={[styles.revokeButtonText, { color: COLORS.textSecondary }]}>Cancel</Text>
+                    <Text style={[styles.revokeButtonText, { color: colors.textSecondary }]}>Cancel</Text>
                   </TouchableOpacity>
                 </View>
               </Card>
@@ -332,7 +335,7 @@ export default function ShareBirthPlanScreen() {
         {/* Empty State */}
         {shareRequests.length === 0 && (
           <View style={styles.emptyState}>
-            <Icon name="share-social" size={48} color={COLORS.textLight} />
+            <Icon name="share-social" size={48} color={colors.textLight} />
             <Text style={styles.emptyTitle}>No Active Shares</Text>
             <Text style={styles.emptyText}>
               Search for your doula or midwife above to share your birth plan with them.
@@ -344,10 +347,10 @@ export default function ShareBirthPlanScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -365,11 +368,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXxl,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.lg,
     lineHeight: 22,
   },
@@ -380,18 +383,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   sectionSubtitle: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.md,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.sm,
     paddingHorizontal: SIZES.md,
@@ -400,13 +403,13 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: SIZES.sm,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     paddingVertical: SIZES.xs,
   },
   resultsContainer: {
     marginTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
     paddingTop: SIZES.md,
   },
   providerRow: {
@@ -414,13 +417,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   providerAvatar: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -431,45 +434,45 @@ const styles = StyleSheet.create({
   providerName: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   providerRole: {
     fontSize: SIZES.fontSm,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '500',
   },
   providerEmail: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   shareButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusMd,
     gap: 4,
   },
   shareButtonText: {
-    color: COLORS.white,
+    color: colors.white,
     fontWeight: '600',
     fontSize: SIZES.fontSm,
   },
   sharedBadge: {
-    backgroundColor: COLORS.success + '20',
+    backgroundColor: colors.success + '20',
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.xs,
     borderRadius: SIZES.radiusMd,
   },
   sharedBadgeText: {
-    color: COLORS.success,
+    color: colors.success,
     fontWeight: '600',
     fontSize: SIZES.fontSm,
   },
   noResults: {
     textAlign: 'center',
-    color: COLORS.textLight,
+    color: colors.textLight,
     marginTop: SIZES.md,
     fontStyle: 'italic',
   },
@@ -487,7 +490,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.primaryLight + '30',
+    backgroundColor: colors.primaryLight + '30',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -498,7 +501,7 @@ const styles = StyleSheet.create({
   requestName: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 2,
   },
   statusRow: {
@@ -510,13 +513,13 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   revokeButton: {
-    backgroundColor: COLORS.error + '15',
+    backgroundColor: colors.error + '15',
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusMd,
   },
   revokeButtonText: {
-    color: COLORS.error,
+    color: colors.error,
     fontWeight: '600',
     fontSize: SIZES.fontSm,
   },
@@ -528,14 +531,14 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: SIZES.sm,
     paddingHorizontal: SIZES.xl,
   },
-});
+}));

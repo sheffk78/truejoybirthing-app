@@ -17,9 +17,12 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { apiRequest } from '../../src/utils/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function MidwifeVisitsScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
   const [visits, setVisits] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
@@ -122,7 +125,7 @@ export default function MidwifeVisitsScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.roleMidwife} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.roleMidwife} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -132,7 +135,7 @@ export default function MidwifeVisitsScreen() {
             style={styles.addButton}
             onPress={() => setModalVisible(true)}
           >
-            <Icon name="add" size={24} color={COLORS.white} />
+            <Icon name="add" size={24} color={colors.white} />
           </TouchableOpacity>
         </View>
         
@@ -176,13 +179,13 @@ export default function MidwifeVisitsScreen() {
                 <View
                   style={[
                     styles.typeBadge,
-                    { backgroundColor: visit.visit_type === 'Prenatal' ? COLORS.roleMidwife + '20' : COLORS.accent + '20' },
+                    { backgroundColor: visit.visit_type === 'Prenatal' ? colors.roleMidwife + '20' : colors.accent + '20' },
                   ]}
                 >
                   <Text
                     style={[
                       styles.typeText,
-                      { color: visit.visit_type === 'Prenatal' ? COLORS.roleMidwife : COLORS.accent },
+                      { color: visit.visit_type === 'Prenatal' ? colors.roleMidwife : colors.accent },
                     ]}
                   >
                     {visit.visit_type}
@@ -236,7 +239,7 @@ export default function MidwifeVisitsScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Record Visit</Text>
             <View style={{ width: 24 }} />
@@ -353,10 +356,10 @@ export default function MidwifeVisitsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -371,20 +374,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXxl,
     fontFamily: FONTS.heading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   addButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: COLORS.roleMidwife,
+    backgroundColor: colors.roleMidwife,
     alignItems: 'center',
     justifyContent: 'center',
   },
   emptyText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   visitCard: {
@@ -402,13 +405,13 @@ const styles = StyleSheet.create({
   clientName: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: 2,
   },
   visitDate: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   typeBadge: {
     paddingHorizontal: SIZES.sm,
@@ -425,7 +428,7 @@ const styles = StyleSheet.create({
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   vitalItem: {
     marginRight: SIZES.lg,
@@ -434,23 +437,23 @@ const styles = StyleSheet.create({
   vitalLabel: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    color: COLORS.textLight,
+    color: colors.textLight,
   },
   vitalValue: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   noteText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.sm,
     fontStyle: 'italic',
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -458,13 +461,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.subheading,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalContent: {
     flex: 1,
@@ -473,7 +476,7 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
   },
@@ -484,22 +487,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     marginRight: SIZES.sm,
   },
   clientOptionSelected: {
-    backgroundColor: COLORS.roleMidwife,
-    borderColor: COLORS.roleMidwife,
+    backgroundColor: colors.roleMidwife,
+    borderColor: colors.roleMidwife,
   },
   clientOptionText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   clientOptionTextSelected: {
-    color: COLORS.white,
+    color: colors.white,
     fontFamily: FONTS.bodyBold,
   },
   typeSelector: {
@@ -510,23 +513,23 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: SIZES.sm,
     alignItems: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     marginRight: SIZES.sm,
     borderRadius: SIZES.radiusMd,
   },
   typeOptionSelected: {
-    backgroundColor: COLORS.roleMidwife,
-    borderColor: COLORS.roleMidwife,
+    backgroundColor: colors.roleMidwife,
+    borderColor: colors.roleMidwife,
   },
   typeOptionText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   typeOptionTextSelected: {
-    color: COLORS.white,
+    color: colors.white,
     fontFamily: FONTS.bodyBold,
   },
   vitalsGrid: {
@@ -537,14 +540,14 @@ const styles = StyleSheet.create({
     marginRight: SIZES.sm,
   },
   textInput: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   textArea: {
     minHeight: 100,
@@ -553,8 +556,8 @@ const styles = StyleSheet.create({
   modalFooter: {
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderTopColor: colors.border,
+    backgroundColor: colors.white,
   },
   filterContainer: {
     marginBottom: SIZES.md,
@@ -562,23 +565,23 @@ const styles = StyleSheet.create({
   filterChip: {
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.radiusMd,
     marginRight: SIZES.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
   },
   filterChipActive: {
-    backgroundColor: COLORS.roleMidwife,
-    borderColor: COLORS.roleMidwife,
+    backgroundColor: colors.roleMidwife,
+    borderColor: colors.roleMidwife,
   },
   filterChipText: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   filterChipTextActive: {
-    color: COLORS.white,
+    color: colors.white,
     fontFamily: FONTS.bodyBold,
   },
-});
+}));

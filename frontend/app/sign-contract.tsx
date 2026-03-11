@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -18,7 +17,8 @@ import Button from '../src/components/Button';
 import Input from '../src/components/Input';
 import { apiRequest } from '../src/utils/api';
 import { API_ENDPOINTS, API_BASE_URL } from '../src/constants/api';
-import { COLORS, SIZES } from '../src/constants/theme';
+import { SIZES } from '../src/constants/theme';
+import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
 interface ContractData {
   contract: {
@@ -61,6 +61,8 @@ export default function SignContractScreen() {
   const [signing, setSigning] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const colors = useColors();
+  const styles = getStyles(colors);
   
   useEffect(() => {
     fetchContract();
@@ -130,7 +132,7 @@ export default function SignContractScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.roleDoula} />
+        <ActivityIndicator size="large" color={colors.roleDoula} />
         <Text style={styles.loadingText}>Loading contract...</Text>
       </SafeAreaView>
     );
@@ -139,7 +141,7 @@ export default function SignContractScreen() {
   if (error || !contractData) {
     return (
       <SafeAreaView style={styles.errorContainer}>
-        <Icon name="alert-circle-outline" size={64} color={COLORS.error} />
+        <Icon name="alert-circle-outline" size={64} color={colors.error} />
         <Text style={styles.errorText}>{error || 'Contract not found'}</Text>
         <Button title="Go Back" onPress={() => router.back()} variant="outline" />
       </SafeAreaView>
@@ -155,7 +157,7 @@ export default function SignContractScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} data-testid="back-btn">
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Review & Sign</Text>
         <View style={{ width: 24 }} />
@@ -175,7 +177,7 @@ export default function SignContractScreen() {
               )}
             </View>
             <View style={styles.partySeparator}>
-              <Icon name="swap-horizontal" size={24} color={COLORS.textLight} />
+              <Icon name="swap-horizontal" size={24} color={colors.textLight} />
             </View>
             <View style={styles.partyInfo}>
               <Text style={styles.partyLabel}>Client</Text>
@@ -191,7 +193,7 @@ export default function SignContractScreen() {
             <View style={styles.feeSummary}>
               <View style={styles.feeRow}>
                 <Text style={styles.feeLabel}>Total Fee</Text>
-                <Text style={styles.feeAmount}>{formatCurrency(contract.total_fee)}</Text>
+                <Text style={[styles.feeAmount, { color: colors.roleDoula }]}>{formatCurrency(contract.total_fee)}</Text>
               </View>
               {contract.retainer_amount && (
                 <View style={styles.feeRow}>
@@ -247,10 +249,10 @@ export default function SignContractScreen() {
         
         {/* Provider Signature (if already signed by provider) */}
         {contract.doula_signature && (
-          <Card style={styles.providerSignatureCard}>
+          <Card style={[styles.providerSignatureCard, { backgroundColor: colors.success + '08', borderColor: colors.success + '30' }]}>
             <View style={styles.signatureHeader}>
-              <Icon name="checkmark-circle" size={20} color={COLORS.success} />
-              <Text style={styles.signatureLabel}>Provider Signature</Text>
+              <Icon name="checkmark-circle" size={20} color={colors.success} />
+              <Text style={[styles.signatureLabel, { color: colors.success }]}>Provider Signature</Text>
             </View>
             <Text style={styles.signatureText}>
               {contract.doula_signature.signer_name} signed on{' '}
@@ -265,10 +267,10 @@ export default function SignContractScreen() {
         
         {/* Signature Section */}
         {isAlreadySigned ? (
-          <Card style={styles.signedCard}>
+          <Card style={[styles.signedCard, { backgroundColor: colors.success + '10', borderColor: colors.success }]}>
             <View style={styles.signedHeader}>
-              <Icon name="checkmark-circle" size={32} color={COLORS.success} />
-              <Text style={styles.signedTitle}>Contract Signed</Text>
+              <Icon name="checkmark-circle" size={32} color={colors.success} />
+              <Text style={[styles.signedTitle, { color: colors.success }]}>Contract Signed</Text>
             </View>
             <Text style={styles.signedInfo}>
               Signed by {contract.client_signature?.signer_name || 'Client'} on{' '}
@@ -286,7 +288,7 @@ export default function SignContractScreen() {
             
             {/* Download PDF Button */}
             <TouchableOpacity 
-              style={styles.downloadButton}
+              style={[styles.downloadButton, { backgroundColor: colors.roleDoula }]}
               onPress={() => {
                 const pdfUrl = `${API_BASE_URL}/api/contracts/${contractId}/pdf`;
                 if (Platform.OS === 'web') {
@@ -297,7 +299,7 @@ export default function SignContractScreen() {
               }}
               data-testid="download-pdf-btn"
             >
-              <Icon name="download-outline" size={20} color={COLORS.white} />
+              <Icon name="download-outline" size={20} color={colors.white} />
               <Text style={styles.downloadButtonText}>Download Signed PDF</Text>
             </TouchableOpacity>
           </Card>
@@ -324,8 +326,8 @@ export default function SignContractScreen() {
               onPress={() => setAgreed(!agreed)}
               data-testid="agreement-checkbox"
             >
-              <View style={[styles.checkbox, agreed && styles.checkboxChecked]}>
-                {agreed && <Icon name="checkmark" size={16} color={COLORS.white} />}
+              <View style={[styles.checkbox, agreed && { backgroundColor: colors.roleDoula, borderColor: colors.roleDoula }]}>
+                {agreed && <Icon name="checkmark" size={16} color={colors.white} />}
               </View>
               <Text style={styles.agreementText}>
                 I have read the entire agreement above, understand its terms, and agree to be bound by them.
@@ -347,34 +349,34 @@ export default function SignContractScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   loadingText: {
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     padding: SIZES.xl,
   },
   errorText: {
     marginTop: SIZES.md,
     marginBottom: SIZES.lg,
     fontSize: SIZES.fontMd,
-    color: COLORS.error,
+    color: colors.error,
     textAlign: 'center',
   },
   header: {
@@ -382,14 +384,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -404,7 +406,7 @@ const styles = StyleSheet.create({
   contractTitle: {
     fontSize: SIZES.fontXl,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.lg,
     textAlign: 'center',
   },
@@ -418,17 +420,17 @@ const styles = StyleSheet.create({
   },
   partyLabel: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   partyName: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   partyDetail: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   partySeparator: {
@@ -440,7 +442,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.lg,
   },
   detailSection: {
@@ -449,22 +451,19 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   detailText: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 22,
   },
   feeAmount: {
     fontSize: SIZES.fontXl,
     fontWeight: '700',
-    color: COLORS.roleDoula,
   },
   signedCard: {
-    backgroundColor: COLORS.success + '10',
-    borderColor: COLORS.success,
     borderWidth: 1,
   },
   signedHeader: {
@@ -475,30 +474,28 @@ const styles = StyleSheet.create({
   signedTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '700',
-    color: COLORS.success,
     marginLeft: SIZES.sm,
   },
   signedInfo: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   signedNote: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.sm,
   },
   downloadButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.roleDoula,
     paddingVertical: SIZES.md,
     paddingHorizontal: SIZES.lg,
     borderRadius: SIZES.radiusMd,
     marginTop: SIZES.lg,
   },
   downloadButtonText: {
-    color: COLORS.white,
+    color: colors.white,
     fontSize: SIZES.fontMd,
     fontWeight: '600',
     marginLeft: SIZES.sm,
@@ -508,14 +505,12 @@ const styles = StyleSheet.create({
   },
   signatureInstructions: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.lg,
     lineHeight: 20,
   },
   providerSignatureCard: {
     marginBottom: SIZES.md,
-    backgroundColor: COLORS.success + '08',
-    borderColor: COLORS.success + '30',
     borderWidth: 1,
   },
   signatureHeader: {
@@ -526,19 +521,18 @@ const styles = StyleSheet.create({
   signatureLabel: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
-    color: COLORS.success,
     marginLeft: SIZES.xs,
   },
   signatureText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginLeft: 28,
   },
   feeSummary: {
     marginTop: SIZES.lg,
     paddingTop: SIZES.lg,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   feeRow: {
     flexDirection: 'row',
@@ -548,16 +542,16 @@ const styles = StyleSheet.create({
   },
   feeLabel: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   feeDetail: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
     fontWeight: '500',
   },
   contractText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textPrimary,
+    color: colors.text,
     lineHeight: 22,
     textAlign: 'justify',
   },
@@ -572,22 +566,18 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     marginRight: SIZES.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkboxChecked: {
-    backgroundColor: COLORS.roleDoula,
-    borderColor: COLORS.roleDoula,
-  },
   agreementText: {
     flex: 1,
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   signButton: {
     marginTop: SIZES.sm,
   },
-});
+}));

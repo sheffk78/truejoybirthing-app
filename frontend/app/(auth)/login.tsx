@@ -20,8 +20,8 @@ import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { useAuthStore } from '../../src/store/authStore';
-import { COLORS, SIZES, FONTS, BRAND } from '../../src/constants/theme';
-import { useColors } from '../../src/hooks/useThemedStyles';
+import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -34,6 +34,7 @@ export default function LoginScreen() {
   const { width } = useWindowDimensions();
   const isWideScreen = width > 768;
   const colors = useColors();
+  const styles = getStyles(colors);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -231,7 +232,7 @@ export default function LoginScreen() {
               // @ts-ignore
               onClick={Platform.OS === 'web' ? () => router.back() : undefined}
             >
-              <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+              <Icon name="arrow-back" size={24} color={colors.text} />
             </Pressable>
             
             {/* Spacer for image */}
@@ -302,7 +303,7 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   // Split screen styles (wide)
   splitContainer: {
     flex: 1,
@@ -351,7 +352,7 @@ const styles = StyleSheet.create({
   formSection: {
     flex: 1,
     maxWidth: '50%',
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   formSafeArea: {
     flex: 1,
@@ -373,13 +374,13 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   formSubtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.xl,
   },
   inputsContainer: {
@@ -389,7 +390,7 @@ const styles = StyleSheet.create({
   // Mobile styles
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   mobileBg: {
     position: 'absolute',
@@ -423,7 +424,7 @@ const styles = StyleSheet.create({
     height: SCREEN_HEIGHT * 0.18,
   },
   mobileFormCard: {
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
     borderRadius: 24,
     padding: SIZES.lg,
     shadowColor: '#4A3B4E',
@@ -436,13 +437,13 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: SIZES.lg,
   },
   mobileInputs: {
@@ -454,7 +455,7 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.primary,
+    color: colors.primary,
     fontFamily: FONTS.bodyMedium,
   },
   loginButton: {
@@ -468,12 +469,12 @@ const styles = StyleSheet.create({
   signupText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   signupLink: {
     fontSize: SIZES.fontMd,
-    color: COLORS.primary,
+    color: colors.primary,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
   },
-});
+}));

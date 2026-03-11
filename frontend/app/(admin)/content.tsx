@@ -16,9 +16,12 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function AdminContentScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const [content, setContent] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -96,7 +99,7 @@ export default function AdminContentScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.roleAdmin} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.roleAdmin} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -114,14 +117,14 @@ export default function AdminContentScreen() {
             <Card style={styles.contentCard}>
               <View style={styles.contentHeader}>
                 <Text style={styles.sectionTitle}>{getSectionTitle(item.section_id)}</Text>
-                <Icon name="create-outline" size={20} color={COLORS.roleAdmin} />
+                <Icon name="create-outline" size={20} color={colors.roleAdmin} />
               </View>
               <Text style={styles.explanatoryPreview} numberOfLines={2}>
                 {item.explanatory_text || 'No content set'}
               </Text>
               {item.video_url && (
                 <View style={styles.videoIndicator}>
-                  <Icon name="videocam" size={14} color={COLORS.success} />
+                  <Icon name="videocam" size={14} color={colors.success} />
                   <Text style={styles.videoText}>Video attached</Text>
                 </View>
               )}
@@ -139,7 +142,7 @@ export default function AdminContentScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Icon name="close" size={24} color={COLORS.textPrimary} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Edit Content</Text>
             <View style={{ width: 24 }} />
@@ -186,10 +189,10 @@ export default function AdminContentScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -201,11 +204,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: SIZES.fontXxl,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: 4,
   },
   contentCard: {
@@ -220,12 +223,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     flex: 1,
   },
   explanatoryPreview: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   videoIndicator: {
@@ -235,12 +238,12 @@ const styles = StyleSheet.create({
   },
   videoText: {
     fontSize: SIZES.fontXs,
-    color: COLORS.success,
+    color: colors.success,
     marginLeft: 4,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -248,13 +251,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   modalContent: {
     flex: 1,
@@ -263,24 +266,24 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: SIZES.fontLg,
     fontWeight: '700',
-    color: COLORS.roleAdmin,
+    color: colors.roleAdmin,
     marginBottom: SIZES.lg,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
   },
   textInput: {
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: colors.border,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   textArea: {
     minHeight: 200,
@@ -289,7 +292,7 @@ const styles = StyleSheet.create({
   modalFooter: {
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderTopColor: colors.border,
+    backgroundColor: colors.white,
   },
-});
+}));

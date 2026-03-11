@@ -16,8 +16,8 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { COLORS, SIZES } from '../../src/constants/theme';
-import { useColors } from '../../src/hooks/useThemedStyles';
+import { SIZES } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface TeamMemberResponse {
   provider: {
@@ -57,6 +57,7 @@ interface ShareRequest {
 export default function MyTeamScreen() {
   const router = useRouter();
   const colors = useColors();
+  const styles = getStyles(colors);
   const [teamMembers, setTeamMembers] = useState<TeamMemberResponse[]>([]);
   const [shareRequests, setShareRequests] = useState<ShareRequest[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -215,7 +216,7 @@ export default function MyTeamScreen() {
                       <Icon 
                         name={getProviderIcon(member.provider_role)} 
                         size={24} 
-                        color={COLORS.white} 
+                        color={colors.white} 
                       />
                     </View>
                   )}
@@ -224,17 +225,17 @@ export default function MyTeamScreen() {
                     <View style={styles.roleRow}>
                       <View style={[
                         styles.roleBadge,
-                        { backgroundColor: member.provider_role === 'DOULA' ? COLORS.primary + '20' : COLORS.success + '20' }
+                        { backgroundColor: member.provider_role === 'DOULA' ? colors.primary + '20' : colors.success + '20' }
                       ]}>
                         <Text style={[
                           styles.roleText,
-                          { color: member.provider_role === 'DOULA' ? COLORS.primary : COLORS.success }
+                          { color: member.provider_role === 'DOULA' ? colors.primary : colors.success }
                         ]}>
                           {member.provider_role}
                         </Text>
                       </View>
-                      <View style={[styles.statusBadge, { backgroundColor: COLORS.success + '15' }]}>
-                        <Text style={[styles.statusText, { color: COLORS.success }]}>
+                      <View style={[styles.statusBadge, { backgroundColor: colors.success + '15' }]}>
+                        <Text style={[styles.statusText, { color: colors.success }]}>
                           {getRelationshipLabel(member.relationship_type)}
                         </Text>
                       </View>
@@ -249,7 +250,7 @@ export default function MyTeamScreen() {
                     <View style={styles.detailsRow}>
                       {(member.profile.location_city || member.profile.location_state) && (
                         <View style={styles.detailItem}>
-                          <Icon name="location-outline" size={14} color={COLORS.textSecondary} />
+                          <Icon name="location-outline" size={14} color={colors.textSecondary} />
                           <Text style={styles.detailText}>
                             {[member.profile.location_city, member.profile.location_state].filter(Boolean).join(', ')}
                           </Text>
@@ -257,7 +258,7 @@ export default function MyTeamScreen() {
                       )}
                       {(member.profile.years_in_practice || member.profile.experience_years) && (
                         <View style={styles.detailItem}>
-                          <Icon name="ribbon-outline" size={14} color={COLORS.textSecondary} />
+                          <Icon name="ribbon-outline" size={14} color={colors.textSecondary} />
                           <Text style={styles.detailText}>
                             {member.profile.years_in_practice || member.profile.experience_years} years experience
                           </Text>
@@ -293,7 +294,7 @@ export default function MyTeamScreen() {
                 {/* Birth Plan Access */}
                 {member.share_request && (
                   <View style={styles.accessRow}>
-                    <Icon name="document-text-outline" size={14} color={COLORS.success} />
+                    <Icon name="document-text-outline" size={14} color={colors.success} />
                     <Text style={styles.accessText}>Has access to your birth plan</Text>
                   </View>
                 )}
@@ -306,7 +307,7 @@ export default function MyTeamScreen() {
                       onPress={() => router.push(`/(mom)/messages?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
                       data-testid={`message-btn-${member.id}`}
                     >
-                      <Icon name="chatbubble-outline" size={16} color={COLORS.primary} />
+                      <Icon name="chatbubble-outline" size={16} color={colors.primary} />
                       <Text style={styles.quickActionText}>Message</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -314,7 +315,7 @@ export default function MyTeamScreen() {
                       onPress={() => router.push(`/(mom)/appointments?providerId=${member.provider_id}&providerName=${encodeURIComponent(member.provider_name)}`)}
                       data-testid={`schedule-btn-${member.id}`}
                     >
-                      <Icon name="calendar-outline" size={16} color={COLORS.primary} />
+                      <Icon name="calendar-outline" size={16} color={colors.primary} />
                       <Text style={styles.quickActionText}>Schedule</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -322,7 +323,7 @@ export default function MyTeamScreen() {
                       onPress={() => router.push(`/(mom)/provider-detail?providerId=${member.provider_id}`)}
                       data-testid={`profile-btn-${member.id}`}
                     >
-                      <Icon name="person-outline" size={16} color={COLORS.primary} />
+                      <Icon name="person-outline" size={16} color={colors.primary} />
                       <Text style={styles.quickActionText}>Profile</Text>
                     </TouchableOpacity>
                   </View>
@@ -352,21 +353,21 @@ export default function MyTeamScreen() {
                       <Icon 
                         name={getProviderIcon(request.provider_role)} 
                         size={24} 
-                        color={COLORS.warning} 
+                        color={colors.warning} 
                       />
                     </View>
                   )}
                   <View style={styles.teamInfo}>
                     <Text style={styles.teamName}>{request.provider_name}</Text>
                     <View style={styles.roleRow}>
-                      <View style={[styles.roleBadge, { backgroundColor: COLORS.warning + '20' }]}>
-                        <Text style={[styles.roleText, { color: COLORS.warning }]}>
+                      <View style={[styles.roleBadge, { backgroundColor: colors.warning + '20' }]}>
+                        <Text style={[styles.roleText, { color: colors.warning }]}>
                           {request.provider_role}
                         </Text>
                       </View>
                     </View>
                     <View style={styles.statusRow}>
-                      <Icon name="time" size={14} color={COLORS.warning} />
+                      <Icon name="time" size={14} color={colors.warning} />
                       <Text style={styles.pendingText}>Invitation pending</Text>
                     </View>
                   </View>
@@ -387,7 +388,7 @@ export default function MyTeamScreen() {
         {allTeamProviders.length === 0 && pendingProviders.length === 0 && (
           <Card style={styles.emptyCard}>
             <View style={styles.emptyIcon}>
-              <Icon name="people" size={48} color={COLORS.textLight} />
+              <Icon name="people" size={48} color={colors.textLight} />
             </View>
             <Text style={styles.emptyTitle}>No Team Members Yet</Text>
             <Text style={styles.emptyText}>
@@ -405,7 +406,7 @@ export default function MyTeamScreen() {
         {/* Info Card */}
         <Card style={styles.infoCard}>
           <View style={styles.infoHeader}>
-            <Icon name="information-circle" size={20} color={COLORS.primary} />
+            <Icon name="information-circle" size={20} color={colors.primary} />
             <Text style={styles.infoTitle}>About Your Team</Text>
           </View>
           <Text style={styles.infoText}>
@@ -418,48 +419,48 @@ export default function MyTeamScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1, backgroundColor: colors.background },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl, overflow: 'visible' },
-  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: COLORS.textPrimary },
-  subtitle: { fontSize: SIZES.fontMd, color: COLORS.textSecondary, marginBottom: SIZES.lg },
+  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: colors.text },
+  subtitle: { fontSize: SIZES.fontMd, color: colors.textSecondary, marginBottom: SIZES.lg },
   addButton: { 
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'center', 
-    backgroundColor: COLORS.primary, 
+    backgroundColor: colors.primary, 
     padding: SIZES.md, 
     borderRadius: SIZES.radiusMd, 
     marginBottom: SIZES.lg, 
     gap: SIZES.xs 
   },
-  addButtonText: { color: COLORS.white, fontWeight: '600', fontSize: SIZES.fontMd },
+  addButtonText: { color: colors.white, fontWeight: '600', fontSize: SIZES.fontMd },
   marketplaceButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: colors.primary,
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.lg,
   },
   marketplaceButtonText: { 
     flex: 1, 
-    color: COLORS.white, 
+    color: colors.white, 
     fontWeight: '600', 
     fontSize: SIZES.fontMd, 
     marginLeft: SIZES.sm 
   },
   section: { marginBottom: SIZES.lg },
-  sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary, marginBottom: SIZES.xs },
-  sectionSubtitle: { fontSize: SIZES.fontSm, color: COLORS.textSecondary, marginBottom: SIZES.md },
+  sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text, marginBottom: SIZES.xs },
+  sectionSubtitle: { fontSize: SIZES.fontSm, color: colors.textSecondary, marginBottom: SIZES.md },
   teamCard: { marginBottom: SIZES.sm, overflow: 'visible' },
-  pendingCard: { borderStyle: 'dashed', borderWidth: 1, borderColor: COLORS.warning },
+  pendingCard: { borderStyle: 'dashed', borderWidth: 1, borderColor: colors.warning },
   teamRow: { flexDirection: 'row', alignItems: 'center' },
   avatar: { 
     width: 52, 
     height: 52, 
     borderRadius: 26, 
-    backgroundColor: COLORS.primary, 
+    backgroundColor: colors.primary, 
     alignItems: 'center', 
     justifyContent: 'center' 
   },
@@ -468,28 +469,28 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 26,
   },
-  pendingAvatar: { backgroundColor: COLORS.warning + '20' },
+  pendingAvatar: { backgroundColor: colors.warning + '20' },
   teamInfo: { flex: 1, marginLeft: SIZES.md },
-  teamName: { fontSize: SIZES.fontMd, fontWeight: '600', color: COLORS.textPrimary },
+  teamName: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text },
   roleRow: { flexDirection: 'row', marginTop: 4, flexWrap: 'wrap', gap: 4 },
   roleBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 2, borderRadius: SIZES.radiusSm },
   roleText: { fontSize: SIZES.fontXs, fontWeight: '600' },
   statusBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 2, borderRadius: SIZES.radiusSm },
   statusText: { fontSize: SIZES.fontXs, fontWeight: '600' },
-  accessText: { fontSize: SIZES.fontSm, color: COLORS.success, marginLeft: 4 },
+  accessText: { fontSize: SIZES.fontSm, color: colors.success, marginLeft: 4 },
   accessRow: { 
     flexDirection: 'row', 
     alignItems: 'center', 
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border + '50',
+    borderTopColor: colors.border + '50',
   },
   providerDetails: {
     marginTop: SIZES.md,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border + '50',
+    borderTopColor: colors.border + '50',
   },
   detailsRow: {
     flexDirection: 'row',
@@ -504,11 +505,11 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
   },
   bioText: {
     fontSize: SIZES.fontSm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginTop: SIZES.xs,
     lineHeight: 18,
   },
@@ -519,36 +520,36 @@ const styles = StyleSheet.create({
     marginTop: SIZES.sm,
   },
   serviceTag: {
-    backgroundColor: COLORS.primary + '10',
+    backgroundColor: colors.primary + '10',
     paddingHorizontal: SIZES.sm,
     paddingVertical: 3,
     borderRadius: SIZES.radiusSm,
   },
   serviceTagText: {
     fontSize: SIZES.fontXs,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '500',
   },
   moreServices: {
     fontSize: SIZES.fontXs,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     alignSelf: 'center',
   },
   statusRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 4 },
-  pendingText: { fontSize: SIZES.fontSm, color: COLORS.warning },
+  pendingText: { fontSize: SIZES.fontSm, color: colors.warning },
   removeBtn: { padding: SIZES.sm },
   cancelBtn: { 
     paddingHorizontal: SIZES.md, 
     paddingVertical: SIZES.sm, 
-    backgroundColor: COLORS.textLight + '20', 
+    backgroundColor: colors.textLight + '20', 
     borderRadius: SIZES.radiusMd 
   },
-  cancelBtnText: { color: COLORS.textSecondary, fontWeight: '600', fontSize: SIZES.fontSm },
+  cancelBtnText: { color: colors.textSecondary, fontWeight: '600', fontSize: SIZES.fontSm },
   quickActionsContainer: { 
     marginTop: SIZES.md, 
     paddingTop: SIZES.md, 
     borderTopWidth: 1, 
-    borderTopColor: COLORS.border,
+    borderTopColor: colors.border,
   },
   quickActionsRow: { 
     flexDirection: 'row', 
@@ -559,7 +560,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'center',
-    backgroundColor: COLORS.primary + '10', 
+    backgroundColor: colors.primary + '10', 
     paddingVertical: 6, 
     paddingHorizontal: 8, 
     borderRadius: SIZES.radiusSm,
@@ -567,16 +568,16 @@ const styles = StyleSheet.create({
   },
   quickActionText: { 
     fontSize: SIZES.fontSm, 
-    color: COLORS.primary, 
+    color: colors.primary, 
     fontWeight: '500' 
   },
   emptyCard: { alignItems: 'center', padding: SIZES.xl, marginBottom: SIZES.lg },
   emptyIcon: { marginBottom: SIZES.md },
-  emptyTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: COLORS.textPrimary, marginBottom: SIZES.xs },
-  emptyText: { fontSize: SIZES.fontMd, color: COLORS.textSecondary, textAlign: 'center', marginBottom: SIZES.lg },
+  emptyTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text, marginBottom: SIZES.xs },
+  emptyText: { fontSize: SIZES.fontMd, color: colors.textSecondary, textAlign: 'center', marginBottom: SIZES.lg },
   emptyButton: { minWidth: 160 },
-  infoCard: { backgroundColor: COLORS.primary + '08' },
+  infoCard: { backgroundColor: colors.primary + '08' },
   infoHeader: { flexDirection: 'row', alignItems: 'center', gap: SIZES.sm, marginBottom: SIZES.sm },
-  infoTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: COLORS.primary },
-  infoText: { fontSize: SIZES.fontSm, color: COLORS.textSecondary, lineHeight: 20 },
-});
+  infoTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.primary },
+  infoText: { fontSize: SIZES.fontSm, color: colors.textSecondary, lineHeight: 20 },
+}));

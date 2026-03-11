@@ -15,7 +15,8 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
-import { COLORS, SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface ProviderProfile {
   user_id: string;
@@ -38,6 +39,8 @@ interface ProviderProfile {
 }
 
 export default function ProviderDetailScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
   const router = useRouter();
   const params = useLocalSearchParams<{ providerId: string }>();
   const providerId = params.providerId;
@@ -83,7 +86,7 @@ export default function ProviderDetailScreen() {
   };
 
   const getRoleColor = (role: string) => {
-    return role === 'DOULA' ? COLORS.roleDoula : COLORS.roleMidwife;
+    return role === 'DOULA' ? colors.roleDoula : colors.roleMidwife;
   };
 
   const getRoleIcon = (role: string) => {
@@ -107,13 +110,13 @@ export default function ProviderDetailScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Icon name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Provider Profile</Text>
           <View style={{ width: 40 }} />
         </View>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </SafeAreaView>
     );
@@ -124,13 +127,13 @@ export default function ProviderDetailScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+            <Icon name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Provider Profile</Text>
           <View style={{ width: 40 }} />
         </View>
         <View style={styles.errorContainer}>
-          <Icon name="alert-circle-outline" size={48} color={COLORS.error} />
+          <Icon name="alert-circle-outline" size={48} color={colors.error} />
           <Text style={styles.errorText}>{error || 'Provider not found'}</Text>
           <Button title="Go Back" onPress={() => router.back()} style={{ marginTop: SIZES.lg }} />
         </View>
@@ -146,7 +149,7 @@ export default function ProviderDetailScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Icon name="arrow-back" size={24} color={COLORS.textPrimary} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Provider Profile</Text>
         <View style={{ width: 40 }} />
@@ -171,11 +174,11 @@ export default function ProviderDetailScreen() {
         {/* Quick Actions */}
         <View style={styles.actionsRow}>
           <TouchableOpacity style={styles.actionButton} onPress={handleMessage}>
-            <Icon name="chatbubble-outline" size={24} color={COLORS.primary} />
+            <Icon name="chatbubble-outline" size={24} color={colors.primary} />
             <Text style={styles.actionText}>Message</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton} onPress={handleSchedule}>
-            <Icon name="calendar-outline" size={24} color={COLORS.primary} />
+            <Icon name="calendar-outline" size={24} color={colors.primary} />
             <Text style={styles.actionText}>Schedule</Text>
           </TouchableOpacity>
         </View>
@@ -184,7 +187,7 @@ export default function ProviderDetailScreen() {
         <Card style={styles.detailsCard}>
           {profile.practice_name && (
             <View style={styles.detailRow}>
-              <Icon name="business-outline" size={20} color={COLORS.textSecondary} />
+              <Icon name="business-outline" size={20} color={colors.textSecondary} />
               <View style={styles.detailContent}>
                 <Text style={styles.detailLabel}>Practice</Text>
                 <Text style={styles.detailValue}>{profile.practice_name}</Text>
@@ -194,7 +197,7 @@ export default function ProviderDetailScreen() {
 
           {(profile.location_city || profile.location_state) && (
             <View style={styles.detailRow}>
-              <Icon name="location-outline" size={20} color={COLORS.textSecondary} />
+              <Icon name="location-outline" size={20} color={colors.textSecondary} />
               <View style={styles.detailContent}>
                 <Text style={styles.detailLabel}>Location</Text>
                 <Text style={styles.detailValue}>
@@ -206,7 +209,7 @@ export default function ProviderDetailScreen() {
 
           {profile.years_in_practice && (
             <View style={styles.detailRow}>
-              <Icon name="time-outline" size={20} color={COLORS.textSecondary} />
+              <Icon name="time-outline" size={20} color={colors.textSecondary} />
               <View style={styles.detailContent}>
                 <Text style={styles.detailLabel}>Experience</Text>
                 <Text style={styles.detailValue}>{profile.years_in_practice} years</Text>
@@ -216,7 +219,7 @@ export default function ProviderDetailScreen() {
 
           {profile.credentials && (
             <View style={styles.detailRow}>
-              <Icon name="ribbon-outline" size={20} color={COLORS.textSecondary} />
+              <Icon name="ribbon-outline" size={20} color={colors.textSecondary} />
               <View style={styles.detailContent}>
                 <Text style={styles.detailLabel}>Credentials</Text>
                 <Text style={styles.detailValue}>{profile.credentials}</Text>
@@ -226,7 +229,7 @@ export default function ProviderDetailScreen() {
 
           {profile.phone && (
             <View style={styles.detailRow}>
-              <Icon name="call-outline" size={20} color={COLORS.textSecondary} />
+              <Icon name="call-outline" size={20} color={colors.textSecondary} />
               <View style={styles.detailContent}>
                 <Text style={styles.detailLabel}>Phone</Text>
                 <Text style={styles.detailValue}>{profile.phone}</Text>
@@ -277,10 +280,10 @@ export default function ProviderDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -289,8 +292,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.white,
   },
   backButton: {
     width: 40,
@@ -302,7 +305,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: SIZES.lg,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
   },
   loadingContainer: {
     flex: 1,
@@ -317,7 +320,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: SIZES.md,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: SIZES.md,
   },
@@ -345,7 +348,7 @@ const styles = StyleSheet.create({
   providerName: {
     fontSize: SIZES.xl,
     fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   roleBadge: {
@@ -354,7 +357,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.sm,
   },
   roleText: {
-    color: COLORS.white,
+    color: colors.white,
     fontSize: SIZES.sm,
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -368,7 +371,7 @@ const styles = StyleSheet.create({
   actionButton: {
     alignItems: 'center',
     padding: SIZES.md,
-    backgroundColor: COLORS.white,
+    backgroundColor: colors.white,
     borderRadius: SIZES.md,
     minWidth: 100,
     shadowColor: '#000',
@@ -380,7 +383,7 @@ const styles = StyleSheet.create({
   actionText: {
     marginTop: SIZES.xs,
     fontSize: SIZES.sm,
-    color: COLORS.primary,
+    color: colors.primary,
     fontWeight: '500',
   },
   detailsCard: {
@@ -392,7 +395,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: colors.border,
   },
   detailContent: {
     marginLeft: SIZES.md,
@@ -400,23 +403,23 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: SIZES.sm,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     marginBottom: 2,
   },
   detailValue: {
     fontSize: SIZES.md,
-    color: COLORS.textPrimary,
+    color: colors.text,
     fontWeight: '500',
   },
   sectionTitle: {
     fontSize: SIZES.md,
     fontWeight: '600',
-    color: COLORS.textPrimary,
+    color: colors.text,
     marginBottom: SIZES.sm,
   },
   bioText: {
     fontSize: SIZES.md,
-    color: COLORS.textSecondary,
+    color: colors.textSecondary,
     lineHeight: 22,
   },
   tagsContainer: {
@@ -433,4 +436,4 @@ const styles = StyleSheet.create({
     fontSize: SIZES.sm,
     fontWeight: '500',
   },
-});
+}));
