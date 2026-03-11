@@ -2,11 +2,9 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Image,
   ImageBackground,
   Platform,
-  Linking,
   Pressable,
   Dimensions,
 } from 'react-native';
@@ -26,16 +24,6 @@ export default function WelcomeScreen() {
   const router = useRouter();
   const colors = useColors();
   const styles = getStyles(colors);
-  
-  const handleGoogleLogin = () => {
-    if (Platform.OS === 'web') {
-      const redirectUrl = window.location.origin + '/auth-callback';
-      window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-    } else {
-      const redirectUrl = 'https://bug-fixes-p0.preview.emergentagent.com/auth-callback';
-      Linking.openURL(`https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`);
-    }
-  };
   
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -139,28 +127,6 @@ export default function WelcomeScreen() {
             data-testid="login-btn"
           >
             <Text style={styles.secondaryButtonText}>I already have an account</Text>
-          </Pressable>
-          
-          {/* Divider */}
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>or</Text>
-            <View style={styles.dividerLine} />
-          </View>
-          
-          {/* Google Login */}
-          <Pressable
-            style={({ pressed }) => [
-              styles.googleButton,
-              pressed && styles.buttonPressed
-            ]}
-            onPress={handleGoogleLogin}
-            // @ts-ignore - onClick for web compatibility
-            onClick={Platform.OS === 'web' ? handleGoogleLogin : undefined}
-            data-testid="google-login-btn"
-          >
-            <Icon name="logo-google" size={18} color={colors.text} />
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
           </Pressable>
           
           {/* Footer */}
@@ -284,39 +250,6 @@ const getStyles = createThemedStyles((colors) => ({
   buttonPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: SIZES.sm,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.border,
-  },
-  dividerText: {
-    marginHorizontal: SIZES.md,
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: SIZES.radiusFull,
-    paddingVertical: SIZES.md,
-    gap: SIZES.sm,
-  },
-  googleButtonText: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    fontWeight: '600',
-    color: colors.text,
   },
   footerText: {
     fontSize: SIZES.fontXs,
