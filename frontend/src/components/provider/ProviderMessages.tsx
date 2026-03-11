@@ -454,9 +454,16 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
                     ]}
                     onPress={() => setSelectedClientForNewMessage(client)}
                   >
-                    <View style={[styles.clientAvatar, { backgroundColor: colors.primary + '20' }]}>
-                      <Icon name="person" size={20} color={colors.primary} />
-                    </View>
+                    {client.picture ? (
+                      <Image 
+                        source={{ uri: client.picture }} 
+                        style={styles.clientAvatarImage}
+                      />
+                    ) : (
+                      <View style={[styles.clientAvatar, { backgroundColor: colors.primary + '20' }]}>
+                        <Icon name="person" size={20} color={colors.primary} />
+                      </View>
+                    )}
                     <View style={styles.clientSelectInfo}>
                       <Text style={[styles.clientSelectName, { color: colors.text }]}>{client.name}</Text>
                       {client.edd && (
@@ -557,6 +564,7 @@ const getStyles = createThemedStyles((colors) => ({
   noClientsText: { fontSize: SIZES.fontMd, textAlign: 'center', padding: SIZES.xl },
   clientSelectItem: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, borderRadius: SIZES.radiusMd, borderWidth: 1 },
   clientAvatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.md },
+  clientAvatarImage: { width: 40, height: 40, borderRadius: 20, marginRight: SIZES.md },
   clientSelectInfo: { flex: 1 },
   clientSelectName: { fontSize: SIZES.fontMd, fontWeight: '600' },
   clientSelectEdd: { fontSize: SIZES.fontSm, marginTop: 2 },
