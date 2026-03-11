@@ -26,7 +26,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { apiRequest, uploadImage } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
-import { useColors } from '../../hooks/useThemedStyles';
+import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
 const MAX_BIO_LENGTH = 800;
@@ -58,6 +58,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   const { user, logout, updateUser } = useAuthStore();
   const { status: subscriptionData, fetchStatus: fetchSubscriptionStatus } = useSubscriptionStore();
   const colors = useColors();
+  const styles = getStyles(colors);
   
   const [profile, setProfile] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -373,7 +374,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   const videoId = getYouTubeVideoId(videoIntroUrl);
   
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']} data-testid={`${config.role.toLowerCase()}-profile-screen`}>
+    <SafeAreaView style={styles.container} edges={['top']} data-testid={`${config.role.toLowerCase()}-profile-screen`}>
       {/* Hidden file input for web */}
       {Platform.OS === 'web' && (
         <input
@@ -405,8 +406,8 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
             </View>
           </TouchableOpacity>
           <Text style={styles.photoHint}>Tap to change photo</Text>
-          <Text style={[styles.userName, { color: colors.text }]}>{user?.full_name}</Text>
-          <Text style={[styles.userEmail, { color: colors.textSecondary }]}>{user?.email}</Text>
+          <Text style={styles.userName}>{user?.full_name}</Text>
+          <Text style={styles.userEmail}>{user?.email}</Text>
           <View style={[styles.roleBadge, { backgroundColor: primaryColor }]}>
             <Icon name={roleIcon as any} size={14} color={colors.white} />
             <Text style={styles.roleText}>{config.roleLabel}</Text>
@@ -767,8 +768,8 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
+const getStyles = createThemedStyles((colors) => ({
+  container: { flex: 1, backgroundColor: colors.background },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
   
   // Header styles
@@ -782,58 +783,62 @@ const styles = StyleSheet.create({
     position: 'absolute', bottom: 0, right: 0, 
     width: 32, height: 32, borderRadius: 16, 
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: '#FFFFFF' 
+    borderWidth: 2, borderColor: colors.white 
   },
-  photoHint: { fontSize: SIZES.fontXs, marginTop: SIZES.xs },
-  userName: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading, marginTop: SIZES.sm },
-  userEmail: { fontSize: SIZES.fontSm },
+  photoHint: { fontSize: SIZES.fontXs, marginTop: SIZES.xs, color: colors.textSecondary },
+  userName: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading, marginTop: SIZES.sm, color: colors.text },
+  userEmail: { fontSize: SIZES.fontSm, color: colors.textSecondary },
   roleBadge: { 
     flexDirection: 'row', alignItems: 'center', 
     paddingHorizontal: SIZES.md, paddingVertical: SIZES.xs, 
     borderRadius: SIZES.radiusFull, marginTop: SIZES.sm 
   },
-  roleText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium, color: '#FFFFFF', marginLeft: 4 },
+  roleText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium, color: colors.white, marginLeft: 4 },
   
   // Card styles
   profileCard: { marginBottom: SIZES.md },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.md },
-  cardTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.subheading },
+  cardTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.subheading, color: colors.text },
   editButton: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium },
   
   // Info display styles
   infoRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: SIZES.sm },
   infoText: { marginLeft: SIZES.md, flex: 1 },
-  infoLabel: { fontSize: SIZES.fontXs },
-  infoValue: { fontSize: SIZES.fontMd, fontFamily: FONTS.body },
+  infoLabel: { fontSize: SIZES.fontXs, color: colors.textSecondary },
+  infoValue: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text },
   
   // Form styles
   locationRow: { flexDirection: 'row', gap: SIZES.sm },
   cityInput: { flex: 2 },
   stateInput: { flex: 1 },
   zipLookupStatus: { flexDirection: 'row', alignItems: 'center', marginVertical: SIZES.xs },
-  zipLookupText: { fontSize: SIZES.fontSm, marginLeft: SIZES.xs },
+  zipLookupText: { fontSize: SIZES.fontSm, marginLeft: SIZES.xs, color: colors.textSecondary },
   
   // Toggle styles
   toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: SIZES.md },
-  toggleLabel: { fontSize: SIZES.fontMd, fontFamily: FONTS.body },
+  toggleLabel: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text },
   toggle: { 
     width: 50, height: 28, borderRadius: 14, 
-    justifyContent: 'center', padding: 2 
+    justifyContent: 'center', padding: 2,
+    backgroundColor: colors.border 
   },
   toggleDot: { 
     width: 24, height: 24, borderRadius: 12, 
-    backgroundColor: '#FFFFFF' 
+    backgroundColor: colors.white 
   },
   toggleDotActive: { alignSelf: 'flex-end' },
   
   // Video styles
-  fieldDescription: { fontSize: SIZES.fontSm, marginBottom: SIZES.md },
+  fieldDescription: { fontSize: SIZES.fontSm, marginBottom: SIZES.md, color: colors.textSecondary },
   videoInput: { 
     borderWidth: 1, 
-    borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd 
+    borderColor: colors.border,
+    borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd,
+    color: colors.text,
+    backgroundColor: colors.inputBackground,
   },
-  videoInputError: {},
-  errorText: { fontSize: SIZES.fontSm, marginTop: SIZES.xs },
+  videoInputError: { borderColor: colors.error },
+  errorText: { fontSize: SIZES.fontSm, marginTop: SIZES.xs, color: colors.error },
   videoPreview: { borderRadius: SIZES.radiusMd, overflow: 'hidden', position: 'relative' },
   videoThumbnail: { width: '100%', height: 180 },
   playIconOverlay: { 
@@ -841,21 +846,24 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.3)' 
   },
   noVideoContainer: { alignItems: 'center', paddingVertical: SIZES.lg },
-  noVideoText: { fontSize: SIZES.fontMd, marginTop: SIZES.sm },
+  noVideoText: { fontSize: SIZES.fontMd, marginTop: SIZES.sm, color: colors.textSecondary },
   
   // Bio styles
   bioInput: { 
     borderWidth: 1, 
+    borderColor: colors.border,
     borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd, 
-    minHeight: 120, textAlignVertical: 'top' 
+    minHeight: 120, textAlignVertical: 'top',
+    color: colors.text,
+    backgroundColor: colors.inputBackground,
   },
-  charCount: { fontSize: SIZES.fontXs, textAlign: 'right', marginTop: SIZES.xs },
-  bioText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, lineHeight: 22 },
-  noBioText: { fontSize: SIZES.fontMd, fontStyle: 'italic' },
+  charCount: { fontSize: SIZES.fontXs, textAlign: 'right', marginTop: SIZES.xs, color: colors.textSecondary },
+  bioText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, lineHeight: 22, color: colors.text },
+  noBioText: { fontSize: SIZES.fontMd, fontStyle: 'italic', color: colors.textSecondary },
   
   // Subscription styles
   subscriptionInfo: { flexDirection: 'row', alignItems: 'center' },
-  subscriptionText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, marginLeft: SIZES.sm },
+  subscriptionText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, marginLeft: SIZES.sm, color: colors.text },
   subscriptionDetails: { marginTop: SIZES.sm, marginLeft: 36 },
   daysRemainingBadge: { 
     flexDirection: 'row', 
@@ -878,7 +886,8 @@ const styles = StyleSheet.create({
   autoRenewText: { 
     fontSize: SIZES.fontXs, 
     fontFamily: FONTS.body, 
-    marginLeft: SIZES.xs 
+    marginLeft: SIZES.xs,
+    color: colors.textSecondary 
   },
   
   // Feedback section styles
@@ -893,6 +902,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.body, 
     marginBottom: SIZES.sm,
     marginLeft: 30,
+    color: colors.textSecondary,
   },
   feedbackButton: { 
     flexDirection: 'row', 
@@ -905,7 +915,7 @@ const styles = StyleSheet.create({
   feedbackButtonText: { 
     fontSize: SIZES.fontSm, 
     fontFamily: FONTS.bodyMedium, 
-    color: '#FFFFFF' 
+    color: colors.white 
   },
   
   // Logout styles
@@ -913,13 +923,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', 
     paddingVertical: SIZES.md, marginTop: SIZES.md 
   },
-  logoutText: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium, marginLeft: SIZES.sm },
+  logoutText: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium, marginLeft: SIZES.sm, color: colors.error },
   
   // Legal Links styles
   legalSection: {
     marginTop: SIZES.lg,
     paddingTop: SIZES.md,
     borderTopWidth: 1,
+    borderTopColor: colors.border,
     alignItems: 'center',
   },
   legalLinks: {
@@ -935,8 +946,10 @@ const styles = StyleSheet.create({
   legalLinkText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
+    color: colors.textSecondary,
   },
   legalSeparator: {
     fontSize: SIZES.fontXs,
+    color: colors.textSecondary,
   },
-});
+}));

@@ -27,7 +27,7 @@ router = APIRouter(prefix="/subscription", tags=["Subscription"])
 # Pricing constants
 PRO_MONTHLY_PRICE = 29.00
 PRO_ANNUAL_PRICE = 276.00
-TRIAL_DURATION_DAYS = 30
+TRIAL_DURATION_DAYS = 14
 SUBSCRIPTION_PLANS = ["monthly", "annual"]
 
 
@@ -202,7 +202,7 @@ async def get_pricing():
 
 @router.post("/start-trial")
 async def start_trial(request: StartTrialRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
-    """Start a 30-day free trial (mock implementation)"""
+    """Start a 14-day free trial (mock implementation)"""
     now = get_now()
     
     # Check if user already has subscription

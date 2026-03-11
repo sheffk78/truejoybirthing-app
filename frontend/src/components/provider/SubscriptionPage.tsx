@@ -79,7 +79,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
     setProcessing(true);
     try {
       await startTrial(selectedPlan);
-      Alert.alert('Trial Started!', 'Your 30-day free trial has begun. Enjoy full access to all features!', [
+      Alert.alert('Trial Started!', 'Your 14-day free trial has begun. Enjoy full access to all features!', [
         { text: 'Get Started', onPress: () => router.back() }
       ]);
     } catch (error: any) {
@@ -370,14 +370,14 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                         styles.progressBarFill, 
                         { 
                           backgroundColor: status.is_trial ? colors.warning : primaryColor,
-                          width: `${Math.min(100, Math.max(5, (status.days_remaining / (status.is_trial ? 30 : 365)) * 100))}%`
+                          width: `${Math.min(100, Math.max(5, (status.days_remaining / (status.is_trial ? 14 : 365)) * 100))}%`
                         }
                       ]} 
                     />
                   </View>
                   <Text style={styles.progressSubtext}>
                     {status.is_trial 
-                      ? `${30 - status.days_remaining} of 30 days used`
+                      ? `${14 - status.days_remaining} of 14 days used`
                       : `${365 - status.days_remaining} of 365 days used`
                     }
                   </Text>

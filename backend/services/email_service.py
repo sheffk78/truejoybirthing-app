@@ -538,7 +538,7 @@ async def send_trial_started_email(
 ) -> bool:
     """Send email when provider starts a free trial"""
     
-    trial_days = 30
+    trial_days = 14
     end_date_str = trial_end_date.strftime("%B %d, %Y")
     plan_display = "Monthly" if plan_type == "monthly" else "Annual"
     

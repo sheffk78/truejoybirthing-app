@@ -32,7 +32,7 @@ export const SUBSCRIPTION_PLANS = {
     currency: 'USD',
     period: 'month',
     periodLabel: '/month',
-    trialDays: 30,
+    trialDays: 14,
     appleProductId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_MONTHLY,
     googleBasePlan: SUBSCRIPTION_PRODUCTS.GOOGLE.BASE_PLANS.MONTHLY,
   },
@@ -44,7 +44,7 @@ export const SUBSCRIPTION_PLANS = {
     currency: 'USD',
     period: 'year',
     periodLabel: '/year',
-    trialDays: 30,
+    trialDays: 14,
     savings: 72.00, // $29 * 12 - $276
     appleProductId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_ANNUAL,
     googleBasePlan: SUBSCRIPTION_PRODUCTS.GOOGLE.BASE_PLANS.ANNUAL,
@@ -54,7 +54,7 @@ export const SUBSCRIPTION_PLANS = {
 // ============== SUBSCRIPTION STATUS ==============
 export type SubscriptionStatus = 
   | 'none'        // Never subscribed
-  | 'trial'       // In 30-day free trial
+  | 'trial'       // In 14-day free trial
   | 'active'      // Paid subscription active
   | 'expired'     // Trial or subscription expired
   | 'cancelled'   // User cancelled (may still be active until period end)
@@ -123,7 +123,7 @@ export const STORE_MANAGEMENT_URLS = {
 
 // ============== TRIAL CONFIGURATION ==============
 export const TRIAL_CONFIG = {
-  durationDays: 30,
+  durationDays: 14,
   requiresPaymentMethod: false, // iOS/Android handle this
   canRestartTrial: false, // One trial per account
 } as const;
@@ -135,8 +135,8 @@ export const SUBSCRIPTION_COPY = {
   
   // Trial messaging
   trialTitle: 'Start Your Free Trial',
-  trialSubtitle: 'Get 30 days of full access to all Pro features',
-  trialCta: 'Start 30-Day Free Trial',
+  trialSubtitle: 'Get 14 days of full access to all Pro features',
+  trialCta: 'Start 14-Day Free Trial',
   trialNoCard: 'No credit card required to start trial',
   
   // Subscription messaging
@@ -154,7 +154,7 @@ export const SUBSCRIPTION_COPY = {
   // Pro feature gating
   proFeatureLockedTitle: 'Pro Feature',
   proFeatureLockedMessage: (feature: string) => 
-    `${feature} requires True Joy Pro. Start your free 30-day trial to unlock all professional tools.`,
+    `${feature} requires True Joy Pro. Start your free 14-day trial to unlock all professional tools.`,
   
   // Status messages
   trialActive: (daysRemaining: number) => 
