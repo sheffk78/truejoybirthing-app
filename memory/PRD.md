@@ -38,19 +38,19 @@ Build a comprehensive birthing support application for expecting mothers, doulas
 - [x] Full migration of all components and screens to dynamic theming
 - [x] Resolved all build errors from batch migration
 
-### Contraction Timer Improvements (March 2025)
-- [x] Changed tab bar icon from `timer-outline` to `stopwatch-outline` 
-- [x] Added icon mappings: `stopwatch-outline`, `flag-outline`, `water`, `stop-circle`
+### Contraction Timer Improvements (Completed & Verified - March 2025)
+- [x] Changed tab bar icon from `timer-outline` to `stopwatch-outline`
+- [x] Added icon mappings: `stopwatch-outline`, `flag-outline`, `water`, `stop-circle`, `radio-button-off`, `checkbox`, `square-outline`, `archive-outline`, `stats-chart-outline`
 - [x] Fixed rest timer to properly count up after stopping contraction
 - [x] Moved pattern status badge below action buttons (less intrusive)
 - [x] Delayed "Early Labor" message until 3+ contractions recorded
 - [x] Changed End button icon to `flag-outline`
 - [x] Changed Water Broke icon to filled `water`
 
-### Provider Navigation Improvements (March 2025)
+### Provider Navigation Improvements (Completed & Verified - March 2025)
 - [x] Notes page breadcrumb now navigates to client detail (not router.back())
 - [x] Clients list "Birth Plan" button now goes directly to birth plan view
-- [x] Clients list "Message" button now goes directly to messages page
+- [x] Clients list "Message" button now navigates with `clientUserId` (linked_mom_id) for auto-opening conversation
 
 ### Authentication & Onboarding
 - [x] Email/password login and registration
@@ -89,7 +89,7 @@ Build a comprehensive birthing support application for expecting mothers, doulas
 ## Prioritized Backlog
 
 ### P0 (Critical)
-- [ ] Full regression testing of all changes
+- [x] Full regression testing of all changes (Completed March 2025)
 
 ### P1 (High Priority)
 - [ ] Apple IAP integration for subscriptions
@@ -145,10 +145,19 @@ Added the following to `src/components/Icon.tsx`:
 'water': 'Droplet',
 'water-outline': 'Droplet',
 
-// Stop circle
-'stop': 'Square',
-'stop-circle': 'StopCircle',
-'stop-circle-outline': 'StopCircle',
+// Checkbox/Square
+'checkbox': 'CheckSquare',
+'square-outline': 'Square',
+
+// Radio buttons
+'radio-button-on': 'CircleDot',
+'radio-button-off': 'Circle',
+
+// Archive
+'archive-outline': 'Archive',
+
+// Stats/Chart
+'stats-chart-outline': 'BarChart2',
 ```
 
 ### File Structure
