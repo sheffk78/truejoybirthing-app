@@ -1,0 +1,87 @@
+{
+  "summary": "Frontend testing for contraction timer UI changes and Doula navigation. CRITICAL ISSUES FOUND: (1) Icon mappings missing for stopwatch-outline, flag-outline, and water icons - all render as circles. (2) Pattern status appears ABOVE action buttons instead of below as specified.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "critical": [
+      {
+        "component": "Icon.tsx",
+        "issue": "Missing icon mappings for stopwatch-outline, flag-outline, and water - all default to Circle icon",
+        "priority": "HIGH",
+        "affected_files": ["/app/frontend/src/components/Icon.tsx"],
+        "fix": "Add mappings: 'stopwatch-outline': 'Timer', 'timer-outline': 'Timer', 'flag-outline': 'Flag', 'flag': 'Flag', 'water': 'Droplet', 'water-outline': 'Droplet'"
+      },
+      {
+        "component": "contraction-timer.tsx",
+        "issue": "Pattern status badge appears ABOVE action buttons (History, Add Manual, Share, End) instead of BELOW as specified",
+        "priority": "HIGH",
+        "details": "Screenshot shows Early Labor badge at Y=943, History button bottom at Y=1057. Pattern status should render after bottomActions and secondaryActionsRow but appears between main button and actions."
+      }
+    ],
+    "ui_bugs": [
+      {
+        "component": "Timer Tab Icon",
+        "issue": "Renders as generic circle instead of stopwatch icon",
+        "selector": "Tab bar Timer icon",
+        "expected": "stopwatch-outline icon",
+        "actual": "Circle icon (fallback)"
+      },
+      {
+        "component": "End Button Icon",
+        "issue": "Renders as generic circle instead of flag icon",
+        "selector": "End button in contraction timer",
+        "expected": "flag-outline icon",
+        "actual": "Circle icon (fallback)"
+      },
+      {
+        "component": "Water Broke Button Icon",
+        "issue": "Renders as generic circle instead of water droplet icon",
+        "selector": "Water Broke button in contraction timer",
+        "expected": "water icon (filled droplet)",
+        "actual": "Circle icon (fallback)"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "contraction_timer_tab_icon": "FAIL - Shows circle instead of stopwatch-outline",
+    "contraction_timer_rest_timer": "PASS - Rest timer counts up from 0 after contraction ends",
+    "contraction_timer_end_button_icon": "FAIL - Shows circle instead of flag-outline",
+    "contraction_timer_water_broke_icon": "FAIL - Shows circle instead of water icon",
+    "contraction_timer_pattern_status_position": "FAIL - Pattern status above actions, should be below",
+    "doula_birth_plan_navigation": "PARTIAL - Goes to client-detail with tab=birthplan (fallback path when linked_mom_id is null)",
+    "doula_message_navigation": "UNABLE TO VERIFY - Session issues during test",
+    "notes_breadcrumb_navigation": "CODE OK - Correctly routes to client-detail page"
+  },
+  "test_report_links": ["/app/test_reports/iteration_161.json"],
+  "action_items": [
+    "Add missing icon mappings to /app/frontend/src/components/Icon.tsx: stopwatch-outline->Timer, timer-outline->Timer, flag-outline->Flag, flag->Flag, water->Droplet, water-outline->Droplet",
+    "Fix pattern status position in contraction-timer.tsx - should appear AFTER bottomActions and secondaryActionsRow sections, not before",
+    "Verify demo client data has linked_mom_id populated for Birth Plan direct navigation to work"
+  ],
+  "critical_code_review_comments": [
+    "Icon.tsx line 319: Falls back to Circle for any unmapped icon - stopwatch-outline, flag-outline, water all unmapped",
+    "contraction-timer.tsx layout order (lines 806-868): Code shows bottomActions -> secondaryActionsRow -> patternStatusCompact but UI renders pattern status above actions",
+    "ProviderClients.tsx line 414: Birth Plan navigation depends on client.linked_mom_id being non-null"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only test)",
+    "frontend": "40% - Critical icon and layout issues found"
+  },
+  "test_credentials": {
+    "mom": "demo.mom@truejoybirthing.com / DemoScreenshot2024!",
+    "doula": "demo.doula@truejoybirthing.com / DemoScreenshot2024!"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Icon mappings need to be added to Icon.tsx. Pattern status position in contraction-timer.tsx needs CSS/layout fix. Rest timer counting up is working correctly. Doula navigation code looks correct but depends on linked_mom_id data.",
+  "verification_screenshots": [
+    ".screenshots/timer_full_layout.png - Shows pattern status above action buttons",
+    ".screenshots/doula_clients_fresh.png - Shows Birth Plan and Message buttons on client cards"
+  ]
+}

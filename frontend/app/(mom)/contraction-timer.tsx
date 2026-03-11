@@ -209,30 +209,45 @@ export default function ContractionTimerScreen() {
   
   // Timer effect
   useEffect(() => {
+    // Clear any existing timer first
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    
     if (isContracting) {
+      // Contracting timer - count up from current timerSeconds
       timerRef.current = setInterval(() => {
         setTimerSeconds(s => s + 1);
       }, 1000);
     } else if (session?.status === 'ACTIVE' && contractions.length > 0) {
-      // Calculate resting time since last contraction
+      // Resting timer - calculate time since last contraction ended
       const lastContraction = contractions[0];
       if (lastContraction?.end_time) {
         const lastEnd = new Date(lastContraction.end_time).getTime();
         const now = Date.now();
-        setRestingSeconds(Math.floor((now - lastEnd) / 1000));
+        const initialRestSeconds = Math.floor((now - lastEnd) / 1000);
+        setRestingSeconds(initialRestSeconds);
         
         timerRef.current = setInterval(() => {
           setRestingSeconds(s => s + 1);
         }, 1000);
+      } else {
+        // Last contraction has no end_time (shouldn't happen, but reset to 0)
+        setRestingSeconds(0);
       }
+    } else {
+      // No contractions yet or session not active
+      setRestingSeconds(0);
     }
     
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+        timerRef.current = null;
       }
     };
-  }, [isContracting, session?.status]);
+  }, [isContracting, session?.status, contractions]);
   
   // Fetch active session on mount
   useEffect(() => {
@@ -547,7 +562,10 @@ export default function ContractionTimerScreen() {
   };
   
   const getPatternStatusLabel = () => {
-    if (!patternStatus) return 'Start timing';
+    // Don't show labor phase until we have at least 3 contractions for meaningful data
+    const contractionCount = stats?.contraction_count || 0;
+    if (!patternStatus || contractionCount < 3) return 'Timing...';
+    
     switch (patternStatus.status) {
       case '511_reached':
         return '5-1-1 Pattern Reached';
@@ -785,24 +803,6 @@ export default function ContractionTimerScreen() {
         </Pressable>
       </View>
       
-      {/* Pattern Status */}
-      <View style={[styles.patternStatus, { borderColor: getPatternStatusColor() }]}>
-        <Icon 
-          name={patternStatus?.pattern_reached ? "alert-circle" : "information-circle-outline"} 
-          size={20} 
-          color={getPatternStatusColor()} 
-        />
-        <Text style={[styles.patternStatusText, { color: getPatternStatusColor() }]}>
-          {getPatternStatusLabel()}
-        </Text>
-      </View>
-      
-      {patternStatus?.pattern_reached && (
-        <View style={styles.patternAlert}>
-          <Text style={styles.patternAlertText}>{patternStatus.message}</Text>
-        </View>
-      )}
-      
       {/* Bottom Actions */}
       <View style={styles.bottomActions}>
         <Pressable style={styles.actionBtn} onPress={() => setShowHistoryModal(true)}>
@@ -821,7 +821,7 @@ export default function ContractionTimerScreen() {
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={endSession}>
-          <Icon name="stop-circle-outline" size={24} color={colors.error} />
+          <Icon name="flag-outline" size={24} color={colors.error} />
           <Text style={[styles.actionBtnText, { color: colors.error }]}>End</Text>
         </Pressable>
       </View>
@@ -830,7 +830,7 @@ export default function ContractionTimerScreen() {
       <View style={styles.secondaryActionsRow}>
         {!session?.water_broke_at && (
           <Pressable style={styles.secondaryActionBtn} onPress={() => setShowWaterBrokeModal(true)}>
-            <Icon name="water-outline" size={20} color={colors.primary} />
+            <Icon name="water" size={20} color={colors.info || colors.primary} />
             <Text style={styles.secondaryActionText}>Water Broke</Text>
           </Pressable>
         )}
@@ -847,6 +847,25 @@ export default function ContractionTimerScreen() {
           </Pressable>
         )}
       </View>
+      
+      {/* Pattern Status - moved below actions, smaller and less intrusive */}
+      {(stats?.contraction_count || 0) >= 1 && (
+        <View style={[styles.patternStatusCompact, { backgroundColor: getPatternStatusColor() + '15', borderColor: getPatternStatusColor() + '30' }]}>
+          <Icon 
+            name={patternStatus?.pattern_reached ? "alert-circle" : "pulse-outline"} 
+            size={16} 
+            color={getPatternStatusColor()} 
+          />
+          <Text style={[styles.patternStatusTextCompact, { color: getPatternStatusColor() }]}>
+            {getPatternStatusLabel()}
+          </Text>
+          {patternStatus?.pattern_reached && (
+            <Text style={[styles.patternAlertInline, { color: getPatternStatusColor() }]}>
+              - {patternStatus.message}
+            </Text>
+          )}
+        </View>
+      )}
       
       {/* Intensity Selection Modal */}
       <Modal
@@ -1415,6 +1434,31 @@ const getStyles = createThemedStyles((colors) => ({
     color: '#C62828',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  
+  // Compact Pattern Status (moved below actions)
+  patternStatusCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginHorizontal: 20,
+    marginTop: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    flexWrap: 'wrap',
+  },
+  patternStatusTextCompact: {
+    fontSize: 13,
+    fontFamily: FONTS.bodyMedium,
+    marginLeft: 6,
+  },
+  patternAlertInline: {
+    fontSize: 12,
+    fontFamily: FONTS.body,
+    marginLeft: 4,
+    flexShrink: 1,
   },
   
   // Bottom Actions

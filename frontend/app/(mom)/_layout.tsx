@@ -49,7 +49,7 @@ export default function MomLayout() {
         options={{
           title: 'Timer',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="timer-outline" size={size} color={color} />
+            <Icon name="stopwatch-outline" size={size} color={color} />
           ),
         }}
       />

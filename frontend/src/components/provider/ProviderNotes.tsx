@@ -190,7 +190,11 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
         <View style={[styles.contextHeader, { borderBottomColor: colors.border }]}>
           <View style={styles.breadcrumb}>
             <TouchableOpacity 
-              onPress={() => router.back()}
+              onPress={() => {
+                // Navigate back to client detail page, not just router.back()
+                const baseRoute = config.role === 'MIDWIFE' ? '/(midwife)' : '/(doula)';
+                router.push(`${baseRoute}/client-detail?clientId=${params.clientId}&clientName=${encodeURIComponent(clientName)}`);
+              }}
               style={styles.breadcrumbItem}
             >
               <Text style={[styles.breadcrumbLink, { color: primaryColor }]}>
