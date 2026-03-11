@@ -414,11 +414,6 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           </View>
         </View>
         
-        {/* Appearance Settings */}
-        <Card style={styles.profileCard}>
-          <AppearanceSettings showLabel={true} />
-        </Card>
-        
         {/* Profile Info Card */}
         <Card style={styles.profileCard}>
           <View style={styles.cardHeader}>
@@ -639,6 +634,11 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
             style={{ backgroundColor: primaryColor, marginBottom: SIZES.lg }}
           />
         )}
+
+        {/* Appearance Settings */}
+        <Card style={styles.profileCard}>
+          <AppearanceSettings showLabel={true} />
+        </Card>
 
         {/* Subscription Status */}
         <Card style={styles.profileCard}>
