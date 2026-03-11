@@ -427,8 +427,13 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                       style={[styles.actionButton, { backgroundColor: colors.accent + '10' }]}
                       onPress={() => {
                         // Navigate directly to messages for this client
+                        // ProviderMessages expects clientUserId (the linked mom's user ID) to auto-open conversation
                         const baseRoute = isMidwife ? '/(midwife)' : '/(doula)';
-                        router.push(`${baseRoute}/messages?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+                        if (client.linked_mom_id) {
+                          router.push(`${baseRoute}/messages?clientUserId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
+                        } else {
+                          router.push(`${baseRoute}/messages?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+                        }
                       }}
                     >
                       <Icon name="chatbubble-outline" size={14} color={colors.accent} />

@@ -10,7 +10,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://theme-unify-preview.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://timer-icons-nav.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 MIDWIFE_EMAIL = "demo.midwife@truejoybirthing.com"

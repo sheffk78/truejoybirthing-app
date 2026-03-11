@@ -8,7 +8,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://theme-unify-preview.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://timer-icons-nav.preview.emergentagent.com')
 
 # Test credentials
 TEST_DOULA_EMAIL = "testdoula123@test.com"

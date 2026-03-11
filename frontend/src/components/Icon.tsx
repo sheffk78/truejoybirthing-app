@@ -295,8 +295,24 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   'restaurant-outline': 'UtensilsCrossed',
   
   // Radio button
-  'radio-button-on': 'Circle',
+  'radio-button-on': 'CircleDot',
   'radio-button-on-outline': 'CircleDot',
+  'radio-button-off': 'Circle',
+  'radio-button-off-outline': 'Circle',
+
+  // Checkbox
+  'checkbox': 'CheckSquare',
+  'checkbox-outline': 'CheckSquare',
+  'square': 'Square',
+  'square-outline': 'Square',
+
+  // Archive
+  'archive': 'Archive',
+  'archive-outline': 'Archive',
+
+  // Stats/Chart
+  'stats-chart': 'BarChart2',
+  'stats-chart-outline': 'BarChart2',
   
   // Ear
   'ear': 'Ear',
@@ -305,6 +321,25 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   // Nutrition
   'nutrition': 'Apple',
   'nutrition-outline': 'Apple',
+  
+  // Timer/Stopwatch
+  'timer': 'Timer',
+  'timer-outline': 'Timer',
+  'stopwatch': 'Timer',
+  'stopwatch-outline': 'Timer',
+  
+  // Flag
+  'flag': 'Flag',
+  'flag-outline': 'Flag',
+  
+  // Water/Droplet
+  'water': 'Droplet',
+  'water-outline': 'Droplet',
+  
+  // Stop circle
+  'stop': 'Square',
+  'stop-circle': 'StopCircle',
+  'stop-circle-outline': 'StopCircle',
 };
 
 interface IconProps {

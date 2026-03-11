@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://theme-unify-preview.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://timer-icons-nav.preview.emergentagent.com')
 
 class TestMidwifeAuth:
     """Test midwife authentication setup"""

@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://theme-unify-preview.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://timer-icons-nav.preview.emergentagent.com')
 
 # Test credentials
 DOULA_CREDS = {"email": "demo.doula@truejoybirthing.com", "password": "DemoScreenshot2024!"}
