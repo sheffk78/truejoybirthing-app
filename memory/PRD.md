@@ -46,6 +46,9 @@ Build a comprehensive birthing support application for expecting mothers, doulas
 - [x] Delayed "Early Labor" message until 3+ contractions recorded
 - [x] Changed End button icon to `flag-outline`
 - [x] Changed Water Broke icon to filled `water`
+- [x] Fixed timer label text: "Contraction..." / "Surging..." / "Wave..." (was misspelled as "Contractioning", "Surgeing", "Waveing")
+- [x] Fixed dark-mode placeholder text on all TextInputs (Water Breaking, Manual Entry, Session Notes)
+- [x] Reduced spacing on stats strip, bottom actions, secondary actions, pattern status for less squished layout
 
 ### Provider Navigation Improvements (Completed & Verified - March 2025)
 - [x] Notes page breadcrumb now navigates to client detail (not router.back())

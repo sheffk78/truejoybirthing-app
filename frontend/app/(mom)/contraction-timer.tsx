@@ -780,7 +780,11 @@ export default function ContractionTimerScreen() {
             )}
           </Text>
           <Text style={styles.timerLabel}>
-            {isContracting ? `${birthWordCapitalized.slice(0, -1)}ing...` : (
+            {isContracting ? (
+              birthWord === 'contractions' ? 'Contraction...' :
+              birthWord === 'surges' ? 'Surging...' :
+              'Wave...'
+            ) : (
               session?.status === 'ACTIVE' && contractions.length > 0 
                 ? 'Resting...'
                 : 'Ready'
@@ -978,10 +982,11 @@ export default function ContractionTimerScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Start Time (HH:MM)</Text>
               <TextInput
-                style={styles.formInput}
+                style={[styles.formInput, { color: colors.text }]}
                 value={manualStartTime}
                 onChangeText={setManualStartTime}
                 placeholder="e.g. 14:30"
+                placeholderTextColor={colors.textLight}
                 keyboardType="numbers-and-punctuation"
               />
             </View>
@@ -989,10 +994,11 @@ export default function ContractionTimerScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Duration (seconds)</Text>
               <TextInput
-                style={styles.formInput}
+                style={[styles.formInput, { color: colors.text }]}
                 value={manualDuration}
                 onChangeText={setManualDuration}
                 placeholder="e.g. 60"
+                placeholderTextColor={colors.textLight}
                 keyboardType="number-pad"
               />
             </View>
@@ -1023,10 +1029,11 @@ export default function ContractionTimerScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Notes (optional)</Text>
               <TextInput
-                style={[styles.formInput, { height: 80 }]}
+                style={[styles.formInput, { height: 80, color: colors.text }]}
                 value={manualNotes}
                 onChangeText={setManualNotes}
                 placeholder="Any notes..."
+                placeholderTextColor={colors.textLight}
                 multiline
               />
             </View>
@@ -1133,10 +1140,11 @@ export default function ContractionTimerScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.formLabel}>Notes (optional)</Text>
               <TextInput
-                style={[styles.formInput, { height: 100 }]}
+                style={[styles.formInput, { height: 100, color: colors.text }]}
                 value={waterBrokeNote}
                 onChangeText={setWaterBrokeNote}
                 placeholder="e.g., Clear fluid, moderate amount..."
+                placeholderTextColor={colors.textLight}
                 multiline
               />
             </View>
@@ -1168,10 +1176,11 @@ export default function ContractionTimerScreen() {
             
             <View style={styles.formGroup}>
               <TextInput
-                style={[styles.formInput, { height: 150 }]}
+                style={[styles.formInput, { height: 150, color: colors.text }]}
                 value={sessionNotes}
                 onChangeText={setSessionNotes}
                 placeholder="Add notes about this labor session..."
+                placeholderTextColor={colors.textLight}
                 multiline
               />
             </View>
@@ -1327,7 +1336,7 @@ const getStyles = createThemedStyles((colors) => ({
   statsStrip: {
     flexDirection: 'row',
     backgroundColor: colors.white,
-    paddingVertical: 16,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
@@ -1358,12 +1367,13 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
   },
   timerCircle: {
-    width: 220,
-    height: 220,
-    borderRadius: 110,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     backgroundColor: colors.white,
     justifyContent: 'center',
     alignItems: 'center',
@@ -1372,7 +1382,7 @@ const getStyles = createThemedStyles((colors) => ({
     shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 8,
-    marginBottom: 32,
+    marginBottom: 24,
   },
   timerText: {
     fontSize: 48,
@@ -1441,10 +1451,11 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
     marginHorizontal: 20,
-    marginTop: 8,
+    marginTop: 4,
+    marginBottom: 4,
     borderRadius: 20,
     borderWidth: 1,
     flexWrap: 'wrap',
@@ -1464,7 +1475,7 @@ const getStyles = createThemedStyles((colors) => ({
   // Bottom Actions
   bottomActions: {
     flexDirection: 'row',
-    paddingVertical: 16,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     borderTopWidth: 1,
     borderTopColor: colors.border,
@@ -1753,10 +1764,10 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#E3F2FD',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     marginHorizontal: 16,
-    marginTop: 8,
+    marginTop: 4,
     borderRadius: 8,
   },
   waterBrokeText: {
@@ -1769,9 +1780,9 @@ const getStyles = createThemedStyles((colors) => ({
   secondaryActionsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 16,
-    gap: 16,
+    gap: 12,
     borderTopWidth: 1,
     borderTopColor: colors.border,
     backgroundColor: colors.background,
