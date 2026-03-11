@@ -13,7 +13,7 @@ import requests
 import os
 
 # Use the public API URL
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://timer-icons-nav.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://bug-fixes-p0.preview.emergentagent.com')
 
 # Test credentials
 DOULA_EMAIL = "testdoula123@test.com"

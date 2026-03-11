@@ -32,7 +32,7 @@ export default function WelcomeScreen() {
       const redirectUrl = window.location.origin + '/auth-callback';
       window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
     } else {
-      const redirectUrl = 'https://timer-icons-nav.preview.emergentagent.com/auth-callback';
+      const redirectUrl = 'https://bug-fixes-p0.preview.emergentagent.com/auth-callback';
       Linking.openURL(`https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`);
     }
   };

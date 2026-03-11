@@ -55,6 +55,10 @@ Build a comprehensive birthing support application for expecting mothers, doulas
 - [x] Clients list "Birth Plan" button now goes directly to birth plan view
 - [x] Clients list "Message" button now navigates with `clientUserId` (linked_mom_id) for auto-opening conversation
 
+### Bug Fixes (Completed - March 2025)
+- [x] Fixed Mom's "Schedule" screen showing no providers - Updated `/api/mom/team-providers` endpoint to include providers from clients collection and converted leads (not just share_requests)
+- [x] Added profile pictures to messaging interface - Both Mom messages and Provider messages now display user profile pictures when available
+
 ### Authentication & Onboarding
 - [x] Email/password login and registration
 - [x] Google OAuth integration (Emergent-managed)

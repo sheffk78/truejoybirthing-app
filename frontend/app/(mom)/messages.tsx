@@ -11,6 +11,7 @@ import {
   Platform,
   Modal,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
@@ -403,13 +404,20 @@ export default function MessagesScreen() {
             >
               <Card style={[styles.conversationCard, conv.unread_count > 0 && styles.unreadCard]}>
                 <View style={styles.conversationRow}>
-                  <View style={[styles.avatar, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
-                    <Icon 
-                      name={conv.other_user_role === 'DOULA' ? 'heart' : conv.other_user_role === 'MIDWIFE' ? 'medkit' : 'person'} 
-                      size={24} 
-                      color={getRoleColor(conv.other_user_role)} 
+                  {conv.other_user_picture ? (
+                    <Image 
+                      source={{ uri: conv.other_user_picture }} 
+                      style={styles.avatarImage}
                     />
-                  </View>
+                  ) : (
+                    <View style={[styles.avatar, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
+                      <Icon 
+                        name={conv.other_user_role === 'DOULA' ? 'heart' : conv.other_user_role === 'MIDWIFE' ? 'medkit' : 'person'} 
+                        size={24} 
+                        color={getRoleColor(conv.other_user_role)} 
+                      />
+                    </View>
+                  )}
                   <View style={styles.conversationInfo}>
                     <View style={styles.nameRow}>
                       <Text style={styles.userName}>{conv.other_user_name}</Text>
@@ -553,13 +561,20 @@ export default function MessagesScreen() {
                     onPress={() => startConversation(member)}
                     data-testid={`team-member-${member.user_id}`}
                   >
-                    <View style={[styles.memberAvatar, { backgroundColor: getRoleColor(member.role) + '20' }]}>
-                      <Icon 
-                        name={member.role === 'DOULA' ? 'heart' : 'medkit'} 
-                        size={24} 
-                        color={getRoleColor(member.role)} 
+                    {member.picture ? (
+                      <Image 
+                        source={{ uri: member.picture }} 
+                        style={styles.memberAvatarImage}
                       />
-                    </View>
+                    ) : (
+                      <View style={[styles.memberAvatar, { backgroundColor: getRoleColor(member.role) + '20' }]}>
+                        <Icon 
+                          name={member.role === 'DOULA' ? 'heart' : 'medkit'} 
+                          size={24} 
+                          color={getRoleColor(member.role)} 
+                        />
+                      </View>
+                    )}
                     <View style={styles.memberInfo}>
                       <Text style={styles.memberName}>{member.name}</Text>
                       <View style={[styles.memberRoleBadge, { backgroundColor: getRoleColor(member.role) + '20' }]}>
@@ -649,6 +664,12 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: SIZES.md,
+  },
+  avatarImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     marginRight: SIZES.md,
   },
   conversationInfo: {
@@ -856,6 +877,11 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  memberAvatarImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
   },
   memberInfo: {
     flex: 1,

@@ -14,6 +14,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Modal,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
@@ -30,6 +31,7 @@ interface Conversation {
   other_user_id: string;
   other_user_name: string;
   other_user_role: string;
+  other_user_picture?: string | null;
   last_message?: string;
   last_message_time?: string;
   unread_count: number;
@@ -287,13 +289,20 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
             >
               <Card style={styles.conversationCard}>
                 <View style={styles.conversationRow}>
-                  <View style={[styles.avatar, { backgroundColor: getRoleColor(conversation.other_user_role) + '20' }]}>
-                    <Icon 
-                      name="person" 
-                      size={24} 
-                      color={getRoleColor(conversation.other_user_role)} 
+                  {conversation.other_user_picture ? (
+                    <Image 
+                      source={{ uri: conversation.other_user_picture }} 
+                      style={styles.avatarImage}
                     />
-                  </View>
+                  ) : (
+                    <View style={[styles.avatar, { backgroundColor: getRoleColor(conversation.other_user_role) + '20' }]}>
+                      <Icon 
+                        name="person" 
+                        size={24} 
+                        color={getRoleColor(conversation.other_user_role)} 
+                      />
+                    </View>
+                  )}
                   <View style={styles.conversationInfo}>
                     <View style={styles.nameRow}>
                       <Text style={[styles.userName, { color: colors.text }]}>{conversation.other_user_name}</Text>
@@ -517,6 +526,7 @@ const getStyles = createThemedStyles((colors) => ({
   conversationCard: { marginBottom: SIZES.sm },
   conversationRow: { flexDirection: 'row', alignItems: 'center' },
   avatar: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.md },
+  avatarImage: { width: 48, height: 48, borderRadius: 24, marginRight: SIZES.md },
   conversationInfo: { flex: 1 },
   nameRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
   userName: { fontSize: SIZES.fontMd, fontWeight: '600', marginRight: SIZES.sm },
