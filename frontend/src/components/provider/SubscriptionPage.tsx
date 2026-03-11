@@ -51,6 +51,9 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                              status?.subscription_status === 'active' && 
                              status?.plan_type === 'monthly';
 
+  // Determine if user is on trial and can upgrade to paid
+  const canUpgradeFromTrial = status?.has_pro_access && status?.is_trial;
+
   // Get the product ID for the selected plan
   const getProductIdForPlan = (planType: string) => {
     if (Platform.OS === 'ios') {
@@ -187,6 +190,51 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
       Alert.alert('Upgrade Successful!', 'You\'re now on the annual plan. Thank you!');
     } catch (error: any) {
       Alert.alert('Upgrade Failed', error.message || 'Failed to upgrade subscription');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  // Handle upgrading from trial to paid subscription
+  const handleUpgradeFromTrial = async (planType: 'monthly' | 'annual') => {
+    const planLabel = planType === 'monthly' ? 'Monthly ($29/mo)' : 'Annual ($276/yr - Save $72!)';
+    const confirmUpgrade = Platform.OS === 'web' 
+      ? window.confirm(`Upgrade to ${planLabel}?\n\nYour trial will end and your paid subscription will start immediately.`)
+      : await new Promise<boolean>((resolve) => {
+          Alert.alert(
+            `Upgrade to ${planType === 'monthly' ? 'Monthly' : 'Annual'} Plan?`,
+            `Your trial will end and your paid subscription will start immediately.${planType === 'annual' ? ' You\'ll save $72/year!' : ''}`,
+            [
+              { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+              { text: 'Upgrade Now', onPress: () => resolve(true) }
+            ]
+          );
+        });
+
+    if (!confirmUpgrade) return;
+
+    setProcessing(true);
+    try {
+      // Use real IAP on native platforms
+      if (iapAvailable && Platform.OS !== 'web') {
+        const productId = getProductIdForPlan(planType);
+        if (productId) {
+          const offerToken = Platform.OS === 'android' ? `${planType}-offer` : undefined;
+          const result = await purchase(productId, offerToken);
+          if (!result.success && result.error) {
+            throw new Error(result.error);
+          }
+          await fetchStatus();
+          Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.');
+          return;
+        }
+      }
+      
+      // Fallback to mock activation for web/development
+      await activateSubscription(planType);
+      Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.');
+    } catch (error: any) {
+      Alert.alert('Upgrade Failed', error.message || 'Failed to activate subscription');
     } finally {
       setProcessing(false);
     }
@@ -536,6 +584,62 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               fullWidth
               style={{ backgroundColor: colors.success }}
             />
+          </Card>
+        )}
+
+        {/* Upgrade from Trial Card - For users on free trial */}
+        {canUpgradeFromTrial && !showCancelConfirm && (
+          <Card style={[styles.upgradeCard, { borderColor: primaryColor }]}>
+            <View style={styles.upgradeHeader}>
+              <View style={[styles.upgradeBadge, { backgroundColor: primaryColor }]}>
+                <Icon name="rocket" size={14} color={colors.white} />
+                <Text style={styles.upgradeBadgeText}>UPGRADE NOW</Text>
+              </View>
+            </View>
+            <Text style={styles.upgradeTitle}>Ready to Subscribe?</Text>
+            <Text style={styles.upgradeDescription}>
+              Love True Joy Pro? Subscribe now to ensure uninterrupted access when your trial ends.
+            </Text>
+            
+            {/* Plan Options */}
+            <View style={styles.trialUpgradePlans}>
+              <TouchableOpacity 
+                style={[styles.trialUpgradePlan, { borderColor: colors.border }]}
+                onPress={() => handleUpgradeFromTrial('monthly')}
+                disabled={processing}
+              >
+                <View style={styles.trialUpgradePlanInfo}>
+                  <Text style={styles.trialUpgradePlanName}>Monthly</Text>
+                  <Text style={[styles.trialUpgradePlanPrice, { color: primaryColor }]}>$29/mo</Text>
+                </View>
+                <Icon name="chevron-forward" size={20} color={primaryColor} />
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.trialUpgradePlan, styles.trialUpgradePlanRecommended, { borderColor: colors.success }]}
+                onPress={() => handleUpgradeFromTrial('annual')}
+                disabled={processing}
+              >
+                <View style={[styles.recommendedBadge, { backgroundColor: colors.success }]}>
+                  <Text style={styles.recommendedBadgeText}>BEST VALUE</Text>
+                </View>
+                <View style={styles.trialUpgradePlanInfo}>
+                  <Text style={styles.trialUpgradePlanName}>Annual</Text>
+                  <View style={styles.trialUpgradePriceRow}>
+                    <Text style={[styles.trialUpgradePlanPrice, { color: colors.success }]}>$276/yr</Text>
+                    <Text style={styles.trialUpgradeSavings}>Save $72!</Text>
+                  </View>
+                </View>
+                <Icon name="chevron-forward" size={20} color={colors.success} />
+              </TouchableOpacity>
+            </View>
+            
+            {processing && (
+              <View style={styles.processingOverlay}>
+                <ActivityIndicator size="small" color={primaryColor} />
+                <Text style={styles.processingText}>Processing...</Text>
+              </View>
+            )}
           </Card>
         )}
 
@@ -1106,5 +1210,74 @@ const getStyles = createThemedStyles((colors) => ({
   upgradeComparisonNew: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
+  },
+  // Trial upgrade styles
+  trialUpgradePlans: {
+    gap: SIZES.sm,
+  },
+  trialUpgradePlan: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: SIZES.md,
+    borderRadius: SIZES.radiusMd,
+    borderWidth: 1,
+    backgroundColor: colors.white,
+  },
+  trialUpgradePlanRecommended: {
+    borderWidth: 2,
+    position: 'relative',
+  },
+  recommendedBadge: {
+    position: 'absolute',
+    top: -10,
+    right: SIZES.md,
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: 2,
+    borderRadius: SIZES.radiusFull,
+  },
+  recommendedBadgeText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyMedium,
+    color: colors.white,
+  },
+  trialUpgradePlanInfo: {
+    flex: 1,
+  },
+  trialUpgradePlanName: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyMedium,
+    color: colors.text,
+    marginBottom: 2,
+  },
+  trialUpgradePriceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
+  },
+  trialUpgradePlanPrice: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.heading,
+  },
+  trialUpgradeSavings: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyMedium,
+    color: colors.success,
+    backgroundColor: colors.success + '20',
+    paddingHorizontal: SIZES.xs,
+    paddingVertical: 2,
+    borderRadius: SIZES.radiusSm,
+  },
+  processingOverlay: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: SIZES.md,
+    gap: SIZES.sm,
+  },
+  processingText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
   },
 }));
