@@ -370,7 +370,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
 
         {/* Third row of actions - Midwife only for Labor tracking and Newborn Exam */}
         {isMidwife && (
-          <View style={[styles.actionsRow, { justifyContent: 'flex-start' }]}>
+          <View style={styles.actionsRow}>
             {/* Labor Records Quick Access */}
             <TouchableOpacity 
               style={styles.actionButton}
@@ -398,6 +398,10 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               </View>
               <Text style={styles.actionLabel}>Newborn Exam</Text>
             </TouchableOpacity>
+
+            {/* Empty placeholders for alignment with the 4-item row above */}
+            <View style={styles.actionButton} />
+            <View style={styles.actionButton} />
           </View>
         )}
         
