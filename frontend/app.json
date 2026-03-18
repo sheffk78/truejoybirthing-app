@@ -15,8 +15,15 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.truejoybirthing.app",
+      "buildNumber": "1",
       "infoPlist": {
-        "SKAdNetworkItems": []
+        "SKAdNetworkItems": [],
+        "NSCameraUsageDescription": "True Joy Birthing needs camera access to take profile photos.",
+        "NSPhotoLibraryUsageDescription": "True Joy Birthing needs photo library access to select profile photos.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
@@ -26,8 +33,11 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.truejoybirthing.app",
+      "versionCode": 1,
       "permissions": [
-        "com.android.vending.BILLING"
+        "com.android.vending.BILLING",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE"
       ]
     },
     "web": {
@@ -40,7 +50,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash-image.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#F8F4F9"
@@ -56,6 +66,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
+    },
+    "owner": "truejoybirthing",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID"
     }
   }
 }
