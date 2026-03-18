@@ -50,9 +50,9 @@ const MOCK_PRODUCTS: IAPProduct[] = [
   {
     productId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_ANNUAL,
     title: 'True Joy Pro – Annual',
-    description: 'Full access to all Pro features. Save $72!',
+    description: 'Full access to all Pro features. Save ~$85!',
     price: '276.00',
-    localizedPrice: '$276.00',
+    localizedPrice: '$274.99',
     currency: 'USD',
     isMonthly: false,
     subscriptionPeriod: 'P1Y',

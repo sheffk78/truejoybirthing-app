@@ -25,8 +25,8 @@ BRAND_COLOR = "#9F83B6"  # Soft Lavender
 ACCENT_COLOR = "#D4A5A5"  # Dusty Rose
 
 # Pricing info
-PRO_MONTHLY_PRICE = 29.00
-PRO_ANNUAL_PRICE = 276.00
+PRO_MONTHLY_PRICE = 29.99
+PRO_ANNUAL_PRICE = 274.99
 
 
 def get_email_header() -> str:

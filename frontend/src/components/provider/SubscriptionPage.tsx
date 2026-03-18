@@ -70,7 +70,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
   // Find IAP product price to display
   const getIAPPrice = (isMonthly: boolean) => {
     const product = products.find(p => p.isMonthly === isMonthly);
-    return product?.localizedPrice || (isMonthly ? '$29.00' : '$276.00');
+    return product?.localizedPrice || (isMonthly ? '$29.99' : '$274.99');
   };
 
   const handleStartTrial = async () => {
@@ -154,11 +154,11 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
   const handleUpgradeToAnnual = async () => {
     const confirmUpgrade = Platform.OS === 'web' 
-      ? window.confirm('Upgrade to Annual Plan?\n\nYou\'ll save $72/year compared to monthly billing. Your new annual subscription will start immediately.')
+      ? window.confirm('Upgrade to Annual Plan?\n\nYou\'ll save ~$85/year compared to monthly billing. Your new annual subscription will start immediately.')
       : await new Promise<boolean>((resolve) => {
           Alert.alert(
             'Upgrade to Annual Plan?',
-            'You\'ll save $72/year compared to monthly billing. Your new annual subscription will start immediately.',
+            'You\'ll save ~$85/year compared to monthly billing. Your new annual subscription will start immediately.',
             [
               { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
               { text: 'Upgrade Now', onPress: () => resolve(true) }
@@ -197,13 +197,13 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
   // Handle upgrading from trial to paid subscription
   const handleUpgradeFromTrial = async (planType: 'monthly' | 'annual') => {
-    const planLabel = planType === 'monthly' ? 'Monthly ($29/mo)' : 'Annual ($276/yr - Save $72!)';
+    const planLabel = planType === 'monthly' ? 'Monthly ($29.99/mo)' : 'Annual ($274.99/yr - Save ~$85!)';
     const confirmUpgrade = Platform.OS === 'web' 
       ? window.confirm(`Upgrade to ${planLabel}?\n\nYour trial will end and your paid subscription will start immediately.`)
       : await new Promise<boolean>((resolve) => {
           Alert.alert(
             `Upgrade to ${planType === 'monthly' ? 'Monthly' : 'Annual'} Plan?`,
-            `Your trial will end and your paid subscription will start immediately.${planType === 'annual' ? ' You\'ll save $72/year!' : ''}`,
+            `Your trial will end and your paid subscription will start immediately.${planType === 'annual' ? ' You\'ll save ~$85/year!' : ''}`,
             [
               { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
               { text: 'Upgrade Now', onPress: () => resolve(true) }
@@ -292,7 +292,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
     // Add upgrade option for monthly subscribers
     if (canUpgradeToAnnual) {
       options.push({
-        text: 'Upgrade to Annual (Save $72/yr)',
+        text: 'Upgrade to Annual (Save ~$85/yr)',
         onPress: handleUpgradeToAnnual
       });
     }
@@ -500,7 +500,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                   </View>
                   <View style={styles.managementOptionText}>
                     <Text style={styles.managementOptionTitle}>Upgrade to Annual</Text>
-                    <Text style={styles.managementOptionDesc}>Save $72/year - That's 2 months free!</Text>
+                    <Text style={styles.managementOptionDesc}>Save ~$85/year - That's 2 months free!</Text>
                   </View>
                 </View>
                 <Icon name="chevron-forward" size={20} color={colors.success} />
@@ -559,7 +559,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
             <View style={styles.upgradeHeader}>
               <View style={[styles.upgradeBadge, { backgroundColor: colors.success }]}>
                 <Icon name="star" size={14} color={colors.white} />
-                <Text style={styles.upgradeBadgeText}>SAVE $72/YEAR</Text>
+                <Text style={styles.upgradeBadgeText}>SAVE ~$85/YEAR</Text>
               </View>
             </View>
             <Text style={styles.upgradeTitle}>Switch to Annual Billing</Text>
@@ -574,7 +574,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               <Icon name="arrow-forward" size={20} color={colors.textSecondary} />
               <View style={styles.upgradeComparisonItem}>
                 <Text style={styles.upgradeComparisonLabel}>Annual</Text>
-                <Text style={[styles.upgradeComparisonNew, { color: colors.success }]}>$276/yr</Text>
+                <Text style={[styles.upgradeComparisonNew, { color: colors.success }]}>$274.99/yr</Text>
               </View>
             </View>
             <Button
@@ -610,7 +610,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               >
                 <View style={styles.trialUpgradePlanInfo}>
                   <Text style={styles.trialUpgradePlanName}>Monthly</Text>
-                  <Text style={[styles.trialUpgradePlanPrice, { color: primaryColor }]}>$29/mo</Text>
+                  <Text style={[styles.trialUpgradePlanPrice, { color: primaryColor }]}>$29.99/mo</Text>
                 </View>
                 <Icon name="chevron-forward" size={20} color={primaryColor} />
               </TouchableOpacity>
@@ -626,8 +626,8 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                 <View style={styles.trialUpgradePlanInfo}>
                   <Text style={styles.trialUpgradePlanName}>Annual</Text>
                   <View style={styles.trialUpgradePriceRow}>
-                    <Text style={[styles.trialUpgradePlanPrice, { color: colors.success }]}>$276/yr</Text>
-                    <Text style={styles.trialUpgradeSavings}>Save $72!</Text>
+                    <Text style={[styles.trialUpgradePlanPrice, { color: colors.success }]}>$274.99/yr</Text>
+                    <Text style={styles.trialUpgradeSavings}>Save ~$85!</Text>
                   </View>
                 </View>
                 <Icon name="chevron-forward" size={20} color={colors.success} />

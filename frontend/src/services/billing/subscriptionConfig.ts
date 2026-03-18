@@ -28,7 +28,7 @@ export const SUBSCRIPTION_PLANS = {
     id: 'monthly',
     name: 'True Joy Pro',
     displayName: 'Pro Monthly',
-    price: 29.00,
+    price: 29.99,
     currency: 'USD',
     period: 'month',
     periodLabel: '/month',
@@ -40,12 +40,12 @@ export const SUBSCRIPTION_PLANS = {
     id: 'annual',
     name: 'True Joy Pro',
     displayName: 'Pro Annual',
-    price: 276.00,
+    price: 274.99,
     currency: 'USD',
     period: 'year',
     periodLabel: '/year',
     trialDays: 14,
-    savings: 72.00, // $29 * 12 - $276
+    savings: 84.89, // $29.99 * 12 - $274.99
     appleProductId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_ANNUAL,
     googleBasePlan: SUBSCRIPTION_PRODUCTS.GOOGLE.BASE_PLANS.ANNUAL,
   },

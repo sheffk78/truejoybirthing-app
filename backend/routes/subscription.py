@@ -25,8 +25,8 @@ import logging
 router = APIRouter(prefix="/subscription", tags=["Subscription"])
 
 # Pricing constants
-PRO_MONTHLY_PRICE = 29.00
-PRO_ANNUAL_PRICE = 276.00
+PRO_MONTHLY_PRICE = 29.99
+PRO_ANNUAL_PRICE = 274.99
 TRIAL_DURATION_DAYS = 14
 SUBSCRIPTION_PLANS = ["monthly", "annual"]
 
