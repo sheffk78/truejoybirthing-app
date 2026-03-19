@@ -36,8 +36,17 @@ async def search_providers(
         doula_query = {"in_marketplace": True, "accepting_new_clients": True}
         
         doula_profiles = await db.doula_profiles.find(doula_query, {"_id": 0}).to_list(100)
+        
+        # Batch fetch all users for doula profiles
+        doula_user_ids = [p["user_id"] for p in doula_profiles]
+        doula_users = await db.users.find(
+            {"user_id": {"$in": doula_user_ids}}, 
+            {"_id": 0, "password_hash": 0}
+        ).to_list(100)
+        doula_users_by_id = {u["user_id"]: u for u in doula_users}
+        
         for profile in doula_profiles:
-            user = await db.users.find_one({"user_id": profile["user_id"]}, {"_id": 0, "password_hash": 0})
+            user = doula_users_by_id.get(profile["user_id"])
             if user:
                 # Apply search filter
                 if search:
@@ -67,8 +76,17 @@ async def search_providers(
         midwife_query = {"in_marketplace": True, "accepting_new_clients": True}
         
         midwife_profiles = await db.midwife_profiles.find(midwife_query, {"_id": 0}).to_list(100)
+        
+        # Batch fetch all users for midwife profiles
+        midwife_user_ids = [p["user_id"] for p in midwife_profiles]
+        midwife_users = await db.users.find(
+            {"user_id": {"$in": midwife_user_ids}}, 
+            {"_id": 0, "password_hash": 0}
+        ).to_list(100)
+        midwife_users_by_id = {u["user_id"]: u for u in midwife_users}
+        
         for profile in midwife_profiles:
-            user = await db.users.find_one({"user_id": profile["user_id"]}, {"_id": 0, "password_hash": 0})
+            user = midwife_users_by_id.get(profile["user_id"])
             if user:
                 # Apply search filter
                 if search:
