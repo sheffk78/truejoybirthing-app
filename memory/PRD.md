@@ -97,10 +97,14 @@ Build a comprehensive birthing support application for expecting mothers, doulas
 
 ### P0 (Critical)
 - [x] Full regression testing of all changes (Completed March 2025)
+- [x] Fixed production deployment blockers (December 2025):
+  - Added missing `react-native-nitro-modules` peer dependency for `react-native-iap`
+  - Added `resend` package to backend requirements.txt
+  - Fixed `.gitignore` blocking `.env` files during deployment
 
 ### P1 (High Priority)
-- [ ] Apple IAP integration for subscriptions
-- [ ] Google Play IAP integration
+- [ ] Apple IAP integration testing with sandbox accounts (post-deployment)
+- [ ] Google Play IAP integration testing
 - [ ] Stripe integration for web subscriptions
 
 ### P2 (Medium Priority)
