@@ -129,6 +129,11 @@ Build a comprehensive birthing support application for expecting mothers, doulas
   - This ESM package exports resolution breaks Babel's require() for react-native-worklets/plugin
   - SOLUTION: Added `config.resolver.unstable_enablePackageExports = false` to metro.config.js
   - Also pinned react-native-worklets@0.7.4 exactly and added resolutions field
+- [x] Fixed Emergent deployment "patch-package not found" error (December 2025):
+  - Error: `/bin/sh: 1: patch-package: not found` during `yarn install` postinstall script
+  - ROOT CAUSE: `patch-package` and `postinstall-postinstall` were in `devDependencies`
+  - During production builds, devDependencies are not installed, so `patch-package` command unavailable
+  - SOLUTION: Moved `patch-package` and `postinstall-postinstall` from `devDependencies` to `dependencies`
 
 ### P1 (High Priority)
 - [ ] Apple IAP integration testing with sandbox accounts (post-deployment)
@@ -235,4 +240,4 @@ Added the following to `src/components/Icon.tsx`:
 
 ---
 
-*Last Updated: December 2025*
+*Last Updated: March 2026*
