@@ -134,6 +134,14 @@ Build a comprehensive birthing support application for expecting mothers, doulas
   - ROOT CAUSE: `patch-package` and `postinstall-postinstall` were in `devDependencies`
   - During production builds, devDependencies are not installed, so `patch-package` command unavailable
   - SOLUTION: Moved `patch-package` and `postinstall-postinstall` from `devDependencies` to `dependencies`
+- [x] Fixed react-native-iap patch not applied during EAS build (March 2026):
+  - Error: `Unresolved reference 'currentActivity'` at RNIapModule.kt lines 464 and 540
+  - ROOT CAUSE: Emergent deployment system overwrites `postinstall` script with its own `apply-expo-patch.js`
+  - This prevents `patch-package` from running and applying the react-native-iap fix
+  - SOLUTION: Created Expo config plugin `plugins/withIAPPatch.js` that applies the fix during prebuild
+  - Plugin patches both occurrences of deprecated `currentActivity` API in RNIapModule.kt
+  - Updated `patches/react-native-iap+12.16.4.patch` to cover both line 464 and line 540
+  - Added `./plugins/withIAPPatch` to app.json plugins array
 
 ### P1 (High Priority)
 - [ ] Apple IAP integration testing with sandbox accounts (post-deployment)
