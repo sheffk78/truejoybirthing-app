@@ -106,6 +106,10 @@ Build a comprehensive birthing support application for expecting mothers, doulas
   - Downgraded react-native-iap from v14.7.12 to v12.16.4 (removes Nitro dependency)
   - Removed react-native-iap plugin from app.json
   - Regenerated fresh yarn.lock
+- [x] Fixed app icon dimensions for Expo build validation (March 2026):
+  - Resized adaptive-icon.png from 512x513 to 512x512
+  - Resized icon.png from 512x513 to 512x512  
+  - Resized favicon.png from 512x513 to 512x512
 
 ### P1 (High Priority)
 - [ ] Apple IAP integration testing with sandbox accounts (post-deployment)
