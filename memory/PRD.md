@@ -118,6 +118,11 @@ Build a comprehensive birthing support application for expecting mothers, doulas
   - Enabled New Architecture (`newArchEnabled: true` in app.json) - Required for Reanimated 4.x
   - Added `react-native-worklets@~0.7.0` dependency - Required by Reanimated 4.x
   - Fixes compilation error: "cannot find symbol TRACE_TAG_REACT_JAVA_BRIDGE"
+- [x] Fixed react-native-iap Kotlin compilation error (December 2025):
+  - React Native 0.81 removed `currentActivity` API, breaking react-native-iap@12.16.4
+  - Created patch using `patch-package` to replace `currentActivity` with `reactApplicationContext.currentActivity`
+  - Patch file: `patches/react-native-iap+12.16.4.patch`
+  - Added `postinstall` script to package.json for auto-applying patch
 
 ### P1 (High Priority)
 - [ ] Apple IAP integration testing with sandbox accounts (post-deployment)
@@ -224,4 +229,4 @@ Added the following to `src/components/Icon.tsx`:
 
 ---
 
-*Last Updated: March 11, 2025*
+*Last Updated: December 2025*
