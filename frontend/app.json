@@ -33,7 +33,7 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "com.truejoybirthing.app",
-      "versionCode": 103,
+      "versionCode": 104,
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.CAMERA",
@@ -54,12 +54,6 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#F8F4F9"
-        }
-      ],
-      [
-        "react-native-iap",
-        {
-          "paymentProvider": "both"
         }
       ],
       "@react-native-community/datetimepicker"

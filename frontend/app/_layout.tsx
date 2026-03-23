@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { Platform, StatusBar, View } from 'react-native';
+import { Platform, StatusBar, View, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {
@@ -137,11 +137,13 @@ export default function RootLayout() {
     Lato_700Bold,
   });
   
-  // Show loading screen while fonts are loading
+  // Show simple loading screen while fonts are loading (before ThemeProvider is available)
   if (!fontsLoaded) {
     return (
       <SafeAreaProvider>
-        <LoadingScreen message="Loading True Joy Birthing..." />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FAF7FC' }}>
+          <ActivityIndicator size="large" color="#8B76A0" />
+        </View>
       </SafeAreaProvider>
     );
   }

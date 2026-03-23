@@ -101,6 +101,11 @@ Build a comprehensive birthing support application for expecting mothers, doulas
   - Added missing `react-native-nitro-modules` peer dependency for `react-native-iap`
   - Added `resend` package to backend requirements.txt
   - Fixed `.gitignore` blocking `.env` files during deployment
+- [x] Fixed Android app crash on launch (March 2026):
+  - Fixed ThemeProvider context error - LoadingScreen was rendering before ThemeProvider
+  - Downgraded react-native-iap from v14.7.12 to v12.16.4 (removes Nitro dependency)
+  - Removed react-native-iap plugin from app.json
+  - Regenerated fresh yarn.lock
 
 ### P1 (High Priority)
 - [ ] Apple IAP integration testing with sandbox accounts (post-deployment)
