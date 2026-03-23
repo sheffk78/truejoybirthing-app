@@ -17,7 +17,7 @@ import uuid
 from datetime import datetime
 
 # Base URL from environment - public URL for testing
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://bug-fixes-p0.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://bundle-resolve.preview.emergentagent.com')
 
 # Test credentials
 MIDWIFE_EMAIL = "demo.midwife@truejoybirthing.com"

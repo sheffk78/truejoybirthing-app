@@ -238,7 +238,7 @@ eas submit --platform android --latest
 ## 9. PRODUCTION ENVIRONMENT
 
 ### 9.1 Backend URL
-Current preview URL: `https://bug-fixes-p0.preview.emergentagent.com`
+Current preview URL: `https://bundle-resolve.preview.emergentagent.com`
 
 **For production, you'll need:**
 - [ ] Production backend hosted (AWS, Google Cloud, etc.)

@@ -18,7 +18,7 @@ import os
 from datetime import datetime, timedelta
 
 # Base URL from environment
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://bug-fixes-p0.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://bundle-resolve.preview.emergentagent.com')
 
 # Expected sections in midwife contract template
 EXPECTED_MIDWIFE_SECTIONS = [

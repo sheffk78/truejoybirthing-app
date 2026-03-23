@@ -14,7 +14,7 @@ from datetime import datetime
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = 'https://bug-fixes-p0.preview.emergentagent.com'
+    BASE_URL = 'https://bundle-resolve.preview.emergentagent.com'
 
 # Test data prefixes
 TEST_PREFIX = "TEST_MSG_"

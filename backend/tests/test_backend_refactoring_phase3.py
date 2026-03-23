@@ -20,7 +20,7 @@ from datetime import datetime
 # Use environment variable for base URL
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://bug-fixes-p0.preview.emergentagent.com"
+    BASE_URL = "https://bundle-resolve.preview.emergentagent.com"
 
 # Test credentials
 DOULA_EMAIL = "demo.doula@truejoybirthing.com"
