@@ -2,7 +2,7 @@
   "expo": {
     "name": "True Joy Birthing",
     "slug": "true-joy-birthing",
-    "version": "1.0.0",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "truejoybirthing",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.truejoybirthing.app",
-      "buildNumber": "1",
+      "buildNumber": "108",
       "infoPlist": {
         "SKAdNetworkItems": [],
         "NSCameraUsageDescription": "True Joy Birthing needs camera access to take profile photos.",
@@ -33,7 +33,7 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "com.truejoybirthing.app",
-      "versionCode": 107,
+      "versionCode": 108,
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.CAMERA",
