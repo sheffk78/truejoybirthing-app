@@ -33,7 +33,7 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "com.truejoybirthing.app",
-      "versionCode": 105,
+      "versionCode": 106,
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.CAMERA",
