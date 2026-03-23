@@ -5,6 +5,11 @@ const { FileStore } = require('metro-cache');
 
 const config = getDefaultConfig(__dirname);
 
+// CRITICAL FIX: Disable ESM package exports resolution (SDK 54 default)
+// This fixes "Cannot find module 'react-native-worklets/plugin'" error in EAS builds
+// See: https://docs.expo.dev/guides/customizing-metro/#package-exports-support
+config.resolver.unstable_enablePackageExports = false;
+
 // Ensure TTF fonts are processed as assets
 if (!config.resolver.assetExts.includes('ttf')) {
   config.resolver.assetExts.push('ttf');
