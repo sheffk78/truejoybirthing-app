@@ -110,6 +110,10 @@ Build a comprehensive birthing support application for expecting mothers, doulas
   - Resized adaptive-icon.png from 512x513 to 512x512
   - Resized icon.png from 512x513 to 512x512  
   - Resized favicon.png from 512x513 to 512x512
+- [x] Fixed react-native-iap Gradle variant ambiguity (March 2026):
+  - Created `plugins/withIAPStoreVariant.js` Expo config plugin
+  - Plugin adds `missingDimensionStrategy 'store', 'play'` to Android build.gradle
+  - Resolves Gradle error: "Cannot choose between amazonReleaseRuntimeElements and playReleaseRuntimeElements"
 
 ### P1 (High Priority)
 - [ ] Apple IAP integration testing with sandbox accounts (post-deployment)

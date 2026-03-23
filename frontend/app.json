@@ -56,7 +56,8 @@
           "backgroundColor": "#F8F4F9"
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "./plugins/withIAPStoreVariant"
     ],
     "experiments": {
       "typedRoutes": true
