@@ -69,7 +69,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "YOUR_EAS_PROJECT_ID"
+        "projectId": "62708679-6031-4e8c-87d9-24e338d149cf"
       }
     },
     "owner": "truejoybirthing",
@@ -77,7 +77,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID"
+      "url": "https://u.expo.dev/62708679-6031-4e8c-87d9-24e338d149cf"
     }
   }
 }
