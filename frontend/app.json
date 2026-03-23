@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "truejoybirthing",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "assetBundlePatterns": [
       "**/*",
       "./assets/fonts/*.ttf"

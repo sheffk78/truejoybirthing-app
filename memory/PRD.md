@@ -114,6 +114,10 @@ Build a comprehensive birthing support application for expecting mothers, doulas
   - Created `plugins/withIAPStoreVariant.js` Expo config plugin
   - Plugin adds `missingDimensionStrategy 'store', 'play'` to Android build.gradle
   - Resolves Gradle error: "Cannot choose between amazonReleaseRuntimeElements and playReleaseRuntimeElements"
+- [x] Fixed react-native-reanimated 4.x compatibility (March 2026):
+  - Enabled New Architecture (`newArchEnabled: true` in app.json) - Required for Reanimated 4.x
+  - Added `react-native-worklets@~0.7.0` dependency - Required by Reanimated 4.x
+  - Fixes compilation error: "cannot find symbol TRACE_TAG_REACT_JAVA_BRIDGE"
 
 ### P1 (High Priority)
 - [ ] Apple IAP integration testing with sandbox accounts (post-deployment)
