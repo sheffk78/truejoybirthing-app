@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "truejoybirthing",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "assetBundlePatterns": [
       "**/*",
       "./assets/fonts/*.ttf"
@@ -31,9 +31,9 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#9B6B9E"
       },
-      "edgeToEdgeEnabled": true,
+      "edgeToEdgeEnabled": false,
       "package": "com.truejoybirthing.app",
-      "versionCode": 102,
+      "versionCode": 103,
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.CAMERA",
