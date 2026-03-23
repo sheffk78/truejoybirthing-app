@@ -123,6 +123,10 @@ Build a comprehensive birthing support application for expecting mothers, doulas
   - Created patch using `patch-package` to replace `currentActivity` with `reactApplicationContext.currentActivity`
   - Patch file: `patches/react-native-iap+12.16.4.patch`
   - Added `postinstall` script to package.json for auto-applying patch
+- [x] Fixed EAS Update Babel plugin error (December 2025):
+  - Error: "Cannot find module 'react-native-worklets/plugin'" during Metro bundling
+  - Root cause: Reanimated v4 requires `react-native-worklets/plugin` instead of `react-native-reanimated/plugin`
+  - Updated `babel.config.js` to use `react-native-worklets/plugin` as the last plugin
 
 ### P1 (High Priority)
 - [ ] Apple IAP integration testing with sandbox accounts (post-deployment)
