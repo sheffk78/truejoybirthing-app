@@ -25,23 +25,22 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 
 ## What's Been Implemented
 
-### December 23, 2025 - Deployment Fix
-**Root Cause Identified**: `patch-package` is fundamentally incompatible with EAS cloud builds because:
-1. EAS builds don't persist node_modules from postinstall scripts
-2. The build environment PATH doesn't include node_modules/.bin
-3. Dual patching approach (patch-package + config plugin) caused conflicts
+### March 24, 2025 - iOS Build Fix (RCT-Folly)
+**Issue**: iOS build failing with `Unable to find a specification for RCT-Folly depended upon by RNIap`
+
+**Root Cause**: `react-native-iap@12.16.4` has a podspec that depends on `RCT-Folly`, but in React Native 0.81+, `RCT-Folly` has been absorbed into prebuilt React Native dependencies and no longer exists as a standalone CocoaPod.
 
 **Fix Applied**:
-1. ✅ Removed `patch-package` and `postinstall-postinstall` from dependencies
-2. ✅ Removed `postinstall` script from package.json
-3. ✅ Deleted `/app/frontend/patches/` directory
-4. ✅ Removed `react-native-worklets` from dependencies (kept in resolutions for version control)
-5. ✅ Verified `withIAPPatch.js` Expo config plugin handles IAP patching during prebuild
+1. Created new Expo config plugin `/app/frontend/plugins/withIAPPodfilePatch.js`
+2. This plugin adds a `pre_install` hook to the Podfile that patches `RNIap.podspec` at pod install time
+3. The patch removes the `RCT-Folly` dependency line from the podspec
+4. Registered the plugin in `app.json`
+5. Removed `package-lock.json` to fix the "multiple lock files" warning
 
-**How IAP Patching Now Works**:
-- The `withIAPPatch.js` config plugin (in `/app/frontend/plugins/`) patches the `currentActivity` compilation error during Expo's prebuild phase
-- This is the correct approach for EAS builds as it runs before native compilation
-- The plugin is registered in `app.json` under plugins array
+### March 23, 2025 - Previous Fixes
+- Removed `patch-package` approach (incompatible with EAS)
+- Created `withIAPPatch.js` to fix Android `currentActivity` compilation error
+- Updated version to 1.0.5, versionCode/buildNumber to 108
 
 ## Architecture
 
@@ -53,15 +52,24 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
     ├── package.json           # No postinstall script
     ├── app.json               # Expo config with plugins
     ├── metro.config.js        # unstable_enablePackageExports: false
+    ├── yarn.lock              # Single lock file (removed package-lock.json)
     └── plugins/
-        ├── withIAPPatch.js    # Patches react-native-iap for RN 0.81+
-        └── withIAPStoreVariant.js
+        ├── withIAPPatch.js         # Android: patches currentActivity
+        ├── withIAPPodfilePatch.js  # iOS: adds pre_install hook to remove RCT-Folly dep
+        └── withIAPStoreVariant.js  # IAP store variant config
 ```
+
+## How iOS Podspec Patching Works
+1. During `expo prebuild`, `withIAPPodfilePatch.js` runs
+2. It modifies the generated `ios/Podfile` to add a `pre_install` hook
+3. When EAS runs `pod install`, the pre_install hook executes FIRST
+4. The hook patches `node_modules/react-native-iap/RNIap.podspec` to remove the `RCT-Folly` dependency
+5. CocoaPods then resolves dependencies without the missing `RCT-Folly`
 
 ## Credentials
 - Demo Account: `demo.mom@truejoybirthing.com` / `DemoScreenshot2024!`
 
 ## Next Steps
-1. Trigger new deployment
-2. Verify EAS build passes eas-update and native compilation steps
-3. Test IAP functionality with sandbox accounts post-deployment
+1. Trigger new iOS deployment
+2. Verify EAS build passes the "Install pods" phase
+3. If successful, test IAP functionality with sandbox accounts
