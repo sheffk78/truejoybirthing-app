@@ -14,7 +14,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "deploymentTarget": "13.4",
+      "deploymentTarget": "15.1",
       "bundleIdentifier": "com.truejoybirthing.app",
       "buildNumber": "108",
       "infoPlist": {
@@ -63,7 +63,7 @@
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "13.4"
+            "deploymentTarget": "15.1"
           }
         }
       ]

@@ -28,13 +28,17 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 ### December 2025 - iOS Deployment Target Fix (COMPLETE)
 **Issue**: After fixing RCT-Folly issue, build failed with `EAS_BUILD_HIGHER_MINIMUM_DEPLOYMENT_TARGET_ERROR`.
 
-**Root Cause**: Simply setting `deploymentTarget` in app.json's ios section is insufficient for EAS builds. Expo SDK 50+ requires the `expo-build-properties` plugin to properly configure native build settings during CocoaPods installation.
+**Root Cause**: 
+1. Simply setting `deploymentTarget` in app.json's ios section is insufficient for EAS builds
+2. Expo SDK 50+ requires the `expo-build-properties` plugin to properly configure native build settings
+3. The EAS build system requires iOS 15.1 minimum (not 13.4)
 
 **Solution Applied**:
 1. Installed `expo-build-properties@1.0.10`
-2. Configured the plugin in app.json with `deploymentTarget: "13.4"`
-3. Removed obsolete `apply-patches.js` script
-4. Cleaned up all react-native-iap references
+2. Configured the plugin in app.json with `deploymentTarget: "15.1"` 
+3. Also set `ios.deploymentTarget: "15.1"` in the ios section of app.json
+4. Removed obsolete `apply-patches.js` script
+5. Cleaned up all react-native-iap references
 
 ### December 2025 - MAJOR FIX: Migrated from react-native-iap to expo-iap
 **Issue**: iOS build failing with `Unable to find a specification for RCT-Folly depended upon by RNIap` after 5+ failed attempts with various patching approaches.
