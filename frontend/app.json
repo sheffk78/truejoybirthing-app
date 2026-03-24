@@ -14,6 +14,7 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "deploymentTarget": "13.4",
       "bundleIdentifier": "com.truejoybirthing.app",
       "buildNumber": "108",
       "infoPlist": {

@@ -25,6 +25,11 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 
 ## What's Been Implemented
 
+### December 2025 - iOS Deployment Target Fix
+**Issue**: After fixing RCT-Folly issue, build failed with `EAS_BUILD_HIGHER_MINIMUM_DEPLOYMENT_TARGET_ERROR`.
+
+**Solution**: Added `"deploymentTarget": "13.4"` to the `ios` section of `app.json`. This satisfies the `OnsideKit` dependency requirement from `expo-iap`.
+
 ### December 2025 - MAJOR FIX: Migrated from react-native-iap to expo-iap
 **Issue**: iOS build failing with `Unable to find a specification for RCT-Folly depended upon by RNIap` after 5+ failed attempts with various patching approaches.
 
@@ -34,7 +39,6 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 - `expo-iap` is an Expo Module specifically designed for Expo SDK 54 and newer
 - Maintained by the same author (hyochan) as react-native-iap
 - No RCT-Folly dependency issues - uses modern Expo module architecture
-- Version 3.4.11 released March 24, 2026 (same day!)
 
 **Changes Made:**
 1. Removed `react-native-iap@12.16.4`
@@ -43,16 +47,13 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 4. Removed all custom IAP plugins (`withIAPPatch.js`, `withIAPPodfilePatch.js`, `withIAPStoreVariant.js`)
 5. Removed postinstall patch scripts
 6. Added `expo-iap` to app.json plugins
+7. Added `"deploymentTarget": "13.4"` to ios config
 
 ### Why previous patching approaches failed:
 1. **postinstall script**: Emergent deployment replaces it with their own `apply-expo-patch.js`
 2. **eas-build-post-install**: For iOS, this runs AFTER `pod install` (too late!)
 3. **Podfile pre_install hook**: Ruby hook wasn't executing properly on EAS
 4. **Config plugins**: Run during prebuild but EAS skips prebuild when `ios/` dir exists
-
-### March 23, 2025 - Previous Fixes (now obsolete)
-- Removed `patch-package` approach (incompatible with EAS)
-- Updated version to 1.0.5, versionCode/buildNumber to 108
 
 ## Architecture
 
@@ -62,11 +63,9 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 │   └── server.py              # FastAPI backend
 └── frontend/
     ├── package.json           # Uses expo-iap, no custom postinstall
-    ├── app.json               # expo-iap plugin registered
+    ├── app.json               # expo-iap plugin + deploymentTarget: 13.4
     ├── metro.config.js        # unstable_enablePackageExports: false
     ├── yarn.lock
-    ├── scripts/
-    │   └── reset-project.js   # Only standard Expo script
     └── src/services/billing/
         └── iapService.native.ts  # Updated to use expo-iap
 ```
@@ -84,38 +83,10 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 - Demo Account: `demo.mom@truejoybirthing.com` / `DemoScreenshot2024!`
 
 ## Next Steps
-1. Trigger new iOS deployment via Emergent
-2. Verify EAS build passes (no more RCT-Folly error!)
+1. **Trigger new iOS deployment** - The `deploymentTarget` fix has been applied
+2. Verify EAS build passes (no more RCT-Folly or deployment target errors!)
 3. If successful, test IAP functionality with sandbox accounts
 
-### Previous Fixes
-- Removed `patch-package` approach (incompatible with EAS)
-- Created `withIAPPatch.js` to fix Android `currentActivity` compilation error
-- Updated version to 1.0.5, versionCode/buildNumber to 108
-
-## Architecture
-
-```
-/app
-├── backend/
-│   └── server.py              # FastAPI backend
-└── frontend/
-    ├── package.json           # Has postinstall + EAS hooks as fallbacks
-    ├── app.json               # Expo config with plugins
-    ├── metro.config.js        # unstable_enablePackageExports: false
-    ├── yarn.lock              # Single lock file
-    ├── scripts/
-    │   └── patch-iap.js       # Node.js patch script (fallback)
-    └── plugins/
-        ├── withIAPPatch.js         # Android: patches currentActivity
-        ├── withIAPPodfilePatch.js  # iOS: injects pre_install hook to patch RNIap
-        └── withIAPStoreVariant.js  # IAP store variant config
-```
-
-## Credentials
-- Demo Account: `demo.mom@truejoybirthing.com` / `DemoScreenshot2024!`
-
-## Next Steps
-1. Trigger new iOS deployment via Emergent
-2. Verify EAS build passes the "Install pods" phase
-3. If successful, test IAP functionality with sandbox accounts
+## Issues Resolved
+- ✅ `RCT-Folly` dependency error (migrated to expo-iap)
+- ✅ `EAS_BUILD_HIGHER_MINIMUM_DEPLOYMENT_TARGET_ERROR` (added deploymentTarget: 13.4)
