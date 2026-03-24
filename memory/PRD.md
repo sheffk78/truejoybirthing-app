@@ -25,28 +25,30 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 
 ## What's Been Implemented
 
-### December 2025 - iOS Build Fix (postinstall approach)
+### December 2025 - iOS Build Fix (Podfile pre_install hook approach)
 **Issue**: iOS build failing with `Unable to find a specification for RCT-Folly depended upon by RNIap`
 
 **Root Cause**: `react-native-iap@12.16.4` has a podspec that depends on `RCT-Folly`, but in React Native 0.81+, `RCT-Folly` has been absorbed into prebuilt React Native dependencies and no longer exists as a standalone CocoaPod.
 
-**Fix Applied (NEW - npm postinstall approach)**:
-1. Created `/app/frontend/scripts/patch-iap.js` - a Node.js script that patches the RNIap.podspec
-2. Added `"postinstall": "node ./scripts/patch-iap.js"` to package.json scripts
-3. This runs AFTER `npm/yarn install` but BEFORE `expo prebuild` and `pod install`
-4. The script removes the `RCT-Folly` dependency line from the podspec
+**Why previous approaches failed**:
+1. `postinstall` script: Runs after npm install locally, but EAS skips prebuild when `ios/` directory exists, so the patched node_modules aren't used
+2. `eas-build-post-install`: According to official Expo docs, this runs AFTER pod install on iOS, not before
 
-**Why this approach works**:
-- EAS Build lifecycle: `npm install` → `postinstall runs` → `expo prebuild` → `pod install`
-- The postinstall script patches node_modules immediately after install, before pod install runs
-- This is cleaner than config plugins which run during prebuild (after node_modules is already installed)
+**Fix Applied (Podfile pre_install hook)**:
+1. Created `/app/frontend/plugins/withIAPPodfilePatch.js` - a config plugin that injects a `pre_install` Ruby hook into the Podfile
+2. The hook runs DURING `pod install` on the EAS server, BEFORE CocoaPods resolves dependencies
+3. It patches `node_modules/react-native-iap/RNIap.podspec` to remove the `RCT-Folly` dependency
+4. Also kept postinstall and eas-build-post-install scripts as fallbacks
 
-**Cleanup**:
-- Removed `withIAPPodfilePatch.js` plugin (no longer needed)
-- Simplified `withIAPPatch.js` to only handle Android patching
-- iOS patching is now handled entirely by the postinstall script
+**How the fix works on EAS**:
+1. Emergent deployment runs `expo prebuild` → creates `ios/` directory with patched Podfile
+2. Project uploaded to EAS (including the patched Podfile)
+3. EAS runs `yarn install` (fresh node_modules with unpatched RNIap.podspec)
+4. EAS runs `pod install` → **pre_install hook patches RNIap.podspec** before dependency resolution
+5. CocoaPods resolves dependencies without the missing `RCT-Folly`
+6. Build succeeds!
 
-### March 23, 2025 - Previous Fixes
+### Previous Fixes
 - Removed `patch-package` approach (incompatible with EAS)
 - Created `withIAPPatch.js` to fix Android `currentActivity` compilation error
 - Updated version to 1.0.5, versionCode/buildNumber to 108
@@ -58,29 +60,22 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 ├── backend/
 │   └── server.py              # FastAPI backend
 └── frontend/
-    ├── package.json           # Has postinstall script for iOS patching
+    ├── package.json           # Has postinstall + EAS hooks as fallbacks
     ├── app.json               # Expo config with plugins
     ├── metro.config.js        # unstable_enablePackageExports: false
     ├── yarn.lock              # Single lock file
     ├── scripts/
-    │   └── patch-iap.js       # iOS: patches RNIap.podspec (removes RCT-Folly dep)
+    │   └── patch-iap.js       # Node.js patch script (fallback)
     └── plugins/
         ├── withIAPPatch.js         # Android: patches currentActivity
+        ├── withIAPPodfilePatch.js  # iOS: injects pre_install hook to patch RNIap
         └── withIAPStoreVariant.js  # IAP store variant config
 ```
-
-## How iOS Podspec Patching Works (postinstall approach)
-1. EAS runs `npm install` or `yarn install`
-2. The `postinstall` script in package.json is triggered
-3. `scripts/patch-iap.js` runs and patches `node_modules/react-native-iap/RNIap.podspec`
-4. The `RCT-Folly` dependency line is commented out
-5. EAS continues with `expo prebuild`
-6. EAS runs `pod install` - which now succeeds because the problematic dependency is removed
 
 ## Credentials
 - Demo Account: `demo.mom@truejoybirthing.com` / `DemoScreenshot2024!`
 
 ## Next Steps
-1. Trigger new iOS deployment
+1. Trigger new iOS deployment via Emergent
 2. Verify EAS build passes the "Install pods" phase
 3. If successful, test IAP functionality with sandbox accounts

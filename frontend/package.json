@@ -9,7 +9,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "postinstall": "node ./scripts/patch-iap.js"
+    "postinstall": "node ./scripts/patch-iap.js",
+    "eas-build-pre-install": "echo 'EAS pre-install hook running...'",
+    "eas-build-post-install": "node ./scripts/patch-iap.js && echo 'EAS post-install patch completed'"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.6",
