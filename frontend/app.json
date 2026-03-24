@@ -57,9 +57,7 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "./plugins/withIAPStoreVariant",
-      "./plugins/withIAPPatch",
-      "./plugins/withIAPPodfilePatch"
+      "expo-iap"
     ],
     "experiments": {
       "typedRoutes": true

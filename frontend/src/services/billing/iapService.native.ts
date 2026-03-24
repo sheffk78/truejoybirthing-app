@@ -1,9 +1,9 @@
 /**
  * In-App Purchase Service
- * Handles Apple App Store and Google Play subscriptions
+ * Handles Apple App Store and Google Play subscriptions using expo-iap
  * 
  * NOTE: This module is web-safe and Expo Go-safe. 
- * react-native-iap is only loaded on native builds (not Expo Go).
+ * expo-iap is only loaded on native builds (not Expo Go).
  * On web/Expo Go, all methods return appropriate fallback values.
  * 
  * Product IDs:
@@ -77,9 +77,8 @@ function getMockProducts(): IAPProduct[] {
 
 class IAPService {
   private isInitialized = false;
-  private RNIap: any = null;
-  private purchaseUpdateSubscription: any = null;
-  private purchaseErrorSubscription: any = null;
+  private ExpoIap: any = null;
+  private purchaseSubscription: any = null;
   private onPurchaseUpdate: ((purchase: any) => void) | null = null;
   private onPurchaseError: ((error: any) => void) | null = null;
 
@@ -103,16 +102,16 @@ class IAPService {
     }
 
     try {
-      // Dynamically require react-native-iap only on native builds
-      this.RNIap = require('react-native-iap');
+      // Dynamically require expo-iap only on native builds
+      this.ExpoIap = require('expo-iap');
       
       // Check if the module is properly linked
-      if (!this.RNIap || !this.RNIap.initConnection) {
-        console.log('[IAP] react-native-iap not properly linked');
+      if (!this.ExpoIap || !this.ExpoIap.initConnection) {
+        console.log('[IAP] expo-iap not properly linked');
         return false;
       }
       
-      const result = await this.RNIap.initConnection();
+      const result = await this.ExpoIap.initConnection();
       console.log('[IAP] Connection initialized:', result);
       this.isInitialized = true;
       this.setupListeners();
@@ -120,10 +119,10 @@ class IAPService {
     } catch (error: any) {
       // Handle the case where native module isn't available
       const errorMsg = error.message || '';
-      if (errorMsg.includes('NitroModules') || 
-          errorMsg.includes('initConnection') || 
+      if (errorMsg.includes('initConnection') || 
           errorMsg.includes('undefined') ||
-          errorMsg.includes('not supported')) {
+          errorMsg.includes('not supported') ||
+          errorMsg.includes('Native module')) {
         console.log('[IAP] Native IAP module not available - using backend subscription management');
       } else {
         console.error('[IAP] Failed to initialize:', error);
@@ -133,21 +132,32 @@ class IAPService {
   }
 
   /**
-   * Set up purchase listeners
+   * Set up purchase listeners using expo-iap event emitter
    */
   private setupListeners() {
-    if (!this.RNIap) return;
+    if (!this.ExpoIap) return;
 
-    // Listen for successful purchases
-    this.purchaseUpdateSubscription = this.RNIap.purchaseUpdatedListener(async (purchase: any) => {
+    // expo-iap uses a different event system
+    // Subscribe to purchase updates
+    this.purchaseSubscription = this.ExpoIap.purchaseUpdatedListener(async (purchase: any) => {
       console.log('[IAP] Purchase update:', purchase);
       
-      if (purchase.transactionReceipt) {
+      // expo-iap uses 'transactionReceipt' for iOS and 'purchaseToken' for Android
+      const receipt = purchase.transactionReceipt || purchase.purchaseToken;
+      
+      if (receipt) {
         // Validate with backend
         await this.validatePurchase(purchase);
         
-        // Acknowledge the purchase
-        await this.RNIap.finishTransaction({ purchase, isConsumable: false });
+        // Acknowledge the purchase - expo-iap uses finishTransaction
+        try {
+          await this.ExpoIap.finishTransaction({ 
+            purchase, 
+            isConsumable: false 
+          });
+        } catch (finishError) {
+          console.warn('[IAP] Failed to finish transaction:', finishError);
+        }
         
         // Notify callback
         if (this.onPurchaseUpdate) {
@@ -157,12 +167,14 @@ class IAPService {
     });
 
     // Listen for purchase errors
-    this.purchaseErrorSubscription = this.RNIap.purchaseErrorListener((error: any) => {
-      console.warn('[IAP] Purchase error:', error);
-      if (this.onPurchaseError) {
-        this.onPurchaseError(error);
-      }
-    });
+    if (this.ExpoIap.purchaseErrorListener) {
+      this.ExpoIap.purchaseErrorListener((error: any) => {
+        console.warn('[IAP] Purchase error:', error);
+        if (this.onPurchaseError) {
+          this.onPurchaseError(error);
+        }
+      });
+    }
   }
 
   /**
@@ -170,7 +182,7 @@ class IAPService {
    */
   async getProducts(): Promise<IAPProduct[]> {
     // Return mock products on web
-    if (Platform.OS === 'web' || !this.RNIap) {
+    if (Platform.OS === 'web' || !this.ExpoIap) {
       return getMockProducts();
     }
 
@@ -183,7 +195,8 @@ class IAPService {
     }
 
     try {
-      const subscriptions = await this.RNIap.getSubscriptions({ skus: PRODUCT_SKUS });
+      // expo-iap uses getSubscriptions with skus array
+      const subscriptions = await this.ExpoIap.getSubscriptions({ skus: PRODUCT_SKUS });
       return subscriptions.map((sub: any) => this.mapSubscriptionToProduct(sub));
     } catch (error) {
       console.error('[IAP] Failed to get products:', error);
@@ -222,7 +235,7 @@ class IAPService {
       return { success: false, error: 'Web purchases not supported. Use Stripe.' };
     }
 
-    if (!this.RNIap) {
+    if (!this.ExpoIap) {
       return { success: false, error: 'IAP not initialized' };
     }
 
@@ -233,13 +246,13 @@ class IAPService {
     try {
       if (Platform.OS === 'android') {
         // Android requires offer token for subscription purchases
-        await this.RNIap.requestSubscription({
+        await this.ExpoIap.requestSubscription({
           sku: productId,
           subscriptionOffers: offerToken ? [{ sku: productId, offerToken }] : undefined,
         });
       } else {
         // iOS
-        await this.RNIap.requestSubscription({ sku: productId });
+        await this.ExpoIap.requestSubscription({ sku: productId });
       }
       
       // Purchase flow started - result will come through listener
@@ -264,6 +277,9 @@ class IAPService {
     }
 
     try {
+      // expo-iap uses transactionReceipt for iOS, purchaseToken for Android
+      const receipt = purchase.transactionReceipt || purchase.purchaseToken;
+      
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.SUBSCRIPTION_VALIDATE}`, {
         method: 'POST',
         headers: {
@@ -271,10 +287,10 @@ class IAPService {
           'Authorization': `Bearer ${sessionToken}`,
         },
         body: JSON.stringify({
-          receipt: purchase.transactionReceipt,
+          receipt: receipt,
           subscription_provider: Platform.OS === 'ios' ? 'APPLE' : 'GOOGLE',
           product_id: purchase.productId,
-          transaction_id: purchase.transactionId,
+          transaction_id: purchase.transactionId || purchase.orderId,
         }),
       });
 
@@ -298,7 +314,7 @@ class IAPService {
       return { success: false, error: 'Restore not available on web' };
     }
 
-    if (!this.RNIap) {
+    if (!this.ExpoIap) {
       return { success: false, error: 'IAP not initialized' };
     }
 
@@ -307,7 +323,7 @@ class IAPService {
     }
 
     try {
-      const purchases = await this.RNIap.getAvailablePurchases();
+      const purchases = await this.ExpoIap.getAvailablePurchases();
       
       if (purchases.length === 0) {
         return { success: false, error: 'No previous purchases found' };
@@ -323,7 +339,7 @@ class IAPService {
         await this.validatePurchase(subscription);
         return { 
           success: true, 
-          transactionId: subscription.transactionId,
+          transactionId: subscription.transactionId || subscription.orderId,
           productId: subscription.productId,
         };
       }
@@ -363,25 +379,21 @@ class IAPService {
    * Call this when app is closing or user logs out
    */
   async cleanup() {
-    if (this.purchaseUpdateSubscription) {
-      this.purchaseUpdateSubscription.remove();
-      this.purchaseUpdateSubscription = null;
-    }
-    if (this.purchaseErrorSubscription) {
-      this.purchaseErrorSubscription.remove();
-      this.purchaseErrorSubscription = null;
+    if (this.purchaseSubscription) {
+      this.purchaseSubscription.remove();
+      this.purchaseSubscription = null;
     }
     
-    if (this.isInitialized && this.RNIap && Platform.OS !== 'web') {
+    if (this.isInitialized && this.ExpoIap && Platform.OS !== 'web') {
       try {
-        await this.RNIap.endConnection();
+        await this.ExpoIap.endConnection();
       } catch (error) {
         console.warn('[IAP] Failed to end connection:', error);
       }
     }
     
     this.isInitialized = false;
-    this.RNIap = null;
+    this.ExpoIap = null;
   }
 }
 
