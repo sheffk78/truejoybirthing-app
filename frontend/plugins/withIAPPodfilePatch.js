@@ -1,12 +1,6 @@
 /**
  * Expo config plugin to add a pre_install hook to the Podfile
  * that patches react-native-iap's podspec for RN 0.81+ compatibility
- * 
- * This plugin adds Ruby code to the Podfile that runs during `pod install`
- * and removes the RCT-Folly dependency from RNIap.podspec.
- * 
- * The patch happens DURING pod install on the EAS server, ensuring it works
- * even with fresh node_modules.
  */
 
 const { withDangerousMod } = require('@expo/config-plugins');
@@ -28,44 +22,39 @@ function withIAPPodfilePatch(config) {
       let podfileContent = fs.readFileSync(podfilePath, 'utf8');
 
       // Check if we already added the patch
-      if (podfileContent.includes('# RNIap RCT-Folly patch')) {
+      if (podfileContent.includes('RNIAP_PATCH_MARKER')) {
         console.log('[withIAPPodfilePatch] Podfile already patched');
         return config;
       }
 
-      // The pre_install hook that patches RNIap.podspec
-      // This runs BEFORE CocoaPods resolves dependencies
+      // Simple pre_install hook with minimal Ruby code - using string replacement
       const preInstallHook = `
-# RNIap RCT-Folly patch for React Native 0.81+ compatibility
-# In RN 0.81+, Folly is bundled in React-Core and RCT-Folly no longer exists as a separate pod
+# RNIAP_PATCH_MARKER - RCT-Folly fix for RN 0.81+
 pre_install do |installer|
-  # Find and patch RNIap.podspec
-  rniap_podspec_path = File.join(__dir__, '..', 'node_modules', 'react-native-iap', 'RNIap.podspec')
-  
-  if File.exist?(rniap_podspec_path)
-    podspec_content = File.read(rniap_podspec_path)
-    
-    if podspec_content.include?('s.dependency "RCT-Folly"')
-      # Comment out the RCT-Folly dependency
-      patched_content = podspec_content.gsub(
-        /^(\\s*)s\\.dependency\\s+"RCT-Folly"\\s*$/,
-        '\\1# s.dependency "RCT-Folly" # REMOVED: Not available in RN 0.81+'
-      )
-      
-      File.write(rniap_podspec_path, patched_content)
-      Pod::UI.puts "[RNIap Patch] ✅ Removed RCT-Folly dependency from RNIap.podspec"
+  puts "[RNIAP] Starting podspec patch..."
+  podspec_file = File.join(__dir__, "..", "node_modules", "react-native-iap", "RNIap.podspec")
+  puts "[RNIAP] Checking: " + podspec_file
+  if File.exist?(podspec_file)
+    content = File.read(podspec_file)
+    puts "[RNIAP] File exists, size: " + content.length.to_s
+    if content.include?("RCT-Folly")
+      puts "[RNIAP] Found RCT-Folly dependency, patching..."
+      # Use simple string replacement - handles both quote styles
+      new_content = content.gsub('s.dependency "RCT-Folly"', '# s.dependency "RCT-Folly" # REMOVED')
+      new_content = new_content.gsub("s.dependency 'RCT-Folly'", "# s.dependency 'RCT-Folly' # REMOVED")
+      File.write(podspec_file, new_content)
+      puts "[RNIAP] Patch applied successfully!"
     else
-      Pod::UI.puts "[RNIap Patch] ✅ RNIap.podspec already patched or no RCT-Folly dependency"
+      puts "[RNIAP] No RCT-Folly dependency found (already patched?)"
     end
   else
-    Pod::UI.puts "[RNIap Patch] ⚠️  RNIap.podspec not found at #{rniap_podspec_path}"
+    puts "[RNIAP] WARNING: podspec not found!"
   end
 end
 
 `;
 
-      // Find where to insert the pre_install hook
-      // It should go before any target blocks
+      // Find where to insert - before the first target block
       const targetMatch = podfileContent.match(/^target\s+['"][^'"]+['"]\s+do/m);
       
       if (targetMatch) {
@@ -78,21 +67,10 @@ end
         fs.writeFileSync(podfilePath, podfileContent, 'utf8');
         console.log('[withIAPPodfilePatch] ✅ Added pre_install hook to Podfile');
       } else {
-        // If no target block found, append at the beginning after require statements
-        const requireMatch = podfileContent.match(/^(require[^\n]+\n)+/m);
-        if (requireMatch) {
-          const insertPosition = requireMatch.index + requireMatch[0].length;
-          podfileContent = 
-            podfileContent.slice(0, insertPosition) + 
-            preInstallHook + 
-            podfileContent.slice(insertPosition);
-        } else {
-          // Just prepend it
-          podfileContent = preInstallHook + podfileContent;
-        }
-        
+        // Fallback: add after require statements
+        podfileContent = preInstallHook + podfileContent;
         fs.writeFileSync(podfilePath, podfileContent, 'utf8');
-        console.log('[withIAPPodfilePatch] ✅ Added pre_install hook to Podfile (fallback position)');
+        console.log('[withIAPPodfilePatch] ✅ Added pre_install hook to Podfile (at beginning)');
       }
 
       return config;

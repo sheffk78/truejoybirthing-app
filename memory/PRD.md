@@ -25,28 +25,25 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 
 ## What's Been Implemented
 
-### December 2025 - iOS Build Fix (Podfile pre_install hook approach)
+### December 2025 - iOS Build Fix (Podfile pre_install hook approach) - ITERATION 2
 **Issue**: iOS build failing with `Unable to find a specification for RCT-Folly depended upon by RNIap`
 
 **Root Cause**: `react-native-iap@12.16.4` has a podspec that depends on `RCT-Folly`, but in React Native 0.81+, `RCT-Folly` has been absorbed into prebuilt React Native dependencies and no longer exists as a standalone CocoaPod.
 
 **Why previous approaches failed**:
-1. `postinstall` script: Runs after npm install locally, but EAS skips prebuild when `ios/` directory exists, so the patched node_modules aren't used
-2. `eas-build-post-install`: According to official Expo docs, this runs AFTER pod install on iOS, not before
+1. `postinstall` script: Emergent deployment system replaces it with their own `apply-expo-patch.js`
+2. `eas-build-post-install`: According to official Expo docs, for iOS this runs AFTER `pod install`, not before!
+3. Config plugins: They run during prebuild but EAS skips prebuild when `ios/` dir exists
 
-**Fix Applied (Podfile pre_install hook)**:
-1. Created `/app/frontend/plugins/withIAPPodfilePatch.js` - a config plugin that injects a `pre_install` Ruby hook into the Podfile
-2. The hook runs DURING `pod install` on the EAS server, BEFORE CocoaPods resolves dependencies
-3. It patches `node_modules/react-native-iap/RNIap.podspec` to remove the `RCT-Folly` dependency
-4. Also kept postinstall and eas-build-post-install scripts as fallbacks
+**Current Fix (Podfile pre_install hook with simplified Ruby)**:
+1. Created `/app/frontend/plugins/withIAPPodfilePatch.js` - injects Ruby code into Podfile
+2. The `pre_install` hook runs BEFORE CocoaPods analyzes dependencies
+3. It patches `node_modules/react-native-iap/RNIap.podspec` using simple string replacement (no regex)
+4. Uses `puts` for logging to see output in EAS build logs
 
-**How the fix works on EAS**:
-1. Emergent deployment runs `expo prebuild` → creates `ios/` directory with patched Podfile
-2. Project uploaded to EAS (including the patched Podfile)
-3. EAS runs `yarn install` (fresh node_modules with unpatched RNIap.podspec)
-4. EAS runs `pod install` → **pre_install hook patches RNIap.podspec** before dependency resolution
-5. CocoaPods resolves dependencies without the missing `RCT-Folly`
-6. Build succeeds!
+**Key insight from EAS docs**:
+- `eas-build-post-install` on iOS runs AFTER `npm install` + `prebuild` + `pod install` (too late!)
+- The ONLY way to patch before `pod install` is via Podfile's `pre_install` hook
 
 ### Previous Fixes
 - Removed `patch-package` approach (incompatible with EAS)
