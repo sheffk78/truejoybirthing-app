@@ -81,3 +81,7 @@ android-sdk/
 
 # Note: .env files are NOT ignored - they are needed for deployment
 # Sensitive credentials should be managed via CI/CD secrets, not .env files in production
+-e 
+# Environment files
+*.env
+*.env.*
