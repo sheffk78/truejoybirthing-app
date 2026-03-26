@@ -18,8 +18,12 @@ from datetime import datetime, timezone
 from io import BytesIO
 import uuid
 import asyncio
+import os
 
 from .dependencies import db, get_now, get_current_user, check_role, User
+
+# TODO: Replace with your own frontend URL when migrating off Emergent
+FRONTEND_BASE_URL = os.environ.get('FRONTEND_BASE_URL', 'https://bundle-resolve.preview.emergentagent.com')
 
 # Import contract templates and PDF generation
 # These will be imported from the main module for now
@@ -579,7 +583,7 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
-                signing_url = f"https://bundle-resolve.preview.emergentagent.com/contract/{contract_id}"
+                signing_url = f"{FRONTEND_BASE_URL}/contract/{contract_id}"
                 params = {
                     "from": _sender_email,
                     "to": mom["email"],
@@ -1101,7 +1105,7 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
-                signing_url = f"https://bundle-resolve.preview.emergentagent.com/sign-midwife-contract?contractId={contract_id}"
+                signing_url = f"{FRONTEND_BASE_URL}/sign-midwife-contract?contractId={contract_id}"
                 params = {
                     "from": _sender_email,
                     "to": mom["email"],
