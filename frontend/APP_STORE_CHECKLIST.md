@@ -238,7 +238,7 @@ eas submit --platform android --latest
 ## 9. PRODUCTION ENVIRONMENT
 
 ### 9.1 Backend URL
-Current preview URL: `https://bundle-resolve.preview.emergentagent.com`
+Current backend URL: `https://truejoybirthing-app-production.up.railway.app`
 
 **For production, you'll need:**
 - [ ] Production backend hosted (AWS, Google Cloud, etc.)

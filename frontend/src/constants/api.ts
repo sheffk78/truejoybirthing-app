@@ -1,8 +1,7 @@
 // API Configuration
 // Single source of truth for backend URL.
 // In web environment, use relative path since backend and frontend are on same domain.
-// The /api prefix is handled by the Kubernetes ingress.
-// TODO: Replace with your own backend URL when migrating off Emergent
+// The /api prefix is handled by the reverse proxy.
 import { Platform } from 'react-native';
 
 const getBackendUrl = () => {
@@ -11,16 +10,14 @@ const getBackendUrl = () => {
     return '';
   }
   // On native, use the environment variable (set in eas.json for builds)
-  // TODO: Replace default with your own backend URL when migrating off Emergent
-  return process.env.EXPO_PUBLIC_BACKEND_URL || 'https://bundle-resolve.preview.emergentagent.com';
+  return process.env.EXPO_PUBLIC_BACKEND_URL || 'https://truejoybirthing-app-production.up.railway.app';
 };
 
 export const API_BASE = `${getBackendUrl()}/api`;
 
 // Full base URL for direct resource access (like PDF downloads)
 // On web, returns empty string which works for same-origin requests, on native uses env var
-// TODO: Replace default with your own backend URL when migrating off Emergent
-export const API_BASE_URL = Platform.OS === 'web' ? '' : (process.env.EXPO_PUBLIC_BACKEND_URL || 'https://bundle-resolve.preview.emergentagent.com');
+export const API_BASE_URL = Platform.OS === 'web' ? '' : (process.env.EXPO_PUBLIC_BACKEND_URL || 'https://truejoybirthing-app-production.up.railway.app');
 
 export const API_ENDPOINTS = {
   // Auth
