@@ -26,7 +26,7 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // Mother holding newborn - intimate moment
-const LOGIN_IMAGE = 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/vp8xh1cu_IMG_0160.jpg';
+const LOGIN_IMAGE = require('../../assets/images/skin-to-skin.jpg');
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -78,7 +78,7 @@ export default function LoginScreen() {
         {/* Left side - Image */}
         <View style={styles.imageSection}>
           <ImageBackground
-            source={{ uri: LOGIN_IMAGE }}
+            source={LOGIN_IMAGE}
             style={styles.imageBg}
             resizeMode="cover"
           >
@@ -99,7 +99,7 @@ export default function LoginScreen() {
                 />
               ) : (
                 <Image
-                  source={{ uri: BRAND.logoIcon }}
+                  source={BRAND.logoIcon}
                   style={styles.splitLogo}
                   resizeMode="contain"
                 />
@@ -199,7 +199,7 @@ export default function LoginScreen() {
     <View style={styles.container}>
       {/* Background Image */}
       <ImageBackground
-        source={{ uri: LOGIN_IMAGE }}
+        source={LOGIN_IMAGE}
         style={styles.mobileBg}
         resizeMode="cover"
       >

@@ -18,9 +18,9 @@ import { useColors, createThemedStyles, ThemeColors } from '../../src/hooks/useT
 
 // Birth photos
 const PHOTOS = {
-  hero: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/nubpbqis_IMG_9108.jpg',
-  team: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/9z5rmv0g_IMG_8613.jpg',
-  family: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/fg673ifm_IMG_8684.jpg',
+  hero: require('../../assets/images/hero-newborn.jpg'),
+  team: require('../../assets/images/water-birth-team.jpg'),
+  family: require('../../assets/images/family-moment.jpg'),
 };
 
 interface QuickStartItem {
@@ -97,7 +97,7 @@ export default function GettingStartedScreen() {
     <View style={styles.container}>
       {/* Hero Section with Photo */}
       <ImageBackground
-        source={{ uri: PHOTOS.hero }}
+        source={PHOTOS.hero}
         style={styles.heroSection}
         resizeMode="cover"
       >
