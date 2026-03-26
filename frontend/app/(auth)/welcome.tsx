@@ -18,7 +18,7 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 const { width, height } = Dimensions.get('window');
 
 // Beautiful birth photo - newborn sleeping on mother
-const HERO_IMAGE = 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/nubpbqis_IMG_9108.jpg';
+const HERO_IMAGE = require('../../assets/images/hero-newborn.jpg');
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function WelcomeScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Hero Image Background */}
       <ImageBackground
-        source={{ uri: HERO_IMAGE }}
+        source={HERO_IMAGE}
         style={styles.heroImage}
         resizeMode="cover"
       >
@@ -57,7 +57,7 @@ export default function WelcomeScreen() {
             />
           ) : (
             <Image
-              source={{ uri: BRAND.logoIcon }}
+              source={BRAND.logoIcon}
               style={styles.logo}
               resizeMode="contain"
             />

@@ -122,10 +122,10 @@ export const SHADOWS = {
 
 // Logo URLs
 export const BRAND = {
-  logoSvg: 'https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/ccxz8is7_Logo%20TJB.svg',
-  logoJpg: 'https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/oqwstugf_true-joy-birthing-full-color-200%20%281%29.jpg',
+  logoSvg: require('../../assets/images/logo-full.svg'),
+  logoJpg: require('../../assets/images/logo-full-color.jpg'),
   // Transparent icon (no white background) - use on photo backgrounds
-  logoIcon: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/n90h7kfh_Logo%20TJB%20%281%29.svg',
+  logoIcon: require('../../assets/images/logo-icon.svg'),
   name: 'True Joy Birthing',
   tagline: 'Your birth plan, your team, your support in one place.',
 };

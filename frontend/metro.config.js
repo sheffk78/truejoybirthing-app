@@ -15,6 +15,11 @@ if (!config.resolver.assetExts.includes('ttf')) {
   config.resolver.assetExts.push('ttf');
 }
 
+// Ensure SVG files are processed as assets (for bundled logo images)
+if (!config.resolver.assetExts.includes('svg')) {
+  config.resolver.assetExts.push('svg');
+}
+
 // Use a stable on-disk store (shared across web/android)
 const root = process.env.METRO_CACHE_ROOT || path.join(__dirname, '.metro-cache');
 config.cacheStores = [
