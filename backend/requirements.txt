@@ -6,7 +6,6 @@ exponent_server_sdk==2.2.0
 fastapi==0.110.1
 google-auth>=2.29.0
 httpx==0.28.1
-jq>=1.6.0
 motor==3.3.1
 numpy>=1.26.0
 pandas>=2.2.0
