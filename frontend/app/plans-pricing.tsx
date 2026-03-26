@@ -72,7 +72,7 @@ export default function PlansPricingScreen() {
       await startTrial(selectedPlan);
       Alert.alert(
         'Trial Started!',
-        `Your 30-day free trial has begun. You'll have full access to all Pro features.`,
+        `Your 14-day free trial has begun. You'll have full access to all Pro features.`,
         [{ text: 'Get Started', onPress: () => router.back() }]
       );
     } catch (error: any) {
@@ -261,7 +261,7 @@ export default function PlansPricingScreen() {
                       <>
                         <Ionicons name="gift" size={20} color="#fff" />
                         <Text style={styles.trialButtonText}>
-                          {iapAvailable ? 'Start 30-Day Free Trial' : 'Start 30-Day Free Trial'}
+                          {iapAvailable ? 'Start 14-Day Free Trial' : 'Start 14-Day Free Trial'}
                         </Text>
                       </>
                     )}
@@ -296,7 +296,7 @@ export default function PlansPricingScreen() {
                     <>
                       <Ionicons name="card" size={20} color="#fff" />
                       <Text style={styles.subscribeButtonText}>
-                        Subscribe Now - ${selectedPlan === 'annual' ? '276/yr' : '29/mo'}
+                        Subscribe Now - ${selectedPlan === 'annual' ? '274.99/yr' : '29.99/mo'}
                       </Text>
                     </>
                   )}

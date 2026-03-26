@@ -214,7 +214,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         return false;
       }
       
-      const response = await fetch(`${API_BASE}/api/subscription/validate-receipt`, {
+      const response = await fetch(`${API_BASE}${API_ENDPOINTS.SUBSCRIPTION_VALIDATE}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

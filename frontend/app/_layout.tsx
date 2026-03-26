@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { Platform, StatusBar, View, ActivityIndicator } from 'react-native';
+import { Platform, StatusBar, View, ActivityIndicator, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {
@@ -170,11 +170,88 @@ function ThemedLayout() {
         <Stack.Screen name="sign-midwife-contract" />
         <Stack.Screen name="plans-pricing" />
         <Stack.Screen name="pro-feedback" />
+        <Stack.Screen name="sign-contract" />
+        <Stack.Screen name="view-birth-plan" />
+        <Stack.Screen name="tutorial" />
         <Stack.Screen name="index" />
       </Stack>
     </View>
   );
 }
+
+// ErrorBoundary class component to catch unhandled render errors
+class AppErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('App ErrorBoundary caught:', error, errorInfo);
+  }
+
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={errorStyles.container}>
+          <Text style={errorStyles.title}>Something went wrong</Text>
+          <Text style={errorStyles.message}>
+            The app encountered an unexpected error. Please try again.
+          </Text>
+          <TouchableOpacity style={errorStyles.button} onPress={this.handleRetry}>
+            <Text style={errorStyles.buttonText}>Tap to Retry</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+const errorStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FAF7FC',
+    padding: 24,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#2D2438',
+    marginBottom: 12,
+  },
+  message: {
+    fontSize: 16,
+    color: '#6B5C7B',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 24,
+  },
+  button: {
+    backgroundColor: '#8B76A0',
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 24,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
 
 export default function RootLayout() {
   // Load all fonts including Ionicons and brand fonts
@@ -199,9 +276,11 @@ export default function RootLayout() {
   
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
-        <ThemedLayout />
-      </ThemeProvider>
+      <AppErrorBoundary>
+        <ThemeProvider>
+          <ThemedLayout />
+        </ThemeProvider>
+      </AppErrorBoundary>
     </SafeAreaProvider>
   );
 }

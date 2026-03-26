@@ -743,8 +743,14 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
             )}
 
             <Text style={styles.termsText}>
-              By subscribing, you agree to our Terms of Service and Privacy Policy. 
-              Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period.
+              Payment will be charged to your Apple ID account at the confirmation of purchase. 
+              Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period. 
+              Your account will be charged for renewal within 24 hours prior to the end of the current period. 
+              You can manage and cancel your subscriptions by going to Settings {'>'} [Your Name] {'>'} Subscriptions on your device. 
+              By subscribing, you agree to our{' '}
+              <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://truejoybirthing.com/terms/')}>Terms of Service</Text>
+              {' '}and{' '}
+              <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://truejoybirthing.com/privacy/')}>Privacy Policy</Text>.
             </Text>
           </View>
         )}

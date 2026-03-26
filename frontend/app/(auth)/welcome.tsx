@@ -51,13 +51,13 @@ export default function WelcomeScreen() {
         <View style={styles.logoContainer}>
           {Platform.OS === 'web' ? (
             <img 
-              src={BRAND.logoIcon} 
+              src={BRAND.logoJpg} 
               alt="True Joy Birthing"
               style={{ width: 120, height: 120, objectFit: 'contain' }}
             />
           ) : (
             <Image
-              source={BRAND.logoIcon}
+              source={BRAND.logoJpg}
               style={styles.logo}
               resizeMode="contain"
             />

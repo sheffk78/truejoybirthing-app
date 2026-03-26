@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({}));
         throw new Error(error.detail || 'Login failed');
       }
       
@@ -102,7 +102,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({}));
         throw new Error(error.detail || 'Registration failed');
       }
       
@@ -141,7 +141,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({}));
         throw new Error(error.detail || 'Google login failed');
       }
       

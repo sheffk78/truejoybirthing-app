@@ -62,8 +62,8 @@ export interface SubscriptionConfiguration {
  * - Google: Snake case with underscores (com_example_product)
  */
 export const SUBSCRIPTION_CONFIG: SubscriptionConfiguration = {
-  // 30-day free trial for all Pro users
-  trialDays: 30,
+  // 14-day free trial for all Pro users
+  trialDays: 14,
   
   // Product IDs for each platform
   // These MUST match App Store Connect / Play Console configuration

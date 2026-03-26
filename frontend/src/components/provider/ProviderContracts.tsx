@@ -26,6 +26,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ContractsConfig, ContractSection } from './config/contractsConfig';
+import { API_BASE_URL } from '../../constants/api';
 
 interface Contract {
   contract_id: string;
@@ -59,7 +60,7 @@ interface ProviderContractsProps {
 export default function ProviderContracts({ config }: ProviderContractsProps) {
   const colors = useColors();
   const styles = getStyles(colors);
-  const { user, backendUrl } = useAuthStore();
+  const { user } = useAuthStore();
   const router = useRouter();
   const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
   
@@ -330,7 +331,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
 
   const handleViewPDF = async (contract: Contract) => {
     try {
-      const pdfUrl = config.endpoints.pdf(contract.contract_id, backendUrl || '');
+      const pdfUrl = config.endpoints.pdf(contract.contract_id, API_BASE_URL);
       if (Platform.OS === 'web') {
         // Open in new window/tab for web
         const newWindow = window.open(pdfUrl, '_blank');

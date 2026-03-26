@@ -93,13 +93,13 @@ export default function LoginScreen() {
               <SafeAreaView style={styles.imageContent}>
                 {Platform.OS === 'web' ? (
                 <img 
-                  src={BRAND.logoIcon} 
+                  src={BRAND.logoJpg} 
                   alt="True Joy Birthing"
                   style={{ width: 160, height: 55, objectFit: 'contain' }}
                 />
               ) : (
                 <Image
-                  source={BRAND.logoIcon}
+                  source={BRAND.logoJpg}
                   style={styles.splitLogo}
                   resizeMode="contain"
                 />
