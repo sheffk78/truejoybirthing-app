@@ -6,6 +6,7 @@ email-validator>=2.2.0
 emergentintegrations==0.1.0
 exponent_server_sdk==2.2.0
 fastapi==0.110.1
+google-auth>=2.29.0
 flake8>=7.0.0
 httpx==0.28.1
 isort>=5.13.2
