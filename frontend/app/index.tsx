@@ -5,6 +5,19 @@ import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
+// Helper to navigate to the correct dashboard based on user role
+function navigateToDashboard(router: any, role: string) {
+  if (role === 'MOM') {
+    router.replace('/(mom)/home');
+  } else if (role === 'DOULA') {
+    router.replace('/(doula)/dashboard');
+  } else if (role === 'MIDWIFE') {
+    router.replace('/(midwife)/dashboard');
+  } else if (role === 'ADMIN') {
+    router.replace('/(admin)/content');
+  }
+}
+
 export default function Index() {
   const router = useRouter();
   const { isLoading, isAuthenticated, user } = useAuthStore();
@@ -17,25 +30,8 @@ export default function Index() {
     if (!isAuthenticated) {
       router.replace('/(auth)/welcome');
     } else if (user) {
-      if (!user.onboarding_completed) {
-        if (user.role === 'MOM') {
-          router.replace('/(auth)/mom-onboarding');
-        } else if (user.role === 'DOULA') {
-          router.replace('/(auth)/doula-onboarding');
-        } else if (user.role === 'MIDWIFE') {
-          router.replace('/(auth)/midwife-onboarding');
-        }
-      } else {
-        if (user.role === 'MOM') {
-          router.replace('/(mom)/home');
-        } else if (user.role === 'DOULA') {
-          router.replace('/(doula)/dashboard');
-        } else if (user.role === 'MIDWIFE') {
-          router.replace('/(midwife)/dashboard');
-        } else if (user.role === 'ADMIN') {
-          router.replace('/(admin)/content');
-        }
-      }
+      // Always navigate to dashboard - onboarding is auto-completed in _layout.tsx
+      navigateToDashboard(router, user.role);
     }
   }, [isLoading, isAuthenticated, user]);
   

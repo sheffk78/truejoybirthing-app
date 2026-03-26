@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { Platform, StatusBar, View, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -14,14 +14,17 @@ import {
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { ThemeProvider, useTheme } from '../src/contexts/ThemeContext';
+import { apiRequest } from '../src/utils/api';
+import { API_ENDPOINTS } from '../src/constants/api';
 
 // Inner layout component that uses theme
 function ThemedLayout() {
   const { theme, isDark } = useTheme();
-  const { user, isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { user, isAuthenticated, isLoading, checkAuth, updateUser } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
+  const isCompletingOnboarding = useRef(false);
   
   // Initialize the app
   useEffect(() => {
@@ -50,17 +53,63 @@ function ThemedLayout() {
       // Not authenticated, redirect to welcome
       router.replace('/(auth)/welcome');
     } else if (isAuthenticated && user) {
-      // Check if onboarding is needed
+      // Check if onboarding is needed - auto-complete it and go to dashboard
       if (!user.onboarding_completed) {
-        // First show intro walkthrough, then role-specific profile setup
-        const isOnIntro = currentScreen === 'onboarding-intro';
-        const isOnProfileSetup = ['mom-onboarding', 'doula-onboarding', 'midwife-onboarding'].includes(currentScreen);
-        
-        if (!isOnIntro && !isOnProfileSetup) {
-          // Start with the intro walkthrough
-          router.replace('/(auth)/onboarding-intro');
+        if (!isCompletingOnboarding.current) {
+          isCompletingOnboarding.current = true;
+          // Auto-complete onboarding with minimal data so user can get to the app
+          // They can fill in detailed profile info later from their profile screen
+          (async () => {
+            try {
+              let endpoint = API_ENDPOINTS.MOM_ONBOARDING;
+              let body: any = {};
+              
+              if (user.role === 'MOM') {
+                endpoint = API_ENDPOINTS.MOM_ONBOARDING;
+                body = {
+                  due_date: '',
+                  planned_birth_setting: 'Not sure',
+                  zip_code: '',
+                  location_city: '',
+                  location_state: '',
+                };
+              } else if (user.role === 'DOULA') {
+                endpoint = API_ENDPOINTS.DOULA_ONBOARDING;
+                body = {
+                  practice_name: user.full_name || 'My Practice',
+                  zip_code: '',
+                  location_city: '',
+                  location_state: '',
+                  services_offered: ['Birth Doula'],
+                  years_in_practice: null,
+                  accepting_new_clients: true,
+                };
+              } else if (user.role === 'MIDWIFE') {
+                endpoint = API_ENDPOINTS.MIDWIFE_ONBOARDING;
+                body = {
+                  practice_name: user.full_name || 'My Practice',
+                  credentials: 'CPM',
+                  zip_code: '',
+                  location_city: '',
+                  location_state: '',
+                  years_in_practice: null,
+                  birth_settings_served: [],
+                  accepting_new_clients: true,
+                };
+              }
+              
+              await apiRequest(endpoint, { method: 'POST', body });
+            } catch (error) {
+              // Even if the API call fails, mark onboarding complete locally
+              // so the user isn't stuck. They can update their profile later.
+              console.log('Auto-complete onboarding error (non-blocking):', error);
+            }
+            
+            updateUser({ onboarding_completed: true });
+            isCompletingOnboarding.current = false;
+          })();
         }
-        // If already on intro or profile setup, let them continue
+        return; // Wait for onboarding to complete before routing
       } else if (inAuthGroup) {
         // Already authenticated and onboarded, redirect to appropriate dashboard
         if (user.role === 'MOM') {
