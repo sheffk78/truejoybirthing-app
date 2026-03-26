@@ -77,7 +77,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user_id: data.user_id,
           email: data.email,
           full_name: data.full_name,
-          role: data.role,
+          role: (data.role || '').toUpperCase() as User['role'],
           picture: data.picture,
           onboarding_completed: data.onboarding_completed,
         },
@@ -116,7 +116,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user_id: data.user_id,
           email: data.email,
           full_name: data.full_name,
-          role: data.role,
+          role: (data.role || '').toUpperCase() as User['role'],
           picture: null,
           onboarding_completed: false,
         },
@@ -154,7 +154,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user_id: data.user_id,
           email: data.email,
           full_name: data.full_name,
-          role: data.role,
+          role: (data.role || '').toUpperCase() as User['role'],
           picture: data.picture,
           onboarding_completed: data.onboarding_completed,
         },
@@ -223,7 +223,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           user_id: data.user_id,
           email: data.email,
           full_name: data.full_name,
-          role: data.role,
+          role: (data.role || '').toUpperCase() as User['role'],
           picture: data.picture,
           onboarding_completed: data.onboarding_completed,
           profile: data.profile,
@@ -260,7 +260,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       const currentUser = get().user;
       if (currentUser) {
-        set({ user: { ...currentUser, role: role as User['role'] } });
+        set({ user: { ...currentUser, role: role.toUpperCase() as User['role'] } });
       }
     } catch (error) {
       throw error;
