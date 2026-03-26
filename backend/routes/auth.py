@@ -9,13 +9,19 @@ from fastapi import APIRouter, HTTPException, Depends, Request, Response
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime, timezone, timedelta
+import os
 import uuid
-import httpx
+
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token as google_id_token
 
 from .dependencies import (
     db, get_now, get_current_user, verify_password, get_password_hash,
     generate_id, ACCESS_TOKEN_EXPIRE_DAYS, User
 )
+
+# TODO: Set GOOGLE_CLIENT_ID env var with your Google OAuth client ID
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -142,31 +148,34 @@ async def login(login_data: UserLogin, response: Response):
 
 @router.post("/google-session")
 async def process_google_session(request: Request, response: Response):
-    """Process Google OAuth session_id and create user session"""
+    """Process Google OAuth token and create user session.
+    
+    Accepts a Google ID token (via 'session_id' or 'id_token' field) and verifies
+    it directly with Google, then creates or updates the user in the database.
+    """
     body = await request.json()
-    session_id = body.get("session_id")
+    # Accept token as 'session_id' (legacy) or 'id_token'
+    token = body.get("session_id") or body.get("id_token")
     
-    if not session_id:
-        raise HTTPException(status_code=400, detail="session_id required")
+    if not token:
+        raise HTTPException(status_code=400, detail="session_id or id_token required")
     
-    # Call Emergent Auth to get user data
-    # REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-    async with httpx.AsyncClient() as client_http:
-        try:
-            auth_response = await client_http.get(
-                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
-                headers={"X-Session-ID": session_id}
-            )
-            if auth_response.status_code != 200:
-                raise HTTPException(status_code=401, detail="Invalid session_id")
-            
-            auth_data = auth_response.json()
-        except Exception as e:
-            raise HTTPException(status_code=401, detail=f"Auth error: {str(e)}")
+    # Verify the Google ID token directly with Google
+    try:
+        idinfo = google_id_token.verify_oauth2_token(
+            token,
+            google_requests.Request(),
+            GOOGLE_CLIENT_ID or None  # Pass None if not set to skip audience check
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid Google token: {str(e)}")
     
-    email = auth_data.get("email")
-    name = auth_data.get("name")
-    picture = auth_data.get("picture")
+    email = idinfo.get("email")
+    if not email:
+        raise HTTPException(status_code=401, detail="Google token missing email claim")
+    
+    name = idinfo.get("name", "")
+    picture = idinfo.get("picture", "")
     
     now = get_now()
     
