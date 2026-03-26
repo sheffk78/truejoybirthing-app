@@ -7,7 +7,7 @@
  * On web/Expo Go, all methods return appropriate fallback values.
  * 
  * Product IDs:
- * - Apple: truejoy.pro.monthly ($29/month), truejoy.pro.annual ($276/year)
+ * - Apple: truejoy.pro.monthly ($29.99/month), truejoy.pro.annual ($274.99/year)
  * - Google: truejoy_pro with base plans 'monthly' and 'annual'
  */
 
@@ -56,8 +56,8 @@ function getMockProducts(): IAPProduct[] {
       productId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_MONTHLY,
       title: 'True Joy Pro – Monthly',
       description: 'Full access to all Pro features',
-      price: '29.00',
-      localizedPrice: '$29.00',
+      price: '29.99',
+      localizedPrice: '$29.99',
       currency: 'USD',
       isMonthly: true,
       subscriptionPeriod: 'P1M',
@@ -65,9 +65,9 @@ function getMockProducts(): IAPProduct[] {
     {
       productId: SUBSCRIPTION_PRODUCTS.APPLE.PRO_ANNUAL,
       title: 'True Joy Pro – Annual',
-      description: 'Full access to all Pro features. Save $72!',
-      price: '276.00',
-      localizedPrice: '$276.00',
+      description: 'Full access to all Pro features. Save $84.89!',
+      price: '274.99',
+      localizedPrice: '$274.99',
       currency: 'USD',
       isMonthly: false,
       subscriptionPeriod: 'P1Y',
@@ -216,8 +216,8 @@ class IAPService {
       productId: sub.productId,
       title: sub.title || (isMonthly ? 'Pro Monthly' : 'Pro Annual'),
       description: sub.description || 'Full access to True Joy Pro features',
-      price: sub.price || (isMonthly ? '29.00' : '276.00'),
-      localizedPrice: sub.localizedPrice || (isMonthly ? '$29.00' : '$276.00'),
+      price: sub.price || (isMonthly ? '29.99' : '274.99'),
+      localizedPrice: sub.localizedPrice || (isMonthly ? '$29.99' : '$274.99'),
       currency: sub.currency || 'USD',
       isMonthly,
       subscriptionPeriod: isMonthly ? 'P1M' : 'P1Y',
