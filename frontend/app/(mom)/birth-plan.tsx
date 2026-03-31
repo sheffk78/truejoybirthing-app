@@ -234,7 +234,7 @@ export default function BirthPlanScreen() {
     
     return (
       <View>
-        {formConfig.fields.map((field) => renderField(field, sectionData, updateSectionData))}
+        {formConfig.fields.map((field) => renderField(field, sectionData, updateSectionData, colors))}
       </View>
     );
   };
