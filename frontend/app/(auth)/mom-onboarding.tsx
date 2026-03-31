@@ -46,12 +46,20 @@ export default function MomOnboardingScreen() {
   const [isLookingUpZip, setIsLookingUpZip] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  // Format date as MM-DD-YYYY
+  // Format date as YYYY-MM-DD for API storage (ISO format)
   const formatDate = (date: Date) => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const year = date.getFullYear();
-    return `${month}-${day}-${year}`;
+    return `${year}-${month}-${day}`;
+  };
+  
+  // Format date as MM/DD/YYYY for user-facing display
+  const formatDateDisplay = (date: Date) => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
   };
   
   // Handle date change from picker
@@ -181,7 +189,7 @@ export default function MomOnboardingScreen() {
             >
               <Icon name="calendar" size={22} color={colors.primary} />
               <Text style={[styles.dateText, !dueDate && styles.datePlaceholder]}>
-                {dueDate ? formatDate(dueDate) : 'Select your due date'}
+                {dueDate ? formatDateDisplay(dueDate) : 'Select your due date'}
               </Text>
               <Icon name="chevron-down" size={20} color={colors.textSecondary} />
             </TouchableOpacity>

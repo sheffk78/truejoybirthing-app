@@ -65,11 +65,24 @@ export default function MomProfileScreen() {
       setTeam(teamData);
       setBirthPlan(birthPlanData);
       
-      // Set form values
+      // Set form values - parse due date robustly
       const dueDateStr = profileData.due_date || '';
-      setDueDate(dueDateStr);
       if (dueDateStr) {
-        setDueDateObj(new Date(dueDateStr));
+        let parsedDate: Date;
+        if (/^\d{2}-\d{2}-\d{4}$/.test(dueDateStr)) {
+          // Old format: MM-DD-YYYY → parse manually to avoid JS Date misinterpretation
+          const [month, day, year] = dueDateStr.split('-').map(Number);
+          parsedDate = new Date(year, month - 1, day);
+        } else {
+          // ISO format: YYYY-MM-DD → append T00:00:00 to avoid timezone offset
+          parsedDate = new Date(dueDateStr + 'T00:00:00');
+        }
+        setDueDateObj(parsedDate);
+        // Normalize to YYYY-MM-DD for consistent storage
+        const normalizedDate = `${parsedDate.getFullYear()}-${String(parsedDate.getMonth() + 1).padStart(2, '0')}-${String(parsedDate.getDate()).padStart(2, '0')}`;
+        setDueDate(normalizedDate);
+      } else {
+        setDueDate('');
       }
       setZipCode(profileData.zip_code || '');
       setLocationCity(profileData.location_city || '');
@@ -95,11 +108,19 @@ export default function MomProfileScreen() {
     return profile?.planned_birth_setting || 'Not set';
   };
 
-  // Format due date for display
+  // Format due date for display - handles both old MM-DD-YYYY and new YYYY-MM-DD
   const formatDueDate = (dateStr: string) => {
     if (!dateStr) return 'Not set';
     try {
-      const date = new Date(dateStr);
+      let date: Date;
+      if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+        // Old format: MM-DD-YYYY
+        const [month, day, year] = dateStr.split('-').map(Number);
+        date = new Date(year, month - 1, day);
+      } else {
+        // ISO format: YYYY-MM-DD
+        date = new Date(dateStr + 'T00:00:00');
+      }
       return date.toLocaleDateString('en-US', { 
         month: 'long', 
         day: 'numeric', 
@@ -156,13 +177,25 @@ export default function MomProfileScreen() {
 
   const formatDisplayDate = (dateStr: string) => {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    try {
+      let date: Date;
+      if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+        // Old format: MM-DD-YYYY
+        const [month, day, year] = dateStr.split('-').map(Number);
+        date = new Date(year, month - 1, day);
+      } else {
+        // ISO format: YYYY-MM-DD
+        date = new Date(dateStr + 'T00:00:00');
+      }
+      return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch {
+      return dateStr;
+    }
   };
   
   const handleSave = async () => {
