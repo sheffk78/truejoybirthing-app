@@ -370,12 +370,11 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
             const hasUpcomingAppt = clientAppointments[client.client_id];
             
             return (
-              <TouchableOpacity
-                key={client.client_id}
-                onPress={() => handleClientPress(client)}
-                data-testid={`client-card-${client.client_id}`}
-              >
-                <Card style={styles.clientCard}>
+              <Card key={client.client_id} style={styles.clientCard} data-testid={`client-card-${client.client_id}`}>
+                <TouchableOpacity
+                  onPress={() => handleClientPress(client)}
+                  activeOpacity={0.7}
+                >
                   <View style={styles.clientRow}>
                     <View style={[styles.clientAvatar, { backgroundColor: primaryColor + '20' }]}>
                       {client.picture ? (
@@ -406,42 +405,41 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                       </View>
                     </View>
                   </View>
-                  <View style={[styles.clientActions, { borderTopColor: colors.border }]}>
-                    <TouchableOpacity 
-                      style={[styles.actionButton, { backgroundColor: colors.primary + '10' }]}
-                      onPress={() => {
-                        // Navigate directly to birth plan view
-                        if (client.linked_mom_id) {
-                          router.push(`/view-birth-plan?momId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
-                        } else {
-                          // Fallback to client detail if no linked mom
-                          const baseRoute = isMidwife ? '/(midwife)' : '/(doula)';
-                          router.push(`${baseRoute}/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}&tab=birthplan`);
-                        }
-                      }}
-                    >
-                      <Icon name="clipboard-outline" size={14} color={colors.primary} />
-                      <Text style={[styles.actionText, { color: colors.primary }]}>Birth Plan</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                      style={[styles.actionButton, { backgroundColor: colors.accent + '10' }]}
-                      onPress={() => {
-                        // Navigate directly to messages for this client
-                        // ProviderMessages expects clientUserId (the linked mom's user ID) to auto-open conversation
+                </TouchableOpacity>
+                <View style={[styles.clientActions, { borderTopColor: colors.border }]}>
+                  <TouchableOpacity 
+                    style={[styles.actionButton, { backgroundColor: colors.primary + '10' }]}
+                    onPress={() => {
+                      // Navigate directly to birth plan view
+                      if (client.linked_mom_id) {
+                        router.push(`/view-birth-plan?momId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
+                      } else {
+                        // Fallback to client detail if no linked mom
                         const baseRoute = isMidwife ? '/(midwife)' : '/(doula)';
-                        if (client.linked_mom_id) {
-                          router.push(`${baseRoute}/messages?clientUserId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
-                        } else {
-                          router.push(`${baseRoute}/messages?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
-                        }
-                      }}
-                    >
-                      <Icon name="chatbubble-outline" size={14} color={colors.accent} />
-                      <Text style={[styles.actionText, { color: colors.accent }]}>Message</Text>
-                    </TouchableOpacity>
-                  </View>
-                </Card>
-              </TouchableOpacity>
+                        router.push(`${baseRoute}/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}&tab=birthplan`);
+                      }
+                    }}
+                  >
+                    <Icon name="clipboard-outline" size={14} color={colors.primary} />
+                    <Text style={[styles.actionText, { color: colors.primary }]}>Birth Plan</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.actionButton, { backgroundColor: colors.accent + '10' }]}
+                    onPress={() => {
+                      // Navigate directly to messages for this client
+                      const baseRoute = isMidwife ? '/(midwife)' : '/(doula)';
+                      if (client.linked_mom_id) {
+                        router.push(`${baseRoute}/messages?clientUserId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
+                      } else {
+                        router.push(`${baseRoute}/messages?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+                      }
+                    }}
+                  >
+                    <Icon name="chatbubble-outline" size={14} color={colors.accent} />
+                    <Text style={[styles.actionText, { color: colors.accent }]}>Message</Text>
+                  </TouchableOpacity>
+                </View>
+              </Card>
             );
           })
         )}

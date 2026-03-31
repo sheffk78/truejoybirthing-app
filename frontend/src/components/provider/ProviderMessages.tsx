@@ -33,6 +33,7 @@ interface Conversation {
   other_user_role: string;
   other_user_picture?: string | null;
   last_message?: string;
+  last_message_content?: string;
   last_message_time?: string;
   unread_count: number;
 }
@@ -42,7 +43,8 @@ interface Message {
   sender_id: string;
   receiver_id: string;
   content: string;
-  sent_at: string;
+  created_at: string;
+  sent_at?: string; // legacy alias
   read: boolean;
 }
 
@@ -216,7 +218,9 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
   };
   
   const formatTime = (dateStr: string) => {
+    if (!dateStr) return '';
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return '';
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -313,7 +317,7 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
                       </View>
                     </View>
                     <Text style={[styles.lastMessage, { color: colors.textSecondary }]} numberOfLines={1}>
-                      {conversation.last_message || 'No messages yet'}
+                      {conversation.last_message_content || conversation.last_message || 'No messages yet'}
                     </Text>
                   </View>
                   <View style={styles.metaColumn}>
@@ -384,7 +388,7 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
                       {message.content}
                     </Text>
                     <Text style={[styles.messageTime, isMe && styles.messageTimeMe, !isMe && { color: colors.textLight }]}>
-                      {formatTime(message.sent_at)}
+                      {formatTime(message.created_at || message.sent_at || '')}
                     </Text>
                   </View>
                 );
