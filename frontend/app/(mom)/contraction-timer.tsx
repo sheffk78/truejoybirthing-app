@@ -14,6 +14,7 @@ import {
   Animated,
   Easing,
   Dimensions,
+  AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
@@ -149,6 +150,10 @@ export default function ContractionTimerScreen() {
   const [restingSeconds, setRestingSeconds] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   
+  // Track real timestamps so timers survive app backgrounding
+  const contractionStartTimeRef = useRef<number | null>(null);
+  const lastContractionEndTimeRef = useRef<number | null>(null);
+  
   // Modal states
   const [showStartModal, setShowStartModal] = useState(false);
   const [showIntensityModal, setShowIntensityModal] = useState(false);
@@ -207,7 +212,8 @@ export default function ContractionTimerScreen() {
     }
   }, [isContracting]);
   
-  // Timer effect
+  // Timer effect — uses real timestamps so the display stays accurate
+  // even when the app has been in the background
   useEffect(() => {
     // Clear any existing timer first
     if (timerRef.current) {
@@ -215,22 +221,24 @@ export default function ContractionTimerScreen() {
       timerRef.current = null;
     }
     
-    if (isContracting) {
-      // Contracting timer - count up from current timerSeconds
+    if (isContracting && contractionStartTimeRef.current) {
+      // Contracting timer — recalculate from real start time each tick
+      const startMs = contractionStartTimeRef.current;
+      setTimerSeconds(Math.floor((Date.now() - startMs) / 1000));
+      
       timerRef.current = setInterval(() => {
-        setTimerSeconds(s => s + 1);
+        setTimerSeconds(Math.floor((Date.now() - startMs) / 1000));
       }, 1000);
     } else if (session?.status === 'ACTIVE' && contractions.length > 0) {
-      // Resting timer - calculate time since last contraction ended
+      // Resting timer — recalculate from real end time each tick
       const lastContraction = contractions[0];
       if (lastContraction?.end_time) {
-        const lastEnd = new Date(lastContraction.end_time).getTime();
-        const now = Date.now();
-        const initialRestSeconds = Math.floor((now - lastEnd) / 1000);
-        setRestingSeconds(initialRestSeconds);
+        const lastEndMs = new Date(lastContraction.end_time).getTime();
+        lastContractionEndTimeRef.current = lastEndMs;
+        setRestingSeconds(Math.floor((Date.now() - lastEndMs) / 1000));
         
         timerRef.current = setInterval(() => {
-          setRestingSeconds(s => s + 1);
+          setRestingSeconds(Math.floor((Date.now() - lastEndMs) / 1000));
         }, 1000);
       } else {
         // Last contraction has no end_time (shouldn't happen, but reset to 0)
@@ -248,6 +256,22 @@ export default function ContractionTimerScreen() {
       }
     };
   }, [isContracting, session?.status, contractions]);
+  
+  // AppState listener — recalculate timers when the app returns to the foreground
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        // App came back to the foreground — recalculate from real timestamps
+        if (isContracting && contractionStartTimeRef.current) {
+          setTimerSeconds(Math.floor((Date.now() - contractionStartTimeRef.current) / 1000));
+        } else if (lastContractionEndTimeRef.current) {
+          setRestingSeconds(Math.floor((Date.now() - lastContractionEndTimeRef.current) / 1000));
+        }
+      }
+    });
+    
+    return () => subscription.remove();
+  }, [isContracting]);
   
   // Fetch active session on mount
   useEffect(() => {
@@ -277,10 +301,10 @@ export default function ContractionTimerScreen() {
       if (data.contractions?.length > 0) {
         const running = data.contractions.find((c: Contraction) => c.end_time === null);
         if (running) {
+          const startMs = new Date(running.start_time).getTime();
+          contractionStartTimeRef.current = startMs;
           setIsContracting(true);
-          const startTime = new Date(running.start_time).getTime();
-          const now = Date.now();
-          setTimerSeconds(Math.floor((now - startTime) / 1000));
+          setTimerSeconds(Math.floor((Date.now() - startMs) / 1000));
         }
       }
       
@@ -409,6 +433,7 @@ export default function ContractionTimerScreen() {
     
     try {
       await apiRequest('/contractions/start', { method: 'POST' });
+      contractionStartTimeRef.current = Date.now();
       setIsContracting(true);
       setTimerSeconds(0);
       setRestingSeconds(0);
@@ -424,6 +449,7 @@ export default function ContractionTimerScreen() {
         : '/contractions/stop';
       const data = await apiRequest(url, { method: 'POST' });
       
+      contractionStartTimeRef.current = null;
       setIsContracting(false);
       setTimerSeconds(0);
       
