@@ -439,7 +439,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   actionCard: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     marginHorizontal: SIZES.xs,

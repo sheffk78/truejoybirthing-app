@@ -1265,12 +1265,12 @@ export default function ContractionTimerScreen() {
                         height={180}
                         yAxisSuffix="s"
                         chartConfig={{
-                          backgroundColor: '#fff',
-                          backgroundGradientFrom: '#fff',
-                          backgroundGradientTo: '#fff',
+                          backgroundColor: colors.surface,
+                          backgroundGradientFrom: colors.surface,
+                          backgroundGradientTo: colors.surface,
                           decimalPlaces: 0,
                           color: (opacity = 1) => `rgba(156, 125, 97, ${opacity})`,
-                          labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                          labelColor: () => colors.textSecondary,
                           style: { borderRadius: 8 },
                           propsForDots: { r: '4', strokeWidth: '2', stroke: colors.primary }
                         }}
@@ -1307,12 +1307,12 @@ export default function ContractionTimerScreen() {
                           height={180}
                           yAxisSuffix="m"
                           chartConfig={{
-                            backgroundColor: '#fff',
-                            backgroundGradientFrom: '#fff',
-                            backgroundGradientTo: '#fff',
+                            backgroundColor: colors.surface,
+                            backgroundGradientFrom: colors.surface,
+                            backgroundGradientTo: colors.surface,
                             decimalPlaces: 0,
                             color: (opacity = 1) => `rgba(97, 125, 156, ${opacity})`,
-                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            labelColor: () => colors.textSecondary,
                             style: { borderRadius: 8 },
                             propsForDots: { r: '4', strokeWidth: '2', stroke: colors.secondary }
                           }}
@@ -1394,7 +1394,7 @@ const getStyles = createThemedStyles((colors) => ({
   // Stats Strip
   statsStrip: {
     flexDirection: 'row',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
@@ -1433,7 +1433,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.primary,
@@ -1483,7 +1483,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 8,
     borderRadius: 8,
     borderWidth: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   patternStatusText: {
     fontSize: 14,
@@ -1538,7 +1538,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: 20,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   actionBtn: {
     flex: 1,
@@ -1558,7 +1558,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
@@ -1631,7 +1631,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginHorizontal: 4,
     borderRadius: 12,
     borderWidth: 2,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   intensityDot: {
     width: 24,
@@ -1734,7 +1734,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: 12,
     fontSize: 16,
     fontFamily: FONTS.body,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   intensityRow: {
     flexDirection: 'row',
@@ -1756,7 +1756,7 @@ const getStyles = createThemedStyles((colors) => ({
   
   // Summary styles
   summaryCard: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 24,
     marginBottom: 20,
@@ -1814,7 +1814,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   settingsBtn: {
     padding: 8,
@@ -1851,7 +1851,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: colors.border,
@@ -1947,7 +1947,7 @@ const getStyles = createThemedStyles((colors) => ({
   // Charts
   chartSection: {
     marginBottom: 24,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 16,
   },
