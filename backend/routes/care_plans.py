@@ -18,9 +18,125 @@ from datetime import datetime, timezone, timedelta
 import uuid
 from io import BytesIO
 
+from reportlab.platypus import Paragraph, Spacer
+
 from .dependencies import db, check_role, User, create_notification, send_notification_email, get_now
 
 router = APIRouter(tags=["Care Plans"])
+
+# ============== PDF EXPORT HELPERS ==============
+
+# Maps section IDs to display names for PDF export
+PDF_SECTION_NAMES = {
+    "about_me": "About Me & My Preferences",
+    "labor_delivery": "Labor & Delivery Preferences",
+    "pain_management": "Pain Management",
+    "monitoring_iv": "Labor Environment & Comfort",
+    "induction_interventions": "Induction & Birth Interventions",
+    "pushing_safe_word": "Pushing, Delivery & Safe Word",
+    "post_delivery": "Post-Delivery Preferences",
+    "newborn_care": "Newborn Care Preferences",
+    "other_considerations": "Other Important Considerations",
+}
+
+# Maps field keys to human-readable labels for PDF export
+PDF_FIELD_LABELS = {
+    # About Me
+    "motherName": "Mother's Name",
+    "partnerName": "Partner's Name",
+    "emailAddress": "Email Address",
+    "phoneNumber": "Phone Number",
+    "dueDate": "Due Date",
+    "birthSupport": "Birth Support (and relationship)",
+    "doctorMidwife": "Doctor/Midwife Name",
+    "birthLocation": "Where do you plan to give birth?",
+    "hospitalName": "Hospital/Birth Center Name",
+    # Labor & Delivery
+    "laborEnvironment": "Labor Environment Preferences",
+    "clothingPreference": "What would you like to wear during labor?",
+    "laborPositions": "Labor Positions You Want to Try",
+    "hydrationFood": "Food and Drink During Labor",
+    "peoplePresent": "Who would you like present during labor?",
+    "photographyPreferences": "Photography/Video Preferences",
+    # Pain Management
+    "painManagementApproach": "Overall Approach to Pain Management",
+    "naturalMethods": "Non-Medication Pain Relief Methods",
+    "medicationOptions": "Medication Options (if needed)",
+    "epiduralPreferences": "If you choose an epidural",
+    # Monitoring & IV
+    "fetalMonitoring": "Fetal Monitoring Preference",
+    "ivPreference": "IV/Hep-Lock Preference",
+    "vaginalExams": "Vaginal Exams",
+    "artificialRupture": "Artificial Rupture of Membranes",
+    "comfortMeasures": "Comfort Measures Available",
+    # Induction & Interventions
+    "inductionPreference": "Induction Preferences",
+    "pitocinAugmentation": "Pitocin/Augmentation",
+    "episiotomy": "Episiotomy Preferences",
+    "assistedDelivery": "Assisted Delivery (Vacuum/Forceps)",
+    "cesareanPreferences": "If Cesarean Becomes Necessary",
+    # Pushing & Safe Word
+    "pushingApproach": "Pushing Approach",
+    "pushingPositions": "Pushing Positions to Try",
+    "mirrorUse": "Would you like to use a mirror?",
+    "touchBaby": "Would you like to touch baby's head as they crown?",
+    "perinealSupport": "Perineal Support Preferences",
+    "safeWord": "Safe Word",
+    "safeWordMeaning": "What should happen when you use your safe word?",
+    # Post-Delivery
+    "skinToSkin": "Immediate Skin-to-Skin",
+    "cordClamping": "Cord Clamping",
+    "cordCutting": "Who would you like to cut the cord?",
+    "cordBloodBanking": "Cord Blood Banking",
+    "placentaPlans": "Placenta Preferences",
+    "goldenHour": "Golden Hour Preferences",
+    "announcements": "Announcing Baby's Arrival",
+    # Newborn Care
+    "babyExamLocation": "Where should baby's exam take place?",
+    "delayedBathing": "Baby's First Bath",
+    "vernixCleaning": "Vernix (White Coating)",
+    "eyeOintment": "Eye Prophylaxis (Erythromycin)",
+    "vitaminK": "Vitamin K",
+    "hepatitisB": "Hepatitis B Vaccine",
+    "circumcision": "Circumcision (if applicable)",
+    "feedingPlan": "Feeding Plan",
+    "pacifierUse": "Pacifier Use",
+    "roomingIn": "Rooming In",
+    # Other Considerations
+    "culturalReligious": "Cultural or Religious Considerations",
+    "previousBirthExperience": "Previous Birth Experiences to Consider",
+    "anxietiesConcerns": "Special Anxieties or Concerns",
+    "medicalConditions": "Medical Conditions or Allergies",
+    "emergencyContact": "Emergency Contact (besides partner)",
+    "musicPreferences": "Music Preferences",
+}
+
+
+def build_birth_plan_pdf_sections(elements, sections, heading_style, body_style):
+    """Build PDF content for birth plan sections. Shared by mom and provider PDF exports."""
+    for section in sections:
+        section_id = section.get("section_id", "")
+        section_name = PDF_SECTION_NAMES.get(section_id, section_id.replace("_", " ").title())
+        data = section.get("data", {})
+        
+        if not data:
+            continue
+        
+        elements.append(Paragraph(section_name, heading_style))
+        
+        for key, value in data.items():
+            if value:
+                label = PDF_FIELD_LABELS.get(key, key.replace("_", " ").title())
+                
+                if isinstance(value, list):
+                    value_str = ", ".join(str(v) for v in value)
+                else:
+                    value_str = str(value)
+                
+                elements.append(Paragraph(f"<b>{label}:</b> {value_str}", body_style))
+        
+        elements.append(Spacer(1, 10))
+
 
 # ============== PYDANTIC MODELS ==============
 
@@ -393,41 +509,7 @@ async def export_birth_plan_pdf(user: User = Depends(check_role(["MOM"]))):
     
     # Sections
     sections = plan.get("sections", [])
-    section_names = {
-        "getting_started": "Getting Started",
-        "support_preferences": "Support & Atmosphere",
-        "pain_management": "Pain Management",
-        "monitoring_iv": "Labor Environment & Comfort",
-        "interventions": "Interventions & C-Section",
-        "pushing_safe_word": "Pushing, Delivery & Safe Word",
-        "baby_care": "Baby Care After Birth",
-        "feeding": "Feeding Preferences",
-        "postpartum": "Postpartum Care",
-        "additional_info": "Additional Information"
-    }
-    
-    for section in sections:
-        section_id = section.get("section_id", "")
-        section_name = section_names.get(section_id, section_id.replace("_", " ").title())
-        data = section.get("data", {})
-        
-        if not data:
-            continue
-        
-        elements.append(Paragraph(section_name, heading_style))
-        
-        for key, value in data.items():
-            if value:
-                label = key.replace("_", " ").replace("Preference", "").title()
-                
-                if isinstance(value, list):
-                    value_str = ", ".join(str(v) for v in value)
-                else:
-                    value_str = str(value)
-                
-                elements.append(Paragraph(f"<b>{label}:</b> {value_str}", body_style))
-        
-        elements.append(Spacer(1, 10))
+    build_birth_plan_pdf_sections(elements, sections, heading_style, body_style)
     
     doc.build(elements)
     buffer.seek(0)
@@ -1223,41 +1305,7 @@ async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check
     
     # Sections
     sections = plan.get("sections", [])
-    section_names = {
-        "getting_started": "Getting Started",
-        "support_preferences": "Support & Atmosphere",
-        "pain_management": "Pain Management",
-        "monitoring_iv": "Labor Environment & Comfort",
-        "interventions": "Interventions & C-Section",
-        "pushing_safe_word": "Pushing, Delivery & Safe Word",
-        "baby_care": "Baby Care After Birth",
-        "feeding": "Feeding Preferences",
-        "postpartum": "Postpartum Care",
-        "additional_info": "Additional Information"
-    }
-    
-    for section in sections:
-        section_id = section.get("section_id", "")
-        section_name = section_names.get(section_id, section_id.replace("_", " ").title())
-        data = section.get("data", {})
-        
-        if not data:
-            continue
-        
-        elements.append(Paragraph(section_name, heading_style))
-        
-        for key, value in data.items():
-            if value:
-                label = key.replace("_", " ").replace("Preference", "").title()
-                
-                if isinstance(value, list):
-                    value_str = ", ".join(str(v) for v in value)
-                else:
-                    value_str = str(value)
-                
-                elements.append(Paragraph(f"<b>{label}:</b> {value_str}", body_style))
-        
-        elements.append(Spacer(1, 10))
+    build_birth_plan_pdf_sections(elements, sections, heading_style, body_style)
     
     doc.build(elements)
     buffer.seek(0)

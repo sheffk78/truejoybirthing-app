@@ -127,8 +127,58 @@ export default function BirthPlanScreen() {
         
         Alert.alert('Success', 'Your birth plan PDF has been downloaded! Check your Downloads folder.');
       } else {
-        // For native mobile, we would use expo-file-system and expo-sharing
-        Alert.alert('Download', 'PDF download is available on the web version.');
+        // Native mobile: download PDF then share/save via system share sheet
+        const FileSystem = require('expo-file-system/legacy');
+        const Sharing = require('expo-sharing');
+        
+        // Fetch PDF as blob, convert to base64, write to local file
+        const response = await fetch(pdfUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/pdf',
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to download PDF');
+        }
+        
+        const blob = await response.blob();
+        
+        if (blob.size === 0) {
+          throw new Error('Downloaded PDF is empty');
+        }
+        
+        // Convert blob to base64
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            // Strip the data:application/pdf;base64, prefix
+            const base64Data = result.split(',')[1];
+            resolve(base64Data);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        
+        // Write to local file
+        const fileUri = FileSystem.cacheDirectory + 'My_Birth_Plan.pdf';
+        await FileSystem.writeAsStringAsync(fileUri, base64, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        
+        // Check if sharing is available, then open share sheet
+        const isAvailable = await Sharing.isAvailableAsync();
+        if (isAvailable) {
+          await Sharing.shareAsync(fileUri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Save or Share Your Birth Plan',
+          });
+        } else {
+          Alert.alert('Success', 'Your birth plan PDF has been saved to the app cache.');
+        }
       }
     } catch (error: any) {
       console.error('PDF download error:', error);
