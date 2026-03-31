@@ -194,15 +194,39 @@ export default function MarketplaceScreen() {
         });
       }
     } catch (error: any) {
-      // If message sending fails (e.g., no connection), still navigate to messages
-      Alert.alert(
-        'Start Conversation',
-        `Would you like to connect with ${provider.full_name}? You may need to share your birth plan with them first to send messages.`,
-        [
-          { text: 'Go to My Team', onPress: () => router.push('/(mom)/my-team') },
-          { text: 'Cancel', style: 'cancel' }
-        ]
-      );
+      // Messaging requires the provider to be an accepted member of the mom's team
+      const isConnectionError = error.message?.includes('connection') || error.message?.includes('403');
+      
+      if (isConnectionError || error.status === 403) {
+        const currentStatus = teamStatus[provider.user_id];
+        
+        if (currentStatus === 'pending') {
+          Alert.alert(
+            'Request Pending',
+            `${provider.full_name} hasn't accepted your team request yet. Once they accept, you'll be able to message them directly.`,
+            [{ text: 'OK' }]
+          );
+        } else if (currentStatus === 'accepted') {
+          // Shouldn't happen if accepted, but handle gracefully
+          Alert.alert(
+            'Unable to Message',
+            `There was a problem sending your message. Please try again.`,
+            [{ text: 'OK' }]
+          );
+        } else {
+          // Not on team at all
+          Alert.alert(
+            'Add to Your Team First',
+            `You can only message providers who are on your team. Would you like to send ${provider.full_name} a team request? Once they accept, you'll be able to message them.`,
+            [
+              { text: 'Send Team Request', onPress: () => handleAddToTeam(provider) },
+              { text: 'Cancel', style: 'cancel' }
+            ]
+          );
+        }
+      } else {
+        Alert.alert('Error', error.message || 'Failed to send message. Please try again.');
+      }
     } finally {
       setContactingProvider(false);
       setSelectedProvider(null);
