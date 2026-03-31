@@ -1240,53 +1240,86 @@ export default function ContractionTimerScreen() {
                 <>
                   <View style={styles.chartSection}>
                     <Text style={styles.chartTitle}>Duration Over Time (seconds)</Text>
-                    <LineChart
-                      data={{
-                        labels: chartData.duration_data.map((d: any) => `#${d.x}`).slice(-8),
-                        datasets: [{ data: chartData.duration_data.map((d: any) => d.y).slice(-8) }]
+                    <Text style={styles.chartHint}>Swipe left/right to see more</Text>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={true}
+                      contentContainerStyle={{ paddingRight: 16 }}
+                      ref={(ref) => {
+                        if (ref && chartData.duration_data.length > 8) {
+                          setTimeout(() => ref.scrollToEnd({ animated: false }), 100);
+                        }
                       }}
-                      width={Dimensions.get('window').width - 80}
-                      height={180}
-                      yAxisSuffix="s"
-                      chartConfig={{
-                        backgroundColor: '#fff',
-                        backgroundGradientFrom: '#fff',
-                        backgroundGradientTo: '#fff',
-                        decimalPlaces: 0,
-                        color: (opacity = 1) => `rgba(156, 125, 97, ${opacity})`,
-                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        style: { borderRadius: 8 },
-                        propsForDots: { r: '4', strokeWidth: '2', stroke: colors.primary }
-                      }}
-                      bezier
-                      style={{ borderRadius: 8 }}
-                    />
-                  </View>
-                  
-                  {chartData.interval_data.length >= 2 && (
-                    <View style={styles.chartSection}>
-                      <Text style={styles.chartTitle}>Interval Over Time (minutes)</Text>
+                    >
                       <LineChart
                         data={{
-                          labels: chartData.interval_data.map((d: any) => `#${d.x}`).slice(-8),
-                          datasets: [{ data: chartData.interval_data.map((d: any) => d.y).slice(-8) }]
+                          labels: chartData.duration_data.map((d: any, i: number) => {
+                            // Show every Nth label to avoid overlap
+                            const total = chartData.duration_data.length;
+                            const step = total <= 10 ? 1 : total <= 20 ? 2 : Math.ceil(total / 12);
+                            return i % step === 0 || i === total - 1 ? `#${d.x}` : '';
+                          }),
+                          datasets: [{ data: chartData.duration_data.map((d: any) => d.y) }]
                         }}
-                        width={Dimensions.get('window').width - 80}
+                        width={Math.max(Dimensions.get('window').width - 80, chartData.duration_data.length * 55)}
                         height={180}
-                        yAxisSuffix="m"
+                        yAxisSuffix="s"
                         chartConfig={{
                           backgroundColor: '#fff',
                           backgroundGradientFrom: '#fff',
                           backgroundGradientTo: '#fff',
                           decimalPlaces: 0,
-                          color: (opacity = 1) => `rgba(97, 125, 156, ${opacity})`,
+                          color: (opacity = 1) => `rgba(156, 125, 97, ${opacity})`,
                           labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                           style: { borderRadius: 8 },
-                          propsForDots: { r: '4', strokeWidth: '2', stroke: colors.secondary }
+                          propsForDots: { r: '4', strokeWidth: '2', stroke: colors.primary }
                         }}
                         bezier
                         style={{ borderRadius: 8 }}
                       />
+                    </ScrollView>
+                  </View>
+                  
+                  {chartData.interval_data.length >= 2 && (
+                    <View style={styles.chartSection}>
+                      <Text style={styles.chartTitle}>Interval Over Time (minutes)</Text>
+                      <Text style={styles.chartHint}>Swipe left/right to see more</Text>
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={true}
+                        contentContainerStyle={{ paddingRight: 16 }}
+                        ref={(ref) => {
+                          if (ref && chartData.interval_data.length > 8) {
+                            setTimeout(() => ref.scrollToEnd({ animated: false }), 100);
+                          }
+                        }}
+                      >
+                        <LineChart
+                          data={{
+                            labels: chartData.interval_data.map((d: any, i: number) => {
+                              const total = chartData.interval_data.length;
+                              const step = total <= 10 ? 1 : total <= 20 ? 2 : Math.ceil(total / 12);
+                              return i % step === 0 || i === total - 1 ? `#${d.x}` : '';
+                            }),
+                            datasets: [{ data: chartData.interval_data.map((d: any) => d.y) }]
+                          }}
+                          width={Math.max(Dimensions.get('window').width - 80, chartData.interval_data.length * 55)}
+                          height={180}
+                          yAxisSuffix="m"
+                          chartConfig={{
+                            backgroundColor: '#fff',
+                            backgroundGradientFrom: '#fff',
+                            backgroundGradientTo: '#fff',
+                            decimalPlaces: 0,
+                            color: (opacity = 1) => `rgba(97, 125, 156, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            style: { borderRadius: 8 },
+                            propsForDots: { r: '4', strokeWidth: '2', stroke: colors.secondary }
+                          }}
+                          bezier
+                          style={{ borderRadius: 8 }}
+                        />
+                      </ScrollView>
                     </View>
                   )}
                 </>
@@ -1922,6 +1955,13 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: 14,
     fontFamily: FONTS.heading,
     color: colors.text,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  chartHint: {
+    fontSize: 11,
+    fontFamily: FONTS.body,
+    color: colors.textLight,
     marginBottom: 8,
     textAlign: 'center',
   },
