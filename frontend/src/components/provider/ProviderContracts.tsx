@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { apiRequest } from '../../utils/api';
 import useAuthStore from '../../store/authStore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -82,6 +83,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
   const [submitting, setSubmitting] = useState(false);
   const [isQuickEditMode, setIsQuickEditMode] = useState(false);
   const [quickEditData, setQuickEditData] = useState<Record<string, any>>({});
+  const [activeDateField, setActiveDateField] = useState<string | null>(null);
 
   const primaryColor = config.primaryColor;
   const sections = config.sections;
@@ -409,13 +411,47 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
             numberOfLines={4}
           />
         ) : field.type === 'date' ? (
-          <TextInput
-            style={styles.input}
-            value={value}
-            onChangeText={(text) => updateFormField(field.id, text)}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor={colors.textLight}
-          />
+          Platform.OS === 'web' ? (
+            <input
+              type="date"
+              value={value}
+              onChange={(e: any) => updateFormField(field.id, e.target.value)}
+              style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16 }}
+            />
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.datePickerButton}
+                onPress={() => setActiveDateField(field.id)}
+              >
+                <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+                <Text style={[styles.datePickerText, { color: value ? colors.text : colors.textLight }]}>
+                  {value || 'Select date'}
+                </Text>
+              </TouchableOpacity>
+              {activeDateField === field.id && (
+                <DateTimePicker
+                  value={value ? new Date(value + 'T00:00:00') : new Date()}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={(event: any, date?: Date) => {
+                    if (Platform.OS !== 'ios') setActiveDateField(null);
+                    if (date) {
+                      const y = date.getFullYear();
+                      const m = String(date.getMonth() + 1).padStart(2, '0');
+                      const d = String(date.getDate()).padStart(2, '0');
+                      updateFormField(field.id, `${y}-${m}-${d}`);
+                    }
+                  }}
+                />
+              )}
+              {Platform.OS === 'ios' && activeDateField === field.id && (
+                <TouchableOpacity onPress={() => setActiveDateField(null)} style={styles.datePickerDone}>
+                  <Text style={[styles.datePickerDoneText, { color: colors.primary }]}>Done</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          )
         ) : field.type === 'number' ? (
           <TextInput
             style={styles.input}
@@ -1308,4 +1344,8 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
   },
+  datePickerButton: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radiusSm, paddingHorizontal: SIZES.md, paddingVertical: 14, backgroundColor: colors.surface, gap: SIZES.sm },
+  datePickerText: { fontSize: SIZES.fontMd },
+  datePickerDone: { alignItems: 'flex-end', paddingVertical: SIZES.xs },
+  datePickerDoneText: { fontSize: SIZES.fontMd, fontWeight: '600' },
 }));

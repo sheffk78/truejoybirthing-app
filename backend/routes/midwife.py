@@ -110,10 +110,17 @@ async def midwife_onboarding(profile_data: MidwifeProfileUpdate, user: User = De
         "pricing_base": profile_data.pricing_base,
         "pricing_notes": profile_data.pricing_notes,
         "insurance_accepted": profile_data.insurance_accepted or [],
+        "practice_name": profile_data.practice_name,
+        "years_in_practice": profile_data.years_in_practice,
         "in_marketplace": profile_data.in_marketplace if profile_data.in_marketplace is not None else True,
         "accepting_new_clients": profile_data.accepting_new_clients if profile_data.accepting_new_clients is not None else True,
         "updated_at": now
     }
+    
+    # Remove None values so we don't overwrite existing data with null
+    profile = {k: v for k, v in profile.items() if v is not None}
+    profile["user_id"] = user.user_id  # Always keep user_id
+    profile["updated_at"] = now  # Always keep updated_at
     
     await db.midwife_profiles.update_one(
         {"user_id": user.user_id},

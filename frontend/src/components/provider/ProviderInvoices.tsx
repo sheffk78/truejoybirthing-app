@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
@@ -68,6 +69,8 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   const [dueDate, setDueDate] = useState('');
   const [paymentInstructions, setPaymentInstructions] = useState('');
   const [notesForClient, setNotesForClient] = useState('');
+  const [showIssueDatePicker, setShowIssueDatePicker] = useState(false);
+  const [showDueDatePicker, setShowDueDatePicker] = useState(false);
   
   // Payment Instructions Modal
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -708,13 +711,38 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16 }}
                   />
                 ) : (
-                  <TextInput
-                    style={styles.input}
-                    value={issueDate}
-                    onChangeText={setIssueDate}
-                    placeholder="YYYY-MM-DD"
-                    placeholderTextColor={colors.textLight}
-                  />
+                  <>
+                    <TouchableOpacity
+                      style={styles.datePickerButton}
+                      onPress={() => setShowIssueDatePicker(true)}
+                    >
+                      <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+                      <Text style={[styles.datePickerText, { color: issueDate ? colors.text : colors.textLight }]}>
+                        {issueDate || 'Select date'}
+                      </Text>
+                    </TouchableOpacity>
+                    {showIssueDatePicker && (
+                      <DateTimePicker
+                        value={issueDate ? new Date(issueDate + 'T00:00:00') : new Date()}
+                        mode="date"
+                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                        onChange={(event: any, date?: Date) => {
+                          setShowIssueDatePicker(Platform.OS === 'ios');
+                          if (date) {
+                            const y = date.getFullYear();
+                            const m = String(date.getMonth() + 1).padStart(2, '0');
+                            const d = String(date.getDate()).padStart(2, '0');
+                            setIssueDate(`${y}-${m}-${d}`);
+                          }
+                        }}
+                      />
+                    )}
+                    {Platform.OS === 'ios' && showIssueDatePicker && (
+                      <TouchableOpacity onPress={() => setShowIssueDatePicker(false)} style={styles.datePickerDone}>
+                        <Text style={[styles.datePickerDoneText, { color: colors.primary }]}>Done</Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
                 )}
               </View>
               <View style={styles.dateField}>
@@ -727,13 +755,38 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16 }}
                   />
                 ) : (
-                  <TextInput
-                    style={styles.input}
-                    value={dueDate}
-                    onChangeText={setDueDate}
-                    placeholder="YYYY-MM-DD"
-                    placeholderTextColor={colors.textLight}
-                  />
+                  <>
+                    <TouchableOpacity
+                      style={styles.datePickerButton}
+                      onPress={() => setShowDueDatePicker(true)}
+                    >
+                      <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+                      <Text style={[styles.datePickerText, { color: dueDate ? colors.text : colors.textLight }]}>
+                        {dueDate || 'Select date'}
+                      </Text>
+                    </TouchableOpacity>
+                    {showDueDatePicker && (
+                      <DateTimePicker
+                        value={dueDate ? new Date(dueDate + 'T00:00:00') : new Date()}
+                        mode="date"
+                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                        onChange={(event: any, date?: Date) => {
+                          setShowDueDatePicker(Platform.OS === 'ios');
+                          if (date) {
+                            const y = date.getFullYear();
+                            const m = String(date.getMonth() + 1).padStart(2, '0');
+                            const d = String(date.getDate()).padStart(2, '0');
+                            setDueDate(`${y}-${m}-${d}`);
+                          }
+                        }}
+                      />
+                    )}
+                    {Platform.OS === 'ios' && showDueDatePicker && (
+                      <TouchableOpacity onPress={() => setShowDueDatePicker(false)} style={styles.datePickerDone}>
+                        <Text style={[styles.datePickerDoneText, { color: colors.primary }]}>Done</Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
                 )}
               </View>
             </View>
@@ -978,6 +1031,10 @@ const getStyles = createThemedStyles((colors) => ({
   noClientsText: { fontSize: SIZES.fontSm, color: colors.textLight, fontStyle: 'italic' },
   dateRow: { flexDirection: 'row', gap: SIZES.md },
   dateField: { flex: 1 },
+  datePickerButton: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radiusSm, paddingHorizontal: SIZES.md, paddingVertical: 14, backgroundColor: colors.surface, gap: SIZES.sm },
+  datePickerText: { fontSize: SIZES.fontMd },
+  datePickerDone: { alignItems: 'flex-end', paddingVertical: SIZES.xs },
+  datePickerDoneText: { fontSize: SIZES.fontMd, fontWeight: '600' },
   defaultToggle: { flexDirection: 'row', alignItems: 'center', marginTop: SIZES.md },
   defaultToggleText: { fontSize: SIZES.fontMd, color: colors.text, marginLeft: SIZES.sm },
   saveButton: { paddingVertical: SIZES.md, borderRadius: SIZES.radiusMd, alignItems: 'center' },
