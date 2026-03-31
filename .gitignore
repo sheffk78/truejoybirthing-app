@@ -85,3 +85,4 @@ android-sdk/
 # Environment files
 *.env
 *.env.*
+DARKMODE-FIX.md

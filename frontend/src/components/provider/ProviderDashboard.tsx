@@ -346,13 +346,12 @@ const styles = StyleSheet.create({
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginHorizontal: -SIZES.xs,
+    gap: SIZES.sm,
     marginBottom: SIZES.lg,
   },
   statCard: {
-    width: '48%',
-    marginHorizontal: '1%',
-    marginBottom: SIZES.sm,
+    flexBasis: '47%',
+    flexGrow: 1,
     alignItems: 'center',
     padding: SIZES.md,
   },
@@ -374,14 +373,14 @@ const styles = StyleSheet.create({
   actionsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginHorizontal: -SIZES.xs,
+    gap: SIZES.sm,
     marginBottom: SIZES.lg,
   },
   actionCard: {
-    width: '48%',
+    flexBasis: '47%',
+    flexGrow: 1,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
-    margin: '1%',
     alignItems: 'center',
   },
   actionIcon: {
