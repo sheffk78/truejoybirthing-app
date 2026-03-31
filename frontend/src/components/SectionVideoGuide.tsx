@@ -8,11 +8,24 @@ import {
   Platform,
   Dimensions,
   Image,
+  StatusBar,
+  ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from './Icon';
 import { SIZES, FONTS } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
+
+// Only import WebView on native platforms (not needed on web, uses iframe instead)
+let WebView: any = null;
+if (Platform.OS !== 'web') {
+  try {
+    WebView = require('react-native-webview').WebView;
+  } catch (e) {
+    // WebView not available - will fall back gracefully
+  }
+}
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -75,6 +88,7 @@ export const SECTION_VIDEOS: Record<string, {
 export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuideProps) {
   const [expanded, setExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(true);
   const colors = useColors();
   
   const videoConfig = SECTION_VIDEOS[sectionId];
@@ -88,62 +102,195 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
     if (Platform.OS === 'web') {
       setExpanded(!expanded);
     } else {
+      setVideoLoading(true);
       setModalVisible(true);
     }
   };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setVideoLoading(true);
+  };
+
+  // Build HTML wrapper for the Bunny.net embed to ensure proper sizing in WebView
+  const videoHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; }
+      </style>
+    </head>
+    <body>
+      <iframe
+        src="${videoConfig.embedUrl}"
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
+        allowfullscreen
+      ></iframe>
+    </body>
+    </html>
+  `;
+  
+  // Native fullscreen video modal
+  const renderNativeVideoModal = () => (
+    <Modal
+      visible={modalVisible}
+      animationType="slide"
+      presentationStyle="fullScreen"
+      onRequestClose={handleCloseModal}
+      supportedOrientations={['portrait', 'landscape']}
+    >
+      <View style={styles.modalContainer}>
+        <StatusBar hidden={modalVisible} />
+        
+        {/* Close Button Header */}
+        <View style={[styles.modalHeader, { backgroundColor: '#000' }]}>
+          <View style={styles.modalHeaderContent}>
+            <Text style={styles.modalTitle} numberOfLines={1}>
+              {videoConfig.title || sectionTitle}
+            </Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={handleCloseModal}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Icon name="close-circle" size={32} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        {/* WebView Video Player */}
+        <View style={styles.modalVideoContainer}>
+          {videoLoading && (
+            <View style={styles.loadingOverlay}>
+              <ActivityIndicator size="large" color="#FFFFFF" />
+              <Text style={styles.loadingText}>Loading video...</Text>
+            </View>
+          )}
+          {WebView ? (
+            <WebView
+              source={{ html: videoHtml }}
+              style={styles.webview}
+              allowsInlineMediaPlayback={true}
+              mediaPlaybackRequiresUserAction={false}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              allowsFullscreenVideo={true}
+              onLoadEnd={() => setVideoLoading(false)}
+              onError={() => setVideoLoading(false)}
+            />
+          ) : (
+            <View style={styles.loadingOverlay}>
+              <Icon name="alert-circle" size={48} color="#FFFFFF" />
+              <Text style={styles.loadingText}>Video player unavailable</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
   
   // Collapsed state - thumbnail with play button
-  if (!expanded) {
+  if (!expanded && !modalVisible) {
     return (
-      <Pressable
-        style={({ pressed }) => [
-          styles.container,
-          pressed && styles.pressed,
-        ]}
-        onPress={handlePress}
-        // @ts-ignore - onClick for web compatibility
-        onClick={Platform.OS === 'web' ? handlePress : undefined}
-        data-testid={`video-guide-${sectionId}`}
-      >
-        <LinearGradient
-          colors={[colors.primary + '15', colors.secondary + '10']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradientBg}
+      <>
+        <Pressable
+          style={({ pressed }) => [
+            styles.container,
+            pressed && styles.pressed,
+          ]}
+          onPress={handlePress}
+          // @ts-ignore - onClick for web compatibility
+          onClick={Platform.OS === 'web' ? handlePress : undefined}
+          data-testid={`video-guide-${sectionId}`}
         >
-          {/* Play Button Circle */}
-          <View style={[styles.playButtonContainer, { shadowColor: colors.primary }]}>
-            <LinearGradient
-              colors={[colors.primary, colors.primaryDark]}
-              style={styles.playButton}
-            >
-              <Icon name="play" size={20} color="#FFFFFF" />
-            </LinearGradient>
-          </View>
-          
-          {/* Text Content */}
-          <View style={styles.textContent}>
-            <Text style={[styles.videoTitle, { color: colors.text }]}>
-              {videoConfig.title || 'Watch Guide'}
-            </Text>
-            <Text style={[styles.videoDuration, { color: colors.textSecondary }]}>
-              <Icon name="time-outline" size={12} color={colors.textSecondary} />
-              {' '}{videoConfig.duration || 'Short video'}
-            </Text>
-          </View>
-          
-          {/* Expand Icon */}
-          <Icon 
-            name={expanded ? "chevron-up" : "chevron-down"} 
-            size={20} 
-            color={colors.primary} 
-          />
-        </LinearGradient>
-      </Pressable>
+          <LinearGradient
+            colors={[colors.primary + '15', colors.secondary + '10']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientBg}
+          >
+            {/* Play Button Circle */}
+            <View style={[styles.playButtonContainer, { shadowColor: colors.primary }]}>
+              <LinearGradient
+                colors={[colors.primary, colors.primaryDark]}
+                style={styles.playButton}
+              >
+                <Icon name="play" size={20} color="#FFFFFF" />
+              </LinearGradient>
+            </View>
+            
+            {/* Text Content */}
+            <View style={styles.textContent}>
+              <Text style={[styles.videoTitle, { color: colors.text }]}>
+                {videoConfig.title || 'Watch Guide'}
+              </Text>
+              <Text style={[styles.videoDuration, { color: colors.textSecondary }]}>
+                <Icon name="time-outline" size={12} color={colors.textSecondary} />
+                {' '}{videoConfig.duration || 'Short video'}
+              </Text>
+            </View>
+            
+            {/* Expand Icon */}
+            <Icon 
+              name={Platform.OS === 'web' ? "chevron-down" : "play-circle-outline"} 
+              size={20} 
+              color={colors.primary} 
+            />
+          </LinearGradient>
+        </Pressable>
+        {Platform.OS !== 'web' && renderNativeVideoModal()}
+      </>
+    );
+  }
+
+  // Native: when modal is visible, still render the collapsed button + modal
+  if (Platform.OS !== 'web') {
+    return (
+      <>
+        <Pressable
+          style={({ pressed }) => [
+            styles.container,
+            pressed && styles.pressed,
+          ]}
+          onPress={handlePress}
+          data-testid={`video-guide-${sectionId}`}
+        >
+          <LinearGradient
+            colors={[colors.primary + '15', colors.secondary + '10']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientBg}
+          >
+            <View style={[styles.playButtonContainer, { shadowColor: colors.primary }]}>
+              <LinearGradient
+                colors={[colors.primary, colors.primaryDark]}
+                style={styles.playButton}
+              >
+                <Icon name="play" size={20} color="#FFFFFF" />
+              </LinearGradient>
+            </View>
+            <View style={styles.textContent}>
+              <Text style={[styles.videoTitle, { color: colors.text }]}>
+                {videoConfig.title || 'Watch Guide'}
+              </Text>
+              <Text style={[styles.videoDuration, { color: colors.textSecondary }]}>
+                <Icon name="time-outline" size={12} color={colors.textSecondary} />
+                {' '}{videoConfig.duration || 'Short video'}
+              </Text>
+            </View>
+            <Icon name="play-circle-outline" size={20} color={colors.primary} />
+          </LinearGradient>
+        </Pressable>
+        {renderNativeVideoModal()}
+      </>
     );
   }
   
-  // Expanded state - inline video player (web)
+  // Expanded state - inline video player (web only)
   return (
     <View style={[styles.expandedContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* Collapse Header */}
@@ -164,24 +311,17 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
       
       {/* Video Player */}
       <View style={styles.videoWrapper}>
-        {Platform.OS === 'web' ? (
-          <iframe
-            src={videoConfig.embedUrl}
-            style={{
-              border: 0,
-              width: '100%',
-              height: '100%',
-              borderRadius: 12,
-            }}
-            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-            allowFullScreen
-          />
-        ) : (
-          <View style={[styles.nativeVideoPlaceholder, { backgroundColor: colors.backgroundSecondary }]}>
-            <Icon name="play-circle" size={48} color={colors.primary} />
-            <Text style={[styles.nativeVideoText, { color: colors.textSecondary }]}>Tap to watch in fullscreen</Text>
-          </View>
-        )}
+        <iframe
+          src={videoConfig.embedUrl}
+          style={{
+            border: 0,
+            width: '100%',
+            height: '100%',
+            borderRadius: 12,
+          }}
+          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+          allowFullScreen
+        />
       </View>
     </View>
   );
@@ -256,14 +396,51 @@ const styles = StyleSheet.create({
     aspectRatio: 1, // Square video
     backgroundColor: '#000',
   },
-  nativeVideoPlaceholder: {
+  // Native fullscreen modal styles
+  modalContainer: {
     flex: 1,
+    backgroundColor: '#000',
+  },
+  modalHeader: {
+    paddingTop: Platform.OS === 'ios' ? 50 : 30,
+    paddingBottom: 10,
+    paddingHorizontal: SIZES.md,
+  },
+  modalHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  modalTitle: {
+    flex: 1,
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginRight: SIZES.md,
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalVideoContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  webview: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 10,
   },
-  nativeVideoText: {
-    marginTop: SIZES.sm,
+  loadingText: {
+    color: '#FFFFFF',
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
+    marginTop: SIZES.sm,
   },
 });
