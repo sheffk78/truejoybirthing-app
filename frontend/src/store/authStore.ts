@@ -28,6 +28,7 @@ interface AuthState {
   register: (email: string, password: string, fullName: string, role: string) => Promise<void>;
   loginWithGoogle: (sessionId: string) => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   checkAuth: () => Promise<void>;
   setRole: (role: string) => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
@@ -189,6 +190,37 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isAuthenticated: false,
       isLoading: false,
     });
+  },
+  
+  deleteAccount: async () => {
+    try {
+      set({ isLoading: true });
+      const token = get().sessionToken || await AsyncStorage.getItem('session_token');
+      if (!token) throw new Error('Not authenticated');
+      
+      const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_DELETE_ACCOUNT}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to delete account');
+      }
+      
+      // Clear local storage and reset state
+      await AsyncStorage.removeItem('session_token');
+      set({
+        user: null,
+        sessionToken: null,
+        isAuthenticated: false,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
   },
   
   checkAuth: async () => {

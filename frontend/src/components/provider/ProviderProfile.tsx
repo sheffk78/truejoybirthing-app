@@ -55,7 +55,8 @@ interface ProviderProfileProps {
 
 export default function ProviderProfile({ config }: ProviderProfileProps) {
   const router = useRouter();
-  const { user, logout, updateUser } = useAuthStore();
+  const { user, logout, deleteAccount, updateUser } = useAuthStore();
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const { status: subscriptionData, fetchStatus: fetchSubscriptionStatus } = useSubscriptionStore();
   const colors = useColors();
   const styles = getStyles(colors);
@@ -368,6 +369,55 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           },
         },
       ]);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const performDelete = async () => {
+      setDeletingAccount(true);
+      try {
+        await deleteAccount();
+        router.replace('/(auth)/welcome');
+      } catch (error: any) {
+        Alert.alert('Error', error.message || 'Failed to delete account');
+      } finally {
+        setDeletingAccount(false);
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(
+        'DELETE ACCOUNT\n\nThis will permanently delete your account and all associated data including clients, contracts, invoices, messages, and notes.\n\nThis action cannot be undone. Are you absolutely sure?'
+      );
+      if (confirmed) {
+        await performDelete();
+      }
+    } else {
+      Alert.alert(
+        'Delete Account?',
+        'This will permanently delete your account and all associated data including clients, contracts, invoices, messages, and notes.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete Permanently',
+            style: 'destructive',
+            onPress: () => {
+              Alert.alert(
+                'Are you absolutely sure?',
+                'This action cannot be undone. All your data will be permanently removed.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Yes, Delete My Account',
+                    style: 'destructive',
+                    onPress: performDelete,
+                  },
+                ]
+              );
+            },
+          },
+        ]
+      );
     }
   };
 
@@ -726,6 +776,24 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           <Icon name="log-out-outline" size={20} color={colors.error} />
           <Text style={styles.logoutText}>Log Out</Text>
         </Pressable>
+
+        {/* Delete Account - App Store Requirement (Guideline 5.1.1(v)) */}
+        <Pressable 
+          style={({ pressed }) => [
+            styles.deleteAccountButton,
+            Platform.OS === 'web' && { cursor: 'pointer' as any },
+            pressed && { opacity: 0.7 }
+          ]}
+          onPress={handleDeleteAccount}
+          disabled={deletingAccount}
+          accessibilityRole="button"
+          accessibilityLabel="Delete your account permanently"
+        >
+          <Icon name="trash-outline" size={18} color={colors.error} />
+          <Text style={styles.deleteAccountText}>
+            {deletingAccount ? 'Deleting...' : 'Delete Account'}
+          </Text>
+        </Pressable>
         
         {/* Legal Links - App Store Compliance */}
         <View style={styles.legalSection}>
@@ -924,6 +992,13 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: SIZES.md, marginTop: SIZES.md 
   },
   logoutText: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium, marginLeft: SIZES.sm, color: colors.error },
+  
+  // Delete Account styles
+  deleteAccountButton: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    paddingVertical: SIZES.sm, marginTop: SIZES.xs,
+  },
+  deleteAccountText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, marginLeft: SIZES.xs, color: colors.error, opacity: 0.7 },
   
   // Legal Links styles
   legalSection: {

@@ -53,7 +53,16 @@ export default function PlansPricingScreen() {
   
   // Handle IAP purchase or mock trial
   const handleIAPPurchase = async () => {
-    // On web, fall back to mock trial
+    // On iOS, MUST use In-App Purchase - never fall back to direct backend calls
+    if (Platform.OS === 'ios') {
+      Alert.alert(
+        'Subscribe',
+        'Please use the Subscription page in your profile to subscribe via the App Store.',
+        [{ text: 'OK', onPress: () => router.back() }]
+      );
+      return;
+    }
+    // On web/Android fallback, use mock trial
     handleStartTrial();
   };
   
@@ -67,12 +76,21 @@ export default function PlansPricingScreen() {
   };
 
   const handleStartTrial = async () => {
+    // On iOS, trials must go through In-App Purchase (configured in App Store Connect)
+    if (Platform.OS === 'ios') {
+      Alert.alert(
+        'Start Trial',
+        'Please use the Subscription page in your profile to start your free trial via the App Store.',
+        [{ text: 'OK', onPress: () => router.back() }]
+      );
+      return;
+    }
     try {
       setProcessingAction(true);
       await startTrial(selectedPlan);
       Alert.alert(
         'Trial Started!',
-        `Your 30-day free trial has begun. You'll have full access to all Pro features.`,
+        `Your 14-day free trial has begun. You'll have full access to all Pro features.`,
         [{ text: 'Get Started', onPress: () => router.back() }]
       );
     } catch (error: any) {
@@ -83,9 +101,17 @@ export default function PlansPricingScreen() {
   };
 
   const handleSubscribe = async () => {
+    // On iOS, MUST use In-App Purchase
+    if (Platform.OS === 'ios') {
+      Alert.alert(
+        'Subscribe',
+        'Please use the Subscription page in your profile to subscribe via the App Store.',
+        [{ text: 'OK', onPress: () => router.back() }]
+      );
+      return;
+    }
     try {
       setProcessingAction(true);
-      // In real app, this would open IAP flow
       await activateSubscription(selectedPlan);
       Alert.alert(
         'Subscription Activated!',
@@ -304,13 +330,11 @@ export default function PlansPricingScreen() {
               )}
 
               <Text style={styles.disclaimer}>
-                {status?.subscription_status === 'none' 
-                  ? iapAvailable 
-                    ? `${SUBSCRIPTION_CONFIG.trialDays}-day free trial. Cancel anytime in ${getCurrentPlatform() === 'ios' ? 'App Store' : 'Google Play'} settings.`
+                {Platform.OS === 'ios'
+                  ? 'Payment is charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. Subscriptions may be managed and auto-renewal may be turned off in Account Settings after purchase.'
+                  : Platform.OS === 'android'
+                    ? `${SUBSCRIPTION_CONFIG.trialDays}-day free trial. Payment is charged through Google Play. Cancel anytime in Google Play settings.`
                     : `No credit card required for trial. Cancel anytime.`
-                  : isIAPAvailable() 
-                    ? `Your subscription will be managed through the ${getCurrentPlatform() === 'ios' ? 'App Store' : 'Google Play Store'}.`
-                    : 'Subscriptions are managed through the iOS App Store or Google Play Store on your mobile device.'
                 }
               </Text>
             </View>

@@ -27,6 +27,7 @@ export const API_ENDPOINTS = {
   AUTH_LOGOUT: '/auth/logout',
   AUTH_SET_ROLE: '/auth/set-role',
   AUTH_UPDATE_PROFILE: '/auth/update-profile',
+  AUTH_DELETE_ACCOUNT: '/auth/delete-account',
   
   // Mom
   MOM_ONBOARDING: '/mom/onboarding',

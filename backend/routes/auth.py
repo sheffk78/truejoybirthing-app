@@ -297,3 +297,51 @@ async def update_profile(request: Request, user: User = Depends(get_current_user
     )
     
     return {"message": "Profile updated", **update_data}
+
+
+@router.delete("/delete-account")
+async def delete_account(user: User = Depends(get_current_user())):
+    """Permanently delete user account and all associated data.
+    Required by Apple App Store Guideline 5.1.1(v).
+    """
+    user_id = user.user_id
+    
+    # Delete user record and sessions
+    await db.users.delete_one({"user_id": user_id})
+    await db.user_sessions.delete_many({"user_id": user_id})
+    
+    # Delete subscription
+    await db.subscriptions.delete_many({"user_id": user_id})
+    
+    # Delete role-specific profiles
+    await db.mom_profiles.delete_many({"user_id": user_id})
+    await db.doula_profiles.delete_many({"user_id": user_id})
+    await db.midwife_profiles.delete_many({"user_id": user_id})
+    
+    # Delete provider-related data
+    await db.clients.delete_many({"provider_id": user_id})
+    await db.notes.delete_many({"provider_id": user_id})
+    
+    # Delete messages (sent or received)
+    await db.messages.delete_many(
+        {"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]}
+    )
+    
+    # Delete invoices and contracts (as provider or client)
+    await db.invoices.delete_many(
+        {"$or": [{"provider_id": user_id}, {"client_user_id": user_id}]}
+    )
+    await db.contracts.delete_many(
+        {"$or": [{"provider_id": user_id}, {"client_user_id": user_id}]}
+    )
+    
+    # Delete appointments
+    await db.appointments.delete_many(
+        {"$or": [{"provider_id": user_id}, {"client_user_id": user_id}]}
+    )
+    
+    # Delete birth plans and notifications
+    await db.birth_plans.delete_many({"user_id": user_id})
+    await db.notifications.delete_many({"user_id": user_id})
+    
+    return {"message": "Account and all associated data have been permanently deleted"}

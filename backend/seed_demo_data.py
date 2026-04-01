@@ -33,8 +33,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
 DB_NAME = os.environ.get("DB_NAME", "test_database")
 
-# Demo account passwords
-DEMO_PASSWORD = "DemoScreenshot2024!"
+# Demo account passwords - must match what is entered in App Store Connect
+DEMO_PASSWORDS = {
+    "demo.doula@truejoybirthing.com": "DemoDoula2024!",
+    "demo.midwife@truejoybirthing.com": "DemoMidwife2024!",
+    "demo.mom@truejoybirthing.com": "DemoMom2024!",
+}
+DEMO_PASSWORD_DEFAULT = "DemoScreenshot2024!"  # fallback for non-primary accounts
 
 # ============== DEMO PROFILE IMAGES ==============
 # Using DiceBear API for legally-safe, synthetic avatars
@@ -535,7 +540,7 @@ async def seed_demo_data(reset: bool = False):
             "email": doula["email"],
             "full_name": doula["full_name"],
             "role": "DOULA",
-            "password_hash": pwd_context.hash(DEMO_PASSWORD),
+            "password_hash": pwd_context.hash(DEMO_PASSWORDS.get(doula["email"], DEMO_PASSWORD_DEFAULT)),
             "picture": get_avatar_url(doula["full_name"], "lorelei"),
             "onboarding_completed": True,
             "created_at": now - timedelta(days=random.randint(30, 365)),
@@ -591,7 +596,7 @@ async def seed_demo_data(reset: bool = False):
             "email": midwife["email"],
             "full_name": midwife["full_name"],
             "role": "MIDWIFE",
-            "password_hash": pwd_context.hash(DEMO_PASSWORD),
+            "password_hash": pwd_context.hash(DEMO_PASSWORDS.get(midwife["email"], DEMO_PASSWORD_DEFAULT)),
             "picture": get_avatar_url(midwife["full_name"], "lorelei"),
             "onboarding_completed": True,
             "created_at": now - timedelta(days=random.randint(30, 365)),
@@ -647,7 +652,7 @@ async def seed_demo_data(reset: bool = False):
             "email": mom["email"],
             "full_name": mom["full_name"],
             "role": "MOM",
-            "password_hash": pwd_context.hash(DEMO_PASSWORD),
+            "password_hash": pwd_context.hash(DEMO_PASSWORDS.get(mom["email"], DEMO_PASSWORD_DEFAULT)),
             "picture": get_avatar_url(mom["full_name"], "lorelei"),
             "onboarding_completed": True,
             "created_at": now - timedelta(days=random.randint(30, 180)),
@@ -935,7 +940,10 @@ async def seed_demo_data(reset: bool = False):
     print(f"Demo Doula:   demo.doula@truejoybirthing.com")
     print(f"Demo Midwife: demo.midwife@truejoybirthing.com")
     print(f"Demo Mom:     demo.mom@truejoybirthing.com")
-    print(f"Password:     {DEMO_PASSWORD}")
+    print(f"Doula PW:     {DEMO_PASSWORDS['demo.doula@truejoybirthing.com']}")
+    print(f"Midwife PW:   {DEMO_PASSWORDS['demo.midwife@truejoybirthing.com']}")
+    print(f"Mom PW:       {DEMO_PASSWORDS['demo.mom@truejoybirthing.com']}")
+    print(f"Other PW:     {DEMO_PASSWORD_DEFAULT}")
     print("-" * 40)
     
     mongo_client.close()

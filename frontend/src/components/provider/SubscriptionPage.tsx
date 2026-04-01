@@ -81,6 +81,24 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
     setProcessing(true);
     try {
+      // On iOS, trials must go through In-App Purchase (configured in App Store Connect)
+      if (Platform.OS === 'ios') {
+        if (!iapAvailable) {
+          Alert.alert('Not Available', 'In-App Purchase is not available. Please restart the app and try again.');
+          return;
+        }
+        const productId = getProductIdForPlan(selectedPlan);
+        if (productId) {
+          const result = await purchase(productId);
+          if (!result.success && result.error) {
+            throw new Error(result.error);
+          }
+          router.back();
+          return;
+        }
+      }
+
+      // Web/Android/development fallback
       await startTrial(selectedPlan);
       Alert.alert('Trial Started!', 'Your 14-day free trial has begun. Enjoy full access to all features!', [
         { text: 'Get Started', onPress: () => router.back() }
@@ -100,26 +118,39 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
     setProcessing(true);
     try {
-      // Use real IAP on native platforms
-      if (iapAvailable && Platform.OS !== 'web') {
+      // On iOS, subscriptions MUST go through In-App Purchase
+      if (Platform.OS === 'ios') {
+        if (!iapAvailable) {
+          Alert.alert('Not Available', 'In-App Purchase is not available. Please restart the app and try again.');
+          setProcessing(false);
+          return;
+        }
         const productId = getProductIdForPlan(selectedPlan);
         if (productId) {
-          // For Android subscriptions with multiple base plans, we need offer token
-          const offerToken = Platform.OS === 'android' ? 
-            (selectedPlan === 'monthly' ? 'monthly-offer' : 'annual-offer') : 
-            undefined;
-          
+          const result = await purchase(productId);
+          if (!result.success && result.error) {
+            throw new Error(result.error);
+          }
+          router.back();
+          return;
+        }
+      }
+
+      // Use real IAP on Android
+      if (iapAvailable && Platform.OS === 'android') {
+        const productId = getProductIdForPlan(selectedPlan);
+        if (productId) {
+          const offerToken = selectedPlan === 'monthly' ? 'monthly-offer' : 'annual-offer';
           const result = await purchase(productId, offerToken);
           if (!result.success && result.error) {
             throw new Error(result.error);
           }
-          // If successful, the IAP callbacks will handle the rest
           router.back();
           return;
         }
       }
       
-      // Fallback to mock activation for web/development
+      // Fallback to mock activation for web/development only
       await activateSubscription(selectedPlan);
       Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.', [
         { text: 'Continue', onPress: () => router.back() }
@@ -170,12 +201,30 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
     setProcessing(true);
     try {
-      // Use real IAP on native platforms
-      if (iapAvailable && Platform.OS !== 'web') {
+      // On iOS, upgrades MUST go through In-App Purchase
+      if (Platform.OS === 'ios') {
+        if (!iapAvailable) {
+          Alert.alert('Not Available', 'In-App Purchase is not available. Please restart the app and try again.');
+          setProcessing(false);
+          return;
+        }
         const productId = getProductIdForPlan('annual');
         if (productId) {
-          const offerToken = Platform.OS === 'android' ? 'annual-offer' : undefined;
-          const result = await purchase(productId, offerToken);
+          const result = await purchase(productId);
+          if (!result.success && result.error) {
+            throw new Error(result.error);
+          }
+          await fetchStatus();
+          Alert.alert('Upgrade Successful!', 'You\'re now on the annual plan. Thank you!');
+          return;
+        }
+      }
+
+      // Android IAP
+      if (iapAvailable && Platform.OS === 'android') {
+        const productId = getProductIdForPlan('annual');
+        if (productId) {
+          const result = await purchase(productId, 'annual-offer');
           if (!result.success && result.error) {
             throw new Error(result.error);
           }
@@ -185,7 +234,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
         }
       }
       
-      // Fallback to mock activation for web/development
+      // Fallback to mock activation for web/development only
       await activateSubscription('annual');
       Alert.alert('Upgrade Successful!', 'You\'re now on the annual plan. Thank you!');
     } catch (error: any) {
@@ -215,12 +264,30 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
     setProcessing(true);
     try {
-      // Use real IAP on native platforms
-      if (iapAvailable && Platform.OS !== 'web') {
+      // On iOS, MUST go through In-App Purchase
+      if (Platform.OS === 'ios') {
+        if (!iapAvailable) {
+          Alert.alert('Not Available', 'In-App Purchase is not available. Please restart the app and try again.');
+          setProcessing(false);
+          return;
+        }
         const productId = getProductIdForPlan(planType);
         if (productId) {
-          const offerToken = Platform.OS === 'android' ? `${planType}-offer` : undefined;
-          const result = await purchase(productId, offerToken);
+          const result = await purchase(productId);
+          if (!result.success && result.error) {
+            throw new Error(result.error);
+          }
+          await fetchStatus();
+          Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.');
+          return;
+        }
+      }
+
+      // Android IAP
+      if (iapAvailable && Platform.OS === 'android') {
+        const productId = getProductIdForPlan(planType);
+        if (productId) {
+          const result = await purchase(productId, `${planType}-offer`);
           if (!result.success && result.error) {
             throw new Error(result.error);
           }
@@ -230,7 +297,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
         }
       }
       
-      // Fallback to mock activation for web/development
+      // Fallback to mock activation for web/development only
       await activateSubscription(planType);
       Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.');
     } catch (error: any) {
@@ -743,8 +810,12 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
             )}
 
             <Text style={styles.termsText}>
-              By subscribing, you agree to our Terms of Service and Privacy Policy. 
-              Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period.
+              {Platform.OS === 'ios'
+                ? 'Payment is charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. Subscriptions may be managed and auto-renewal may be turned off in your Account Settings after purchase.'
+                : Platform.OS === 'android'
+                  ? 'Payment is charged through your Google Play account. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Subscriptions may be managed in Google Play Store settings.'
+                  : 'By subscribing, you agree to our Terms of Service and Privacy Policy. Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period.'
+              }
             </Text>
           </View>
         )}
