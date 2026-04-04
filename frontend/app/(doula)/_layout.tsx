@@ -3,6 +3,7 @@ import { Tabs } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import { useColors, SIZES } from '../../src/hooks/useThemedStyles';
 import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**
  * Doula Navigation Layout
@@ -18,7 +19,9 @@ import { Platform } from 'react-native';
  */
 export default function DoulaLayout() {
   const colors = useColors();
-  
+  const insets = useSafeAreaInsets();
+  const bottomInset = Platform.OS === 'ios' ? 28 : Math.max(insets.bottom, 8);
+
   return (
     <Tabs
       screenOptions={{
@@ -28,8 +31,8 @@ export default function DoulaLayout() {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          height: Platform.OS === 'ios' ? 88 : 64,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+          height: (Platform.OS === 'ios' ? 60 : 56) + bottomInset,
+          paddingBottom: bottomInset,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
