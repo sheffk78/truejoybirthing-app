@@ -157,14 +157,15 @@ export default function LoginScreen() {
                       error={errors.password}
                     />
                     
-                    <Pressable 
+                    <Pressable
                       style={styles.forgotPassword}
+                      onPress={() => router.push('/(auth)/forgot-password')}
                       // @ts-ignore
-                      onClick={Platform.OS === 'web' ? () => {} : undefined}
+                      onClick={Platform.OS === 'web' ? () => router.push('/(auth)/forgot-password') : undefined}
                     >
                       <Text style={styles.forgotPasswordText}>Forgot password?</Text>
                     </Pressable>
-                    
+
                     <Button
                       title="Log In"
                       onPress={handleLogin}
@@ -174,10 +175,10 @@ export default function LoginScreen() {
                       testID="login-submit-btn"
                     />
                   </View>
-                  
+
                   <View style={styles.signupSection}>
                     <Text style={styles.signupText}>Don't have an account? </Text>
-                    <Pressable 
+                    <Pressable
                       onPress={() => router.push('/(auth)/signup')}
                       // @ts-ignore
                       onClick={Platform.OS === 'web' ? () => router.push('/(auth)/signup') : undefined}
@@ -267,10 +268,11 @@ export default function LoginScreen() {
                   error={errors.password}
                 />
                 
-                <Pressable 
+                <Pressable
                   style={styles.forgotPassword}
+                  onPress={() => router.push('/(auth)/forgot-password')}
                   // @ts-ignore
-                  onClick={Platform.OS === 'web' ? () => {} : undefined}
+                  onClick={Platform.OS === 'web' ? () => router.push('/(auth)/forgot-password') : undefined}
                 >
                   <Text style={styles.forgotPasswordText}>Forgot password?</Text>
                 </Pressable>

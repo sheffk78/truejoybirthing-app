@@ -10,12 +10,16 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 import uuid
+import random
+import logging
 import httpx
 
 from .dependencies import (
     db, get_now, get_current_user, verify_password, get_password_hash,
     generate_id, ACCESS_TOKEN_EXPIRE_DAYS, User
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -35,6 +39,20 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    code: str
+    new_password: str
+
+
+# Password reset config
+RESET_CODE_EXPIRY_MINUTES = 15
 
 
 # ============== HELPER FUNCTIONS ==============
@@ -345,3 +363,83 @@ async def delete_account(user: User = Depends(get_current_user())):
     await db.notifications.delete_many({"user_id": user_id})
     
     return {"message": "Account and all associated data have been permanently deleted"}
+
+
+# ============== PASSWORD RESET ==============
+
+@router.post("/forgot-password")
+async def forgot_password(data: ForgotPasswordRequest):
+    """Request a password reset code. Always returns success to prevent user enumeration."""
+    now = get_now()
+
+    user_doc = await db.users.find_one({"email": data.email}, {"_id": 0})
+
+    if user_doc:
+        # Generate a 6-digit code
+        code = f"{random.randint(0, 999999):06d}"
+
+        # Store the reset code
+        await db.password_resets.delete_many({"email": data.email})
+        await db.password_resets.insert_one({
+            "email": data.email,
+            "user_id": user_doc["user_id"],
+            "code": code,
+            "expires_at": now + timedelta(minutes=RESET_CODE_EXPIRY_MINUTES),
+            "created_at": now,
+            "used": False,
+        })
+
+        # Send the email
+        try:
+            from services.email_service import send_password_reset_email
+            await send_password_reset_email(
+                to_email=data.email,
+                user_name=user_doc.get("full_name", ""),
+                reset_code=code,
+                expiry_minutes=RESET_CODE_EXPIRY_MINUTES,
+            )
+        except Exception as e:
+            logger.error(f"Failed to send password reset email to {data.email}: {e}")
+
+    # Always return success to prevent user enumeration
+    return {"message": "If an account with that email exists, a reset code has been sent."}
+
+
+@router.post("/reset-password")
+async def reset_password(data: ResetPasswordRequest):
+    """Reset password using a valid reset code."""
+    now = get_now()
+
+    # Find the reset record
+    reset_doc = await db.password_resets.find_one({
+        "email": data.email,
+        "code": data.code,
+        "used": False,
+    })
+
+    if not reset_doc:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset code")
+
+    if reset_doc["expires_at"] < now:
+        # Clean up expired code
+        await db.password_resets.delete_one({"_id": reset_doc["_id"]})
+        raise HTTPException(status_code=400, detail="Reset code has expired. Please request a new one.")
+
+    # Validate new password
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+
+    # Update the user's password
+    new_hash = get_password_hash(data.new_password)
+    result = await db.users.update_one(
+        {"email": data.email},
+        {"$set": {"password_hash": new_hash, "updated_at": now}}
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Failed to update password")
+
+    # Mark the reset code as used and clean up
+    await db.password_resets.delete_many({"email": data.email})
+
+    return {"message": "Password has been reset successfully. You can now log in with your new password."}
