@@ -16,6 +16,7 @@ from .dependencies import (
     db, get_now, get_current_user, verify_password, get_password_hash,
     generate_id, ACCESS_TOKEN_EXPIRE_DAYS, User
 )
+from ensure_demo_accounts import is_demo_account, ensure_demo_accounts
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -343,5 +344,9 @@ async def delete_account(user: User = Depends(get_current_user())):
     # Delete birth plans and notifications
     await db.birth_plans.delete_many({"user_id": user_id})
     await db.notifications.delete_many({"user_id": user_id})
-    
+
+    # Re-create demo accounts after deletion so they remain available for Apple review
+    if is_demo_account(user.email):
+        await ensure_demo_accounts(db)
+
     return {"message": "Account and all associated data have been permanently deleted"}

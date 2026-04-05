@@ -10,9 +10,9 @@ This document provides comprehensive instructions for capturing high-quality scr
 
 | Role | Email | Password |
 |------|-------|----------|
-| **Demo Doula** | demo.doula@truejoybirthing.com | DemoScreenshot2024! |
-| **Demo Midwife** | demo.midwife@truejoybirthing.com | DemoScreenshot2024! |
-| **Demo Mom** | demo.mom@truejoybirthing.com | DemoScreenshot2024! |
+| **Demo Doula** | demo.doula@truejoybirthing.com | DemoDoula2024! |
+| **Demo Midwife** | demo.midwife@truejoybirthing.com | DemoMidwife2024! |
+| **Demo Mom** | demo.mom@truejoybirthing.com | DemoMom2024! |
 
 ## Demo Data Overview
 
@@ -156,7 +156,7 @@ The seed script creates the following realistic data:
 
 ### Mom Experience Flow
 
-1. **Login** → demo.mom@truejoybirthing.com / DemoScreenshot2024!
+1. **Login** → demo.mom@truejoybirthing.com / DemoMom2024!
 2. **Dashboard** → First screen after login
 3. **Birth Plan** → Tap "Birth Plan" card or tab
 4. **Birth Plan Section** → Tap any completed section
@@ -165,7 +165,7 @@ The seed script creates the following realistic data:
 
 ### Provider Experience Flow (Doula)
 
-1. **Login** → demo.doula@truejoybirthing.com / DemoScreenshot2024!
+1. **Login** → demo.doula@truejoybirthing.com / DemoDoula2024!
 2. **Dashboard** → First screen after login
 3. **Clients** → Tap "Clients" in bottom nav
 4. **Client Detail** → Tap "Emma Johnson" in clients list
