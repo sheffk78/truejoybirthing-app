@@ -99,8 +99,16 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
       }
       
       setInvoices(filteredInvoices);
-      setClients(clientsData);
+      const clientList = clientsData || [];
+      setClients(clientList);
       setPaymentTemplates(templatesData);
+
+      // Auto-select client from params or single-client fallback
+      const active = clientList.filter((c: any) => c.linked_mom_id);
+      const autoId = params.clientId || (active.length === 1 ? active[0].client_id : '');
+      if (autoId) {
+        setSelectedClientId(autoId);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -118,9 +126,16 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
     setRefreshing(false);
   };
 
+  const getAutoSelectClientId = () => {
+    if (params.clientId) return params.clientId;
+    const active = clients.filter(c => c.linked_mom_id);
+    if (active.length === 1) return active[0].client_id;
+    return '';
+  };
+
   const resetInvoiceForm = () => {
-    // Preserve client selection in client-scoped mode
-    setSelectedClientId(isClientScoped && params.clientId ? params.clientId : '');
+    // Preserve client selection in client-scoped mode or single-client fallback
+    setSelectedClientId(getAutoSelectClientId());
     setDescription('');
     setAmount('');
     setIssueDate(new Date().toISOString().split('T')[0]);

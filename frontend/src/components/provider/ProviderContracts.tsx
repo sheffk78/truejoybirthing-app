@@ -89,12 +89,31 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
   const sections = config.sections;
   const defaultValues = config.defaultValues;
 
+  // Auto-select client from params or single-client fallback after data loads
+  const autoSelectClient = (clientList: Client[]) => {
+    const activeClients = clientList.filter(c => c.linked_mom_id);
+    let targetClientId = params.clientId || '';
+
+    // Fallback: if no clientId param but only one active client, auto-select them
+    if (!targetClientId && activeClients.length === 1) {
+      targetClientId = activeClients[0].client_id;
+    }
+
+    if (targetClientId) {
+      const client = activeClients.find(c => c.client_id === targetClientId);
+      if (client) {
+        setSelectedClientId(client.client_id);
+        updateFormField('client_name', client.name);
+        if (client.edd) {
+          updateFormField('estimated_due_date', client.edd);
+        }
+        fetchClientBirthPlanData(client);
+      }
+    }
+  };
+
   useEffect(() => {
     loadData();
-    // If client-scoped, pre-select the client
-    if (params.clientId) {
-      setSelectedClientId(params.clientId);
-    }
   }, [params.clientId]);
 
   const loadData = async () => {
@@ -111,8 +130,10 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
       }
       
       setContracts(filteredContracts);
-      setClients(clientsRes || []);
-      
+      const clientList = clientsRes || [];
+      setClients(clientList);
+      autoSelectClient(clientList);
+
       // Load templates separately
       try {
         const templatesRes = await apiRequest('/contract-templates');
@@ -155,10 +176,29 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
     } catch {
       setFormData({ ...defaultValues });
     }
-    
-    setSelectedClientId('');
+
     setSelectedTemplateId('');
     setCurrentSection(0);
+
+    // Preserve client selection in client-scoped mode or single-client fallback
+    const activeClients = clients.filter(c => c.linked_mom_id);
+    const autoClientId = params.clientId || (activeClients.length === 1 ? activeClients[0].client_id : '');
+    if (autoClientId) {
+      const client = activeClients.find(c => c.client_id === autoClientId);
+      if (client) {
+        setSelectedClientId(client.client_id);
+        updateFormField('client_name', client.name);
+        if (client.edd) {
+          updateFormField('estimated_due_date', client.edd);
+        }
+        fetchClientBirthPlanData(client);
+      } else {
+        setSelectedClientId('');
+      }
+    } else {
+      setSelectedClientId('');
+    }
+
     setShowCreateModal(true);
   };
 
@@ -733,10 +773,15 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                           fetchClientBirthPlanData(client);
                         }}
                       >
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Text style={[
                           styles.clientOptionText,
-                          selectedClientId === client.client_id && { color: primaryColor }
+                          selectedClientId === client.client_id && { color: primaryColor, fontWeight: '600' }
                         ]}>{client.name}</Text>
+                        {selectedClientId === client.client_id && (
+                          <Ionicons name="checkmark-circle" size={18} color={primaryColor} />
+                        )}
+                      </View>
                         {client.edd && (
                           <Text style={styles.clientDueDate}>Due: {client.edd}</Text>
                         )}
