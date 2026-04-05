@@ -14,6 +14,7 @@ export default function AuthLayout() {
       <Stack.Screen name="welcome" />
       <Stack.Screen name="login" />
       <Stack.Screen name="signup" />
+      <Stack.Screen name="notification-permission" />
       <Stack.Screen name="mom-onboarding" />
       <Stack.Screen name="doula-onboarding" />
       <Stack.Screen name="midwife-onboarding" />
