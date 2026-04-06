@@ -8,15 +8,15 @@ const getBackendUrl = () => {
     // On web, use relative path - the proxy will handle routing to backend
     return '';
   }
-  // On native, use the environment variable
-  return process.env.EXPO_PUBLIC_BACKEND_URL || '';
+  // On native, use the environment variable or default to Railway production
+  return process.env.EXPO_PUBLIC_BACKEND_URL || 'https://truejoybirthing-app-production.up.railway.app';
 };
 
 export const API_BASE = `${getBackendUrl()}/api`;
 
 // Full base URL for direct resource access (like PDF downloads)
 // On web, returns empty string which works for same-origin requests, on native uses env var
-export const API_BASE_URL = Platform.OS === 'web' ? '' : (process.env.EXPO_PUBLIC_BACKEND_URL || '');
+export const API_BASE_URL = Platform.OS === 'web' ? '' : (process.env.EXPO_PUBLIC_BACKEND_URL || 'https://truejoybirthing-app-production.up.railway.app');
 
 export const API_ENDPOINTS = {
   // Auth

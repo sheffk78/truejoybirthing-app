@@ -23,7 +23,7 @@
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_BACKEND_URL": "https://bundle-resolve.preview.emergentagent.com"
+        "EXPO_PUBLIC_BACKEND_URL": "https://truejoybirthing-app-production.up.railway.app"
       },
       "ios": {
         "resourceClass": "m-medium"
