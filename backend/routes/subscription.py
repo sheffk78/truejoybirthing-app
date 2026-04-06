@@ -13,6 +13,7 @@ from datetime import datetime, timezone, timedelta
 import uuid
 
 from .dependencies import db, get_now, get_current_user, check_role, User
+from ensure_demo_accounts import is_demo_account
 from services.email_service import (
     send_subscription_activated_email,
     send_subscription_upgraded_email,
@@ -141,7 +142,22 @@ async def get_subscription_status(user: User = Depends(get_current_user())):
             "is_mom": True,
             "auto_renewing": False
         }
-    
+
+    # Demo accounts always have pro access (for Apple review)
+    if is_demo_account(user.email):
+        return {
+            "has_pro_access": True,
+            "subscription_status": "active",
+            "plan_type": "annual",
+            "subscription_provider": "DEMO",
+            "trial_end_date": None,
+            "subscription_end_date": None,
+            "days_remaining": 365,
+            "is_trial": False,
+            "is_mom": False,
+            "auto_renewing": True
+        }
+
     # Get subscription info for PRO users
     subscription = await db.subscriptions.find_one(
         {"user_id": user.user_id},

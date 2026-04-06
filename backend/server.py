@@ -36,6 +36,9 @@ from midwife_contract_template import (
 # Import client utility functions
 from utils.client_utils import is_client_active, calculate_client_active_status
 
+# Import demo account guarantee
+from ensure_demo_accounts import ensure_demo_accounts, is_demo_account
+
 # Import modular route dependencies ONLY (routers imported after auth is defined)
 from routes import dependencies as route_deps
 
@@ -1874,6 +1877,11 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+@app.on_event("startup")
+async def startup_ensure_demo_accounts():
+    """Ensure demo accounts exist on every server startup for Apple review."""
+    await ensure_demo_accounts(db)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
