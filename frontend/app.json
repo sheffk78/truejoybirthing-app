@@ -38,7 +38,8 @@
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE"
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES"
       ]
     },
     "web": {
@@ -48,6 +49,13 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "True Joy Birthing needs photo library access to select profile photos.",
+          "cameraPermission": "True Joy Birthing needs camera access to take profile photos."
+        }
+      ],
       [
         "expo-splash-screen",
         {

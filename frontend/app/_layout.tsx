@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { Platform, StatusBar, View, ActivityIndicator } from 'react-native';
+import { Platform, StatusBar, View, ActivityIndicator, BackHandler } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {
@@ -94,6 +94,24 @@ function ThemedLayout() {
     }
   }, [isAuthenticated, isLoading, user, segments, isReady]);
   
+  // Handle Android hardware back button
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const onBackPress = () => {
+      // If the router can go back, go back within the app
+      if (router.canGoBack()) {
+        router.back();
+        return true; // prevent default (exit app)
+      }
+      // On a root tab screen — don't exit the app, just do nothing
+      return true;
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  }, [router]);
+
   // Show loading screen while initializing
   if (!isReady || isLoading) {
     return <LoadingScreen message="Loading True Joy Birthing..." />;
