@@ -26,6 +26,7 @@ const CREDENTIALS = [
   { value: 'CPM', label: 'Certified Professional Midwife' },
   { value: 'LM', label: 'Licensed Midwife' },
   { value: 'CNM', label: 'Certified Nurse-Midwife' },
+  { value: 'DEM', label: 'Direct Entry Midwife' },
 ];
 
 const BIRTH_SETTINGS = [

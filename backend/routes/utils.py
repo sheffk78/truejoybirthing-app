@@ -12,6 +12,14 @@ from pydantic import BaseModel
 from typing import Optional
 
 from .dependencies import get_db, check_role, User
+from weekly_content import (
+    WEEKLY_TIPS as FULL_WEEKLY_TIPS,
+    WEEKLY_AFFIRMATIONS as FULL_WEEKLY_AFFIRMATIONS,
+    POSTPARTUM_TIPS as FULL_POSTPARTUM_TIPS,
+    POSTPARTUM_AFFIRMATIONS as FULL_POSTPARTUM_AFFIRMATIONS,
+    get_weekly_tip as get_full_weekly_tip,
+    get_weekly_affirmation as get_full_weekly_affirmation,
+)
 
 router = APIRouter()
 
@@ -218,16 +226,16 @@ async def get_weekly_content(user: User = Depends(check_role(["MOM"]))):
         days_postpartum = (today - due_date).days
         postpartum_week = min((days_postpartum // 7) + 1, 6)  # Cap at 6 weeks
     
-    # Get the appropriate content
+    # Get the appropriate content (use full-length content from weekly_content.py)
     if is_postpartum:
-        tip = get_weekly_tip(current_week, is_postpartum=True, postpartum_week=postpartum_week)
-        affirmation = get_weekly_affirmation(current_week, is_postpartum=True, postpartum_week=postpartum_week)
+        tip = get_full_weekly_tip(current_week, is_postpartum=True, postpartum_week=postpartum_week)
+        affirmation = get_full_weekly_affirmation(current_week, is_postpartum=True, postpartum_week=postpartum_week)
         display_week = f"Postpartum Week {postpartum_week}"
     else:
         # Clamp to valid pregnancy weeks
         clamped_week = max(1, min(current_week, 42))
-        tip = get_weekly_tip(clamped_week)
-        affirmation = get_weekly_affirmation(clamped_week)
+        tip = get_full_weekly_tip(clamped_week)
+        affirmation = get_full_weekly_affirmation(clamped_week)
         display_week = f"Week {clamped_week}"
     
     return {
@@ -247,18 +255,18 @@ async def get_all_weekly_content():
     for week in range(1, 43):
         pregnancy_content.append({
             "week": week,
-            "tip": WEEKLY_TIPS.get(week, ""),
-            "affirmation": WEEKLY_AFFIRMATIONS.get(week, "")
+            "tip": FULL_WEEKLY_TIPS.get(week, ""),
+            "affirmation": FULL_WEEKLY_AFFIRMATIONS.get(week, "")
         })
-    
+
     postpartum_content = []
     for week in range(1, 7):
         postpartum_content.append({
             "week": week,
-            "tip": POSTPARTUM_TIPS.get(week, ""),
-            "affirmation": POSTPARTUM_AFFIRMATIONS.get(week, "")
+            "tip": FULL_POSTPARTUM_TIPS.get(week, ""),
+            "affirmation": FULL_POSTPARTUM_AFFIRMATIONS.get(week, "")
         })
-    
+
     return {
         "pregnancy": pregnancy_content,
         "postpartum": postpartum_content
