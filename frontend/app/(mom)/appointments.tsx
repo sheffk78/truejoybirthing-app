@@ -588,8 +588,22 @@ export default function AppointmentsScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Date Picker - Always use modal for better mobile experience */}
-            {showDatePicker && (
+            {/* Date Picker */}
+            {showDatePicker && Platform.OS === 'android' && (
+              <DateTimePicker
+                value={appointmentDate}
+                mode="date"
+                display="default"
+                minimumDate={new Date()}
+                onChange={(event, date) => {
+                  setShowDatePicker(false);
+                  if (event.type === 'set' && date) {
+                    setAppointmentDate(date);
+                  }
+                }}
+              />
+            )}
+            {showDatePicker && Platform.OS !== 'android' && (
               <Modal
                 visible={showDatePicker}
                 transparent
@@ -651,8 +665,21 @@ export default function AppointmentsScreen() {
               </Modal>
             )}
 
-            {/* Time Picker - Always use modal for better mobile experience */}
-            {showTimePicker && (
+            {/* Time Picker */}
+            {showTimePicker && Platform.OS === 'android' && (
+              <DateTimePicker
+                value={appointmentTime}
+                mode="time"
+                display="default"
+                onChange={(event, date) => {
+                  setShowTimePicker(false);
+                  if (event.type === 'set' && date) {
+                    setAppointmentTime(date);
+                  }
+                }}
+              />
+            )}
+            {showTimePicker && Platform.OS !== 'android' && (
               <Modal
                 visible={showTimePicker}
                 transparent
@@ -771,7 +798,7 @@ export default function AppointmentsScreen() {
             <Button
               title={isCreating ? 'Sending Request...' : 'Send Request'}
               onPress={handleCreateAppointment}
-              disabled={!selectedProvider || isCreating}
+              disabled={(!selectedProvider && !isPersonalAppointment) || isCreating}
               loading={isCreating}
               fullWidth
               data-testid="submit-appointment-btn"

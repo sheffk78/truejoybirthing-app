@@ -198,7 +198,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -229,6 +229,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
       }
 
       const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -247,24 +248,25 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   const uploadProfilePhoto = async (asset: ImagePicker.ImagePickerAsset) => {
     setUploadingPhoto(true);
     try {
-      // For web, use base64 directly; for native, use uploadImage utility
       let imageUrl: string;
-      if (Platform.OS === 'web' && asset.base64) {
+      if (asset.base64) {
+        // Use base64 directly when available (requested via base64: true in picker options)
         imageUrl = `data:image/jpeg;base64,${asset.base64}`;
       } else {
+        // Fallback to uploadImage utility (handles file:// URIs via expo-file-system)
         imageUrl = await uploadImage(asset.uri, 'profile');
       }
-      
+
       setProfilePicture(imageUrl);
-      
+
       await apiRequest(config.endpoints.profile, {
         method: 'PUT',
         body: { picture: imageUrl },
       });
-      
+
       // Update auth store so Dashboard and other screens show the new picture
       updateUser({ picture: imageUrl });
-      
+
       if (Platform.OS === 'web') {
         window.alert('Profile photo updated!');
       } else {
