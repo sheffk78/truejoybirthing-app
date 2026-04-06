@@ -54,9 +54,10 @@ function ThemedLayout() {
       if (!user.onboarding_completed) {
         // First show intro walkthrough, then role-specific profile setup
         const isOnIntro = currentScreen === 'onboarding-intro';
+        const isOnNotificationPermission = currentScreen === 'notification-permission';
         const isOnProfileSetup = ['mom-onboarding', 'doula-onboarding', 'midwife-onboarding'].includes(currentScreen);
         
-        if (!isOnIntro && !isOnProfileSetup) {
+        if (!isOnIntro && !isOnNotificationPermission && !isOnProfileSetup) {
           // Start with the intro walkthrough
           router.replace('/(auth)/onboarding-intro');
         }

@@ -1,6 +1,6 @@
 /**
  * Push Notifications Hook for True Joy Birthing
- * 
+ *
  * Handles push notification registration, permission requests,
  * and notification event handling using Expo Push Notifications.
  */
@@ -8,8 +8,9 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Platform, Alert } from 'react-native';
+import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import { apiRequest } from '../utils/api';
 import { useAuthStore } from '../store/authStore';
 
@@ -39,7 +40,7 @@ export function usePushNotifications() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const notificationListener = useRef<Notifications.EventSubscription>();
   const responseListener = useRef<Notifications.EventSubscription>();
 
@@ -84,7 +85,7 @@ export function usePushNotifications() {
       // Get current permission status
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       setPermissionStatus(existingStatus);
-      
+
       let finalStatus = existingStatus;
 
       // Request permission if not already granted
@@ -109,7 +110,7 @@ export function usePushNotifications() {
           vibrationPattern: [0, 250, 250, 250],
           lightColor: '#9B7BB8', // Primary purple color
         });
-        
+
         // Create channel for messages
         await Notifications.setNotificationChannelAsync('messages', {
           name: 'Messages',
@@ -117,7 +118,7 @@ export function usePushNotifications() {
           importance: Notifications.AndroidImportance.HIGH,
           sound: 'default',
         });
-        
+
         // Create channel for appointments
         await Notifications.setNotificationChannelAsync('appointments', {
           name: 'Appointments',
@@ -129,7 +130,7 @@ export function usePushNotifications() {
 
       // Get Expo push token
       const projectId = Constants.expoConfig?.extra?.eas?.projectId;
-      
+
       if (!projectId) {
         console.log('[Push] No EAS project ID found, using fallback');
       }
@@ -140,7 +141,7 @@ export function usePushNotifications() {
 
       const token = tokenData.data;
       console.log('[Push] Expo push token:', token.substring(0, 30) + '...');
-      
+
       setExpoPushToken(token);
 
       // Register with backend
@@ -157,6 +158,35 @@ export function usePushNotifications() {
       return null;
     }
   }, [registerTokenWithBackend]);
+
+  // Refresh push token (re-register on app launch if permissions granted)
+  const refreshPushToken = useCallback(async () => {
+    if (!isAuthenticated) return;
+
+    try {
+      if (!Device.isDevice) return;
+
+      const { status } = await Notifications.getPermissionsAsync();
+      setPermissionStatus(status);
+
+      if (status !== 'granted') return;
+
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+      const tokenData = await Notifications.getExpoPushTokenAsync({
+        projectId: projectId || undefined,
+      });
+
+      const token = tokenData.data;
+      setExpoPushToken(token);
+
+      // Re-register with backend (tokens can rotate)
+      const registered = await registerTokenWithBackend(token);
+      setIsRegistered(registered);
+      console.log('[Push] Token refreshed on app launch');
+    } catch (err) {
+      console.error('[Push] Error refreshing push token:', err);
+    }
+  }, [isAuthenticated, registerTokenWithBackend]);
 
   // Unregister push token
   const unregisterPushNotifications = useCallback(async () => {
@@ -191,8 +221,8 @@ export function usePushNotifications() {
   // Initialize on mount and user change
   useEffect(() => {
     if (isAuthenticated && user?.user_id) {
-      // Auto-register for push notifications when user is authenticated
-      registerForPushNotifications();
+      // Refresh push token on app launch (handles token rotation)
+      refreshPushToken();
 
       // Set up notification listeners
       notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
@@ -204,7 +234,7 @@ export function usePushNotifications() {
         console.log('[Push] User responded to notification:', response.notification.request.content.data);
         // Handle notification tap - navigate to relevant screen
         const data = response.notification.request.content.data as Record<string, any>;
-        handleNotificationResponse(data);
+        handleNotificationResponse(data, user.role);
       });
     }
 
@@ -216,7 +246,7 @@ export function usePushNotifications() {
         Notifications.removeNotificationSubscription(responseListener.current);
       }
     };
-  }, [isAuthenticated, user?.user_id, registerForPushNotifications]);
+  }, [isAuthenticated, user?.user_id, refreshPushToken]);
 
   return {
     expoPushToken,
@@ -228,43 +258,60 @@ export function usePushNotifications() {
     registerForPushNotifications,
     unregisterPushNotifications,
     checkPushStatus,
+    refreshPushToken,
   };
 }
 
 // Handle notification tap - navigate to relevant screen
-function handleNotificationResponse(data: Record<string, any>) {
-  const notificationType = data.notification_type;
-  
+function handleNotificationResponse(data: Record<string, any>, userRole?: string) {
+  const notificationType = data.notification_type || data.type;
+  const conversationId = data.conversationId;
+
+  // Determine the correct route prefix based on user role
+  const getRolePrefix = () => {
+    switch (userRole) {
+      case 'DOULA': return '(doula)';
+      case 'MIDWIFE': return '(midwife)';
+      case 'MOM':
+      default: return '(mom)';
+    }
+  };
+
+  const rolePrefix = getRolePrefix();
+
   switch (notificationType) {
     case 'message':
-      // Navigate to messages
-      console.log('[Push] Navigate to messages');
+      if (conversationId) {
+        // Navigate to the specific conversation
+        router.push(`/${rolePrefix}/messages?userId=${conversationId}` as any);
+      } else {
+        router.push(`/${rolePrefix}/messages` as any);
+      }
       break;
     case 'appointment':
     case 'appointment_request':
     case 'appointment_accepted':
     case 'appointment_declined':
-      // Navigate to appointments
-      console.log('[Push] Navigate to appointments');
+      router.push(`/${rolePrefix}/appointments` as any);
       break;
     case 'contract':
     case 'contract_signed':
-      // Navigate to contracts
-      console.log('[Push] Navigate to contracts');
+      router.push(`/${rolePrefix}/contracts` as any);
       break;
     case 'invoice':
     case 'payment':
-      // Navigate to invoices
-      console.log('[Push] Navigate to invoices');
+      router.push(`/${rolePrefix}/invoices` as any);
       break;
     case 'team_invite':
     case 'team_accepted':
-      // Navigate to team/providers
-      console.log('[Push] Navigate to team');
+      if (userRole === 'MOM') {
+        router.push(`/${rolePrefix}/my-team` as any);
+      } else {
+        router.push(`/${rolePrefix}/clients` as any);
+      }
       break;
     default:
-      // Navigate to notifications
-      console.log('[Push] Navigate to notifications');
+      router.push(`/${rolePrefix}/messages` as any);
   }
 }
 

@@ -65,6 +65,13 @@
           "backgroundColor": "#F8F4F9"
         }
       ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#9F83B6"
+        }
+      ],
       "@react-native-community/datetimepicker",
       "expo-iap",
       [

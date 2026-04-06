@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
-  StyleSheet,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,17 +15,9 @@ export default function OnboardingIntroScreen() {
   const { user } = useAuthStore();
   
   const handleComplete = () => {
-    // After walkthrough, redirect to role-specific profile setup
-    if (user?.role === 'MOM') {
-      router.replace('/(auth)/mom-onboarding');
-    } else if (user?.role === 'DOULA') {
-      router.replace('/(auth)/doula-onboarding');
-    } else if (user?.role === 'MIDWIFE') {
-      router.replace('/(auth)/midwife-onboarding');
-    } else {
-      // Fallback
-      router.replace('/(auth)/mom-onboarding');
-    }
+    // After walkthrough, go to notification permission screen before role-specific profile setup
+    const role = user?.role || 'MOM';
+    router.replace(`/(auth)/notification-permission?role=${role}`);
   };
   
   return (

@@ -247,13 +247,22 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
     await db.messages.insert_one(message_doc)
     message_doc.pop('_id', None)
     
-    # Create notification for receiver
+    # Create notification for receiver with sender name and conversation context
+    message_body = message_data.content.strip()
+    if len(message_body) > 100:
+        message_body = message_body[:100] + "..."
+
     await create_notification(
         user_id=message_data.receiver_id,
-        notif_type="new_message",
-        title="New Message",
-        message=f"{user.full_name} sent you a message",
-        data={"sender_id": user.user_id, "message_id": message_doc["message_id"]}
+        notif_type="message",
+        title=user.full_name,
+        message=message_body,
+        data={
+            "sender_id": user.user_id,
+            "message_id": message_doc["message_id"],
+            "conversationId": user.user_id,
+            "type": "message",
+        }
     )
     
     # Send real-time WebSocket notification to receiver
