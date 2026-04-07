@@ -155,6 +155,9 @@ async def ensure_demo_accounts(db):
                 # Ensure subscription is active and not expired
                 sub_end = existing_sub.get("subscription_end_date")
                 sub_status = existing_sub.get("subscription_status")
+                # Ensure sub_end is timezone-aware for comparison
+                if sub_end and sub_end.tzinfo is None:
+                    sub_end = sub_end.replace(tzinfo=timezone.utc)
                 if sub_status != "active" or (sub_end and sub_end < now):
                     await db.subscriptions.update_one(
                         {"user_id": user_id},
