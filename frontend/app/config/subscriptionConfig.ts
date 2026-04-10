@@ -88,7 +88,7 @@ export const SUBSCRIPTION_CONFIG: SubscriptionConfiguration = {
     monthly: {
       id: 'monthly',
       name: 'True Joy Pro – Monthly',
-      price: 29,
+      price: 29.99,
       period: 'month',
       features: [
         'Client management and history',
@@ -101,7 +101,7 @@ export const SUBSCRIPTION_CONFIG: SubscriptionConfiguration = {
     annual: {
       id: 'annual',
       name: 'True Joy Pro – Annual',
-      price: 276, // $23/month billed annually (save $72)
+      price: 274.99, // ~$22.92/month billed annually (save ~$85)
       period: 'year',
       features: [
         'Client management and history',
@@ -109,7 +109,7 @@ export const SUBSCRIPTION_CONFIG: SubscriptionConfiguration = {
         'Invoices and payments',
         'Notes and visit summaries',
         'Marketplace profile and visibility',
-        'Save $72 vs monthly',
+        'Save ~$85 vs monthly',
       ],
     },
   },

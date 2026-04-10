@@ -807,11 +807,14 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             </View>
 
             <Text style={styles.fieldLabel}>Payment Instructions</Text>
+            <Text style={[styles.fieldHint, { color: colors.textLight }]}>
+              Tell your client how to pay you directly (e.g., Venmo, Zelle, check). Payments are handled between you and your client — not processed through this app.
+            </Text>
             <TextInput
               style={[styles.input, styles.textArea]}
               value={paymentInstructions}
               onChangeText={setPaymentInstructions}
-              placeholder="How should the client pay? (Venmo, Zelle, check, etc.)"
+              placeholder="How should the client pay? (e.g., Venmo @handle, Zelle to email, check payable to...)"
               placeholderTextColor={colors.textLight}
               multiline
               numberOfLines={4}
@@ -1015,6 +1018,7 @@ const getStyles = createThemedStyles((colors) => ({
   modalContent: { flex: 1, padding: SIZES.md },
   modalFooter: { padding: SIZES.md, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.white },
   fieldLabel: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.textSecondary, marginBottom: SIZES.xs, marginTop: SIZES.md },
+  fieldHint: { fontSize: SIZES.fontXs, lineHeight: 16, marginBottom: SIZES.sm },
   input: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd, color: colors.text },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
   clientDropdownContainer: { marginBottom: SIZES.sm },

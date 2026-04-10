@@ -23,7 +23,7 @@ interface OnboardingStep {
   description: string;
   icon: string;
   colorKey: 'secondary' | 'primary' | 'accent';
-  image: string;
+  image: number;
 }
 
 interface OnboardingWalkthroughProps {
@@ -31,13 +31,13 @@ interface OnboardingWalkthroughProps {
   onComplete: () => void;
 }
 
-// Birth photos from user
+// Birth photos - bundled locally
 const BIRTH_PHOTOS = {
-  skinToSkin: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/vp8xh1cu_IMG_0160.jpg',
-  waterBirth1: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/xzxgnokb_IMG_8612.jpg',
-  waterBirth2: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/9z5rmv0g_IMG_8613.jpg',
-  familyMoment: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/fg673ifm_IMG_8684.jpg',
-  newbornSleeping: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/nubpbqis_IMG_9108.jpg',
+  skinToSkin: require('../../assets/images/hero-skin-to-skin.jpg'),
+  waterBirth1: require('../../assets/images/hero-water-birth-2.jpg'),
+  waterBirth2: require('../../assets/images/hero-water-birth.jpg'),
+  familyMoment: require('../../assets/images/hero-family-moment.jpg'),
+  newbornSleeping: require('../../assets/images/hero-newborn-sleeping.jpg'),
 };
 
 const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
@@ -160,7 +160,7 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
         {/* Photo with gradient overlay */}
         <View style={styles.photoContainer}>
           <ImageBackground
-            source={{ uri: item.image }}
+            source={item.image}
             style={styles.stepImage}
             resizeMode="cover"
           >
