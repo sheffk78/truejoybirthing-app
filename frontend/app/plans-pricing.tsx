@@ -51,10 +51,10 @@ export default function PlansPricingScreen() {
     fetchPricing();
   }, []);
   
-  // Handle IAP purchase or mock trial
+  // Handle IAP purchase or redirect to subscription page
   const handleIAPPurchase = async () => {
-    // On iOS, MUST use In-App Purchase - never fall back to direct backend calls
-    if (Platform.OS === 'ios') {
+    // On iOS/Android, redirect to the Subscription page which handles IAP properly
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
       Alert.alert(
         'Subscribe',
         'Please use the Subscription page in your profile to subscribe via the App Store.',
@@ -62,7 +62,7 @@ export default function PlansPricingScreen() {
       );
       return;
     }
-    // On web/Android fallback, use mock trial
+    // On web only, use mock trial
     handleStartTrial();
   };
   
@@ -72,12 +72,12 @@ export default function PlansPricingScreen() {
       Alert.alert('Not Available', 'Restore purchases is only available on iOS and Android.');
       return;
     }
-    Alert.alert('Not Available', 'Please use the native iOS or Android app to restore purchases.');
+    Alert.alert('Restore Purchases', 'Please use the Subscription page in your profile to restore purchases.');
   };
 
   const handleStartTrial = async () => {
-    // On iOS, trials must go through In-App Purchase (configured in App Store Connect)
-    if (Platform.OS === 'ios') {
+    // On iOS/Android, trials must go through In-App Purchase (configured in App Store Connect)
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
       Alert.alert(
         'Start Trial',
         'Please use the Subscription page in your profile to start your free trial via the App Store.',
@@ -85,24 +85,27 @@ export default function PlansPricingScreen() {
       );
       return;
     }
-    try {
-      setProcessingAction(true);
-      await startTrial(selectedPlan);
-      Alert.alert(
-        'Trial Started!',
-        `Your 14-day free trial has begun. You'll have full access to all Pro features.`,
-        [{ text: 'Get Started', onPress: () => router.back() }]
-      );
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to start trial');
-    } finally {
-      setProcessingAction(false);
+    // Web only
+    if (Platform.OS === 'web') {
+      try {
+        setProcessingAction(true);
+        await startTrial(selectedPlan);
+        Alert.alert(
+          'Trial Started!',
+          `Your 14-day free trial has begun. You'll have full access to all Pro features.`,
+          [{ text: 'Get Started', onPress: () => router.back() }]
+        );
+      } catch (error: any) {
+        Alert.alert('Error', error.message || 'Failed to start trial');
+      } finally {
+        setProcessingAction(false);
+      }
     }
   };
 
   const handleSubscribe = async () => {
-    // On iOS, MUST use In-App Purchase
-    if (Platform.OS === 'ios') {
+    // On iOS/Android, MUST use In-App Purchase
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
       Alert.alert(
         'Subscribe',
         'Please use the Subscription page in your profile to subscribe via the App Store.',
@@ -110,18 +113,21 @@ export default function PlansPricingScreen() {
       );
       return;
     }
-    try {
-      setProcessingAction(true);
-      await activateSubscription(selectedPlan);
-      Alert.alert(
-        'Subscription Activated!',
-        `Your ${selectedPlan === 'annual' ? 'annual' : 'monthly'} subscription is now active.`,
-        [{ text: 'Continue', onPress: () => router.back() }]
-      );
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to activate subscription');
-    } finally {
-      setProcessingAction(false);
+    // Web only
+    if (Platform.OS === 'web') {
+      try {
+        setProcessingAction(true);
+        await activateSubscription(selectedPlan);
+        Alert.alert(
+          'Subscription Activated!',
+          `Your ${selectedPlan === 'annual' ? 'annual' : 'monthly'} subscription is now active.`,
+          [{ text: 'Continue', onPress: () => router.back() }]
+        );
+      } catch (error: any) {
+        Alert.alert('Error', error.message || 'Failed to activate subscription');
+      } finally {
+        setProcessingAction(false);
+      }
     }
   };
 

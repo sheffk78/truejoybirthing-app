@@ -65,7 +65,7 @@ export type SubscriptionProvider =
   | 'apple'       // App Store (iOS)
   | 'google'      // Google Play (Android)
   | 'mock'        // Development/testing
-  | 'web';        // Web payments (Stripe - for web only, not mobile)
+  | 'web';        // Web (development/testing only)
 
 export type PlanType = 'monthly' | 'annual';
 

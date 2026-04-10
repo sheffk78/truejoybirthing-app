@@ -232,7 +232,7 @@ class IAPService {
     offerToken?: string
   ): Promise<PurchaseResult> {
     if (Platform.OS === 'web') {
-      return { success: false, error: 'Web purchases not supported. Use Stripe.' };
+      return { success: false, error: 'Purchases are only available on iOS and Android.' };
     }
 
     if (!this.ExpoIap) {
