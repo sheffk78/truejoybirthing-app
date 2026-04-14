@@ -218,7 +218,12 @@ async def get_pricing():
 
 @router.post("/start-trial")
 async def start_trial(request: StartTrialRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
-    """Start a 14-day free trial (mock implementation)"""
+    """Start a 14-day free trial.
+    
+    NOTE: On iOS/Android, trials are initiated through In-App Purchase (StoreKit / Google Play Billing)
+    and validated via /validate-receipt. This endpoint is only used for web/development testing.
+    The mobile apps enforce IAP on the client side and never call this endpoint.
+    """
     now = get_now()
     
     # Check if user already has subscription
@@ -236,6 +241,13 @@ async def start_trial(request: StartTrialRequest, user: User = Depends(check_rol
     provider = request.subscription_provider.upper() if request.subscription_provider else "MOCK"
     if provider not in ["APPLE", "GOOGLE", "MOCK", "WEB"]:
         provider = "MOCK"
+    
+    # Block APPLE/GOOGLE providers from using this endpoint - they must use /validate-receipt
+    if provider in ["APPLE", "GOOGLE"]:
+        raise HTTPException(
+            status_code=400,
+            detail="iOS and Android trials must be initiated through In-App Purchase. Use the subscribe button in the app."
+        )
     
     trial_end = now + timedelta(days=TRIAL_DURATION_DAYS)
     
@@ -286,13 +298,24 @@ async def start_trial(request: StartTrialRequest, user: User = Depends(check_rol
 
 @router.post("/activate")
 async def activate_subscription(request: StartTrialRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
-    """Activate a full subscription after trial (mock implementation)"""
+    """Activate a full subscription after trial.
+    
+    NOTE: On iOS/Android, subscriptions are purchased through In-App Purchase and
+    validated via /validate-receipt. This endpoint is only for web/development testing.
+    """
     now = get_now()
     
     # Normalize subscription provider
     provider = request.subscription_provider.upper() if request.subscription_provider else "MOCK"
     if provider not in ["APPLE", "GOOGLE", "MOCK", "WEB"]:
         provider = "MOCK"
+    
+    # Block APPLE/GOOGLE providers from using this endpoint - they must use /validate-receipt
+    if provider in ["APPLE", "GOOGLE"]:
+        raise HTTPException(
+            status_code=400,
+            detail="iOS and Android subscriptions must be purchased through In-App Purchase. Use the subscribe button in the app."
+        )
     
     # Calculate subscription end based on plan
     if request.plan_type == "monthly":

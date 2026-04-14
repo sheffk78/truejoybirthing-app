@@ -81,15 +81,20 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
     setProcessing(true);
     try {
-      // On iOS, trials must go through In-App Purchase (configured in App Store Connect)
-      if (Platform.OS === 'ios') {
+      // On iOS/Android, trials MUST go through In-App Purchase (configured in App Store Connect / Google Play Console)
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
         if (!iapAvailable) {
-          Alert.alert('Not Available', 'In-App Purchase is not available. Please restart the app and try again.');
+          Alert.alert(
+            'In-App Purchase Unavailable',
+            'Please make sure you are signed in to your App Store account and try again. Go to Settings > [Your Name] to verify.',
+            [{ text: 'OK' }]
+          );
           return;
         }
         const productId = getProductIdForPlan(selectedPlan);
         if (productId) {
-          const result = await purchase(productId);
+          const offerToken = Platform.OS === 'android' ? `${selectedPlan}-offer` : undefined;
+          const result = await purchase(productId, offerToken);
           if (!result.success && result.error) {
             throw new Error(result.error);
           }
@@ -98,13 +103,15 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
         }
       }
 
-      // Web/Android/development fallback
-      await startTrial(selectedPlan);
-      Alert.alert('Trial Started!', 'Your 14-day free trial has begun. Enjoy full access to all features!', [
-        { text: 'Get Started', onPress: () => router.back() }
-      ]);
+      // Web/development only fallback — never reached on iOS/Android
+      if (Platform.OS === 'web') {
+        await startTrial(selectedPlan);
+        Alert.alert('Trial Started!', 'Your 14-day free trial has begun. Enjoy full access to all features!', [
+          { text: 'Get Started', onPress: () => router.back() }
+        ]);
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to start trial');
+      Alert.alert('Error', error.message || 'Failed to start trial. Please try again.');
     } finally {
       setProcessing(false);
     }
@@ -118,29 +125,20 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
     setProcessing(true);
     try {
-      // On iOS, subscriptions MUST go through In-App Purchase
-      if (Platform.OS === 'ios') {
+      // On iOS/Android, subscriptions MUST go through In-App Purchase
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
         if (!iapAvailable) {
-          Alert.alert('Not Available', 'In-App Purchase is not available. Please restart the app and try again.');
+          Alert.alert(
+            'In-App Purchase Unavailable',
+            'Please make sure you are signed in to your App Store account and try again. Go to Settings > [Your Name] to verify.',
+            [{ text: 'OK' }]
+          );
           setProcessing(false);
           return;
         }
         const productId = getProductIdForPlan(selectedPlan);
         if (productId) {
-          const result = await purchase(productId);
-          if (!result.success && result.error) {
-            throw new Error(result.error);
-          }
-          router.back();
-          return;
-        }
-      }
-
-      // Use real IAP on Android
-      if (iapAvailable && Platform.OS === 'android') {
-        const productId = getProductIdForPlan(selectedPlan);
-        if (productId) {
-          const offerToken = selectedPlan === 'monthly' ? 'monthly-offer' : 'annual-offer';
+          const offerToken = Platform.OS === 'android' ? `${selectedPlan}-offer` : undefined;
           const result = await purchase(productId, offerToken);
           if (!result.success && result.error) {
             throw new Error(result.error);
@@ -150,13 +148,15 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
         }
       }
       
-      // Fallback to mock activation for web/development only
-      await activateSubscription(selectedPlan);
-      Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.', [
-        { text: 'Continue', onPress: () => router.back() }
-      ]);
+      // Web/development only fallback — never reached on iOS/Android
+      if (Platform.OS === 'web') {
+        await activateSubscription(selectedPlan);
+        Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.', [
+          { text: 'Continue', onPress: () => router.back() }
+        ]);
+      }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to activate subscription');
+      Alert.alert('Error', error.message || 'Failed to activate subscription. Please try again.');
     } finally {
       setProcessing(false);
     }
@@ -201,30 +201,21 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
     setProcessing(true);
     try {
-      // On iOS, upgrades MUST go through In-App Purchase
-      if (Platform.OS === 'ios') {
+      // On iOS/Android, upgrades MUST go through In-App Purchase
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
         if (!iapAvailable) {
-          Alert.alert('Not Available', 'In-App Purchase is not available. Please restart the app and try again.');
+          Alert.alert(
+            'In-App Purchase Unavailable',
+            'Please make sure you are signed in to your App Store account and try again.',
+            [{ text: 'OK' }]
+          );
           setProcessing(false);
           return;
         }
         const productId = getProductIdForPlan('annual');
         if (productId) {
-          const result = await purchase(productId);
-          if (!result.success && result.error) {
-            throw new Error(result.error);
-          }
-          await fetchStatus();
-          Alert.alert('Upgrade Successful!', 'You\'re now on the annual plan. Thank you!');
-          return;
-        }
-      }
-
-      // Android IAP
-      if (iapAvailable && Platform.OS === 'android') {
-        const productId = getProductIdForPlan('annual');
-        if (productId) {
-          const result = await purchase(productId, 'annual-offer');
+          const offerToken = Platform.OS === 'android' ? 'annual-offer' : undefined;
+          const result = await purchase(productId, offerToken);
           if (!result.success && result.error) {
             throw new Error(result.error);
           }
@@ -234,9 +225,11 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
         }
       }
       
-      // Fallback to mock activation for web/development only
-      await activateSubscription('annual');
-      Alert.alert('Upgrade Successful!', 'You\'re now on the annual plan. Thank you!');
+      // Web/development only fallback — never reached on iOS/Android
+      if (Platform.OS === 'web') {
+        await activateSubscription('annual');
+        Alert.alert('Upgrade Successful!', 'You\'re now on the annual plan. Thank you!');
+      }
     } catch (error: any) {
       Alert.alert('Upgrade Failed', error.message || 'Failed to upgrade subscription');
     } finally {
@@ -264,30 +257,21 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
 
     setProcessing(true);
     try {
-      // On iOS, MUST go through In-App Purchase
-      if (Platform.OS === 'ios') {
+      // On iOS/Android, MUST go through In-App Purchase
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
         if (!iapAvailable) {
-          Alert.alert('Not Available', 'In-App Purchase is not available. Please restart the app and try again.');
+          Alert.alert(
+            'In-App Purchase Unavailable',
+            'Please make sure you are signed in to your App Store account and try again.',
+            [{ text: 'OK' }]
+          );
           setProcessing(false);
           return;
         }
         const productId = getProductIdForPlan(planType);
         if (productId) {
-          const result = await purchase(productId);
-          if (!result.success && result.error) {
-            throw new Error(result.error);
-          }
-          await fetchStatus();
-          Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.');
-          return;
-        }
-      }
-
-      // Android IAP
-      if (iapAvailable && Platform.OS === 'android') {
-        const productId = getProductIdForPlan(planType);
-        if (productId) {
-          const result = await purchase(productId, `${planType}-offer`);
+          const offerToken = Platform.OS === 'android' ? `${planType}-offer` : undefined;
+          const result = await purchase(productId, offerToken);
           if (!result.success && result.error) {
             throw new Error(result.error);
           }
@@ -297,9 +281,11 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
         }
       }
       
-      // Fallback to mock activation for web/development only
-      await activateSubscription(planType);
-      Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.');
+      // Web/development only fallback — never reached on iOS/Android
+      if (Platform.OS === 'web') {
+        await activateSubscription(planType);
+        Alert.alert('Subscription Active!', 'Thank you for subscribing! You now have full access.');
+      }
     } catch (error: any) {
       Alert.alert('Upgrade Failed', error.message || 'Failed to activate subscription');
     } finally {
