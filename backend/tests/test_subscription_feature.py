@@ -39,7 +39,7 @@ class TestSubscriptionPricing:
         assert monthly_plan is not None, "Monthly plan not found"
         assert monthly_plan["price"] == 29.0, "Monthly price should be $29"
         assert monthly_plan["period"] == "month"
-        assert monthly_plan["trial_days"] == 30
+        assert monthly_plan["trial_days"] == 14
         assert len(monthly_plan["features"]) > 0, "Monthly plan should have features"
         
         # Check annual plan
@@ -47,7 +47,7 @@ class TestSubscriptionPricing:
         assert annual_plan is not None, "Annual plan not found"
         assert annual_plan["price"] == 276.0, "Annual price should be $276"
         assert annual_plan["period"] == "year"
-        assert annual_plan["trial_days"] == 30
+        assert annual_plan["trial_days"] == 14
         assert "savings" in annual_plan, "Annual plan should show savings"
         
         # Check mom features
@@ -136,7 +136,7 @@ class TestDoulaSubscriptionWorkflow:
         print(f"✅ DOULA without subscription: status={data['subscription_status']}, access={data['has_pro_access']}")
     
     def test_doula_start_trial(self):
-        """POST /api/subscription/start-trial - starts 30-day trial for PRO users"""
+        """POST /api/subscription/start-trial - starts 14-day trial for PRO users"""
         response = self.client.post(
             f"{BASE_URL}/api/subscription/start-trial",
             json={"plan_type": "monthly"}

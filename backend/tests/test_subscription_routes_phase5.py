@@ -129,7 +129,7 @@ class TestSubscriptionPricing:
         assert monthly is not None, "Missing monthly plan"
         assert monthly["price"] == 29.00, f"Monthly price should be $29.00, got {monthly['price']}"
         assert monthly["period"] == "month", "Monthly period should be 'month'"
-        assert monthly["trial_days"] == 30, "Trial days should be 30"
+        assert monthly["trial_days"] == 14, "Trial days should be 14"
         assert "features" in monthly, "Monthly plan should have features"
         
         # Verify annual plan

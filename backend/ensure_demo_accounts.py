@@ -163,40 +163,21 @@ async def ensure_demo_accounts(db):
             await db[profile_collection].insert_one(profile_data)
             logger.info(f"  Created {profile_collection} profile for {email}")
 
-        # Ensure provider accounts have an active subscription
+        # DO NOT auto-create subscriptions for demo/provider accounts.
+        # Apple reviewers must see the paywall and test the full IAP flow
+        # in App Store sandbox. Pre-granting access triggers guideline 3.1.1
+        # rejection ("app accesses paid digital content without IAP").
+        # If a reviewer has already completed a sandbox IAP purchase, that
+        # subscription record will exist and be honoured by /subscription/status.
         if account["needs_subscription"]:
             existing_sub = await db.subscriptions.find_one({"user_id": user_id})
-            if not existing_sub:
-                sub_doc = {
-                    "subscription_id": f"demo_sub_{uuid.uuid4().hex[:8]}",
-                    "user_id": user_id,
-                    "subscription_status": "active",
-                    "plan_type": "annual",
-                    "subscription_provider": "DEMO",
-                    "subscription_start_date": now - timedelta(days=30),
-                    "subscription_end_date": now + timedelta(days=335),
-                    "auto_renewing": True,
-                    "created_at": now,
-                }
-                await db.subscriptions.insert_one(sub_doc)
-                logger.info(f"  Created active subscription for {email}")
-            else:
-                # Ensure subscription is active and not expired
-                sub_end = existing_sub.get("subscription_end_date")
-                sub_status = existing_sub.get("subscription_status")
-                # Ensure sub_end is timezone-aware for comparison
-                if sub_end and sub_end.tzinfo is None:
-                    sub_end = sub_end.replace(tzinfo=timezone.utc)
-                if sub_status != "active" or (sub_end and sub_end < now):
-                    await db.subscriptions.update_one(
-                        {"user_id": user_id},
-                        {"$set": {
-                            "subscription_status": "active",
-                            "subscription_end_date": now + timedelta(days=335),
-                            "auto_renewing": True,
-                        }}
-                    )
-                    logger.info(f"  Renewed subscription for {email}")
+            if existing_sub and existing_sub.get("subscription_provider") == "DEMO":
+                # Remove legacy DEMO-provider subscriptions so reviewers
+                # are forced through the real IAP flow on next review.
+                await db.subscriptions.delete_one({"user_id": user_id})
+                logger.info(f"  Removed legacy DEMO subscription for {email} (IAP required)")
+            elif existing_sub:
+                logger.info(f"  Existing IAP subscription found for {email} — keeping it")
 
     # Seed demo data so Apple reviewers see populated screens
     await _seed_demo_data(db, demo_user_ids, now)

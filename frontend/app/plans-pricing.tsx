@@ -14,6 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSubscriptionStore } from '../src/store/subscriptionStore';
 import { useAuthStore } from '../src/store/authStore';
+import { useIAP } from '../src/services/billing/useIAP';
+import { SUBSCRIPTION_PRODUCTS } from '../src/services/billing/subscriptionConfig';
 import { 
   SUBSCRIPTION_CONFIG, 
   getAnnualSavings, 
@@ -41,28 +43,61 @@ export default function PlansPricingScreen() {
   const colors = useColors();
   const styles = getStyles(colors);
   
-  // IAP state (for native platforms only)
-  const iapAvailable = isIAPAvailable();
-  const isPurchasing = false;
-  const isRestoring = false;
+  // IAP hook — handles native purchase flow directly
+  const { products, purchase, restore, isLoading: iapLoading, isAvailable: iapAvailable, error: iapError } = useIAP();
+  const isPurchasing = iapLoading && processingAction;
+  const isRestoring = iapLoading && !processingAction;
 
   useEffect(() => {
     fetchStatus();
     fetchPricing();
   }, []);
-  
-  // Handle IAP purchase or redirect to subscription page
+
+  // Get the correct product ID for the selected plan on current platform
+  const getProductIdForPlan = (planType: string) => {
+    if (Platform.OS === 'ios') {
+      return planType === 'monthly'
+        ? SUBSCRIPTION_PRODUCTS.APPLE.PRO_MONTHLY
+        : SUBSCRIPTION_PRODUCTS.APPLE.PRO_ANNUAL;
+    } else if (Platform.OS === 'android') {
+      return SUBSCRIPTION_PRODUCTS.GOOGLE.SUBSCRIPTION_ID;
+    }
+    return null;
+  };
+
+  // Handle IAP purchase directly on iOS/Android
   const handleIAPPurchase = async () => {
-    // On iOS/Android, redirect to the Subscription page which handles IAP properly
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      Alert.alert(
-        'Subscribe',
-        'Please use the Subscription page in your profile to subscribe via the App Store.',
-        [{ text: 'OK', onPress: () => router.back() }]
-      );
+      if (!iapAvailable) {
+        Alert.alert(
+          'In-App Purchase Unavailable',
+          'Please make sure you are signed in to your App Store account and try again. Go to Settings > [Your Name] to verify.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+      setProcessingAction(true);
+      try {
+        const productId = getProductIdForPlan(selectedPlan);
+        if (!productId) throw new Error('Could not determine product');
+        const offerToken = Platform.OS === 'android' ? `${selectedPlan}-offer` : undefined;
+        const result = await purchase(productId, offerToken);
+        if (result.success) {
+          await fetchStatus();
+          Alert.alert('Purchase Complete', 'Thank you for subscribing to True Joy Pro!', [
+            { text: 'Continue', onPress: () => router.back() },
+          ]);
+        } else if (result.error && result.error !== 'E_USER_CANCELLED') {
+          Alert.alert('Purchase Failed', result.error || 'Please try again.');
+        }
+      } catch (error: any) {
+        Alert.alert('Error', error.message || 'Failed to complete purchase');
+      } finally {
+        setProcessingAction(false);
+      }
       return;
     }
-    // On web only, use mock trial
+    // Web fallback
     handleStartTrial();
   };
   
@@ -72,17 +107,26 @@ export default function PlansPricingScreen() {
       Alert.alert('Not Available', 'Restore purchases is only available on iOS and Android.');
       return;
     }
-    Alert.alert('Restore Purchases', 'Please use the Subscription page in your profile to restore purchases.');
+    setProcessingAction(true);
+    try {
+      const result = await restore();
+      if (result.success) {
+        await fetchStatus();
+        Alert.alert('Restore Complete', 'Your subscription has been restored.');
+      } else if (result.error) {
+        Alert.alert('Restore Failed', result.error);
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to restore purchases');
+    } finally {
+      setProcessingAction(false);
+    }
   };
 
   const handleStartTrial = async () => {
-    // On iOS/Android, trials must go through In-App Purchase (configured in App Store Connect)
+    // On iOS/Android, trials go through IAP (trial period configured in App Store Connect)
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      Alert.alert(
-        'Start Trial',
-        'Please use the Subscription page in your profile to start your free trial via the App Store.',
-        [{ text: 'OK', onPress: () => router.back() }]
-      );
+      await handleIAPPurchase();
       return;
     }
     // Web only
@@ -106,11 +150,7 @@ export default function PlansPricingScreen() {
   const handleSubscribe = async () => {
     // On iOS/Android, MUST use In-App Purchase
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      Alert.alert(
-        'Subscribe',
-        'Please use the Subscription page in your profile to subscribe via the App Store.',
-        [{ text: 'OK', onPress: () => router.back() }]
-      );
+      await handleIAPPurchase();
       return;
     }
     // Web only
@@ -293,7 +333,7 @@ export default function PlansPricingScreen() {
                       <>
                         <Ionicons name="gift" size={20} color="#fff" />
                         <Text style={styles.trialButtonText}>
-                          {iapAvailable ? 'Start 30-Day Free Trial' : 'Start 30-Day Free Trial'}
+                          Start 14-Day Free Trial
                         </Text>
                       </>
                     )}

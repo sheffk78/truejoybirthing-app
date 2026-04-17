@@ -28,7 +28,7 @@ MOM_PASSWORD = "password123"
 # Subscription constants from backend
 PRO_MONTHLY_PRICE = 29.00
 PRO_ANNUAL_PRICE = 276.00
-TRIAL_DURATION_DAYS = 30
+TRIAL_DURATION_DAYS = 14
 
 # Product IDs
 APPLE_MONTHLY_ID = "truejoy.pro.monthly"

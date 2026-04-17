@@ -117,7 +117,7 @@ SUBSCRIPTION_STATUS = ["none", "trial", "active", "expired", "cancelled"]
 SUBSCRIPTION_PLANS = ["monthly", "annual"]
 PRO_MONTHLY_PRICE = 29.00
 PRO_ANNUAL_PRICE = 276.00
-TRIAL_DURATION_DAYS = 30
+TRIAL_DURATION_DAYS = 14  # Must match App Store Connect subscription configuration
 
 # ============== PDF GENERATION HELPERS ==============
 
