@@ -105,9 +105,11 @@ class IAPService {
       // Dynamically require expo-iap only on native builds
       this.ExpoIap = require('expo-iap');
       
-      // Check if the module is properly linked
-      if (!this.ExpoIap || !this.ExpoIap.initConnection) {
-        console.log('[IAP] expo-iap not properly linked');
+      // Check if the module is properly linked and has v3 API surface
+      const requiredFns = ['initConnection', 'fetchProducts', 'requestPurchase', 'purchaseUpdatedListener', 'finishTransaction'];
+      const missing = requiredFns.filter((fn) => typeof this.ExpoIap?.[fn] !== 'function');
+      if (missing.length > 0) {
+        console.log('[IAP] expo-iap missing expected functions:', missing.join(', '));
         return false;
       }
       
@@ -195,8 +197,15 @@ class IAPService {
     }
 
     try {
-      // expo-iap uses getSubscriptions with skus array
-      const subscriptions = await this.ExpoIap.getSubscriptions({ skus: PRODUCT_SKUS });
+      // expo-iap v3 uses fetchProducts with type: 'subs' for subscriptions
+      const subscriptions = await this.ExpoIap.fetchProducts({
+        skus: PRODUCT_SKUS,
+        type: 'subs',
+      });
+      if (!subscriptions || subscriptions.length === 0) {
+        console.warn('[IAP] fetchProducts returned empty — falling back to mock products');
+        return getMockProducts();
+      }
       return subscriptions.map((sub: any) => this.mapSubscriptionToProduct(sub));
     } catch (error) {
       console.error('[IAP] Failed to get products:', error);
@@ -244,18 +253,32 @@ class IAPService {
     }
 
     try {
+      // expo-iap v3: unified requestPurchase with platform-specific request objects
       if (Platform.OS === 'android') {
-        // Android requires offer token for subscription purchases
-        await this.ExpoIap.requestSubscription({
-          sku: productId,
-          subscriptionOffers: offerToken ? [{ sku: productId, offerToken }] : undefined,
+        await this.ExpoIap.requestPurchase({
+          request: {
+            android: {
+              skus: [productId],
+              subscriptionOffers: offerToken
+                ? [{ sku: productId, offerToken }]
+                : [],
+            },
+          },
+          type: 'subs',
         });
       } else {
-        // iOS
-        await this.ExpoIap.requestSubscription({ sku: productId });
+        await this.ExpoIap.requestPurchase({
+          request: {
+            ios: {
+              sku: productId,
+              andDangerouslyFinishTransactionAutomatically: false,
+            },
+          },
+          type: 'subs',
+        });
       }
-      
-      // Purchase flow started - result will come through listener
+
+      // Purchase flow started - result will come through purchaseUpdatedListener
       return { success: true };
     } catch (error: any) {
       console.error('[IAP] Purchase failed:', error);
@@ -323,9 +346,11 @@ class IAPService {
     }
 
     try {
-      const purchases = await this.ExpoIap.getAvailablePurchases();
-      
-      if (purchases.length === 0) {
+      const purchases = await this.ExpoIap.getAvailablePurchases({
+        onlyIncludeActiveItemsIOS: true,
+      });
+
+      if (!purchases || purchases.length === 0) {
         return { success: false, error: 'No previous purchases found' };
       }
 

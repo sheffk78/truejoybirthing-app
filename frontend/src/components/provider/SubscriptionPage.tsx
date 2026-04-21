@@ -742,7 +742,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                     </View>
                     <View style={styles.planPriceContainer}>
                       <Text style={styles.planPrice}>${plan.price}</Text>
-                      <Text style={styles.planPricePeriod}>/{plan.period === 'Monthly' ? 'mo' : 'yr'}</Text>
+                      <Text style={styles.planPricePeriod}>/{plan.period?.toLowerCase().startsWith('month') ? 'mo' : 'yr'}</Text>
                     </View>
                   </View>
                   {plan.savings && (
