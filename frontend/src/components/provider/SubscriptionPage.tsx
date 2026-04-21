@@ -741,13 +741,22 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
                       <Text style={styles.planPeriod}>{plan.period}</Text>
                     </View>
                     <View style={styles.planPriceContainer}>
-                      <Text style={styles.planPrice}>${plan.price}</Text>
-                      <Text style={styles.planPricePeriod}>/{plan.period?.toLowerCase().startsWith('month') ? 'mo' : 'yr'}</Text>
+                      {(() => {
+                        const isMonthly = plan.period?.toLowerCase().startsWith('month');
+                        // Prefer the localized store price when available (Apple-required)
+                        const storePrice = getIAPPrice(!!isMonthly);
+                        return (
+                          <>
+                            <Text style={styles.planPrice}>{storePrice}</Text>
+                            <Text style={styles.planPricePeriod}>/{isMonthly ? 'mo' : 'yr'}</Text>
+                          </>
+                        );
+                      })()}
                     </View>
                   </View>
-                  {plan.savings && (
+                  {plan.savings && !plan.period?.toLowerCase().startsWith('month') && (
                     <View style={[styles.savingsBadge, { backgroundColor: colors.success + '20' }]}>
-                      <Text style={[styles.savingsText, { color: colors.success }]}>Save {plan.savings}%</Text>
+                      <Text style={[styles.savingsText, { color: colors.success }]}>Save ${plan.savings} per year</Text>
                     </View>
                   )}
                   {plan.trial_days > 0 && (
@@ -795,14 +804,31 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               </TouchableOpacity>
             )}
 
-            <Text style={styles.termsText}>
-              {Platform.OS === 'ios'
-                ? 'Payment is charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. Subscriptions may be managed and auto-renewal may be turned off in your Account Settings after purchase.'
-                : Platform.OS === 'android'
-                  ? 'Payment is charged through your Google Play account. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Subscriptions may be managed in Google Play Store settings.'
-                  : 'By subscribing, you agree to our Terms of Service and Privacy Policy. Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period.'
-              }
-            </Text>
+            {/* Required subscription disclosure (Apple Guideline 3.1.2) */}
+            <View style={styles.disclosureBlock}>
+              <Text style={styles.disclosureHeading}>Subscription Details</Text>
+              <Text style={styles.disclosureLine}>• True Joy Pro — Monthly: {getIAPPrice(true)} per month</Text>
+              <Text style={styles.disclosureLine}>• True Joy Pro — Annual: {getIAPPrice(false)} per year</Text>
+              <Text style={styles.disclosureLine}>• Includes a 14-day free trial for new subscribers</Text>
+              <Text style={styles.disclosureLine}>• Unlimited client management, contracts, invoices, notes, and marketplace visibility</Text>
+              <Text style={styles.termsText}>
+                {Platform.OS === 'ios'
+                  ? 'Payment is charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. Subscriptions may be managed and auto-renewal may be turned off in your Account Settings after purchase.'
+                  : Platform.OS === 'android'
+                    ? 'Payment is charged through your Google Play account. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Subscriptions may be managed in Google Play Store settings.'
+                    : 'By subscribing, you agree to our Terms of Service and Privacy Policy. Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period.'
+                }
+              </Text>
+              <View style={styles.legalLinksRow}>
+                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/terms-of-service/')}>
+                  <Text style={[styles.legalLink, { color: primaryColor }]}>Terms of Use</Text>
+                </TouchableOpacity>
+                <Text style={styles.legalLinkSeparator}>·</Text>
+                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/privacy-policy/')}>
+                  <Text style={[styles.legalLink, { color: primaryColor }]}>Privacy Policy</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         )}
 
@@ -830,7 +856,7 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
             </Text>
             <TouchableOpacity 
               style={[styles.feedbackButton, { backgroundColor: primaryColor }]}
-              onPress={() => Linking.openURL('https://truejoybirthing.com/feedback/')}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/contact/')}
             >
               <Icon name="star-outline" size={18} color={colors.white} />
               <Text style={styles.feedbackButtonText}>Leave Feedback</Text>
@@ -1049,6 +1075,42 @@ const getStyles = createThemedStyles((colors) => ({
     textAlign: 'center',
     marginTop: SIZES.md,
     lineHeight: 18,
+  },
+  disclosureBlock: {
+    marginTop: SIZES.md,
+    paddingTop: SIZES.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  disclosureHeading: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: SIZES.xs,
+  },
+  disclosureLine: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  legalLinksRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: SIZES.sm,
+    gap: SIZES.xs,
+  },
+  legalLink: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
+    textDecorationLine: 'underline',
+  },
+  legalLinkSeparator: {
+    fontSize: SIZES.fontSm,
+    color: colors.textLight,
   },
   supportSection: {
     alignItems: 'center',

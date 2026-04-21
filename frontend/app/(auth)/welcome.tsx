@@ -4,6 +4,7 @@ import {
   Text,
   Image,
   ImageBackground,
+  Linking,
   Platform,
   Pressable,
   Dimensions,
@@ -132,8 +133,19 @@ export default function WelcomeScreen() {
           {/* Footer */}
           <Text style={styles.footerText}>
             By continuing, you agree to our{' '}
-            <Text style={styles.linkText}>Terms</Text> and{' '}
-            <Text style={styles.linkText}>Privacy Policy</Text>
+            <Text
+              style={styles.linkText}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/terms-of-service/')}
+            >
+              Terms
+            </Text>{' '}
+            and{' '}
+            <Text
+              style={styles.linkText}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/privacy-policy/')}
+            >
+              Privacy Policy
+            </Text>
           </Text>
         </View>
       </SafeAreaView>

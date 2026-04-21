@@ -147,27 +147,32 @@ export function useIAP(): UseIAPReturn {
 
   // Handle successful purchase
   const handlePurchaseSuccess = useCallback(async (purchase: any, service: any) => {
-    console.log('[useIAP] Purchase successful:', purchase.productId);
-    
-    if (purchase.transactionReceipt) {
-      const validated = await validateReceipt(
-        purchase.transactionReceipt,
-        purchase.productId
-      );
-      
-      if (validated) {
-        await fetchStatus();
-        
-        if (Platform.OS !== 'web') {
-          Alert.alert(
-            'Purchase Complete',
-            'Thank you for subscribing to True Joy Pro!',
-            [{ text: 'OK' }]
-          );
-        }
-      } else {
-        setError('Failed to validate purchase. Please contact support.');
+    const productId = purchase.productId || purchase.id;
+    console.log('[useIAP] Purchase successful:', productId);
+
+    // expo-iap v3 unified the receipt field to `purchaseToken`. Older builds
+    // expose `transactionReceipt` on iOS. Accept either.
+    const receipt = purchase.purchaseToken || purchase.transactionReceipt;
+    if (!receipt) {
+      console.warn('[useIAP] Purchase event missing receipt/purchaseToken', Object.keys(purchase || {}));
+      setError('Purchase completed but no receipt was returned. Please contact support.');
+      return;
+    }
+
+    const validated = await validateReceipt(receipt, productId);
+
+    if (validated) {
+      await fetchStatus();
+
+      if (Platform.OS !== 'web') {
+        Alert.alert(
+          'Purchase Complete',
+          'Thank you for subscribing to True Joy Pro!',
+          [{ text: 'OK' }]
+        );
       }
+    } else {
+      setError('Failed to validate purchase. Please contact support.');
     }
   }, [validateReceipt, fetchStatus]);
 

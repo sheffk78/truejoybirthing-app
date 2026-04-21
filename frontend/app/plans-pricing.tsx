@@ -48,6 +48,16 @@ export default function PlansPricingScreen() {
   const isPurchasing = iapLoading && processingAction;
   const isRestoring = iapLoading && !processingAction;
 
+  // Look up localized store price for the currently selected plan; fall back
+  // to the pricing-endpoint value, which always matches backend configuration.
+  const getDisplayPriceForSelected = () => {
+    const isMonthly = selectedPlan === 'monthly';
+    const storeProduct = products.find((p) => p.isMonthly === isMonthly);
+    if (storeProduct?.localizedPrice) return storeProduct.localizedPrice;
+    const plan = pricing?.plans?.find((p) => p.id === selectedPlan);
+    return plan ? `$${plan.price}` : (isMonthly ? '$29.99' : '$274.99');
+  };
+
   useEffect(() => {
     fetchStatus();
     fetchPricing();
@@ -368,7 +378,7 @@ export default function PlansPricingScreen() {
                     <>
                       <Ionicons name="card" size={20} color="#fff" />
                       <Text style={styles.subscribeButtonText}>
-                        Subscribe Now - ${selectedPlan === 'annual' ? '276/yr' : '29/mo'}
+                        Subscribe Now — {getDisplayPriceForSelected()}/{selectedPlan === 'annual' ? 'yr' : 'mo'}
                       </Text>
                     </>
                   )}
@@ -383,6 +393,15 @@ export default function PlansPricingScreen() {
                     : `No credit card required for trial. Cancel anytime.`
                 }
               </Text>
+              <View style={styles.legalLinksRow}>
+                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/terms-of-service/')}>
+                  <Text style={[styles.legalLink, { color: colors.primary }]}>Terms of Use</Text>
+                </TouchableOpacity>
+                <Text style={styles.legalLinkSeparator}>·</Text>
+                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/privacy-policy/')}>
+                  <Text style={[styles.legalLink, { color: colors.primary }]}>Privacy Policy</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
 
@@ -579,6 +598,22 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.textSecondary,
     fontSize: 12,
     marginTop: 4,
+  },
+  legalLinksRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 6,
+  },
+  legalLink: {
+    fontSize: 13,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+  },
+  legalLinkSeparator: {
+    fontSize: 13,
+    color: colors.textLight,
   },
   
   momNote: {

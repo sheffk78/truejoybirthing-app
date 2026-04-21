@@ -214,20 +214,40 @@ class IAPService {
   }
 
   /**
-   * Map store subscription to our product format
+   * Map store subscription to our product format.
+   *
+   * expo-iap v3 renamed several fields on the product object:
+   *   productId       -> id
+   *   localizedPrice  -> displayPrice
+   *   subscriptionPeriodIOS -> subscriptionPeriodUnitIOS + subscriptionPeriodNumberIOS
+   *
+   * We read both the new and legacy names so older SDK builds still work.
    */
   private mapSubscriptionToProduct(sub: any): IAPProduct {
-    const isMonthly = sub.productId.includes('monthly') || 
-                      sub.subscriptionPeriodAndroid?.includes('P1M') ||
-                      sub.subscriptionPeriodIOS?.includes('P1M');
-    
+    const productId: string = sub.id || sub.productId || '';
+    const iosPeriodUnit: string | undefined = sub.subscriptionPeriodUnitIOS;
+    const legacyIosPeriod: string | undefined = sub.subscriptionPeriodIOS;
+    const androidPeriod: string | undefined = sub.subscriptionPeriodAndroid;
+
+    const isMonthly =
+      productId.includes('monthly') ||
+      androidPeriod?.includes('P1M') ||
+      legacyIosPeriod?.includes('P1M') ||
+      iosPeriodUnit?.toUpperCase() === 'MONTH';
+
+    const displayPrice: string = sub.displayPrice || sub.localizedPrice ||
+      (isMonthly ? '$29.99' : '$274.99');
+    const rawPrice: string =
+      (sub.price !== undefined && sub.price !== null && String(sub.price)) ||
+      (isMonthly ? '29.99' : '274.99');
+
     return {
-      productId: sub.productId,
-      title: sub.title || (isMonthly ? 'Pro Monthly' : 'Pro Annual'),
+      productId,
+      title: sub.title || sub.displayName || (isMonthly ? 'Pro Monthly' : 'Pro Annual'),
       description: sub.description || 'Full access to True Joy Pro features',
-      price: sub.price || (isMonthly ? '29.99' : '274.99'),
-      localizedPrice: sub.localizedPrice || (isMonthly ? '$29.99' : '$274.99'),
-      currency: sub.currency || 'USD',
+      price: rawPrice,
+      localizedPrice: displayPrice,
+      currency: sub.currency || sub.currencyCode || 'USD',
       isMonthly,
       subscriptionPeriod: isMonthly ? 'P1M' : 'P1Y',
     };

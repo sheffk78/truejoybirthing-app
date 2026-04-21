@@ -5,7 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Platform,
 } from 'react-native';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
@@ -67,21 +69,29 @@ export default function AdminSettingsScreen() {
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Version</Text>
-            <Text style={styles.infoValue}>1.0.0 MVP</Text>
+            <Text style={styles.infoValue}>{Constants.expoConfig?.version ?? '1.0.13'}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Build</Text>
+            <Text style={styles.infoValue}>
+              {Platform.OS === 'ios'
+                ? (Constants.expoConfig?.ios?.buildNumber ?? '118')
+                : String(Constants.expoConfig?.android?.versionCode ?? '118')}
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Environment</Text>
-            <Text style={styles.infoValue}>Development</Text>
+            <Text style={styles.infoValue}>Production</Text>
           </View>
         </Card>
-        
+
         {/* Features */}
         <Card style={styles.featuresCard}>
-          <Text style={styles.cardTitle}>MVP Features</Text>
-          
+          <Text style={styles.cardTitle}>Features</Text>
+
           <View style={styles.featureItem}>
             <Icon name="checkmark-circle" size={20} color={colors.success} />
-            <Text style={styles.featureText}>User Authentication (Email + Google)</Text>
+            <Text style={styles.featureText}>Email & Password Authentication</Text>
           </View>
           <View style={styles.featureItem}>
             <Icon name="checkmark-circle" size={20} color={colors.success} />
@@ -89,23 +99,23 @@ export default function AdminSettingsScreen() {
           </View>
           <View style={styles.featureItem}>
             <Icon name="checkmark-circle" size={20} color={colors.success} />
-            <Text style={styles.featureText}>Birth Plan Builder (Mom)</Text>
+            <Text style={styles.featureText}>Birth Plan Builder</Text>
           </View>
           <View style={styles.featureItem}>
             <Icon name="checkmark-circle" size={20} color={colors.success} />
             <Text style={styles.featureText}>Client Management (Doula/Midwife)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="ellipse-outline" size={20} color={colors.warning} />
-            <Text style={styles.featureText}>E-Signature (Mocked)</Text>
+            <Icon name="checkmark-circle" size={20} color={colors.success} />
+            <Text style={styles.featureText}>Digital Contracts & E-Signatures</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="ellipse-outline" size={20} color={colors.warning} />
-            <Text style={styles.featureText}>PDF Export (Mocked)</Text>
+            <Icon name="checkmark-circle" size={20} color={colors.success} />
+            <Text style={styles.featureText}>PDF Export</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="close-circle-outline" size={20} color={colors.textLight} />
-            <Text style={styles.featureText}>Payment Integration (Skipped for MVP)</Text>
+            <Icon name="checkmark-circle" size={20} color={colors.success} />
+            <Text style={styles.featureText}>In-App Subscriptions (Apple / Google)</Text>
           </View>
         </Card>
         

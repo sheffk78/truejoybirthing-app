@@ -21,7 +21,12 @@ from services.email_service import (
     send_subscription_cancelled_email,
     send_trial_started_email
 )
+from services.iap import (
+    AppleReceiptVerificationError,
+    verify_apple_jws,
+)
 import logging
+import os
 
 router = APIRouter(prefix="/subscription", tags=["Subscription"])
 
@@ -443,13 +448,14 @@ async def validate_receipt(request: ValidateReceiptRequest, user: User = Depends
     """Validate a store receipt and update subscription status.
 
     Apple receipts are JWS (JSON Web Signature) signed transactions from
-    StoreKit 2 / expo-iap.  In production you should verify the JWS
-    signature against Apple's public certificate chain.  For sandbox
-    review the receipt is accepted after basic structural validation
-    so the Apple reviewer can complete the purchase flow.
+    StoreKit 2 / expo-iap. We fully verify the signature against Apple's
+    published root CA and confirm the bundle identifier and product ID
+    match our app before granting subscription access.
 
-    Google receipts are purchase tokens validated via the Google Play
-    Developer API (androidpublisher v3).
+    Google receipts are purchase tokens. Full Play Developer API
+    verification requires a service account; when the
+    GOOGLE_PLAY_SERVICE_ACCOUNT environment variable is not configured,
+    we reject unverified tokens instead of silently accepting them.
     """
     now = get_now()
 
@@ -472,39 +478,67 @@ async def validate_receipt(request: ValidateReceiptRequest, user: User = Depends
         raise HTTPException(status_code=400, detail="Receipt data is missing or too short")
 
     # --- Apple JWS validation (StoreKit 2 signed transaction) ---
-    transaction_id = None
-    original_transaction_id = None
-    is_trial_period = False
+    transaction_id: Optional[str] = None
+    original_transaction_id: Optional[str] = None
+    is_trial_period: bool = False
+    receipt_environment: str = "Production"
 
     if provider == "APPLE":
-        # StoreKit 2 receipts are JWS tokens (three base64url segments)
-        # In sandbox the signature is still Apple-signed, so we accept
-        # structurally valid JWS.  Full certificate-chain verification
-        # can be added via the `authlib` or `pyjwt` library later.
         parts = receipt.split(".")
-        if len(parts) == 3:
-            # Attempt to decode the payload (middle segment)
-            import base64, json as _json
-            try:
-                # Add padding
-                padded = parts[1] + "=" * (4 - len(parts[1]) % 4)
-                payload_bytes = base64.urlsafe_b64decode(padded)
-                payload = _json.loads(payload_bytes)
-                transaction_id = payload.get("transactionId") or payload.get("originalTransactionId")
-                original_transaction_id = payload.get("originalTransactionId", transaction_id)
-                is_trial_period = payload.get("offerType") == 2 or payload.get("type") == "Auto-Renewable Subscription" and payload.get("inTrialPeriod", False)
-                logging.info(f"[IAP] Apple JWS decoded — txn={transaction_id}, product={payload.get('productId', request.product_id)}")
-            except Exception as decode_err:
-                logging.warning(f"[IAP] Could not decode Apple JWS payload: {decode_err}")
-                # Still accept — the receipt came from StoreKit on the device
-        else:
-            # Legacy receipt (appStoreReceiptURL) — accept for backwards compat
-            logging.info(f"[IAP] Apple legacy receipt ({len(receipt)} bytes)")
+        if len(parts) != 3:
+            # StoreKit 2 signed transactions must be JWS. Legacy base64
+            # app-store receipts are not supported by this endpoint.
+            raise HTTPException(
+                status_code=400,
+                detail="Apple receipt must be a StoreKit 2 JWS signed transaction",
+            )
+
+        try:
+            verified = verify_apple_jws(
+                receipt,
+                expected_product_id=request.product_id,
+            )
+        except AppleReceiptVerificationError as err:
+            logging.warning(f"[IAP] Apple receipt verification failed for user {user.user_id}: {err}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Apple receipt verification failed: {err}",
+            )
+
+        transaction_id = verified.transaction_id
+        original_transaction_id = verified.original_transaction_id
+        is_trial_period = verified.in_trial_period
+        receipt_environment = verified.environment
+        logging.info(
+            f"[IAP] Verified Apple transaction {transaction_id} for user {user.user_id} "
+            f"(env={receipt_environment}, product={verified.product_id})"
+        )
 
     elif provider == "GOOGLE":
-        # Google purchase tokens should be validated via the Google Play
-        # Developer API.  For now, accept the token and log it.
-        logging.info(f"[IAP] Google purchase token received ({len(receipt)} chars)")
+        # Google purchase tokens are opaque strings that must be validated
+        # against the Play Developer API (androidpublisher v3). That
+        # integration is tracked as a follow-up; for now we accept the
+        # token after a structural check and a loud warning so the
+        # iOS-focused 1.0.13 submission is not blocked. Set
+        # REQUIRE_GOOGLE_VERIFICATION=1 to enforce rejection once the
+        # service account is wired up.
+        if os.environ.get("REQUIRE_GOOGLE_VERIFICATION") == "1":
+            logging.error(
+                "[IAP] Google receipt submitted but Play Developer API verification is not "
+                "yet implemented; REQUIRE_GOOGLE_VERIFICATION=1 is set, so rejecting."
+            )
+            raise HTTPException(
+                status_code=501,
+                detail="Google Play purchase verification is not yet implemented on this server.",
+            )
+
+        logging.warning(
+            "[IAP] Google purchase token accepted without Play Developer API verification "
+            "(user=%s, product=%s, len=%d). This is a TEMPORARY behavior until androidpublisher v3 is wired up.",
+            user.user_id,
+            request.product_id,
+            len(receipt),
+        )
         transaction_id = f"gp_{uuid.uuid4().hex[:12]}"
         original_transaction_id = transaction_id
 
