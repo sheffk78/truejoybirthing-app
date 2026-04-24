@@ -102,17 +102,25 @@ class IAPService {
     }
 
     try {
-      // Dynamically require expo-iap only on native builds
-      this.ExpoIap = require('expo-iap');
-      
-      // Check if the module is properly linked and has v3 API surface
+      // Dynamically require expo-iap only on native builds.
+      // Use interop-safe unwrap so Metro/Hermes ESM→CJS interop can't leave us
+      // with a module namespace object whose methods look like getters instead
+      // of callable functions. This is the fix for the "Object is not a
+      // function" error we hit in build 118 when the reviewer tapped
+      // Start Free Trial.
+      const mod = require('expo-iap');
+      this.ExpoIap = (mod && mod.default && typeof mod.default === 'object') ? mod.default : mod;
+
+      // Check if the module is properly linked and has v3 API surface.
+      // Log the shape so TestFlight/App Review crashes are easier to debug.
       const requiredFns = ['initConnection', 'fetchProducts', 'requestPurchase', 'purchaseUpdatedListener', 'finishTransaction'];
       const missing = requiredFns.filter((fn) => typeof this.ExpoIap?.[fn] !== 'function');
       if (missing.length > 0) {
         console.log('[IAP] expo-iap missing expected functions:', missing.join(', '));
+        console.log('[IAP] expo-iap module keys:', Object.keys(this.ExpoIap || {}).slice(0, 40).join(', '));
         return false;
       }
-      
+
       const result = await this.ExpoIap.initConnection();
       console.log('[IAP] Connection initialized:', result);
       this.isInitialized = true;
@@ -272,11 +280,31 @@ class IAPService {
       await this.initialize();
     }
 
+    // Defensive guard: if requestPurchase isn't a function, fail early with a
+    // clear message instead of the opaque "Object is not a function" we hit
+    // in build 118. This should never fire after a successful initialize(),
+    // but acts as a safety net if the module shape changes under us.
+    if (typeof this.ExpoIap.requestPurchase !== 'function') {
+      const keys = Object.keys(this.ExpoIap || {}).slice(0, 40).join(', ');
+      console.error('[IAP] requestPurchase is not a function. Module keys:', keys);
+      return { success: false, error: 'Purchase system not available. Please update the app and try again.' };
+    }
+
     try {
-      // expo-iap v3: unified requestPurchase with platform-specific request objects
+      // expo-iap v3: unified requestPurchase with platform-specific request
+      // objects. Prefer the new `apple`/`google` field names (v3.4+) with the
+      // legacy `ios`/`android` names kept as a fallback. expo-iap accepts
+      // either, but the documented preferred shape is apple/google.
+      console.log('[IAP] Starting purchase flow for', productId, 'on', Platform.OS);
       if (Platform.OS === 'android') {
         await this.ExpoIap.requestPurchase({
           request: {
+            google: {
+              skus: [productId],
+              subscriptionOffers: offerToken
+                ? [{ sku: productId, offerToken }]
+                : [],
+            },
             android: {
               skus: [productId],
               subscriptionOffers: offerToken
@@ -289,6 +317,10 @@ class IAPService {
       } else {
         await this.ExpoIap.requestPurchase({
           request: {
+            apple: {
+              sku: productId,
+              andDangerouslyFinishTransactionAutomatically: false,
+            },
             ios: {
               sku: productId,
               andDangerouslyFinishTransactionAutomatically: false,
@@ -301,10 +333,17 @@ class IAPService {
       // Purchase flow started - result will come through purchaseUpdatedListener
       return { success: true };
     } catch (error: any) {
-      console.error('[IAP] Purchase failed:', error);
+      // Log the full error shape so App Review / TestFlight crashes are
+      // debuggable from Xcode console or sentry-equivalent.
+      console.error('[IAP] Purchase failed:', {
+        message: error?.message,
+        code: error?.code,
+        name: error?.name,
+        stack: error?.stack,
+      });
       return {
         success: false,
-        error: error.message || 'Purchase failed',
+        error: error?.message || 'Purchase failed',
       };
     }
   }
