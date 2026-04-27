@@ -14,7 +14,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "deploymentTarget": "15.1",
+      "deploymentTarget": "16.0",
       "bundleIdentifier": "com.truejoybirthing.app",
       "buildNumber": "119",
       "infoPlist": {
@@ -73,12 +73,19 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "expo-iap",
+      [
+        "expo-iap",
+        {
+          "modules": {
+            "onside": false
+          }
+        }
+      ],
       [
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "16.0"
           }
         }
       ]
