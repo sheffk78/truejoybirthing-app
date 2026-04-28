@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "deploymentTarget": "16.0",
       "bundleIdentifier": "com.truejoybirthing.app",
-      "buildNumber": "119",
+      "buildNumber": "120",
       "infoPlist": {
         "SKAdNetworkItems": [],
         "NSCameraUsageDescription": "True Joy Birthing needs camera access to take profile photos.",
@@ -34,7 +34,7 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "com.truejoybirthing.app",
-      "versionCode": 119,
+      "versionCode": 120,
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.CAMERA",
