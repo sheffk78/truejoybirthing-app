@@ -101,7 +101,20 @@ export default function PlansPricingScreen() {
           Alert.alert('Purchase Failed', result.error || 'Please try again.');
         }
       } catch (error: any) {
-        Alert.alert('Error', error.message || 'Failed to complete purchase');
+        // Verbose diagnostic for App Review debugging — shows full error info
+        console.error('[IAP][handleIAPPurchase] caught error:', error);
+        console.error('[IAP][handleIAPPurchase] error.message:', error?.message);
+        console.error('[IAP][handleIAPPurchase] error.stack:', error?.stack);
+        console.error('[IAP][handleIAPPurchase] error.name:', error?.name);
+        console.error('[IAP][handleIAPPurchase] typeof error:', typeof error);
+        console.error('[IAP][handleIAPPurchase] error keys:', error ? Object.keys(error) : 'null');
+        const debugMsg = [
+          `Type: ${error?.name || typeof error}`,
+          `Message: ${error?.message || String(error)}`,
+          `Stack (first 3 lines):`,
+          (error?.stack || 'no stack').split('\n').slice(0, 4).join('\n'),
+        ].join('\n');
+        Alert.alert('Purchase Error (Diagnostic)', debugMsg);
       } finally {
         setProcessingAction(false);
       }
