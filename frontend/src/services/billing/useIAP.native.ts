@@ -14,6 +14,35 @@ import { Platform, Alert, LogBox } from 'react-native';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { SUBSCRIPTION_PRODUCTS } from './subscriptionConfig';
 
+// Resolve the iapService singleton via require() so we can defensively unwrap
+// Metro/Hermes ESM->CJS module namespace wrapping. Some build configs surface
+// the module as { iapService: <instance>, default: <instance>, __esModule: true }
+// rather than passing through the named export, which causes
+// `iapService.purchaseSubscription is not a function (it is Object)` at call time.
+let __resolvedIapService: any = null;
+function resolveIapService(): any {
+  if (__resolvedIapService) return __resolvedIapService;
+  if (Platform.OS === 'web') return null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const mod: any = require('./iapService');
+    // Try, in order: default export, named iapService, the module itself.
+    const candidates = [mod?.default, mod?.iapService, mod];
+    for (const c of candidates) {
+      if (c && typeof c.initialize === 'function' && typeof c.purchaseSubscription === 'function') {
+        __resolvedIapService = c;
+        return c;
+      }
+    }
+    console.error('[useIAP] Failed to resolve iapService singleton from module:',
+      mod ? Object.keys(mod) : 'null', 'mod typeof =', typeof mod);
+    return null;
+  } catch (e: any) {
+    console.warn('[useIAP] require(./iapService) threw:', e?.message);
+    return null;
+  }
+}
+
 // Ignore IAP-related warnings in Expo Go
 LogBox.ignoreLogs([
   '[IAP] Failed to initialize',
@@ -98,8 +127,12 @@ export function useIAP(): UseIAPReturn {
 
       setIsLoading(true);
       try {
-        // Dynamically import iapService only on native
-        const { iapService: service } = await import('./iapService');
+        // Resolve the singleton with defensive unwrapping for Metro/Hermes
+        // module-namespace edge cases.
+        const service = resolveIapService();
+        if (!service) {
+          throw new Error('iapService singleton could not be resolved on this platform');
+        }
         if (!mounted) return;
         
         setIapService(service);
@@ -200,7 +233,18 @@ export function useIAP(): UseIAPReturn {
     setError(null);
     
     try {
-      const result = await iapService.purchaseSubscription(productId, offerToken);
+      // Belt-and-suspenders: if the state-stored reference somehow lost its
+      // methods (Metro/Hermes namespace wrapping observed in build 119),
+      // fall back to a freshly resolved singleton.
+      const svc: any =
+        iapService && typeof (iapService as any).purchaseSubscription === 'function'
+          ? iapService
+          : resolveIapService();
+      if (!svc || typeof svc.purchaseSubscription !== 'function') {
+        const keys = svc ? Object.keys(svc).join(',') : 'null';
+        throw new Error(`Purchase service unavailable (resolved keys: ${keys})`);
+      }
+      const result = await svc.purchaseSubscription(productId, offerToken);
       return result;
     } catch (err: any) {
       setError(err.message);
@@ -220,7 +264,14 @@ export function useIAP(): UseIAPReturn {
     setError(null);
     
     try {
-      const result = await iapService.restorePurchases();
+      const svc: any =
+        iapService && typeof (iapService as any).restorePurchases === 'function'
+          ? iapService
+          : resolveIapService();
+      if (!svc || typeof svc.restorePurchases !== 'function') {
+        throw new Error('Restore service unavailable');
+      }
+      const result = await svc.restorePurchases();
       
       if (result.success) {
         await fetchStatus();
@@ -245,7 +296,15 @@ export function useIAP(): UseIAPReturn {
     
     setIsLoading(true);
     try {
-      const storeProducts = await iapService.getProducts();
+      const svc: any =
+        iapService && typeof (iapService as any).getProducts === 'function'
+          ? iapService
+          : resolveIapService();
+      if (!svc || typeof svc.getProducts !== 'function') {
+        setProducts(MOCK_PRODUCTS);
+        return;
+      }
+      const storeProducts = await svc.getProducts();
       setProducts(storeProducts);
     } catch (err: any) {
       setError(err.message);
