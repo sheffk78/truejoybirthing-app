@@ -214,7 +214,12 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         return false;
       }
       
-      const response = await fetch(`${API_BASE}/api/subscription/validate-receipt`, {
+      // NOTE: API_BASE already includes the `/api` prefix
+      // (see src/constants/api.ts). Adding `/api/` here again produces
+      // `/api/api/subscription/validate-receipt` and a 404, which is what
+      // App Review build 122 hit on iPad — the error surfaced as
+      // "Failed to validate purchase. Please contact support."
+      const response = await fetch(`${API_BASE}/subscription/validate-receipt`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

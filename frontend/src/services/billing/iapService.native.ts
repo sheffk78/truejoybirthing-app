@@ -155,28 +155,57 @@ class IAPService {
     // Subscribe to purchase updates
     this.purchaseUpdateListener = this.ExpoIap.purchaseUpdatedListener(async (purchase: any) => {
       console.log('[IAP] Purchase update:', purchase);
-      
+
       // expo-iap uses 'transactionReceipt' for iOS and 'purchaseToken' for Android
       const receipt = purchase.transactionReceipt || purchase.purchaseToken;
-      
-      if (receipt) {
-        // Validate with backend
-        await this.validatePurchase(purchase);
-        
-        // Acknowledge the purchase - expo-iap uses finishTransaction
-        try {
-          await this.ExpoIap.finishTransaction({ 
-            purchase, 
-            isConsumable: false 
+
+      if (!receipt) {
+        console.warn('[IAP] Purchase event missing receipt/purchaseToken');
+        if (this.onPurchaseError) {
+          this.onPurchaseError({
+            code: 'E_NO_RECEIPT',
+            message: 'Purchase completed but no receipt was returned. Please contact support.',
           });
+        }
+        return;
+      }
+
+      // Validate with backend. We deliberately validate BEFORE calling
+      // finishTransaction so that if the server rejects the receipt the
+      // transaction stays in the queue and StoreKit can retry / surface a
+      // proper error rather than silently consuming a bad purchase.
+      const validated = await this.validatePurchase(purchase);
+
+      if (!validated) {
+        if (this.onPurchaseError) {
+          this.onPurchaseError({
+            code: 'E_VALIDATION_FAILED',
+            message: 'We could not verify your purchase with our servers. Please try again or contact support.',
+          });
+        }
+        // Still finish the transaction so the user is not stuck on a pending
+        // "You're all set" forever; backend logs will capture the failure.
+        try {
+          await this.ExpoIap.finishTransaction({ purchase, isConsumable: false });
         } catch (finishError) {
-          console.warn('[IAP] Failed to finish transaction:', finishError);
+          console.warn('[IAP] Failed to finish transaction after failed validation:', finishError);
         }
-        
-        // Notify callback
-        if (this.onPurchaseUpdate) {
-          this.onPurchaseUpdate(purchase);
-        }
+        return;
+      }
+
+      // Acknowledge the purchase - expo-iap uses finishTransaction
+      try {
+        await this.ExpoIap.finishTransaction({
+          purchase,
+          isConsumable: false,
+        });
+      } catch (finishError) {
+        console.warn('[IAP] Failed to finish transaction:', finishError);
+      }
+
+      // Notify callback
+      if (this.onPurchaseUpdate) {
+        this.onPurchaseUpdate(purchase);
       }
     });
 
@@ -354,6 +383,11 @@ class IAPService {
 
   /**
    * Validate purchase receipt with backend
+   *
+   * IMPORTANT: API_BASE already includes the `/api` prefix
+   * (see src/constants/api.ts). API_ENDPOINTS.SUBSCRIPTION_VALIDATE is
+   * `/subscription/validate-receipt`, so the final URL is
+   * `${BACKEND}/api/subscription/validate-receipt`.
    */
   private async validatePurchase(purchase: any): Promise<boolean> {
     const sessionToken = await this.getSessionToken();
@@ -365,8 +399,11 @@ class IAPService {
     try {
       // expo-iap uses transactionReceipt for iOS, purchaseToken for Android
       const receipt = purchase.transactionReceipt || purchase.purchaseToken;
-      
-      const response = await fetch(`${API_BASE}${API_ENDPOINTS.SUBSCRIPTION_VALIDATE}`, {
+      const productId = purchase.productId || purchase.id;
+      const url = `${API_BASE}${API_ENDPOINTS.SUBSCRIPTION_VALIDATE}`;
+      console.log('[IAP] Validating receipt with backend at', url, 'product=', productId);
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -375,19 +412,20 @@ class IAPService {
         body: JSON.stringify({
           receipt: receipt,
           subscription_provider: Platform.OS === 'ios' ? 'APPLE' : 'GOOGLE',
-          product_id: purchase.productId,
+          product_id: productId,
           transaction_id: purchase.transactionId || purchase.orderId,
         }),
       });
 
       if (!response.ok) {
-        console.error('[IAP] Validation failed:', await response.text());
+        const body = await response.text().catch(() => '');
+        console.error('[IAP] Validation failed:', response.status, body);
         return false;
       }
 
       return true;
-    } catch (error) {
-      console.error('[IAP] Validation error:', error);
+    } catch (error: any) {
+      console.error('[IAP] Validation error:', error?.message || error);
       return false;
     }
   }

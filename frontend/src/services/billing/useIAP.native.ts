@@ -111,7 +111,13 @@ export function useIAP(): UseIAPReturn {
   const [isAvailable, setIsAvailable] = useState(false);
   const [iapService, setIapService] = useState<any>(null);
   
-  const { fetchStatus, validateReceipt } = useSubscriptionStore();
+  // We intentionally do NOT use validateReceipt from the store here. The
+  // iapService listener (setupListeners() in iapService.native.ts) is the
+  // single source of truth for receipt validation — it POSTs to
+  // /api/subscription/validate-receipt and calls finishTransaction. Calling
+  // validateReceipt() here as well caused a duplicate request to a wrong URL
+  // (build 122) and surfaced "Failed to validate purchase" to App Review.
+  const { fetchStatus } = useSubscriptionStore();
 
   // Initialize IAP on mount - only on native
   useEffect(() => {
@@ -179,35 +185,29 @@ export function useIAP(): UseIAPReturn {
   }, []);
 
   // Handle successful purchase
-  const handlePurchaseSuccess = useCallback(async (purchase: any, service: any) => {
+  //
+  // The iapService listener has already POSTed the receipt to the backend and
+  // called finishTransaction by the time this callback fires (see
+  // setupListeners() in iapService.native.ts). Our job here is only to refresh
+  // the local subscription status and confirm to the user.
+  const handlePurchaseSuccess = useCallback(async (purchase: any, _service: any) => {
     const productId = purchase.productId || purchase.id;
     console.log('[useIAP] Purchase successful:', productId);
 
-    // expo-iap v3 unified the receipt field to `purchaseToken`. Older builds
-    // expose `transactionReceipt` on iOS. Accept either.
-    const receipt = purchase.purchaseToken || purchase.transactionReceipt;
-    if (!receipt) {
-      console.warn('[useIAP] Purchase event missing receipt/purchaseToken', Object.keys(purchase || {}));
-      setError('Purchase completed but no receipt was returned. Please contact support.');
-      return;
-    }
-
-    const validated = await validateReceipt(receipt, productId);
-
-    if (validated) {
+    try {
       await fetchStatus();
-
-      if (Platform.OS !== 'web') {
-        Alert.alert(
-          'Purchase Complete',
-          'Thank you for subscribing to True Joy Pro!',
-          [{ text: 'OK' }]
-        );
-      }
-    } else {
-      setError('Failed to validate purchase. Please contact support.');
+    } catch (err: any) {
+      console.warn('[useIAP] fetchStatus after purchase failed:', err?.message);
     }
-  }, [validateReceipt, fetchStatus]);
+
+    if (Platform.OS !== 'web') {
+      Alert.alert(
+        'Purchase Complete',
+        'Thank you for subscribing to True Joy Pro!',
+        [{ text: 'OK' }]
+      );
+    }
+  }, [fetchStatus]);
 
   // Handle purchase error
   const handlePurchaseError = useCallback((purchaseError: any) => {
