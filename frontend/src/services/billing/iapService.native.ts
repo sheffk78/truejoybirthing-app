@@ -78,7 +78,11 @@ function getMockProducts(): IAPProduct[] {
 class IAPService {
   private isInitialized = false;
   private ExpoIap: any = null;
-  private purchaseSubscription: any = null;
+  // NOTE: must NOT be named `purchaseSubscription` — that collides with the
+  // public method of the same name and shadows it on the instance, causing
+  // `iapService.purchaseSubscription is not a function (it is Object)` once
+  // the listener has been registered. Naming history left a landmine here.
+  private purchaseUpdateListener: any = null;
   private onPurchaseUpdate: ((purchase: any) => void) | null = null;
   private onPurchaseError: ((error: any) => void) | null = null;
 
@@ -149,7 +153,7 @@ class IAPService {
 
     // expo-iap uses a different event system
     // Subscribe to purchase updates
-    this.purchaseSubscription = this.ExpoIap.purchaseUpdatedListener(async (purchase: any) => {
+    this.purchaseUpdateListener = this.ExpoIap.purchaseUpdatedListener(async (purchase: any) => {
       console.log('[IAP] Purchase update:', purchase);
       
       // expo-iap uses 'transactionReceipt' for iOS and 'purchaseToken' for Android
@@ -463,9 +467,9 @@ class IAPService {
    * Call this when app is closing or user logs out
    */
   async cleanup() {
-    if (this.purchaseSubscription) {
-      this.purchaseSubscription.remove();
-      this.purchaseSubscription = null;
+    if (this.purchaseUpdateListener) {
+      this.purchaseUpdateListener.remove();
+      this.purchaseUpdateListener = null;
     }
     
     if (this.isInitialized && this.ExpoIap && Platform.OS !== 'web') {
