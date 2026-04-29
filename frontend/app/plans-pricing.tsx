@@ -44,7 +44,8 @@ export default function PlansPricingScreen() {
   const styles = getStyles(colors);
   
   // IAP hook — handles native purchase flow directly
-  const { products, purchase, restore, isLoading: iapLoading, isAvailable: iapAvailable, error: iapError } = useIAP();
+  const { products, purchase, restore, isLoading: iapLoading, isAvailable: iapAvailable, error: iapError, productsAvailable, productsError, refreshProducts } = useIAP();
+  const [isRetryingProducts, setIsRetryingProducts] = useState(false);
   const isPurchasing = iapLoading && processingAction;
   const isRestoring = iapLoading && !processingAction;
 
@@ -344,23 +345,59 @@ export default function PlansPricingScreen() {
             <View style={styles.ctaContainer}>
               {!hasAccess && status?.subscription_status !== 'trial' && (
                 <>
-                  {/* Start Trial Button (uses mock for web, IAP for native) */}
-                  <TouchableOpacity
-                    style={[styles.trialButton, { backgroundColor: colors.primary }]}
-                    onPress={iapAvailable ? handleIAPPurchase : handleStartTrial}
-                    disabled={processingAction || isPurchasing}
-                  >
-                    {(processingAction || isPurchasing) ? (
-                      <ActivityIndicator color="#fff" />
-                    ) : (
-                      <>
-                        <Ionicons name="gift" size={20} color="#fff" />
-                        <Text style={styles.trialButtonText}>
-                          Start 14-Day Free Trial
-                        </Text>
-                      </>
-                    )}
-                  </TouchableOpacity>
+                  {/* Start Trial Button (uses mock for web, IAP for native).
+                      On real native builds, only enable when products actually loaded
+                      from the App Store. Otherwise show a retry state — calling
+                      requestPurchase() with a SKU StoreKit doesn't have crashes with
+                      "SKU not found" (Apple build 122 rejection). */}
+                  {iapAvailable && !productsAvailable ? (
+                    <View style={styles.unavailableContainer}>
+                      <Ionicons name="cloud-offline-outline" size={20} color={colors.textSecondary} />
+                      <Text style={styles.unavailableText}>
+                        Subscriptions are temporarily unavailable. Please try again.
+                      </Text>
+                      {productsError ? (
+                        <Text style={styles.unavailableHint}>{productsError}</Text>
+                      ) : null}
+                      <TouchableOpacity
+                        style={[styles.retryButton, { borderColor: colors.primary }]}
+                        onPress={async () => {
+                          try {
+                            setIsRetryingProducts(true);
+                            await refreshProducts();
+                          } finally {
+                            setIsRetryingProducts(false);
+                          }
+                        }}
+                        disabled={isRetryingProducts}
+                      >
+                        {isRetryingProducts ? (
+                          <ActivityIndicator color={colors.primary} size="small" />
+                        ) : (
+                          <Text style={[styles.retryButtonText, { color: colors.primary }]}>
+                            Try Again
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={[styles.trialButton, { backgroundColor: colors.primary }]}
+                      onPress={iapAvailable ? handleIAPPurchase : handleStartTrial}
+                      disabled={processingAction || isPurchasing}
+                    >
+                      {(processingAction || isPurchasing) ? (
+                        <ActivityIndicator color="#fff" />
+                      ) : (
+                        <>
+                          <Ionicons name="gift" size={20} color="#fff" />
+                          <Text style={styles.trialButtonText}>
+                            Start 14-Day Free Trial
+                          </Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  )}
                   
                   {/* Restore Purchases Button (native only) */}
                   {iapAvailable && (
@@ -380,22 +417,54 @@ export default function PlansPricingScreen() {
               )}
               
               {(status?.subscription_status === 'expired' || status?.subscription_status === 'trial') && (
-                <TouchableOpacity
-                  style={[styles.subscribeButton, { backgroundColor: colors.secondary }]}
-                  onPress={iapAvailable ? handleIAPPurchase : handleSubscribe}
-                  disabled={processingAction || isPurchasing}
-                >
-                  {(processingAction || isPurchasing) ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <>
-                      <Ionicons name="card" size={20} color="#fff" />
-                      <Text style={styles.subscribeButtonText}>
-                        Subscribe Now — {getDisplayPriceForSelected()}/{selectedPlan === 'annual' ? 'yr' : 'mo'}
-                      </Text>
-                    </>
-                  )}
-                </TouchableOpacity>
+                iapAvailable && !productsAvailable ? (
+                  <View style={styles.unavailableContainer}>
+                    <Ionicons name="cloud-offline-outline" size={20} color={colors.textSecondary} />
+                    <Text style={styles.unavailableText}>
+                      Subscriptions are temporarily unavailable. Please try again.
+                    </Text>
+                    {productsError ? (
+                      <Text style={styles.unavailableHint}>{productsError}</Text>
+                    ) : null}
+                    <TouchableOpacity
+                      style={[styles.retryButton, { borderColor: colors.primary }]}
+                      onPress={async () => {
+                        try {
+                          setIsRetryingProducts(true);
+                          await refreshProducts();
+                        } finally {
+                          setIsRetryingProducts(false);
+                        }
+                      }}
+                      disabled={isRetryingProducts}
+                    >
+                      {isRetryingProducts ? (
+                        <ActivityIndicator color={colors.primary} size="small" />
+                      ) : (
+                        <Text style={[styles.retryButtonText, { color: colors.primary }]}>
+                          Try Again
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={[styles.subscribeButton, { backgroundColor: colors.secondary }]}
+                    onPress={iapAvailable ? handleIAPPurchase : handleSubscribe}
+                    disabled={processingAction || isPurchasing}
+                  >
+                    {(processingAction || isPurchasing) ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <>
+                        <Ionicons name="card" size={20} color="#fff" />
+                        <Text style={styles.subscribeButtonText}>
+                          Subscribe Now — {getDisplayPriceForSelected()}/{selectedPlan === 'annual' ? 'yr' : 'mo'}
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                )
               )}
 
               <Text style={styles.disclaimer}>
@@ -606,6 +675,42 @@ const getStyles = createThemedStyles((colors) => ({
     gap: 8,
   },
   subscribeButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  unavailableContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: colors.background === '#fff' ? '#FAFAFA' : 'rgba(255,255,255,0.04)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: 8,
+  },
+  unavailableText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  unavailableHint: {
+    color: colors.textSecondary,
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 4,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    minWidth: 140,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  retryButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
   disclaimer: {
     textAlign: 'center',
     color: colors.textSecondary,

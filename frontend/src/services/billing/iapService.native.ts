@@ -48,6 +48,31 @@ export interface PurchaseResult {
 }
 
 /**
+ * Result returned by getProductsDetailed(). Distinguishes "we got real
+ * products from Apple" from "we are showing mock/fallback values".
+ *
+ * On a real native build, only `source === 'store'` should let the user
+ * actually tap the Start Free Trial button — calling requestPurchase against
+ * a SKU that StoreKit didn’t return is what produces the "SKU not found"
+ * error App Review hit on iPad in build 122.
+ */
+export interface ProductsResult {
+  products: IAPProduct[];
+  /**
+   * 'store'   = fetchProducts returned real products from Apple/Google.
+   * 'mock'    = web / Expo Go / SDK unavailable — mock prices for development.
+   * 'empty'   = real native build, IAP available, but Apple returned no
+   *             products. Most often this means the products are not yet
+   *             approved & served by Sandbox to this device. The UI should
+   *             show a retry state and disable purchase, NOT show mock
+   *             prices and let the user attempt a doomed purchase.
+   */
+  source: 'store' | 'mock' | 'empty';
+  /** Last error message from the underlying fetchProducts call, if any. */
+  fetchError?: string;
+}
+
+/**
  * Get mock products for web/development
  */
 function getMockProducts(): IAPProduct[] {
@@ -221,36 +246,89 @@ class IAPService {
   }
 
   /**
-   * Get available subscription products from store
+   * Get available subscription products from store.
+   *
+   * Backwards-compatible wrapper that flattens to just the products array.
+   * New code should prefer getProductsDetailed() so the UI can distinguish
+   * “real Apple products” from “mock fallback” and avoid attempting a
+   * doomed requestPurchase against a SKU StoreKit doesn’t know about.
    */
   async getProducts(): Promise<IAPProduct[]> {
-    // Return mock products on web
+    const result = await this.getProductsDetailed();
+    return result.products;
+  }
+
+  /**
+   * Get available subscription products with provenance.
+   *
+   * Returns one of three states:
+   *   - source: 'store' — real products from Apple/Google. Safe to purchase.
+   *   - source: 'mock'  — web / Expo Go / SDK absent. Dev-only.
+   *   - source: 'empty' — real native build, IAP available, Apple returned
+   *                       no products. Caller MUST NOT call requestPurchase.
+   *                       Show a retry / unavailable state instead.
+   */
+  async getProductsDetailed(): Promise<ProductsResult> {
+    // Web has no real store; return mock products for layout/dev only.
     if (Platform.OS === 'web' || !this.ExpoIap) {
-      return getMockProducts();
+      return { products: getMockProducts(), source: 'mock' };
     }
 
     if (!this.isInitialized) {
       await this.initialize();
     }
 
+    // initialize() is allowed to fail and leave us un-initialized (e.g. in
+    // Expo Go). In that case fall back to mock so the screen still renders
+    // for development — but mark it as mock.
+    if (!this.isInitialized || !this.ExpoIap) {
+      return { products: getMockProducts(), source: 'mock' };
+    }
+
     if (!PRODUCT_SKUS || PRODUCT_SKUS.length === 0) {
-      return getMockProducts();
+      return { products: getMockProducts(), source: 'mock' };
     }
 
     try {
+      console.log('[IAP] fetchProducts requesting SKUs:', PRODUCT_SKUS.join(', '));
       // expo-iap v3 uses fetchProducts with type: 'subs' for subscriptions
       const subscriptions = await this.ExpoIap.fetchProducts({
         skus: PRODUCT_SKUS,
         type: 'subs',
       });
+      console.log(
+        '[IAP] fetchProducts returned',
+        Array.isArray(subscriptions) ? subscriptions.length : 'non-array',
+        subscriptions ? `(keys=${Object.keys(subscriptions).slice(0, 5).join(',')})` : '',
+      );
       if (!subscriptions || subscriptions.length === 0) {
-        console.warn('[IAP] fetchProducts returned empty — falling back to mock products');
-        return getMockProducts();
+        // CRITICAL: Do NOT fall back to mock products here on a real native
+        // build. Showing $29.99/$274.99 mock cards and letting the user tap
+        // Start Free Trial dispatches requestPurchase against a SKU Apple
+        // hasn’t actually served, producing "SKU not found" — this is what
+        // App Review reported in build 122 on iPad.
+        console.warn(
+          '[IAP] fetchProducts returned 0 products on a native build. ' +
+            'Most likely the IAP products are not yet served by Sandbox to this device. ' +
+            'Falling through to empty state — paywall will show retry UI.'
+        );
+        return {
+          products: [],
+          source: 'empty',
+          fetchError: 'No subscription products are currently available from the App Store.',
+        };
       }
-      return subscriptions.map((sub: any) => this.mapSubscriptionToProduct(sub));
-    } catch (error) {
-      console.error('[IAP] Failed to get products:', error);
-      return getMockProducts();
+      const mapped = subscriptions.map((sub: any) => this.mapSubscriptionToProduct(sub));
+      console.log('[IAP] mapped product IDs:', mapped.map((p) => p.productId).join(', '));
+      return { products: mapped, source: 'store' };
+    } catch (error: any) {
+      console.error('[IAP] Failed to get products:', error?.message || error, error?.code);
+      // Surface the failure to the UI rather than masking with mocks.
+      return {
+        products: [],
+        source: 'empty',
+        fetchError: error?.message || 'Could not load subscription products from the App Store.',
+      };
     }
   }
 

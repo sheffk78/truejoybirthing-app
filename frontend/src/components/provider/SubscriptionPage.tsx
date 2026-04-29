@@ -36,7 +36,8 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
   const styles = getStyles(colors);
   const router = useRouter();
   const { status, pricing, isLoading, fetchStatus, fetchPricing, startTrial, activateSubscription, cancelSubscription, getSubscriptionManageUrl } = useSubscriptionStore();
-  const { products, purchase, restore, isLoading: iapLoading, isAvailable: iapAvailable, error: iapError } = useIAP();
+  const { products, purchase, restore, isLoading: iapLoading, isAvailable: iapAvailable, error: iapError, productsAvailable, productsError, refreshProducts } = useIAP();
+  const [isRetryingProducts, setIsRetryingProducts] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
@@ -772,7 +773,41 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
             ))}
 
             <View style={styles.actionButtons}>
-              {status?.subscription_status === 'none' ? (
+              {/* On real native builds, only enable the purchase CTA when products
+                  actually loaded from the App Store. Otherwise show a retry state
+                  — calling requestPurchase() with a SKU StoreKit doesn't have
+                  crashes with "SKU not found" (Apple build 122 rejection). */}
+              {iapAvailable && !productsAvailable ? (
+                <View style={styles.unavailableContainer}>
+                  <Icon name="cloud-offline-outline" size={20} color={colors.textSecondary} />
+                  <Text style={styles.unavailableText}>
+                    Subscriptions are temporarily unavailable. Please try again.
+                  </Text>
+                  {productsError ? (
+                    <Text style={styles.unavailableHint}>{productsError}</Text>
+                  ) : null}
+                  <TouchableOpacity
+                    style={[styles.retryButton, { borderColor: primaryColor }]}
+                    onPress={async () => {
+                      try {
+                        setIsRetryingProducts(true);
+                        await refreshProducts();
+                      } finally {
+                        setIsRetryingProducts(false);
+                      }
+                    }}
+                    disabled={isRetryingProducts}
+                  >
+                    {isRetryingProducts ? (
+                      <ActivityIndicator color={primaryColor} size="small" />
+                    ) : (
+                      <Text style={[styles.retryButtonText, { color: primaryColor }]}>
+                        Try Again
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              ) : status?.subscription_status === 'none' ? (
                 <Button
                   title={processing ? 'Starting Trial...' : 'Start Free Trial'}
                   onPress={handleStartTrial}
@@ -1067,6 +1102,43 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
     textDecorationLine: 'underline',
+  },
+  unavailableContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SIZES.md,
+    paddingHorizontal: SIZES.md,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    gap: SIZES.xs,
+  },
+  unavailableText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+    color: colors.text,
+    textAlign: 'center',
+  },
+  unavailableHint: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: colors.textLight,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: SIZES.xs,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.md,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    minWidth: 140,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  retryButtonText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
   },
   termsText: {
     fontSize: SIZES.fontXs,

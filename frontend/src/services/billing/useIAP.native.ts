@@ -73,6 +73,16 @@ export interface UseIAPReturn {
   products: IAPProduct[];
   isLoading: boolean;
   isAvailable: boolean;
+  /**
+   * True only when `products` came from the real Apple/Google store.
+   * False when products are mock fallback values (web, Expo Go) OR when
+   * Apple returned no products on a real native build (the App Review
+   * "SKU not found" case). The paywall MUST gate the purchase button on
+   * this flag and not just on `products.length > 0`.
+   */
+  productsAvailable: boolean;
+  /** Reason products are unavailable, e.g. "App Store returned no products". */
+  productsError: string | null;
   error: string | null;
   purchase: (productId: string, offerToken?: string) => Promise<PurchaseResult>;
   restore: () => Promise<PurchaseResult>;
@@ -109,6 +119,8 @@ export function useIAP(): UseIAPReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAvailable, setIsAvailable] = useState(false);
+  const [productsAvailable, setProductsAvailable] = useState(false);
+  const [productsError, setProductsError] = useState<string | null>(null);
   const [iapService, setIapService] = useState<any>(null);
   
   // We intentionally do NOT use validateReceipt from the store here. The
@@ -154,11 +166,19 @@ export function useIAP(): UseIAPReturn {
             (purchase: any) => handlePurchaseSuccess(purchase, service),
             handlePurchaseError
           );
-          
-          // Load products
-          const storeProducts = await service.getProducts();
+
+          // Load products with provenance so the UI can distinguish real
+          // store products from mock/empty fallback states.
+          const detailed = await service.getProductsDetailed();
           if (mounted) {
-            setProducts(storeProducts);
+            setProducts(detailed.products);
+            setProductsAvailable(detailed.source === 'store');
+            setProductsError(
+              detailed.source === 'empty'
+                ? detailed.fetchError ||
+                    'Subscriptions are temporarily unavailable. Please try again in a moment.'
+                : null
+            );
           }
         }
       } catch (err: any) {
@@ -287,27 +307,42 @@ export function useIAP(): UseIAPReturn {
     }
   }, [iapService, fetchStatus]);
 
-  // Refresh products
+  // Refresh products. Used by the paywall "Try Again" button when products
+  // failed to load on a real native build.
   const refreshProducts = useCallback(async () => {
     if (Platform.OS === 'web' || !iapService) {
       setProducts(MOCK_PRODUCTS);
+      setProductsAvailable(false);
+      setProductsError(null);
       return;
     }
-    
+
     setIsLoading(true);
+    setProductsError(null);
     try {
       const svc: any =
-        iapService && typeof (iapService as any).getProducts === 'function'
+        iapService && typeof (iapService as any).getProductsDetailed === 'function'
           ? iapService
           : resolveIapService();
-      if (!svc || typeof svc.getProducts !== 'function') {
+      if (!svc || typeof svc.getProductsDetailed !== 'function') {
         setProducts(MOCK_PRODUCTS);
+        setProductsAvailable(false);
+        setProductsError('Subscriptions are not available on this build.');
         return;
       }
-      const storeProducts = await svc.getProducts();
-      setProducts(storeProducts);
+      const detailed = await svc.getProductsDetailed();
+      setProducts(detailed.products);
+      setProductsAvailable(detailed.source === 'store');
+      setProductsError(
+        detailed.source === 'empty'
+          ? detailed.fetchError ||
+              'Subscriptions are temporarily unavailable. Please try again in a moment.'
+          : null
+      );
     } catch (err: any) {
       setError(err.message);
+      setProductsAvailable(false);
+      setProductsError(err?.message || 'Could not refresh subscription products.');
     } finally {
       setIsLoading(false);
     }
@@ -317,6 +352,8 @@ export function useIAP(): UseIAPReturn {
     products,
     isLoading,
     isAvailable,
+    productsAvailable,
+    productsError,
     error,
     purchase,
     restore,

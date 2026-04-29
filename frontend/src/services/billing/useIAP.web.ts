@@ -30,6 +30,8 @@ export interface UseIAPReturn {
   products: IAPProduct[];
   isLoading: boolean;
   isAvailable: boolean;
+  productsAvailable: boolean;
+  productsError: string | null;
   error: string | null;
   purchase: (productId: string, offerToken?: string) => Promise<PurchaseResult>;
   restore: () => Promise<PurchaseResult>;
@@ -80,6 +82,11 @@ export function useIAP(): UseIAPReturn {
     products,
     isLoading,
     isAvailable: false,
+    // On web we never make a real Apple/Google purchase, but we do show
+    // mock pricing for layout. Surface this as "not available" so the
+    // shared paywall components don’t enable the native purchase flow.
+    productsAvailable: false,
+    productsError: null,
     error,
     purchase,
     restore,
