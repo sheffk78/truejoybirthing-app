@@ -37,8 +37,8 @@ In-app messaging exists between Moms and their connected providers
 (Doulas, Midwives). This is reflected in the Age Rating answers
 (Messaging and Chat = Yes).
 
-Privacy Policy: https://truejoybirthing.com/privacy
-Terms of Use:   https://truejoybirthing.com/terms
+Privacy Policy: https://truejoybirthing.com/privacy-policy/
+Terms of Use:   https://truejoybirthing.com/terms-of-service/
 
 Thank you,
 The True Joy Birthing Team
