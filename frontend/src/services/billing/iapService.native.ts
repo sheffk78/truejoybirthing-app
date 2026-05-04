@@ -152,6 +152,35 @@ class IAPService {
 
       const result = await this.ExpoIap.initConnection();
       console.log('[IAP] Connection initialized:', result);
+
+      // syncIOS primes StoreKit 2 on its first run by syncing pending
+      // transactions with the user's Apple ID. In sandbox this also has
+      // the side-effect of warming the IAP cache, which makes a subsequent
+      // fetchProducts far less likely to return an empty array on iOS
+      // review devices (observed in build 124).
+      if (Platform.OS === 'ios' && typeof this.ExpoIap.syncIOS === 'function') {
+        try {
+          await this.ExpoIap.syncIOS();
+          console.log('[IAP] syncIOS completed');
+        } catch (syncErr: any) {
+          // syncIOS is best-effort; don't fail init if it errors
+          console.warn('[IAP] syncIOS warning:', syncErr.message || syncErr);
+        }
+      }
+
+      // Warm StoreKit: getAvailablePurchases() forces a round-trip with
+      // Apple's servers that primes the IAP metadata cache, dramatically
+      // reducing the likelihood that the following fetchProducts returns
+      // [] on a fresh sandbox / review account.
+      if (Platform.OS === 'ios') {
+        try {
+          const priorPurchases = await this.ExpoIap.getAvailablePurchases({ onlyIncludeActiveItemsIOS: true });
+          console.log('[IAP] getAvailablePurchases returned', priorPurchases?.length || 0, 'prior purchase(s)');
+        } catch (warmErr: any) {
+          console.warn('[IAP] getAvailablePurchases warm-up warning:', warmErr.message || warmErr);
+        }
+      }
+
       this.isInitialized = true;
       this.setupListeners();
       return true;

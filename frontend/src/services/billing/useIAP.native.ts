@@ -174,9 +174,9 @@ export function useIAP(): UseIAPReturn {
             setProducts(detailed.products);
             setProductsAvailable(detailed.source === 'store');
             setProductsError(
-              detailed.source === 'empty'
-                ? detailed.fetchError ||
-                    'Subscriptions are temporarily unavailable. Please try again in a moment.'
+            detailed.source === 'empty'
+              ? detailed.fetchError ||
+                  'Connecting to the App Store. Ensure you are signed in to your Apple ID and try again.'
                 : null
             );
           }
@@ -334,9 +334,9 @@ export function useIAP(): UseIAPReturn {
       setProducts(detailed.products);
       setProductsAvailable(detailed.source === 'store');
       setProductsError(
-        detailed.source === 'empty'
-          ? detailed.fetchError ||
-              'Subscriptions are temporarily unavailable. Please try again in a moment.'
+            detailed.source === 'empty'
+              ? detailed.fetchError ||
+                  'Connecting to the App Store. Ensure you are signed in to your Apple ID and try again.'
           : null
       );
     } catch (err: any) {
