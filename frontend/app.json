@@ -17,6 +17,7 @@
       "deploymentTarget": "16.0",
       "bundleIdentifier": "com.truejoybirthing.app",
       "buildNumber": "127",
+      "teamId": "A3DU82XQTJ",
       "infoPlist": {
         "SKAdNetworkItems": [],
         "NSCameraUsageDescription": "True Joy Birthing needs camera access to take profile photos.",
