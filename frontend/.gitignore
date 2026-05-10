@@ -9,6 +9,11 @@ dist/
 web-build/
 expo-env.d.ts
 
+# Native build artifacts
+ios/
+android/
+.metro-cache/
+
 # Native
 .kotlin/
 *.orig.*
