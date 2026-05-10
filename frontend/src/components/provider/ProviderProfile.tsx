@@ -801,14 +801,14 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         <View style={styles.legalSection}>
           <View style={styles.legalLinks}>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/privacy-policy/')}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/privacy')}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Privacy Policy</Text>
             </TouchableOpacity>
             <Text style={styles.legalSeparator}>•</Text>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/disclaimer/')}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Disclaimer</Text>
@@ -816,7 +816,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           </View>
           <View style={styles.legalLinks}>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/terms-of-service/')}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Terms of Service</Text>

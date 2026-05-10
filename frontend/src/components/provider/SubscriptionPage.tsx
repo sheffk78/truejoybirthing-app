@@ -839,33 +839,34 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
               </TouchableOpacity>
             )}
 
-            {/* Required subscription disclosure (Apple Guideline 3.1.2) */}
-            <View style={styles.disclosureBlock}>
-              <Text style={styles.disclosureHeading}>Subscription Details</Text>
-              <Text style={styles.disclosureLine}>• True Joy Pro — Monthly: {getIAPPrice(true)} per month</Text>
-              <Text style={styles.disclosureLine}>• True Joy Pro — Annual: {getIAPPrice(false)} per year</Text>
-              <Text style={styles.disclosureLine}>• Includes a 14-day free trial for new subscribers</Text>
-              <Text style={styles.disclosureLine}>• Unlimited client management, contracts, invoices, notes, and marketplace visibility</Text>
-              <Text style={styles.termsText}>
-                {Platform.OS === 'ios'
-                  ? 'Payment is charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. Subscriptions may be managed and auto-renewal may be turned off in your Account Settings after purchase.'
-                  : Platform.OS === 'android'
-                    ? 'Payment is charged through your Google Play account. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Subscriptions may be managed in Google Play Store settings.'
-                    : 'By subscribing, you agree to our Terms of Service and Privacy Policy. Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period.'
-                }
-              </Text>
-              <View style={styles.legalLinksRow}>
-                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/terms-of-service/')}>
-                  <Text style={[styles.legalLink, { color: primaryColor }]}>Terms of Use</Text>
-                </TouchableOpacity>
-                <Text style={styles.legalLinkSeparator}>·</Text>
-                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/privacy-policy/')}>
-                  <Text style={[styles.legalLink, { color: primaryColor }]}>Privacy Policy</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
           </View>
         )}
+
+        {/* Required subscription disclosure (Apple Guideline 3.1.2) — always visible */}
+        <View style={styles.disclosureBlock}>
+          <Text style={styles.disclosureHeading}>Subscription Details</Text>
+          <Text style={styles.disclosureLine}>• True Joy Pro — Monthly: {getIAPPrice(true)} per month</Text>
+          <Text style={styles.disclosureLine}>• True Joy Pro — Annual: {getIAPPrice(false)} per year</Text>
+          <Text style={styles.disclosureLine}>• Includes a 14-day free trial for new subscribers</Text>
+          <Text style={styles.disclosureLine}>• Unlimited client management, contracts, invoices, notes, and marketplace visibility</Text>
+          <Text style={styles.termsText}>
+            {Platform.OS === 'ios'
+              ? 'Payment is charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. Subscriptions may be managed and auto-renewal may be turned off in your Account Settings after purchase.'
+              : Platform.OS === 'android'
+                ? 'Payment is charged through your Google Play account. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Subscriptions may be managed in Google Play Store settings.'
+                : 'By subscribing, you agree to our Terms of Service and Privacy Policy. Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period.'
+            }
+          </Text>
+          <View style={styles.legalLinksRow}>
+            <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}>
+              <Text style={[styles.legalLink, { color: primaryColor }]}>Terms of Use</Text>
+            </TouchableOpacity>
+            <Text style={styles.legalLinkSeparator}>·</Text>
+            <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/privacy')}>
+              <Text style={[styles.legalLink, { color: primaryColor }]}>Privacy Policy</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {/* Contact Support */}
         <View style={styles.supportSection}>

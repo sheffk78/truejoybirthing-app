@@ -135,14 +135,12 @@ export default function WelcomeScreen() {
             By continuing, you agree to our{' '}
             <Text
               style={styles.linkText}
-              onPress={() => Linking.openURL('https://truejoybirthing.com/terms-of-service/')}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}
             >
               Terms
-            </Text>{' '}
-            and{' '}
-            <Text
+            </Text>{' '}\n            and{' '}\n            <Text
               style={styles.linkText}
-              onPress={() => Linking.openURL('https://truejoybirthing.com/privacy-policy/')}
+              onPress={() => Linking.openURL('https://truejoybirthing.com/privacy')}
             >
               Privacy Policy
             </Text>

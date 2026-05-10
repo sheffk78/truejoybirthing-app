@@ -2,7 +2,7 @@
   "expo": {
     "name": "True Joy Birthing",
     "slug": "truejoybirthing",
-    "version": "1.0.14",
+    "version": "1.0.15",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "truejoybirthing",
@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "deploymentTarget": "16.0",
       "bundleIdentifier": "com.truejoybirthing.app",
-      "buildNumber": "127",
+      "buildNumber": "128",
       "teamId": "A3DU82XQTJ",
       "infoPlist": {
         "SKAdNetworkItems": [],
@@ -35,7 +35,7 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "com.truejoybirthing.app",
-      "versionCode": 127,
+      "versionCode": 128,
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.CAMERA",

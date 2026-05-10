@@ -66,7 +66,7 @@ This document outlines all steps needed to submit True Joy Birthing to the Apple
 ### 3.1 Privacy Policy ⚠️ REQUIRED
 - [ ] Privacy Policy URL (required for both stores)
 - Must include: data collection, usage, sharing, retention
-- Recommended: Host at `https://truejoybirthing.com/privacy-policy`
+- Recommended: Host at `https://truejoybirthing.com/privacy`
 
 ### 3.2 Terms of Service ⚠️ REQUIRED
 - [ ] Terms of Service URL
@@ -269,7 +269,7 @@ Android: com.truejoybirthing.app
 ```
 
 ### Key URLs Needed
-- Privacy Policy: https://truejoybirthing.com/privacy-policy
+- Privacy Policy: https://truejoybirthing.com/privacy
 - Terms of Service: https://truejoybirthing.com/terms
 - Support: https://truejoybirthing.com/contact
 

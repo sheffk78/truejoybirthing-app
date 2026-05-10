@@ -476,11 +476,11 @@ export default function PlansPricingScreen() {
                 }
               </Text>
               <View style={styles.legalLinksRow}>
-                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/terms-of-service/')}>
+                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}>
                   <Text style={[styles.legalLink, { color: colors.primary }]}>Terms of Use</Text>
                 </TouchableOpacity>
                 <Text style={styles.legalLinkSeparator}>·</Text>
-                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/privacy-policy/')}>
+                <TouchableOpacity onPress={() => Linking.openURL('https://truejoybirthing.com/privacy')}>
                   <Text style={[styles.legalLink, { color: colors.primary }]}>Privacy Policy</Text>
                 </TouchableOpacity>
               </View>
