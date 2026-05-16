@@ -19,6 +19,7 @@ import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData, getBabyDevLabel } from '../../src/constants/babyDevelopmentData';
+import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 
 interface PendingContract {
   contract_id: string;
@@ -233,8 +234,7 @@ export default function MomHomeScreen() {
           // Use local data first (offline-first), fall back to API data
           const localBabyDev = getBabyDevData(currentWeek);
           const babyDev = weeklyContent?.baby_development || localBabyDev;
-          const babyImage = weeklyContent?.baby_image || localBabyDev?.imageName;
-          
+
           if (!babyDev) return null;
           
           const label = babyDev.food 
@@ -255,15 +255,19 @@ export default function MomHomeScreen() {
                 </View>
               </View>
               
-              {/* Illustration placeholder */}
+              {/* Baby development illustration */}
               <View style={styles.babyDevImageContainer}>
-                {babyImage ? (
-                  <View style={styles.babyDevImagePlaceholder}>
-                    <Icon name="image-outline" size={48} color="#B87AA060" />
-                    <Text style={styles.babyDevImageCaption}>
-                      {babyDev.phase === 'size_reference' ? `${babyDev.food} · ${babyDev.size_note || ''}` : `Week ${currentWeek}`}
-                    </Text>
-                  </View>
+                {hasPregnancyIllustration(currentWeek) ? (
+                  <Image
+                    source={getPregnancyIllustration(currentWeek)}
+                    style={styles.babyDevImage}
+                    resizeMode="contain"
+                    accessibilityLabel={
+                      babyDev.phase === 'size_reference'
+                        ? `Illustration showing the size of a ${babyDev.food} at week ${currentWeek} of pregnancy`
+                        : `Cross-section illustration showing baby at ${currentWeek} weeks inside the uterus`
+                    }
+                  />
                 ) : (
                   <View style={styles.babyDevImagePlaceholder}>
                     <Icon name="image-outline" size={48} color="#B87AA040" />
@@ -651,6 +655,12 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     backgroundColor: '#FAF8F5',
   },
+  babyDevImage: {
+    width: '100%',
+    height: 220,
+    borderRadius: SIZES.radiusMd,
+    resizeMode: 'contain',
+  },
   babyDevImageContainer: {
     marginBottom: SIZES.md,
   },
@@ -660,12 +670,6 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: '#B87AA012',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  babyDevImageCaption: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: '#B87AA080',
-    marginTop: SIZES.xs,
   },
   babyDevSizeBadge: {
     alignSelf: 'flex-start',
