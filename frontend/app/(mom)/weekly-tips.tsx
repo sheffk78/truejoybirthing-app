@@ -16,6 +16,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+import { getBabyDevData, BABY_DEVELOPMENT_BY_WEEK } from '../../src/constants/babyDevelopmentData';
 
 interface WeekContent {
   week: number;
@@ -209,6 +210,55 @@ export default function WeeklyTipsScreen() {
           </Card>
         )}
 
+        {/* Baby Development Card (pregnancy weeks 4-40 only) */}
+        {!showPostpartum && (() => {
+          const week = selectedWeek;
+          if (!week || week < 4 || week > 40) return null;
+          
+          // Local data for offline-first, supplemented by API
+          const localBabyDev = getBabyDevData(week);
+          const apiBabyDev = displayContent?.baby_development;
+          const apiBabyImage = displayContent?.baby_image;
+          
+          const babyDev = apiBabyDev || localBabyDev;
+          if (!babyDev) return null;
+          
+          const imageName = apiBabyImage || localBabyDev?.imageName;
+          
+          return (
+            <Card style={styles.babyDevCard}>
+              <View style={styles.contentHeader}>
+                <View style={[styles.iconContainer, { backgroundColor: '#B87AA020' }]}>
+                  <Icon name="egg" size={24} color="#B87AA0" />
+                </View>
+                <Text style={styles.contentLabel}>Baby Development</Text>
+              </View>
+              
+              {/* Phase label */}
+              <Text style={styles.babyDevPhaseLabel}>
+                {babyDev.food 
+                  ? `As small as a ${babyDev.food}${babyDev.size_note ? ` (${babyDev.size_note})` : ''}`
+                  : `Week ${week}`}
+              </Text>
+              
+              {/* Illustration placeholder */}
+              <View style={styles.babyDevImagePlaceholder}>
+                <Icon name="image-outline" size={48} color="#B87AA060" />
+                <Text style={styles.babyDevImageCaption}>
+                  {babyDev.phase === 'size_reference' 
+                    ? `${babyDev.food} · ${babyDev.size_note || ''}`
+                    : `Week ${week}`}
+                </Text>
+              </View>
+              
+              <Text style={styles.babyDevTitle}>{babyDev.title}</Text>
+              <Text style={styles.babyDevDescription}>
+                {babyDev.description}
+              </Text>
+            </Card>
+          );
+        })()}
+
         {!displayContent?.tip && !displayContent?.affirmation && (
           <View style={styles.emptyState}>
             <Icon name="document-text-outline" size={48} color={colors.border} />
@@ -231,7 +281,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -256,7 +306,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     paddingHorizontal: SIZES.md,
     paddingBottom: SIZES.sm,
   },
@@ -299,7 +349,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.sm,
@@ -402,5 +452,43 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
     color: colors.textSecondary,
+  },
+  // Baby Development Card Styles
+  babyDevCard: {
+    marginBottom: SIZES.md,
+    padding: SIZES.lg,
+    backgroundColor: '#FAF8F5',
+  },
+  babyDevPhaseLabel: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyMedium,
+    color: '#B87AA0',
+    marginBottom: SIZES.sm,
+  },
+  babyDevImagePlaceholder: {
+    height: 200,
+    borderRadius: SIZES.radiusMd,
+    backgroundColor: '#B87AA012',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.md,
+  },
+  babyDevImageCaption: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: '#B87AA080',
+    marginTop: SIZES.xs,
+  },
+  babyDevTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.bodyBold,
+    color: '#2A2A2A',
+    marginBottom: SIZES.xs,
+  },
+  babyDevDescription: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    lineHeight: 26,
   },
 }));

@@ -18,6 +18,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+import { getBabyDevData, getBabyDevLabel } from '../../src/constants/babyDevelopmentData';
 
 interface PendingContract {
   contract_id: string;
@@ -221,6 +222,76 @@ export default function MomHomeScreen() {
             </Text>
           </Card>
         )}
+        
+        {/* Baby Development Card */}
+        {(() => {
+          // Determine the current pregnancy week for baby development
+          const currentWeek = weeklyContent?.week;
+          const isPostpartum = weeklyContent?.is_postpartum;
+          if (isPostpartum || !currentWeek || currentWeek < 4 || currentWeek > 40) return null;
+          
+          // Use local data first (offline-first), fall back to API data
+          const localBabyDev = getBabyDevData(currentWeek);
+          const babyDev = weeklyContent?.baby_development || localBabyDev;
+          const babyImage = weeklyContent?.baby_image || localBabyDev?.imageName;
+          
+          if (!babyDev) return null;
+          
+          const label = babyDev.food 
+            ? `As small as a ${babyDev.food}`
+            : 'Your baby this week';
+          
+          return (
+            <Card style={styles.babyDevCard}>
+              <View style={styles.weeklyHeader}>
+                <View style={[styles.weeklyIconContainer, { backgroundColor: '#B87AA020' }]}>
+                  <Icon name="egg" size={22} color="#B87AA0" />
+                </View>
+                <View style={styles.weeklyHeaderText}>
+                  <Text style={styles.weeklyLabel}>Baby Development</Text>
+                  <Text style={[styles.weeklyWeek, { color: '#B87AA0' }]}>
+                    {weeklyContent.display_week || `Week ${currentWeek}`}
+                  </Text>
+                </View>
+              </View>
+              
+              {/* Illustration placeholder */}
+              <View style={styles.babyDevImageContainer}>
+                {babyImage ? (
+                  <View style={styles.babyDevImagePlaceholder}>
+                    <Icon name="image-outline" size={48} color="#B87AA060" />
+                    <Text style={styles.babyDevImageCaption}>
+                      {babyDev.phase === 'size_reference' ? `${babyDev.food} · ${babyDev.size_note || ''}` : `Week ${currentWeek}`}
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={styles.babyDevImagePlaceholder}>
+                    <Icon name="image-outline" size={48} color="#B87AA040" />
+                  </View>
+                )}
+              </View>
+              
+              {/* Size badge for early weeks */}
+              {babyDev.phase === 'size_reference' && babyDev.size_note && (
+                <View style={styles.babyDevSizeBadge}>
+                  <Text style={styles.babyDevSizeBadgeText}>{babyDev.size_note}</Text>
+                </View>
+              )}
+              
+              <Text style={styles.babyDevTitle}>{babyDev.title}</Text>
+              <Text style={styles.babyDevDescription} numberOfLines={4}>
+                {babyDev.description}
+              </Text>
+              <TouchableOpacity 
+                style={styles.weeklyReadMore}
+                onPress={() => router.push('/(mom)/weekly-tips')}
+              >
+                <Text style={[styles.weeklyReadMoreText, { color: '#B87AA0' }]}>Learn more</Text>
+                <Icon name="chevron-forward" size={16} color="#B87AA0" />
+              </TouchableOpacity>
+            </Card>
+          );
+        })()}
         
         {/* Pending Actions Section - Contracts & Invoices */}
         {(pendingContracts.length > 0 || pendingInvoices.length > 0) && (
@@ -573,5 +644,53 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
     color: colors.textSecondary,
+  },
+  // Baby Development Card Styles
+  babyDevCard: {
+    marginBottom: SIZES.md,
+    padding: SIZES.md,
+    backgroundColor: '#FAF8F5',
+  },
+  babyDevImageContainer: {
+    marginBottom: SIZES.md,
+  },
+  babyDevImagePlaceholder: {
+    height: 200,
+    borderRadius: SIZES.radiusMd,
+    backgroundColor: '#B87AA012',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  babyDevImageCaption: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: '#B87AA080',
+    marginTop: SIZES.xs,
+  },
+  babyDevSizeBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#A8B5A020',
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: SIZES.xs / 2,
+    borderRadius: SIZES.radiusSm,
+    marginBottom: SIZES.sm,
+  },
+  babyDevSizeBadgeText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+    color: '#A8B5A0',
+  },
+  babyDevTitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+    color: '#2A2A2A',
+    marginBottom: SIZES.xs,
+  },
+  babyDevDescription: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    lineHeight: 22,
+    marginBottom: SIZES.sm,
   },
 }));
