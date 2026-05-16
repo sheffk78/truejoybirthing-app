@@ -76,7 +76,7 @@ export default function BirthPlanPreviewScreen() {
   const handleDownloadPDF = async () => {
     if (Platform.OS === 'web') {
       try {
-        const token = sessionToken || localStorage.getItem('authToken');
+        const token = sessionToken || localStorage.getItem('session_token');
         const pdfUrl = `${API_BASE}${API_ENDPOINTS.BIRTH_PLAN_EXPORT}/pdf`;
         
         const response = await fetch(pdfUrl, {
@@ -132,7 +132,7 @@ export default function BirthPlanPreviewScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header - Hidden on print */}
-      <View style={styles.header} className="no-print">
+      <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
@@ -235,7 +235,7 @@ export default function BirthPlanPreviewScreen() {
       </ScrollView>
 
       {/* Action Bar - Hidden on print */}
-      <View style={styles.actionBar} className="no-print">
+      <View style={styles.actionBar}>
         <TouchableOpacity style={styles.printButton} onPress={handlePrint}>
           <Icon name="print" size={20} color={colors.white} />
           <Text style={styles.printButtonText}>Print Birth Plan</Text>
@@ -283,7 +283,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   backButton: {
     padding: SIZES.xs,
@@ -308,7 +308,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingBottom: 100,
   },
   printableContent: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.lg,
     shadowColor: '#000',
@@ -471,7 +471,7 @@ const getStyles = createThemedStyles((colors) => ({
     left: 0,
     right: 0,
     padding: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },

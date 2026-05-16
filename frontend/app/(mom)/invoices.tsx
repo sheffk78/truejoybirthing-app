@@ -274,7 +274,7 @@ const getStyles = createThemedStyles((colors) => ({
     lineHeight: 18,
   },
   emptyCard: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: SIZES.xl,
     alignItems: 'center',
@@ -292,7 +292,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.sm,
   },
   invoiceCard: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: SIZES.md,
     marginBottom: SIZES.sm,
@@ -334,7 +334,7 @@ const getStyles = createThemedStyles((colors) => ({
   viewButton: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   viewButtonText: { fontSize: 14, color: colors.primary, fontWeight: '500' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%' },
+  modalContent: { backgroundColor: colors.surface, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%' },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',

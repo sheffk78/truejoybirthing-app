@@ -276,9 +276,9 @@ export default function MomHomeScreen() {
               </View>
               
               {/* Size badge for early weeks */}
-              {babyDev.phase === 'size_reference' && babyDev.size_note && (
+              {babyDev.phase === 'size_reference' && babyDev.sizeNote && (
                 <View style={styles.babyDevSizeBadge}>
-                  <Text style={styles.babyDevSizeBadgeText}>{babyDev.size_note}</Text>
+                  <Text style={styles.babyDevSizeBadgeText}>{babyDev.sizeNote}</Text>
                 </View>
               )}
               
@@ -538,27 +538,6 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
     color: colors.textSecondary,
-  },
-  teamCard: {
-    marginBottom: SIZES.md,
-  },
-  teamHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SIZES.sm,
-  },
-  teamTitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
-    marginLeft: SIZES.sm,
-  },
-  teamText: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
-    marginBottom: SIZES.md,
-    lineHeight: 20,
   },
   // Weekly Tip & Affirmation Card Styles
   weeklyCard: {

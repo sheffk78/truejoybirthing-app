@@ -611,7 +611,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   backButton: {
     flexDirection: 'row',
@@ -958,7 +958,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center', 
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -984,7 +984,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'flex-end',
   },
   noteModalContent: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopLeftRadius: SIZES.radiusLg,
     borderTopRightRadius: SIZES.radiusLg,
     padding: SIZES.lg,

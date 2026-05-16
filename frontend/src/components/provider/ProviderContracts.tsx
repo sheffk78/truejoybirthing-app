@@ -21,7 +21,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { apiRequest } from '../../utils/api';
+import { apiRequest, getApiBaseUrl } from '../../utils/api';
 import useAuthStore from '../../store/authStore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SIZES, FONTS } from '../../constants/theme';
@@ -60,7 +60,8 @@ interface ProviderContractsProps {
 export default function ProviderContracts({ config }: ProviderContractsProps) {
   const colors = useColors();
   const styles = getStyles(colors);
-  const { user, backendUrl } = useAuthStore();
+  const { user } = useAuthStore();
+  const backendUrl = getApiBaseUrl();
   const router = useRouter();
   const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
   
@@ -989,7 +990,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -1020,7 +1021,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -1066,7 +1067,7 @@ const getStyles = createThemedStyles((colors) => ({
     textAlign: 'center',
   },
   contractCard: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.lg,
     marginBottom: SIZES.md,
@@ -1154,7 +1155,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopLeftRadius: SIZES.radiusLg,
     borderTopRightRadius: SIZES.radiusLg,
     maxHeight: '90%',
@@ -1270,7 +1271,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   clientOptionText: {
     fontSize: SIZES.fontMd,

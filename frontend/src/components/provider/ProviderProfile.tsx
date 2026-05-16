@@ -83,6 +83,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   // Doula-specific
   const [zipCode, setZipCode] = useState('');
   const [lookingUpZip, setLookingUpZip] = useState(false);
+  const [zipLookupError, setZipLookupError] = useState('');
   
   // Midwife-specific
   const [credentials, setCredentials] = useState('');
@@ -92,18 +93,29 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   const roleIcon = isMidwife ? 'medkit' : 'heart';
   
   const handleZipChange = async (zip: string) => {
-    setZipCode(zip);
-    if (zip.length === 5) {
+    const cleaned = zip.replace(/\D/g, '').slice(0, 5);
+    setZipCode(cleaned);
+    setZipLookupError('');
+    if (cleaned.length === 5) {
       setLookingUpZip(true);
       try {
-        const data = await apiRequest(`/lookup/zipcode/${zip}`);
+        const data = await apiRequest(`/lookup/zipcode/${cleaned}`, { timeoutMs: 8000 });
         setLocationCity(data.city || '');
-        setLocationState(data.state || '');
-      } catch (error) {
+        setLocationState(data.state_abbreviation || data.state || '');
+        if (!data.city || !data.state) {
+          setZipLookupError('We couldn’t find that zip code. Please check it and try again.');
+        }
+      } catch (error: any) {
         console.error('Zip lookup failed:', error);
+        setLocationCity('');
+        setLocationState('');
+        setZipLookupError(error.message || 'Zip code lookup failed. Please try again.');
       } finally {
         setLookingUpZip(false);
       }
+    } else {
+      setLocationCity('');
+      setLocationState('');
     }
   };
   
@@ -511,6 +523,9 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
                   <Text style={styles.zipLookupText}>Looking up location...</Text>
                 </View>
               )}
+              {!!zipLookupError && (
+                <Text style={styles.errorText}>{zipLookupError}</Text>
+              )}
               
               <View style={styles.locationRow}>
                 <Input
@@ -890,11 +905,11 @@ const getStyles = createThemedStyles((colors) => ({
   toggle: { 
     width: 50, height: 28, borderRadius: 14, 
     justifyContent: 'center', padding: 2,
-    backgroundColor: colors.border 
+backgroundColor: colors.surface
   },
   toggleDot: { 
     width: 24, height: 24, borderRadius: 12, 
-    backgroundColor: colors.white 
+backgroundColor: colors.surface
   },
   toggleDotActive: { alignSelf: 'flex-end' },
   

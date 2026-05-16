@@ -470,7 +470,7 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.error,
   },
   breadcrumbHeader: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
@@ -583,7 +583,7 @@ const getStyles = createThemedStyles((colors) => ({
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.sm,

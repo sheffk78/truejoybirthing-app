@@ -293,7 +293,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   backButton: {
     width: 40,
@@ -371,7 +371,7 @@ const getStyles = createThemedStyles((colors) => ({
   actionButton: {
     alignItems: 'center',
     padding: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.md,
     minWidth: 100,
     shadowColor: '#000',

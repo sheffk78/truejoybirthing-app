@@ -368,7 +368,7 @@ const getStyles = createThemedStyles((colors) => ({
   datePickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: SIZES.radiusMd,
@@ -385,7 +385,7 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.textLight,
   },
   datePickerContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusMd,
     marginTop: SIZES.sm,
     overflow: 'hidden',

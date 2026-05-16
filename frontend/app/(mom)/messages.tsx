@@ -12,6 +12,7 @@ import {
   Modal,
   ActivityIndicator,
   Image,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
@@ -294,6 +295,13 @@ export default function MessagesScreen() {
   const getRoleColor = (role: string) => {
     return role === 'DOULA' ? colors.roleDoula : role === 'MIDWIFE' ? colors.roleMidwife : colors.primary;
   };
+
+  const closeConversation = () => {
+    Keyboard.dismiss();
+    setSelectedConversation(null);
+    setNewMessage('');
+    fetchConversations();
+  };
   
   return (
     <SafeAreaView style={styles.container} edges={['top']} data-testid="messages-screen">
@@ -450,13 +458,13 @@ export default function MessagesScreen() {
       <Modal
         visible={!!selectedConversation}
         animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setSelectedConversation(null)}
+        presentationStyle="fullScreen"
+        onRequestClose={closeConversation}
       >
         <SafeAreaView style={styles.modalContainer}>
           {/* Chat Header */}
           <View style={styles.chatHeader}>
-            <TouchableOpacity onPress={() => setSelectedConversation(null)} data-testid="close-chat-btn">
+            <TouchableOpacity onPress={closeConversation} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} data-testid="close-chat-btn">
               <Icon name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>
@@ -533,7 +541,7 @@ export default function MessagesScreen() {
             <TouchableOpacity onPress={() => setShowNewMessageModal(false)}>
               <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text style={styles.chatHeaderTitle}>New Message</Text>
+            <Text style={styles.chatHeaderName}>New Message</Text>
             <View style={{ width: 24 }} />
           </View>
           
@@ -731,7 +739,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   chatHeaderInfo: {
     flex: 1,
@@ -774,7 +782,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderBottomRightRadius: 4,
   },
   messageBubbleOther: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomLeftRadius: 4,
   },
   messageText: {
@@ -801,7 +809,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   messageInput: {
     flex: 1,
@@ -864,7 +872,7 @@ const getStyles = createThemedStyles((colors) => ({
   teamMemberCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.sm,

@@ -485,7 +485,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -538,7 +538,7 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.white,
   },
   templateCard: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.lg,
     marginBottom: SIZES.md,
@@ -615,7 +615,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopLeftRadius: SIZES.radiusLg,
     borderTopRightRadius: SIZES.radiusLg,
     maxHeight: '90%',

@@ -396,7 +396,7 @@ const getStyles = createThemedStyles((colors) => ({
   milestoneTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text, marginBottom: 4 },
   milestoneDesc: { fontSize: SIZES.fontSm, color: colors.textSecondary },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: colors.white, borderTopLeftRadius: SIZES.radiusLg, borderTopRightRadius: SIZES.radiusLg, padding: SIZES.lg, paddingBottom: SIZES.xxl, maxHeight: '80%' },
+  modalContent: { backgroundColor: colors.surface, borderTopLeftRadius: SIZES.radiusLg, borderTopRightRadius: SIZES.radiusLg, padding: SIZES.lg, paddingBottom: SIZES.xxl, maxHeight: '80%' },
   modalScroll: { maxHeight: 350 },
   modalTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text, marginBottom: SIZES.lg, textAlign: 'center' },
   inputLabel: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.textSecondary, marginBottom: SIZES.xs },
@@ -441,7 +441,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.lg 
   },
   dateModalContent: { 
-    backgroundColor: colors.white, 
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusLg, 
     padding: SIZES.lg, 
     width: '100%', 

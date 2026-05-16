@@ -1501,7 +1501,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -1517,13 +1517,13 @@ const getStyles = createThemedStyles((colors) => ({
   modalFooter: {
     flexDirection: 'row',
     padding: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
   // Collapsible sections
   collapsibleSection: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.sm,
     overflow: 'hidden',
@@ -1565,7 +1565,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
     color: colors.text,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   inputSmall: {
     marginTop: SIZES.xs,
@@ -1607,7 +1607,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     marginBottom: SIZES.xs,
   },
   optionButtonSmall: {
@@ -1681,7 +1681,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   statusButtonText: {
     fontSize: SIZES.fontXs,

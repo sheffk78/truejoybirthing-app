@@ -39,7 +39,7 @@ function ThemedLayout() {
     if (!isReady || isLoading) return;
     
     const inAuthGroup = segments[0] === '(auth)';
-    const currentScreen = segments[1];
+    const currentScreen = (segments as string[])[1];
     const currentPath = segments.join('/');
     const currentRoleGroup = segments[0]; // e.g., '(mom)', '(doula)', '(midwife)', '(admin)'
     
@@ -55,7 +55,7 @@ function ThemedLayout() {
         // First show intro walkthrough, then role-specific profile setup
         const isOnIntro = currentScreen === 'onboarding-intro';
         const isOnNotificationPermission = currentScreen === 'notification-permission';
-        const isOnProfileSetup = ['mom-onboarding', 'doula-onboarding', 'midwife-onboarding'].includes(currentScreen);
+        const isOnProfileSetup = !!currentScreen && ['mom-onboarding', 'doula-onboarding', 'midwife-onboarding'].includes(currentScreen);
         
         if (!isOnIntro && !isOnNotificationPermission && !isOnProfileSetup) {
           // Start with the intro walkthrough

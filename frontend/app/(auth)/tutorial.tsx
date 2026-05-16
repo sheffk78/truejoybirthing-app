@@ -3,7 +3,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppTutorial from '../../src/components/AppTutorial';
 import { useAuthStore } from '../../src/store/authStore';
-import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+import { useColors } from '../../src/hooks/useThemedStyles';
 import {
   MOM_TUTORIAL_STEPS,
   DOULA_TUTORIAL_STEPS,
@@ -14,7 +14,6 @@ const TUTORIAL_SEEN_KEY = 'tutorial_completed';
 
 export default function TutorialScreen() {
   const colors = useColors();
-  const styles = getStyles(colors);
   const router = useRouter();
   const { role } = useLocalSearchParams<{ role?: string }>();
   const { user } = useAuthStore();

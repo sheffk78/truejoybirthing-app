@@ -252,7 +252,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
@@ -277,7 +277,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.md,
   },
   textInput: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: SIZES.radiusMd,
@@ -293,6 +293,6 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
 }));

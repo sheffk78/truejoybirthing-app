@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { SIZES } from '../constants/theme';
 import { useColors, useShadows } from '../hooks/useThemedStyles';
 
 interface CardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   variant?: 'elevated' | 'outlined' | 'filled';
   padding?: 'none' | 'sm' | 'md' | 'lg';
 }
@@ -34,7 +34,9 @@ export default function Card({
       default:
         return {
           backgroundColor: colors.surface,
-          ...shadows.md,
+          borderWidth: 1,
+          borderColor: colors.border,
+          ...shadows.sm,
         };
     }
   };
@@ -61,6 +63,6 @@ export default function Card({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: SIZES.radiusLg,
+    borderRadius: SIZES.radiusMd,
   },
 });

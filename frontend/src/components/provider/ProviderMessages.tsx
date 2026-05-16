@@ -15,6 +15,7 @@ import {
   Platform,
   Modal,
   Image,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
@@ -240,6 +241,13 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
     return role === 'MOM' ? colors.primary : role === 'MIDWIFE' ? colors.roleMidwife : colors.roleDoula;
   };
 
+  const closeConversation = () => {
+    Keyboard.dismiss();
+    setSelectedConversation(null);
+    setNewMessage('');
+    fetchConversations();
+  };
+
   const primaryColor = config.primaryColor;
   
   // Get clients that don't already have a conversation
@@ -344,12 +352,12 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
         visible={!!selectedConversation}
         animationType="slide"
         presentationStyle="fullScreen"
-        onRequestClose={() => setSelectedConversation(null)}
+        onRequestClose={closeConversation}
       >
         <SafeAreaView style={[styles.modalContainer, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
           {/* Chat Header */}
           <View style={[styles.chatHeader, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
-            <TouchableOpacity onPress={() => setSelectedConversation(null)} style={{ padding: SIZES.xs }}>
+            <TouchableOpacity onPress={closeConversation} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={{ padding: SIZES.xs }}>
               <Icon name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>

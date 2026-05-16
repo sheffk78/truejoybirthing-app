@@ -685,7 +685,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                         fontSize: 16,
                         borderRadius: 8,
                         border: `1px solid ${colors.border}`,
-                        backgroundColor: colors.white,
+                        backgroundColor: colors.surface,
                       }}
                     />
                   </View>
@@ -734,7 +734,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                         fontSize: 16,
                         borderRadius: 8,
                         border: `1px solid ${colors.border}`,
-                        backgroundColor: colors.white,
+                        backgroundColor: colors.surface,
                       }}
                     />
                   </View>
@@ -818,7 +818,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   webDatePickerContainer: {
     marginVertical: SIZES.sm,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusMd,
     overflow: 'visible',
     zIndex: 1000,
@@ -830,7 +830,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -861,7 +861,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -878,7 +878,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   tabsContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     paddingHorizontal: SIZES.lg,
     paddingBottom: SIZES.md,
     borderBottomWidth: 1,
@@ -1054,7 +1054,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1104,7 +1104,7 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.textLight,
   },
   pickerContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
     borderColor: colors.border,
@@ -1173,7 +1173,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   toggleKnobActive: {
     transform: [{ translateX: 20 }],

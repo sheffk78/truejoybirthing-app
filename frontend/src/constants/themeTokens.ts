@@ -91,65 +91,65 @@ export interface ColorTokens {
 
 export const LIGHT_COLORS: ColorTokens = {
   background: {
-    primary: '#FEFCFF',      // Warm white with hint of pink
-    secondary: '#F9F5FA',    // Subtle lavender tint
-    surface: '#FFFFFF',      // Pure white for cards
-    elevated: '#FFFFFF',     // Elevated surfaces
-    subtle: '#F5F0F7',       // Very subtle lavender
+    primary: '#FAF8F5',      // Cream canvas
+    secondary: '#F5F3EF',    // Warm alternate surface
+    surface: '#FDFCFA',      // Subtle lift for cards
+    elevated: '#FFFFFF',     // Modals / highest surfaces
+    subtle: '#F5F3EF',       // Warm subtle background
   },
   
   text: {
-    primary: '#4A3B4E',      // Deep warm gray
-    secondary: '#8A7E8E',    // Medium gray
-    muted: '#B0A6B4',        // Light gray
+    primary: '#2A2A2A',      // Charcoal
+    secondary: '#6A6B6C',    // Gray body text
+    muted: '#9A9B9C',        // Captions / muted text
     onAccent: '#FFFFFF',     // White on accent backgrounds
     inverse: '#FFFFFF',      // For dark backgrounds
   },
   
   accent: {
-    primary: '#9F83B6',      // Soft Lavender
-    primaryLight: '#C4B1D3', // Light Lavender
-    primaryDark: '#7D628C',  // Deep Lavender
-    secondary: '#D4A5A5',    // Dusty Rose
-    secondaryLight: '#E3C0C0',
-    secondaryDark: '#B88A8A',
-    tertiary: '#8CAF8C',     // Sage Green
+    primary: '#8E8CB5',      // Lavender 500
+    primaryLight: '#D5D3E8', // Lavender 300
+    primaryDark: '#6E6C99',  // Lavender 600
+    secondary: '#B87AA0',    // Rose 500
+    secondaryLight: '#E6BBD8',
+    secondaryDark: '#9A5E84',
+    tertiary: '#A8B5A0',     // Sage
   },
   
   border: {
-    subtle: '#EFE6F2',       // Very light lavender
-    default: '#E0D6E4',      // Light lavender
-    strong: '#C4B1D3',       // Medium lavender
+    subtle: '#E6E4F4',       // Lavender 200
+    default: '#D5D3E8',      // Lavender 300
+    strong: '#8E8CB5',       // Lavender 500
   },
   
   status: {
-    success: '#8CAF8C',      // Sage green
-    successBg: '#E8F5E8',
+    success: '#A8B5A0',      // Sage
+    successBg: '#E8EDE5',
     warning: '#E6C685',      // Warm yellow
     warningBg: '#FFF8E6',
     error: '#D48A8A',        // Soft red
     errorBg: '#FCEAEA',
-    info: '#8CA8AF',         // Soft teal
-    infoBg: '#E8F2F4',
+    info: '#8E8CB5',         // Lavender
+    infoBg: '#F1F1FB',
   },
   
   role: {
-    mom: '#D4A5A5',          // Dusty Rose
-    doula: '#9F83B6',        // Lavender
-    midwife: '#8CAF8C',      // Sage Green
-    admin: '#8A7E8E',        // Gray
+    mom: '#B87AA0',          // Rose
+    doula: '#8E8CB5',        // Lavender
+    midwife: '#A8B5A0',      // Sage
+    admin: '#6A6B6C',        // Gray
   },
   
   mood: {
     veryLow: '#D48A8A',
     low: '#E6C685',
     neutral: '#B0A6B4',
-    good: '#8CAF8C',
-    great: '#8CA8AF',
+    good: '#A8B5A0',
+    great: '#8E8CB5',
   },
   
   overlay: {
-    backdrop: 'rgba(74, 59, 78, 0.5)',  // Dark overlay for modals
+    backdrop: 'rgba(42, 42, 42, 0.5)',  // Dark overlay for modals
     light: 'rgba(255, 255, 255, 0.9)',
   },
   
@@ -261,25 +261,25 @@ export interface ShadowTokens {
 
 export const LIGHT_SHADOWS: ShadowTokens = {
   sm: {
-    shadowColor: '#4A3B4E',
+    shadowColor: '#2A2A2A',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.03,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 1,
   },
   md: {
-    shadowColor: '#4A3B4E',
+    shadowColor: '#2A2A2A',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.04,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 2,
   },
   lg: {
-    shadowColor: '#4A3B4E',
+    shadowColor: '#2A2A2A',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.06,
     shadowRadius: 16,
-    elevation: 8,
+    elevation: 3,
   },
 };
 
@@ -289,21 +289,21 @@ export const DARK_SHADOWS: ShadowTokens = {
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 1,
   },
   md: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 2,
   },
   lg: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.5,
     shadowRadius: 16,
-    elevation: 8,
+    elevation: 3,
   },
 };
 

@@ -17,13 +17,14 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { getBabyDevData, BABY_DEVELOPMENT_BY_WEEK } from '../../src/constants/babyDevelopmentData';
+import { getBabyDevData, type BabyDevEntry } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 
 interface WeekContent {
   week: number;
   tip: string;
   affirmation: string;
+  baby_development?: BabyDevEntry;
 }
 
 export default function WeeklyTipsScreen() {
@@ -236,7 +237,7 @@ export default function WeeklyTipsScreen() {
               {/* Phase label */}
               <Text style={styles.babyDevPhaseLabel}>
                 {babyDev.food 
-                  ? `As small as a ${babyDev.food}${babyDev.size_note ? ` (${babyDev.size_note})` : ''}`
+                  ? `As small as a ${babyDev.food}${babyDev.sizeNote ? ` (${babyDev.sizeNote})` : ''}`
                   : `Week ${week}`}
               </Text>
               

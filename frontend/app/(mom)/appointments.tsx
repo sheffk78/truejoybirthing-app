@@ -874,7 +874,7 @@ const getStyles = createThemedStyles((colors) => ({
   
   // Provider Selection
   providersList: { gap: SIZES.sm },
-  providerOption: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: colors.white, borderRadius: SIZES.radiusMd, borderWidth: 2, borderColor: 'transparent' },
+  providerOption: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, borderWidth: 2, borderColor: 'transparent' },
   providerOptionSelected: { borderColor: colors.primary, backgroundColor: colors.primary + '10' },
   providerOptionAvatar: { width: 48, height: 48, borderRadius: 24, marginRight: SIZES.md },
   providerOptionInfo: { flex: 1 },
@@ -885,12 +885,12 @@ const getStyles = createThemedStyles((colors) => ({
   
   // Date Time
   dateTimeRow: { flexDirection: 'row', gap: SIZES.sm },
-  dateTimeButton: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: colors.white, borderRadius: SIZES.radiusMd, gap: SIZES.sm },
+  dateTimeButton: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, gap: SIZES.sm },
   dateTimeText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text },
   
   // Date Modal (web & native)
   dateModalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center', padding: SIZES.lg },
-  dateModalContent: { backgroundColor: colors.white, borderRadius: SIZES.radiusLg, padding: SIZES.lg, width: '100%', maxWidth: 400 },
+  dateModalContent: { backgroundColor: colors.surface, borderRadius: SIZES.radiusLg, padding: SIZES.lg, width: '100%', maxWidth: 400 },
   dateModalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.lg },
   dateModalTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: colors.text },
   webCalendarWrapper: { marginVertical: SIZES.md },
@@ -898,15 +898,15 @@ const getStyles = createThemedStyles((colors) => ({
   
   // Type Options
   typeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.sm },
-  typeOption: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, backgroundColor: colors.white, borderRadius: SIZES.radiusMd, borderWidth: 1, borderColor: colors.border },
+  typeOption: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, borderWidth: 1, borderColor: colors.border },
   typeOptionSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
   typeOptionText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: colors.textSecondary },
   typeOptionTextSelected: { color: colors.white, fontFamily: FONTS.bodyBold },
   
   // Virtual Toggle
-  virtualToggle: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: colors.white, borderRadius: SIZES.radiusMd, marginTop: SIZES.md },
+  virtualToggle: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, marginTop: SIZES.md },
   virtualToggleText: { flex: 1, fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text, marginLeft: SIZES.sm },
   
   // Notes
-  notesInput: { backgroundColor: colors.white, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text, minHeight: 100, textAlignVertical: 'top' },
+  notesInput: { backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text, minHeight: 100, textAlignVertical: 'top' },
 }));

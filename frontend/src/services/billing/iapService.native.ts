@@ -348,7 +348,7 @@ class IAPService {
         };
       }
       const mapped = subscriptions.map((sub: any) => this.mapSubscriptionToProduct(sub));
-      console.log('[IAP] mapped product IDs:', mapped.map((p) => p.productId).join(', '));
+      console.log('[IAP] mapped product IDs:', mapped.map((p: IAPProduct) => p.productId).join(', '));
       return { products: mapped, source: 'store' };
     } catch (error: any) {
       console.error('[IAP] Failed to get products:', error?.message || error, error?.code);
@@ -564,7 +564,7 @@ class IAPService {
 
       // Find most recent subscription
       const subscription = purchases.find((p: any) => 
-        PRODUCT_SKUS?.includes(p.productId)
+        (PRODUCT_SKUS as readonly string[]).includes(p.productId)
       );
 
       if (subscription) {

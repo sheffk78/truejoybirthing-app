@@ -68,8 +68,6 @@ export default function MyTeamScreen() {
         apiRequest(API_ENDPOINTS.MOM_TEAM),
         apiRequest(API_ENDPOINTS.BIRTH_PLAN_SHARE_REQUESTS),
       ]);
-      console.log('Team data received:', JSON.stringify(teamData));
-      console.log('Share requests received:', JSON.stringify(requestsData));
       setTeamMembers(teamData || []);
       setShareRequests(requestsData.requests || []);
     } catch (error) {

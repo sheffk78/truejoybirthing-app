@@ -1210,7 +1210,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -1225,7 +1225,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
@@ -1254,7 +1254,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
     color: colors.text,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   textArea: {
     minHeight: 80,
@@ -1271,7 +1271,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   optionButtonSelected: {
     borderColor: colors.primary,
@@ -1298,7 +1298,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   painScaleButtonSelected: {
     borderColor: 'transparent',

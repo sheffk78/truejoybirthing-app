@@ -15,5 +15,15 @@ export { default as ProviderLeads } from './ProviderLeads';
 export { DOULA_CONFIG, MIDWIFE_CONFIG, getProviderConfig } from './config/providerConfig';
 export type { ProviderConfig } from './config/providerConfig';
 
-// Export types
-export * from './types/provider';
+// Export types without colliding with the ProviderProfile component export
+export type {
+  ProviderRole,
+  ShareRequest,
+  ConnectedClient,
+  Conversation,
+  Message,
+  Invoice,
+  PaymentTemplate,
+  DashboardStats,
+  ProviderProfile as ProviderProfileData,
+} from './types/provider';

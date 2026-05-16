@@ -349,13 +349,12 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
   const handleDownloadReport = async () => {
     setDownloading(true);
     try {
-      const token = useAuthStore.getState().token;
+      const token = useAuthStore.getState().sessionToken;
       const baseUrl = getApiBaseUrl();
       const url = `${baseUrl}/midwife/clients/${clientId}/birth-summary/pdf`;
       
       if (Platform.OS === 'web') {
         // For web, open the PDF in a new tab
-        const fullUrl = `${url}?token=${token}`;
         // Use fetch to get the PDF with auth header
         const response = await fetch(url, {
           headers: {
@@ -1050,7 +1049,7 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                       styles.previewStatusText,
                       { color: birthRecord?.maternal_status === 'stable' ? colors.success : colors.warning }
                     ]}>
-                      {birthRecord?.maternal_status?.charAt(0).toUpperCase() + birthRecord?.maternal_status?.slice(1) || 'Unknown'}
+                      {birthRecord?.maternal_status ? birthRecord.maternal_status.charAt(0).toUpperCase() + birthRecord.maternal_status.slice(1) : 'Unknown'}
                     </Text>
                   </View>
                 </View>
@@ -1062,8 +1061,10 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
                     { backgroundColor: colors.success + '20' }
                   ]}>
                     <Text style={[styles.previewStatusText, { color: colors.success }]}>
-                      {birthRecord?.baby_status?.replace(/_/g, ' ')?.charAt(0).toUpperCase() + 
-                       birthRecord?.baby_status?.replace(/_/g, ' ')?.slice(1) || 'Unknown'}
+                      {birthRecord?.baby_status ? (() => {
+                        const babyStatus = birthRecord.baby_status.replace(/_/g, ' ');
+                        return babyStatus.charAt(0).toUpperCase() + babyStatus.slice(1);
+                      })() : 'Unknown'}
                     </Text>
                   </View>
                 </View>
@@ -1280,7 +1281,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -1295,7 +1296,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
@@ -1324,7 +1325,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
     color: colors.text,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   textArea: {
     minHeight: 70,
@@ -1352,7 +1353,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     marginBottom: SIZES.xs,
   },
   optionButtonSelected: {
@@ -1397,7 +1398,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
   },
   previewContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusLg,
     width: '100%',
     maxWidth: 420,

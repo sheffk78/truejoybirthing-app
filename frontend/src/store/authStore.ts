@@ -118,7 +118,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           email: data.email,
           full_name: data.full_name,
           role: data.role,
-          picture: null,
+          picture: undefined,
           onboarding_completed: false,
         },
         sessionToken: data.session_token,

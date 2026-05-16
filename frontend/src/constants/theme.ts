@@ -1,53 +1,53 @@
 // True Joy Birthing Theme - Official Brand Colors
-// Logo: Lavender pregnant silhouette + Pink script text
+// Aligned with the current website VISUAL-TOKENS palette.
 
 export const COLORS = {
-  // Primary - Lavender from logo silhouette
-  primary: '#9F83B6',         // Soft Lavender
-  primaryLight: '#C4B1D3',    // Light Lavender
-  primaryDark: '#7D628C',     // Deep Lavender
+  // Primary - Lavender from the website action system
+  primary: '#8E8CB5',         // Lavender 500
+  primaryLight: '#D5D3E8',    // Lavender 300
+  primaryDark: '#6E6C99',     // Lavender 600
   
-  // Secondary - Pink from logo text
-  secondary: '#D4A5A5',       // Dusty Rose
-  secondaryLight: '#E3C0C0',  // Light Rose
-  secondaryDark: '#B88A8A',   // Deep Rose
+  // Secondary - Rose from the website link/accent system
+  secondary: '#B87AA0',       // Rose 500
+  secondaryLight: '#E6BBD8',  // Rose 300
+  secondaryDark: '#9A5E84',   // Rose 600
   
   // Accent - Calming Sage Green
-  accent: '#8CAF8C',
-  accentLight: '#A8CFA8',
-  accentDark: '#6E8F6E',
+  accent: '#A8B5A0',
+  accentLight: '#E8EDE5',
+  accentDark: '#7F8E76',
   
   // Backgrounds
   white: '#FFFFFF',
-  background: '#FEFCFF',      // Warm White with hint of pink
-  surface: '#FFFFFF',
-  subtle: '#F9F5FA',          // Subtle lavender tint
-  border: '#EFE6F2',
+  background: '#FAF8F5',      // Cream canvas
+  surface: '#FDFCFA',
+  subtle: '#F5F3EF',          // Warm alternate section surface
+  border: '#E6E4F4',
   
   // Text
-  textPrimary: '#4A3B4E',     // Deep warm gray
-  textSecondary: '#8A7E8E',   // Medium gray
-  textLight: '#B0A6B4',       // Light gray
+  textPrimary: '#2A2A2A',     // Charcoal
+  textSecondary: '#6A6B6C',   // Gray body text
+  textLight: '#9A9B9C',       // Muted captions
   textOnPrimary: '#FFFFFF',
   
   // Status
-  success: '#8CAF8C',
+  success: '#A8B5A0',
   warning: '#E6C685',
   error: '#D48A8A',
-  info: '#8CA8AF',
+  info: '#8E8CB5',
   
   // Mood colors
   moodVeryLow: '#D48A8A',
   moodLow: '#E6C685',
   moodNeutral: '#B0A6B4',
-  moodGood: '#8CAF8C',
-  moodGreat: '#8CA8AF',
+  moodGood: '#A8B5A0',
+  moodGreat: '#8E8CB5',
   
   // Role-specific colors
-  roleMom: '#D4A5A5',         // Dusty Rose for Mom
-  roleDoula: '#9F83B6',       // Lavender for Doula
-  roleMidwife: '#8CAF8C',     // Sage Green for Midwife
-  roleAdmin: '#8A7E8E',       // Gray for Admin
+  roleMom: '#B87AA0',         // Rose for Mom
+  roleDoula: '#8E8CB5',       // Lavender for Doula
+  roleMidwife: '#A8B5A0',     // Sage for Midwife
+  roleAdmin: '#6A6B6C',       // Gray for Admin
 };
 
 export const FONTS = {
@@ -57,6 +57,7 @@ export const FONTS = {
   // Lato for body text
   body: 'Lato_400Regular',
   bodyMedium: 'Lato_400Regular',
+  bodyItalic: 'Lato_400Regular',
   bodyBold: 'Lato_700Bold',
   // Fallbacks
   regular: 'System',
@@ -76,6 +77,7 @@ export const SIZES = {
   xxxl: 64,
   
   // Border radius
+  radiusXs: 4,
   radiusSm: 8,
   radiusMd: 12,
   radiusLg: 16,
@@ -98,25 +100,25 @@ export const SIZES = {
 
 export const SHADOWS = {
   sm: {
-    shadowColor: '#4A3B4E',
+    shadowColor: '#2A2A2A',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.03,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 1,
   },
   md: {
-    shadowColor: '#4A3B4E',
+    shadowColor: '#2A2A2A',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.04,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 2,
   },
   lg: {
-    shadowColor: '#4A3B4E',
+    shadowColor: '#2A2A2A',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.06,
     shadowRadius: 16,
-    elevation: 8,
+    elevation: 3,
   },
 };
 

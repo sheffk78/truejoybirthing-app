@@ -441,7 +441,7 @@ export default function MomProfileScreen() {
   };
   
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Hidden file input for web */}
       {Platform.OS === 'web' && (
         <input
@@ -471,7 +471,7 @@ export default function MomProfileScreen() {
             ) : user?.picture ? (
               <Image 
                 source={{ uri: user.picture }} 
-                style={[styles.avatarImage, { pointerEvents: 'none' }]} 
+                style={styles.avatarImage}
               />
             ) : (
               <View style={styles.avatarPlaceholder}>
@@ -482,9 +482,9 @@ export default function MomProfileScreen() {
               <Icon name="camera" size={14} color={colors.white} />
             </View>
           </TouchableOpacity>
-          <Text style={[styles.userName, { color: colors.text.primary }]}>{user?.full_name}</Text>
-          <Text style={[styles.userEmail, { color: colors.text.secondary }]}>{user?.email}</Text>
-          <Text style={[styles.tapToEdit, { color: colors.text.muted }]}>Tap photo to update</Text>
+          <Text style={[styles.userName, { color: colors.text }]}>{user?.full_name}</Text>
+          <Text style={[styles.userEmail, { color: colors.textSecondary }]}>{user?.email}</Text>
+          <Text style={[styles.tapToEdit, { color: colors.textLight }]}>Tap photo to update</Text>
         </View>
         
         {/* Profile Info */}
@@ -873,7 +873,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.lg,
   },
   dateModalContent: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.lg,
     width: '100%',

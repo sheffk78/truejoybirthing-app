@@ -44,6 +44,7 @@ export default function DoulaOnboardingScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLookingUpZip, setIsLookingUpZip] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [zipLookupError, setZipLookupError] = useState('');
   
   // Lookup city/state from zip code
   const lookupZipCode = useCallback(async (zip: string) => {
@@ -52,17 +53,26 @@ export default function DoulaOnboardingScreen() {
     }
     
     setIsLookingUpZip(true);
+    setZipLookupError('');
     try {
       const result = await apiRequest(`/lookup/zipcode/${zip}`, {
         method: 'GET',
+        timeoutMs: 8000,
       });
       
       if (result.city && result.state) {
         setLocationCity(result.city);
         setLocationState(result.state_abbreviation || result.state);
+      } else {
+        setLocationCity('');
+        setLocationState('');
+        setZipLookupError('We couldn’t find that zip code. Please check it and try again.');
       }
     } catch (error: any) {
       console.log('Zip code lookup error:', error.message);
+      setLocationCity('');
+      setLocationState('');
+      setZipLookupError(error.message || 'Zip code lookup failed. Please try again.');
     } finally {
       setIsLookingUpZip(false);
     }
@@ -78,6 +88,7 @@ export default function DoulaOnboardingScreen() {
     } else {
       setLocationCity('');
       setLocationState('');
+      setZipLookupError('');
     }
   };
   
@@ -190,6 +201,9 @@ export default function DoulaOnboardingScreen() {
                   {locationCity}, {locationState}
                 </Text>
               </View>
+            )}
+            {!!zipLookupError && (
+              <Text style={styles.errorText}>{zipLookupError}</Text>
             )}
           </View>
           
@@ -384,7 +398,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 6,
     borderWidth: 2,
     borderColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -418,7 +432,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   toggleKnobActive: {
     transform: [{ translateX: 20 }],

@@ -62,6 +62,8 @@ export const useColors = () => {
     roleDoula: colors.role.doula,
     midwifePrimary: colors.role.midwife,
     roleMidwife: colors.role.midwife,
+    adminPrimary: colors.role.admin,
+    roleAdmin: colors.role.admin,
     
     // Mood colors
     moodVeryLow: colors.mood.veryLow,
@@ -81,6 +83,7 @@ export const useColors = () => {
     cardBackground: colors.background.surface,
     inputBackground: colors.background.surface,
     divider: colors.border.subtle,
+    subtle: colors.background.subtle,
     placeholder: colors.text.muted,
     icon: colors.text.secondary,
     iconActive: colors.accent.primary,

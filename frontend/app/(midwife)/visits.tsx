@@ -462,7 +462,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
@@ -487,7 +487,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     marginRight: SIZES.sm,
@@ -513,7 +513,7 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
     paddingVertical: SIZES.sm,
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     marginRight: SIZES.sm,
@@ -540,7 +540,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginRight: SIZES.sm,
   },
   textInput: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: SIZES.radiusMd,
@@ -557,7 +557,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   filterContainer: {
     marginBottom: SIZES.md,
@@ -565,7 +565,7 @@ const getStyles = createThemedStyles((colors) => ({
   filterChip: {
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusMd,
     marginRight: SIZES.sm,
     borderWidth: 1,

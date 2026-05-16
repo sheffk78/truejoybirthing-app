@@ -6,14 +6,15 @@ export interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   body?: any;
   headers?: Record<string, string>;
+  timeoutMs?: number;
 }
 
 export function getApiBaseUrl(): string {
   return API_BASE;
 }
 
-export async function apiRequest<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
-  const { method = 'GET', body, headers = {} } = options;
+export async function apiRequest<T = any>(endpoint: string, options: ApiOptions = {}): Promise<T> {
+  const { method = 'GET', body, headers = {}, timeoutMs } = options;
   
   const token = await AsyncStorage.getItem('session_token');
   
@@ -26,12 +27,28 @@ export async function apiRequest<T>(endpoint: string, options: ApiOptions = {}):
     requestHeaders['Authorization'] = `Bearer ${token}`;
   }
   
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    method,
-    headers: requestHeaders,
-    credentials: 'include',
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const controller = timeoutMs ? new AbortController() : undefined;
+  const timeoutId = timeoutMs
+    ? setTimeout(() => controller?.abort(), timeoutMs)
+    : undefined;
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}${endpoint}`, {
+      method,
+      headers: requestHeaders,
+      credentials: 'include',
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller?.signal,
+    });
+  } catch (error: any) {
+    if (error?.name === 'AbortError') {
+      throw new Error('Request timed out. Please check your connection and try again.');
+    }
+    throw error;
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
   
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));

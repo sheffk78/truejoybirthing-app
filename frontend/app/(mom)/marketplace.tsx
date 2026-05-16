@@ -124,7 +124,6 @@ export default function MarketplaceScreen() {
             consultMap[providerId] = data.status;
           });
           
-          console.log('Consultation status map:', consultMap);
         }
         
         setConsultationStatus(consultMap);
@@ -339,7 +338,6 @@ export default function MarketplaceScreen() {
   
   const getConsultationButtonText = (providerId: string) => {
     const status = consultationStatus[providerId];
-    console.log('getConsultationButtonText:', providerId, status);
     if (status === 'consultation_requested') return 'Requested';
     if (status === 'consultation_scheduled') return 'Scheduled';
     if (status === 'consultation_completed') return 'Completed';
@@ -347,9 +345,10 @@ export default function MarketplaceScreen() {
     return 'Request Consult';
   };
   
-  const getConsultationButtonDisabled = (providerId: string) => {
+  const getConsultationButtonDisabled = (providerId?: string) => {
+    if (!providerId) return false;
     const status = consultationStatus[providerId];
-    return status && !['declined', 'not_a_fit'].includes(status);
+    return !!status && !['declined', 'not_a_fit'].includes(status);
   };
   
   const getTeamButtonText = (providerId: string) => {
@@ -1040,7 +1039,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
@@ -1172,7 +1171,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   footerButtonsRow: {
     flexDirection: 'row',
@@ -1213,7 +1212,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.lg,
   },
   messageModalContent: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: SIZES.radiusLg,
     width: '100%',
     maxWidth: 400,

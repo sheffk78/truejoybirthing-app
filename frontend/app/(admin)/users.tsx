@@ -232,7 +232,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     marginRight: SIZES.sm,
     borderWidth: 1,
     borderColor: colors.border,

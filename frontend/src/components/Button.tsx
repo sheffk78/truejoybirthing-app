@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  StyleProp,
   ViewStyle,
   TextStyle,
   Platform,
@@ -19,9 +20,10 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
   icon?: React.ReactNode;
+  leftIcon?: React.ReactNode;
   testID?: string;
 }
 
@@ -36,6 +38,7 @@ export default function Button({
   style,
   textStyle,
   icon,
+  leftIcon,
   testID,
 }: ButtonProps) {
   const colors = useColors();
@@ -149,8 +152,8 @@ export default function Button({
         />
       ) : (
         <>
-          {icon && <>{icon}</>}
-          <Text style={[getTextStyle(), icon ? { marginLeft: SIZES.sm } : {}, textStyle]}>
+          {(icon || leftIcon) && <>{icon || leftIcon}</>}
+          <Text style={[getTextStyle(), (icon || leftIcon) ? { marginLeft: SIZES.sm } : {}, textStyle]}>
             {title}
           </Text>
         </>
