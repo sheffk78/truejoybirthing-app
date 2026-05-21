@@ -64,18 +64,18 @@ async def search_providers(
                 # Apply search filter
                 if search:
                     search_lower = search.lower()
-                    name_match = user.get("full_name", "").lower().find(search_lower) >= 0
-                    city_match = profile.get("location_city", "").lower().find(search_lower) >= 0
-                    state_match = profile.get("location_state", "").lower().find(search_lower) >= 0
-                    zip_match = profile.get("zip_code", "").lower().find(search_lower) >= 0 if profile.get("zip_code") else False
+                    name_match = (user.get("full_name") or "").lower().find(search_lower) >= 0
+                    city_match = (profile.get("location_city") or "").lower().find(search_lower) >= 0
+                    state_match = (profile.get("location_state") or "").lower().find(search_lower) >= 0
+                    zip_match = (profile.get("zip_code") or "").lower().find(search_lower) >= 0
                     
                     if not (name_match or city_match or state_match or zip_match):
                         continue
                 
                 # Apply individual filters
-                if location_city and profile.get("location_city", "").lower().find(location_city.lower()) < 0:
+                if location_city and (profile.get("location_city") or "").lower().find(location_city.lower()) < 0:
                     continue
-                if location_state and profile.get("location_state", "").lower().find(location_state.lower()) < 0:
+                if location_state and (profile.get("location_state") or "").lower().find(location_state.lower()) < 0:
                     continue
                 
                 doulas.append({
@@ -104,18 +104,18 @@ async def search_providers(
                 # Apply search filter
                 if search:
                     search_lower = search.lower()
-                    name_match = user.get("full_name", "").lower().find(search_lower) >= 0
-                    city_match = profile.get("location_city", "").lower().find(search_lower) >= 0
-                    state_match = profile.get("location_state", "").lower().find(search_lower) >= 0
-                    zip_match = profile.get("zip_code", "").lower().find(search_lower) >= 0 if profile.get("zip_code") else False
+                    name_match = (user.get("full_name") or "").lower().find(search_lower) >= 0
+                    city_match = (profile.get("location_city") or "").lower().find(search_lower) >= 0
+                    state_match = (profile.get("location_state") or "").lower().find(search_lower) >= 0
+                    zip_match = (profile.get("zip_code") or "").lower().find(search_lower) >= 0
                     
                     if not (name_match or city_match or state_match or zip_match):
                         continue
                 
                 # Apply individual filters
-                if location_city and profile.get("location_city", "").lower().find(location_city.lower()) < 0:
+                if location_city and (profile.get("location_city") or "").lower().find(location_city.lower()) < 0:
                     continue
-                if location_state and profile.get("location_state", "").lower().find(location_state.lower()) < 0:
+                if location_state and (profile.get("location_state") or "").lower().find(location_state.lower()) < 0:
                     continue
                 if birth_setting and birth_setting not in profile.get("birth_settings_served", []):
                     continue
