@@ -84,8 +84,10 @@ export default function MarketplaceScreen() {
       }));
       setProviders(allProviders);
       
-      // Fetch team status for each provider
-      await fetchTeamStatus(allProviders);
+      // Fetch team status separately — failures should not wipe provider list
+      fetchTeamStatus(allProviders).catch((err) => {
+        console.warn('Failed to fetch team/consultation status (non-fatal):', err);
+      });
     } catch (error) {
       console.error('Error fetching providers:', error);
       setProviders([]);
