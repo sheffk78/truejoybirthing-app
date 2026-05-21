@@ -305,171 +305,17 @@ export default function MessagesScreen() {
   
   return (
     <SafeAreaView style={styles.container} edges={['top']} data-testid="messages-screen">
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
-        }
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>Messages</Text>
-            <Text style={styles.subtitle}>Stay in touch with your care team</Text>
-          </View>
-          <TouchableOpacity 
-            style={styles.newMessageButton} 
-            onPress={openNewMessageModal}
-            data-testid="new-message-btn"
-          >
-            <Icon name="create-outline" size={20} color={colors.white} />
-          </TouchableOpacity>
-        </View>
-        
-        {/* Pending Invoices Section */}
-        {pendingInvoices.length > 0 && (
-          <View style={styles.invoicesSection} data-testid="pending-invoices-section">
-            <View style={styles.invoicesSectionHeader}>
-              <Icon name="receipt-outline" size={20} color={colors.warning} />
-              <Text style={styles.invoicesSectionTitle}>Pending Invoices</Text>
-              <View style={styles.invoicesBadge}>
-                <Text style={styles.invoicesBadgeText}>{pendingInvoices.length}</Text>
-              </View>
-            </View>
-            {pendingInvoices.map((invoice: any) => (
-              <Card 
-                key={invoice.invoice_id} 
-                style={styles.invoiceCard}
-                data-testid={`invoice-${invoice.invoice_id}`}
-              >
-                <View style={styles.invoiceRow}>
-                  <View style={styles.invoiceInfo}>
-                    <Text style={styles.invoiceAmount}>
-                      ${invoice.amount?.toFixed(2) || '0.00'}
-                    </Text>
-                    <Text style={styles.invoiceDescription} numberOfLines={1}>
-                      {invoice.description || 'Invoice'}
-                    </Text>
-                    <Text style={styles.invoiceFrom}>
-                      From: {invoice.provider_name || 'Your Provider'}
-                    </Text>
-                  </View>
-                  <View style={styles.invoiceMeta}>
-                    <View style={[
-                      styles.invoiceStatusBadge,
-                      { backgroundColor: invoice.status === 'sent' ? colors.warning + '20' : colors.primary + '20' }
-                    ]}>
-                      <Text style={[
-                        styles.invoiceStatusText,
-                        { color: invoice.status === 'sent' ? colors.warning : colors.primary }
-                      ]}>
-                        {invoice.status === 'sent' ? 'Awaiting Payment' : 'Pending'}
-                      </Text>
-                    </View>
-                    {invoice.due_date && (
-                      <Text style={styles.invoiceDueDate}>
-                        Due: {new Date(invoice.due_date).toLocaleDateString()}
-                      </Text>
-                    )}
-                  </View>
-                </View>
-                {invoice.payment_instructions && (
-                  <View style={styles.paymentInstructions}>
-                    <Text style={styles.paymentInstructionsLabel}>Payment Instructions:</Text>
-                    <Text style={styles.paymentInstructionsText}>{invoice.payment_instructions}</Text>
-                  </View>
-                )}
-              </Card>
-            ))}
-            <Text style={styles.invoiceDisclaimer}>
-              Payments are made directly to your provider. True Joy Birthing does not process payments.
-            </Text>
-          </View>
-        )}
-        
-        {/* Conversations List */}
-        {conversations.length === 0 ? (
-          <Card style={styles.emptyCard}>
-            <Icon name="chatbubbles-outline" size={48} color={colors.textLight} />
-            <Text style={styles.emptyText}>No messages yet</Text>
-            <Text style={styles.emptySubtext}>
-              Tap the button above to message someone on your team
-            </Text>
-            <Button
-              title="Start a Conversation"
-              onPress={openNewMessageModal}
-              style={{ marginTop: SIZES.md }}
-              icon={<Icon name="add" size={18} color={colors.white} />}
-            />
-          </Card>
-        ) : (
-          conversations.map((conv) => (
-            <TouchableOpacity
-              key={conv.other_user_id}
-              onPress={() => openConversation(conv)}
-              data-testid={`conversation-${conv.other_user_id}`}
-            >
-              <Card style={[styles.conversationCard, conv.unread_count > 0 && styles.unreadCard]}>
-                <View style={styles.conversationRow}>
-                  {conv.other_user_picture ? (
-                    <Image 
-                      source={{ uri: conv.other_user_picture }} 
-                      style={styles.avatarImage}
-                    />
-                  ) : (
-                    <View style={[styles.avatar, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
-                      <Icon 
-                        name={conv.other_user_role === 'DOULA' ? 'heart' : conv.other_user_role === 'MIDWIFE' ? 'medkit' : 'person'} 
-                        size={24} 
-                        color={getRoleColor(conv.other_user_role)} 
-                      />
-                    </View>
-                  )}
-                  <View style={styles.conversationInfo}>
-                    <View style={styles.nameRow}>
-                      <Text style={styles.userName}>{conv.other_user_name}</Text>
-                      <View style={[styles.roleBadge, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
-                        <Text style={[styles.roleText, { color: getRoleColor(conv.other_user_role) }]}>
-                          {conv.other_user_role}
-                        </Text>
-                      </View>
-                    </View>
-                    <Text style={styles.lastMessage} numberOfLines={1}>
-                      {conv.is_sender ? 'You: ' : ''}{conv.last_message_content}
-                    </Text>
-                  </View>
-                  <View style={styles.metaColumn}>
-                    <Text style={styles.timeText}>{formatTime(conv.last_message_time)}</Text>
-                    {conv.unread_count > 0 && (
-                      <View style={styles.unreadBadge}>
-                        <Text style={styles.unreadText}>{conv.unread_count}</Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              </Card>
-            </TouchableOpacity>
-          ))
-        )}
-      </ScrollView>
-      
-      {/* Chat Modal */}
-      <Modal
-        visible={!!selectedConversation}
-        animationType="slide"
-        presentationStyle="fullScreen"
-        onRequestClose={closeConversation}
-      >
-        <SafeAreaView style={styles.modalContainer}>
+      {selectedConversation ? (
+        /* Inline chat view — tab bar stays visible below */
+        <View style={styles.chatInlineContainer}>
           {/* Chat Header */}
           <View style={styles.chatHeader}>
             <TouchableOpacity onPress={closeConversation} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} data-testid="close-chat-btn">
               <Icon name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>
-              <Text style={styles.chatHeaderName}>{selectedConversation?.other_user_name}</Text>
-              <Text style={styles.chatHeaderRole}>{selectedConversation?.other_user_role}</Text>
+              <Text style={styles.chatHeaderName}>{selectedConversation.other_user_name}</Text>
+              <Text style={styles.chatHeaderRole}>{selectedConversation.other_user_role}</Text>
             </View>
             <View style={{ width: 24 }} />
           </View>
@@ -526,8 +372,158 @@ export default function MessagesScreen() {
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
-        </SafeAreaView>
-      </Modal>
+        </View>
+      ) : (
+        /* Conversation list view */
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.title}>Messages</Text>
+              <Text style={styles.subtitle}>Stay in touch with your care team</Text>
+            </View>
+            <TouchableOpacity 
+              style={styles.newMessageButton} 
+              onPress={openNewMessageModal}
+              data-testid="new-message-btn"
+            >
+              <Icon name="create-outline" size={20} color={colors.white} />
+            </TouchableOpacity>
+          </View>
+          
+          {/* Pending Invoices Section */}
+          {pendingInvoices.length > 0 && (
+            <View style={styles.invoicesSection} data-testid="pending-invoices-section">
+              <View style={styles.invoicesSectionHeader}>
+                <Icon name="receipt-outline" size={20} color={colors.warning} />
+                <Text style={styles.invoicesSectionTitle}>Pending Invoices</Text>
+                <View style={styles.invoicesBadge}>
+                  <Text style={styles.invoicesBadgeText}>{pendingInvoices.length}</Text>
+                </View>
+              </View>
+              {pendingInvoices.map((invoice: any) => (
+                <Card 
+                  key={invoice.invoice_id} 
+                  style={styles.invoiceCard}
+                  data-testid={`invoice-${invoice.invoice_id}`}
+                >
+                  <View style={styles.invoiceRow}>
+                    <View style={styles.invoiceInfo}>
+                      <Text style={styles.invoiceAmount}>
+                        ${invoice.amount?.toFixed(2) || '0.00'}
+                      </Text>
+                      <Text style={styles.invoiceDescription} numberOfLines={1}>
+                        {invoice.description || 'Invoice'}
+                      </Text>
+                      <Text style={styles.invoiceFrom}>
+                        From: {invoice.provider_name || 'Your Provider'}
+                      </Text>
+                    </View>
+                    <View style={styles.invoiceMeta}>
+                      <View style={[
+                        styles.invoiceStatusBadge,
+                        { backgroundColor: invoice.status === 'sent' ? colors.warning + '20' : colors.primary + '20' }
+                      ]}>
+                        <Text style={[
+                          styles.invoiceStatusText,
+                          { color: invoice.status === 'sent' ? colors.warning : colors.primary }
+                        ]}>
+                          {invoice.status === 'sent' ? 'Awaiting Payment' : 'Pending'}
+                        </Text>
+                      </View>
+                      {invoice.due_date && (
+                        <Text style={styles.invoiceDueDate}>
+                          Due: {new Date(invoice.due_date).toLocaleDateString()}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                  {invoice.payment_instructions && (
+                    <View style={styles.paymentInstructions}>
+                      <Text style={styles.paymentInstructionsLabel}>Payment Instructions:</Text>
+                      <Text style={styles.paymentInstructionsText}>{invoice.payment_instructions}</Text>
+                    </View>
+                  )}
+                </Card>
+              ))}
+              <Text style={styles.invoiceDisclaimer}>
+                Payments are made directly to your provider. True Joy Birthing does not process payments.
+              </Text>
+            </View>
+          )}
+          
+          {/* Conversations List */}
+          {conversations.length === 0 ? (
+            <Card style={styles.emptyCard}>
+              <Icon name="chatbubbles-outline" size={48} color={colors.textLight} />
+              <Text style={styles.emptyText}>No messages yet</Text>
+              <Text style={styles.emptySubtext}>
+                Tap the button above to message someone on your team
+              </Text>
+              <Button
+                title="Start a Conversation"
+                onPress={openNewMessageModal}
+                style={{ marginTop: SIZES.md }}
+                icon={<Icon name="add" size={18} color={colors.white} />}
+              />
+            </Card>
+          ) : (
+            conversations.map((conv) => (
+              <TouchableOpacity
+                key={conv.other_user_id}
+                onPress={() => openConversation(conv)}
+                data-testid={`conversation-${conv.other_user_id}`}
+              >
+                <Card style={[styles.conversationCard, conv.unread_count > 0 && styles.unreadCard]}>
+                  <View style={styles.conversationRow}>
+                    {conv.other_user_picture ? (
+                      <Image 
+                        source={{ uri: conv.other_user_picture }} 
+                        style={styles.avatarImage}
+                      />
+                    ) : (
+                      <View style={[styles.avatar, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
+                        <Icon 
+                          name={conv.other_user_role === 'DOULA' ? 'heart' : conv.other_user_role === 'MIDWIFE' ? 'medkit' : 'person'} 
+                          size={24} 
+                          color={getRoleColor(conv.other_user_role)} 
+                        />
+                      </View>
+                    )}
+                    <View style={styles.conversationInfo}>
+                      <View style={styles.nameRow}>
+                        <Text style={styles.userName}>{conv.other_user_name}</Text>
+                        <View style={[styles.roleBadge, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
+                          <Text style={[styles.roleText, { color: getRoleColor(conv.other_user_role) }]}>
+                            {conv.other_user_role}
+                          </Text>
+                        </View>
+                      </View>
+                      <Text style={styles.lastMessage} numberOfLines={1}>
+                        {conv.is_sender ? 'You: ' : ''}{conv.last_message_content}
+                      </Text>
+                    </View>
+                    <View style={styles.metaColumn}>
+                      <Text style={styles.timeText}>{formatTime(conv.last_message_time)}</Text>
+                      {conv.unread_count > 0 && (
+                        <View style={styles.unreadBadge}>
+                          <Text style={styles.unreadText}>{conv.unread_count}</Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            ))
+          )}
+        </ScrollView>
+      )}
 
       {/* New Message Modal - Select Team Member */}
       <Modal
@@ -728,6 +724,10 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
     color: colors.white,
+  },
+  chatInlineContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
   },
   modalContainer: {
     flex: 1,

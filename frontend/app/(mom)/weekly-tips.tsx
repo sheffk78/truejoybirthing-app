@@ -260,7 +260,10 @@ export default function WeeklyTipsScreen() {
                 </View>
               )}
               
-              <Text style={styles.babyDevTitle}>{babyDev.title}</Text>
+              {/* For size_reference weeks, title duplicates the phase label — skip it */}
+              {babyDev.phase !== 'size_reference' && (
+                <Text style={styles.babyDevTitle}>{babyDev.title}</Text>
+              )}
               <Text style={styles.babyDevDescription}>
                 {babyDev.description}
               </Text>
