@@ -227,7 +227,9 @@ export default function MomHomeScreen() {
         {/* Baby Development Card */}
         {(() => {
           // Determine the current pregnancy week for baby development
-          const currentWeek = weeklyContent?.week;
+          // Ensure currentWeek is a number (API may return numeric string)
+          const rawWeek = weeklyContent?.week;
+          const currentWeek = typeof rawWeek === 'number' ? rawWeek : Number(rawWeek);
           const isPostpartum = weeklyContent?.is_postpartum;
           if (isPostpartum || !currentWeek || currentWeek < 4 || currentWeek > 40) return null;
           
@@ -245,7 +247,7 @@ export default function MomHomeScreen() {
             <Card style={styles.babyDevCard}>
               <View style={styles.weeklyHeader}>
                 <View style={[styles.weeklyIconContainer, { backgroundColor: '#B87AA020' }]}>
-                  <Icon name="egg" size={22} color="#B87AA0" />
+                  <Icon name="baby" size={22} color="#B87AA0" />
                 </View>
                 <View style={styles.weeklyHeaderText}>
                   <Text style={styles.weeklyLabel}>Baby Development</Text>
@@ -267,6 +269,7 @@ export default function MomHomeScreen() {
                         ? `Illustration showing the size of a ${babyDev.food} at week ${currentWeek} of pregnancy`
                         : `Cross-section illustration showing baby at ${currentWeek} weeks inside the uterus`
                     }
+                    onError={(e) => console.warn(`Failed to load pregnancy illustration for week ${currentWeek}:`, e.nativeEvent?.error)}
                   />
                 ) : (
                   <View style={styles.babyDevImagePlaceholder}>
@@ -638,7 +641,6 @@ const getStyles = createThemedStyles((colors) => ({
     width: '100%',
     height: 220,
     borderRadius: SIZES.radiusMd,
-    resizeMode: 'contain',
   },
   babyDevImageContainer: {
     marginBottom: SIZES.md,

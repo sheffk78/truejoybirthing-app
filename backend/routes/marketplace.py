@@ -12,6 +12,20 @@ from .dependencies import db
 
 router = APIRouter(prefix="/marketplace", tags=["Marketplace"])
 
+# Fields to expose from user documents on the marketplace (no PII leakage)
+USER_PUBLIC_FIELDS = {
+    "_id": 0,
+    "password_hash": 0,
+    "email": 0,
+    "phone_number": 0,
+    "address": 0,
+    "stripe_customer_id": 0,
+    "stripe_account_id": 0,
+    "reset_token": 0,
+    "reset_token_expires": 0,
+    "verification_token": 0,
+    "created_at": 0,
+}
 
 # ============== ROUTES ==============
 
@@ -21,7 +35,6 @@ async def search_providers(
     location_city: Optional[str] = Query(None, description="Filter by city"),
     location_state: Optional[str] = Query(None, description="Filter by state"),
     birth_setting: Optional[str] = Query(None, description="Filter by birth setting (midwives only)"),
-    virtual_available: Optional[bool] = Query(None, description="Filter by virtual availability"),
     search: Optional[str] = Query(None, description="Search name, city, state, or zip")
 ):
     """
@@ -37,11 +50,11 @@ async def search_providers(
         
         doula_profiles = await db.doula_profiles.find(doula_query, {"_id": 0}).to_list(100)
         
-        # Batch fetch all users for doula profiles
+        # Batch fetch all users for doula profiles (only public fields)
         doula_user_ids = [p["user_id"] for p in doula_profiles]
         doula_users = await db.users.find(
             {"user_id": {"$in": doula_user_ids}}, 
-            {"_id": 0, "password_hash": 0}
+            USER_PUBLIC_FIELDS
         ).to_list(100)
         doula_users_by_id = {u["user_id"]: u for u in doula_users}
         
@@ -54,7 +67,7 @@ async def search_providers(
                     name_match = user.get("full_name", "").lower().find(search_lower) >= 0
                     city_match = profile.get("location_city", "").lower().find(search_lower) >= 0
                     state_match = profile.get("location_state", "").lower().find(search_lower) >= 0
-                    zip_match = profile.get("zip_code", "").find(search) >= 0 if profile.get("zip_code") else False
+                    zip_match = profile.get("zip_code", "").lower().find(search_lower) >= 0 if profile.get("zip_code") else False
                     
                     if not (name_match or city_match or state_match or zip_match):
                         continue
@@ -77,11 +90,11 @@ async def search_providers(
         
         midwife_profiles = await db.midwife_profiles.find(midwife_query, {"_id": 0}).to_list(100)
         
-        # Batch fetch all users for midwife profiles
+        # Batch fetch all users for midwife profiles (only public fields)
         midwife_user_ids = [p["user_id"] for p in midwife_profiles]
         midwife_users = await db.users.find(
             {"user_id": {"$in": midwife_user_ids}}, 
-            {"_id": 0, "password_hash": 0}
+            USER_PUBLIC_FIELDS
         ).to_list(100)
         midwife_users_by_id = {u["user_id"]: u for u in midwife_users}
         
@@ -94,7 +107,7 @@ async def search_providers(
                     name_match = user.get("full_name", "").lower().find(search_lower) >= 0
                     city_match = profile.get("location_city", "").lower().find(search_lower) >= 0
                     state_match = profile.get("location_state", "").lower().find(search_lower) >= 0
-                    zip_match = profile.get("zip_code", "").find(search) >= 0 if profile.get("zip_code") else False
+                    zip_match = profile.get("zip_code", "").lower().find(search_lower) >= 0 if profile.get("zip_code") else False
                     
                     if not (name_match or city_match or state_match or zip_match):
                         continue
@@ -119,7 +132,7 @@ async def search_providers(
 @router.get("/provider/{user_id}")
 async def get_provider_profile(user_id: str):
     """Get a provider's public profile with client count"""
-    user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
+    user = await db.users.find_one({"user_id": user_id}, USER_PUBLIC_FIELDS)
     if not user:
         raise HTTPException(status_code=404, detail="Provider not found")
     

@@ -229,7 +229,7 @@ export default function WeeklyTipsScreen() {
             <Card style={styles.babyDevCard}>
               <View style={styles.contentHeader}>
                 <View style={[styles.iconContainer, { backgroundColor: '#B87AA020' }]}>
-                  <Icon name="egg" size={24} color="#B87AA0" />
+                  <Icon name="baby" size={24} color="#B87AA0" />
                 </View>
                 <Text style={styles.contentLabel}>Baby Development</Text>
               </View>
@@ -252,6 +252,7 @@ export default function WeeklyTipsScreen() {
                       ? `Illustration showing the size of a ${babyDev.food} at week ${week} of pregnancy`
                       : `Cross-section illustration showing baby at ${week} weeks inside the uterus`
                   }
+                  onError={(e) => console.warn(`Failed to load pregnancy illustration for week ${week}:`, e.nativeEvent?.error)}
                 />
               ) : (
                 <View style={styles.babyDevImagePlaceholder}>

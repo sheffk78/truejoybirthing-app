@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -32,9 +32,10 @@ export default function MarketplaceScreen() {
   const colors = useColors();
   const styles = getStyles(colors);
   const [providers, setProviders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedType, setSelectedType] = useState('All');
-  const [searchCity, setSearchCity] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
   const [contactingProvider, setContactingProvider] = useState(false);
   const [addingToTeam, setAddingToTeam] = useState(false);
@@ -46,16 +47,25 @@ export default function MarketplaceScreen() {
   const [currentVideoId, setCurrentVideoId] = useState<string | null>(null);
   const [currentVideoTitle, setCurrentVideoTitle] = useState<string>('');
   
-  const fetchProviders = async () => {
+  // Use refs for latest values to avoid stale closures in effects
+  const searchQueryRef = useRef(searchQuery);
+  const selectedTypeRef = useRef(selectedType);
+  searchQueryRef.current = searchQuery;
+  selectedTypeRef.current = selectedType;
+  
+  const fetchProviders = useCallback(async (search?: string, type?: string) => {
     try {
+      const currentSearch = search !== undefined ? search : searchQueryRef.current;
+      const currentType = type !== undefined ? type : selectedTypeRef.current;
+      
       let endpoint = '/marketplace/providers?';
       const params = [];
       
-      if (selectedType !== 'All') {
-        params.push(`provider_type=${selectedType}`);
+      if (currentType !== 'All') {
+        params.push(`provider_type=${currentType}`);
       }
-      if (searchCity.trim()) {
-        params.push(`search=${encodeURIComponent(searchCity.trim())}`);
+      if (currentSearch.trim()) {
+        params.push(`search=${encodeURIComponent(currentSearch.trim())}`);
       }
       
       const data = await apiRequest(endpoint + params.join('&'));
@@ -66,8 +76,7 @@ export default function MarketplaceScreen() {
       ].map(p => ({
         user_id: p.user?.user_id,
         full_name: p.user?.full_name,
-        email: p.user?.email,
-        // Prefer profile picture over user picture, fallback to user picture
+        // email excluded from API for privacy
         picture: p.profile?.picture || p.user?.picture,
         role: p.user?.role || p.provider_type,
         provider_type: p.provider_type,
@@ -80,8 +89,10 @@ export default function MarketplaceScreen() {
     } catch (error) {
       console.error('Error fetching providers:', error);
       setProviders([]);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []); // Using refs to avoid stale closures - no dependencies needed
   
   const fetchTeamStatus = async (providerList: any[]) => {
     try {
@@ -135,14 +146,18 @@ export default function MarketplaceScreen() {
     }
   };
   
+  // Fetch on mount and when selectedType changes
   useEffect(() => {
     fetchProviders();
-  }, [selectedType]);
+  }, [selectedType, fetchProviders]);
   
-  // Also fetch on mount
+  // Debounced search: re-fetch when search query changes (with 400ms debounce)
   useEffect(() => {
-    fetchProviders();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchProviders();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery, fetchProviders]);
   
   const onRefresh = async () => {
     setRefreshing(true);
@@ -158,7 +173,8 @@ export default function MarketplaceScreen() {
     if (!provider?.user_id || contactingProvider) return;
     
     setContactingProvider(true);
-    setSelectedProvider(provider);
+    // Note: don't open modal here — both success paths navigate away,
+    // and on error we show an Alert. The modal (if already open) stays open.
     
     try {
       // Check if there's an existing conversation with this provider
@@ -169,6 +185,7 @@ export default function MarketplaceScreen() {
       
       if (existingConv) {
         // Navigate to existing conversation
+        setSelectedProvider(null); // close modal if open
         router.push({
           pathname: '/(mom)/messages',
           params: { openConversation: provider.user_id }
@@ -187,6 +204,7 @@ export default function MarketplaceScreen() {
         });
         
         // Navigate to messages with this provider
+        setSelectedProvider(null); // close modal if open
         router.push({
           pathname: '/(mom)/messages',
           params: { openConversation: provider.user_id }
@@ -226,9 +244,9 @@ export default function MarketplaceScreen() {
       } else {
         Alert.alert('Error', error.message || 'Failed to send message. Please try again.');
       }
+      // Don't close modal on error — user may want to try another action
     } finally {
       setContactingProvider(false);
-      setSelectedProvider(null);
     }
   };
   
@@ -393,8 +411,8 @@ export default function MarketplaceScreen() {
               <Icon name="search-outline" size={20} color={colors.textSecondary} />
               <TextInput
                 style={styles.searchInput}
-                value={searchCity}
-                onChangeText={setSearchCity}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
                 placeholder="Search by name, city, state, or zip..."
                 placeholderTextColor={colors.textLight}
                 onSubmitEditing={handleSearch}
@@ -438,7 +456,12 @@ export default function MarketplaceScreen() {
           </Text>
         </View>
         
-        {providers.length === 0 ? (
+        {loading ? (
+          <Card style={styles.emptyCard}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.emptyText}>Loading providers...</Text>
+          </Card>
+        ) : providers.length === 0 ? (
           <Card style={styles.emptyCard}>
             <Icon name="search-outline" size={48} color={colors.textLight} />
             <Text style={styles.emptyText}>No providers found</Text>
@@ -448,10 +471,8 @@ export default function MarketplaceScreen() {
           </Card>
         ) : (
           providers.map((provider) => (
-            <TouchableOpacity
+            <View
               key={provider.user_id}
-              activeOpacity={0.8}
-              onPress={() => setSelectedProvider(provider)}
               data-testid={`provider-card-${provider.user_id}`}
             >
               <Card style={styles.providerCard}>
@@ -524,28 +545,32 @@ export default function MarketplaceScreen() {
                 {/* Quick Action Buttons */}
                 <View style={styles.cardActions}>
                   <TouchableOpacity
-                    style={[styles.cardActionBtn, styles.cardContactBtn]}
-                    onPress={(e) => {
-                      e.stopPropagation();
-                      handleContactProvider(provider);
-                    }}
+                    style={[
+                      styles.cardActionBtn, styles.cardContactBtn,
+                      contactingProvider && styles.cardDisabledBtn
+                    ]}
+                    onPress={() => handleContactProvider(provider)}
+                    disabled={contactingProvider}
                     data-testid={`contact-btn-${provider.user_id}`}
                   >
-                    <Icon name="chatbubble-outline" size={16} color={colors.white} />
-                    <Text style={styles.cardActionBtnText}>Contact</Text>
+                    {contactingProvider ? (
+                      <ActivityIndicator size="small" color={colors.white} />
+                    ) : (
+                      <>
+                        <Icon name="chatbubble-outline" size={16} color={colors.white} />
+                        <Text style={styles.cardActionBtnText}>Contact</Text>
+                      </>
+                    )}
                   </TouchableOpacity>
                   
                   <TouchableOpacity
                     style={[
                       styles.cardActionBtn, 
                       styles.cardConsultBtn,
-                      getConsultationButtonDisabled(provider.user_id) && styles.cardDisabledBtn
+                      (getConsultationButtonDisabled(provider.user_id) || requestingConsultation) && styles.cardDisabledBtn
                     ]}
-                    onPress={(e) => {
-                      e.stopPropagation();
-                      handleRequestConsultation(provider);
-                    }}
-                    disabled={getConsultationButtonDisabled(provider.user_id)}
+                    onPress={() => handleRequestConsultation(provider)}
+                    disabled={getConsultationButtonDisabled(provider.user_id) || requestingConsultation}
                     data-testid={`consult-btn-${provider.user_id}`}
                   >
                     <Icon 
@@ -559,12 +584,16 @@ export default function MarketplaceScreen() {
                   </TouchableOpacity>
                 </View>
                 
-                <View style={styles.viewProfile}>
+                <TouchableOpacity
+                  style={styles.viewProfile}
+                  onPress={() => setSelectedProvider(provider)}
+                  data-testid={`view-profile-btn-${provider.user_id}`}
+                >
                   <Text style={styles.viewProfileText}>View Profile</Text>
                   <Icon name="chevron-forward" size={16} color={colors.primary} />
-                </View>
+                </TouchableOpacity>
               </Card>
-            </TouchableOpacity>
+            </View>
           ))
         )}
       </ScrollView>

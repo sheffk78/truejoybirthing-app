@@ -238,6 +238,14 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   // Baby
   'baby': 'Baby',
   
+  // Egg
+  'egg': 'Egg',
+  'egg-outline': 'Egg',
+  
+  // Image
+  'image': 'Image',
+  'image-outline': 'Image',
+  
   // Gift
   'gift': 'Gift',
   'gift-outline': 'Gift',
