@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useSubscriptionStore } from '../src/store/subscriptionStore';
 import { useAuthStore } from '../src/store/authStore';
 import { useIAP } from '../src/services/billing/useIAP';
@@ -22,7 +22,7 @@ import {
   getStatusDisplayText,
   getProviderDisplayName 
 } from './config/subscriptionConfig';
-import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
+import { useColors, createThemedStyles, SIZES, FONTS } from '../src/hooks/useThemedStyles';
 
 // Platform detection helpers
 const getCurrentPlatform = () => {
@@ -37,6 +37,19 @@ const isIAPAvailable = () => {
 
 export default function PlansPricingScreen() {
   const { user } = useAuthStore();
+  const { onboarding, role } = useLocalSearchParams<{ onboarding?: string; role?: string }>();
+  const isOnboarding = onboarding === 'true';
+  const onboardingRole = role || user?.role || '';
+  
+  // After subscription action in onboarding context, go to tutorial not back
+  const navigateAfterAction = () => {
+    if (isOnboarding && onboardingRole) {
+      router.replace(`/tutorial?role=${onboardingRole}`);
+    } else {
+      router.back();
+    }
+  };
+  
   const { status, pricing, isLoading, fetchStatus, fetchPricing, startTrial, activateSubscription } = useSubscriptionStore();
   const [selectedPlan, setSelectedPlan] = useState<string>('monthly');
   const [processingAction, setProcessingAction] = useState(false);
@@ -96,7 +109,7 @@ export default function PlansPricingScreen() {
         if (result.success) {
           await fetchStatus();
           Alert.alert('Purchase Complete', 'Thank you for subscribing to True Joy Pro!', [
-            { text: 'Continue', onPress: () => router.back() },
+            { text: 'Continue', onPress: () => navigateAfterAction() },
           ]);
         } else if (result.error && result.error !== 'E_USER_CANCELLED') {
           Alert.alert('Purchase Failed', result.error || 'Please try again.');
@@ -115,7 +128,8 @@ export default function PlansPricingScreen() {
           `Stack (first 3 lines):`,
           (error?.stack || 'no stack').split('\n').slice(0, 4).join('\n'),
         ].join('\n');
-        Alert.alert('Purchase Error (Diagnostic)', debugMsg);
+        console.error('[IAP][handleIAPPurchase] Full error:', debugMsg);
+        Alert.alert('Purchase Failed', 'Something went wrong. Please try again or contact support if the issue persists.');
       } finally {
         setProcessingAction(false);
       }
@@ -161,7 +175,7 @@ export default function PlansPricingScreen() {
         Alert.alert(
           'Trial Started!',
           `Your 14-day free trial has begun. You'll have full access to all Pro features.`,
-          [{ text: 'Get Started', onPress: () => router.back() }]
+          [{ text: 'Get Started', onPress: () => navigateAfterAction() }]
         );
       } catch (error: any) {
         Alert.alert('Error', error.message || 'Failed to start trial');
@@ -185,7 +199,7 @@ export default function PlansPricingScreen() {
         Alert.alert(
           'Subscription Activated!',
           `Your ${selectedPlan === 'annual' ? 'annual' : 'monthly'} subscription is now active.`,
-          [{ text: 'Continue', onPress: () => router.back() }]
+          [{ text: 'Continue', onPress: () => navigateAfterAction() }]
         );
       } catch (error: any) {
         Alert.alert('Error', error.message || 'Failed to activate subscription');
@@ -214,7 +228,15 @@ export default function PlansPricingScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => {
+          if (isOnboarding) {
+            // In onboarding, back goes to role-specific profile setup
+            const backRoute = onboardingRole === 'MIDWIFE' ? '/(auth)/midwife-onboarding' : '/(auth)/doula-onboarding';
+            router.replace(backRoute as any);
+          } else {
+            router.back();
+          }
+        }} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Plans & Pricing</Text>
@@ -484,6 +506,22 @@ export default function PlansPricingScreen() {
                   <Text style={[styles.legalLink, { color: colors.primary }]}>Privacy Policy</Text>
                 </TouchableOpacity>
               </View>
+              
+              {/* Skip option during onboarding */}
+              {isOnboarding && (
+                <TouchableOpacity 
+                  onPress={() => {
+                    if (onboardingRole) {
+                      router.replace(`/tutorial?role=${onboardingRole}`);
+                    }
+                  }}
+                  style={styles.skipButton}
+                >
+                  <Text style={[styles.skipButtonText, { color: colors.textSecondary }]}>
+                    Skip for now
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           )}
 
@@ -732,6 +770,15 @@ const getStyles = createThemedStyles((colors) => ({
   legalLinkSeparator: {
     fontSize: 13,
     color: colors.textLight,
+  },
+  skipButton: {
+    alignItems: 'center',
+    marginTop: 16,
+    paddingVertical: 10,
+  },
+  skipButtonText: {
+    fontSize: 15,
+    fontFamily: FONTS.body,
   },
   
   momNote: {

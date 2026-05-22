@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -53,12 +53,14 @@ export default function MidwifeOnboardingScreen() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [zipLookupError, setZipLookupError] = useState('');
   
-  // Lookup city/state from zip code
+  // Lookup city/state from zip code (with request tracking to avoid stale responses)
+  const lookupRequestId = useRef(0);
   const lookupZipCode = useCallback(async (zip: string) => {
     if (zip.length !== 5 || !/^\d{5}$/.test(zip)) {
       return;
     }
     
+    const thisRequestId = ++lookupRequestId.current;
     setIsLookingUpZip(true);
     setZipLookupError('');
     try {
@@ -67,21 +69,27 @@ export default function MidwifeOnboardingScreen() {
         timeoutMs: 8000,
       });
       
+      // Discard stale response if a newer request was made
+      if (lookupRequestId.current !== thisRequestId) return;
+      
       if (result.city && result.state) {
         setLocationCity(result.city);
         setLocationState(result.state_abbreviation || result.state);
       } else {
         setLocationCity('');
         setLocationState('');
-        setZipLookupError('We couldn’t find that zip code. Please check it and try again.');
+        setZipLookupError("We couldn't find that zip code. Please check it and try again.");
       }
     } catch (error: any) {
+      if (lookupRequestId.current !== thisRequestId) return;
       console.log('Zip code lookup error:', error.message);
       setLocationCity('');
       setLocationState('');
       setZipLookupError(error.message || 'Zip code lookup failed. Please try again.');
     } finally {
-      setIsLookingUpZip(false);
+      if (lookupRequestId.current === thisRequestId) {
+        setIsLookingUpZip(false);
+      }
     }
   }, []);
   
@@ -135,14 +143,14 @@ export default function MidwifeOnboardingScreen() {
           zip_code: zipCode,
           location_city: locationCity,
           location_state: locationState,
-          years_in_practice: yearsInPractice ? parseInt(yearsInPractice) : null,
+          years_in_practice: yearsInPractice ? Math.max(0, parseInt(yearsInPractice) || 0) : null,
           birth_settings_served: birthSettingsServed,
           accepting_new_clients: acceptingNewClients,
         },
       });
       
       updateUser({ onboarding_completed: true });
-      router.replace('/tutorial?role=MIDWIFE');
+      router.replace('/plans-pricing?onboarding=true&role=MIDWIFE');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to save your information');
     } finally {
@@ -163,6 +171,9 @@ export default function MidwifeOnboardingScreen() {
         >
           {/* Header */}
           <View style={styles.headerSection}>
+            <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={styles.backButton}>
+              <Icon name="arrow-back" size={24} color={colors.text} />
+            </TouchableOpacity>
             <View style={styles.progressBar}>
               <View style={[styles.progressFill, { width: '100%' }]} />
             </View>
@@ -315,7 +326,7 @@ export default function MidwifeOnboardingScreen() {
           
           {/* Continue Button */}
           <Button
-            title="Continue to Dashboard"
+            title="Continue"
             onPress={handleContinue}
             loading={isLoading}
             fullWidth
@@ -344,6 +355,10 @@ const getStyles = createThemedStyles((colors) => ({
   },
   headerSection: {
     marginBottom: SIZES.xl,
+  },
+  backButton: {
+    marginBottom: SIZES.md,
+    marginLeft: -SIZES.xs,
   },
   progressBar: {
     height: 4,

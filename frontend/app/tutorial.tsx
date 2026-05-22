@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppTutorial from '../src/components/AppTutorial';
 import { useAuthStore } from '../src/store/authStore';
 import { useColors } from '../src/hooks/useThemedStyles';
@@ -10,12 +9,10 @@ import {
   MIDWIFE_TUTORIAL_STEPS,
 } from '../src/constants/tutorialData';
 
-const TUTORIAL_SEEN_KEY = 'tutorial_completed';
-
 export default function TutorialScreen() {
   const router = useRouter();
   const { role } = useLocalSearchParams<{ role?: string }>();
-  const { user } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
   const colors = useColors();
   
   const userRole = role || user?.role || 'MOM';
@@ -55,21 +52,14 @@ export default function TutorialScreen() {
   
   const config = getTutorialConfig();
   
-  const markTutorialComplete = async () => {
-    try {
-      await AsyncStorage.setItem(`${TUTORIAL_SEEN_KEY}_${userRole}`, 'true');
-    } catch (error) {
-      console.log('Error saving tutorial state:', error);
-    }
-  };
-  
   const handleComplete = async () => {
-    await markTutorialComplete();
+    // Mark tutorial seen via authStore so navigation guard stays in sync
+    updateUser({ tutorial_completed: true } as any);
     router.replace(config.homeRoute as any);
   };
   
   const handleSkip = async () => {
-    await markTutorialComplete();
+    updateUser({ tutorial_completed: true } as any);
     router.replace(config.homeRoute as any);
   };
   
