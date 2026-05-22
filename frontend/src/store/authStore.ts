@@ -9,6 +9,7 @@ export interface User {
   role: 'MOM' | 'DOULA' | 'MIDWIFE' | 'ADMIN';
   picture?: string;
   onboarding_completed: boolean;
+  tutorial_completed?: boolean;
   profile?: any;
 }
 

@@ -52,16 +52,19 @@ function ThemedLayout() {
     } else if (isAuthenticated && user) {
       // Check if onboarding is needed
       if (!user.onboarding_completed) {
-        // First show intro walkthrough, then role-specific profile setup
+        // First show intro walkthrough, then role-specific profile setup,
+        // then plans-pricing, then tutorial (all part of onboarding flow)
         const isOnIntro = currentScreen === 'onboarding-intro';
         const isOnNotificationPermission = currentScreen === 'notification-permission';
         const isOnProfileSetup = !!currentScreen && ['mom-onboarding', 'doula-onboarding', 'midwife-onboarding'].includes(currentScreen);
+        const isOnPlansPricing = segments[0] === 'plans-pricing';
+        const isOnTutorial = segments[0] === 'tutorial';
         
-        if (!isOnIntro && !isOnNotificationPermission && !isOnProfileSetup) {
+        if (!isOnIntro && !isOnNotificationPermission && !isOnProfileSetup && !isOnPlansPricing && !isOnTutorial) {
           // Start with the intro walkthrough
           router.replace('/(auth)/onboarding-intro');
         }
-        // If already on intro or profile setup, let them continue
+        // If already on an onboarding screen, let them continue
       } else if (inAuthGroup) {
         // Already authenticated and onboarded, redirect to appropriate dashboard
         if (user.role === 'MOM') {

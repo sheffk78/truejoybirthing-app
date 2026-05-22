@@ -141,7 +141,8 @@ export default function DoulaOnboardingScreen() {
         },
       });
       
-      updateUser({ onboarding_completed: true });
+      // Don't set onboarding_completed until tutorial is done — prevents
+      // root guard from redirecting to dashboard before subscription/tutorial
       router.replace('/plans-pricing?onboarding=true&role=DOULA');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to save your information');

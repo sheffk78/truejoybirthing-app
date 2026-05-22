@@ -53,13 +53,13 @@ export default function TutorialScreen() {
   const config = getTutorialConfig();
   
   const handleComplete = async () => {
-    // Mark tutorial seen via authStore so navigation guard stays in sync
-    updateUser({ tutorial_completed: true } as any);
+    // Mark both flags — onboarding is truly complete after tutorial
+    updateUser({ onboarding_completed: true, tutorial_completed: true });
     router.replace(config.homeRoute as any);
   };
   
   const handleSkip = async () => {
-    updateUser({ tutorial_completed: true } as any);
+    updateUser({ onboarding_completed: true, tutorial_completed: true });
     router.replace(config.homeRoute as any);
   };
   
