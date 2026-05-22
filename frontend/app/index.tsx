@@ -18,13 +18,10 @@ export default function Index() {
       router.replace('/(auth)/welcome');
     } else if (user) {
       if (!user.onboarding_completed) {
-        if (user.role === 'MOM') {
-          router.replace('/(auth)/mom-onboarding');
-        } else if (user.role === 'DOULA') {
-          router.replace('/(auth)/doula-onboarding');
-        } else if (user.role === 'MIDWIFE') {
-          router.replace('/(auth)/midwife-onboarding');
-        }
+        // Redirect to onboarding-intro so the full flow plays out
+        // (walkthrough → notifications → profile → plans-pricing → tutorial)
+        // The root layout guard handles subsequent redirects
+        router.replace('/(auth)/onboarding-intro');
       } else {
         if (user.role === 'MOM') {
           router.replace('/(mom)/home');

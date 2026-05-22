@@ -262,6 +262,7 @@ async def get_me(user: User = Depends(get_current_user())):
         "role": user.role,
         "picture": user.picture,
         "onboarding_completed": user.onboarding_completed,
+        "tutorial_completed": user.tutorial_completed,
         "profile": profile_data
     }
 
@@ -296,7 +297,7 @@ async def set_role(request: Request, user: User = Depends(get_current_user())):
 
 @router.put("/update-profile")
 async def update_profile(request: Request, user: User = Depends(get_current_user())):
-    """Update user profile (picture, name, etc.)"""
+    """Update user profile (picture, name, onboarding status, etc.)"""
     body = await request.json()
     
     update_data = {}
@@ -304,6 +305,10 @@ async def update_profile(request: Request, user: User = Depends(get_current_user
         update_data["picture"] = body["picture"]
     if "full_name" in body:
         update_data["full_name"] = body["full_name"]
+    if "onboarding_completed" in body:
+        update_data["onboarding_completed"] = body["onboarding_completed"]
+    if "tutorial_completed" in body:
+        update_data["tutorial_completed"] = body["tutorial_completed"]
     
     if not update_data:
         raise HTTPException(status_code=400, detail="No valid fields to update")

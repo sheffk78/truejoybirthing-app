@@ -128,10 +128,11 @@ async def midwife_onboarding(profile_data: MidwifeProfileUpdate, user: User = De
         upsert=True
     )
     
-    # Mark onboarding complete
+    # Mark profile complete but NOT onboarding_completed —
+    # onboarding is only complete after the tutorial
     await db.users.update_one(
         {"user_id": user.user_id},
-        {"$set": {"onboarding_completed": True, "updated_at": now}}
+        {"$set": {"profile_completed": True, "updated_at": now}}
     )
     
     return {"message": "Onboarding completed", "profile": profile}

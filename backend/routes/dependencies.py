@@ -49,6 +49,7 @@ class User(BaseModel):
     role: Optional[str] = None
     picture: Optional[str] = None
     onboarding_completed: Optional[bool] = False
+    tutorial_completed: Optional[bool] = False
 
 
 def init_dependencies(

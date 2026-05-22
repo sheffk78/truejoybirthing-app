@@ -3,6 +3,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import AppTutorial from '../src/components/AppTutorial';
 import { useAuthStore } from '../src/store/authStore';
 import { useColors } from '../src/hooks/useThemedStyles';
+import { apiRequest } from '../src/utils/api';
+import { API_ENDPOINTS } from '../src/constants/api';
 import {
   MOM_TUTORIAL_STEPS,
   DOULA_TUTORIAL_STEPS,
@@ -52,15 +54,31 @@ export default function TutorialScreen() {
   
   const config = getTutorialConfig();
   
-  const handleComplete = async () => {
-    // Mark both flags — onboarding is truly complete after tutorial
+  const completeOnboarding = async () => {
+    // Update local state immediately for instant UI transition
     updateUser({ onboarding_completed: true, tutorial_completed: true });
+    // Persist to backend so onboarding_completed survives re-auth/refresh
+    try {
+      await apiRequest(API_ENDPOINTS.AUTH_UPDATE_PROFILE, {
+        method: 'PUT',
+        body: JSON.stringify({
+          onboarding_completed: true,
+          tutorial_completed: true,
+        }),
+      });
+    } catch (e) {
+      // Local state is already set — backend sync is best-effort
+      console.warn('Failed to persist onboarding completion to backend:', e);
+    }
     router.replace(config.homeRoute as any);
   };
   
+  const handleComplete = async () => {
+    await completeOnboarding();
+  };
+  
   const handleSkip = async () => {
-    updateUser({ onboarding_completed: true, tutorial_completed: true });
-    router.replace(config.homeRoute as any);
+    await completeOnboarding();
   };
   
   return (
