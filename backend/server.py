@@ -443,6 +443,7 @@ class User(BaseModel):
     role: str
     picture: Optional[str] = None
     onboarding_completed: bool = False
+    tutorial_completed: Optional[bool] = False
     created_at: datetime
     updated_at: Optional[datetime] = None
 
