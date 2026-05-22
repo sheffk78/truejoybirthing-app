@@ -65,11 +65,15 @@ export default function MessagesScreen() {
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loadingTeam, setLoadingTeam] = useState(false);
   const [pendingInvoices, setPendingInvoices] = useState<any[]>([]);
   const scrollViewRef = useRef<ScrollView>(null);
+  const currentUserIdRef = useRef<string>('');
+  const isNearBottomRef = useRef(true);
   
   const fetchConversations = async () => {
     try {
@@ -84,6 +88,7 @@ export default function MessagesScreen() {
     try {
       const data = await apiRequest<{ user_id: string }>(API_ENDPOINTS.AUTH_ME);
       setCurrentUserId(data.user_id);
+      currentUserIdRef.current = data.user_id;
     } catch (error) {
       console.error('Error fetching user:', error);
     }
@@ -190,39 +195,45 @@ export default function MessagesScreen() {
   
   const { sessionToken } = useAuthStore();
   
+  // Connect WebSocket once on mount; subscribe separately so handler uses refs
+  useEffect(() => {
+    if (!sessionToken) return;
+    
+    wsClient.connect(sessionToken);
+    
+    const unsubscribe = wsClient.subscribe('new_message', (data) => {
+      if (selectedConversation && data.message?.sender_id === selectedConversation.other_user_id) {
+        const newMsg: Message = {
+          message_id: data.message.message_id,
+          sender_id: data.message.sender_id,
+          sender_name: data.message.sender_name,
+          sender_role: data.message.sender_role,
+          receiver_id: currentUserIdRef.current,
+          content: data.message.content,
+          created_at: data.message.created_at,
+          read: false,
+        };
+        // Deduplicate: don't add if message already exists (from HTTP refresh)
+        setMessages((prev) => {
+          if (prev.some(m => m.message_id === newMsg.message_id)) return prev;
+          return [...prev, newMsg];
+        });
+      }
+      // Refresh conversation list to update unread counts
+      fetchConversations();
+    });
+    
+    return () => {
+      unsubscribe();
+    };
+  }, [sessionToken]);
+  
+  // Initial data fetch on mount
   useEffect(() => {
     fetchConversations();
     fetchCurrentUser();
     fetchInvoices();
-    
-    // Connect to WebSocket for real-time messages
-    if (sessionToken) {
-      wsClient.connect(sessionToken);
-      
-      // Subscribe to new messages
-      const unsubscribe = wsClient.subscribe('new_message', (data) => {
-        // If currently in a conversation with the sender, add the message
-        if (selectedConversation && data.message?.sender_id === selectedConversation.other_user_id) {
-          setMessages((prev) => [...prev, {
-            message_id: data.message.message_id,
-            sender_id: data.message.sender_id,
-            sender_name: data.message.sender_name,
-            sender_role: data.message.sender_role,
-            receiver_id: currentUserId,
-            content: data.message.content,
-            created_at: data.message.created_at,
-            read: false,
-          }]);
-        }
-        // Refresh conversation list to update unread counts
-        fetchConversations();
-      });
-      
-      return () => {
-        unsubscribe();
-      };
-    }
-  }, [sessionToken, selectedConversation?.other_user_id]);
+  }, []);
   
   const onRefresh = async () => {
     setRefreshing(true);
@@ -232,6 +243,8 @@ export default function MessagesScreen() {
   
   const openConversation = async (conversation: Conversation) => {
     setSelectedConversation(conversation);
+    setLoadingMessages(true);
+    setSendError(null);
     try {
       const data = await apiRequest<{ messages: Message[] }>(
         `${API_ENDPOINTS.MESSAGES}/${conversation.other_user_id}`
@@ -241,35 +254,47 @@ export default function MessagesScreen() {
       fetchConversations();
     } catch (error) {
       console.error('Error fetching messages:', error);
+    } finally {
+      setLoadingMessages(false);
     }
   };
   
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation || sending) return;
     
+    const messageText = newMessage.trim();
     setSending(true);
+    setSendError(null);
+    setNewMessage('');
+    
     try {
-      await apiRequest(API_ENDPOINTS.MESSAGES, {
+      const response = await apiRequest<{ message: Message }>(API_ENDPOINTS.MESSAGES, {
         method: 'POST',
         body: {
           receiver_id: selectedConversation.other_user_id,
-          content: newMessage.trim(),
+          content: messageText,
         },
       });
       
-      setNewMessage('');
-      // Refresh messages
-      const data = await apiRequest<{ messages: Message[] }>(
-        `${API_ENDPOINTS.MESSAGES}/${selectedConversation.other_user_id}`
-      );
-      setMessages(data.messages || []);
+      // Add the sent message from the API response (avoids full re-fetch + deduplication issues)
+      if (response.message) {
+        setMessages((prev) => {
+          if (prev.some(m => m.message_id === response.message.message_id)) return prev;
+          return [...prev, response.message];
+        });
+      }
       
       // Scroll to bottom
       setTimeout(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }, 100);
+      
+      // Refresh conversation list for last_message update
+      fetchConversations();
     } catch (error: any) {
       console.error('Error sending message:', error);
+      setNewMessage(messageText); // Restore message text so user can retry
+      setSendError('Failed to send. Tap to retry.');
     } finally {
       setSending(false);
     }
@@ -324,13 +349,29 @@ export default function MessagesScreen() {
           <KeyboardAvoidingView 
             style={styles.chatContent}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
           >
+            {loadingMessages ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={colors.primary} />
+              </View>
+            ) : (
             <ScrollView 
               ref={scrollViewRef}
               style={styles.messagesContainer}
               contentContainerStyle={styles.messagesContent}
-              onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: false })}
+              keyboardShouldPersistTaps="handled"
+              onScroll={(e) => {
+                const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
+                const threshold = 100;
+                isNearBottomRef.current = 
+                  layoutMeasurement.height + contentOffset.y >= contentSize.height - threshold;
+              }}
+              onContentSizeChange={() => {
+                if (isNearBottomRef.current) {
+                  scrollViewRef.current?.scrollToEnd({ animated: false });
+                }
+              }}
             >
               {messages.map((msg) => {
                 const isMe = msg.sender_id === currentUserId;
@@ -349,9 +390,15 @@ export default function MessagesScreen() {
                 );
               })}
             </ScrollView>
+            )}
             
             {/* Input */}
             <View style={styles.inputContainer}>
+              {sendError && (
+                <TouchableOpacity onPress={() => { setSendError(null); sendMessage(); }} style={styles.sendError}>
+                  <Text style={styles.sendErrorText}>{sendError}</Text>
+                </TouchableOpacity>
+              )}
               <TextInput
                 style={styles.messageInput}
                 value={newMessage}
@@ -1012,5 +1059,18 @@ const getStyles = createThemedStyles((colors) => ({
     textAlign: 'center',
     marginTop: SIZES.sm,
     fontStyle: 'italic',
+  },
+  sendError: {
+    backgroundColor: colors.error + '15',
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.xs,
+    borderRadius: SIZES.xs,
+    marginBottom: SIZES.xs,
+  },
+  sendErrorText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.error,
+    textAlign: 'center',
   },
 }));

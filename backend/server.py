@@ -72,25 +72,37 @@ api_router = APIRouter(prefix="/api")
 class ConnectionManager:
     """Manages WebSocket connections for real-time messaging"""
     def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = {}  # user_id -> WebSocket
+        self.active_connections: Dict[str, List[WebSocket]] = {}  # user_id -> [WebSocket, ...]
     
     async def connect(self, websocket: WebSocket, user_id: str):
         await websocket.accept()
-        self.active_connections[user_id] = websocket
-        logger.info(f"WebSocket connected: {user_id}")
+        if user_id not in self.active_connections:
+            self.active_connections[user_id] = []
+        self.active_connections[user_id].append(websocket)
+        logger.info(f"WebSocket connected: {user_id} (total: {len(self.active_connections[user_id])})")
     
-    def disconnect(self, user_id: str):
+    def disconnect(self, websocket: WebSocket, user_id: str):
         if user_id in self.active_connections:
-            del self.active_connections[user_id]
+            try:
+                self.active_connections[user_id].remove(websocket)
+            except ValueError:
+                pass
+            if not self.active_connections[user_id]:
+                del self.active_connections[user_id]
             logger.info(f"WebSocket disconnected: {user_id}")
     
     async def send_personal_message(self, message: dict, user_id: str):
         if user_id in self.active_connections:
-            try:
-                await self.active_connections[user_id].send_json(message)
-            except Exception as e:
-                logger.error(f"Error sending WebSocket message to {user_id}: {e}")
-                self.disconnect(user_id)
+            dead_sockets = []
+            for ws in self.active_connections[user_id]:
+                try:
+                    await ws.send_json(message)
+                except Exception as e:
+                    logger.error(f"Error sending WebSocket message to {user_id}: {e}")
+                    dead_sockets.append(ws)
+            # Clean up dead sockets
+            for ws in dead_sockets:
+                self.disconnect(ws, user_id)
     
     async def broadcast_to_users(self, message: dict, user_ids: List[str]):
         for user_id in user_ids:
@@ -1836,29 +1848,48 @@ async def health_check():
 @app.websocket("/ws/messages/{token}")
 async def websocket_messages(websocket: WebSocket, token: str):
     """WebSocket endpoint for real-time messaging"""
-    # Authenticate user from token
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("user_id")
-        if not user_id:
-            await websocket.close(code=4001)
-            return
-        
-        # Connect the user
-        await ws_manager.connect(websocket, user_id)
-        
-        try:
-            while True:
-                # Wait for messages (keepalive pings are handled automatically)
-                data = await websocket.receive_text()
-                # Client can send ping messages to keep connection alive
-                if data == "ping":
-                    await websocket.send_text("pong")
-        except WebSocketDisconnect:
-            ws_manager.disconnect(user_id)
-    except JWTError:
+    # Authenticate user from session token (same as get_current_user)
+    session_doc = await db.user_sessions.find_one(
+        {"session_token": token},
+        {"_id": 0}
+    )
+    
+    if not session_doc:
+        logger.warning(f"WebSocket auth failed: no session for token prefix {token[:12]}...")
         await websocket.close(code=4001)
         return
+    
+    # Check expiry
+    expires_at = session_doc.get("expires_at")
+    if expires_at:
+        from datetime import timezone as _tz
+        if isinstance(expires_at, str):
+            from datetime import datetime as _dt
+            expires_at = _dt.fromisoformat(expires_at.replace("Z", "+00:00"))
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=_tz.utc)
+        if datetime.now(timezone.utc) > expires_at:
+            logger.warning(f"WebSocket auth failed: session expired for user {session_doc.get('user_id')}")
+            await websocket.close(code=4001)
+            return
+    
+    user_id = session_doc.get("user_id")
+    if not user_id:
+        await websocket.close(code=4001)
+        return
+    
+    # Connect the user
+    await ws_manager.connect(websocket, user_id)
+    
+    try:
+        while True:
+            # Wait for messages (keepalive pings are handled automatically)
+            data = await websocket.receive_text()
+            # Client can send ping messages to keep connection alive
+            if data == "ping":
+                await websocket.send_text("pong")
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket, user_id)
 
 # Include the router in the main app
 app.include_router(api_router)
