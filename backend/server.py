@@ -1917,6 +1917,11 @@ app.add_middleware(
 # above on the app directly — not under api_router — so their /admin/api/* paths
 # resolve before this SPA catch-all.
 ADMIN_DIST = Path(__file__).parent.parent / "admin-frontend" / "dist"
+print(f"[startup] Checking admin dashboard at {ADMIN_DIST}")
+print(f"[startup] ADMIN_DIST.exists() = {ADMIN_DIST.exists()}")
+if ADMIN_DIST.exists():
+    print(f"[startup] index.html exists = {(ADMIN_DIST / 'index.html').exists()}")
+    print(f"[startup] Contents: {list(ADMIN_DIST.iterdir())}")
 if ADMIN_DIST.exists() and (ADMIN_DIST / "index.html").exists():
     # Mount static assets (JS, CSS, fonts) — exact path match, no conflict with API routes
     app.mount("/admin/assets", StaticFiles(directory=str(ADMIN_DIST / "assets")), name="admin-assets")
