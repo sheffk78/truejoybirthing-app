@@ -1849,23 +1849,6 @@ async def root():
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
-@api_router.get("/debug/admin-path")
-async def debug_admin_path():
-    """Debug endpoint to check if admin frontend dist directory exists."""
-    admin_dist = Path(__file__).parent.parent / "admin-frontend" / "dist"
-    result = {
-        "path": str(admin_dist),
-        "exists": admin_dist.exists(),
-    }
-    if admin_dist.exists():
-        result["contents"] = [str(p.name) for p in admin_dist.iterdir()]
-        result["index_html_exists"] = (admin_dist / "index.html").exists()
-        assets_dir = admin_dist / "assets"
-        result["assets_dir_exists"] = assets_dir.exists()
-        if assets_dir.exists():
-            result["assets_contents"] = [str(p.name) for p in assets_dir.iterdir()]
-    return result
-
 # ============== WEBSOCKET ENDPOINT ==============
 @app.websocket("/ws/messages/{token}")
 async def websocket_messages(websocket: WebSocket, token: str):
@@ -1934,11 +1917,6 @@ app.add_middleware(
 # above on the app directly — not under api_router — so their /admin/api/* paths
 # resolve before this SPA catch-all.
 ADMIN_DIST = Path(__file__).parent / "admin-frontend" / "dist"
-print(f"[startup] Checking admin dashboard at {ADMIN_DIST}")
-print(f"[startup] ADMIN_DIST.exists() = {ADMIN_DIST.exists()}")
-if ADMIN_DIST.exists():
-    print(f"[startup] index.html exists = {(ADMIN_DIST / 'index.html').exists()}")
-    print(f"[startup] Contents: {list(ADMIN_DIST.iterdir())}")
 if ADMIN_DIST.exists() and (ADMIN_DIST / "index.html").exists():
     # Mount static assets (JS, CSS, fonts) — exact path match, no conflict with API routes
     app.mount("/admin/assets", StaticFiles(directory=str(ADMIN_DIST / "assets")), name="admin-assets")
