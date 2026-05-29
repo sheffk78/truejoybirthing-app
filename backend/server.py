@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, WebSocket, WebSocketDisconnect
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -1478,6 +1479,7 @@ from routes import birth_summary as birth_summary_routes
 from routes import uploads as uploads_routes
 from routes import newborn_exam as newborn_exam_routes
 from routes import contractions as contractions_routes
+from routes import admin_dashboard as admin_dashboard_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1504,6 +1506,8 @@ api_router.include_router(birth_summary_routes.router)
 api_router.include_router(uploads_routes.router)
 api_router.include_router(newborn_exam_routes.router)
 api_router.include_router(contractions_routes.router)
+# Admin dashboard routes mounted directly on app (not under /api prefix)
+# so frontend paths match: /admin/api/dashboard/*
 
 # ============== AUTH ROUTES ==============
 # MIGRATED TO: routes/auth.py
@@ -1892,8 +1896,12 @@ async def websocket_messages(websocket: WebSocket, token: str):
     except WebSocketDisconnect:
         ws_manager.disconnect(websocket, user_id)
 
-# Include the router in the main app
+# Include the main API router in the app
 app.include_router(api_router)
+
+# Include admin dashboard routes directly on app (not under /api prefix)
+# so frontend paths match: /admin/api/dashboard/*
+app.include_router(admin_dashboard_routes.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -1902,6 +1910,35 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ============== ADMIN SPA ==============
+# Serve the React admin dashboard from the built frontend.
+# IMPORTANT: The admin dashboard API routes (admin_dashboard_routes) are registered
+# above on the app directly — not under api_router — so their /admin/api/* paths
+# resolve before this SPA catch-all.
+ADMIN_DIST = Path(__file__).parent.parent / "admin-frontend" / "dist"
+if ADMIN_DIST.exists() and (ADMIN_DIST / "index.html").exists():
+    # Mount static assets (JS, CSS, fonts) — exact path match, no conflict with API routes
+    app.mount("/admin/assets", StaticFiles(directory=str(ADMIN_DIST / "assets")), name="admin-assets")
+
+    # Serve favicon and other root static files
+    @app.get("/admin/favicon.svg")
+    async def admin_favicon():
+        favicon = ADMIN_DIST / "favicon.svg"
+        if favicon.exists():
+            return FileResponse(str(favicon))
+        return FileResponse(str(ADMIN_DIST / "index.html"))
+
+    # SPA catch-all: any /admin path that doesn't match an API route
+    # or static asset returns index.html for React Router to handle
+    @app.get("/admin/{full_path:path}")
+    @app.get("/admin")
+    async def admin_spa(full_path: str = ""):
+        return FileResponse(str(ADMIN_DIST / "index.html"))
+
+    print(f"[startup] Admin dashboard mounted from {ADMIN_DIST}")
+else:
+    print(f"[startup] Admin dashboard not found at {ADMIN_DIST} — SPA will not be available")
 
 # Configure logging
 logging.basicConfig(

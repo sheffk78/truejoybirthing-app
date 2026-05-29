@@ -1,0 +1,100 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: #FAFAF8;
+  --color-foreground: #1A1A2E;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #1A1A2E;
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #1A1A2E;
+  --color-primary: #2CB67D;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #F0F0EC;
+  --color-secondary-foreground: #1A1A2E;
+  --color-muted: #F0F0EC;
+  --color-muted-foreground: #6B7280;
+  --color-accent: #E85D4A;
+  --color-accent-foreground: #FFFFFF;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-input: #E5E7EB;
+  --color-ring: #2CB67D;
+
+  /* TJB Custom Colors */
+  --color-tjb-teal: #2CB67D;
+  --color-tjb-teal-light: #4FD19B;
+  --color-tjb-teal-dark: #1E8A5E;
+  --color-tjb-coral: #E85D4A;
+  --color-tjb-coral-light: #F08A7D;
+  --color-tjb-coral-dark: #C43E2D;
+  --color-tjb-cream: #FAFAF8;
+  --color-tjb-dark: #1A1A2E;
+
+  /* Chart colors */
+  --color-chart-1: #2CB67D;
+  --color-chart-2: #E85D4A;
+  --color-chart-3: #4FD19B;
+  --color-chart-4: #F08A7D;
+  --color-chart-5: #1E8A5E;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: 'Geist Variable', sans-serif;
+}
+
+/* Light mode only for v1 */
+:root {
+  --background: #FAFAF8;
+  --foreground: #1A1A2E;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A2E;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A2E;
+  --primary: #2CB67D;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0F0EC;
+  --secondary-foreground: #1A1A2E;
+  --muted: #F0F0EC;
+  --muted-foreground: #6B7280;
+  --accent: #E85D4A;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #2CB67D;
+  --radius: 0.625rem;
+  --chart-1: #2CB67D;
+  --chart-2: #E85D4A;
+  --chart-3: #4FD19B;
+  --chart-4: #F08A7D;
+  --chart-5: #1E8A5E;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1A2E;
+  --sidebar-primary: #2CB67D;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F0F0EC;
+  --sidebar-accent-foreground: #1A1A2E;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #2CB67D;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  html {
+    @apply font-sans;
+  }
+}
