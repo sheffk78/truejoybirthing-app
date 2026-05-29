@@ -158,9 +158,17 @@ async def ensure_demo_accounts(db):
 
         demo_user_ids[account["role"]] = user_id
 
-        # Ensure role-specific profile exists
+        # Ensure role-specific profile exists (skip for roles without profiles, e.g. ADMIN)
         profile_collection = account["profile_collection"]
-        profile_data = account["profile_data"].copy()
+        if profile_collection is None:
+            # No profile collection for this role (e.g. ADMIN)
+            continue
+
+        profile_data = account["profile_data"]
+        if profile_data is None:
+            continue
+
+        profile_data = profile_data.copy()
 
         # Set dynamic due_date for mom accounts
         if account["role"] == "MOM" and profile_data.get("due_date") is None:
