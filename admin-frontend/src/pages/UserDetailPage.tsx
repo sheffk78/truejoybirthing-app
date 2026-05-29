@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 const subscriptionStatusColors: Record<string, string> = {
-  TRIAL: 'bg-tjb-teal/10 text-tjb-teal border-tjb-teal/20',
+  TRIAL: 'bg-tjb-lavender-100 text-tjb-lavender-600 border-tjb-lavender-300',
   ACTIVE: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   PAST_DUE: 'bg-amber-50 text-amber-700 border-amber-200',
   CANCELED: 'bg-gray-50 text-gray-600 border-gray-200',
@@ -24,10 +24,10 @@ const subscriptionStatusColors: Record<string, string> = {
 };
 
 const roleColors: Record<string, string> = {
-  MOM: 'bg-tjb-teal/10 text-tjb-teal border-tjb-teal/20',
-  DOULA: 'bg-tjb-coral/10 text-tjb-coral border-tjb-coral/20',
+  MOM: 'bg-tjb-lavender-100 text-tjb-lavender-600 border-tjb-lavender-300',
+  DOULA: 'bg-tjb-rose-100 text-tjb-rose-600 border-tjb-rose-200',
   MIDWIFE: 'bg-purple-50 text-purple-700 border-purple-200',
-  ADMIN: 'bg-tjb-dark/10 text-tjb-dark border-tjb-dark/20',
+  ADMIN: 'bg-tjb-charcoal/10 text-tjb-charcoal border-tjb-charcoal/20',
 };
 
 export default function UserDetailPage() {
@@ -87,12 +87,12 @@ export default function UserDetailPage() {
         <CardContent className="p-6 md:p-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <Avatar className="h-16 w-16 text-xl">
-              <AvatarFallback className="bg-tjb-teal/10 text-tjb-teal font-semibold">
+              <AvatarFallback className="bg-tjb-lavender-100 text-tjb-lavender-600 font-semibold">
                 {initials}
               </AvatarFallback>
             </Avatar>
             <div className="space-y-1 flex-1">
-              <h1 className="text-2xl font-bold text-tjb-dark">
+              <h1 className="text-2xl font-bold text-tjb-charcoal">
                 {user.full_name || user.name || 'Unnamed User'}
               </h1>
               <div className="flex flex-wrap items-center gap-2">
@@ -116,7 +116,7 @@ export default function UserDetailPage() {
         <Card className="shadow-sm border-border/60">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Mail className="h-4 w-4 text-tjb-teal" />
+              <Mail className="h-4 w-4 text-tjb-lavender-600" />
               Contact Information
             </CardTitle>
           </CardHeader>
@@ -163,7 +163,7 @@ export default function UserDetailPage() {
         <Card className="shadow-sm border-border/60">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-tjb-teal" />
+              <CreditCard className="h-4 w-4 text-tjb-lavender-600" />
               Subscription
             </CardTitle>
           </CardHeader>
@@ -218,7 +218,7 @@ export default function UserDetailPage() {
         <Card className="shadow-sm border-border/60">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <User className="h-4 w-4 text-tjb-teal" />
+              <User className="h-4 w-4 text-tjb-lavender-600" />
               Profile
             </CardTitle>
           </CardHeader>
@@ -268,7 +268,7 @@ export default function UserDetailPage() {
         <Card className="shadow-sm border-border/60">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-tjb-teal" />
+              <Calendar className="h-4 w-4 text-tjb-lavender-600" />
               Activity
             </CardTitle>
           </CardHeader>

@@ -13,7 +13,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-tjb-dark">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-tjb-charcoal">Dashboard</h1>
         <div className="p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20">
           Failed to load dashboard data. Please try refreshing the page.
         </div>
@@ -27,7 +27,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-tjb-dark">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-tjb-charcoal">Dashboard</h1>
         <p className="text-muted-foreground mt-1">Overview of your True Joy Birthing platform</p>
       </div>
 
@@ -62,7 +62,7 @@ export default function DashboardPage() {
       {/* Role breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-tjb-dark">Users by Role</h2>
+          <h2 className="text-lg font-semibold text-tjb-charcoal">Users by Role</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {Object.entries(roleBreakdown).map(([role, count]) => (
               <StatsCard
@@ -78,11 +78,11 @@ export default function DashboardPage() {
 
         {/* Subscription breakdown */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-tjb-dark">Subscription Status</h2>
+          <h2 className="text-lg font-semibold text-tjb-charcoal">Subscription Status</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {Object.entries(subscriptionBreakdown).map(([status, count]) => {
               const statusColors: Record<string, string> = {
-                TRIAL: 'bg-tjb-teal/10 text-tjb-teal border-tjb-teal/20',
+                TRIAL: 'bg-tjb-lavender-100 text-tjb-lavender-600 border-tjb-lavender-300',
                 ACTIVE: 'bg-emerald-50 text-emerald-700 border-emerald-200',
                 PAST_DUE: 'bg-amber-50 text-amber-700 border-amber-200',
                 CANCELED: 'bg-gray-50 text-gray-600 border-gray-200',

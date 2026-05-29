@@ -33,11 +33,11 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-lg border-border/60">
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-4">
-            <div className="w-14 h-14 rounded-2xl bg-tjb-teal flex items-center justify-center shadow-md">
+            <div className="w-14 h-14 rounded-2xl bg-tjb-lavender-600 flex items-center justify-center shadow-md">
               <span className="text-white font-bold text-2xl">T</span>
             </div>
           </div>
-          <CardTitle className="text-2xl font-semibold text-tjb-dark">
+          <CardTitle className="text-2xl font-semibold text-tjb-charcoal">
             True Joy Birthing
           </CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -58,7 +58,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@truejoybirthing.com"
+                placeholder="shelbi@truejoybirthing.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -83,7 +83,7 @@ export default function LoginPage() {
             </div>
             <Button
               type="submit"
-              className="w-full h-11 bg-tjb-teal hover:bg-tjb-teal-dark text-white font-medium"
+              className="w-full h-11 bg-tjb-lavender-600 hover:bg-tjb-rose-600 text-white font-medium"
               disabled={isLoading}
             >
               {isLoading ? 'Signing in...' : 'Sign in'}

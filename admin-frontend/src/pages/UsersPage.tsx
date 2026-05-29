@@ -23,7 +23,7 @@ const roleTabs = [
 ];
 
 const subscriptionStatusColors: Record<string, string> = {
-  TRIAL: 'bg-tjb-teal/10 text-tjb-teal border-tjb-teal/20',
+  TRIAL: 'bg-tjb-lavender-100 text-tjb-lavender-600 border-tjb-lavender-300',
   ACTIVE: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   PAST_DUE: 'bg-amber-50 text-amber-700 border-amber-200',
   CANCELED: 'bg-gray-50 text-gray-600 border-gray-200',
@@ -42,10 +42,10 @@ function SubscriptionBadge({ status }: { status: string }) {
 
 function RoleBadge({ role }: { role: string }) {
   const roleColors: Record<string, string> = {
-    MOM: 'bg-tjb-teal/10 text-tjb-teal border-tjb-teal/20',
-    DOULA: 'bg-tjb-coral/10 text-tjb-coral border-tjb-coral/20',
+    MOM: 'bg-tjb-lavender-100 text-tjb-lavender-600 border-tjb-lavender-300',
+    DOULA: 'bg-tjb-rose-100 text-tjb-rose-600 border-tjb-rose-200',
     MIDWIFE: 'bg-purple-50 text-purple-700 border-purple-200',
-    ADMIN: 'bg-tjb-dark/10 text-tjb-dark border-tjb-dark/20',
+    ADMIN: 'bg-tjb-charcoal/10 text-tjb-charcoal border-tjb-charcoal/20',
   };
   const label = role === 'MOM' ? 'Mom' : role.charAt(0) + role.slice(1).toLowerCase();
   return (
@@ -85,7 +85,7 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-tjb-dark">Users</h1>
+        <h1 className="text-2xl font-bold text-tjb-charcoal">Users</h1>
         <p className="text-muted-foreground mt-1">Manage and view all platform users</p>
       </div>
 
@@ -146,7 +146,7 @@ export default function UsersPage() {
                         className="cursor-pointer hover:bg-muted/30 transition-colors"
                         onClick={() => navigate(`/admin/users/${user.id}`)}
                       >
-                        <TableCell className="font-medium text-tjb-dark">
+                        <TableCell className="font-medium text-tjb-charcoal">
                           {user.full_name || user.name || '—'}
                         </TableCell>
                         <TableCell className="text-muted-foreground">

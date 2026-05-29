@@ -6,42 +6,50 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-background: #FAFAF8;
-  --color-foreground: #1A1A2E;
+  --color-background: #FAF8F5;
+  --color-foreground: #2A2A2A;
   --color-card: #FFFFFF;
-  --color-card-foreground: #1A1A2E;
+  --color-card-foreground: #2A2A2A;
   --color-popover: #FFFFFF;
-  --color-popover-foreground: #1A1A2E;
-  --color-primary: #2CB67D;
+  --color-popover-foreground: #2A2A2A;
+  --color-primary: #6E6C99;
   --color-primary-foreground: #FFFFFF;
-  --color-secondary: #F0F0EC;
-  --color-secondary-foreground: #1A1A2E;
-  --color-muted: #F0F0EC;
-  --color-muted-foreground: #6B7280;
-  --color-accent: #E85D4A;
+  --color-secondary: #F1F1FB;
+  --color-secondary-foreground: #2A2A2A;
+  --color-muted: #F5F3EF;
+  --color-muted-foreground: #6A6B6C;
+  --color-accent: #9A5E84;
   --color-accent-foreground: #FFFFFF;
   --color-destructive: #EF4444;
   --color-destructive-foreground: #FFFFFF;
-  --color-border: #E5E7EB;
-  --color-input: #E5E7EB;
-  --color-ring: #2CB67D;
+  --color-border: #E6E4F4;
+  --color-input: #E6E4F4;
+  --color-ring: #6E6C99;
 
-  /* TJB Custom Colors */
-  --color-tjb-teal: #2CB67D;
-  --color-tjb-teal-light: #4FD19B;
-  --color-tjb-teal-dark: #1E8A5E;
-  --color-tjb-coral: #E85D4A;
-  --color-tjb-coral-light: #F08A7D;
-  --color-tjb-coral-dark: #C43E2D;
-  --color-tjb-cream: #FAFAF8;
-  --color-tjb-dark: #1A1A2E;
+  /* TJB Brand Colors */
+  --color-tjb-cream: #FAF8F5;
+  --color-tjb-cream-50: #FDFCFA;
+  --color-tjb-lavender-100: #F1F1FB;
+  --color-tjb-lavender-200: #E6E4F4;
+  --color-tjb-lavender-300: #D5D3E8;
+  --color-tjb-lavender-500: #8E8CB5;
+  --color-tjb-lavender-600: #6E6C99;
+  --color-tjb-lavender-700: #504E7A;
+  --color-tjb-rose-100: #FCF5F9;
+  --color-tjb-rose-200: #EFD3E5;
+  --color-tjb-rose-500: #B87AA0;
+  --color-tjb-rose-600: #9A5E84;
+  --color-tjb-charcoal: #2A2A2A;
+  --color-tjb-gray: #6A6B6C;
+  --color-tjb-gray-300: #9A9B9C;
+  --color-tjb-dark: #2A2A2A;
 
-  /* Chart colors */
-  --color-chart-1: #2CB67D;
-  --color-chart-2: #E85D4A;
-  --color-chart-3: #4FD19B;
-  --color-chart-4: #F08A7D;
-  --color-chart-5: #1E8A5E;
+  /* Chart colors (lavender-600, rose-600, lavender-500, rose-500, lavender-700) */
+  --color-chart-1: #6E6C99;
+  --color-chart-2: #9A5E84;
+  --color-chart-3: #8E8CB5;
+  --color-chart-4: #B87AA0;
+  --color-chart-5: #504E7A;
 }
 
 @theme inline {
@@ -51,39 +59,39 @@
 
 /* Light mode only for v1 */
 :root {
-  --background: #FAFAF8;
-  --foreground: #1A1A2E;
+  --background: #FAF8F5;
+  --foreground: #2A2A2A;
   --card: #FFFFFF;
-  --card-foreground: #1A1A2E;
+  --card-foreground: #2A2A2A;
   --popover: #FFFFFF;
-  --popover-foreground: #1A1A2E;
-  --primary: #2CB67D;
+  --popover-foreground: #2A2A2A;
+  --primary: #6E6C99;
   --primary-foreground: #FFFFFF;
-  --secondary: #F0F0EC;
-  --secondary-foreground: #1A1A2E;
-  --muted: #F0F0EC;
-  --muted-foreground: #6B7280;
-  --accent: #E85D4A;
+  --secondary: #F1F1FB;
+  --secondary-foreground: #2A2A2A;
+  --muted: #F5F3EF;
+  --muted-foreground: #6A6B6C;
+  --accent: #9A5E84;
   --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #E5E7EB;
-  --input: #E5E7EB;
-  --ring: #2CB67D;
+  --border: #E6E4F4;
+  --input: #E6E4F4;
+  --ring: #6E6C99;
   --radius: 0.625rem;
-  --chart-1: #2CB67D;
-  --chart-2: #E85D4A;
-  --chart-3: #4FD19B;
-  --chart-4: #F08A7D;
-  --chart-5: #1E8A5E;
+  --chart-1: #6E6C99;
+  --chart-2: #9A5E84;
+  --chart-3: #8E8CB5;
+  --chart-4: #B87AA0;
+  --chart-5: #504E7A;
   --sidebar: #FFFFFF;
-  --sidebar-foreground: #1A1A2E;
-  --sidebar-primary: #2CB67D;
+  --sidebar-foreground: #2A2A2A;
+  --sidebar-primary: #6E6C99;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F0F0EC;
-  --sidebar-accent-foreground: #1A1A2E;
-  --sidebar-border: #E5E7EB;
-  --sidebar-ring: #2CB67D;
+  --sidebar-accent: #F1F1FB;
+  --sidebar-accent-foreground: #2A2A2A;
+  --sidebar-border: #E6E4F4;
+  --sidebar-ring: #6E6C99;
 }
 
 @layer base {

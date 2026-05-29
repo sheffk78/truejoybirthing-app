@@ -18,22 +18,22 @@ export function StatsCard({ title, value, subtitle, icon: Icon, trend, className
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground font-medium">{title}</p>
-            <p className="text-3xl font-bold text-tjb-dark tracking-tight">{value}</p>
+            <p className="text-3xl font-bold text-tjb-charcoal tracking-tight">{value}</p>
             {subtitle && (
               <p className="text-sm text-muted-foreground">{subtitle}</p>
             )}
             {trend && (
               <p className={cn(
                 'text-sm font-medium',
-                trend.value >= 0 ? 'text-tjb-teal' : 'text-tjb-coral'
+                trend.value >= 0 ? 'text-tjb-lavender-600' : 'text-tjb-rose-600'
               )}>
                 {trend.value >= 0 ? '↑' : '↓'} {Math.abs(trend.value)}% {trend.label}
               </p>
             )}
           </div>
           {Icon && (
-            <div className="p-3 rounded-xl bg-tjb-teal/10">
-              <Icon className="w-5 h-5 text-tjb-teal" />
+            <div className="p-3 rounded-xl bg-tjb-lavender-100">
+              <Icon className="w-5 h-5 text-tjb-lavender-600" />
             </div>
           )}
         </div>
