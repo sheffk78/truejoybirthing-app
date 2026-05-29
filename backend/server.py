@@ -1933,7 +1933,7 @@ app.add_middleware(
 # IMPORTANT: The admin dashboard API routes (admin_dashboard_routes) are registered
 # above on the app directly — not under api_router — so their /admin/api/* paths
 # resolve before this SPA catch-all.
-ADMIN_DIST = Path(__file__).parent.parent / "admin-frontend" / "dist"
+ADMIN_DIST = Path(__file__).parent / "admin-frontend" / "dist"
 print(f"[startup] Checking admin dashboard at {ADMIN_DIST}")
 print(f"[startup] ADMIN_DIST.exists() = {ADMIN_DIST.exists()}")
 if ADMIN_DIST.exists():
