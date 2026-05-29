@@ -86,8 +86,17 @@ DEMO_ACCOUNTS = [
         },
         "needs_subscription": False,
     },
+    # Admin demo account for dashboard access
+    {
+        "email": "admin@truejoybirthing.com",
+        "password": "TJBAdmin2024!",
+        "full_name": "Admin Demo",
+        "role": "ADMIN",
+        "profile_collection": None,
+        "profile_data": None,
+        "needs_subscription": False,
+    },
 ]
-
 # Emails that are considered demo accounts (used for bypass checks)
 DEMO_EMAILS = {account["email"] for account in DEMO_ACCOUNTS}
 
