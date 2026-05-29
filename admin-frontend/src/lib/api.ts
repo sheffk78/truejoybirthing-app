@@ -97,4 +97,20 @@ export const api = {
 
   getUser: (userId: string) =>
     request<any>(`/admin/api/dashboard/users/${userId}`),
+
+  // Analytics
+  getAnalyticsOverview: (period: string = '30d') =>
+    request<any>(`/admin/api/dashboard/analytics/overview?period=${period}`),
+
+  getAnalyticsTraffic: (period: string = '30d') =>
+    request<any>(`/admin/api/dashboard/analytics/traffic?period=${period}`),
+
+  getAnalyticsPages: (period: string = '30d') =>
+    request<any>(`/admin/api/dashboard/analytics/pages?period=${period}`),
+
+  getAnalyticsGeography: (period: string = '30d') =>
+    request<any>(`/admin/api/dashboard/analytics/geography?period=${period}`),
+
+  getAnalyticsAcquisition: (period: string = '30d') =>
+    request<any>(`/admin/api/dashboard/analytics/acquisition?period=${period}`),
 };

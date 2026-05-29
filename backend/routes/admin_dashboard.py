@@ -1,15 +1,22 @@
 """
 Admin Dashboard Routes Module
 
-Handles admin dashboard statistics, user search, user detail, and auth endpoints.
+Handles admin dashboard statistics, user search, user detail, auth endpoints,
+and GA4 analytics endpoints.
 Follows the same patterns as admin.py.
 """
 
+import os
+import json
+
 from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
+
+from google.analytics.data_v1beta import BetaAnalyticsDataClient, RunReportRequest, DateRange, Dimension, Metric
+from google.oauth2 import service_account
 
 from .dependencies import db, get_now, get_current_user, check_role, User, verify_password
 
@@ -352,3 +359,285 @@ async def get_user_detail(user_id: str, user: User = Depends(check_role(["ADMIN"
     user_data["profile"] = serialize_doc(profile_data) if profile_data else None
 
     return serialize_doc(user_data)
+
+
+# ============== GA4 ANALYTICS ==============
+
+GA4_PROPERTY_ID = "469670390"
+_ga4_client = None
+
+
+def get_ga4_client():
+    """Lazily initialize and cache the GA4 BetaAnalyticsDataClient using service account credentials."""
+    global _ga4_client
+    if _ga4_client is not None:
+        return _ga4_client
+
+    sa_json = os.environ.get("GA4_SERVICE_ACCOUNT_JSON")
+    if not sa_json:
+        return None
+
+    try:
+        sa_info = json.loads(sa_json)
+        credentials = service_account.Credentials.from_service_account_info(sa_info)
+        _ga4_client = BetaAnalyticsDataClient(credentials=credentials)
+        return _ga4_client
+    except Exception:
+        return None
+
+
+def _raise_ga4_unavailable():
+    """Raise 503 when GA4 is not configured."""
+    raise HTTPException(status_code=503, detail="GA4 service account not configured")
+
+
+def _rows_to_dicts(response) -> list:
+    """Convert GA4 RunReportResponse rows to list of dicts using dimension/metric header names."""
+    dim_headers = [h.name for h in response.dimension_headers] if response.dimension_headers else []
+    met_headers = [h.name for h in response.metric_headers] if response.metric_headers else []
+    rows_out = []
+    for row in response.rows:
+        entry = {}
+        for i, dh in enumerate(dim_headers):
+            entry[dh] = row.dimension_values[i].value
+        for i, mh in enumerate(met_headers):
+            entry[mh] = row.metric_values[i].value
+        rows_out.append(entry)
+    return rows_out
+
+
+@router.get("/analytics/overview")
+async def analytics_overview(
+    period: Optional[str] = Query("30d", description="Period: 7d or 30d"),
+    user: User = Depends(check_role(["ADMIN"])),
+):
+    """GA4 overview: totalUsers, pageviews, bounceRate, averageSessionDuration,
+    plus top 5 pages and top 5 sources."""
+    client = get_ga4_client()
+    if client is None:
+        _raise_ga4_unavailable()
+
+    days = 7 if period == "7d" else 30
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    start_date = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    # --- Core metrics ---
+    metrics_request = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=today)],
+        metrics=[
+            Metric(name="totalUsers"),
+            Metric(name="screenPageViews"),
+            Metric(name="bounceRate"),
+            Metric(name="averageSessionDuration"),
+        ],
+    )
+    metrics_response = client.run_report(metrics_request)
+    metrics_rows = _rows_to_dicts(metrics_response)
+
+    row = metrics_rows[0] if metrics_rows else {}
+    overview_data = {
+        "active_users": int(row.get("totalUsers", "0")),
+        "pageviews": int(row.get("screenPageViews", "0")),
+        "bounce_rate": float(row.get("bounceRate", "0")),
+        "avg_session_duration": float(row.get("averageSessionDuration", "0")),
+    }
+
+    # --- Top 5 pages ---
+    pages_request = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=today)],
+        dimensions=[Dimension(name="pagePath")],
+        metrics=[Metric(name="screenPageViews"), Metric(name="totalUsers")],
+        order_bys=[{"metric": {"metric_name": "screenPageViews"}, "desc": True}],
+        limit=5,
+    )
+    pages_response = client.run_report(pages_request)
+    top_pages = [
+        {
+            "page": r.get("pagePath", ""),
+            "pageviews": int(r.get("screenPageViews", "0")),
+            "users": int(r.get("totalUsers", "0")),
+        }
+        for r in _rows_to_dicts(pages_response)
+    ]
+
+    # --- Top 5 sources ---
+    sources_request = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=today)],
+        dimensions=[Dimension(name="sessionSource")],
+        metrics=[Metric(name="totalUsers"), Metric(name="screenPageViews")],
+        order_bys=[{"metric": {"metric_name": "totalUsers"}, "desc": True}],
+        limit=5,
+    )
+    sources_response = client.run_report(sources_request)
+    top_sources = [
+        {
+            "source": r.get("sessionSource", ""),
+            "users": int(r.get("totalUsers", "0")),
+            "pageviews": int(r.get("screenPageViews", "0")),
+        }
+        for r in _rows_to_dicts(sources_response)
+    ]
+
+    return {
+        **overview_data,
+        "top_pages": top_pages,
+        "top_sources": top_sources,
+    }
+
+
+@router.get("/analytics/traffic")
+async def analytics_traffic(
+    period: Optional[str] = Query("30d", description="Period: 7d or 30d"),
+    user: User = Depends(check_role(["ADMIN"])),
+):
+    """GA4 daily traffic time series: [{date, pageviews, users}]."""
+    client = get_ga4_client()
+    if client is None:
+        _raise_ga4_unavailable()
+
+    days = 7 if period == "7d" else 30
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    start_date = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    request = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=today)],
+        dimensions=[Dimension(name="date")],
+        metrics=[Metric(name="screenPageViews"), Metric(name="totalUsers")],
+        order_bys=[{"dimension": {"dimension_name": "date"}, "desc": False}],
+    )
+    response = client.run_report(request)
+    rows = _rows_to_dicts(response)
+
+    # Normalise: GA4 returns date as YYYYMMDD — convert to YYYY-MM-DD
+    result = []
+    for row in rows:
+        raw_date = row.get("date", "")
+        if len(raw_date) == 8:
+            formatted = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:8]}"
+        else:
+            formatted = raw_date
+        result.append({
+            "date": formatted,
+            "pageviews": int(row.get("screenPageViews", "0")),
+            "users": int(row.get("totalUsers", "0")),
+        })
+
+    return result
+
+
+@router.get("/analytics/pages")
+async def analytics_pages(
+    period: Optional[str] = Query("30d", description="Period: 7d or 30d"),
+    user: User = Depends(check_role(["ADMIN"])),
+):
+    """GA4 top 20 pages by pageviews: [{page, pageviews, users, avg_time_on_page}]."""
+    client = get_ga4_client()
+    if client is None:
+        _raise_ga4_unavailable()
+
+    days = 7 if period == "7d" else 30
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    start_date = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    pages_request = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=today)],
+        dimensions=[Dimension(name="pagePath")],
+        metrics=[
+            Metric(name="screenPageViews"),
+            Metric(name="totalUsers"),
+            Metric(name="averageSessionDuration"),
+        ],
+        order_bys=[{"metric": {"metric_name": "screenPageViews"}, "desc": True}],
+        limit=20,
+    )
+    pages_response = client.run_report(pages_request)
+
+    return [
+        {
+            "page": row.get("pagePath", ""),
+            "pageviews": int(row.get("screenPageViews", "0")),
+            "users": int(row.get("totalUsers", "0")),
+            "avg_time_on_page": float(row.get("averageSessionDuration", "0")),
+        }
+        for row in _rows_to_dicts(pages_response)
+    ]
+
+
+@router.get("/analytics/geography")
+async def analytics_geography(
+    period: Optional[str] = Query("30d", description="Period: 7d or 30d"),
+    user: User = Depends(check_role(["ADMIN"])),
+):
+    """GA4 top 15 regions by users: [{country, region, users, pageviews}]."""
+    client = get_ga4_client()
+    if client is None:
+        _raise_ga4_unavailable()
+
+    days = 7 if period == "7d" else 30
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    start_date = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    geo_request = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=today)],
+        dimensions=[Dimension(name="country"), Dimension(name="region")],
+        metrics=[Metric(name="totalUsers"), Metric(name="screenPageViews")],
+        order_bys=[{"metric": {"metric_name": "totalUsers"}, "desc": True}],
+        limit=15,
+    )
+    geo_response = client.run_report(geo_request)
+
+    return [
+        {
+            "country": row.get("country", ""),
+            "region": row.get("region", ""),
+            "users": int(row.get("totalUsers", "0")),
+            "pageviews": int(row.get("screenPageViews", "0")),
+        }
+        for row in _rows_to_dicts(geo_response)
+    ]
+
+
+@router.get("/analytics/acquisition")
+async def analytics_acquisition(
+    period: Optional[str] = Query("30d", description="Period: 7d or 30d"),
+    user: User = Depends(check_role(["ADMIN"])),
+):
+    """GA4 top 10 acquisition sources: [{source, medium, users, pageviews, bounce_rate}]."""
+    client = get_ga4_client()
+    if client is None:
+        _raise_ga4_unavailable()
+
+    days = 7 if period == "7d" else 30
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    start_date = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    acq_request = RunReportRequest(
+        property=f"properties/{GA4_PROPERTY_ID}",
+        date_ranges=[DateRange(start_date=start_date, end_date=today)],
+        dimensions=[Dimension(name="sessionSource"), Dimension(name="sessionMedium")],
+        metrics=[
+            Metric(name="totalUsers"),
+            Metric(name="screenPageViews"),
+            Metric(name="bounceRate"),
+        ],
+        order_bys=[{"metric": {"metric_name": "totalUsers"}, "desc": True}],
+        limit=10,
+    )
+    acq_response = client.run_report(acq_request)
+
+    return [
+        {
+            "source": row.get("sessionSource", ""),
+            "medium": row.get("sessionMedium", ""),
+            "users": int(row.get("totalUsers", "0")),
+            "pageviews": int(row.get("screenPageViews", "0")),
+            "bounce_rate": float(row.get("bounceRate", "0")),
+        }
+        for row in _rows_to_dicts(acq_response)
+    ]
