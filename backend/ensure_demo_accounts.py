@@ -88,9 +88,9 @@ DEMO_ACCOUNTS = [
     },
     # Admin demo account for dashboard access
     {
-        "email": "admin@truejoybirthing.com",
+        "email": "shelbi@truejoybirthing.com",
         "password": "TJBAdmin2024!",
-        "full_name": "Admin Demo",
+        "full_name": "TJB Admin",
         "role": "ADMIN",
         "profile_collection": None,
         "profile_data": None,
