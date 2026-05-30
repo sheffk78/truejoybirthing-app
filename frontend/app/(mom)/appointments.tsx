@@ -637,6 +637,8 @@ export default function AppointmentsScreen() {
                             borderRadius: 12,
                             outline: 'none',
                             cursor: 'pointer',
+                            color: colors.text,
+                            backgroundColor: colors.surface,
                           }}
                         />
                       </View>
@@ -650,6 +652,7 @@ export default function AppointmentsScreen() {
                           onChange={(event, date) => {
                             if (date) setAppointmentDate(date);
                           }}
+                          textColor={colors.text}
                           style={{ width: '100%', height: 200 }}
                         />
                       </View>
@@ -715,6 +718,8 @@ export default function AppointmentsScreen() {
                             borderRadius: 12,
                             outline: 'none',
                             cursor: 'pointer',
+                            color: colors.text,
+                            backgroundColor: colors.surface,
                           }}
                         />
                       </View>
@@ -727,6 +732,7 @@ export default function AppointmentsScreen() {
                           onChange={(event, date) => {
                             if (date) setAppointmentTime(date);
                           }}
+                          textColor={colors.text}
                           style={{ width: '100%', height: 200 }}
                         />
                       </View>

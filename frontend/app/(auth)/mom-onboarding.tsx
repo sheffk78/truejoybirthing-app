@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -195,25 +196,89 @@ export default function MomOnboardingScreen() {
               <Icon name="chevron-down" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
             
-            {showDatePicker && (
-              <View style={styles.datePickerContainer}>
-                <DateTimePicker
-                  value={dueDate || new Date()}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  onChange={handleDateChange}
-                  minimumDate={new Date()}
-                  maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)} // Max 1 year ahead
-                />
-                {Platform.OS === 'ios' && (
-                  <Button
-                    title="Done"
-                    onPress={() => setShowDatePicker(false)}
-                    style={styles.datePickerDone}
-                    size="sm"
-                  />
-                )}
-              </View>
+            {showDatePicker && Platform.OS === 'web' && (
+              <Modal
+                visible={showDatePicker}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setShowDatePicker(false)}
+              >
+                <View style={styles.dateModalOverlay}>
+                  <View style={styles.dateModalContent}>
+                    <View style={styles.dateModalHeader}>
+                      <Text style={styles.dateModalTitle}>Select Due Date</Text>
+                      <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                        <Icon name="close" size={24} color={colors.text} />
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.webCalendarWrapper}>
+                      <input
+                        type="date"
+                        value={dueDate ? dueDate.toISOString().split('T')[0] : ''}
+                        min={new Date().toISOString().split('T')[0]}
+                        onChange={(e: any) => {
+                          if (e.target.value) {
+                            setDueDate(new Date(e.target.value + 'T12:00:00'));
+                            if (errors.dueDate) {
+                              setErrors(prev => ({ ...prev, dueDate: '' }));
+                            }
+                          }
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: 16,
+                          fontSize: 18,
+                          border: `2px solid ${colors.primary}`,
+                          borderRadius: 12,
+                          outline: 'none',
+                          cursor: 'pointer',
+                          color: colors.text,
+                          backgroundColor: colors.surface,
+                        }}
+                      />
+                    </View>
+                    <Button
+                      title="Done"
+                      onPress={() => setShowDatePicker(false)}
+                      fullWidth
+                      style={{ marginTop: 16 }}
+                    />
+                  </View>
+                </View>
+              </Modal>
+            )}
+            {showDatePicker && Platform.OS === 'ios' && (
+              <Modal transparent animationType="slide" onRequestClose={() => setShowDatePicker(false)}>
+                <View style={styles.dateModalOverlay}>
+                  <View style={styles.dateModalContent}>
+                    <View style={styles.dateModalHeader}>
+                      <Text style={styles.dateModalTitle}>Select Due Date</Text>
+                      <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                        <Text style={[styles.dateModalTitle, { color: colors.primary }]}>Done</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <DateTimePicker
+                      value={dueDate || new Date()}
+                      mode="date"
+                      display="spinner"
+                      onChange={handleDateChange}
+                      minimumDate={new Date()}
+                      maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
+                      textColor={colors.text}
+                    />
+                  </View>
+                </View>
+              </Modal>
+            )}
+            {showDatePicker && Platform.OS === 'android' && (
+              <DateTimePicker
+                value={dueDate || new Date()}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+                minimumDate={new Date()}
+                maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
+              />
             )}
           </View>
           
@@ -385,14 +450,34 @@ const getStyles = createThemedStyles((colors) => ({
   datePlaceholder: {
     color: colors.textLight,
   },
-  datePickerContainer: {
-    backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusMd,
-    marginTop: SIZES.sm,
-    overflow: 'hidden',
+  // Date modal styles for iOS spinner pickers
+  dateModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SIZES.lg,
   },
-  datePickerDone: {
-    margin: SIZES.sm,
+  dateModalContent: {
+    backgroundColor: colors.surface,
+    borderRadius: SIZES.radiusLg,
+    padding: SIZES.lg,
+    width: '100%',
+    maxWidth: 400,
+  },
+  dateModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SIZES.lg,
+  },
+  dateModalTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.heading,
+    color: colors.text,
+  },
+  webCalendarWrapper: {
+    marginVertical: SIZES.md,
   },
   settingSection: {
     marginBottom: SIZES.lg,

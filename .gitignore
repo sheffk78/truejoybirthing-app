@@ -86,3 +86,6 @@ android-sdk/
 *.env
 *.env.*
 DARKMODE-FIX.md
+
+# Secrets (service account keys, etc.)
+backend/secrets/

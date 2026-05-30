@@ -457,7 +457,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
               type="date"
               value={value}
               onChange={(e: any) => updateFormField(field.id, e.target.value)}
-              style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16 }}
+              style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16, color: colors.text, backgroundColor: colors.surface }}
             />
           ) : (
             <>
@@ -470,13 +470,13 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                   {value || 'Select date'}
                 </Text>
               </TouchableOpacity>
-              {activeDateField === field.id && (
+              {activeDateField === field.id && Platform.OS === 'android' && (
                 <DateTimePicker
                   value={value ? new Date(value + 'T00:00:00') : new Date()}
                   mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  display="default"
                   onChange={(event: any, date?: Date) => {
-                    if (Platform.OS !== 'ios') setActiveDateField(null);
+                    setActiveDateField(null);
                     if (date) {
                       const y = date.getFullYear();
                       const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -486,10 +486,33 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                   }}
                 />
               )}
-              {Platform.OS === 'ios' && activeDateField === field.id && (
-                <TouchableOpacity onPress={() => setActiveDateField(null)} style={styles.datePickerDone}>
-                  <Text style={[styles.datePickerDoneText, { color: colors.primary }]}>Done</Text>
-                </TouchableOpacity>
+              {activeDateField === field.id && Platform.OS === 'ios' && (
+                <Modal transparent animationType="slide" onRequestClose={() => setActiveDateField(null)}>
+                  <View style={styles.dateModalOverlay}>
+                    <View style={styles.dateModalContent}>
+                      <View style={styles.dateModalHeader}>
+                        <Text style={styles.dateModalTitle}>Select Date</Text>
+                        <TouchableOpacity onPress={() => setActiveDateField(null)}>
+                          <Text style={[styles.dateModalTitle, { color: colors.primary }]}>Done</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <DateTimePicker
+                        value={value ? new Date(value + 'T00:00:00') : new Date()}
+                        mode="date"
+                        display="spinner"
+                        onChange={(event: any, date?: Date) => {
+                          if (date) {
+                            const y = date.getFullYear();
+                            const m = String(date.getMonth() + 1).padStart(2, '0');
+                            const d = String(date.getDate()).padStart(2, '0');
+                            updateFormField(field.id, `${y}-${m}-${d}`);
+                          }
+                        }}
+                        textColor={colors.text}
+                      />
+                    </View>
+                  </View>
+                </Modal>
               )}
             </>
           )
@@ -1392,6 +1415,30 @@ const getStyles = createThemedStyles((colors) => ({
   },
   datePickerButton: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radiusSm, paddingHorizontal: SIZES.md, paddingVertical: 14, backgroundColor: colors.surface, gap: SIZES.sm },
   datePickerText: { fontSize: SIZES.fontMd },
-  datePickerDone: { alignItems: 'flex-end', paddingVertical: SIZES.xs },
-  datePickerDoneText: { fontSize: SIZES.fontMd, fontWeight: '600' },
+  // Date modal styles for iOS spinner pickers
+  dateModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SIZES.lg,
+  },
+  dateModalContent: {
+    backgroundColor: colors.surface,
+    borderRadius: SIZES.radiusLg,
+    padding: SIZES.lg,
+    width: '100%',
+    maxWidth: 400,
+  },
+  dateModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SIZES.lg,
+  },
+  dateModalTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.subheading,
+    color: colors.text,
+  },
 }));

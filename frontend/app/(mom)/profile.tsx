@@ -553,6 +553,8 @@ export default function MomProfileScreen() {
                               borderRadius: 12,
                               outline: 'none',
                               cursor: 'pointer',
+                              color: colors.text,
+                              backgroundColor: colors.surface,
                             }}
                           />
                         </View>
@@ -566,24 +568,41 @@ export default function MomProfileScreen() {
                     </View>
                   </Modal>
                 ) : (
-                  <View style={styles.datePickerContainer}>
-                    <DateTimePicker
-                      value={dueDateObj || new Date()}
-                      mode="date"
-                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                      onChange={handleDateChange}
-                      minimumDate={new Date()}
-                      maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
-                    />
+                  <>
                     {Platform.OS === 'ios' && (
-                      <Button
-                        title="Done"
-                        onPress={() => setShowDatePicker(false)}
-                        size="sm"
-                        style={{ marginTop: 8 }}
+                      <Modal transparent animationType="slide" onRequestClose={() => setShowDatePicker(false)}>
+                        <View style={styles.dateModalOverlay}>
+                          <View style={styles.dateModalContent}>
+                            <View style={styles.dateModalHeader}>
+                              <Text style={styles.dateModalTitle}>Select Due Date</Text>
+                              <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                                <Text style={[styles.dateModalTitle, { color: colors.primary }]}>Done</Text>
+                              </TouchableOpacity>
+                            </View>
+                            <DateTimePicker
+                              value={dueDateObj || new Date()}
+                              mode="date"
+                              display="spinner"
+                              onChange={handleDateChange}
+                              minimumDate={new Date()}
+                              maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
+                              textColor={colors.text}
+                            />
+                          </View>
+                        </View>
+                      </Modal>
+                    )}
+                    {Platform.OS === 'android' && (
+                      <DateTimePicker
+                        value={dueDateObj || new Date()}
+                        mode="date"
+                        display="default"
+                        onChange={handleDateChange}
+                        minimumDate={new Date()}
+                        maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
                       />
                     )}
-                  </View>
+                  </>
                 )
               )}
               
@@ -858,12 +877,6 @@ const getStyles = createThemedStyles((colors) => ({
   },
   datePickerPlaceholder: {
     color: colors.textLight,
-  },
-  datePickerContainer: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: SIZES.radiusMd,
-    padding: SIZES.md,
-    marginBottom: SIZES.md,
   },
   dateModalOverlay: {
     flex: 1,

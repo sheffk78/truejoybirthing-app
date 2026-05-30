@@ -8,9 +8,11 @@ import {
   RefreshControl,
   Modal,
   Alert,
+  Platform,
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
@@ -33,7 +35,8 @@ export default function MidwifeVisitsScreen() {
   const [showInactive, setShowInactive] = useState(false);
   
   const [selectedClientId, setSelectedClientId] = useState(params.clientId || '');
-  const [visitDate, setVisitDate] = useState('');
+  const [visitDateObj, setVisitDateObj] = useState<Date | null>(null);
+  const [showVisitDatePicker, setShowVisitDatePicker] = useState(false);
   const [visitType, setVisitType] = useState('Prenatal');
   const [gestationalAge, setGestationalAge] = useState('');
   const [bloodPressure, setBloodPressure] = useState('');
@@ -72,7 +75,7 @@ export default function MidwifeVisitsScreen() {
   
   const resetForm = () => {
     setSelectedClientId('');
-    setVisitDate('');
+    setVisitDateObj(null);
     setVisitType('Prenatal');
     setGestationalAge('');
     setBloodPressure('');
@@ -82,11 +85,12 @@ export default function MidwifeVisitsScreen() {
   };
   
   const handleCreateVisit = async () => {
-    if (!selectedClientId || !visitDate) {
-      Alert.alert('Error', 'Please select a client and enter a visit date');
+    if (!selectedClientId || !visitDateObj) {
+      Alert.alert('Error', 'Please select a client and pick a visit date');
       return;
     }
     
+    const visitDate = visitDateObj.toISOString().split('T')[0];
     setSaving(true);
     try {
       // Use unified endpoint which auto-creates linked appointment
@@ -292,13 +296,84 @@ export default function MidwifeVisitsScreen() {
               ))}
             </View>
             
-            <Input
-              label="Visit Date *"
-              placeholder="YYYY-MM-DD"
-              value={visitDate}
-              onChangeText={setVisitDate}
-              leftIcon="calendar-outline"
-            />
+            {/* Visit Date Picker */}
+            <Text style={styles.fieldLabel}>Visit Date *</Text>
+            <TouchableOpacity
+              style={styles.datePickerButton}
+              onPress={() => setShowVisitDatePicker(true)}
+              activeOpacity={0.7}
+              data-testid="visit-date-picker-btn"
+            >
+              <Icon name="calendar" size={20} color={colors.roleMidwife} />
+              <Text style={[styles.datePickerText, !visitDateObj && styles.datePickerPlaceholder]}>
+                {visitDateObj 
+                  ? visitDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                  : 'Select visit date'}
+              </Text>
+              <Icon name="chevron-down" size={18} color={colors.textSecondary} />
+            </TouchableOpacity>
+            {showVisitDatePicker && Platform.OS === 'android' && (
+              <DateTimePicker
+                value={visitDateObj || new Date()}
+                mode="date"
+                display="default"
+                onChange={(event, date) => {
+                  setShowVisitDatePicker(false);
+                  if (event.type === 'set' && date) setVisitDateObj(date);
+                }}
+              />
+            )}
+            {showVisitDatePicker && Platform.OS !== 'android' && (
+              Platform.OS === 'web' ? (
+                <View style={styles.webDatePickerContainer}>
+                  <input
+                    type="date"
+                    value={visitDateObj ? visitDateObj.toISOString().split('T')[0] : ''}
+                    onChange={(e: any) => {
+                      if (e.target.value) {
+                        setVisitDateObj(new Date(e.target.value + 'T12:00:00'));
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: 12,
+                      fontSize: 16,
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: 8,
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                    }}
+                  />
+                  <Button title="Done" onPress={() => setShowVisitDatePicker(false)} fullWidth style={{ marginTop: 8 }} />
+                </View>
+              ) : (
+                <Modal
+                  visible={showVisitDatePicker}
+                  transparent
+                  animationType="slide"
+                  onRequestClose={() => setShowVisitDatePicker(false)}
+                >
+                  <View style={styles.dateModalOverlay}>
+                    <View style={styles.dateModalContent}>
+                      <View style={styles.dateModalHeader}>
+                        <Text style={styles.dateModalTitle}>Select Visit Date</Text>
+                        <TouchableOpacity onPress={() => setShowVisitDatePicker(false)}>
+                          <Icon name="close" size={24} color={colors.text} />
+                        </TouchableOpacity>
+                      </View>
+                      <DateTimePicker
+                        value={visitDateObj || new Date()}
+                        mode="date"
+                        display="spinner"
+                        onChange={(event, date) => { if (date) setVisitDateObj(date); }}
+                        style={{ width: '100%', height: 200 }}
+                      />
+                      <Button title="Done" onPress={() => setShowVisitDatePicker(false)} fullWidth style={{ marginTop: 12 }} />
+                    </View>
+                  </View>
+                </Modal>
+              )
+            )}
             
             <Input
               label="Gestational Age"
@@ -583,5 +658,59 @@ const getStyles = createThemedStyles((colors) => ({
   filterChipTextActive: {
     color: colors.white,
     fontFamily: FONTS.bodyBold,
+  },
+  // Date Picker styles
+  datePickerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: SIZES.radiusMd,
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.md,
+    minHeight: 52,
+    marginBottom: SIZES.sm,
+  },
+  datePickerText: {
+    flex: 1,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.text,
+    marginLeft: SIZES.sm,
+  },
+  datePickerPlaceholder: {
+    color: colors.textLight,
+  },
+  webDatePickerContainer: {
+    marginVertical: SIZES.sm,
+    backgroundColor: colors.surface,
+    borderRadius: SIZES.radiusMd,
+    overflow: 'visible',
+  },
+  dateModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SIZES.lg,
+  },
+  dateModalContent: {
+    backgroundColor: colors.surface,
+    borderRadius: SIZES.radiusLg,
+    padding: SIZES.lg,
+    width: '100%',
+    maxWidth: 400,
+  },
+  dateModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SIZES.lg,
+  },
+  dateModalTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.subheading,
+    color: colors.text,
   },
 }));

@@ -1480,6 +1480,7 @@ from routes import uploads as uploads_routes
 from routes import newborn_exam as newborn_exam_routes
 from routes import contractions as contractions_routes
 from routes import admin_dashboard as admin_dashboard_routes
+from routes import admin_analytics as admin_analytics_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1902,6 +1903,7 @@ app.include_router(api_router)
 # Include admin dashboard routes directly on app (not under /api prefix)
 # so frontend paths match: /admin/api/dashboard/*
 app.include_router(admin_dashboard_routes.router)
+app.include_router(admin_analytics_routes.router)
 
 app.add_middleware(
     CORSMiddleware,

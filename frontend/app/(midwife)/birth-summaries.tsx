@@ -8,9 +8,11 @@ import {
   RefreshControl,
   Modal,
   Alert,
+  Platform,
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
@@ -35,7 +37,10 @@ export default function MidwifeBirthSummariesScreen() {
   
   // Form state
   const [selectedClientId, setSelectedClientId] = useState('');
-  const [birthDatetime, setBirthDatetime] = useState('');
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
+  const [birthTime, setBirthTime] = useState<Date>(new Date());
+  const [showBirthDatePicker, setShowBirthDatePicker] = useState(false);
+  const [showBirthTimePicker, setShowBirthTimePicker] = useState(false);
   const [birthPlace, setBirthPlace] = useState('Home');
   const [modeOfBirth, setModeOfBirth] = useState('Spontaneous Vaginal');
   const [newbornDetails, setNewbornDetails] = useState('');
@@ -67,7 +72,8 @@ export default function MidwifeBirthSummariesScreen() {
   
   const resetForm = () => {
     setSelectedClientId('');
-    setBirthDatetime('');
+    setBirthDate(null);
+    setBirthTime(new Date());
     setBirthPlace('Home');
     setModeOfBirth('Spontaneous Vaginal');
     setNewbornDetails('');
@@ -75,7 +81,16 @@ export default function MidwifeBirthSummariesScreen() {
     setSummaryNote('');
   };
   
+  // Compute the combined birth_datetime string from date + time pickers
+  const getBirthDatetimeString = () => {
+    if (!birthDate) return '';
+    const dateStr = birthDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = `${birthTime.getHours().toString().padStart(2, '0')}:${birthTime.getMinutes().toString().padStart(2, '0')}`;
+    return `${dateStr} ${timeStr}`;
+  };
+  
   const handleCreateSummary = async () => {
+    const birthDatetime = getBirthDatetimeString();
     if (!selectedClientId || !birthDatetime || !birthPlace || !modeOfBirth) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
@@ -269,13 +284,164 @@ export default function MidwifeBirthSummariesScreen() {
               ))}
             </ScrollView>
             
-            <Input
-              label="Birth Date & Time *"
-              placeholder="YYYY-MM-DD HH:MM"
-              value={birthDatetime}
-              onChangeText={setBirthDatetime}
-              leftIcon="calendar-outline"
-            />
+            {/* Birth Date Picker */}
+            <Text style={styles.fieldLabel}>Birth Date *</Text>
+            <TouchableOpacity
+              style={styles.datePickerButton}
+              onPress={() => setShowBirthDatePicker(true)}
+              activeOpacity={0.7}
+              data-testid="birth-date-picker-btn"
+            >
+              <Icon name="calendar" size={20} color={colors.roleMidwife} />
+              <Text style={[styles.datePickerText, !birthDate && styles.datePickerPlaceholder]}>
+                {birthDate 
+                  ? birthDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                  : 'Select birth date'}
+              </Text>
+              <Icon name="chevron-down" size={18} color={colors.textSecondary} />
+            </TouchableOpacity>
+            {showBirthDatePicker && Platform.OS === 'android' && (
+              <DateTimePicker
+                value={birthDate || new Date()}
+                mode="date"
+                display="default"
+                onChange={(event, date) => {
+                  setShowBirthDatePicker(false);
+                  if (event.type === 'set' && date) setBirthDate(date);
+                }}
+              />
+            )}
+            {showBirthDatePicker && Platform.OS !== 'android' && (
+              Platform.OS === 'web' ? (
+                <View style={styles.webDatePickerContainer}>
+                  <input
+                    type="date"
+                    value={birthDate ? birthDate.toISOString().split('T')[0] : ''}
+                    onChange={(e: any) => {
+                      if (e.target.value) {
+                        setBirthDate(new Date(e.target.value + 'T12:00:00'));
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: 12,
+                      fontSize: 16,
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: 8,
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                    }}
+                  />
+                  <Button title="Done" onPress={() => setShowBirthDatePicker(false)} fullWidth style={{ marginTop: 8 }} />
+                </View>
+              ) : (
+                <Modal
+                  visible={showBirthDatePicker}
+                  transparent
+                  animationType="slide"
+                  onRequestClose={() => setShowBirthDatePicker(false)}
+                >
+                  <View style={styles.dateModalOverlay}>
+                    <View style={styles.dateModalContent}>
+                      <View style={styles.dateModalHeader}>
+                        <Text style={styles.dateModalTitle}>Select Birth Date</Text>
+                        <TouchableOpacity onPress={() => setShowBirthDatePicker(false)}>
+                          <Icon name="close" size={24} color={colors.text} />
+                        </TouchableOpacity>
+                      </View>
+                      <DateTimePicker
+                        value={birthDate || new Date()}
+                        mode="date"
+                        display="spinner"
+                        onChange={(event, date) => { if (date) setBirthDate(date); }}
+                        style={{ width: '100%', height: 200 }}
+                      />
+                      <Button title="Done" onPress={() => setShowBirthDatePicker(false)} fullWidth style={{ marginTop: 12 }} />
+                    </View>
+                  </View>
+                </Modal>
+              )
+            )}
+
+            {/* Birth Time Picker */}
+            <Text style={styles.fieldLabel}>Birth Time *</Text>
+            <TouchableOpacity
+              style={styles.datePickerButton}
+              onPress={() => setShowBirthTimePicker(true)}
+              activeOpacity={0.7}
+              data-testid="birth-time-picker-btn"
+            >
+              <Icon name="time" size={20} color={colors.roleMidwife} />
+              <Text style={styles.datePickerText}>
+                {birthTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+              </Text>
+              <Icon name="chevron-down" size={18} color={colors.textSecondary} />
+            </TouchableOpacity>
+            {showBirthTimePicker && Platform.OS === 'android' && (
+              <DateTimePicker
+                value={birthTime}
+                mode="time"
+                display="default"
+                onChange={(event, date) => {
+                  setShowBirthTimePicker(false);
+                  if (event.type === 'set' && date) setBirthTime(date);
+                }}
+              />
+            )}
+            {showBirthTimePicker && Platform.OS !== 'android' && (
+              Platform.OS === 'web' ? (
+                <View style={styles.webDatePickerContainer}>
+                  <input
+                    type="time"
+                    value={`${birthTime.getHours().toString().padStart(2, '0')}:${birthTime.getMinutes().toString().padStart(2, '0')}`}
+                    onChange={(e: any) => {
+                      if (e.target.value) {
+                        const [hours, minutes] = e.target.value.split(':');
+                        const newTime = new Date(birthTime);
+                        newTime.setHours(parseInt(hours, 10), parseInt(minutes, 10));
+                        setBirthTime(newTime);
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: 12,
+                      fontSize: 16,
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: 8,
+                      backgroundColor: colors.surface,
+                      color: colors.text,
+                    }}
+                  />
+                  <Button title="Done" onPress={() => setShowBirthTimePicker(false)} fullWidth style={{ marginTop: 8 }} />
+                </View>
+              ) : (
+                <Modal
+                  visible={showBirthTimePicker}
+                  transparent
+                  animationType="slide"
+                  onRequestClose={() => setShowBirthTimePicker(false)}
+                >
+                  <View style={styles.dateModalOverlay}>
+                    <View style={styles.dateModalContent}>
+                      <View style={styles.dateModalHeader}>
+                        <Text style={styles.dateModalTitle}>Select Birth Time</Text>
+                        <TouchableOpacity onPress={() => setShowBirthTimePicker(false)}>
+                          <Icon name="close" size={24} color={colors.text} />
+                        </TouchableOpacity>
+                      </View>
+                      <DateTimePicker
+                        value={birthTime}
+                        mode="time"
+                        display="spinner"
+                        onChange={(event, date) => { if (date) setBirthTime(date); }}
+                        style={{ width: '100%', height: 200 }}
+                      />
+                      <Button title="Done" onPress={() => setShowBirthTimePicker(false)} fullWidth style={{ marginTop: 12 }} />
+                    </View>
+                  </View>
+                </Modal>
+              )
+            )}
             
             {/* Birth Place Selector */}
             <Text style={styles.fieldLabel}>Birth Place *</Text>
@@ -691,6 +857,59 @@ const getStyles = createThemedStyles((colors) => ({
   },
   complicationText: {
     fontSize: SIZES.fontMd,
+    color: colors.text,
+  },
+  // Date/Time Picker styles
+  datePickerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: SIZES.radiusMd,
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.md,
+    minHeight: 52,
+    marginBottom: SIZES.sm,
+  },
+  datePickerText: {
+    flex: 1,
+    fontSize: SIZES.fontMd,
+    color: colors.text,
+    marginLeft: SIZES.sm,
+  },
+  datePickerPlaceholder: {
+    color: colors.textLight,
+  },
+  webDatePickerContainer: {
+    marginVertical: SIZES.sm,
+    backgroundColor: colors.surface,
+    borderRadius: SIZES.radiusMd,
+    overflow: 'visible',
+  },
+  dateModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SIZES.lg,
+  },
+  dateModalContent: {
+    backgroundColor: colors.surface,
+    borderRadius: SIZES.radiusLg,
+    padding: SIZES.lg,
+    width: '100%',
+    maxWidth: 400,
+  },
+  dateModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SIZES.lg,
+  },
+  dateModalTitle: {
+    fontSize: SIZES.fontLg,
+    fontWeight: '600',
     color: colors.text,
   },
 }));

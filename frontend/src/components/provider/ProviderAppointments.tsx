@@ -686,16 +686,42 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                         borderRadius: 8,
                         border: `1px solid ${colors.border}`,
                         backgroundColor: colors.surface,
+                        color: colors.text,
                       }}
                     />
                   </View>
+                ) : Platform.OS === 'ios' ? (
+                  <Modal transparent animationType="slide" onRequestClose={() => setShowDatePicker(false)}>
+                    <View style={styles.dateModalOverlay}>
+                      <View style={styles.dateModalContent}>
+                        <View style={styles.dateModalHeader}>
+                          <Text style={styles.dateModalTitle}>Select Date</Text>
+                          <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                            <Text style={[styles.dateModalTitle, { color: primaryColor }]}>Done</Text>
+                          </TouchableOpacity>
+                        </View>
+                        {DateTimePicker && (
+                          <DateTimePicker
+                            value={appointmentDate}
+                            mode="date"
+                            display="spinner"
+                            onChange={(event: any, date?: Date) => {
+                              if (date) setAppointmentDate(date);
+                            }}
+                            minimumDate={new Date()}
+                            textColor={colors.text}
+                          />
+                        )}
+                      </View>
+                    </View>
+                  </Modal>
                 ) : DateTimePicker && (
                   <DateTimePicker
                     value={appointmentDate}
                     mode="date"
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    display="default"
                     onChange={(event: any, date?: Date) => {
-                      setShowDatePicker(Platform.OS === 'ios');
+                      setShowDatePicker(false);
                       if (date) setAppointmentDate(date);
                     }}
                     minimumDate={new Date()}
@@ -735,16 +761,41 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                         borderRadius: 8,
                         border: `1px solid ${colors.border}`,
                         backgroundColor: colors.surface,
+                        color: colors.text,
                       }}
                     />
                   </View>
+                ) : Platform.OS === 'ios' ? (
+                  <Modal transparent animationType="slide" onRequestClose={() => setShowTimePicker(false)}>
+                    <View style={styles.dateModalOverlay}>
+                      <View style={styles.dateModalContent}>
+                        <View style={styles.dateModalHeader}>
+                          <Text style={styles.dateModalTitle}>Select Time</Text>
+                          <TouchableOpacity onPress={() => setShowTimePicker(false)}>
+                            <Text style={[styles.dateModalTitle, { color: primaryColor }]}>Done</Text>
+                          </TouchableOpacity>
+                        </View>
+                        {DateTimePicker && (
+                          <DateTimePicker
+                            value={appointmentTime}
+                            mode="time"
+                            display="spinner"
+                            onChange={(event: any, time?: Date) => {
+                              if (time) setAppointmentTime(time);
+                            }}
+                            textColor={colors.text}
+                          />
+                        )}
+                      </View>
+                    </View>
+                  </Modal>
                 ) : DateTimePicker && (
                   <DateTimePicker
                     value={appointmentTime}
                     mode="time"
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    display="default"
                     onChange={(event: any, time?: Date) => {
-                      setShowTimePicker(Platform.OS === 'ios');
+                      setShowTimePicker(false);
                       if (time) setAppointmentTime(time);
                     }}
                   />
@@ -822,6 +873,32 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusMd,
     overflow: 'visible',
     zIndex: 1000,
+  },
+  // Date modal styles for iOS spinner pickers
+  dateModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SIZES.lg,
+  },
+  dateModalContent: {
+    backgroundColor: colors.surface,
+    borderRadius: SIZES.radiusLg,
+    padding: SIZES.lg,
+    width: '100%',
+    maxWidth: 400,
+  },
+  dateModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SIZES.lg,
+  },
+  dateModalTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.subheading,
+    color: colors.text,
   },
   // Breadcrumb styles
   breadcrumbHeader: {
