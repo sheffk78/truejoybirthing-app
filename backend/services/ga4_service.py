@@ -16,8 +16,6 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Optional
 
-from google.oauth2 import service_account
-
 logger = logging.getLogger(__name__)
 
 # GA4 Property ID for True Joy Birthing
@@ -29,6 +27,7 @@ CACHE_TTL_HOURS = 6
 
 def _get_credentials():
     """Load service account credentials from env var (JSON) or file."""
+    from google.oauth2 import service_account
     scopes = ["https://www.googleapis.com/auth/analytics.readonly"]
 
     # Production: GA4_SERVICE_ACCOUNT_JSON env var (full JSON string)
