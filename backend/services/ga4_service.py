@@ -4,6 +4,9 @@ GA4 Data API service for True Joy Birthing admin dashboard.
 Pulls analytics data server-side using the Google Analytics Data API
 with service account authentication. Results are cached in MongoDB
 with a 6-hour TTL to stay within API quotas.
+
+All GA4 API imports are lazy (inside functions) to avoid crashing
+the app at startup if gRPC dependencies are missing.
 """
 
 import os
@@ -13,16 +16,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Optional
 
-from google.analytics.data_v1beta import BetaAnalyticsDataClient
-from google.analytics.data_v1beta import (
-    RunReportRequest,
-    DateRange,
-    Dimension,
-    Metric,
-    OrderBy,
-)
 from google.oauth2 import service_account
-from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +58,9 @@ def _get_credentials():
     )
 
 
-def _get_client() -> BetaAnalyticsDataClient:
-    """Create a new GA4 Data API client."""
+def _get_client():
+    """Create a new GA4 Data API client. Lazy import avoids startup crash."""
+    from google.analytics.data_v1beta import BetaAnalyticsDataClient
     return BetaAnalyticsDataClient(credentials=_get_credentials())
 
 
@@ -118,6 +113,9 @@ async def get_top_pages(db, days: int = 30, limit: int = 20) -> dict:
         return cached
 
     try:
+        from google.analytics.data_v1beta import (
+            RunReportRequest, DateRange, Dimension, Metric, OrderBy,
+        )
         client = _get_client()
         request = RunReportRequest(
             property=f"properties/{TJB_PROPERTY_ID}",
@@ -164,6 +162,9 @@ async def get_traffic_trend(db, days: int = 90) -> dict:
         return cached
 
     try:
+        from google.analytics.data_v1beta import (
+            RunReportRequest, DateRange, Dimension, Metric, OrderBy,
+        )
         client = _get_client()
         request = RunReportRequest(
             property=f"properties/{TJB_PROPERTY_ID}",
@@ -212,6 +213,9 @@ async def get_location_pages(db, days: int = 30) -> dict:
         return cached
 
     try:
+        from google.analytics.data_v1beta import (
+            RunReportRequest, DateRange, Dimension, Metric, OrderBy,
+        )
         client = _get_client()
         # Get all pages, then filter for location pages client-side
         request = RunReportRequest(
@@ -276,6 +280,9 @@ async def get_overview_stats(db, days: int = 30) -> dict:
         return cached
 
     try:
+        from google.analytics.data_v1beta import (
+            RunReportRequest, DateRange, Metric,
+        )
         client = _get_client()
         request = RunReportRequest(
             property=f"properties/{TJB_PROPERTY_ID}",
