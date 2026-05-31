@@ -1,0 +1,13 @@
+# Exclude large/unnecessary directories
+**/node_modules
+frontend/node_modules
+.git
+__pycache__
+*.pyc
+.venv
+venv
+.cache
+*.egg-info
+
+# Explicitly include admin-frontend build output (overrides above)
+!admin-frontend/dist/

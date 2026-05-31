@@ -13,8 +13,9 @@ RUN pip install --no-cache-dir -r requirements-optional.txt || echo "WARNING: Op
 
 COPY backend/ .
 
-# Copy pre-built admin frontend dist into the container
-COPY admin-frontend/dist/ /app/admin-frontend/dist/
+# Admin frontend directory (server.py checks for index.html and mounts the
+# SPA dashboard if found; an empty dir means dashboard is unavailable)
+RUN mkdir -p admin-frontend/dist
 
 EXPOSE 8000
 
