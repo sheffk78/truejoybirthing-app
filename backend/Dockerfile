@@ -1,12 +1,15 @@
 FROM python:3.12
 
-# Install build dependencies for grpcio compilation (if no wheel available)
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
+# Install core requirements first (fast, no grpcio)
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Try to install GA4 dependencies (grpcio-heavy, may fail on some platforms)
+# If this fails, GA4 endpoints return 503 but the rest of the app works fine
+COPY backend/requirements-optional.txt .
+RUN pip install --no-cache-dir -r requirements-optional.txt || echo "WARNING: Optional GA4 deps failed to install, analytics features will be unavailable"
 
 COPY backend/ .
 
