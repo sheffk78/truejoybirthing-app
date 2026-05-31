@@ -12,6 +12,7 @@ import {
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { TjbIconMark } from '@/components/TjbIconMark';
 
 const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
@@ -49,10 +50,8 @@ export default function Layout() {
       >
         <div className="flex items-center justify-between px-6 h-16 border-b border-border">
           <NavLink to="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-tjb-lavender-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
-            </div>
-            <span className="font-semibold text-tjb-charcoal text-lg">TJB Admin</span>
+            <TjbIconMark size={32} className="text-tjb-charcoal" />
+            <span className="font-semibold text-tjb-charcoal text-lg">True Joy Birthing</span>
           </NavLink>
           <button
             className="lg:hidden p-1 hover:bg-muted rounded-md"
@@ -107,10 +106,8 @@ export default function Layout() {
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-tjb-lavender-600 flex items-center justify-center">
-              <span className="text-white font-bold text-xs">T</span>
-            </div>
-            <span className="font-semibold text-tjb-charcoal">TJB Admin</span>
+            <TjbIconMark size={28} className="text-tjb-charcoal" />
+            <span className="font-semibold text-tjb-charcoal">True Joy Birthing</span>
           </div>
         </header>
 

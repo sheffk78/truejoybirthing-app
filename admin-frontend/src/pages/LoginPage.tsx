@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ApiError } from '@/lib/api';
+import { TjbIconMark } from '@/components/TjbIconMark';
 
 export default function LoginPage() {
   const { login, isLoading } = useAuth();
@@ -33,9 +34,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-lg border-border/60">
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-4">
-            <div className="w-14 h-14 rounded-2xl bg-tjb-lavender-600 flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-2xl">T</span>
-            </div>
+            <TjbIconMark size={56} className="text-tjb-lavender-600" />
           </div>
           <CardTitle className="text-2xl font-semibold text-tjb-charcoal">
             True Joy Birthing
