@@ -113,4 +113,46 @@ export const api = {
 
   getAnalyticsAcquisition: (period: string = '30d') =>
     request<any>(`/admin/api/dashboard/analytics/acquisition?period=${period}`),
+
+  // Ambassadors
+  getAmbassadors: (params: { status?: string; page?: number; limit?: number } = {}) => {
+    const searchParams = new URLSearchParams();
+    if (params.status) searchParams.set('status', params.status);
+    if (params.page) searchParams.set('page', String(params.page));
+    if (params.limit) searchParams.set('limit', String(params.limit));
+    const qs = searchParams.toString();
+    return request<{ ambassadors: Array<any>; total: number; page: number; limit: number; pages: number }>(
+      `/admin/api/ambassadors${qs ? `?${qs}` : ''}`
+    );
+  },
+
+  getAmbassador: (ambassadorId: string) =>
+    request<any>(`/admin/api/ambassadors/${ambassadorId}`),
+
+  createAmbassador: (data: { email: string; full_name: string; role: string; city: string; state: string; audience_size?: number }) =>
+    request<any>('/admin/api/ambassadors', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateAmbassador: (ambassadorId: string, data: Record<string, any>) =>
+    request<any>(`/admin/api/ambassadors/${ambassadorId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  approveAmbassador: (ambassadorId: string) =>
+    request<any>(`/admin/api/ambassadors/${ambassadorId}/approve`, {
+      method: 'PUT',
+    }),
+
+  pauseAmbassador: (ambassadorId: string) =>
+    request<any>(`/admin/api/ambassadors/${ambassadorId}/pause`, {
+      method: 'PUT',
+    }),
+
+  deleteAmbassador: (ambassadorId: string) =>
+    request<any>(`/admin/api/ambassadors/${ambassadorId}`, {
+      method: 'DELETE',
+    }),
 };
