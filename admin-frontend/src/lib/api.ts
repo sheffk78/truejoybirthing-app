@@ -113,6 +113,8 @@ export const api = {
 
   getAnalyticsAcquisition: (period: string = '30d') =>
     request<any>(`/admin/api/dashboard/analytics/acquisition?period=${period}`),
+  getAnalyticsLocationPages: (period: string = '30d') =>
+    request<any>(`/admin/api/analytics/location-pages?days=${period === '7d' ? '7' : period === '90d' ? '90' : '30'}`),
 
   // Ambassadors
   getAmbassadors: (params: { status?: string; page?: number; limit?: number } = {}) => {

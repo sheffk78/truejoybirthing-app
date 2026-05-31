@@ -27,6 +27,7 @@ import {
   ArrowDownUp,
   Clock,
   BarChart3,
+  MapPin,
 } from 'lucide-react';
 import { StatsCard } from '@/components/StatsCard';
 
@@ -176,7 +177,7 @@ function ConnectGA4Card() {
 /* ------------------------------------------------------------------ */
 
 export default function AnalyticsPage() {
-  const [period, setPeriod] = useState<'7d' | '30d'>('30d');
+  const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('30d');
 
   /* ---- queries ---- */
 
@@ -210,6 +211,12 @@ export default function AnalyticsPage() {
     retry: false,
   });
 
+  const locationPagesQuery = useQuery({
+    queryKey: ['analytics-location-pages', period],
+    queryFn: () => api.getAnalyticsLocationPages(period),
+    retry: false,
+  });
+
   /* ---- 503 check ---- */
 
   const is503 = (err: unknown) =>
@@ -230,6 +237,7 @@ export default function AnalyticsPage() {
   const topPages = (pagesQuery.data as Array<any>) || [];
   const geography = (geographyQuery.data as Array<any>) || [];
   const acquisition = (acquisitionQuery.data as Array<any>) || [];
+  const locationPagesData = (locationPagesQuery.data as any) || { location_pages: [], total_location_pageviews: 0, count: 0 };
 
   const chartData = traffic.map((d: any) => ({
     date: new Date(d.date).toLocaleDateString('en-US', {
@@ -255,11 +263,12 @@ export default function AnalyticsPage() {
 
         <Tabs
           value={period}
-          onValueChange={(v) => setPeriod(v as '7d' | '30d')}
+          onValueChange={(v) => setPeriod(v as '7d' | '30d' | '90d')}
         >
           <TabsList>
             <TabsTrigger value="7d">7 days</TabsTrigger>
             <TabsTrigger value="30d">30 days</TabsTrigger>
+            <TabsTrigger value="90d">90 days</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -273,7 +282,7 @@ export default function AnalyticsPage() {
             title="Active Users"
             value={formatNumber(overview?.active_users ?? 0)}
             icon={Users}
-            subtitle={`Last ${period === '7d' ? '7' : '30'} days`}
+            subtitle={`Last ${period === '7d' ? '7' : period === '90d' ? '90' : '30'} days`}
           />
           <StatsCard
             title="Pageviews"
@@ -494,6 +503,87 @@ export default function AnalyticsPage() {
           </Card>
         )}
       </div>
+
+      {/* Location Pages table */}
+      {locationPagesQuery.isLoading ? (
+        <SkeletonTable />
+      ) : (
+        <Card className="shadow-sm border-border/60">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-tjb-lavender-600" />
+              <CardTitle className="text-lg font-semibold text-tjb-charcoal">
+                Top Location Pages
+              </CardTitle>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              City & state birth support pages — your local SEO footprint
+            </p>
+          </CardHeader>
+          <CardContent>
+            {locationPagesData.count > 0 && (
+              <div className="mb-4 flex gap-4 text-sm">
+                <span className="text-muted-foreground">
+                  Total pageviews: <span className="font-semibold text-tjb-charcoal">{formatNumber(locationPagesData.total_location_pageviews)}</span>
+                </span>
+                <span className="text-muted-foreground">
+                  Location pages with traffic: <span className="font-semibold text-tjb-charcoal">{locationPagesData.count}</span>
+                </span>
+              </div>
+            )}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Page</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead className="text-right">Pageviews</TableHead>
+                  <TableHead className="text-right">Sessions</TableHead>
+                  <TableHead className="text-right">Active Users</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {locationPagesData.location_pages.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="text-center text-muted-foreground py-8"
+                    >
+                      No location page traffic yet. As your /birth-support/ pages get indexed and ranked, they'll appear here.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  locationPagesData.location_pages.map((p: any, i: number) => (
+                    <TableRow key={i}>
+                      <TableCell className="font-medium max-w-[250px] truncate">
+                        <a
+                          href={`https://truejoybirthing.com${p.path}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-tjb-lavender-600 hover:underline"
+                        >
+                          {p.path}
+                        </a>
+                      </TableCell>
+                      <TableCell className="max-w-[200px] truncate">
+                        {p.title}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatNumber(p.pageviews ?? 0)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatNumber(p.sessions ?? 0)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatNumber(p.active_users ?? 0)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Geography table */}
       {geographyQuery.isLoading ? (
