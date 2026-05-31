@@ -13,7 +13,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Query
 
 from .dependencies import db, check_role, User
-from ..services.ga4_service import (
+from services.ga4_service import (
     get_top_pages,
     get_traffic_trend,
     get_location_pages,
@@ -124,7 +124,7 @@ async def analytics_cache_status(
     # Also do a quick connectivity test
     connectivity = "unknown"
     try:
-        from ..services.ga4_service import _get_client
+        from services.ga4_service import _get_client
         client = _get_client()
         connectivity = "ok"
     except Exception as e:
