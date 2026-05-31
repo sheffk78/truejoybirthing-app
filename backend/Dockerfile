@@ -17,6 +17,9 @@ COPY . .
 # SPA dashboard if found; an empty dir means dashboard is unavailable)
 RUN mkdir -p admin-frontend/dist
 
+# Railway assigns a dynamic PORT — use a start script to expand $PORT at runtime
+RUN printf '#!/bin/sh\nPORT=${PORT:-8000}\necho "Starting uvicorn on port $PORT"\nexec uvicorn server:app --host 0.0.0.0 --port $PORT\n' > /app/start.sh && chmod +x /app/start.sh
+
 EXPOSE 8000
 
-CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["/app/start.sh"]
