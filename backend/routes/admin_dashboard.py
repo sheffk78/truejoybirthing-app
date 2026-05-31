@@ -15,9 +15,6 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
 
-from google.analytics.data_v1beta import BetaAnalyticsDataClient, RunReportRequest, DateRange, Dimension, Metric
-from google.oauth2 import service_account
-
 from .dependencies import db, get_now, get_current_user, check_role, User, verify_password
 
 router = APIRouter(prefix="/admin/api/dashboard", tags=["Admin Dashboard"])
@@ -378,6 +375,8 @@ def get_ga4_client():
         return None
 
     try:
+        from google.oauth2 import service_account
+        from google.analytics.data_v1beta import BetaAnalyticsDataClient
         sa_info = json.loads(sa_json)
         credentials = service_account.Credentials.from_service_account_info(sa_info)
         _ga4_client = BetaAnalyticsDataClient(credentials=credentials)
@@ -413,6 +412,8 @@ async def analytics_overview(
 ):
     """GA4 overview: totalUsers, pageviews, bounceRate, averageSessionDuration,
     plus top 5 pages and top 5 sources."""
+    from google.analytics.data_v1beta import RunReportRequest, DateRange, Dimension, Metric
+
     client = get_ga4_client()
     if client is None:
         _raise_ga4_unavailable()
@@ -494,6 +495,8 @@ async def analytics_traffic(
     user: User = Depends(check_role(["ADMIN"])),
 ):
     """GA4 daily traffic time series: [{date, pageviews, users}]."""
+    from google.analytics.data_v1beta import RunReportRequest, DateRange, Dimension, Metric
+
     client = get_ga4_client()
     if client is None:
         _raise_ga4_unavailable()
@@ -535,6 +538,8 @@ async def analytics_pages(
     user: User = Depends(check_role(["ADMIN"])),
 ):
     """GA4 top 20 pages by pageviews: [{page, pageviews, users, avg_time_on_page}]."""
+    from google.analytics.data_v1beta import RunReportRequest, DateRange, Dimension, Metric
+
     client = get_ga4_client()
     if client is None:
         _raise_ga4_unavailable()
@@ -574,6 +579,8 @@ async def analytics_geography(
     user: User = Depends(check_role(["ADMIN"])),
 ):
     """GA4 top 15 regions by users: [{country, region, users, pageviews}]."""
+    from google.analytics.data_v1beta import RunReportRequest, DateRange, Dimension, Metric
+
     client = get_ga4_client()
     if client is None:
         _raise_ga4_unavailable()
@@ -609,6 +616,8 @@ async def analytics_acquisition(
     user: User = Depends(check_role(["ADMIN"])),
 ):
     """GA4 top 10 acquisition sources: [{source, medium, users, pageviews, bounce_rate}]."""
+    from google.analytics.data_v1beta import RunReportRequest, DateRange, Dimension, Metric
+
     client = get_ga4_client()
     if client is None:
         _raise_ga4_unavailable()
