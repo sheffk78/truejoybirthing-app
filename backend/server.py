@@ -1481,11 +1481,7 @@ from routes import newborn_exam as newborn_exam_routes
 from routes import contractions as contractions_routes
 from routes import admin_dashboard as admin_dashboard_routes
 from routes import admin_analytics as admin_analytics_routes
-try:
-    from routes import admin_ambassador as admin_ambassador_routes
-except Exception as e:
-    print(f"[startup] WARNING: Failed to import admin_ambassador routes: {e}")
-    admin_ambassador_routes = None
+from routes import admin_ambassador as admin_ambassador_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1909,8 +1905,7 @@ app.include_router(api_router)
 # so frontend paths match: /admin/api/dashboard/*
 app.include_router(admin_dashboard_routes.router)
 app.include_router(admin_analytics_routes.router)
-if admin_ambassador_routes:
-    app.include_router(admin_ambassador_routes.router)
+app.include_router(admin_ambassador_routes.router)
 
 app.add_middleware(
     CORSMiddleware,
