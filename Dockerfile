@@ -3,17 +3,18 @@ FROM python:3.12
 WORKDIR /app
 
 # Install core requirements first (fast, no grpcio)
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Try to install GA4 dependencies (grpcio-heavy, may fail on some platforms)
 # If this fails, GA4 endpoints return 503 but the rest of the app works fine
-COPY requirements-optional.txt .
+COPY backend/requirements-optional.txt .
 RUN pip install --no-cache-dir -r requirements-optional.txt || echo "WARNING: Optional GA4 deps failed to install, analytics features will be unavailable"
 
-COPY . .
+# Copy backend code
+COPY backend/ .
 
-# Admin frontend — copy pre-built React SPA so /admin/ routes work
+# Copy pre-built admin frontend SPA (built from admin-frontend/ before deploy)
 COPY admin-frontend/dist/ /app/admin-frontend/dist/
 
 # Railway assigns a dynamic PORT — use a start script to expand $PORT at runtime
