@@ -358,6 +358,39 @@ async def get_user_detail(user_id: str, user: User = Depends(check_role(["ADMIN"
     return serialize_doc(user_data)
 
 
+@router.delete("/users/{user_id}")
+async def delete_user(
+    user_id: str,
+    user: User = Depends(check_role(["ADMIN"])),
+):
+    """Delete a user by user_id. Cannot delete your own account."""
+    if user.user_id == user_id:
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+
+    existing = await db.users.find_one({"user_id": user_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Clean up related data
+    await db.subscriptions.delete_many({"user_id": user_id})
+    await db.push_tokens.delete_many({"user_id": user_id})
+    await db.birth_plans.delete_many({"user_id": user_id})
+    await db.contractions.delete_many({"user_id": user_id})
+    await db.messages.delete_many({"$or": [{"sender_id": user_id}, {"recipient_id": user_id}]})
+    # Remove from any teams
+    await db.users.update_many(
+        {"team.provider_id": user_id},
+        {"$pull": {"team": {"provider_id": user_id}}}
+    )
+    await db.users.update_many(
+        {"team.client_id": {"$regex": f"^client_"}},
+        {"$pull": {"team": {"provider_id": user_id}}}
+    )
+
+    await db.users.delete_one({"user_id": user_id})
+    return {"message": "User deleted", "user_id": user_id}
+
+
 # ============== GA4 ANALYTICS ==============
 
 GA4_PROPERTY_ID = "469670390"
