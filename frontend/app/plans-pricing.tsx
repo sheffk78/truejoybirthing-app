@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../src/components/Icon';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSubscriptionStore } from '../src/store/subscriptionStore';
 import { useAuthStore } from '../src/store/authStore';
@@ -22,7 +22,8 @@ import {
   getStatusDisplayText,
   getProviderDisplayName 
 } from './config/subscriptionConfig';
-import { useColors, createThemedStyles, SIZES, FONTS } from '../src/hooks/useThemedStyles';
+import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
+import { SIZES, FONTS } from '../src/constants/theme';
 
 // Platform detection helpers
 const getCurrentPlatform = () => {
@@ -237,7 +238,7 @@ export default function PlansPricingScreen() {
             router.back();
           }
         }} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Plans & Pricing</Text>
         <View style={{ width: 40 }} />
@@ -247,10 +248,10 @@ export default function PlansPricingScreen() {
         {/* Current Status Banner */}
         {status && !isMom && (
           <View style={[styles.statusBanner, hasAccess ? styles.statusActive : styles.statusInactive]}>
-            <Ionicons 
+            <Icon 
               name={hasAccess ? 'checkmark-circle' : 'information-circle'} 
               size={20} 
-              color={hasAccess ? '#10b981' : '#f59e0b'} 
+              color={hasAccess ? colors.success : colors.warning}
             />
             <Text style={styles.statusText}>
               {hasAccess 
@@ -268,7 +269,7 @@ export default function PlansPricingScreen() {
         {/* MOM FREE Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="heart" size={24} color="#ec4899" />
+            <Icon name="heart" size={24} color={colors.secondary} />
             <Text style={styles.sectionTitle}>For Birthing Moms</Text>
           </View>
           <View style={styles.freeCard}>
@@ -282,14 +283,14 @@ export default function PlansPricingScreen() {
             <View style={styles.featureList}>
               {pricing?.mom_features.map((feature, index) => (
                 <View key={index} style={styles.featureItem}>
-                  <Ionicons name="checkmark-circle" size={20} color="#10b981" />
+                  <Icon name="checkmark-circle" size={20} color={colors.success} />
                   <Text style={styles.featureText}>{feature}</Text>
                 </View>
               ))}
             </View>
             {isMom && (
               <View style={styles.currentPlanBadge}>
-                <Ionicons name="star" size={16} color="#fff" />
+                <Icon name="star" size={16} color={colors.white} />
                 <Text style={styles.currentPlanText}>Your Current Plan</Text>
               </View>
             )}
@@ -299,7 +300,7 @@ export default function PlansPricingScreen() {
         {/* PRO Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="briefcase" size={24} color={colors.primary} />
+            <Icon name="briefcase" size={24} color={colors.primary} />
             <Text style={styles.sectionTitle}>For Doulas & Midwives</Text>
           </View>
           <Text style={styles.proSubtitle}>
@@ -342,7 +343,7 @@ export default function PlansPricingScreen() {
                 </Text>
                 {selectedPlan === plan.id && (
                   <View style={[styles.selectedIndicator, { backgroundColor: colors.primary }]}>
-                    <Ionicons name="checkmark" size={16} color="#fff" />
+                    <Icon name="checkmark" size={16} color={colors.white} />
                   </View>
                 )}
               </TouchableOpacity>
@@ -355,7 +356,7 @@ export default function PlansPricingScreen() {
             <View style={styles.featureList}>
               {pricing?.plans[0]?.features.map((feature, index) => (
                 <View key={index} style={styles.featureItem}>
-                  <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
+                  <Icon name="checkmark-circle" size={20} color={colors.primary} />
                   <Text style={styles.featureText}>{feature}</Text>
                 </View>
               ))}
@@ -374,7 +375,7 @@ export default function PlansPricingScreen() {
                       "SKU not found" (Apple build 122 rejection). */}
                   {iapAvailable && !productsAvailable ? (
                     <View style={styles.unavailableContainer}>
-                      <Ionicons name="cloud-offline-outline" size={20} color={colors.textSecondary} />
+                      <Icon name="cloud-offline-outline" size={20} color={colors.textSecondary} />
                       <Text style={styles.unavailableText}>
                         Subscriptions are temporarily unavailable. Please try again.
                       </Text>
@@ -409,10 +410,10 @@ export default function PlansPricingScreen() {
                       disabled={processingAction || isPurchasing}
                     >
                       {(processingAction || isPurchasing) ? (
-                        <ActivityIndicator color="#fff" />
+                        <ActivityIndicator color={colors.white} />
                       ) : (
                         <>
-                          <Ionicons name="gift" size={20} color="#fff" />
+                          <Icon name="gift" size={20} color={colors.white} />
                           <Text style={styles.trialButtonText}>
                             Start 14-Day Free Trial
                           </Text>
@@ -441,7 +442,7 @@ export default function PlansPricingScreen() {
               {(status?.subscription_status === 'expired' || status?.subscription_status === 'trial') && (
                 iapAvailable && !productsAvailable ? (
                   <View style={styles.unavailableContainer}>
-                    <Ionicons name="cloud-offline-outline" size={20} color={colors.textSecondary} />
+                    <Icon name="cloud-offline-outline" size={20} color={colors.textSecondary} />
                     <Text style={styles.unavailableText}>
                       Subscriptions are temporarily unavailable. Please try again.
                     </Text>
@@ -476,10 +477,10 @@ export default function PlansPricingScreen() {
                     disabled={processingAction || isPurchasing}
                   >
                     {(processingAction || isPurchasing) ? (
-                      <ActivityIndicator color="#fff" />
+                      <ActivityIndicator color={colors.white} />
                     ) : (
                       <>
-                        <Ionicons name="card" size={20} color="#fff" />
+                        <Icon name="card" size={20} color={colors.white} />
                         <Text style={styles.subscribeButtonText}>
                           Subscribe Now — {getDisplayPriceForSelected()}/{selectedPlan === 'annual' ? 'yr' : 'mo'}
                         </Text>
@@ -528,7 +529,7 @@ export default function PlansPricingScreen() {
           {/* Subscription Management Info for Active Subscribers */}
           {status?.has_pro_access && status?.subscription_provider && (
             <View style={styles.manageSubscriptionCard}>
-              <Ionicons name="settings-outline" size={20} color={colors.textSecondary} />
+              <Icon name="settings-outline" size={20} color={colors.textSecondary} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.manageTitle}>Manage Subscription</Text>
                 <Text style={styles.manageDescription}>
@@ -550,7 +551,7 @@ export default function PlansPricingScreen() {
                     }}
                   >
                     <Text style={[styles.manageLinkText, { color: colors.primary }]}>Open {getProviderDisplayName(status.subscription_provider)}</Text>
-                    <Ionicons name="open-outline" size={14} color={colors.primary} />
+                    <Icon name="open-outline" size={14} color={colors.primary} />
                   </TouchableOpacity>
                 )}
               </View>
@@ -559,7 +560,7 @@ export default function PlansPricingScreen() {
 
           {isMom && (
             <View style={styles.momNote}>
-              <Ionicons name="information-circle" size={20} color={colors.textSecondary} />
+              <Icon name="information-circle" size={20} color={colors.textSecondary} />
               <Text style={styles.momNoteText}>
                 This plan is for doulas and midwives. As a mom, you have free access to all features designed for you!
               </Text>
@@ -599,8 +600,8 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 20,
     gap: 8,
   },
-  statusActive: { backgroundColor: '#d1fae5' },
-  statusInactive: { backgroundColor: '#fef3c7' },
+  statusActive: { backgroundColor: colors.success + '20' },
+  statusInactive: { backgroundColor: colors.warning + '20' },
   statusText: { fontSize: 14, fontWeight: '500', color: colors.text },
   
   section: { marginBottom: 24 },
@@ -612,17 +613,17 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 16,
     padding: 20,
     borderWidth: 2,
-    borderColor: '#ec4899',
+    borderColor: colors.secondary,
   },
   freeBadge: {
-    backgroundColor: '#fce7f3',
+    backgroundColor: colors.secondaryLight,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 20,
     alignSelf: 'flex-start',
     marginBottom: 12,
   },
-  freeBadgeText: { color: '#ec4899', fontWeight: '700', fontSize: 12 },
+  freeBadgeText: { color: colors.secondary, fontWeight: '700', fontSize: 12 },
   freeDescription: { color: colors.textSecondary, lineHeight: 22, marginBottom: 16 },
   
   featureList: { gap: 10 },
@@ -633,13 +634,13 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ec4899',
+    backgroundColor: colors.secondary,
     paddingVertical: 10,
     borderRadius: 8,
     marginTop: 16,
     gap: 8,
   },
-  currentPlanText: { color: '#fff', fontWeight: '600', fontSize: 14 },
+  currentPlanText: { color: colors.white, fontWeight: '600', fontSize: 14 },
   
   proSubtitle: { color: colors.textSecondary, marginBottom: 16, lineHeight: 20 },
   
@@ -661,7 +662,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: 2,
     borderRadius: 10,
   },
-  savingsText: { color: '#fff', fontSize: 10, fontWeight: '700' },
+  savingsText: { color: colors.white, fontSize: 10, fontWeight: '700' },
   planName: { fontSize: 14, fontWeight: '500', color: colors.textSecondary, marginBottom: 4 },
   planPrice: { fontSize: 28, fontWeight: '700', color: colors.text },
   planPeriod: { fontSize: 14, color: colors.textSecondary },
@@ -693,7 +694,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 12,
     gap: 8,
   },
-  trialButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  trialButtonText: { color: colors.white, fontWeight: '700', fontSize: 16 },
   restoreButton: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -712,14 +713,14 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 12,
     gap: 8,
   },
-  subscribeButtonText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  subscribeButtonText: { color: colors.white, fontWeight: '700', fontSize: 16 },
   unavailableContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderRadius: 12,
-    backgroundColor: colors.background === '#fff' ? '#FAFAFA' : 'rgba(255,255,255,0.04)',
+    backgroundColor: colors.background === colors.white ? colors.subtle : 'rgba(255,255,255,0.04)',
     borderWidth: 1,
     borderColor: colors.border,
     gap: 8,
@@ -795,13 +796,13 @@ const getStyles = createThemedStyles((colors) => ({
   manageSubscriptionCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#f0fdf4',
+    backgroundColor: colors.success + '15',
     padding: 14,
     borderRadius: 10,
     gap: 10,
     marginTop: 16,
     borderWidth: 1,
-    borderColor: '#bbf7d0',
+    borderColor: colors.success + '40',
   },
   manageTitle: {
     fontSize: 14,

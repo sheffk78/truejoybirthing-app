@@ -4,16 +4,21 @@ import { Platform, StatusBar, View, ActivityIndicator, BackHandler } from 'react
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {
-  PlayfairDisplay_500Medium,
-  PlayfairDisplay_700Bold,
-} from '@expo-google-fonts/playfair-display';
+  CormorantGaramond_500Medium,
+  CormorantGaramond_600SemiBold,
+  CormorantGaramond_700Bold,
+} from '@expo-google-fonts/cormorant-garamond';
 import {
-  Lato_400Regular,
-  Lato_700Bold,
-} from '@expo-google-fonts/lato';
+  SourceSans3_400Regular,
+  SourceSans3_400Regular_Italic,
+  SourceSans3_500Medium,
+  SourceSans3_600SemiBold,
+  SourceSans3_700Bold,
+} from '@expo-google-fonts/source-sans-3';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { ThemeProvider, useTheme } from '../src/contexts/ThemeContext';
+import { COLORS } from '../src/constants/theme';
 
 // Inner layout component that uses theme
 function ThemedLayout() {
@@ -150,21 +155,24 @@ function ThemedLayout() {
 }
 
 export default function RootLayout() {
-  // Load all fonts including Ionicons and brand fonts
+  // Load brand fonts
   const [fontsLoaded] = useFonts({
-    Ionicons: require('../assets/fonts/Ionicons.ttf'),
-    PlayfairDisplay_500Medium,
-    PlayfairDisplay_700Bold,
-    Lato_400Regular,
-    Lato_700Bold,
+    CormorantGaramond_500Medium,
+    CormorantGaramond_600SemiBold,
+    CormorantGaramond_700Bold,
+    SourceSans3_400Regular,
+    SourceSans3_400Regular_Italic,
+    SourceSans3_500Medium,
+    SourceSans3_600SemiBold,
+    SourceSans3_700Bold,
   });
   
   // Show simple loading screen while fonts are loading (before ThemeProvider is available)
   if (!fontsLoaded) {
     return (
       <SafeAreaProvider>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FAF7FC' }}>
-          <ActivityIndicator size="large" color="#8B76A0" />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       </SafeAreaProvider>
     );

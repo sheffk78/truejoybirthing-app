@@ -65,7 +65,7 @@ export default function NotificationPermissionScreen() {
             name: 'Default',
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#9B7BB8',
+            lightColor: '#8E8CB5',
           });
           await Notifications.setNotificationChannelAsync('messages', {
             name: 'Messages',
@@ -181,7 +181,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: colors.subtle || '#F9F5FA',
+    backgroundColor: colors.subtle,
     alignItems: 'center',
     justifyContent: 'center',
   },

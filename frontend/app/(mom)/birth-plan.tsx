@@ -22,7 +22,7 @@ import { SECTION_FORMS, renderField } from '../../src/components/BirthPlanForms'
 import SectionVideoGuide from '../../src/components/SectionVideoGuide';
 import { apiRequest, getApiBaseUrl } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 

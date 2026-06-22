@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { SIZES } from '../constants/theme';
-import { useColors, useShadows } from '../hooks/useThemedStyles';
+import { useColors } from '../hooks/useThemedStyles';
 
 interface CardProps {
   children: React.ReactNode;
@@ -17,7 +17,6 @@ export default function Card({
   padding = 'md',
 }: CardProps) {
   const colors = useColors();
-  const shadows = useShadows();
   
   const getVariantStyle = (): ViewStyle => {
     switch (variant) {
@@ -32,11 +31,11 @@ export default function Card({
           backgroundColor: colors._theme.background.subtle,
         };
       default:
+        // 'elevated' — use border instead of shadow per brand guidelines
         return {
           backgroundColor: colors.surface,
           borderWidth: 1,
           borderColor: colors.border,
-          ...shadows.sm,
         };
     }
   };

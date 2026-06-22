@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   Platform,
   Modal,
-  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,8 +18,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
+import ErrorBoundary from '../../src/components/ErrorBoundary';
 import Input from '../../src/components/Input';
 import AppearanceSettings from '../../src/components/AppearanceSettings';
+import LegalWebView from '../../src/components/LegalWebView';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
@@ -34,6 +35,7 @@ export default function MomProfileScreen() {
   const router = useRouter();
   const { user, logout, deleteAccount, updateUser } = useAuthStore();
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const { isDark } = useTheme();
   
   const [profile, setProfile] = useState<any>(null);
@@ -48,6 +50,9 @@ export default function MomProfileScreen() {
   const [dueDate, setDueDate] = useState('');
   const [dueDateObj, setDueDateObj] = useState<Date | null>(null);
   const [zipCode, setZipCode] = useState('');
+
+  // Legal WebView state
+  const [legalView, setLegalView] = useState<{ url: string; title: string } | null>(null);
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
   const [numberOfChildren, setNumberOfChildren] = useState<number>(0);
@@ -89,8 +94,10 @@ export default function MomProfileScreen() {
       setLocationCity(profileData.location_city || '');
       setLocationState(profileData.location_state || '');
       setNumberOfChildren(profileData.number_of_children || 0);
+      setLoadError(null);
     } catch (error) {
       console.error('Error fetching profile:', error);
+      setLoadError('Unable to load your profile. Please try again.');
     }
   };
   
@@ -170,8 +177,12 @@ export default function MomProfileScreen() {
     }
     if (selectedDate) {
       setDueDateObj(selectedDate);
-      // Format as YYYY-MM-DD for storage
-      const formatted = selectedDate.toISOString().split('T')[0];
+      // Format as YYYY-MM-DD for storage using local date methods
+      // (toISOString() converts to UTC which shifts the date in negative offset timezones)
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const formatted = `${year}-${month}-${day}`;
       setDueDate(formatted);
     }
   };
@@ -441,6 +452,28 @@ export default function MomProfileScreen() {
   };
   
   return (
+    <ErrorBoundary
+      fallback={
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+          <View style={styles.errorContainer}>
+            <Icon name="alert-circle-outline" size={48} color={colors.textLight} />
+            <Text style={styles.errorTitle}>Unable to Load Profile</Text>
+            <Text style={styles.errorMessage}>
+              Something went wrong. Please try again later.
+            </Text>
+            <Button
+              title="Try Again"
+              onPress={fetchData}
+              style={{ marginTop: SIZES.md }}
+              icon={<Icon name="refresh" size={18} color={colors.white} />}
+            />
+          </View>
+        </SafeAreaView>
+      }
+      onError={(error) => {
+        console.error('[Profile Screen] Render error caught by ErrorBoundary:', error);
+      }}
+    >
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Hidden file input for web */}
       {Platform.OS === 'web' && (
@@ -456,6 +489,20 @@ export default function MomProfileScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Inline Error State */}
+        {loadError && (
+          <Card style={styles.errorCard}>
+            <Icon name="alert-circle-outline" size={32} color={colors.error} />
+            <Text style={styles.errorText}>{loadError}</Text>
+            <Button
+              title="Retry"
+              onPress={fetchData}
+              style={{ marginTop: SIZES.sm }}
+              icon={<Icon name="refresh" size={16} color={colors.white} />}
+            />
+          </Card>
+        )}
+        
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity 
@@ -765,14 +812,14 @@ export default function MomProfileScreen() {
         <View style={styles.legalSection}>
           <View style={styles.legalLinks}>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/privacy')}
+              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/privacy', title: 'Privacy Policy' })}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Privacy Policy</Text>
             </TouchableOpacity>
             <Text style={styles.legalSeparator}>•</Text>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}
+              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Disclaimer' })}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Disclaimer</Text>
@@ -780,14 +827,14 @@ export default function MomProfileScreen() {
           </View>
           <View style={styles.legalLinks}>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}
+              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Terms of Service' })}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Terms of Service</Text>
             </TouchableOpacity>
             <Text style={styles.legalSeparator}>•</Text>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/contact/')}
+              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/contact/', title: 'Contact' })}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Contact</Text>
@@ -795,10 +842,19 @@ export default function MomProfileScreen() {
           </View>
         </View>
         
+        {/* In-app Legal WebView */}
+        <LegalWebView
+          visible={legalView !== null}
+          url={legalView?.url ?? ''}
+          title={legalView?.title ?? ''}
+          onClose={() => setLegalView(null)}
+        />
+        
         {/* Bottom spacing for tab bar */}
         <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
+    </ErrorBoundary>
   );
 }
 
@@ -1155,5 +1211,36 @@ const getStyles = createThemedStyles((colors) => ({
   legalSeparator: {
     fontSize: SIZES.fontXs,
     color: colors.textLight,
+  },
+  // Error state styles
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: SIZES.md,
+    padding: SIZES.xl,
+  },
+  errorTitle: {
+    fontSize: SIZES.fontXxl,
+    fontFamily: FONTS.heading,
+    color: colors.text,
+  },
+  errorMessage: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  errorCard: {
+    alignItems: 'center',
+    gap: SIZES.sm,
+    padding: SIZES.lg,
+    marginBottom: SIZES.md,
+  },
+  errorText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.error,
+    textAlign: 'center',
   },
 }));

@@ -341,7 +341,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.sm,
   },
   providerMessage: {
-    backgroundColor: '#f8f4f0',
+    backgroundColor: colors.subtle,
     borderWidth: 1,
     borderColor: colors.primary + '40',
     borderRadius: SIZES.radiusMd,

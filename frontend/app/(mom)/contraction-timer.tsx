@@ -20,7 +20,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS, COLORS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-chart-kit';
@@ -87,9 +87,9 @@ interface ChartData {
 }
 
 const INTENSITIES = [
-  { value: 'MILD', label: 'Mild', color: '#8BC34A' },
-  { value: 'MODERATE', label: 'Moderate', color: '#FF9800' },
-  { value: 'STRONG', label: 'Strong', color: '#F44336' },
+  { value: 'MILD', label: 'Mild', color: COLORS.accent },
+  { value: 'MODERATE', label: 'Moderate', color: COLORS.warning },
+  { value: 'STRONG', label: 'Strong', color: COLORS.error },
 ];
 
 const BIRTH_WORDS = [
@@ -579,9 +579,9 @@ export default function ContractionTimerScreen() {
     if (!patternStatus) return colors.textLight;
     switch (patternStatus.status) {
       case '511_reached':
-        return '#F44336';
+        return colors.error;
       case 'progressing':
-        return '#FF9800';
+        return colors.warning;
       default:
         return colors.accent;
     }
@@ -725,7 +725,7 @@ export default function ContractionTimerScreen() {
             
             {patternStatus?.pattern_reached && (
               <View style={styles.patternReachedBanner}>
-                <Icon name="alert-circle" size={24} color="#F44336" />
+                <Icon name="alert-circle" size={24} color={colors.error} />
                 <Text style={styles.patternReachedText}>5-1-1 Pattern Was Reached</Text>
               </View>
             )}
@@ -735,7 +735,7 @@ export default function ContractionTimerScreen() {
             <Button
               title="Share Summary"
               onPress={exportSummary}
-              leftIcon={<Icon name="share-outline" size={20} color="#fff" />}
+              leftIcon={<Icon name="share-outline" size={20} color={colors.white} />}
               style={{ marginBottom: 12 }}
             />
             <Button
@@ -769,7 +769,7 @@ export default function ContractionTimerScreen() {
       {/* Water Broke Banner (if recorded) */}
       {session?.water_broke_at && (
         <View style={styles.waterBrokeBanner}>
-          <Icon name="water-outline" size={20} color="#1976D2" />
+          <Icon name="water-outline" size={20} color={colors.info || colors.primary} />
           <Text style={styles.waterBrokeText}>
             Water broke at {new Date(session.water_broke_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
             {session.water_broke_note ? ` - ${session.water_broke_note}` : ''}
@@ -1043,7 +1043,7 @@ export default function ContractionTimerScreen() {
                   >
                     <Text style={[
                       styles.intensityChipText,
-                      manualIntensity === intensity.value && { color: '#fff' }
+                      manualIntensity === intensity.value && { color: colors.white }
                     ]}>
                       {intensity.label}
                     </Text>
@@ -1491,7 +1491,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginLeft: 8,
   },
   patternAlert: {
-    backgroundColor: '#FFEBEE',
+    backgroundColor: colors.error + '15',
     marginHorizontal: 20,
     padding: 16,
     borderRadius: 8,
@@ -1500,11 +1500,11 @@ const getStyles = createThemedStyles((colors) => ({
   patternAlertText: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: '#C62828',
+    color: colors.error,
     textAlign: 'center',
     lineHeight: 20,
   },
-  
+
   // Compact Pattern Status (moved below actions)
   patternStatusCompact: {
     flexDirection: 'row',
@@ -1791,14 +1791,14 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFEBEE',
+    backgroundColor: colors.error + '15',
     padding: 16,
     borderRadius: 8,
   },
   patternReachedText: {
     fontSize: 14,
     fontFamily: FONTS.body,
-    color: '#C62828',
+    color: colors.error,
     marginLeft: 8,
   },
   actionButtons: {
@@ -1822,7 +1822,7 @@ const getStyles = createThemedStyles((colors) => ({
   waterBrokeBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E3F2FD',
+    backgroundColor: colors.info + '15',
     paddingVertical: 6,
     paddingHorizontal: 12,
     marginHorizontal: 16,
@@ -1832,7 +1832,7 @@ const getStyles = createThemedStyles((colors) => ({
   waterBrokeText: {
     fontSize: 13,
     fontFamily: FONTS.body,
-    color: '#1976D2',
+    color: colors.info || colors.primary,
     marginLeft: 8,
     flex: 1,
   },

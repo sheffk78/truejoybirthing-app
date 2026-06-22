@@ -10,6 +10,15 @@ const config = getDefaultConfig(__dirname);
 // See: https://docs.expo.dev/guides/customizing-metro/#package-exports-support
 config.resolver.unstable_enablePackageExports = false;
 
+// --- SVG support via react-native-svg-transformer ---
+// Remove 'svg' from assetExts so Metro processes SVGs through the transformer
+config.resolver.assetExts = config.resolver.assetExts.filter((ext) => ext !== 'svg');
+config.resolver.sourceExts = [...config.resolver.sourceExts, 'svg'];
+config.transformer = {
+  ...config.transformer,
+  babelTransformerPath: require.resolve('react-native-svg-transformer/expo'),
+};
+
 // Ensure TTF fonts are processed as assets
 if (!config.resolver.assetExts.includes('ttf')) {
   config.resolver.assetExts.push('ttf');

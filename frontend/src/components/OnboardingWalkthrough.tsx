@@ -10,7 +10,7 @@ import {
   Platform,
   ImageBackground,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { Icon } from './Icon';
 import { SIZES, FONTS } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
@@ -164,16 +164,7 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
             style={styles.stepImage}
             resizeMode="cover"
           >
-            <LinearGradient
-              colors={[
-                `${stepColor}40`,
-                `${stepColor}20`,
-                'rgba(254,252,255,0.9)',
-                colors.background,
-              ]}
-              locations={[0, 0.3, 0.7, 1]}
-              style={styles.photoGradient}
-            />
+            <View style={[styles.photoGradient, { backgroundColor: `${stepColor}30` }]} />
           </ImageBackground>
         </View>
         

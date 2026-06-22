@@ -18,9 +18,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
+import ErrorBoundary from '../../src/components/ErrorBoundary';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 import wsClient from '../../src/utils/websocket';
@@ -75,22 +76,29 @@ export default function MessagesScreen() {
   const currentUserIdRef = useRef<string>('');
   const isNearBottomRef = useRef(true);
   
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   const fetchConversations = async () => {
     try {
       const data = await apiRequest<{ conversations: Conversation[] }>(API_ENDPOINTS.MESSAGES_CONVERSATIONS);
-      setConversations(data.conversations || []);
+      const convos = (data && data.conversations) ? data.conversations : [];
+      setConversations(Array.isArray(convos) ? convos : []);
+      setLoadError(null);
     } catch (error) {
-      console.error('Error fetching conversations:', error);
+      console.error('[Messages] Error fetching conversations:', error);
+      setLoadError('Unable to load messages. Pull to refresh.');
     }
   };
   
   const fetchCurrentUser = async () => {
     try {
       const data = await apiRequest<{ user_id: string }>(API_ENDPOINTS.AUTH_ME);
-      setCurrentUserId(data.user_id);
-      currentUserIdRef.current = data.user_id;
+      if (data && data.user_id) {
+        setCurrentUserId(data.user_id);
+        currentUserIdRef.current = data.user_id;
+      }
     } catch (error) {
-      console.error('Error fetching user:', error);
+      console.error('[Messages] Error fetching current user:', error);
     }
   };
 
@@ -98,13 +106,16 @@ export default function MessagesScreen() {
     try {
       const data = await apiRequest(API_ENDPOINTS.MOM_INVOICES);
       // Filter to pending/unpaid invoices only (exclude Paid and Cancelled)
-      const pending = (data || []).filter((inv: any) => {
-        const status = (inv.status || '').toLowerCase();
+      const invoices = Array.isArray(data) ? data : (data?.invoices ? data.invoices : []);
+      const pending = invoices.filter((inv: any) => {
+        const status = (inv?.status || '').toLowerCase();
         return status === 'pending' || status === 'sent';
       });
       setPendingInvoices(pending);
     } catch (error) {
-      console.error('Error fetching invoices:', error);
+      console.error('[Messages] Error fetching invoices:', error);
+      // Don't crash — just leave pending invoices empty
+      setPendingInvoices([]);
     }
   };
 
@@ -121,25 +132,29 @@ export default function MessagesScreen() {
         // New array format
         console.log('[Messages] Data is array with length:', data.length);
         for (const item of data) {
-          if (item.provider) {
-            const member = {
-              user_id: item.provider.user_id,
-              name: item.provider.full_name,
-              role: item.provider.role,
-              email: item.provider.email || '',
-              picture: item.profile?.picture || item.provider.picture,
-            };
-            console.log('[Messages] Adding team member:', member.name, member.role);
-            members.push(member);
+          try {
+            if (item && item.provider) {
+              const member = {
+                user_id: item.provider.user_id || '',
+                name: item.provider.full_name || 'Unknown',
+                role: item.provider.role || '',
+                email: item.provider.email || '',
+                picture: item.profile?.picture || item.provider.picture,
+              };
+              console.log('[Messages] Adding team member:', member.name, member.role);
+              members.push(member);
+            }
+          } catch (itemError) {
+            console.error('[Messages] Error processing team member item:', itemError);
           }
         }
-      } else {
+      } else if (data && typeof data === 'object') {
         // Legacy object format (doula/midwife keys)
         console.log('[Messages] Data is object format');
         if (data.doula) {
           members.push({
-            user_id: data.doula.user_id,
-            name: data.doula.name,
+            user_id: data.doula.user_id || '',
+            name: data.doula.name || 'Unknown',
             role: 'DOULA',
             email: '',
             picture: data.doula.picture,
@@ -147,8 +162,8 @@ export default function MessagesScreen() {
         }
         if (data.midwife) {
           members.push({
-            user_id: data.midwife.user_id,
-            name: data.midwife.name,
+            user_id: data.midwife.user_id || '',
+            name: data.midwife.name || 'Unknown',
             role: 'MIDWIFE',
             email: '',
             picture: data.midwife.picture,
@@ -160,6 +175,7 @@ export default function MessagesScreen() {
       setTeamMembers(members);
     } catch (error) {
       console.error('[Messages] Error fetching team:', error);
+      setTeamMembers([]);
     } finally {
       setLoadingTeam(false);
     }
@@ -199,28 +215,37 @@ export default function MessagesScreen() {
   useEffect(() => {
     if (!sessionToken) return;
     
-    wsClient.connect(sessionToken);
+    try {
+      wsClient.connect(sessionToken);
+    } catch (wsConnectError) {
+      console.error('[Messages] Error connecting WebSocket:', wsConnectError);
+    }
     
     const unsubscribe = wsClient.subscribe('new_message', (data) => {
-      if (selectedConversation && data.message?.sender_id === selectedConversation.other_user_id) {
-        const newMsg: Message = {
-          message_id: data.message.message_id,
-          sender_id: data.message.sender_id,
-          sender_name: data.message.sender_name,
-          sender_role: data.message.sender_role,
-          receiver_id: currentUserIdRef.current,
-          content: data.message.content,
-          created_at: data.message.created_at,
-          read: false,
-        };
-        // Deduplicate: don't add if message already exists (from HTTP refresh)
-        setMessages((prev) => {
-          if (prev.some(m => m.message_id === newMsg.message_id)) return prev;
-          return [...prev, newMsg];
-        });
+      try {
+        if (!data || !data.message || !data.message.sender_id) return;
+        if (selectedConversation && data.message.sender_id === selectedConversation.other_user_id) {
+          const newMsg: Message = {
+            message_id: data.message.message_id || '',
+            sender_id: data.message.sender_id || '',
+            sender_name: data.message.sender_name || '',
+            sender_role: data.message.sender_role || '',
+            receiver_id: currentUserIdRef.current,
+            content: data.message.content || '',
+            created_at: data.message.created_at || new Date().toISOString(),
+            read: false,
+          };
+          // Deduplicate: don't add if message already exists (from HTTP refresh)
+          setMessages((prev) => {
+            if (prev.some(m => m.message_id === newMsg.message_id)) return prev;
+            return [...prev, newMsg];
+          });
+        }
+        // Refresh conversation list to update unread counts
+        fetchConversations();
+      } catch (wsError) {
+        console.error('[Messages] Error handling WebSocket message:', wsError);
       }
-      // Refresh conversation list to update unread counts
-      fetchConversations();
     });
     
     return () => {
@@ -230,9 +255,18 @@ export default function MessagesScreen() {
   
   // Initial data fetch on mount
   useEffect(() => {
-    fetchConversations();
-    fetchCurrentUser();
-    fetchInvoices();
+    const loadInitialData = async () => {
+      try {
+        await Promise.all([
+          fetchConversations(),
+          fetchCurrentUser(),
+          fetchInvoices(),
+        ]);
+      } catch (error) {
+        console.error('[Messages] Error during initial data fetch:', error);
+      }
+    };
+    loadInitialData();
   }, []);
   
   const onRefresh = async () => {
@@ -242,6 +276,10 @@ export default function MessagesScreen() {
   };
   
   const openConversation = async (conversation: Conversation) => {
+    if (!conversation || !conversation.other_user_id) {
+      console.error('[Messages] Cannot open conversation: invalid conversation object', conversation);
+      return;
+    }
     setSelectedConversation(conversation);
     setLoadingMessages(true);
     setSendError(null);
@@ -249,11 +287,13 @@ export default function MessagesScreen() {
       const data = await apiRequest<{ messages: Message[] }>(
         `${API_ENDPOINTS.MESSAGES}/${conversation.other_user_id}`
       );
-      setMessages(data.messages || []);
+      const msgs = (data && data.messages) ? data.messages : [];
+      setMessages(Array.isArray(msgs) ? msgs : []);
       // Refresh conversations to update unread count
       fetchConversations();
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('[Messages] Error fetching messages:', error);
+      setMessages([]);
     } finally {
       setLoadingMessages(false);
     }
@@ -277,7 +317,7 @@ export default function MessagesScreen() {
       });
       
       // Add the sent message from the API response (avoids full re-fetch + deduplication issues)
-      if (response.message) {
+      if (response && response.message && response.message.message_id) {
         setMessages((prev) => {
           if (prev.some(m => m.message_id === response.message.message_id)) return prev;
           return [...prev, response.message];
@@ -286,13 +326,17 @@ export default function MessagesScreen() {
       
       // Scroll to bottom
       setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
+        try {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        } catch (e) {
+          console.error('[Messages] Error scrolling to bottom:', e);
+        }
       }, 100);
       
       // Refresh conversation list for last_message update
       fetchConversations();
     } catch (error: any) {
-      console.error('Error sending message:', error);
+      console.error('[Messages] Error sending message:', error);
       setNewMessage(messageText); // Restore message text so user can retry
       setSendError('Failed to send. Tap to retry.');
     } finally {
@@ -300,20 +344,27 @@ export default function MessagesScreen() {
     }
   };
   
-  const formatTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
-    if (days === 0) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } else if (days === 1) {
-      return 'Yesterday';
-    } else if (days < 7) {
-      return date.toLocaleDateString([], { weekday: 'short' });
-    } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  const formatTime = (dateStr: string | null | undefined) => {
+    try {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return '';
+      const now = new Date();
+      const diff = now.getTime() - date.getTime();
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      
+      if (days === 0) {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } else if (days === 1) {
+        return 'Yesterday';
+      } else if (days < 7) {
+        return date.toLocaleDateString([], { weekday: 'short' });
+      } else {
+        return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      }
+    } catch (e) {
+      console.error('[Messages] Error formatting time:', e);
+      return '';
     }
   };
   
@@ -329,6 +380,32 @@ export default function MessagesScreen() {
   };
   
   return (
+    <ErrorBoundary
+      fallback={
+        <SafeAreaView style={styles.container} edges={['top']}>
+          <View style={styles.fallbackContainer}>
+            <Icon name="chatbubbles-outline" size={48} color={colors.textLight} />
+            <Text style={styles.fallbackTitle}>Unable to Load Messages</Text>
+            <Text style={styles.fallbackSubtext}>
+              Something went wrong. Pull down to refresh or try again later.
+            </Text>
+            <Button
+              title="Try Again"
+              onPress={() => {
+                fetchConversations();
+                fetchCurrentUser();
+                fetchInvoices();
+              }}
+              style={{ marginTop: SIZES.md }}
+              icon={<Icon name="refresh" size={18} color={colors.white} />}
+            />
+          </View>
+        </SafeAreaView>
+      }
+      onError={(error) => {
+        console.error('[Messages Screen] Render error caught by ErrorBoundary:', error);
+      }}
+    >
     <SafeAreaView style={styles.container} edges={['top']} data-testid="messages-screen">
       {selectedConversation ? (
         /* Inline chat view — tab bar stays visible below */
@@ -431,9 +508,12 @@ export default function MessagesScreen() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <View>
-              <Text style={styles.title}>Messages</Text>
-              <Text style={styles.subtitle}>Stay in touch with your care team</Text>
+            <View style={styles.headerLeft}>
+              <BRAND.logoIcon width={28} height={28} />
+              <View>
+                <Text style={styles.title}>Messages</Text>
+                <Text style={styles.subtitle}>Stay in touch with your care team</Text>
+              </View>
             </View>
             <TouchableOpacity 
               style={styles.newMessageButton} 
@@ -443,6 +523,24 @@ export default function MessagesScreen() {
               <Icon name="create-outline" size={20} color={colors.white} />
             </TouchableOpacity>
           </View>
+          
+          {/* Load Error Banner */}
+          {loadError && conversations.length === 0 && (
+            <Card style={styles.fallbackContainer}>
+              <Icon name="alert-circle-outline" size={36} color={colors.error} />
+              <Text style={styles.fallbackTitle}>Unable to Load Messages</Text>
+              <Text style={styles.fallbackSubtext}>{loadError}</Text>
+              <Button
+                title="Retry"
+                onPress={() => {
+                  setLoadError(null);
+                  fetchConversations();
+                }}
+                style={{ marginTop: SIZES.md }}
+                icon={<Icon name="refresh" size={18} color={colors.white} />}
+              />
+            </Card>
+          )}
           
           {/* Pending Invoices Section */}
           {pendingInvoices.length > 0 && (
@@ -463,7 +561,7 @@ export default function MessagesScreen() {
                   <View style={styles.invoiceRow}>
                     <View style={styles.invoiceInfo}>
                       <Text style={styles.invoiceAmount}>
-                        ${invoice.amount?.toFixed(2) || '0.00'}
+                        ${typeof invoice.amount === 'number' ? invoice.amount.toFixed(2) : '0.00'}
                       </Text>
                       <Text style={styles.invoiceDescription} numberOfLines={1}>
                         {invoice.description || 'Invoice'}
@@ -486,7 +584,7 @@ export default function MessagesScreen() {
                       </View>
                       {invoice.due_date && (
                         <Text style={styles.invoiceDueDate}>
-                          Due: {new Date(invoice.due_date).toLocaleDateString()}
+                          Due: {(() => { try { return new Date(invoice.due_date).toLocaleDateString(); } catch { return ''; } })()}
                         </Text>
                       )}
                     </View>
@@ -643,6 +741,7 @@ export default function MessagesScreen() {
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
+    </ErrorBoundary>
   );
 }
 
@@ -650,6 +749,26 @@ const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  fallbackContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SIZES.xl,
+  },
+  fallbackTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.subheading,
+    color: colors.text,
+    marginTop: SIZES.md,
+  },
+  fallbackSubtext: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    marginTop: SIZES.xs,
+    textAlign: 'center',
+    paddingHorizontal: SIZES.lg,
   },
   scrollContent: {
     padding: SIZES.md,
@@ -660,6 +779,11 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
   },
   title: {
     fontSize: SIZES.fontXxl,

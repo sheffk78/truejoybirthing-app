@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   Text,
-  Image,
   ImageBackground,
   Linking,
   Platform,
@@ -11,7 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { Icon } from '../../src/components/Icon';
 import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
@@ -35,34 +34,13 @@ export default function WelcomeScreen() {
         resizeMode="cover"
       >
         {/* Soft lavender/rose tint overlay */}
-        <LinearGradient
-          colors={[
-            'rgba(159, 131, 182, 0.3)',  // Soft lavender tint
-            'rgba(212, 165, 165, 0.4)',  // Dusty rose tint
-            colors.background + 'D9',     // Fade to background (85% opacity)
-            colors.background
-          ]}
-          locations={[0, 0.3, 0.65, 0.9]}
-          style={styles.gradientOverlay}
-        />
+        <View style={[styles.gradientOverlay, { backgroundColor: 'rgba(159, 131, 182, 0.35)' }]} />
       </ImageBackground>
       
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         {/* Logo at top - using transparent icon on photo background */}
         <View style={styles.logoContainer}>
-          {Platform.OS === 'web' ? (
-            <img 
-              src={BRAND.logoIcon} 
-              alt="True Joy Birthing"
-              style={{ width: 120, height: 120, objectFit: 'contain' }}
-            />
-          ) : (
-            <Image
-              source={{ uri: BRAND.logoIcon }}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-          )}
+          <BRAND.logoIcon width={72} height={72} />
         </View>
         
         {/* Spacer */}
@@ -106,15 +84,10 @@ export default function WelcomeScreen() {
             onClick={Platform.OS === 'web' ? () => router.push('/(auth)/signup') : undefined}
             data-testid="get-started-btn"
           >
-            <LinearGradient
-              colors={[colors.primary, colors.primaryDark]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.buttonGradient}
-            >
+            <View style={[styles.buttonGradient, { backgroundColor: colors.primary }]}>
               <Text style={styles.primaryButtonText}>Get Started Free</Text>
-              <Icon name="arrow-forward" size={20} color="#FFFFFF" />
-            </LinearGradient>
+              <Icon name="arrow-forward" size={20} color={colors.white} />
+            </View>
           </Pressable>
           
           <Pressable
@@ -172,10 +145,6 @@ const getStyles = createThemedStyles((colors) => ({
   logoContainer: {
     alignItems: 'center',
     paddingTop: SIZES.lg,
-  },
-  logo: {
-    width: 180,
-    height: 65,
   },
   spacer: {
     flex: 1,
@@ -244,7 +213,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.bodyBold,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   secondaryButton: {
     alignItems: 'center',

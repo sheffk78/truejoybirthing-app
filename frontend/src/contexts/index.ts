@@ -1,2 +1,2 @@
 // Export all contexts
-export { ThemeProvider, useTheme, useThemeColors, useThemeShadows, useIsDarkMode } from './ThemeContext';
+export { ThemeProvider, useTheme, useThemeColors, useIsDarkMode } from './ThemeContext';

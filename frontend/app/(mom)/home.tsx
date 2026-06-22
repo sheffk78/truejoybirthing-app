@@ -13,10 +13,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
+import ErrorBoundary from '../../src/components/ErrorBoundary';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData, getBabyDevLabel } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
@@ -49,6 +50,7 @@ export default function MomHomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [pendingContracts, setPendingContracts] = useState<PendingContract[]>([]);
   const [pendingInvoices, setPendingInvoices] = useState<PendingInvoice[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
   
   const fetchData = async () => {
     try {
@@ -60,6 +62,7 @@ export default function MomHomeScreen() {
       setBirthPlan(planData);
       setTimeline(timelineData);
       setWeeklyContent(contentData);
+      setLoadError(null);
       
       // Fetch contracts and invoices separately to handle errors gracefully
       try {
@@ -89,6 +92,7 @@ export default function MomHomeScreen() {
       }
     } catch (error) {
       console.error('Error fetching data:', error);
+      setLoadError('Unable to load your home screen. Pull to refresh or try again.');
     }
   };
   
@@ -111,6 +115,28 @@ export default function MomHomeScreen() {
   const firstName = user?.full_name?.split(' ')[0] || 'there';
   
   return (
+    <ErrorBoundary
+      fallback={
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+          <View style={styles.errorContainer}>
+            <Icon name="alert-circle-outline" size={48} color={colors.textLight} />
+            <Text style={styles.errorTitle}>Unable to Load Home</Text>
+            <Text style={styles.errorMessage}>
+              Something went wrong. Pull down to refresh or try again later.
+            </Text>
+            <Button
+              title="Try Again"
+              onPress={fetchData}
+              style={{ marginTop: SIZES.md }}
+              icon={<Icon name="refresh" size={18} color={colors.white} />}
+            />
+          </View>
+        </SafeAreaView>
+      }
+      onError={(error) => {
+        console.error('[Home Screen] Render error caught by ErrorBoundary:', error);
+      }}
+    >
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -119,13 +145,30 @@ export default function MomHomeScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
+        {/* Inline Error State */}
+        {loadError && (
+          <Card style={styles.errorCard}>
+            <Icon name="alert-circle-outline" size={32} color={colors.error} />
+            <Text style={styles.errorText}>{loadError}</Text>
+            <Button
+              title="Retry"
+              onPress={fetchData}
+              style={{ marginTop: SIZES.sm }}
+              icon={<Icon name="refresh" size={16} color={colors.white} />}
+            />
+          </Card>
+        )}
+        
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={[styles.greeting, { color: colors.text }]}>Hello, {firstName}</Text>
-            {timeline?.current_week && (
-              <Text style={[styles.weekText, { color: colors.textSecondary }]}>Week {timeline.current_week} of pregnancy</Text>
-            )}
+          <View style={styles.headerLeft}>
+            <BRAND.logoIcon width={28} height={28} />
+            <View>
+              <Text style={[styles.greeting, { color: colors.text }]}>Hello, {firstName}</Text>
+              {timeline?.current_week && (
+                <Text style={[styles.weekText, { color: colors.textSecondary }]}>Week {timeline.current_week} of pregnancy</Text>
+              )}
+            </View>
           </View>
           <TouchableOpacity 
             style={styles.avatarContainer} 
@@ -246,12 +289,12 @@ export default function MomHomeScreen() {
           return (
             <Card style={styles.babyDevCard}>
               <View style={styles.weeklyHeader}>
-                <View style={[styles.weeklyIconContainer, { backgroundColor: '#B87AA020' }]}>
-                  <Icon name="baby" size={22} color="#B87AA0" />
+                <View style={[styles.weeklyIconContainer, { backgroundColor: colors.secondary + '20' }]}>
+                  <Icon name="baby" size={22} color={colors.secondary} />
                 </View>
                 <View style={styles.weeklyHeaderText}>
                   <Text style={styles.weeklyLabel}>Baby Development</Text>
-                  <Text style={[styles.weeklyWeek, { color: '#B87AA0' }]}>
+                  <Text style={[styles.weeklyWeek, { color: colors.secondary }]}>
                     {weeklyContent.display_week || `Week ${currentWeek}`}
                   </Text>
                 </View>
@@ -273,7 +316,7 @@ export default function MomHomeScreen() {
                   />
                 ) : (
                   <View style={styles.babyDevImagePlaceholder}>
-                    <Icon name="image-outline" size={48} color="#B87AA040" />
+                    <Icon name="image-outline" size={48} color={colors.secondary + '40'} />
                   </View>
                 )}
               </View>
@@ -293,8 +336,8 @@ export default function MomHomeScreen() {
                 style={styles.weeklyReadMore}
                 onPress={() => router.push('/(mom)/weekly-tips')}
               >
-                <Text style={[styles.weeklyReadMoreText, { color: '#B87AA0' }]}>Learn more</Text>
-                <Icon name="chevron-forward" size={16} color="#B87AA0" />
+                <Text style={[styles.weeklyReadMoreText, { color: colors.secondary }]}>Learn more</Text>
+                <Icon name="chevron-forward" size={16} color={colors.secondary} />
               </TouchableOpacity>
             </Card>
           );
@@ -410,6 +453,7 @@ export default function MomHomeScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </ErrorBoundary>
   );
 }
 
@@ -427,6 +471,11 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: SIZES.lg,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
   },
   greeting: {
     fontSize: SIZES.fontXxl,
@@ -463,12 +512,6 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.md,
   },
   cardIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginRight: SIZES.sm,
   },
   cardTitle: {
@@ -521,14 +564,10 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     marginHorizontal: SIZES.xs,
-    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   actionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: SIZES.sm,
   },
   actionTitle: {
@@ -553,11 +592,6 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.sm,
   },
   weeklyIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginRight: SIZES.sm,
   },
   weeklyHeaderText: {
@@ -610,11 +644,6 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
   },
   actionRequiredIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginRight: SIZES.md,
   },
   actionRequiredContent: {
@@ -631,11 +660,44 @@ const getStyles = createThemedStyles((colors) => ({
     fontFamily: FONTS.body,
     color: colors.textSecondary,
   },
+  // Error State Styles
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SIZES.xl,
+  },
+  errorTitle: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.subheading,
+    color: colors.text,
+    marginTop: SIZES.md,
+  },
+  errorMessage: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    marginTop: SIZES.xs,
+    textAlign: 'center',
+    paddingHorizontal: SIZES.lg,
+  },
+  errorCard: {
+    marginBottom: SIZES.md,
+    padding: SIZES.md,
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    marginTop: SIZES.xs,
+    textAlign: 'center',
+  },
   // Baby Development Card Styles
   babyDevCard: {
     marginBottom: SIZES.md,
     padding: SIZES.md,
-    backgroundColor: '#FAF8F5',
+    backgroundColor: colors.background,
   },
   babyDevImage: {
     width: '100%',
@@ -648,13 +710,13 @@ const getStyles = createThemedStyles((colors) => ({
   babyDevImagePlaceholder: {
     height: 200,
     borderRadius: SIZES.radiusMd,
-    backgroundColor: '#B87AA012',
+    backgroundColor: colors.secondary + '12',
     alignItems: 'center',
     justifyContent: 'center',
   },
   babyDevSizeBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#A8B5A020',
+    backgroundColor: colors.accent + '20',
     paddingHorizontal: SIZES.sm,
     paddingVertical: SIZES.xs / 2,
     borderRadius: SIZES.radiusSm,
@@ -663,12 +725,12 @@ const getStyles = createThemedStyles((colors) => ({
   babyDevSizeBadgeText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: '#A8B5A0',
+    color: colors.accent,
   },
   babyDevTitle: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
-    color: '#2A2A2A',
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   babyDevDescription: {

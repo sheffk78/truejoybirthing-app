@@ -31,7 +31,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#9B6B9E"
+        "backgroundColor": "#8E8CB5"
       },
       "edgeToEdgeEnabled": false,
       "package": "com.truejoybirthing.app",
@@ -63,14 +63,14 @@
           "image": "./assets/images/splash-image.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#F8F4F9"
+          "backgroundColor": "#FAF8F5"
         }
       ],
       [
         "expo-notifications",
         {
           "icon": "./assets/images/icon.png",
-          "color": "#9F83B6"
+          "color": "#8E8CB5"
         }
       ],
       "@react-native-community/datetimepicker",

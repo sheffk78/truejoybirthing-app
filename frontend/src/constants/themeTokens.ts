@@ -232,89 +232,12 @@ export const DARK_COLORS: ColorTokens = {
 };
 
 // ============================================
-// SHADOW TOKENS
-// ============================================
-
-export interface ShadowTokens {
-  sm: {
-    shadowColor: string;
-    shadowOffset: { width: number; height: number };
-    shadowOpacity: number;
-    shadowRadius: number;
-    elevation: number;
-  };
-  md: {
-    shadowColor: string;
-    shadowOffset: { width: number; height: number };
-    shadowOpacity: number;
-    shadowRadius: number;
-    elevation: number;
-  };
-  lg: {
-    shadowColor: string;
-    shadowOffset: { width: number; height: number };
-    shadowOpacity: number;
-    shadowRadius: number;
-    elevation: number;
-  };
-}
-
-export const LIGHT_SHADOWS: ShadowTokens = {
-  sm: {
-    shadowColor: '#2A2A2A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  md: {
-    shadowColor: '#2A2A2A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  lg: {
-    shadowColor: '#2A2A2A',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 3,
-  },
-};
-
-export const DARK_SHADOWS: ShadowTokens = {
-  sm: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  md: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  lg: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 16,
-    elevation: 3,
-  },
-};
-
-// ============================================
 // FULL THEME TYPE
 // ============================================
 
 export interface Theme {
   name: 'LIGHT' | 'DARK';
   colors: ColorTokens;
-  shadows: ShadowTokens;
   fonts: typeof FONTS;
   sizes: typeof SIZES;
   brand: typeof BRAND;
@@ -323,7 +246,6 @@ export interface Theme {
 export const LIGHT_THEME: Theme = {
   name: 'LIGHT',
   colors: LIGHT_COLORS,
-  shadows: LIGHT_SHADOWS,
   fonts: FONTS,
   sizes: SIZES,
   brand: BRAND,
@@ -332,7 +254,6 @@ export const LIGHT_THEME: Theme = {
 export const DARK_THEME: Theme = {
   name: 'DARK',
   colors: DARK_COLORS,
-  shadows: DARK_SHADOWS,
   fonts: FONTS,
   sizes: SIZES,
   brand: BRAND,

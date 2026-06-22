@@ -18,7 +18,7 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, SHADOWS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface ShareRequest {

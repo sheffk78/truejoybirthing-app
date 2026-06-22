@@ -51,14 +51,14 @@ export const COLORS = {
 };
 
 export const FONTS = {
-  // Playfair Display for headings
-  heading: 'PlayfairDisplay_700Bold',
-  subheading: 'PlayfairDisplay_500Medium',
-  // Lato for body text
-  body: 'Lato_400Regular',
-  bodyMedium: 'Lato_400Regular',
-  bodyItalic: 'Lato_400Regular',
-  bodyBold: 'Lato_700Bold',
+  // Cormorant Garamond for headings
+  heading: 'CormorantGaramond_700Bold',
+  subheading: 'CormorantGaramond_600SemiBold',
+  // Source Sans 3 for body text
+  body: 'SourceSans3_400Regular',
+  bodyMedium: 'SourceSans3_500Medium',
+  bodyItalic: 'SourceSans3_400Regular_Italic',
+  bodyBold: 'SourceSans3_700Bold',
   // Fallbacks
   regular: 'System',
   medium: 'System',
@@ -98,38 +98,28 @@ export const SIZES = {
   touchMin: 44,
 };
 
-export const SHADOWS = {
-  sm: {
-    shadowColor: '#2A2A2A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  md: {
-    shadowColor: '#2A2A2A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  lg: {
-    shadowColor: '#2A2A2A',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    elevation: 3,
-  },
-};
+// Logo assets - local SVG files bundled with the app
+// react-native-svg-transformer (configured in metro.config.js) transforms .svg
+// files into React components backed by react-native-svg, so we import them
+// directly and render <BRAND.logoSvg /> instead of <Image source={...} />.
+import LogoWordmark from '../../assets/images/wordmark-horizontal.svg';
+import LogoIconMark from '../../assets/images/icon-mark.svg';
+import LogoWordmarkWhite from '../../assets/images/wordmark-horizontal-white.svg';
+import LogoWordmarkMono from '../../assets/images/wordmark-horizontal-mono.svg';
 
-// Logo URLs
 export const BRAND = {
-  logoSvg: 'https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/ccxz8is7_Logo%20TJB.svg',
-  logoJpg: 'https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/oqwstugf_true-joy-birthing-full-color-200%20%281%29.jpg',
-  // Transparent icon (no white background) - use on photo backgrounds
-  logoIcon: 'https://customer-assets.emergentagent.com/job_def95b5c-4fae-4e77-a6e4-2b57d8a6155e/artifacts/n90h7kfh_Logo%20TJB%20%281%29.svg',
+  // Horizontal wordmark (logo + "True Joy Birthing" text) - default logo
+  logoSvg: LogoWordmark,
+  // Alias for logoSvg - used where a "JPG" style logo was previously referenced
+  logoJpg: LogoWordmark,
+  // Transparent icon mark (no text) - use on photo backgrounds
+  logoIcon: LogoIconMark,
+  // White variant for dark backgrounds
+  logoWordmarkWhite: LogoWordmarkWhite,
+  // Monochrome variant
+  logoWordmarkMono: LogoWordmarkMono,
   name: 'True Joy Birthing',
   tagline: 'Your birth plan, your team, your support in one place.',
 };
 
-export default { COLORS, FONTS, SIZES, SHADOWS, BRAND };
+export default { COLORS, FONTS, SIZES, BRAND };

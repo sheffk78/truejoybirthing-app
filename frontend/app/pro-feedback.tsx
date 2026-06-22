@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../src/components/Icon';
 import { router } from 'expo-router';
 import { useAuthStore } from '../src/store/authStore';
 import { useSubscriptionStore } from '../src/store/subscriptionStore';
@@ -81,13 +81,13 @@ export default function ProFeedbackScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
+            <Icon name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Send Feedback</Text>
           <View style={{ width: 40 }} />
         </View>
         <View style={styles.accessDenied}>
-          <Ionicons name="lock-closed" size={48} color={colors.textSecondary} />
+          <Icon name="lock-closed" size={48} color={colors.textSecondary} />
           <Text style={styles.accessDeniedTitle}>Pro Feature</Text>
           <Text style={styles.accessDeniedText}>
             The feedback form is available for Pro subscribers only.
@@ -109,7 +109,7 @@ export default function ProFeedbackScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.successContainer}>
           <View style={styles.successIcon}>
-            <Ionicons name="checkmark-circle" size={64} color={colors.success} />
+            <Icon name="checkmark-circle" size={64} color={colors.success} />
           </View>
           <Text style={styles.successTitle}>Thank You!</Text>
           <Text style={styles.successText}>
@@ -133,7 +133,7 @@ export default function ProFeedbackScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Send Feedback</Text>
         <View style={{ width: 40 }} />
@@ -141,7 +141,7 @@ export default function ProFeedbackScreen() {
 
       <ScrollView style={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.introCard}>
-          <Ionicons name="chatbubble-ellipses-outline" size={24} color={colors.primary} />
+          <Icon name="chatbubble-ellipses-outline" size={24} color={colors.primary} />
           <Text style={styles.introText}>
             Tell us what's working well, what's confusing, or what you'd love to see next. 
             This goes directly to the True Joy Birthing team.
@@ -168,7 +168,7 @@ export default function ProFeedbackScreen() {
                   {topic.label}
                 </Text>
                 {feedbackTopic === topic.value && topic.value !== '' && (
-                  <Ionicons name="checkmark" size={18} color={colors.primary} />
+                  <Icon name="checkmark" size={18} color={colors.primary} />
                 )}
               </TouchableOpacity>
             ))}
@@ -212,10 +212,10 @@ export default function ProFeedbackScreen() {
           disabled={!feedbackText.trim() || isOverLimit || isSubmitting}
         >
           {isSubmitting ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={colors.white} />
           ) : (
             <>
-              <Ionicons name="send" size={20} color="#fff" />
+              <Icon name="send" size={20} color={colors.white} />
               <Text style={styles.submitButtonText}>Send Feedback</Text>
             </>
           )}
@@ -334,7 +334,7 @@ const getStyles = createThemedStyles((colors) => ({
     gap: 8,
   },
   submitButtonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
     fontSize: 16,
   },
@@ -365,7 +365,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 8,
   },
   upgradeButtonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
   },
 
@@ -397,7 +397,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 10,
   },
   doneButtonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: '600',
     fontSize: 16,
   },

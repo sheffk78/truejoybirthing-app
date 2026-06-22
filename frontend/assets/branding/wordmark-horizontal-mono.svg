@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 128" fill="none">
+  <!-- Icon mark -->
+  <g>
+    <path d="M 40 26 Q 26 62 64 94" stroke="#2A2A2A" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+    <path d="M 88 26 Q 102 62 64 94" stroke="#2A2A2A" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+    <ellipse cx="64" cy="54" rx="14" ry="18" fill="#3B3B3B"/>
+    <path d="M 64 60 C 61 56 56 56 56 52 C 56 49 59 47 62 49 C 63 50 64 51 64 51 C 64 51 65 50 66 49 C 69 47 72 49 72 52 C 72 56 67 56 64 60 Z" fill="#2A2A2A" opacity="0.55"/>
+  </g>
+  <!-- True Joy -->
+  <text x="148" y="62"
+        font-family="Cormorant Garamond, Georgia, serif" font-weight="700"
+        font-size="42" fill="#2A2A2A"
+        letter-spacing="-0.42">True Joy</text>
+  <!-- Birthing -->
+  <text x="322" y="62"
+        font-family="Source Sans 3, Helvetica, Arial, sans-serif" font-weight="600"
+        font-size="34" fill="#3B3B3B"
+        letter-spacing="0.68">Birthing</text>
+</svg>

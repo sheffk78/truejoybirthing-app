@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Image,
   ImageBackground,
   Alert,
   KeyboardAvoidingView,
@@ -15,7 +14,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
@@ -82,28 +81,9 @@ export default function LoginScreen() {
             style={styles.imageBg}
             resizeMode="cover"
           >
-            <LinearGradient
-              colors={[
-                'rgba(159, 131, 182, 0.4)',
-                'rgba(212, 165, 165, 0.3)',
-                'transparent'
-              ]}
-              style={styles.imageOverlay}
-            >
+            <View style={[styles.imageOverlay, { backgroundColor: 'rgba(159, 131, 182, 0.35)' }]}>
               <SafeAreaView style={styles.imageContent}>
-                {Platform.OS === 'web' ? (
-                <img 
-                  src={BRAND.logoIcon} 
-                  alt="True Joy Birthing"
-                  style={{ width: 160, height: 55, objectFit: 'contain' }}
-                />
-              ) : (
-                <Image
-                  source={{ uri: BRAND.logoIcon }}
-                  style={styles.splitLogo}
-                  resizeMode="contain"
-                />
-              )}
+                <BRAND.logoIcon width={64} height={64} />
                 <View style={styles.imageTextContainer}>
                   <Text style={styles.imageHeadline}>
                     Welcome back to your birth journey
@@ -113,7 +93,7 @@ export default function LoginScreen() {
                   </Text>
                 </View>
               </SafeAreaView>
-            </LinearGradient>
+            </View>
           </ImageBackground>
         </View>
         
@@ -204,16 +184,7 @@ export default function LoginScreen() {
         style={styles.mobileBg}
         resizeMode="cover"
       >
-        <LinearGradient
-          colors={[
-            'rgba(159, 131, 182, 0.35)',
-            'rgba(254, 252, 255, 0.8)',
-            '#FEFCFF',
-            '#FEFCFF'
-          ]}
-          locations={[0, 0.35, 0.55, 1]}
-          style={styles.mobileGradient}
-        />
+        <View style={[styles.mobileGradient, { backgroundColor: 'rgba(159, 131, 182, 0.35)' }]} />
       </ImageBackground>
       
       <SafeAreaView style={styles.mobileSafeArea} edges={['top', 'bottom']}>
@@ -326,10 +297,6 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.xl,
     justifyContent: 'space-between',
   },
-  splitLogo: {
-    width: 160,
-    height: 55,
-  },
   imageTextContainer: {
     marginBottom: SIZES.xxl,
   },
@@ -337,7 +304,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: 32,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
     marginBottom: SIZES.sm,
     textShadowColor: 'rgba(0,0,0,0.3)',
     textShadowOffset: { width: 0, height: 1 },

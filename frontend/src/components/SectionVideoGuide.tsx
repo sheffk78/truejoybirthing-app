@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { Icon } from './Icon';
 import { SIZES, FONTS } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
@@ -207,20 +207,12 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
           onClick={Platform.OS === 'web' ? handlePress : undefined}
           data-testid={`video-guide-${sectionId}`}
         >
-          <LinearGradient
-            colors={[colors.primary + '15', colors.secondary + '10']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradientBg}
-          >
+          <View style={[styles.gradientBg, { backgroundColor: colors.primary + '15' }]}>
             {/* Play Button Circle */}
             <View style={[styles.playButtonContainer, { shadowColor: colors.primary }]}>
-              <LinearGradient
-                colors={[colors.primary, colors.primaryDark]}
-                style={styles.playButton}
-              >
+              <View style={[styles.playButton, { backgroundColor: colors.primary }]}>
                 <Icon name="play" size={20} color="#FFFFFF" />
-              </LinearGradient>
+              </View>
             </View>
             
             {/* Text Content */}
@@ -240,7 +232,7 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
               size={20} 
               color={colors.primary} 
             />
-          </LinearGradient>
+          </View>
         </Pressable>
         {Platform.OS !== 'web' && renderNativeVideoModal()}
       </>
@@ -259,19 +251,15 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
           onPress={handlePress}
           data-testid={`video-guide-${sectionId}`}
         >
-          <LinearGradient
-            colors={[colors.primary + '15', colors.secondary + '10']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradientBg}
+          <View
+            style={[styles.gradientBg, { backgroundColor: colors.primary + '10' }]}
           >
-            <View style={[styles.playButtonContainer, { shadowColor: colors.primary }]}>
-              <LinearGradient
-                colors={[colors.primary, colors.primaryDark]}
+            <View style={[styles.playButtonContainer, { backgroundColor: colors.primary }]}>
+              <View
                 style={styles.playButton}
               >
                 <Icon name="play" size={20} color="#FFFFFF" />
-              </LinearGradient>
+              </View>
             </View>
             <View style={styles.textContent}>
               <Text style={[styles.videoTitle, { color: colors.text }]}>
@@ -283,7 +271,7 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
               </Text>
             </View>
             <Icon name="play-circle-outline" size={20} color={colors.primary} />
-          </LinearGradient>
+          </View>
         </Pressable>
         {renderNativeVideoModal()}
       </>

@@ -20,7 +20,7 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS, SHADOWS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { LaborSection, BirthRecordSection, PrenatalVisitSection, NewbornExamSection } from '../midwife';
@@ -587,7 +587,8 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.sm,
-    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   actionButton: {
     alignItems: 'center',

@@ -7,12 +7,11 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
-  ImageBackground,
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
@@ -30,7 +29,6 @@ interface RoleData {
   color: string;
   colorLight: string;
   pricing: string;
-  bgImage: string;
 }
 
 const getRoleOptions = (colors: ReturnType<typeof useColors>): RoleData[] => [
@@ -42,7 +40,6 @@ const getRoleOptions = (colors: ReturnType<typeof useColors>): RoleData[] => [
     color: colors.secondary,
     colorLight: colors.secondaryLight,
     pricing: 'Free Forever',
-    bgImage: 'https://images.unsplash.com/photo-1771814535949-53fd6188f5f2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGZsdWlkJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyNTE4MDI0fDA&ixlib=rb-4.1.0&q=85',
   },
   {
     value: 'DOULA',
@@ -52,7 +49,6 @@ const getRoleOptions = (colors: ReturnType<typeof useColors>): RoleData[] => [
     color: colors.primary,
     colorLight: colors.primaryLight,
     pricing: 'Pro Features',
-    bgImage: 'https://images.unsplash.com/photo-1771814536150-fa5677cfca01?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGZsdWlkJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyNTE4MDI0fDA&ixlib=rb-4.1.0&q=85',
   },
   {
     value: 'MIDWIFE',
@@ -62,7 +58,6 @@ const getRoleOptions = (colors: ReturnType<typeof useColors>): RoleData[] => [
     color: colors.accent,
     colorLight: colors.accent + '40',
     pricing: 'Pro Features',
-    bgImage: 'https://images.unsplash.com/photo-1771814567353-4be8ac21cfb4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMHBhc3RlbCUyMGZsdWlkJTIwZ3JhZGllbnR8ZW58MHx8fHwxNzcyNTE4MDI0fDA&ixlib=rb-4.1.0&q=85',
   },
 ];
 
@@ -167,17 +162,7 @@ export default function SignupScreen() {
                 onClick={Platform.OS === 'web' ? () => handleRoleSelect(option.value) : undefined}
                 data-testid={`role-card-${option.value.toLowerCase()}`}
               >
-                <ImageBackground
-                  source={{ uri: option.bgImage }}
-                  style={styles.roleCardBg}
-                  imageStyle={styles.roleCardBgImage}
-                >
-                  <LinearGradient
-                    colors={[option.color + '90', option.color + 'E0']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.roleCardGradient}
-                  >
+                <View style={[styles.roleCardBg, { backgroundColor: option.color }]}>
                     {/* Icon */}
                     <View style={styles.roleIconCircle}>
                       <Icon name={option.icon as any} size={32} color={option.color} />
@@ -194,10 +179,9 @@ export default function SignupScreen() {
                     
                     {/* Arrow */}
                     <View style={styles.roleCardArrow}>
-                      <Icon name="arrow-forward" size={20} color="#FFFFFF" />
+                      <Icon name="arrow-forward" size={20} color={colors.white} />
                     </View>
-                  </LinearGradient>
-                </ImageBackground>
+                </View>
               </Pressable>
             ))}
           </View>
@@ -320,7 +304,7 @@ export default function SignupScreen() {
             ) : (
               <>
                 <Text style={styles.submitButtonText}>Create Account</Text>
-                <Icon name="arrow-forward" size={20} color="#FFFFFF" />
+                <Icon name="arrow-forward" size={20} color={colors.white} />
               </>
             )}
           </Pressable>
@@ -400,11 +384,6 @@ const getStyles = createThemedStyles((colors) => ({
   },
   roleCardBg: {
     width: '100%',
-  },
-  roleCardBgImage: {
-    borderRadius: SIZES.radiusXl,
-  },
-  roleCardGradient: {
     padding: SIZES.lg,
     minHeight: 140,
   },
@@ -421,7 +400,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: 22,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
     marginBottom: 4,
   },
   roleCardSubtitle: {
@@ -441,7 +420,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   roleCardArrow: {
     position: 'absolute',
@@ -507,7 +486,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.bodyBold,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   buttonPressed: {
     opacity: 0.9,

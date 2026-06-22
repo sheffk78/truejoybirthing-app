@@ -111,6 +111,7 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   // Shield
   'shield': 'Shield',
   'shield-checkmark': 'ShieldCheck',
+  'shield-checkmark-outline': 'ShieldCheck',
   
   // Eye
   'eye': 'Eye',
@@ -348,6 +349,59 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   'stop': 'Square',
   'stop-circle': 'StopCircle',
   'stop-circle-outline': 'StopCircle',
+
+  // Appearance / Theme
+  'phone-portrait': 'Smartphone',
+  'phone-portrait-outline': 'Smartphone',
+  'sunny': 'Sun',
+  'sunny-outline': 'Sun',
+  'moon': 'Moon',
+  'moon-outline': 'Moon',
+
+  // Person add
+  'person-add': 'UserPlus',
+  'person-add-outline': 'UserPlus',
+
+  // Card / Credit card
+  'card': 'CreditCard',
+  'card-outline': 'CreditCard',
+
+  // Swap / Exchange
+  'swap-horizontal': 'ArrowLeftRight',
+  'swap-horizontal-outline': 'ArrowLeftRight',
+
+  // Briefcase
+  'briefcase': 'Briefcase',
+  'briefcase-outline': 'Briefcase',
+
+  // Cloud
+  'cloud-offline': 'CloudOff',
+  'cloud-offline-outline': 'CloudOff',
+
+  // Open external
+  'open-outline': 'ExternalLink',
+
+  // Pencil/Edit
+  'pencil': 'Pencil',
+  'pencil-outline': 'Pencil',
+
+  // Copy
+  'copy': 'Copy',
+  'copy-outline': 'Copy',
+
+  // Send outline (variant of send) — already mapped above
+
+  // Receipt
+  'receipt': 'Receipt',
+  'receipt-outline': 'Receipt',
+
+  // Camera
+  'camera': 'Camera',
+  'camera-outline': 'Camera',
+
+  // Chat bubble ellipses
+  'chatbubble-ellipses': 'MessageCircle',
+  'chatbubble-ellipses-outline': 'MessageCircle',
 };
 
 interface IconProps {

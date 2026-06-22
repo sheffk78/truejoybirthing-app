@@ -150,12 +150,6 @@ export const useThemeColors = () => {
   return theme.colors;
 };
 
-// Hook to get just the shadows
-export const useThemeShadows = () => {
-  const { theme } = useTheme();
-  return theme.shadows;
-};
-
 // Hook to check if dark mode
 export const useIsDarkMode = () => {
   const { isDark } = useTheme();

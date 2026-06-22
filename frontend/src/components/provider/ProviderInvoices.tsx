@@ -17,7 +17,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../Icon';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { apiRequest } from '../../utils/api';
@@ -461,7 +461,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         <View style={styles.headerButtons}>
           {!isClientScoped && (
             <TouchableOpacity style={styles.settingsButton} onPress={openCreateTemplate}>
-              <Ionicons name="settings-outline" size={22} color={primaryColor} />
+              <Icon name="settings-outline" size={22} color={primaryColor} />
             </TouchableOpacity>
           )}
           <Pressable
@@ -478,7 +478,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             accessibilityLabel="Create new invoice"
             accessibilityRole="button"
           >
-            <Ionicons name="add" size={24} color="#fff" />
+            <Icon name="add" size={24} color="#fff" />
           </Pressable>
         </View>
       </View>
@@ -515,7 +515,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                 </TouchableOpacity>
               ))}
               <TouchableOpacity style={styles.addTemplateCard} onPress={openCreateTemplate}>
-                <Ionicons name="add-circle-outline" size={24} color={primaryColor} />
+                <Icon name="add-circle-outline" size={24} color={primaryColor} />
                 <Text style={[styles.addTemplateText, { color: primaryColor }]}>Add New</Text>
               </TouchableOpacity>
             </ScrollView>
@@ -540,7 +540,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         {/* Invoice List */}
         {filteredInvoices.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Ionicons name="receipt-outline" size={48} color={colors.textLight} />
+            <Icon name="receipt-outline" size={48} color={colors.textLight} />
             <Text style={styles.emptyText}>
               {statusFilter === 'All' 
                 ? 'No invoices yet. Create your first invoice to get started.'
@@ -580,36 +580,36 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                 {invoice.status === 'Draft' && (
                   <>
                     <TouchableOpacity style={styles.actionButton} onPress={() => openEditInvoice(invoice)}>
-                      <Ionicons name="create-outline" size={18} color={primaryColor} />
+                      <Icon name="create-outline" size={18} color={primaryColor} />
                       <Text style={[styles.actionText, { color: primaryColor }]}>Edit</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.actionButton, { backgroundColor: primaryColor }]} onPress={() => handleSendInvoice(invoice.invoice_id)}>
-                      <Ionicons name="send-outline" size={18} color="#fff" />
+                      <Icon name="send-outline" size={18} color="#fff" />
                       <Text style={[styles.actionText, { color: '#fff' }]}>Send</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.actionButton} onPress={() => handleDeleteInvoice(invoice.invoice_id)}>
-                      <Ionicons name="trash-outline" size={18} color="#f44336" />
+                      <Icon name="trash-outline" size={18} color="#f44336" />
                     </TouchableOpacity>
                   </>
                 )}
                 {invoice.status === 'Sent' && (
                   <>
                     <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#4CAF50' }]} onPress={() => handleMarkPaid(invoice.invoice_id)}>
-                      <Ionicons name="checkmark-circle-outline" size={18} color="#fff" />
+                      <Icon name="checkmark-circle-outline" size={18} color="#fff" />
                       <Text style={[styles.actionText, { color: '#fff' }]}>Mark Paid</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.actionButton} onPress={() => handleSendReminder(invoice.invoice_id)}>
-                      <Ionicons name="notifications-outline" size={18} color={primaryColor} />
+                      <Icon name="notifications-outline" size={18} color={primaryColor} />
                       <Text style={[styles.actionText, { color: primaryColor }]}>Remind</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.actionButton} onPress={() => handleCancelInvoice(invoice.invoice_id)}>
-                      <Ionicons name="close-circle-outline" size={18} color="#f44336" />
+                      <Icon name="close-circle-outline" size={18} color="#f44336" />
                     </TouchableOpacity>
                   </>
                 )}
                 {invoice.status === 'Paid' && (
                   <TouchableOpacity style={styles.actionButton} onPress={() => handleMarkUnpaid(invoice.invoice_id)}>
-                    <Ionicons name="refresh-outline" size={18} color={colors.warning} />
+                    <Icon name="refresh-outline" size={18} color={colors.warning} />
                     <Text style={[styles.actionText, { color: colors.warning }]}>Mark Unpaid</Text>
                   </TouchableOpacity>
                 )}
@@ -634,7 +634,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
           <SafeAreaView style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowInvoiceModal(false)}>
-                <Ionicons name="close" size={24} color={colors.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>
                 {editingInvoice ? 'Edit Invoice' : 'New Invoice'}
@@ -651,11 +651,11 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             <Text style={styles.fieldLabel}>Client *</Text>
             {isClientScoped && params.clientId ? (
               <View style={[styles.clientDropdown, { borderColor: primaryColor, backgroundColor: primaryColor + '10' }]}>
-                <Ionicons name="person" size={18} color={primaryColor} />
+                <Icon name="person" size={18} color={primaryColor} />
                 <Text style={[styles.clientDropdownText, { color: primaryColor, fontWeight: '600' }]}>
                   {clientName || activeClients.find(c => c.client_id === params.clientId)?.name || 'Selected Client'}
                 </Text>
-                <Ionicons name="checkmark-circle" size={18} color={primaryColor} />
+                <Icon name="checkmark-circle" size={18} color={primaryColor} />
               </View>
             ) : (
               <View style={styles.clientDropdownContainer}>
@@ -665,13 +665,13 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     // Simple dropdown logic - show options
                   }}
                 >
-                  <Ionicons name="person-outline" size={18} color={selectedClientId ? primaryColor : colors.textLight} />
+                  <Icon name="person-outline" size={18} color={selectedClientId ? primaryColor : colors.textLight} />
                   <Text style={[styles.clientDropdownText, selectedClientId ? { color: colors.text } : { color: colors.textLight }]}>
                     {selectedClientId 
                       ? activeClients.find(c => c.client_id === selectedClientId)?.name || 'Select Client'
                       : 'Select a client'}
                   </Text>
-                  <Ionicons name="chevron-down" size={18} color={colors.textLight} />
+                  <Icon name="chevron-down" size={18} color={colors.textLight} />
                 </TouchableOpacity>
                 <View style={styles.clientOptions}>
                   {activeClients.map((client) => (
@@ -684,7 +684,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                         {client.name}
                       </Text>
                       {selectedClientId === client.client_id && (
-                        <Ionicons name="checkmark" size={18} color={primaryColor} />
+                        <Icon name="checkmark" size={18} color={primaryColor} />
                       )}
                     </TouchableOpacity>
                   ))}
@@ -731,7 +731,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                       style={styles.datePickerButton}
                       onPress={() => setShowIssueDatePicker(true)}
                     >
-                      <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+                      <Icon name="calendar-outline" size={18} color={colors.primary} />
                       <Text style={[styles.datePickerText, { color: issueDate ? colors.text : colors.textLight }]}>
                         {issueDate || 'Select date'}
                       </Text>
@@ -775,7 +775,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                       style={styles.datePickerButton}
                       onPress={() => setShowDueDatePicker(true)}
                     >
-                      <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+                      <Icon name="calendar-outline" size={18} color={colors.primary} />
                       <Text style={[styles.datePickerText, { color: dueDate ? colors.text : colors.textLight }]}>
                         {dueDate || 'Select date'}
                       </Text>
@@ -861,14 +861,14 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowPaymentModal(false)}>
-              <Ionicons name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {editingTemplate ? 'Edit Template' : 'New Payment Template'}
             </Text>
             {editingTemplate ? (
               <TouchableOpacity onPress={() => handleDeleteTemplate(editingTemplate.template_id)}>
-                <Ionicons name="trash-outline" size={24} color="#f44336" />
+                <Icon name="trash-outline" size={24} color="#f44336" />
               </TouchableOpacity>
             ) : (
               <View style={{ width: 24 }} />
@@ -900,7 +900,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               style={styles.defaultToggle}
               onPress={() => setTemplateIsDefault(!templateIsDefault)}
             >
-              <Ionicons
+              <Icon
                 name={templateIsDefault ? 'checkbox' : 'square-outline'}
                 size={24}
                 color={templateIsDefault ? primaryColor : colors.textLight}

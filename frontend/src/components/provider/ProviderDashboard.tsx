@@ -18,8 +18,8 @@ import Card from '../Card';
 import { useAuthStore } from '../../store/authStore';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { SIZES, SHADOWS, FONTS } from '../../constants/theme';
-import { useColors, useShadows } from '../../hooks/useThemedStyles';
+import { SIZES, FONTS } from '../../constants/theme';
+import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
 interface ShareRequest {
@@ -38,7 +38,6 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   const router = useRouter();
   const { user } = useAuthStore();
   const colors = useColors();
-  const shadows = useShadows();
   
   const [stats, setStats] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -194,7 +193,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
         {/* Lead Insights Card */}
         {stats?.lead_insights && (stats.lead_insights.total_leads > 0 || stats.lead_insights.active_leads > 0) && (
           <TouchableOpacity 
-            style={[styles.leadInsightsCard, { backgroundColor: colors.surface }, shadows.sm]}
+            style={[styles.leadInsightsCard, { backgroundColor: colors.surface }]}
             onPress={() => router.push(config.routes.leads as any)}
             activeOpacity={0.8}
             data-testid="lead-insights-card"
@@ -281,7 +280,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
           {config.dashboard.quickActions.map((action, index) => (
             <TouchableOpacity
               key={action.route}
-              style={[styles.actionCard, { backgroundColor: colors.surface }, shadows.sm]}
+              style={[styles.actionCard, { backgroundColor: colors.surface }]}
               onPress={() => router.push(action.route as any)}
               activeOpacity={0.8}
               data-testid={`action-${action.label.toLowerCase().replace(/\s/g, '-')}`}

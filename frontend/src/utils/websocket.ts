@@ -47,12 +47,17 @@ class WebSocketClient {
       this.ws.onclose = (event) => {
         console.log('WebSocket disconnected:', event.code);
         this.stopPingInterval();
-        this.attemptReconnect();
+        // Only attempt reconnect on abnormal close (code 1006) or going-away (1001)
+        // Don't reconnect on normal close (1000) or if token was cleared (disconnect called)
+        if (this.token && (event.code === 1006 || event.code === 1001 || event.code === 1011)) {
+          this.attemptReconnect();
+        }
       };
 
       this.ws.onerror = (error) => {
         // Silently log WebSocket errors - they're expected when WS is unavailable
         console.log('WebSocket connection unavailable');
+        // Don't throw or crash — the onclose handler will deal with reconnection
       };
     } catch (error) {
       console.error('Failed to create WebSocket:', error);

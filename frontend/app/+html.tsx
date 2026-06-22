@@ -12,18 +12,6 @@ export default function Root({ children }: PropsWithChildren) {
           name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
-        {/* Load Ionicons font for @expo/vector-icons on web */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-              @font-face {
-                font-family: 'Ionicons';
-                src: url('https://cdn.jsdelivr.net/npm/@expo/vector-icons@14.0.3/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf') format('truetype');
-                font-display: swap;
-              }
-            `,
-          }}
-        />
         {/*
           Disable body scrolling on web to make ScrollView components work correctly.
           If you want to enable scrolling, remove `ScrollViewStyleReset` and

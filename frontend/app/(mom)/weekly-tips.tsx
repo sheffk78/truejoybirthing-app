@@ -228,8 +228,8 @@ export default function WeeklyTipsScreen() {
           return (
             <Card style={styles.babyDevCard}>
               <View style={styles.contentHeader}>
-                <View style={[styles.iconContainer, { backgroundColor: '#B87AA020' }]}>
-                  <Icon name="baby" size={24} color="#B87AA0" />
+                <View style={[styles.iconContainer, { backgroundColor: colors.secondary + '20' }]}>
+                  <Icon name="baby" size={24} color={colors.secondary} />
                 </View>
                 <Text style={styles.contentLabel}>Baby Development</Text>
               </View>
@@ -256,7 +256,7 @@ export default function WeeklyTipsScreen() {
                 />
               ) : (
                 <View style={styles.babyDevImagePlaceholder}>
-                  <Icon name="image-outline" size={48} color="#B87AA040" />
+                  <Icon name="image-outline" size={48} color={colors.secondary + '40'} />
                 </View>
               )}
               
@@ -469,12 +469,12 @@ const getStyles = createThemedStyles((colors) => ({
   babyDevCard: {
     marginBottom: SIZES.md,
     padding: SIZES.lg,
-    backgroundColor: '#FAF8F5',
+    backgroundColor: colors.background,
   },
   babyDevPhaseLabel: {
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
-    color: '#B87AA0',
+    color: colors.secondary,
     marginBottom: SIZES.sm,
   },
   babyDevImage: {
@@ -487,7 +487,7 @@ const getStyles = createThemedStyles((colors) => ({
   babyDevImagePlaceholder: {
     height: 200,
     borderRadius: SIZES.radiusMd,
-    backgroundColor: '#B87AA012',
+    backgroundColor: colors.secondary + '12',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SIZES.md,
@@ -495,7 +495,7 @@ const getStyles = createThemedStyles((colors) => ({
   babyDevTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.bodyBold,
-    color: '#2A2A2A',
+    color: colors.text,
     marginBottom: SIZES.xs,
   },
   babyDevDescription: {

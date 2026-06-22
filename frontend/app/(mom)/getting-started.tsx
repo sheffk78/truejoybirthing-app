@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { Icon } from '../../src/components/Icon';
 import { useAuthStore } from '../../src/store/authStore';
 import { SIZES, FONTS } from '../../src/constants/theme';
@@ -101,15 +101,7 @@ export default function GettingStartedScreen() {
         style={styles.heroSection}
         resizeMode="cover"
       >
-        <LinearGradient
-          colors={[
-            'rgba(159, 131, 182, 0.5)',
-            'rgba(254, 252, 255, 0.9)',
-            colors.background,
-          ]}
-          locations={[0, 0.6, 1]}
-          style={styles.heroGradient}
-        >
+        <View style={[styles.heroGradient, { backgroundColor: 'rgba(159, 131, 182, 0.5)' }]}>
           <SafeAreaView edges={['top']}>
             {/* Back Button */}
             <Pressable
@@ -122,7 +114,7 @@ export default function GettingStartedScreen() {
               <Icon name="arrow-back" size={24} color={colors.text} />
             </Pressable>
           </SafeAreaView>
-        </LinearGradient>
+        </View>
       </ImageBackground>
       
       <ScrollView 
@@ -171,7 +163,7 @@ export default function GettingStartedScreen() {
                 {/* Action Button */}
                 <View style={[styles.actionButton, { backgroundColor: item.color }]}>
                   <Text style={styles.actionButtonText}>{item.action}</Text>
-                  <Icon name="arrow-forward" size={16} color="#FFFFFF" />
+                  <Icon name="arrow-forward" size={16} color={colors.white} />
                 </View>
               </View>
             </Pressable>
@@ -372,7 +364,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   tipsContainer: {
     backgroundColor: colors.primary + '08',

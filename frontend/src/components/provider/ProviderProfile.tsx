@@ -22,6 +22,7 @@ import Card from '../Card';
 import Button from '../Button';
 import Input from '../Input';
 import AppearanceSettings from '../AppearanceSettings';
+import LegalWebView from '../LegalWebView';
 import { useAuthStore } from '../../store/authStore';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { apiRequest, uploadImage } from '../../utils/api';
@@ -60,6 +61,9 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   const { status: subscriptionData, fetchStatus: fetchSubscriptionStatus } = useSubscriptionStore();
   const colors = useColors();
   const styles = getStyles(colors);
+
+  // Legal WebView state
+  const [legalView, setLegalView] = useState<{ url: string; title: string } | null>(null);
   
   const [profile, setProfile] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -816,14 +820,14 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         <View style={styles.legalSection}>
           <View style={styles.legalLinks}>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/privacy')}
+              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/privacy', title: 'Privacy Policy' })}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Privacy Policy</Text>
             </TouchableOpacity>
             <Text style={styles.legalSeparator}>•</Text>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}
+              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Disclaimer' })}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Disclaimer</Text>
@@ -831,20 +835,28 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           </View>
           <View style={styles.legalLinks}>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}
+              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Terms of Service' })}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Terms of Service</Text>
             </TouchableOpacity>
             <Text style={styles.legalSeparator}>•</Text>
             <TouchableOpacity 
-              onPress={() => Linking.openURL('https://truejoybirthing.com/contact/')}
+              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/contact/', title: 'Contact' })}
               style={styles.legalLink}
             >
               <Text style={styles.legalLinkText}>Contact</Text>
             </TouchableOpacity>
           </View>
         </View>
+        
+        {/* In-app Legal WebView */}
+        <LegalWebView
+          visible={legalView !== null}
+          url={legalView?.url ?? ''}
+          title={legalView?.title ?? ''}
+          onClose={() => setLegalView(null)}
+        />
         
         {/* Bottom Spacing */}
         <View style={{ height: 100 }} />

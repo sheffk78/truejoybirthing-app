@@ -19,7 +19,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../Icon';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { apiRequest, getApiBaseUrl } from '../../utils/api';
 import useAuthStore from '../../store/authStore';
@@ -465,7 +465,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                 style={styles.datePickerButton}
                 onPress={() => setActiveDateField(field.id)}
               >
-                <Ionicons name="calendar-outline" size={18} color={colors.primary} />
+                <Icon name="calendar-outline" size={18} color={colors.primary} />
                 <Text style={[styles.datePickerText, { color: value ? colors.text : colors.textLight }]}>
                   {value || 'Select date'}
                 </Text>
@@ -577,20 +577,20 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
               style={[styles.actionButton, { backgroundColor: primaryColor }]}
               onPress={() => handleSendContract(contract)}
             >
-              <Ionicons name="send" size={16} color="#fff" />
+              <Icon name="send" size={16} color="#fff" />
               <Text style={styles.actionButtonText}>Send</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionButton, styles.actionButtonOutline]}
               onPress={() => handleDeleteContract(contract)}
             >
-              <Ionicons name="trash-outline" size={16} color={colors.error} />
+              <Icon name="trash-outline" size={16} color={colors.error} />
             </TouchableOpacity>
           </>
         )}
         {contract.status === 'Sent' && (
           <View style={[styles.actionButton, { backgroundColor: colors.warning + '20', paddingHorizontal: 12 }]}>
-            <Ionicons name="time-outline" size={16} color={colors.warning} />
+            <Icon name="time-outline" size={16} color={colors.warning} />
             <Text style={[styles.actionButtonTextSmall, { color: colors.warning, marginLeft: 4 }]}>Awaiting Mom's Signature</Text>
           </View>
         )}
@@ -600,7 +600,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
             onPress={() => handleViewPDF(contract)}
             data-testid={`view-pdf-${contract.contract_id}`}
           >
-            <Ionicons name="document-outline" size={16} color={primaryColor} />
+            <Icon name="document-outline" size={16} color={primaryColor} />
             <Text style={[styles.actionButtonTextSmall, { color: primaryColor }]}>PDF</Text>
           </TouchableOpacity>
         )}
@@ -651,7 +651,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
           onPress={openCreateModal}
           data-testid="add-contract-btn"
         >
-          <Ionicons name="add" size={24} color="#fff" />
+          <Icon name="add" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -661,7 +661,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
       >
         {contracts.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="document-text-outline" size={64} color={colors.border} />
+            <Icon name="document-text-outline" size={64} color={colors.border} />
             <Text style={styles.emptyTitle}>
               {isClientScoped ? 'No Contracts for This Client' : 'No Contracts Yet'}
             </Text>
@@ -687,7 +687,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowCreateModal(false)}>
-                <Ionicons name="close" size={24} color={colors.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>New Service Agreement</Text>
               <View style={{ width: 24 }} />
@@ -702,7 +702,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                     index <= currentSection && { backgroundColor: primaryColor }
                   ]}>
                     {index < currentSection ? (
-                      <Ionicons name="checkmark" size={12} color="#fff" />
+                      <Icon name="checkmark" size={12} color="#fff" />
                     ) : (
                       <Text style={[
                         styles.progressNumber,
@@ -741,7 +741,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                         setFormData({ ...defaultValues });
                       }}
                     >
-                      <Ionicons name="document-outline" size={16} color={selectedTemplateId === '' ? primaryColor : colors.textSecondary} />
+                      <Icon name="document-outline" size={16} color={selectedTemplateId === '' ? primaryColor : colors.textSecondary} />
                       <Text style={[
                         styles.templateOptionText,
                         selectedTemplateId === '' && { color: primaryColor }
@@ -759,7 +759,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                           applyTemplate(template.template_id);
                         }}
                       >
-                        <Ionicons name="copy-outline" size={16} color={selectedTemplateId === template.template_id ? primaryColor : colors.textSecondary} />
+                        <Icon name="copy-outline" size={16} color={selectedTemplateId === template.template_id ? primaryColor : colors.textSecondary} />
                         <Text style={[
                           styles.templateOptionText,
                           selectedTemplateId === template.template_id && { color: primaryColor }
@@ -803,7 +803,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                           selectedClientId === client.client_id && { color: primaryColor, fontWeight: '600' }
                         ]}>{client.name}</Text>
                         {selectedClientId === client.client_id && (
-                          <Ionicons name="checkmark-circle" size={18} color={primaryColor} />
+                          <Icon name="checkmark-circle" size={18} color={primaryColor} />
                         )}
                       </View>
                         {client.edd && (
@@ -822,7 +822,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
 
               {/* Section header */}
               <View style={styles.sectionHeader}>
-                <Ionicons 
+                <Icon 
                   name={sections[currentSection].icon as any} 
                   size={24} 
                   color={primaryColor} 
@@ -851,7 +851,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                 onPress={goToPreviousSection}
                 disabled={currentSection === 0}
               >
-                <Ionicons name="arrow-back" size={20} color={currentSection === 0 ? colors.border : primaryColor} />
+                <Icon name="arrow-back" size={20} color={currentSection === 0 ? colors.border : primaryColor} />
                 <Text style={[styles.navButtonText, currentSection === 0 && styles.navButtonTextDisabled]}>
                   Previous
                 </Text>
@@ -867,7 +867,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                     <ActivityIndicator size="small" color="#fff" />
                   ) : (
                     <>
-                      <Ionicons name="checkmark-circle" size={20} color="#fff" />
+                      <Icon name="checkmark-circle" size={20} color="#fff" />
                       <Text style={styles.submitButtonText}>Create Contract</Text>
                     </>
                   )}
@@ -875,7 +875,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
               ) : (
                 <TouchableOpacity style={styles.navButton} onPress={goToNextSection}>
                   <Text style={[styles.navButtonText, { color: primaryColor }]}>Next</Text>
-                  <Ionicons name="arrow-forward" size={20} color={primaryColor} />
+                  <Icon name="arrow-forward" size={20} color={primaryColor} />
                 </TouchableOpacity>
               )}
             </View>
@@ -889,7 +889,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowPreviewModal(false)}>
-                <Ionicons name="close" size={24} color={colors.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Contract Details</Text>
               {selectedContract?.status === 'Draft' && !isQuickEditMode && (
@@ -897,7 +897,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                   setIsQuickEditMode(true);
                   setQuickEditData({ ...selectedContract });
                 }}>
-                  <Ionicons name="pencil" size={24} color={primaryColor} />
+                  <Icon name="pencil" size={24} color={primaryColor} />
                 </TouchableOpacity>
               )}
               {isQuickEditMode && (
@@ -905,7 +905,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                   {submitting ? (
                     <ActivityIndicator size="small" color={primaryColor} />
                   ) : (
-                    <Ionicons name="checkmark" size={24} color={primaryColor} />
+                    <Icon name="checkmark" size={24} color={primaryColor} />
                   )}
                 </TouchableOpacity>
               )}
@@ -973,7 +973,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                 style={[styles.actionButton, styles.actionButtonOutline, { flex: 1, marginRight: 8 }]}
                 onPress={() => selectedContract && handleViewPDF(selectedContract)}
               >
-                <Ionicons name="document-outline" size={20} color={primaryColor} />
+                <Icon name="document-outline" size={20} color={primaryColor} />
                 <Text style={[styles.actionButtonText, { color: primaryColor }]}>View PDF</Text>
               </TouchableOpacity>
               {selectedContract?.status === 'Draft' && (
@@ -984,7 +984,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                     handleSendContract(selectedContract);
                   }}
                 >
-                  <Ionicons name="send" size={20} color="#fff" />
+                  <Icon name="send" size={20} color="#fff" />
                   <Text style={styles.submitButtonText}>Send</Text>
                 </TouchableOpacity>
               )}

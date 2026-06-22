@@ -15,7 +15,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../Icon';
 import { useAuthStore } from '../../store/authStore';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
@@ -221,7 +221,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
         </View>
         {template.is_default && (
           <View style={[styles.defaultBadge, { backgroundColor: primaryColor }]}>
-            <Ionicons name="star" size={12} color="#fff" />
+            <Icon name="star" size={12} color="#fff" />
             <Text style={styles.defaultBadgeText}>Default</Text>
           </View>
         )}
@@ -241,7 +241,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
           style={[styles.actionBtn, { borderColor: primaryColor }]}
           onPress={() => openEditModal(template)}
         >
-          <Ionicons name="pencil" size={16} color={primaryColor} />
+          <Icon name="pencil" size={16} color={primaryColor} />
           <Text style={[styles.actionBtnText, { color: primaryColor }]}>Edit</Text>
         </TouchableOpacity>
 
@@ -250,7 +250,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
             style={[styles.actionBtn, { borderColor: primaryColor }]}
             onPress={() => handleSetDefault(template.template_id)}
           >
-            <Ionicons name="star-outline" size={16} color={primaryColor} />
+            <Icon name="star-outline" size={16} color={primaryColor} />
             <Text style={[styles.actionBtnText, { color: primaryColor }]}>Set Default</Text>
           </TouchableOpacity>
         )}
@@ -259,7 +259,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
           style={[styles.actionBtn, { borderColor: colors.error }]}
           onPress={() => handleDelete(template)}
         >
-          <Ionicons name="trash-outline" size={16} color={colors.error} />
+          <Icon name="trash-outline" size={16} color={colors.error} />
         </TouchableOpacity>
       </View>
     </View>
@@ -284,7 +284,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
           onPress={openCreateModal}
           data-testid="add-template-btn"
         >
-          <Ionicons name="add" size={24} color="#fff" />
+          <Icon name="add" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -296,7 +296,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
       >
         {templates.length === 0 ? (
           <View style={styles.emptyState}>
-            <Ionicons name="document-text-outline" size={64} color={colors.border} />
+            <Icon name="document-text-outline" size={64} color={colors.border} />
             <Text style={styles.emptyTitle}>No Templates Yet</Text>
             <Text style={styles.emptyText}>
               Create reusable templates to quickly generate {roleLabel.toLowerCase()} contracts with pre-filled terms and fees.
@@ -305,7 +305,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
               style={[styles.createBtn, { backgroundColor: primaryColor }]}
               onPress={openCreateModal}
             >
-              <Ionicons name="add-circle" size={20} color="#fff" />
+              <Icon name="add-circle" size={20} color="#fff" />
               <Text style={styles.createBtnText}>Create First Template</Text>
             </TouchableOpacity>
           </View>
@@ -320,7 +320,7 @@ export default function ProviderContractTemplates({ config }: ProviderContractTe
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowModal(false)}>
-                <Ionicons name="close" size={24} color={colors.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>
                 {editingTemplate ? 'Edit Template' : 'New Template'}
@@ -435,7 +435,7 @@ Postpartum visit"
                 onPress={() => setIsDefault(!isDefault)}
               >
                 <View style={[styles.checkbox, isDefault && { backgroundColor: primaryColor, borderColor: primaryColor }]}>
-                  {isDefault && <Ionicons name="checkmark" size={14} color="#fff" />}
+                  {isDefault && <Icon name="checkmark" size={14} color="#fff" />}
                 </View>
                 <Text style={styles.checkboxLabel}>Set as default template</Text>
               </TouchableOpacity>

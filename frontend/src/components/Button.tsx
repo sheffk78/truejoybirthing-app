@@ -10,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { SIZES, FONTS } from '../constants/theme';
-import { useColors, useShadows } from '../hooks/useThemedStyles';
+import { useColors } from '../hooks/useThemedStyles';
 
 interface ButtonProps {
   title: string;
@@ -42,7 +42,6 @@ export default function Button({
   testID,
 }: ButtonProps) {
   const colors = useColors();
-  const shadows = useShadows();
   
   const getButtonStyle = (): ViewStyle => {
     const base: ViewStyle = {
@@ -140,7 +139,6 @@ export default function Button({
       onClick={Platform.OS === 'web' ? onPress : undefined}
       style={({ pressed }) => [
         getButtonStyle(),
-        shadows.sm,
         style,
         pressed && { opacity: 0.8 }
       ]}

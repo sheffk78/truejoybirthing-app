@@ -21,7 +21,7 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { VideoPlayerModal, getYouTubeVideoId, getYouTubeThumbnail } from '../../src/components/YouTubePlayer';
 import { apiRequest } from '../../src/utils/api';
-import { SIZES, SHADOWS, FONTS } from '../../src/constants/theme';
+import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../src/constants/api';
 
@@ -402,8 +402,11 @@ export default function MarketplaceScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>Find Your Team</Text>
-          <Text style={styles.subtitle}>Connect with doulas and midwives in your area</Text>
+          <BRAND.logoIcon width={28} height={28} />
+          <View>
+            <Text style={styles.title}>Find Your Team</Text>
+            <Text style={styles.subtitle}>Connect with doulas and midwives in your area</Text>
+          </View>
         </View>
         
         {/* Search Section */}
@@ -835,6 +838,9 @@ const getStyles = createThemedStyles((colors) => ({
     paddingBottom: SIZES.xxl,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
     marginBottom: SIZES.lg,
   },
   title: {

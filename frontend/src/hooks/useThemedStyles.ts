@@ -93,12 +93,6 @@ export const useColors = () => {
   }), [colors]);
 };
 
-// Hook to get theme shadows
-export const useShadows = () => {
-  const { theme } = useTheme();
-  return theme.shadows;
-};
-
 // =============================================================================
 // createThemedStyles - Factory function for creating theme-aware styles
 // =============================================================================

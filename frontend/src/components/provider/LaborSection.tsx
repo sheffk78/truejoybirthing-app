@@ -19,7 +19,7 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS, SHADOWS } from '../../constants/theme';
+import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles } from '../../hooks/useThemedStyles';
 
 // ============== TYPES ==============

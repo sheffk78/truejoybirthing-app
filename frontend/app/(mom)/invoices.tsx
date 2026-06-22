@@ -10,16 +10,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../../src/components/Icon';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
-const STATUS_COLORS: Record<string, string> = {
-  'Sent': '#FF9800',
-  'Paid': '#4CAF50',
-  'Cancelled': '#9E9E9E',
+// Maps invoice status to theme color tokens at render time
+const getStatusColor = (status: string, colors: ReturnType<typeof useColors>): string => {
+  if (status === 'Paid') return colors.success;
+  if (status === 'Sent') return colors.warning;
+  return colors.textLight;
 };
 
 export default function MomInvoicesScreen() {
@@ -94,7 +95,7 @@ export default function MomInvoicesScreen() {
 
         {/* Disclaimer */}
         <View style={styles.disclaimerCard}>
-          <Ionicons name="information-circle" size={20} color={colors.primary} />
+          <Icon name="information-circle" size={20} color={colors.primary} />
           <Text style={styles.disclaimerText}>
             Payments are made directly to your provider using the instructions they provide. 
             True Joy Birthing does not process or guarantee payments between you and your provider.
@@ -104,7 +105,7 @@ export default function MomInvoicesScreen() {
         {/* Invoice List */}
         {invoices.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Ionicons name="receipt-outline" size={48} color={colors.textLight} />
+            <Icon name="receipt-outline" size={48} color={colors.textLight} />
             <Text style={styles.emptyTitle}>No Invoices Yet</Text>
             <Text style={styles.emptyText}>
               When your doula or midwife sends you an invoice, it will appear here.
@@ -124,8 +125,8 @@ export default function MomInvoicesScreen() {
                     {getProviderTypeLabel(invoice.provider_type)}
                   </Text>
                 </View>
-                <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[invoice.status] || '#9E9E9E') + '20' }]}>
-                  <Text style={[styles.statusText, { color: STATUS_COLORS[invoice.status] || '#9E9E9E' }]}>
+                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(invoice.status, colors) + '20' }]}>
+                  <Text style={[styles.statusText, { color: getStatusColor(invoice.status, colors) }]}>
                     {invoice.status}
                   </Text>
                 </View>
@@ -144,7 +145,7 @@ export default function MomInvoicesScreen() {
                 <Text style={styles.amountText}>{formatCurrency(invoice.amount)}</Text>
                 <View style={styles.viewButton}>
                   <Text style={styles.viewButtonText}>View Details</Text>
-                  <Ionicons name="chevron-forward" size={16} color={colors.primary} />
+                  <Icon name="chevron-forward" size={16} color={colors.primary} />
                 </View>
               </View>
             </TouchableOpacity>
@@ -158,7 +159,7 @@ export default function MomInvoicesScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowDetailModal(false)}>
-                <Ionicons name="close" size={24} color={colors.text} />
+                <Icon name="close" size={24} color={colors.text} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Invoice Details</Text>
               <View style={{ width: 24 }} />
@@ -197,8 +198,8 @@ export default function MomInvoicesScreen() {
                   )}
                   <View style={styles.detailRow}>
                     <Text style={styles.detailLabel}>Status:</Text>
-                    <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[selectedInvoice.status] || '#9E9E9E') + '20' }]}>
-                      <Text style={[styles.statusText, { color: STATUS_COLORS[selectedInvoice.status] || '#9E9E9E' }]}>
+                    <View style={[styles.statusBadge, { backgroundColor: getStatusColor(selectedInvoice.status, colors) + '20' }]}>
+                      <Text style={[styles.statusText, { color: getStatusColor(selectedInvoice.status, colors) }]}>
                         {selectedInvoice.status}
                       </Text>
                     </View>
@@ -220,7 +221,7 @@ export default function MomInvoicesScreen() {
                   <View style={styles.detailSection}>
                     <Text style={styles.sectionTitle}>Payment Instructions</Text>
                     <View style={styles.paymentInstructionsBox}>
-                      <Ionicons name="card-outline" size={20} color={colors.primary} style={{ marginRight: 8 }} />
+                      <Icon name="card-outline" size={20} color={colors.primary} style={{ marginRight: 8 }} />
                       <Text style={styles.paymentInstructionsText}>
                         {selectedInvoice.payment_instructions_text}
                       </Text>
@@ -238,7 +239,7 @@ export default function MomInvoicesScreen() {
 
                 {/* Disclaimer */}
                 <View style={styles.modalDisclaimerCard}>
-                  <Ionicons name="shield-checkmark-outline" size={16} color={colors.textSecondary} />
+                  <Icon name="shield-checkmark-outline" size={16} color={colors.textSecondary} />
                   <Text style={styles.modalDisclaimerText}>
                     Payments are made directly to your provider. True Joy Birthing does not process 
                     or guarantee payments between you and your provider.
