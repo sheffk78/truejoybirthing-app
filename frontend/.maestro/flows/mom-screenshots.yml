@@ -1,0 +1,54 @@
+appId: com.truejoybirthing.app
+---
+# Mom Screenshot Flow
+# Captures screenshots of all mom-facing screens for Play Store listing
+
+- launchApp
+- waitFor: 3000
+
+# Welcome screen → tap "I already have an account"
+- tapOn: "I already have an account"
+- waitFor: 2000
+
+# Login screen — enter mom demo credentials
+- tapOn: "Email"
+- inputText: "demo.mom@truejoybirthing.com"
+- tapOn: "Password"
+- inputText: "DemoMom2024!"
+- tapOn: "Log In"
+- waitFor: 5000
+
+# Home screen
+- assertVisible: "Hello"
+- takeScreenshot: mom-home
+
+# Navigate to Birth Plan
+- tapOn: "Birth Plan"
+- waitFor: 3000
+- takeScreenshot: mom-birth-plan
+
+# Navigate back to Home
+- tapOn: "Home"
+- waitFor: 2000
+
+# Navigate to Marketplace
+- tapOn: "Find Your Team"
+- waitFor: 3000
+- takeScreenshot: mom-marketplace
+
+# Navigate to Messages
+- tapOn: "Messages"
+- waitFor: 3000
+- takeScreenshot: mom-messages
+
+# Navigate to Profile
+- tapOn: "Profile"
+- waitFor: 3000
+- takeScreenshot: mom-profile
+
+# Navigate to Weekly Tips
+- tapOn: "Weekly Tips"
+- waitFor: 3000
+- takeScreenshot: mom-weekly-tips
+
+- stopApp

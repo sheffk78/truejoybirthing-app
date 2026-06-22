@@ -1,0 +1,40 @@
+appId: com.truejoybirthing.app
+---
+# Midwife Screenshot Flow
+# Captures screenshots of all midwife-facing screens
+
+- launchApp
+- waitFor: 3000
+
+# Welcome screen → tap "I already have an account"
+- tapOn: "I already have an account"
+- waitFor: 2000
+
+# Login screen — enter midwife demo credentials
+- tapOn: "Email"
+- inputText: "demo.midwife@truejoybirthing.com"
+- tapOn: "Password"
+- inputText: "DemoMidwife2024!"
+- tapOn: "Log In"
+- waitFor: 5000
+
+# Midwife Dashboard
+- assertVisible: "Dashboard"
+- takeScreenshot: midwife-dashboard
+
+# Navigate to Clients
+- tapOn: "Clients"
+- waitFor: 3000
+- takeScreenshot: midwife-clients
+
+# Navigate to Messages
+- tapOn: "Messages"
+- waitFor: 3000
+- takeScreenshot: midwife-messages
+
+# Navigate to Profile
+- tapOn: "Profile"
+- waitFor: 3000
+- takeScreenshot: midwife-profile
+
+- stopApp

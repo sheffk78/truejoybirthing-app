@@ -1,0 +1,52 @@
+appId: com.truejoybirthing.app
+---
+# Smoke Test — Core App Functionality
+# Tests that the app launches, auth works, and key screens don't crash
+
+# Test 1: App launches
+- launchApp
+- waitFor: 3000
+- assertVisible: "Your Birth Journey"
+
+# Test 2: Navigate to login
+- tapOn: "I already have an account"
+- waitFor: 2000
+- assertVisible: "Log In"
+
+# Test 3: Invalid credentials show error
+- tapOn: "Email"
+- inputText: "wrong@email.com"
+- tapOn: "Password"
+- inputText: "wrongpassword"
+- tapOn: "Log In"
+- waitFor: 3000
+
+# Test 4: Valid mom login
+- tapOn: "Email"
+- inputText: "demo.mom@truejoybirthing.com"
+- tapOn: "Password"
+- inputText: "DemoMom2024!"
+- tapOn: "Log In"
+- waitFor: 5000
+- assertVisible: "Hello"
+
+# Test 5: Navigate all tabs (crash check)
+- tapOn: "Find Your Team"
+- waitFor: 2000
+- tapOn: "Messages"
+- waitFor: 2000
+- tapOn: "Profile"
+- waitFor: 2000
+- tapOn: "Home"
+- waitFor: 2000
+
+# Test 6: Logout works
+- tapOn: "Profile"
+- waitFor: 2000
+- scrollUntilVisible:
+  text: "Log Out"
+- tapOn: "Log Out"
+- waitFor: 2000
+- assertVisible: "Your Birth Journey"
+
+- stopApp

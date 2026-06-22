@@ -10,11 +10,15 @@ import {
   ActivityIndicator,
   Platform,
   Modal,
+  Share,
+  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as StoreReview from 'expo-store-review';
+import Constants from 'expo-constants';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
@@ -234,6 +238,37 @@ export default function MomProfileScreen() {
     }
   };
   
+  const handleRateApp = async () => {
+    try {
+      if (Platform.OS === 'ios') {
+        const isAvailable = await StoreReview.isAvailableAsync();
+        if (isAvailable) {
+          await StoreReview.requestReview();
+          return;
+        }
+      }
+      // Android or iOS unavailable: open Play Store
+      Linking.openURL('https://play.google.com/store/apps/details?id=com.truejoybirthing.app');
+    } catch (error) {
+      console.error('Rate app error:', error);
+      // Fallback to Play Store
+      Linking.openURL('https://play.google.com/store/apps/details?id=com.truejoybirthing.app');
+    }
+  };
+
+  const handleShareApp = async () => {
+    try {
+      await Share.share({
+        message: 'Check out True Joy Birthing - your birth plan, your team, your support in one place!',
+        url: 'https://truejoybirthing.com',
+      });
+    } catch (error: any) {
+      console.error('Share error:', error);
+    }
+  };
+
+  const appVersion = Constants.expoConfig?.version || '1.0.0';
+
   const handleLogout = () => {
     // Alert.alert doesn't work on web, use window.confirm instead
     if (Platform.OS === 'web') {
@@ -784,6 +819,43 @@ export default function MomProfileScreen() {
           </Card>
         </TouchableOpacity>
         
+        {/* Rate App */}
+        <TouchableOpacity 
+          activeOpacity={0.8}
+          onPress={handleRateApp}
+        >
+          <Card style={styles.menuCard}>
+            <View style={styles.menuRow}>
+              <Icon name="star-outline" size={24} color={colors.primary} />
+              <Text style={styles.menuText}>Rate App</Text>
+              <Icon name="chevron-forward" size={20} color={colors.textLight} />
+            </View>
+          </Card>
+        </TouchableOpacity>
+        
+        {/* Share App */}
+        <TouchableOpacity 
+          activeOpacity={0.8}
+          onPress={handleShareApp}
+        >
+          <Card style={styles.menuCard}>
+            <View style={styles.menuRow}>
+              <Icon name="share-outline" size={24} color={colors.primary} />
+              <Text style={styles.menuText}>Share App</Text>
+              <Icon name="chevron-forward" size={20} color={colors.textLight} />
+            </View>
+          </Card>
+        </TouchableOpacity>
+        
+        {/* App Version */}
+        <Card style={styles.menuCard}>
+          <View style={styles.menuRow}>
+            <Icon name="information-circle-outline" size={24} color={colors.primary} />
+            <Text style={styles.menuText}>App Version</Text>
+            <Text style={styles.versionText}>{appVersion}</Text>
+          </View>
+        </Card>
+        
         {/* Logout */}
         <TouchableOpacity 
           style={styles.logoutButton} 
@@ -1158,6 +1230,10 @@ const getStyles = createThemedStyles((colors) => ({
     marginLeft: SIZES.md,
     fontSize: SIZES.fontMd,
     color: colors.text,
+  },
+  versionText: {
+    fontSize: SIZES.fontSm,
+    color: colors.textSecondary,
   },
   logoutButton: {
     flexDirection: 'row',
