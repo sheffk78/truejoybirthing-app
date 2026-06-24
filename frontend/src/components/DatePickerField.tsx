@@ -12,6 +12,7 @@ import { Icon } from './Icon';
 import Button from './Button';
 import { SIZES, FONTS } from '../constants/theme';
 import { useColors, createThemedStyles } from '../hooks/useThemedStyles';
+import { formatDateLocal, formatDatetimeLocal } from '../utils/date';
 
 interface DatePickerFieldProps {
   label: string;
@@ -133,11 +134,11 @@ export default function DatePickerField({
                     type={mode === 'datetime' ? 'datetime-local' : 'date'}
                     value={value ? (
                       mode === 'datetime'
-                        ? value.toISOString().slice(0, 16)
-                        : value.toISOString().split('T')[0]
+                        ? formatDatetimeLocal(value)
+                        : formatDateLocal(value)
                     ) : ''}
-                    min={minimumDate?.toISOString().split('T')[0]}
-                    max={maximumDate?.toISOString().split('T')[0]}
+                    min={minimumDate ? formatDateLocal(minimumDate) : undefined}
+                    max={maximumDate ? formatDateLocal(maximumDate) : undefined}
                     onChange={(e: any) => {
                       if (e.target.value) {
                         const newDate = new Date(e.target.value);

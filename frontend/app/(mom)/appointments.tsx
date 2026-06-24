@@ -14,6 +14,7 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from 'react-native';
+import { formatDateLocal, todayLocal } from '../../src/utils/date';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -209,7 +210,7 @@ export default function AppointmentsScreen() {
 
     setIsCreating(true);
     try {
-      const dateStr = appointmentDate.toISOString().split('T')[0];
+      const dateStr = formatDateLocal(appointmentDate);
       const timeStr = `${appointmentTime.getHours().toString().padStart(2, '0')}:${appointmentTime.getMinutes().toString().padStart(2, '0')}`;
       
       const result = await apiRequest('/appointments', {
@@ -622,8 +623,8 @@ export default function AppointmentsScreen() {
                       <View style={styles.webCalendarWrapper}>
                         <input
                           type="date"
-                          value={appointmentDate.toISOString().split('T')[0]}
-                          min={new Date().toISOString().split('T')[0]}
+                          value={formatDateLocal(appointmentDate)}
+                          min={todayLocal()}
                           onChange={(e: any) => {
                             if (e.target.value) {
                               setAppointmentDate(new Date(e.target.value + 'T12:00:00'));

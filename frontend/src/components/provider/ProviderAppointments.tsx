@@ -18,6 +18,7 @@ import {
   KeyboardAvoidingView,
   Image,
 } from 'react-native';
+import { formatDateLocal, todayLocal } from '../../utils/date';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Icon } from '../Icon';
@@ -181,7 +182,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
 
     setIsCreating(true);
     try {
-      const dateStr = appointmentDate.toISOString().split('T')[0];
+      const dateStr = formatDateLocal(appointmentDate);
       const timeStr = `${appointmentTime.getHours().toString().padStart(2, '0')}:${appointmentTime.getMinutes().toString().padStart(2, '0')}`;
 
       await apiRequest('/appointments', {
@@ -670,8 +671,8 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                   <View style={styles.webDatePickerContainer}>
                     <input
                       type="date"
-                      value={appointmentDate.toISOString().split('T')[0]}
-                      min={new Date().toISOString().split('T')[0]}
+                      value={formatDateLocal(appointmentDate)}
+                      min={todayLocal()}
                       onChange={(e: any) => {
                         const date = new Date(e.target.value);
                         if (!isNaN(date.getTime())) {

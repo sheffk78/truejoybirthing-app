@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from './Icon';
+import { formatDateLocal } from '../utils/date';
 import { SIZES, FONTS } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
 import Button from './Button';
@@ -78,7 +79,7 @@ const DateInputField = ({
       setShowPicker(false);
     }
     if (selectedDate) {
-      const formatted = selectedDate.toISOString().split('T')[0];
+      const formatted = formatDateLocal(selectedDate);
       onChange(formatted);
     }
   };

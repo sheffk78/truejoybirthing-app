@@ -2,6 +2,7 @@
 // Provides a list of prenatal visits with add/edit/detail modals
 
 import React, { useState, useCallback, useEffect } from 'react';
+import { formatDateLocal, todayLocal } from '../../utils/date';
 import {
   View,
   Text,
@@ -134,7 +135,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
   };
 
   const resetVisitForm = () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = todayLocal();
     setVisitDate(today);
     setUrinalysis('');
     setUrinalysisNote('');

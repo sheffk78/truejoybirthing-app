@@ -11,6 +11,7 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
+import { formatDateLocal } from '../../src/utils/date';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams } from 'expo-router';
@@ -90,7 +91,7 @@ export default function MidwifeVisitsScreen() {
       return;
     }
     
-    const visitDate = visitDateObj.toISOString().split('T')[0];
+    const visitDate = formatDateLocal(visitDateObj);
     setSaving(true);
     try {
       // Use unified endpoint which auto-creates linked appointment
@@ -328,7 +329,7 @@ export default function MidwifeVisitsScreen() {
                 <View style={styles.webDatePickerContainer}>
                   <input
                     type="date"
-                    value={visitDateObj ? visitDateObj.toISOString().split('T')[0] : ''}
+                    value={visitDateObj ? formatDateLocal(visitDateObj) : ''}
                     onChange={(e: any) => {
                       if (e.target.value) {
                         setVisitDateObj(new Date(e.target.value + 'T12:00:00'));

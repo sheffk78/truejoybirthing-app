@@ -1,6 +1,7 @@
 // Shared Invoices Screen for Doula and Midwife
 // Supports client-scoped access when clientId param is provided
 import React, { useEffect, useState } from 'react';
+import { formatDateLocal, todayLocal } from '../../utils/date';
 import {
   View,
   Text,
@@ -138,7 +139,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
     setSelectedClientId(getAutoSelectClientId());
     setDescription('');
     setAmount('');
-    setIssueDate(new Date().toISOString().split('T')[0]);
+    setIssueDate(todayLocal());
     setDueDate('');
     setPaymentInstructions('');
     setNotesForClient('');
@@ -151,7 +152,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
     if (defaultTemplate) {
       setPaymentInstructions(defaultTemplate.instructions_text);
     }
-    setIssueDate(new Date().toISOString().split('T')[0]);
+    setIssueDate(todayLocal());
     setShowInvoiceModal(true);
   };
 

@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { formatDateLocal } from '../../src/utils/date';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -69,7 +70,7 @@ export default function TimelineScreen() {
     }
     if (date) {
       setSelectedDate(date);
-      const formatted = date.toISOString().split('T')[0];
+      const formatted = formatDateLocal(date);
       setNewEvent({ ...newEvent, event_date: formatted });
     }
   };

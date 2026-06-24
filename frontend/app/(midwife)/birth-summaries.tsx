@@ -11,6 +11,7 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
+import { formatDateLocal } from '../../src/utils/date';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from '../../src/components/Icon';
@@ -84,7 +85,7 @@ export default function MidwifeBirthSummariesScreen() {
   // Compute the combined birth_datetime string from date + time pickers
   const getBirthDatetimeString = () => {
     if (!birthDate) return '';
-    const dateStr = birthDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const dateStr = formatDateLocal(birthDate); // YYYY-MM-DD
     const timeStr = `${birthTime.getHours().toString().padStart(2, '0')}:${birthTime.getMinutes().toString().padStart(2, '0')}`;
     return `${dateStr} ${timeStr}`;
   };
@@ -316,7 +317,7 @@ export default function MidwifeBirthSummariesScreen() {
                 <View style={styles.webDatePickerContainer}>
                   <input
                     type="date"
-                    value={birthDate ? birthDate.toISOString().split('T')[0] : ''}
+                    value={birthDate ? formatDateLocal(birthDate) : ''}
                     onChange={(e: any) => {
                       if (e.target.value) {
                         setBirthDate(new Date(e.target.value + 'T12:00:00'));

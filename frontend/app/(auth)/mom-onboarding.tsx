@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
+import { formatDateLocal, todayLocal } from '../../src/utils/date';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -214,8 +215,8 @@ export default function MomOnboardingScreen() {
                     <View style={styles.webCalendarWrapper}>
                       <input
                         type="date"
-                        value={dueDate ? dueDate.toISOString().split('T')[0] : ''}
-                        min={new Date().toISOString().split('T')[0]}
+                        value={dueDate ? formatDateLocal(dueDate) : ''}
+                        min={todayLocal()}
                         onChange={(e: any) => {
                           if (e.target.value) {
                             setDueDate(new Date(e.target.value + 'T12:00:00'));
