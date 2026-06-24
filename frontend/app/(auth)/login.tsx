@@ -133,6 +133,8 @@ export default function LoginScreen() {
                       onChangeText={setPassword}
                       secureTextEntry
                       autoCapitalize="none"
+                      autoComplete="current-password"
+                      textContentType="password"
                       leftIcon="lock-closed-outline"
                       error={errors.password}
                     />
@@ -235,6 +237,8 @@ export default function LoginScreen() {
                   onChangeText={setPassword}
                   secureTextEntry
                   autoCapitalize="none"
+                  autoComplete="current-password"
+                  textContentType="password"
                   leftIcon="lock-closed-outline"
                   error={errors.password}
                 />

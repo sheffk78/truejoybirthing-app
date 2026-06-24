@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { Platform, StatusBar, View, ActivityIndicator, BackHandler } from 'react-native';
+import { Platform, StatusBar, View, BackHandler } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {
@@ -18,7 +18,7 @@ import {
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { ThemeProvider, useTheme } from '../src/contexts/ThemeContext';
-import { COLORS } from '../src/constants/theme';
+import { COLORS, BRAND } from '../src/constants/theme';
 
 // Inner layout component that uses theme
 function ThemedLayout() {
@@ -172,7 +172,7 @@ export default function RootLayout() {
     return (
       <SafeAreaProvider>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <BRAND.logoSvg width={200} height={49} />
         </View>
       </SafeAreaProvider>
     );

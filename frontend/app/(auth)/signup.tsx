@@ -270,6 +270,8 @@ export default function SignupScreen() {
               onChangeText={setPassword}
               secureTextEntry
               autoCapitalize="none"
+              autoComplete="new-password"
+              textContentType="newPassword"
               leftIcon="lock-closed-outline"
               error={errors.password}
               testID="input-password"
@@ -282,6 +284,8 @@ export default function SignupScreen() {
               onChangeText={setConfirmPassword}
               secureTextEntry
               autoCapitalize="none"
+              autoComplete="new-password"
+              textContentType="newPassword"
               leftIcon="lock-closed-outline"
               error={errors.confirmPassword}
               testID="input-confirm-password"
