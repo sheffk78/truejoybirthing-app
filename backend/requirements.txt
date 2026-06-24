@@ -27,3 +27,7 @@ requests>=2.31.0
 typer>=0.9.0
 tzdata>=2024.2
 uvicorn==0.25.0
+apscheduler>=3.10.0
+feedparser>=6.0.0
+openai>=1.30.0
+PyGithub>=2.0.0
