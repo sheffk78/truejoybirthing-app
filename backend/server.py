@@ -1492,6 +1492,7 @@ from routes import contractions as contractions_routes
 from routes import admin_dashboard as admin_dashboard_routes
 from routes import admin_analytics as admin_analytics_routes
 from routes import admin_ambassador as admin_ambassador_routes
+from routes import feed as feed_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1518,6 +1519,7 @@ api_router.include_router(birth_summary_routes.router)
 api_router.include_router(uploads_routes.router)
 api_router.include_router(newborn_exam_routes.router)
 api_router.include_router(contractions_routes.router)
+api_router.include_router(feed_routes.router)
 # Admin dashboard routes mounted directly on app (not under /api prefix)
 # so frontend paths match: /admin/api/dashboard/*
 
@@ -1965,6 +1967,10 @@ logger = logging.getLogger(__name__)
 async def startup_ensure_demo_accounts():
     """Ensure demo accounts exist on every server startup for Apple review."""
     await ensure_demo_accounts(db)
+    
+    # Research feed: raw article fetching runs on the server.
+    # LLM processing (summarization, tagging, blog posts) is handled
+    # by the agent (Kit) via cron job — no API keys needed on the server.
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
