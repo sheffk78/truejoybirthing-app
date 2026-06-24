@@ -1,0 +1,52 @@
+appId: com.truejoybirthing.app
+---
+# Doula Screenshot Flow — 4 screens (iOS)
+- clearState
+- killApp
+- launchApp
+- waitForAnimationToEnd
+
+# Navigate to login via deep link
+- openLink: truejoybirthing://login
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Login — enter doula credentials
+- tapOn: "Enter your email"
+- inputText: "demo.doula@truejoybirthing.com"
+- tapOn: "Enter your password"
+- inputText: "DemoDoula2024!"
+- tapOn: "Welcome Back"
+- tapOn: "Log In"
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Dismiss "Save Password?" modal
+- tapOn: "Not Now"
+- waitForAnimationToEnd
+
+# Screen 6: Accept Client (Clients tab)
+- openLink: truejoybirthing://clients
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ios-doula-accept-client
+
+# Screen 7: Send Invoice
+- openLink: truejoybirthing://invoices
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ios-doula-send-invoice
+
+# Screen 8: Contract
+- openLink: truejoybirthing://contracts
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ios-doula-contract
+
+# Screen 9: Profile
+- openLink: truejoybirthing://profile
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ios-doula-profile
+
+- stopApp

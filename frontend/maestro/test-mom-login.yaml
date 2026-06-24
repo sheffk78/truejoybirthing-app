@@ -1,0 +1,26 @@
+appId: com.truejoybirthing.app
+---
+# Test: Mom Login + Dashboard
+- clearState
+- killApp
+- launchApp
+- waitForAnimationToEnd
+
+# Welcome screen → tap "I already have an account"
+- tapOn: "I already have an account"
+- waitForAnimationToEnd
+
+# Login screen — enter demo credentials
+- tapOn: "Enter your email"
+- inputText: "demo.mom@truejoybirthing.com"
+- tapOn: "Enter your password"
+- inputText: "DemoMom2024!"
+- hideKeyboard
+- tapOn: "Log In"
+- waitForAnimationToEnd
+
+# Dashboard — verify we got past login
+- assertVisible: "Hello"
+- takeScreenshot: ios-mom-dashboard
+
+- stopApp

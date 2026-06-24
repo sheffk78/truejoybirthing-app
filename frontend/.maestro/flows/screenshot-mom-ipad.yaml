@@ -1,0 +1,57 @@
+appId: com.truejoybirthing.app
+---
+# Mom Screenshot Flow — iPad
+# Uses welcome screen navigation (no deep link to avoid dialog)
+- clearState
+- killApp
+- launchApp
+- waitForAnimationToEnd
+
+# Welcome → tap "I already have an account"
+- tapOn: "I already have an account"
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Login — enter mom credentials
+- tapOn: "Enter your email"
+- inputText: "demo.mom@truejoybirthing.com"
+- tapOn: "Enter your password"
+- inputText: "DemoMom2024!"
+- tapOn: "Welcome Back"
+- tapOn: "Log In"
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Dismiss "Save Password?" modal
+- tapOn: "Not Now"
+- waitForAnimationToEnd
+
+# Screen 1: Mom Dashboard
+- takeScreenshot: ipad-mom-dashboard
+
+# Screen 2: Birth Plan
+- tapOn: "Open Birth Plan"
+- waitForAnimationToEnd
+- takeScreenshot: ipad-mom-birth-plan
+
+# Screen 3: Wellness Form
+- openLink: truejoybirthing://wellness
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ipad-mom-wellness-form
+
+# Screen 4: Contraction Timer
+- openLink: truejoybirthing://contraction-timer
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ipad-mom-contraction-timer
+
+# Screen 5: Marketplace
+- openLink: truejoybirthing://my-team
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ipad-mom-marketplace
+
+- stopApp

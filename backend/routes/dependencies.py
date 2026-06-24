@@ -6,13 +6,13 @@ This module provides a centralized way to access shared dependencies
 """
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from typing import Optional, Callable, List
+from typing import Optional, List, Callable
 from datetime import datetime, timezone, timedelta
 from passlib.context import CryptContext
 from jose import jwt
+import uuid
 from fastapi import Request, HTTPException, Depends
 from pydantic import BaseModel
-import uuid
 import sys
 import os
 
@@ -32,9 +32,8 @@ create_notification: Optional[Callable] = None
 send_notification_email: Optional[Callable] = None
 ws_manager = None
 
-# Resend config
+# PostMark config (from email_service module)
 SENDER_EMAIL: str = ""
-RESEND_API_KEY: str = ""
 
 # Auth function references (set during init)
 _get_current_user: Optional[Callable] = None
@@ -64,14 +63,14 @@ def init_dependencies(
     sender_email: str,
     get_current_user_func: Callable = None,
     check_role_func: Callable = None,
-    resend_api_key: str = ""
+    postmark_api_key: str = ""
 ):
     """
     Initialize shared dependencies from the main server module.
     Called once at application startup.
     """
     global db, pwd_context, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_DAYS
-    global create_notification, send_notification_email, ws_manager, SENDER_EMAIL, RESEND_API_KEY
+    global create_notification, send_notification_email, ws_manager, SENDER_EMAIL
     global _get_current_user, _check_role
     
     db = database
@@ -83,7 +82,6 @@ def init_dependencies(
     send_notification_email = email_func
     ws_manager = websocket_manager
     SENDER_EMAIL = sender_email
-    RESEND_API_KEY = resend_api_key
     _get_current_user = get_current_user_func
     _check_role = check_role_func
 

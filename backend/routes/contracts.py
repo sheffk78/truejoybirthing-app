@@ -44,12 +44,8 @@ from reportlab.lib import colors
 
 router = APIRouter(tags=["Contracts"])
 
-# Email sending will use dependencies
-try:
-    import resend
-    resend.api_key = None  # Will be set from dependencies
-except ImportError:
-    resend = None
+# Email sending via email_service
+# (init_contracts_deps sets up the postmark_api_key and sender_email)
 
 
 # ============== PYDANTIC MODELS ==============
@@ -297,23 +293,22 @@ def generate_midwife_contract_pdf_bytes(contract: dict) -> bytes:
 # ============== EMAIL HELPERS ==============
 
 # These will be initialized from dependencies
-_resend_api_key = None
 _sender_email = None
 _create_notification = None
 
-def init_contracts_deps(resend_key: str, sender_email: str, notification_func):
+# Import PostMark-based email sender
+from services.email_service import send_email as postmark_send_email
+
+def init_contracts_deps(postmark_key: str, sender_email: str, notification_func):
     """Initialize contract dependencies"""
-    global _resend_api_key, _sender_email, _create_notification
-    _resend_api_key = resend_key
+    global _sender_email, _create_notification
     _sender_email = sender_email
     _create_notification = notification_func
-    if resend and resend_key:
-        resend.api_key = resend_key
 
 
 async def send_signed_contract_email(contract_type: str, contract: dict, recipient_email: str, recipient_name: str, provider_name: str) -> bool:
     """Send signed contract PDF via email"""
-    if not resend or not _resend_api_key:
+    if not _sender_email:
         return False
     
     try:
@@ -329,24 +324,22 @@ async def send_signed_contract_email(contract_type: str, contract: dict, recipie
         import base64
         pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
         
-        params = {
-            "from": _sender_email,
-            "to": recipient_email,
-            "subject": subject,
-            "html": f"""
+        return await postmark_send_email(
+            to=recipient_email,
+            subject=subject,
+            html=f"""
             <h2>True Joy Birthing</h2>
             <p>Hi {recipient_name},</p>
             <p>The service agreement with {provider_name} has been signed by all parties.</p>
             <p>Please find the signed agreement attached to this email for your records.</p>
             <p>Best wishes,<br>True Joy Birthing</p>
             """,
-            "attachments": [{
-                "filename": filename,
-                "content": pdf_base64
+            attachments=[{
+                "Name": filename,
+                "Content": pdf_base64,
+                "ContentType": "application/pdf",
             }]
-        }
-        await asyncio.to_thread(resend.Emails.send, params)
-        return True
+        )
     except Exception as e:
         print(f"Failed to send signed contract email: {e}")
         return False
@@ -575,16 +568,15 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
     client = await db.clients.find_one({"client_id": contract["client_id"]}, {"_id": 0})
     
     email_sent = False
-    if client and client.get("linked_mom_id") and resend and _sender_email:
+    if client and client.get("linked_mom_id") and _sender_email:
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
                 signing_url = f"https://bundle-resolve.preview.emergentagent.com/contract/{contract_id}"
-                params = {
-                    "from": _sender_email,
-                    "to": mom["email"],
-                    "subject": f"Doula Service Agreement from {user.full_name}",
-                    "html": f"""
+                email_sent = await postmark_send_email(
+                    to=mom["email"],
+                    subject=f"Doula Service Agreement from {user.full_name}",
+                    html=f"""
                     <h2>True Joy Birthing</h2>
                     <p>Hi {client['name']},</p>
                     <p>{user.full_name} has sent you a Doula Service Agreement to review and sign.</p>
@@ -592,10 +584,8 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
                     <p><a href="{signing_url}" style="background-color: #8B6F9C; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">View & Sign Contract</a></p>
                     <p>If you have any questions, please contact your doula directly.</p>
                     <p>Best wishes,<br>True Joy Birthing</p>
-                    """
-                }
-                await asyncio.to_thread(resend.Emails.send, params)
-                email_sent = True
+                    """,
+                )
             except Exception as e:
                 print(f"Failed to send contract email: {e}")
     
@@ -1097,16 +1087,15 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
     client = await db.clients.find_one({"client_id": contract["client_id"]}, {"_id": 0})
     
     email_sent = False
-    if client and client.get("linked_mom_id") and resend and _sender_email:
+    if client and client.get("linked_mom_id") and _sender_email:
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
                 signing_url = f"https://bundle-resolve.preview.emergentagent.com/sign-midwife-contract?contractId={contract_id}"
-                params = {
-                    "from": _sender_email,
-                    "to": mom["email"],
-                    "subject": f"Midwifery Services Agreement from {user.full_name}",
-                    "html": f"""
+                email_sent = await postmark_send_email(
+                    to=mom["email"],
+                    subject=f"Midwifery Services Agreement from {user.full_name}",
+                    html=f"""
                     <h2>True Joy Birthing</h2>
                     <p>Hi {contract['client_name']},</p>
                     <p>{user.full_name} has sent you a Midwifery Services Agreement to review and sign.</p>
@@ -1114,10 +1103,8 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
                     <p><a href="{signing_url}" style="background-color: #5B8C7A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">View & Sign Agreement</a></p>
                     <p>If you have any questions, please contact your midwife directly.</p>
                     <p>Best wishes,<br>True Joy Birthing</p>
-                    """
-                }
-                await asyncio.to_thread(resend.Emails.send, params)
-                email_sent = True
+                    """,
+                )
             except Exception as e:
                 print(f"Failed to send midwife contract email: {e}")
     

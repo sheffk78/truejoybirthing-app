@@ -1,0 +1,46 @@
+appId: com.truejoybirthing.app
+---
+# Midwife Screenshot Flow — 3 health form screens (iOS)
+- clearState
+- killApp
+- launchApp
+- waitForAnimationToEnd
+
+# Navigate to login via deep link
+- openLink: truejoybirthing://login
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Login — enter midwife credentials
+- tapOn: "Enter your email"
+- inputText: "demo.midwife@truejoybirthing.com"
+- tapOn: "Enter your password"
+- inputText: "DemoMidwife2024!"
+- tapOn: "Welcome Back"
+- tapOn: "Log In"
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Dismiss "Save Password?" modal
+- tapOn: "Not Now"
+- waitForAnimationToEnd
+
+# Screen 10: Health Form 1 — Clients list (initial intake)
+- openLink: truejoybirthing://clients
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ios-midwife-health-form-1
+
+# Screen 11: Health Form 2 — Visit notes
+- openLink: truejoybirthing://visits
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ios-midwife-health-form-2
+
+# Screen 12: Health Form 3 — Postpartum / Birth summaries
+- openLink: truejoybirthing://birth-summaries
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- takeScreenshot: ios-midwife-health-form-3
+
+- stopApp

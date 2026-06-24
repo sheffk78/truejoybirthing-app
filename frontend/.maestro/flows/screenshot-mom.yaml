@@ -1,0 +1,61 @@
+appId: com.truejoybirthing.app
+---
+# Mom Screenshot Flow — 5 screens (iOS)
+# Uses deep links to navigate between screens reliably
+- clearState
+- killApp
+- launchApp
+- waitForAnimationToEnd
+
+# Navigate to login via deep link
+- openLink: truejoybirthing://login
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Login — enter mom credentials
+- tapOn: "Enter your email"
+- inputText: "demo.mom@truejoybirthing.com"
+- tapOn: "Enter your password"
+- inputText: "DemoMom2024!"
+- tapOn: "Welcome Back"
+- tapOn: "Log In"
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Dismiss "Save Password?" modal
+- tapOn: "Not Now"
+- waitForAnimationToEnd
+
+# Screen 1: Mom Dashboard (default after login)
+- takeScreenshot: ios-mom-dashboard
+
+# Screen 2: Birth Plan — tap button on dashboard card
+- tapOn: "Open Birth Plan"
+- waitForAnimationToEnd
+- takeScreenshot: ios-mom-birth-plan
+
+# Navigate to Wellness via deep link
+- openLink: truejoybirthing://wellness
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Screen 3: Wellness Form
+- takeScreenshot: ios-mom-wellness-form
+
+# Navigate to Contraction Timer via deep link
+- openLink: truejoybirthing://contraction-timer
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Screen 4: Contraction Timer
+- takeScreenshot: ios-mom-contraction-timer
+
+# Navigate to Marketplace via deep link
+- openLink: truejoybirthing://my-team
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Screen 5: Marketplace (My Team)
+- takeScreenshot: ios-mom-marketplace
+
+- stopApp

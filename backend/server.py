@@ -15,8 +15,13 @@ from datetime import datetime, timezone, timedelta
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 import httpx
-import resend
 import json
+
+# Email service uses PostMark (via httpx)
+from services.email_service import (
+    send_email as postmark_send_email,
+    SENDER_EMAIL as POSTMARK_SENDER_EMAIL,
+)
 
 # Import doula contract template
 from doula_contract_template import (
@@ -51,9 +56,8 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Resend Email Configuration
-resend.api_key = os.environ.get('RESEND_API_KEY', '')
-SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
+# PostMark Email Configuration
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'True Joy Birthing <no-reply@contact.truejoybirthing.com>')
 
 # JWT Configuration
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'true-joy-birthing-secret-key-2025-production')
@@ -416,8 +420,23 @@ async def send_signed_contract_email(contract_type: str, contract: dict, recipie
             ]
         }
         
-        await asyncio.to_thread(resend.Emails.send, params)
-        return True
+        # Convert attachments to PostMark format
+        postmark_attachments = []
+        if params.get("attachments"):
+            for att in params["attachments"]:
+                postmark_attachments.append({
+                    "Name": att["filename"],
+                    "Content": att["content"],
+                    "ContentType": "application/pdf",
+                })
+
+        success = await postmark_send_email(
+            to=params["to"],
+            subject=params["subject"],
+            html=params["html"],
+            attachments=postmark_attachments,
+        )
+        return success
     except Exception as e:
         print(f"Failed to send signed contract email: {e}")
         return False
@@ -1256,25 +1275,16 @@ class ContractSignRequest(BaseModel):
 # ============== EMAIL HELPER ==============
 
 async def send_notification_email(to_email: str, subject: str, html_content: str):
-    """Send email notification using Resend"""
-    if not resend.api_key:
-        logging.warning("RESEND_API_KEY not configured, skipping email")
-        return None
-    
-    params = {
-        "from": SENDER_EMAIL,
-        "to": [to_email],
-        "subject": subject,
-        "html": html_content
-    }
-    
-    try:
-        result = await asyncio.to_thread(resend.Emails.send, params)
-        logging.info(f"Email sent to {to_email}: {result.get('id')}")
-        return result
-    except Exception as e:
-        logging.error(f"Failed to send email to {to_email}: {str(e)}")
-        return None
+    """Send email notification using PostMark"""
+    success = await postmark_send_email(
+        to=to_email,
+        subject=subject,
+        html=html_content,
+    )
+    if success:
+        logging.info(f"Email sent to {to_email}: {subject}")
+        return {"id": "postmark_sent"}
+    return None
 
 def get_share_request_email_html(mom_name: str, provider_name: str):
     """Generate HTML for share request notification email"""
@@ -1443,7 +1453,7 @@ route_deps.init_dependencies(
     sender_email=SENDER_EMAIL,
     get_current_user_func=get_current_user,
     check_role_func=check_role,
-    resend_api_key=os.environ.get("RESEND_API_KEY", "")
+    postmark_api_key=os.environ.get("POSTMARK_API_KEY", "")
 )
 
 # Import and register modular routers AFTER dependencies are initialized
@@ -1460,7 +1470,7 @@ from routes import contracts as contracts_routes
 
 # Initialize contracts dependencies (for email sending)
 contracts_routes.init_contracts_deps(
-    resend_key=os.environ.get("RESEND_API_KEY", ""),
+    postmark_key=os.environ.get("POSTMARK_API_KEY", ""),
     sender_email=SENDER_EMAIL,
     notification_func=create_notification
 )

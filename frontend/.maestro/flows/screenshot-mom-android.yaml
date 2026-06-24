@@ -1,0 +1,54 @@
+appId: com.truejoybirthing.app
+---
+# Mom Screenshot Flow — Android
+- clearState
+- killApp
+- launchApp
+- waitForAnimationToEnd
+
+# Welcome → tap "I already have an account"
+- tapOn: "I already have an account"
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Login — enter mom credentials
+- tapOn: "Enter your email"
+- inputText: "demo.mom@truejoybirthing.com"
+- tapOn: "Enter your password"
+- inputText: "DemoMom2024!"
+- tapOn: "Welcome Back"
+- tapOn: "Log In"
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+# Screen 1: Mom Dashboard
+- takeScreenshot: android-mom-dashboard
+
+# Screen 2: Birth Plan
+- tapOn: "Open Birth Plan"
+- waitForAnimationToEnd
+- takeScreenshot: android-mom-birth-plan
+
+# Screen 3: Wellness Form
+- back
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- tapOn: "Wellness"
+- waitForAnimationToEnd
+- takeScreenshot: android-mom-wellness-form
+
+# Screen 4: Contraction Timer
+- back
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+- tapOn: "Timer"
+- waitForAnimationToEnd
+- takeScreenshot: android-mom-contraction-timer
+
+# Screen 5: Marketplace
+- tapOn: "My Team"
+- waitForAnimationToEnd
+- takeScreenshot: android-mom-marketplace
+
+- stopApp

@@ -5,10 +5,10 @@ const { FileStore } = require('metro-cache');
 
 const config = getDefaultConfig(__dirname);
 
-// CRITICAL FIX: Disable ESM package exports resolution (SDK 54 default)
-// This fixes "Cannot find module 'react-native-worklets/plugin'" error in EAS builds
+// CRITICAL FIX: Enable ESM package exports resolution (SDK 54 default)
+// Required for react-native-worklets/plugin to resolve correctly
 // See: https://docs.expo.dev/guides/customizing-metro/#package-exports-support
-config.resolver.unstable_enablePackageExports = false;
+config.resolver.unstable_enablePackageExports = true;
 
 // --- SVG support via react-native-svg-transformer ---
 // Remove 'svg' from assetExts so Metro processes SVGs through the transformer
@@ -29,14 +29,6 @@ const root = process.env.METRO_CACHE_ROOT || path.join(__dirname, '.metro-cache'
 config.cacheStores = [
   new FileStore({ root: path.join(root, 'cache') }),
 ];
-
-
-// // Exclude unnecessary directories from file watching
-// config.watchFolders = [__dirname];
-// config.resolver.blacklistRE = /(.*)\/(__tests__|android|ios|build|dist|.git|node_modules\/.*\/android|node_modules\/.*\/ios|node_modules\/.*\/windows|node_modules\/.*\/macos)(\/.*)?$/;
-
-// // Alternative: use a more aggressive exclusion pattern
-// config.resolver.blacklistRE = /node_modules\/.*\/(android|ios|windows|macos|__tests__|\.git|.*\.android\.js|.*\.ios\.js)$/;
 
 // Reduce the number of workers to decrease resource usage
 config.maxWorkers = 2;

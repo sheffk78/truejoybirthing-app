@@ -12,12 +12,10 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
-import resend
+from services.email_service import send_email as postmark_send_email
+from services.email_service import SENDER_EMAIL as EMAIL_SENDER
 
 from .dependencies import db, check_role, User
-
-# ============== CONSTANTS ==============
-SENDER_EMAIL = "True Joy Birthing <noreply@truejoybirthing.com>"
 
 # ============== ROUTER ==============
 router = APIRouter(prefix="/pro", tags=["Pro Feedback"])
@@ -230,22 +228,18 @@ async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends
     # Send email to Shelbi (non-blocking)
     email_sent = False
     try:
-        if resend.api_key:
-            resend.Emails.send({
-                "from": SENDER_EMAIL,
-                "to": "shelbi@truejoybirthing.com",
-                "subject": subject,
-                "html": email_body,
-                "reply_to": user.email
-            })
-            email_sent = True
+        email_sent = await postmark_send_email(
+            to="shelbi@truejoybirthing.com",
+            subject=subject,
+            html=email_body,
+            reply_to=user.email
+        )
+        if email_sent:
             # Update record to mark email as sent
             await db.pro_feedback.update_one(
                 {"feedback_id": feedback_record["feedback_id"]},
                 {"$set": {"email_sent": True}}
             )
-        else:
-            logging.warning("Resend API key not configured - feedback email not sent")
     except Exception as e:
         logging.error(f"Failed to send feedback email: {e}")
         # Don't raise exception - feedback is still stored

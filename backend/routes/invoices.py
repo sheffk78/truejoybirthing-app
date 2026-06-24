@@ -18,11 +18,8 @@ import asyncio
 
 from .dependencies import db, get_now, check_role, User, SENDER_EMAIL
 
-# Import resend for email sending
-try:
-    import resend
-except ImportError:
-    resend = None
+# Email sending via email_service
+from services.email_service import send_email as postmark_send_email
 
 router = APIRouter(tags=["Invoices"])
 
@@ -283,13 +280,12 @@ async def send_doula_invoice(invoice_id: str, user: User = Depends(check_role(["
         await db.notifications.insert_one(notification)
         
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
-        if mom and mom.get("email") and resend and resend.api_key:
+        if mom and mom.get("email"):
             try:
-                await asyncio.to_thread(resend.Emails.send, {
-                    "from": SENDER_EMAIL,
-                    "to": mom["email"],
-                    "subject": f"Invoice #{invoice['invoice_number']} from {user.full_name}",
-                    "html": f"""
+                await postmark_send_email(
+                    to=mom["email"],
+                    subject=f"Invoice #{invoice['invoice_number']} from {user.full_name}",
+                    html=f"""
                         <h2>You have received an invoice</h2>
                         <p><strong>From:</strong> {user.full_name}</p>
                         <p><strong>Description:</strong> {invoice['description']}</p>
@@ -303,8 +299,8 @@ async def send_doula_invoice(invoice_id: str, user: User = Depends(check_role(["
                             Payments are made directly to your doula using the instructions provided. 
                             True Joy Birthing does not process or guarantee payments between you and your provider.
                         </p>
-                    """
-                })
+                    """,
+                )
             except Exception as e:
                 logging.error(f"Failed to send invoice email: {e}")
     
@@ -410,7 +406,7 @@ async def send_doula_invoice_reminder(invoice_id: str, user: User = Depends(chec
         await db.notifications.insert_one(notification)
         
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
-        if mom and mom.get("email") and resend and resend.api_key:
+        if mom and mom.get("email"):
             try:
                 days_overdue = ""
                 if invoice.get("due_date"):
@@ -422,11 +418,10 @@ async def send_doula_invoice_reminder(invoice_id: str, user: User = Depends(chec
                     except:
                         pass
                 
-                await asyncio.to_thread(resend.Emails.send, {
-                    "from": SENDER_EMAIL,
-                    "to": mom["email"],
-                    "subject": f"Payment Reminder: Invoice #{invoice['invoice_number']}",
-                    "html": f"""
+                await postmark_send_email(
+                    to=mom["email"],
+                    subject=f"Payment Reminder: Invoice #{invoice['invoice_number']}",
+                    html=f"""
                         <h2>Payment Reminder</h2>
                         <p>This is a friendly reminder about your outstanding invoice.</p>
                         {days_overdue}
@@ -444,8 +439,8 @@ async def send_doula_invoice_reminder(invoice_id: str, user: User = Depends(chec
                             If you have already made this payment, please disregard this reminder.
                             Payments are made directly to your doula using the instructions provided.
                         </p>
-                    """
-                })
+                    """,
+                )
             except Exception as e:
                 logging.error(f"Failed to send invoice reminder email: {e}")
     
@@ -595,13 +590,12 @@ async def send_midwife_invoice(invoice_id: str, user: User = Depends(check_role(
         await db.notifications.insert_one(notification)
         
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
-        if mom and mom.get("email") and resend and resend.api_key:
+        if mom and mom.get("email"):
             try:
-                await asyncio.to_thread(resend.Emails.send, {
-                    "from": SENDER_EMAIL,
-                    "to": mom["email"],
-                    "subject": f"Invoice #{invoice['invoice_number']} from {user.full_name}",
-                    "html": f"""
+                await postmark_send_email(
+                    to=mom["email"],
+                    subject=f"Invoice #{invoice['invoice_number']} from {user.full_name}",
+                    html=f"""
                         <h2>You have received an invoice</h2>
                         <p><strong>From:</strong> {user.full_name}</p>
                         <p><strong>Description:</strong> {invoice['description']}</p>
@@ -615,8 +609,8 @@ async def send_midwife_invoice(invoice_id: str, user: User = Depends(check_role(
                             Payments are made directly to your midwife using the instructions provided. 
                             True Joy Birthing does not process or guarantee payments between you and your provider.
                         </p>
-                    """
-                })
+                    """,
+                )
             except Exception as e:
                 logging.error(f"Failed to send invoice email: {e}")
     
@@ -691,7 +685,7 @@ async def send_midwife_invoice_reminder(invoice_id: str, user: User = Depends(ch
         await db.notifications.insert_one(notification)
         
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
-        if mom and mom.get("email") and resend and resend.api_key:
+        if mom and mom.get("email"):
             try:
                 days_overdue = ""
                 if invoice.get("due_date"):
@@ -703,11 +697,10 @@ async def send_midwife_invoice_reminder(invoice_id: str, user: User = Depends(ch
                     except:
                         pass
                 
-                await asyncio.to_thread(resend.Emails.send, {
-                    "from": SENDER_EMAIL,
-                    "to": mom["email"],
-                    "subject": f"Payment Reminder: Invoice #{invoice['invoice_number']}",
-                    "html": f"""
+                await postmark_send_email(
+                    to=mom["email"],
+                    subject=f"Payment Reminder: Invoice #{invoice['invoice_number']}",
+                    html=f"""
                         <h2>Payment Reminder</h2>
                         <p>This is a friendly reminder about your outstanding invoice.</p>
                         {days_overdue}
@@ -725,8 +718,8 @@ async def send_midwife_invoice_reminder(invoice_id: str, user: User = Depends(ch
                             If you have already made this payment, please disregard this reminder.
                             Payments are made directly to your midwife using the instructions provided.
                         </p>
-                    """
-                })
+                    """,
+                )
             except Exception as e:
                 logging.error(f"Failed to send invoice reminder email: {e}")
     
