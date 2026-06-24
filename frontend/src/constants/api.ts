@@ -145,6 +145,12 @@ export const API_ENDPOINTS = {
   
   // Contract Templates
   CONTRACT_TEMPLATES: '/contract-templates',
+  
+  // Research Feed
+  FEED_ARTICLES: '/feed/articles',
+  FEED_ARTICLE: '/feed/articles',  // Append /{id}
+  FEED_TAGS: '/feed/tags',
+  FEED_REPORT_INACCURACY: '/feed/report-inaccuracy',
 };
 
 export default API_ENDPOINTS;

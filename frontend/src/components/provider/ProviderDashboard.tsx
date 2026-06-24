@@ -21,6 +21,7 @@ import { API_ENDPOINTS } from '../../constants/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
+import ProviderFeedSection from './ProviderFeedSection';
 
 interface ShareRequest {
   request_id: string;
@@ -189,6 +190,9 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
             );
           })}
         </View>
+
+        {/* Research Feed Section — right after stats for visibility */}
+        <ProviderFeedSection primaryColor={primaryColor} />
 
         {/* Lead Insights Card */}
         {stats?.lead_insights && (stats.lead_insights.total_leads > 0 || stats.lead_insights.active_leads > 0) && (

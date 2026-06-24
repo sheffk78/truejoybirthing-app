@@ -11,6 +11,12 @@ export { default as ProviderContracts } from './ProviderContracts';
 export { default as ProviderContractTemplates } from './ProviderContractTemplates';
 export { default as ProviderLeads } from './ProviderLeads';
 
+// Research Feed
+export { default as ProviderFeedSection } from './ProviderFeedSection';
+export { default as ProviderFeedCard } from './ProviderFeedCard';
+export { default as ProviderFeedDisclaimer } from './ProviderFeedDisclaimer';
+export { default as MomFeedSection } from './MomFeedSection';
+
 // Export config
 export { DOULA_CONFIG, MIDWIFE_CONFIG, getProviderConfig } from './config/providerConfig';
 export type { ProviderConfig } from './config/providerConfig';

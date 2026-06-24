@@ -14,6 +14,7 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import ErrorBoundary from '../../src/components/ErrorBoundary';
+import MomFeedSection from '../../src/components/provider/MomFeedSection';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
@@ -451,6 +452,9 @@ export default function MomHomeScreen() {
             <Text style={styles.actionSubtitle}>With your provider</Text>
           </TouchableOpacity>
         </View>
+        
+        {/* Research Feed — Birth & Baby Reads */}
+        <MomFeedSection />
       </ScrollView>
     </SafeAreaView>
     </ErrorBoundary>
