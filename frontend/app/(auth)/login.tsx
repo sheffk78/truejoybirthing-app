@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  Image,
   ImageBackground,
   Alert,
   KeyboardAvoidingView,
@@ -83,7 +84,7 @@ export default function LoginScreen() {
           >
             <View style={[styles.imageOverlay, { backgroundColor: 'rgba(159, 131, 182, 0.35)' }]}>
               <SafeAreaView style={styles.imageContent}>
-                <BRAND.logoIcon width={64} height={64} />
+                <Image source={BRAND.logoIconPng} style={styles.logoIcon} resizeMode="contain" />
                 <View style={styles.imageTextContainer}>
                   <Text style={styles.imageHeadline}>
                     Welcome back to your birth journey
@@ -281,6 +282,10 @@ export default function LoginScreen() {
 }
 
 const getStyles = createThemedStyles((colors) => ({
+  logoIcon: {
+    width: 64,
+    height: 64,
+  },
   // Split screen styles (wide)
   splitContainer: {
     flex: 1,

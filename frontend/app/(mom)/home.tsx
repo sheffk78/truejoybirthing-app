@@ -20,7 +20,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { getBabyDevData, getBabyDevLabel } from '../../src/constants/babyDevelopmentData';
+import { getBabyDevData } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 
 interface PendingContract {
@@ -163,7 +163,7 @@ export default function MomHomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <BRAND.logoIcon width={28} height={28} />
+<Image source={BRAND.logoIconPng} style={styles.headerLogo} resizeMode="contain" />
             <View>
               <Text style={[styles.greeting, { color: colors.text }]}>Hello, {firstName}</Text>
               {timeline?.current_week && (
@@ -185,16 +185,25 @@ export default function MomHomeScreen() {
         </View>
         
         {/* Birth Plan Card */}
-        <Card style={styles.mainCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.cardIcon}>
-              <Icon name="document-text" size={24} color={colors.white} />
+        <TouchableOpacity
+          onPress={() => router.push('/(mom)/birth-plan')}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="Open your Joyful Birth Plan"
+        >
+          <Card style={styles.mainCard}>
+            <View style={styles.birthPlanTopRow}>
+              <View style={styles.birthPlanTextGroup}>
+                <Text style={styles.cardTitle}>Joyful Birth Plan</Text>
+                <Text style={styles.nextStep} numberOfLines={1}>{getNextStep()}</Text>
+              </View>
+              <View style={styles.birthPlanAction}>
+                <Text style={styles.progressText}>
+                  {Math.round(birthPlan?.completion_percentage || 0)}%
+                </Text>
+                <Icon name="chevron-forward" size={18} color={colors.primary} />
+              </View>
             </View>
-            <Text style={styles.cardTitle}>Joyful Birth Plan</Text>
-          </View>
-          
-          {/* Progress Bar */}
-          <View style={styles.progressContainer}>
             <View style={styles.progressBar}>
               <View
                 style={[
@@ -203,70 +212,8 @@ export default function MomHomeScreen() {
                 ]}
               />
             </View>
-            <Text style={styles.progressText}>
-              {Math.round(birthPlan?.completion_percentage || 0)}% complete
-            </Text>
-          </View>
-          
-          <Text style={styles.nextStep}>
-            <Icon name="arrow-forward-circle" size={16} color={colors.primary} />
-            {' '}{getNextStep()}
-          </Text>
-          
-          <Button
-            title="Open Birth Plan"
-            onPress={() => router.push('/(mom)/birth-plan')}
-            fullWidth
-            style={styles.cardButton}
-          />
-        </Card>
-        
-        {/* Weekly Tip Card */}
-        {weeklyContent?.tip && (
-          <Card style={styles.weeklyCard}>
-            <View style={styles.weeklyHeader}>
-              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.primary + '20' }]}>
-                <Icon name="bulb" size={22} color={colors.primary} />
-              </View>
-              <View style={styles.weeklyHeaderText}>
-                <Text style={styles.weeklyLabel}>Weekly Tip</Text>
-                <Text style={styles.weeklyWeek}>
-                  {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.weeklyContent} numberOfLines={4}>
-              {weeklyContent.tip}
-            </Text>
-            <TouchableOpacity 
-              style={styles.weeklyReadMore}
-              onPress={() => router.push('/(mom)/weekly-tips')}
-            >
-              <Text style={styles.weeklyReadMoreText}>Read more</Text>
-              <Icon name="chevron-forward" size={16} color={colors.primary} />
-            </TouchableOpacity>
           </Card>
-        )}
-        
-        {/* Weekly Affirmation Card */}
-        {weeklyContent?.affirmation && (
-          <Card style={[styles.weeklyCard, styles.affirmationCard]}>
-            <View style={styles.weeklyHeader}>
-              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.roleDoula + '20' }]}>
-                <Icon name="heart" size={22} color={colors.roleDoula} />
-              </View>
-              <View style={styles.weeklyHeaderText}>
-                <Text style={styles.weeklyLabel}>Weekly Affirmation</Text>
-                <Text style={styles.weeklyWeek}>
-                  {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.affirmationContent}>
-              "{weeklyContent.affirmation}"
-            </Text>
-          </Card>
-        )}
+        </TouchableOpacity>
         
         {/* Baby Development Card */}
         {(() => {
@@ -282,10 +229,6 @@ export default function MomHomeScreen() {
           const babyDev = weeklyContent?.baby_development || localBabyDev;
 
           if (!babyDev) return null;
-          
-          const label = babyDev.food 
-            ? `As small as a ${babyDev.food}`
-            : 'Your baby this week';
           
           return (
             <Card style={styles.babyDevCard}>
@@ -343,6 +286,54 @@ export default function MomHomeScreen() {
             </Card>
           );
         })()}
+        
+        {/* Weekly Tip Card */}
+        {weeklyContent?.tip && (
+          <Card style={styles.weeklyCard}>
+            <View style={styles.weeklyHeader}>
+              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.primary + '20' }]}>
+                <Icon name="bulb" size={22} color={colors.primary} />
+              </View>
+              <View style={styles.weeklyHeaderText}>
+                <Text style={styles.weeklyLabel}>Weekly Tip</Text>
+                <Text style={styles.weeklyWeek}>
+                  {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.weeklyContent} numberOfLines={4}>
+              {weeklyContent.tip}
+            </Text>
+            <TouchableOpacity 
+              style={styles.weeklyReadMore}
+              onPress={() => router.push('/(mom)/weekly-tips')}
+            >
+              <Text style={styles.weeklyReadMoreText}>Read more</Text>
+              <Icon name="chevron-forward" size={16} color={colors.primary} />
+            </TouchableOpacity>
+          </Card>
+        )}
+        
+        {/* Weekly Affirmation Card */}
+        {weeklyContent?.affirmation && (
+          <Card style={[styles.weeklyCard, styles.affirmationCard]}>
+            <View style={styles.weeklyHeader}>
+              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.roleDoula + '20' }]}>
+                <Icon name="heart" size={22} color={colors.roleDoula} />
+              </View>
+              <View style={styles.weeklyHeaderText}>
+                <Text style={styles.weeklyLabel}>Weekly Affirmation</Text>
+                <Text style={styles.weeklyWeek}>
+                  {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.affirmationContent}>
+              "{weeklyContent.affirmation}"
+            </Text>
+          </Card>
+        )}
+        
         
         {/* Pending Actions Section - Contracts & Invoices */}
         {(pendingContracts.length > 0 || pendingInvoices.length > 0) && (
@@ -476,6 +467,10 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     marginBottom: SIZES.lg,
   },
+  headerLogo: {
+    width: 28,
+    height: 28,
+  },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -507,30 +502,33 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 24,
   },
   mainCard: {
-    marginBottom: SIZES.lg,
-    padding: SIZES.lg,
+    marginBottom: SIZES.md,
+    padding: SIZES.md,
   },
-  cardHeader: {
+  birthPlanTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SIZES.md,
+    justifyContent: 'space-between',
+    gap: SIZES.sm,
+    marginBottom: SIZES.sm,
   },
-  cardIcon: {
-    marginRight: SIZES.sm,
+  birthPlanTextGroup: {
+    flex: 1,
+  },
+  birthPlanAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.xs,
   },
   cardTitle: {
     fontSize: SIZES.fontLg,
     fontFamily: FONTS.heading,
     color: colors.text,
   },
-  progressContainer: {
-    marginBottom: SIZES.md,
-  },
   progressBar: {
     height: 8,
     backgroundColor: colors.border,
     borderRadius: 4,
-    marginBottom: SIZES.xs,
   },
   progressFill: {
     height: '100%',
@@ -539,17 +537,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   progressText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: FONTS.bodyBold,
     color: colors.textSecondary,
   },
   nextStep: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.primary,
-    marginBottom: SIZES.md,
-  },
-  cardButton: {
-    marginTop: SIZES.xs,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    marginTop: 2,
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
@@ -735,7 +730,6 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.bodyBold,
     color: colors.text,
-    marginBottom: SIZES.xs,
   },
   babyDevDescription: {
     fontSize: SIZES.fontSm,

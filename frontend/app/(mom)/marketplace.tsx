@@ -402,7 +402,7 @@ export default function MarketplaceScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <BRAND.logoIcon width={28} height={28} />
+          <Image source={BRAND.logoIconPng} style={styles.headerLogo} resizeMode="contain" />
           <View>
             <Text style={styles.title}>Find Your Team</Text>
             <Text style={styles.subtitle}>Connect with doulas and midwives in your area</Text>
@@ -836,6 +836,10 @@ const getStyles = createThemedStyles((colors) => ({
   scrollContent: {
     padding: SIZES.md,
     paddingBottom: SIZES.xxl,
+  },
+  headerLogo: {
+    width: 28,
+    height: 28,
   },
   header: {
     flexDirection: 'row',

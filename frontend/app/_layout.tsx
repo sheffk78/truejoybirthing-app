@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { Platform, StatusBar, View, BackHandler } from 'react-native';
+import { Platform, StatusBar, View, BackHandler, Image } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {
@@ -172,7 +172,7 @@ export default function RootLayout() {
     return (
       <SafeAreaProvider>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
-          <BRAND.logoSvg width={200} height={49} />
+          <Image source={BRAND.logoPng} style={{ width: 200, height: 88 }} resizeMode="contain" />
         </View>
       </SafeAreaProvider>
     );

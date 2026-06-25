@@ -509,7 +509,7 @@ export default function MessagesScreen() {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <BRAND.logoIcon width={28} height={28} />
+              <Image source={BRAND.logoIconPng} style={styles.headerLogo} resizeMode="contain" />
               <View>
                 <Text style={styles.title}>Messages</Text>
                 <Text style={styles.subtitle}>Stay in touch with your care team</Text>
@@ -773,6 +773,10 @@ const getStyles = createThemedStyles((colors) => ({
   scrollContent: {
     padding: SIZES.md,
     paddingBottom: SIZES.xxl,
+  },
+  headerLogo: {
+    width: 28,
+    height: 28,
   },
   header: {
     marginBottom: SIZES.lg,

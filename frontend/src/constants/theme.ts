@@ -98,26 +98,25 @@ export const SIZES = {
   touchMin: 44,
 };
 
-// Logo assets - local SVG files bundled with the app
-// react-native-svg-transformer (configured in metro.config.js) transforms .svg
-// files into React components backed by react-native-svg, so we import them
-// directly and render <BRAND.logoSvg /> instead of <Image source={...} />.
-import LogoWordmark from '../../assets/images/wordmark-horizontal.svg';
-import LogoIconMark from '../../assets/images/icon-mark.svg';
-import LogoWordmarkWhite from '../../assets/images/wordmark-horizontal-white.svg';
-import LogoWordmarkMono from '../../assets/images/wordmark-horizontal-mono.svg';
+// Logo assets - using PNG for reliable rendering across platforms.
+// The original Illustrator SVGs use CSS <style> blocks with class-based fills
+// which react-native-svg-transformer cannot process correctly, so we use the
+// PNG version (452×200 RGBA) with <Image source={BRAND.logoPng} />.
+// SVG variants are also bundled in assets/images/ for future use if needed.
+const logoPng = require('../../assets/images/logo.png');
+const logoIconPng = require('../../assets/images/logo-icon.png');
 
 export const BRAND = {
-  // Horizontal wordmark (logo + "True Joy Birthing" text) - default logo
-  logoSvg: LogoWordmark,
-  // Alias for logoSvg - used where a "JPG" style logo was previously referenced
-  logoJpg: LogoWordmark,
-  // Transparent icon mark (no text) - use on photo backgrounds
-  logoIcon: LogoIconMark,
-  // White variant for dark backgrounds
-  logoWordmarkWhite: LogoWordmarkWhite,
-  // Monochrome variant
-  logoWordmarkMono: LogoWordmarkMono,
+  // PNG logo (452×200) - use with <Image source={BRAND.logoPng} />
+  logoPng,
+  // Icon-only PNG, rasterized from the approved brand SVG for reliable native rendering.
+  logoIconPng,
+  // Alias for backward compat - previously an SVG component, now a PNG ImageSource
+  logoJpg: logoPng,
+  logoSvg: logoPng,
+  logoIcon: logoIconPng,
+  logoWordmarkWhite: logoPng,
+  logoWordmarkMono: logoPng,
   name: 'True Joy Birthing',
   tagline: 'Your birth plan, your team, your support in one place.',
 };

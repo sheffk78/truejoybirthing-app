@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
+  Image,
   ImageBackground,
   Linking,
   Platform,
@@ -40,7 +41,7 @@ export default function WelcomeScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         {/* Logo at top - using transparent icon on photo background */}
         <View style={styles.logoContainer}>
-          <BRAND.logoIcon width={72} height={72} />
+          <Image source={BRAND.logoIconPng} style={styles.logoIcon} resizeMode="contain" />
         </View>
         
         {/* Spacer */}
@@ -141,6 +142,10 @@ const getStyles = createThemedStyles((colors) => ({
   },
   safeArea: {
     flex: 1,
+  },
+  logoIcon: {
+    width: 72,
+    height: 72,
   },
   logoContainer: {
     alignItems: 'center',
