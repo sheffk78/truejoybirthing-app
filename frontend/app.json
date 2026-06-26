@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "deploymentTarget": "16.0",
       "bundleIdentifier": "com.truejoybirthing.app",
-      "buildNumber": "132",
+      "buildNumber": "139",
       "teamId": "A3DU82XQTJ",
       "infoPlist": {
         "SKAdNetworkItems": [],
@@ -35,7 +35,7 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "com.truejoybirthing.app",
-      "versionCode": 132,
+      "versionCode": 139,
       "permissions": [
         "com.android.vending.BILLING",
         "android.permission.CAMERA",

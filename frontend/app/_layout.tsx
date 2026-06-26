@@ -49,7 +49,7 @@ function ThemedLayout() {
     const currentRoleGroup = segments[0]; // e.g., '(mom)', '(doula)', '(midwife)', '(admin)'
     
     // Allow public routes without auth
-    const isPublicRoute = segments[0] === 'sign-contract' || segments[0] === 'auth-callback' || segments[0] === 'sign-midwife-contract' || segments[0] === 'plans-pricing' || segments[0] === 'pro-feedback';
+    const isPublicRoute = segments[0] === 'sign-contract' || segments[0] === 'sign-midwife-contract' || segments[0] === 'plans-pricing' || segments[0] === 'pro-feedback';
     
     if (!isAuthenticated && !inAuthGroup && !isPublicRoute) {
       // Not authenticated, redirect to welcome
