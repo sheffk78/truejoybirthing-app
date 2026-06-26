@@ -17,7 +17,9 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import * as StoreReview from 'expo-store-review';
+// Safe import: expo-store-review may not be available in all build environments
+let StoreReview: any = null;
+try { StoreReview = require('expo-store-review'); } catch { /* module not available */ }
 import Constants from 'expo-constants';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
@@ -240,10 +242,10 @@ export default function MomProfileScreen() {
   
   const handleRateApp = async () => {
     try {
-      if (Platform.OS === 'ios') {
-        const isAvailable = await StoreReview.isAvailableAsync();
+      if (Platform.OS === 'ios' && StoreReview) {
+        const isAvailable = await StoreReview.isAvailableAsync?.();
         if (isAvailable) {
-          await StoreReview.requestReview();
+          await StoreReview.requestReview?.();
           return;
         }
       }
