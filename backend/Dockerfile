@@ -13,6 +13,9 @@ RUN pip install --no-cache-dir -r requirements-optional.txt || echo "WARNING: Op
 
 COPY . .
 
+# Copy TJB brand assets (fonts + logo for PDF generation)
+COPY assets/ /app/assets/
+
 # Admin frontend — copy pre-built React SPA so /admin/ routes work
 COPY admin-frontend/dist/ /app/admin-frontend/dist/
 

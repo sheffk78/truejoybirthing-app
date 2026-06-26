@@ -21,6 +21,7 @@ from io import BytesIO
 from reportlab.platypus import Paragraph, Spacer
 
 from .dependencies import db, check_role, User, create_notification, send_notification_email, get_now
+from .pdf_branding import create_branded_pdf_buffer
 
 router = APIRouter(tags=["Care Plans"])
 
@@ -458,13 +459,7 @@ async def export_birth_plan(user: User = Depends(check_role(["MOM"]))):
 
 @router.get("/birth-plan/export/pdf")
 async def export_birth_plan_pdf(user: User = Depends(check_role(["MOM"]))):
-    """Generate and download PDF version of birth plan"""
-    from reportlab.lib.pagesizes import letter
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from reportlab.lib import colors
-    
+    """Generate and download a TJB-branded PDF version of the birth plan"""
     plan = await db.birth_plans.find_one({"user_id": user.user_id}, {"_id": 0})
     user_doc = await db.users.find_one({"user_id": user.user_id}, {"_id": 0})
     mom_profile = await db.mom_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
@@ -472,47 +467,16 @@ async def export_birth_plan_pdf(user: User = Depends(check_role(["MOM"]))):
     if not plan:
         raise HTTPException(status_code=404, detail="Birth plan not found")
     
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
-    
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=24, textColor=colors.HexColor('#9F83B6'), spaceAfter=6)
-    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#9F83B6'), spaceBefore=20, spaceAfter=10)
-    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=6)
-    
-    elements = []
-    
-    # Title
     user_name = user_doc.get("full_name", "Mom") if user_doc else "Mom"
-    elements.append(Paragraph(f"{user_name}'s Birth Plan", title_style))
-    elements.append(Spacer(1, 10))
-    
-    # Basic info
-    if mom_profile:
-        info_data = []
-        if mom_profile.get("due_date"):
-            info_data.append(["Expected Due Date:", mom_profile["due_date"]])
-        if mom_profile.get("planned_birth_setting"):
-            info_data.append(["Planned Birth Setting:", mom_profile["planned_birth_setting"]])
-        if mom_profile.get("provider_name"):
-            info_data.append(["Provider:", mom_profile["provider_name"]])
-        
-        if info_data:
-            info_table = Table(info_data, colWidths=[2*inch, 4*inch])
-            info_table.setStyle(TableStyle([
-                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, -1), 10),
-                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-            ]))
-            elements.append(info_table)
-            elements.append(Spacer(1, 15))
-    
-    # Sections
     sections = plan.get("sections", [])
-    build_birth_plan_pdf_sections(elements, sections, heading_style, body_style)
     
-    doc.build(elements)
-    buffer.seek(0)
+    buffer = create_branded_pdf_buffer(
+        user_name=user_name,
+        mom_profile=mom_profile or {},
+        sections=sections,
+        pdf_section_names=PDF_SECTION_NAMES,
+        pdf_field_labels=PDF_FIELD_LABELS,
+    )
     
     filename = f"Birth_Plan_{user_name.replace(' ', '_')}.pdf"
     
@@ -1246,13 +1210,7 @@ async def get_client_birth_plan(mom_user_id: str, user: User = Depends(check_rol
 
 @router.get("/provider/client/{mom_id}/birth-plan/pdf")
 async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
-    """Generate and download PDF version of a client's birth plan for providers"""
-    from reportlab.lib.pagesizes import letter
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from reportlab.lib import colors
-    
+    """Generate and download a TJB-branded PDF version of a client's birth plan for providers"""
     # Verify provider has access to this mom's birth plan
     share_request = await db.share_requests.find_one({
         "mom_user_id": mom_id,
@@ -1270,45 +1228,16 @@ async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check
     if not plan:
         raise HTTPException(status_code=404, detail="Birth plan not found")
     
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
-    
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle('Title', parent=styles['Title'], fontSize=24, textColor=colors.HexColor('#9F83B6'), spaceAfter=6)
-    heading_style = ParagraphStyle('Heading', parent=styles['Heading2'], fontSize=14, textColor=colors.HexColor('#9F83B6'), spaceBefore=20, spaceAfter=10)
-    body_style = ParagraphStyle('Body', parent=styles['Normal'], fontSize=10, leading=14, spaceAfter=6)
-    
-    elements = []
-    
-    # Title
     user_name = user_doc.get("full_name", "Client") if user_doc else "Client"
-    elements.append(Paragraph(f"{user_name}'s Birth Plan", title_style))
-    elements.append(Spacer(1, 10))
-    
-    # Basic info
-    if mom_profile:
-        info_data = []
-        if mom_profile.get("due_date"):
-            info_data.append(["Expected Due Date:", mom_profile["due_date"]])
-        if mom_profile.get("planned_birth_setting"):
-            info_data.append(["Planned Birth Setting:", mom_profile["planned_birth_setting"]])
-        
-        if info_data:
-            info_table = Table(info_data, colWidths=[2*inch, 4*inch])
-            info_table.setStyle(TableStyle([
-                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, -1), 10),
-                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-            ]))
-            elements.append(info_table)
-            elements.append(Spacer(1, 15))
-    
-    # Sections
     sections = plan.get("sections", [])
-    build_birth_plan_pdf_sections(elements, sections, heading_style, body_style)
     
-    doc.build(elements)
-    buffer.seek(0)
+    buffer = create_branded_pdf_buffer(
+        user_name=user_name,
+        mom_profile=mom_profile or {},
+        sections=sections,
+        pdf_section_names=PDF_SECTION_NAMES,
+        pdf_field_labels=PDF_FIELD_LABELS,
+    )
     
     filename = f"Birth_Plan_{user_name.replace(' ', '_')}.pdf"
     
