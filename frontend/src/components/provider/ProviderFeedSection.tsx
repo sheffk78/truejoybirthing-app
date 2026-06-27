@@ -19,7 +19,7 @@ import { API_ENDPOINTS } from '../../constants/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CACHE_KEY = '@research_feed_cache';
-const CACHE_COUNT = 50;
+const CACHE_COUNT = 1; // Only cache the single current article
 
 interface FeedArticle {
   article_id: string;
@@ -79,7 +79,7 @@ export default function ProviderFeedSection({ primaryColor }: ProviderFeedSectio
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const data = await apiRequest(`${API_ENDPOINTS.FEED_ARTICLES}?page=1&limit=10`);
+      const data = await apiRequest(`${API_ENDPOINTS.FEED_ARTICLES}?page=1&limit=1`);
       if (data?.articles) {
         setArticles(data.articles);
         cacheArticles(data.articles);
@@ -122,8 +122,8 @@ export default function ProviderFeedSection({ primaryColor }: ProviderFeedSectio
         </View>
       )}
 
-      {/* Article Cards */}
-      {articles.slice(0, 5).map((article) => (
+      {/* Article Card — single current excerpt */}
+      {articles.slice(0, 1).map((article) => (
         <ProviderFeedCard
           key={article.article_id}
           article={article}

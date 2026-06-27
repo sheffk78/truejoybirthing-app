@@ -334,7 +334,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                           <Text style={[styles.requestCompletionLabel, { color: colors.textLight }]}>Birth Plan:</Text>
                           <View style={[styles.requestCompletionBadge, { backgroundColor: request.birth_plan_completion >= 80 ? colors.success + '20' : colors.warning + '20' }]}>
                             <Text style={[styles.requestCompletionText, { color: request.birth_plan_completion >= 80 ? colors.success : colors.warning }]}>
-                              {request.birth_plan_completion}%
+                              {Math.round(request.birth_plan_completion)}%
                             </Text>
                           </View>
                         </View>
