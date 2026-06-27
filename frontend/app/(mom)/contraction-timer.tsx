@@ -105,11 +105,15 @@ const ALERT_THRESHOLDS = [
   { value: 'none', label: 'No Alert', description: 'Track only, no alerts' },
 ];
 
-// Format seconds to mm:ss
+// Format seconds to mm:ss or h:mm:ss if >= 1 hour
 const formatDuration = (seconds: number | null): string => {
   if (seconds === null || seconds < 0) return '00:00';
-  const mins = Math.floor(seconds / 60);
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
+  if (hrs > 0) {
+    return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
