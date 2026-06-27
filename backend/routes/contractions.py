@@ -147,12 +147,15 @@ def calculate_interval_seconds(current_start: str, previous_start: str) -> int:
     return int((current - previous).total_seconds())
 
 def format_duration(seconds: int) -> str:
-    """Format seconds as mm:ss string"""
+    """Format seconds as mm:ss or h:mm:ss if >= 1 hour"""
     if seconds is None or seconds < 0:
         return "00:00"
-    minutes = seconds // 60
+    hrs = seconds // 3600
+    mins = (seconds % 3600) // 60
     secs = seconds % 60
-    return f"{minutes:02d}:{secs:02d}"
+    if hrs > 0:
+        return f"{hrs}:{mins:02d}:{secs:02d}"
+    return f"{mins:02d}:{secs:02d}"
 
 def check_511_pattern(contractions: List[dict], prefs: dict = None, birth_word: str = "contractions") -> dict:
     """
