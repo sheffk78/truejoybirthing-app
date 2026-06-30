@@ -2,7 +2,7 @@
   "expo": {
     "name": "True Joy Birthing",
     "slug": "truejoybirthing",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "truejoybirthing",
@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "deploymentTarget": "16.0",
       "bundleIdentifier": "com.truejoybirthing.app",
-      "buildNumber": "139",
+      "buildNumber": "140",
       "teamId": "A3DU82XQTJ",
       "infoPlist": {
         "SKAdNetworkItems": [],
@@ -35,12 +35,10 @@
       },
       "edgeToEdgeEnabled": false,
       "package": "com.truejoybirthing.app",
-      "versionCode": 139,
+      "versionCode": 140,
       "permissions": [
         "com.android.vending.BILLING",
-        "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.READ_MEDIA_IMAGES"
+        "android.permission.CAMERA"
       ]
     },
     "web": {
@@ -53,7 +51,6 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "True Joy Birthing needs photo library access to select profile photos.",
           "cameraPermission": "True Joy Birthing needs camera access to take profile photos."
         }
       ],
