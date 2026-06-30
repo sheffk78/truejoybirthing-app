@@ -12,6 +12,10 @@ expo-env.d.ts
 # Native build artifacts
 ios/
 android/
+!assets/branded-screenshots/android/
+!assets/branded-screenshots/ios/
+!assets/app-screenshots/android/
+!assets/app-screenshots/ios/
 .metro-cache/
 
 # Native
