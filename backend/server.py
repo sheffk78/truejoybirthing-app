@@ -60,7 +60,10 @@ db = client[os.environ['DB_NAME']]
 SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'True Joy Birthing <no-reply@contact.truejoybirthing.com>')
 
 # JWT Configuration
-SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'true-joy-birthing-secret-key-2025-production')
+SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
+if not SECRET_KEY:
+    raise RuntimeError("JWT_SECRET_KEY environment variable must be set")
+assert SECRET_KEY  # for type checkers
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 7
 
@@ -1922,9 +1925,12 @@ app.include_router(admin_ambassador_routes.router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[
+        "https://truejoybirthing.com",
+        "https://www.truejoybirthing.com",
+    ],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # ============== ADMIN SPA ==============

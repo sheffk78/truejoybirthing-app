@@ -181,7 +181,7 @@ async def process_google_session(request: Request, response: Response):
             
             auth_data = auth_response.json()
         except Exception as e:
-            raise HTTPException(status_code=401, detail=f"Auth error: {str(e)}")
+            raise HTTPException(status_code=401, detail="Authentication failed")
     
     email = auth_data.get("email")
     name = auth_data.get("name")

@@ -64,7 +64,7 @@ async def upload_image(request: ImageUploadRequest, user: User = Depends(get_cur
     try:
         mime_type, base64_data = validate_base64_image(request.image_data)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail="Invalid image data")
     
     now = datetime.now(timezone.utc)
     image_id = f"img_{uuid.uuid4().hex[:12]}"
