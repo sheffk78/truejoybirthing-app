@@ -640,7 +640,10 @@ async def sign_doula_contract(contract_id: str, request: Request):
         raise HTTPException(status_code=400, detail="Contract must be sent before signing")
     
     # Validate signing token to prevent forged signatures
-    if not signing_token or contract.get("signing_token") != signing_token:
+    # Backward compat: contracts created before this fix have no signing_token,
+    # so only enforce if the contract actually has one stored
+    stored_token = contract.get("signing_token")
+    if stored_token and stored_token != signing_token:
         raise HTTPException(status_code=403, detail="Invalid signing token")
     
     client_signature = {
@@ -1165,7 +1168,10 @@ async def sign_midwife_contract(contract_id: str, request: Request):
         raise HTTPException(status_code=400, detail="Contract must be sent before signing")
     
     # Validate signing token to prevent forged signatures
-    if not signing_token or contract.get("signing_token") != signing_token:
+    # Backward compat: contracts created before this fix have no signing_token,
+    # so only enforce if the contract actually has one stored
+    stored_token = contract.get("signing_token")
+    if stored_token and stored_token != signing_token:
         raise HTTPException(status_code=403, detail="Invalid signing token")
     
     client_signature = {
