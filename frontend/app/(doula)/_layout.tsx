@@ -1,9 +1,10 @@
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import { useColors, SIZES } from '../../src/hooks/useThemedStyles';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuthStore } from '../../src/store/authStore';
 
 /**
  * Doula Navigation Layout
@@ -21,6 +22,13 @@ export default function DoulaLayout() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const bottomInset = Platform.OS === 'ios' ? 28 : Math.max(insets.bottom, 8);
+  const { user } = useAuthStore();
+
+  // Render-time guard: redirect before any screen tree mounts to prevent
+  // wrong-role screens from firing API calls before useEffect-based redirect
+  if (!user || user.role !== 'DOULA') {
+    return <Redirect href="/(auth)/welcome" />;
+  }
 
   return (
     <Tabs

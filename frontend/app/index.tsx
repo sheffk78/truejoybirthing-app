@@ -14,25 +14,27 @@ export default function Index() {
   useEffect(() => {
     if (isLoading) return;
     
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       router.replace('/(auth)/welcome');
-    } else if (user) {
-      if (!user.onboarding_completed) {
-        // Redirect to onboarding-intro so the full flow plays out
-        // (walkthrough → notifications → profile → plans-pricing → tutorial)
-        // The root layout guard handles subsequent redirects
-        router.replace('/(auth)/onboarding-intro');
-      } else {
-        if (user.role === 'MOM') {
-          router.replace('/(mom)/home');
-        } else if (user.role === 'DOULA') {
-          router.replace('/(doula)/dashboard');
-        } else if (user.role === 'MIDWIFE') {
-          router.replace('/(midwife)/dashboard');
-        } else if (user.role === 'ADMIN') {
-          router.replace('/(admin)/content');
-        }
-      }
+      return;
+    }
+    
+    if (!user.onboarding_completed) {
+      // Redirect to onboarding-intro so the full flow plays out
+      // (walkthrough → notifications → profile → plans-pricing → tutorial)
+      // The root layout guard handles subsequent redirects
+      router.replace('/(auth)/onboarding-intro');
+    } else if (user.role === 'MOM') {
+      router.replace('/(mom)/home');
+    } else if (user.role === 'DOULA') {
+      router.replace('/(doula)/dashboard');
+    } else if (user.role === 'MIDWIFE') {
+      router.replace('/(midwife)/dashboard');
+    } else if (user.role === 'ADMIN') {
+      router.replace('/(admin)/content');
+    } else {
+      // Unknown role — send to welcome to avoid perpetual loading screen
+      router.replace('/(auth)/welcome');
     }
   }, [isLoading, isAuthenticated, user]);
   

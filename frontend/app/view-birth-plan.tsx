@@ -149,7 +149,7 @@ export default function ViewBirthPlanScreen() {
           <Text style={styles.errorText}>{error}</Text>
           <Button
             title="Go Back"
-            onPress={() => router.back()}
+            onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }}
             style={{ marginTop: SIZES.md }}
           />
         </View>

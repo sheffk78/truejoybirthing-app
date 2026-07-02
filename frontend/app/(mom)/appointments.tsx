@@ -111,27 +111,33 @@ export default function AppointmentsScreen() {
       ]);
       setAppointments(appointmentsData || []);
       setProviders(providersData || []);
-      
-      // Handle pre-selection from URL params
-      if (params.providerId && providersData?.length > 0) {
-        const provider = providersData.find((p: Provider) => p.user_id === params.providerId);
-        if (provider) {
-          setSelectedProvider(provider);
-          setPreSelectedProviderId(params.providerId);
-          setShowCreateModal(true);
-        }
-      }
     } catch (error: any) {
       console.error('Error fetching data:', error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [params.providerId]);
+  }, []);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Fix 5.7: Handle pre-selection from URL params in a separate effect that
+  // runs once when providerId is first received, rather than inside fetchData
+  // (which would re-open the modal on every fetch, including pull-to-refresh)
+  useEffect(() => {
+    if (!params.providerId) return;
+    if (providers.length === 0) return; // Wait for providers to load
+    const provider = providers.find((p: Provider) => p.user_id === params.providerId);
+    if (provider) {
+      setSelectedProvider(provider);
+      setPreSelectedProviderId(params.providerId);
+      setShowCreateModal(true);
+      // Clear the param so it doesn't re-trigger on subsequent fetches/refreshes
+      router.setParams({ providerId: undefined, providerName: undefined } as any);
+    }
+  }, [params.providerId, providers]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -383,7 +389,7 @@ export default function AppointmentsScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton} data-testid="back-button">
+        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton} data-testid="back-button">
           <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>My Appointments</Text>

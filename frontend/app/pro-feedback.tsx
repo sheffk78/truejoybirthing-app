@@ -80,7 +80,7 @@ export default function ProFeedbackScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton}>
             <Icon name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Send Feedback</Text>
@@ -115,9 +115,9 @@ export default function ProFeedbackScreen() {
           <Text style={styles.successText}>
             Your feedback was sent to the True Joy Birthing team.
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.doneButton, { backgroundColor: colors.primary }]}
-            onPress={() => router.back()}
+            onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }}
           >
             <Text style={styles.doneButtonText}>Done</Text>
           </TouchableOpacity>
@@ -132,7 +132,7 @@ export default function ProFeedbackScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton}>
           <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Send Feedback</Text>

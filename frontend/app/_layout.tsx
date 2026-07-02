@@ -113,8 +113,8 @@ function ThemedLayout() {
         router.back();
         return true; // prevent default (exit app)
       }
-      // On a root tab screen — don't exit the app, just do nothing
-      return true;
+      // On a root tab screen — let the OS handle (minimize/exit)
+      return false;
     };
 
     const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
