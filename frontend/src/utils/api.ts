@@ -1,6 +1,14 @@
 import * as SecureStore from 'expo-secure-store';
 import { API_BASE } from '../constants/api';
 import { Platform } from 'react-native';
+import { useAuthStore } from '../store/authStore';
+
+export class SessionExpiredError extends Error {
+  constructor(message: string = 'Session expired') {
+    super(message);
+    this.name = 'SessionExpiredError';
+  }
+}
 
 export interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -14,7 +22,7 @@ export function getApiBaseUrl(): string {
 }
 
 export async function apiRequest<T = any>(endpoint: string, options: ApiOptions = {}): Promise<T> {
-  const { method = 'GET', body, headers = {}, timeoutMs } = options;
+  const { method = 'GET', body, headers = {}, timeoutMs = 15000 } = options;
   
   const token = await SecureStore.getItemAsync('session_token');
   
@@ -27,10 +35,8 @@ export async function apiRequest<T = any>(endpoint: string, options: ApiOptions 
     requestHeaders['Authorization'] = `Bearer ${token}`;
   }
   
-  const controller = timeoutMs ? new AbortController() : undefined;
-  const timeoutId = timeoutMs
-    ? setTimeout(() => controller?.abort(), timeoutMs)
-    : undefined;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   let response: Response;
   try {
@@ -39,7 +45,7 @@ export async function apiRequest<T = any>(endpoint: string, options: ApiOptions 
       headers: requestHeaders,
       credentials: 'include',
       body: body ? JSON.stringify(body) : undefined,
-      signal: controller?.signal,
+      signal: controller.signal,
     });
   } catch (error: any) {
     if (error?.name === 'AbortError') {
@@ -47,12 +53,29 @@ export async function apiRequest<T = any>(endpoint: string, options: ApiOptions 
     }
     throw error;
   } finally {
-    if (timeoutId) clearTimeout(timeoutId);
+    clearTimeout(timeoutId);
+  }
+  
+  // 401: Session expired - trigger logout via auth store
+  // Safe to import statically: authStore uses raw fetch (not apiRequest),
+  // so there's no circular dependency.
+  if (response.status === 401) {
+    try {
+      await useAuthStore.getState().logout();
+    } catch (e) {
+      // best effort - the caller will get SessionExpiredError regardless
+    }
+    throw new SessionExpiredError('Your session has expired. Please log in again.');
   }
   
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.detail || `Request failed with status ${response.status}`);
+  }
+  
+  // 204 No Content: return null (no body to parse)
+  if (response.status === 204) {
+    return null as T;
   }
   
   return response.json();

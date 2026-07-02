@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { Platform, StatusBar, View, BackHandler, Image } from 'react-native';
+import { Platform, StatusBar, View, BackHandler, Image, AppState } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {
@@ -27,6 +27,7 @@ function ThemedLayout() {
   const segments = useSegments();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
+  const lastBackgroundedRef = useRef<number | null>(null);
   
   // Initialize the app
   useEffect(() => {
@@ -38,6 +39,24 @@ function ThemedLayout() {
     
     prepare();
   }, []);
+  
+  // Re-validate auth when app returns to foreground after >5 minutes
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        lastBackgroundedRef.current = Date.now();
+      } else if (nextAppState === 'active' && lastBackgroundedRef.current) {
+        const backgroundDuration = Date.now() - lastBackgroundedRef.current;
+        lastBackgroundedRef.current = null;
+        // Only re-check if backgrounded for more than 5 minutes
+        if (backgroundDuration > 5 * 60 * 1000) {
+          checkAuth();
+        }
+      }
+    });
+    
+    return () => subscription.remove();
+  }, [checkAuth]);
   
   // Handle navigation based on auth state
   useEffect(() => {

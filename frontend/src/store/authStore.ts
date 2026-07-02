@@ -289,10 +289,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       
       if (!response.ok) {
-        try {
-          await SecureStore.deleteItemAsync('session_token');
-        } catch (e) { /* best effort */ }
-        set({ isLoading: false, isAuthenticated: false, user: null, sessionToken: null });
+        // Only delete token on auth errors (401/403), not server errors (500/503)
+        // Deleting on 500 would force logout when the server has a temporary hiccup
+        if (response.status === 401 || response.status === 403) {
+          try {
+            await SecureStore.deleteItemAsync('session_token');
+          } catch (e) { /* best effort */ }
+          set({ isLoading: false, isAuthenticated: false, user: null, sessionToken: null });
+        } else {
+          // Server error - preserve token, user may just be experiencing a transient issue
+          set({ isLoading: false });
+        }
         return;
       }
       
@@ -313,11 +320,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isLoading: false,
       });
     } catch (error) {
+      // Network error - preserve token, user may be offline
+      // Deleting token on network error would force logout every time the app
+      // can't reach the server (airplane mode, poor signal, etc.)
       console.log('Auth check error:', error);
-      try {
-        await SecureStore.deleteItemAsync('session_token');
-      } catch (e) { /* best effort */ }
-      set({ isLoading: false, isAuthenticated: false, user: null, sessionToken: null });
+      set({ isLoading: false });
     }
   },
   
