@@ -82,13 +82,14 @@ export const api = {
     ),
 
   // Users
-  getUsers: (params: { q?: string; role?: string; subscription_status?: string; page?: number; limit?: number } = {}) => {
+  getUsers: (params: { q?: string; role?: string; subscription_status?: string; page?: number; limit?: number; include_test?: boolean } = {}) => {
     const searchParams = new URLSearchParams();
     if (params.q) searchParams.set('q', params.q);
     if (params.role) searchParams.set('role', params.role);
     if (params.subscription_status) searchParams.set('subscription_status', params.subscription_status);
     if (params.page) searchParams.set('page', String(params.page));
     if (params.limit) searchParams.set('limit', String(params.limit));
+    if (params.include_test) searchParams.set('include_test', 'true');
     const qs = searchParams.toString();
     return request<{ users: Array<any>; total: number; page: number; limit: number; pages: number }>(
       `/admin/api/dashboard/users${qs ? `?${qs}` : ''}`
@@ -97,6 +98,12 @@ export const api = {
 
   getUser: (userId: string) =>
     request<any>(`/admin/api/dashboard/users/${userId}`),
+
+  toggleTestFlag: (userId: string) =>
+    request<{ user_id: string; is_test: boolean; message: string }>(
+      `/admin/api/dashboard/users/${userId}/test-flag`,
+      { method: 'PUT' }
+    ),
 
   // Analytics
   getAnalyticsOverview: (period: string = '30d') =>

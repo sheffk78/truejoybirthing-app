@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,9 @@ import {
   CreditCard,
   Shield,
   User,
+  FlaskConical,
 } from 'lucide-react';
+import { useState } from 'react';
 
 const subscriptionStatusColors: Record<string, string> = {
   TRIAL: 'bg-tjb-lavender-100 text-tjb-lavender-600 border-tjb-lavender-300',
@@ -33,12 +35,28 @@ const roleColors: Record<string, string> = {
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [togglingTest, setTogglingTest] = useState(false);
 
   const { data: user, isLoading, error } = useQuery({
     queryKey: ['user', id],
     queryFn: () => api.getUser(id!),
     enabled: !!id,
   });
+
+  const handleToggleTest = async () => {
+    if (!user || togglingTest) return;
+    setTogglingTest(true);
+    try {
+      await api.toggleTestFlag(user.user_id || user.id);
+      await queryClient.invalidateQueries({ queryKey: ['user', id] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    } catch (e) {
+      // silently fail, UI will re-enable button
+    } finally {
+      setTogglingTest(false);
+    }
+  };
 
   if (error) {
     return (
@@ -104,6 +122,22 @@ export default function UserDetailPage() {
                   <CreditCard className="h-3 w-3 mr-1" />
                   {subStatus === 'TRIAL' ? 'Trial' : subStatus.charAt(0) + subStatus.slice(1).toLowerCase().replace('_', ' ')}
                 </span>
+                {user.is_test && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-amber-50 text-amber-700 border-amber-200">
+                    <FlaskConical className="h-3 w-3 mr-1" />
+                    Test Account
+                  </span>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-2 gap-2"
+                  disabled={togglingTest}
+                  onClick={handleToggleTest}
+                >
+                  <FlaskConical className="h-3.5 w-3.5" />
+                  {user.is_test ? 'Unmark as Test' : 'Mark as Test'}
+                </Button>
               </div>
             </div>
           </div>

@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useNavigate } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, FlaskConical } from 'lucide-react';
 
 const roleTabs = [
   { value: '', label: 'All' },
@@ -61,6 +61,7 @@ export default function UsersPage() {
   const [searchDebounced, setSearchDebounced] = useState('');
   const [role, setRole] = useState('');
   const [page, setPage] = useState(1);
+  const [showTestAccounts, setShowTestAccounts] = useState(false);
   const limit = 20;
 
   // Debounce search
@@ -72,13 +73,14 @@ export default function UsersPage() {
   };
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['users', searchDebounced, role, page],
+    queryKey: ['users', searchDebounced, role, page, showTestAccounts],
     queryFn: () =>
       api.getUsers({
         q: searchDebounced || undefined,
         role: role || undefined,
         page,
         limit,
+        include_test: showTestAccounts,
       }),
   });
 
@@ -109,6 +111,15 @@ export default function UsersPage() {
             ))}
           </TabsList>
         </Tabs>
+        <Button
+          variant={showTestAccounts ? 'default' : 'outline'}
+          size="sm"
+          className="h-10 gap-2"
+          onClick={() => { setShowTestAccounts(!showTestAccounts); setPage(1); }}
+        >
+          <FlaskConical className="h-4 w-4" />
+          {showTestAccounts ? 'Hiding test' : 'Show test'}
+        </Button>
       </div>
 
       {/* Table */}
@@ -143,11 +154,19 @@ export default function UsersPage() {
                     data?.users?.map((user: any) => (
                       <TableRow
                         key={user.id}
-                        className="cursor-pointer hover:bg-muted/30 transition-colors"
+                        className={`cursor-pointer hover:bg-muted/30 transition-colors${user.is_test ? ' opacity-60' : ''}`}
                         onClick={() => navigate(`/admin/users/${user.id}`)}
                       >
                         <TableCell className="font-medium text-tjb-charcoal">
-                          {user.full_name || user.name || '—'}
+                          <div className="flex items-center gap-2">
+                            {user.full_name || user.name || '—'}
+                            {user.is_test && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                <FlaskConical className="h-3 w-3" />
+                                Test
+                              </span>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                           {user.email}

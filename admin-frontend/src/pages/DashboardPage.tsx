@@ -37,7 +37,7 @@ export default function DashboardPage() {
           title="Total Users"
           value={isLoading ? '—' : (stats?.total_users ?? 0).toLocaleString()}
           icon={Users}
-          subtitle="All registered users"
+          subtitle="Excludes test accounts"
         />
         <StatsCard
           title="New This Week"

@@ -109,13 +109,15 @@ async def get_dashboard_stats(user: User = Depends(check_role(["ADMIN"]))):
     """Get dashboard overview statistics (admin only)."""
     now = get_now()
 
-    # Total users
-    total_users = await db.users.count_documents({})
+    # Total users (exclude test accounts from production stats)
+    non_test_filter = {"is_test": {"$ne": True}}
+
+    total_users = await db.users.count_documents(non_test_filter)
 
     # Users by role
     users_by_role = {}
     for role in ROLES:
-        count = await db.users.count_documents({"role": role})
+        count = await db.users.count_documents({**non_test_filter, "role": role})
         users_by_role[role] = count
 
     # Subscription breakdown (exclude MOMs - they have free access)
@@ -130,9 +132,11 @@ async def get_dashboard_stats(user: User = Depends(check_role(["ADMIN"]))):
     thirty_days_ago = now - timedelta(days=30)
 
     signups_last_7_days = await db.users.count_documents({
+        **non_test_filter,
         "created_at": {"$gte": seven_days_ago}
     })
     signups_last_30_days = await db.users.count_documents({
+        **non_test_filter,
         "created_at": {"$gte": thirty_days_ago}
     })
 
@@ -169,11 +173,12 @@ async def get_signup_trend(user: User = Depends(check_role(["ADMIN"]))):
     # Set thirty_days_ago to start of that day
     start_date = thirty_days_ago.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    # Aggregate signups by day and role
+    # Aggregate signups by day and role (exclude test accounts)
     pipeline = [
         {
             "$match": {
-                "created_at": {"$gte": start_date}
+                "created_at": {"$gte": start_date},
+                "is_test": {"$ne": True}
             }
         },
         {
@@ -236,11 +241,16 @@ async def get_dashboard_users(
     subscription_status: Optional[str] = Query(None, description="Filter by subscription status"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=100, description="Items per page"),
+    include_test: bool = Query(False, description="Include test accounts in results"),
     user: User = Depends(check_role(["ADMIN"])),
 ):
     """Get paginated user list with search and filters (admin only)."""
     # Build query
     query = {}
+
+    # Exclude test accounts by default
+    if not include_test:
+        query["is_test"] = {"$ne": True}
 
     # Text search on name/email
     if q:
@@ -389,6 +399,31 @@ async def delete_user(
 
     await db.users.delete_one({"user_id": user_id})
     return {"message": "User deleted", "user_id": user_id}
+
+
+@router.put("/users/{user_id}/test-flag")
+async def toggle_test_flag(
+    user_id: str,
+    user: User = Depends(check_role(["ADMIN"])),
+):
+    """Toggle the is_test flag on a user. Test accounts are excluded from stats and counts."""
+    existing = await db.users.find_one({"user_id": user_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    current_flag = existing.get("is_test", False)
+    new_flag = not current_flag
+
+    await db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {"is_test": new_flag, "updated_at": get_now()}}
+    )
+
+    return {
+        "user_id": user_id,
+        "is_test": new_flag,
+        "message": f"User {'marked as test' if new_flag else 'unmarked from test'} account"
+    }
 
 
 # ============== GA4 ANALYTICS ==============
