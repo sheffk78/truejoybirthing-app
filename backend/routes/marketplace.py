@@ -25,6 +25,12 @@ USER_PUBLIC_FIELDS = {
     "reset_token_expires": 0,
     "verification_token": 0,
     "created_at": 0,
+    "updated_at": 0,
+    "last_login": 0,
+    "device_tokens": 0,
+    "push_token": 0,
+    "personal_notes": 0,
+    "internal_flags": 0,
 }
 
 # ============== ROUTES ==============
