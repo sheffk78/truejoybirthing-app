@@ -21,6 +21,7 @@ from datetime import datetime
 from .dependencies import (
     db, check_role, User, create_notification, get_now, generate_id
 )
+from .relationship_utils import verify_active_relationship
 
 router = APIRouter(tags=["Appointments"])
 
@@ -159,14 +160,8 @@ async def create_appointment(data: dict, user: User = Depends(get_current_user))
         
         if provider_id and provider_id != "none":
             # Appointment with a connected provider
-            # Verify provider is in mom's team
-            share_request = await db.share_requests.find_one({
-                "mom_user_id": user.user_id,
-                "provider_id": provider_id,
-                "status": "accepted"
-            })
-            
-            if not share_request:
+            # Verify provider is in mom's team with an ACTIVE relationship
+            if not await verify_active_relationship(provider_id, user.user_id):
                 raise HTTPException(status_code=403, detail="Not connected with this provider")
             
             # Get provider info

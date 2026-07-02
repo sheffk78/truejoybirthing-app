@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 import uuid
 
 from .dependencies import db, get_now, get_current_user, check_role, User
+from .relationship_utils import verify_active_relationship, get_active_provider_ids_for_mom
 
 router = APIRouter(prefix="/mom", tags=["Mom"])
 
@@ -188,6 +189,8 @@ async def get_mom_team(user: User = Depends(check_role(["MOM"]))):
         {"mom_user_id": user.user_id, "status": "accepted"},
         {"_id": 0}
     ).to_list(20)
+    # Filter to active relationships only
+    share_requests = [r for r in share_requests if r.get("relationship_status", "active") == "active"]
     
     client_records = await db.clients.find(
         {"linked_mom_id": user.user_id, "status": "Active"},
@@ -325,11 +328,12 @@ async def get_team_providers(user: User = Depends(check_role(["MOM"]))):
     providers = []
     seen_provider_ids = set()
     
-    # 1. Get accepted share requests
+    # 1. Get accepted share requests (active relationships only)
     share_requests = await db.share_requests.find(
         {"mom_user_id": user.user_id, "status": "accepted"},
         {"_id": 0}
     ).to_list(20)
+    share_requests = [r for r in share_requests if r.get("relationship_status", "active") == "active"]
     
     for req in share_requests:
         provider_id = req["provider_id"]
@@ -384,15 +388,17 @@ async def get_team_providers(user: User = Depends(check_role(["MOM"]))):
 
 @router.get("/contracts")
 async def get_mom_contracts(user: User = Depends(check_role(["MOM"]))):
-    """Get contracts sent to this mom"""
+    """Get contracts sent to this mom (only from providers with active relationships)"""
     # Find client records where this mom is linked
     clients = await db.clients.find(
         {"linked_mom_id": user.user_id},
-        {"_id": 0, "client_id": 1}
+        {"_id": 0, "client_id": 1, "provider_id": 1}
     ).to_list(100)
-    
-    client_ids = [c["client_id"] for c in clients]
-    
+
+    # Filter to clients whose provider relationship is still active
+    active_provider_ids = set(await get_active_provider_ids_for_mom(user.user_id))
+    client_ids = [c["client_id"] for c in clients if c.get("provider_id") in active_provider_ids]
+
     contracts = await db.contracts.find(
         {"client_id": {"$in": client_ids}},
         {"_id": 0}
@@ -416,20 +422,22 @@ async def get_mom_contracts(user: User = Depends(check_role(["MOM"]))):
 
 @router.get("/invoices")
 async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
-    """Get invoices sent to this mom"""
+    """Get invoices sent to this mom (only from providers with active relationships)"""
     # Find client records where this mom is linked
     clients = await db.clients.find(
         {"linked_mom_id": user.user_id},
-        {"_id": 0, "client_id": 1}
+        {"_id": 0, "client_id": 1, "provider_id": 1}
     ).to_list(100)
-    
-    client_ids = [c["client_id"] for c in clients]
-    
+
+    # Filter to clients whose provider relationship is still active
+    active_provider_ids = set(await get_active_provider_ids_for_mom(user.user_id))
+    client_ids = [c["client_id"] for c in clients if c.get("provider_id") in active_provider_ids]
+
     invoices = await db.invoices.find(
         {"client_id": {"$in": client_ids}},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
-    
+
     # Enrich with provider info
     for invoice in invoices:
         provider = await db.users.find_one(
@@ -439,16 +447,20 @@ async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
         if provider:
             invoice["provider_name"] = provider.get("full_name")
             invoice["provider_role"] = provider.get("role")
-    
+
     return invoices
 
 
 @router.get("/invoices/{invoice_id}")
 async def get_mom_invoice(invoice_id: str, user: User = Depends(check_role(["MOM"]))):
     """Get a specific invoice for this mom"""
-    # Find client records where this mom is linked
+    # Get active provider IDs for this mom
+    from .relationship_utils import get_active_provider_ids_for_mom
+    active_provider_ids = await get_active_provider_ids_for_mom(user.user_id)
+    
+    # Find client records where this mom is linked (only for active providers)
     clients = await db.clients.find(
-        {"linked_mom_id": user.user_id},
+        {"linked_mom_id": user.user_id, "provider_id": {"$in": list(active_provider_ids)}},
         {"_id": 0, "client_id": 1}
     ).to_list(100)
     
@@ -484,14 +496,8 @@ async def create_mom_appointment(request_data: dict, user: User = Depends(check_
     if not provider_id:
         raise HTTPException(status_code=400, detail="provider_id required")
     
-    # Verify provider exists and is connected
-    share_request = await db.share_requests.find_one({
-        "mom_user_id": user.user_id,
-        "provider_id": provider_id,
-        "status": "accepted"
-    })
-    
-    if not share_request:
+    # Verify provider exists and has an active relationship
+    if not await verify_active_relationship(provider_id, user.user_id):
         raise HTTPException(status_code=403, detail="Not connected with this provider")
     
     # Get mom's full name for display
@@ -616,137 +622,3 @@ async def cancel_mom_appointment(appointment_id: str, user: User = Depends(check
     )
     
     return {"message": "Appointment cancelled"}
-
-
-# ============== MOM CONTRACTS ENDPOINT ==============
-
-@router.get("/contracts")
-async def get_mom_contracts(user: User = Depends(get_current_user())):
-    """
-    Get all contracts for the Mom user.
-    This includes contracts where:
-    1. The Mom is listed as mom_user_id on the contract
-    2. The contract is from a provider in the Mom's team
-    3. The Mom's client_id matches the contract's client_id
-    """
-    # Get Mom's team to find linked providers
-    mom_doc = await db.users.find_one(
-        {"user_id": user.user_id},
-        {"_id": 0, "team": 1}
-    )
-    
-    # Collect provider IDs from mom's team
-    provider_ids = []
-    if mom_doc and "team" in mom_doc:
-        for team_member in mom_doc.get("team", []):
-            if team_member.get("provider_id"):
-                provider_ids.append(team_member["provider_id"])
-    
-    contracts = []
-    
-    # Fetch doula contracts - where mom_user_id matches OR doula is in mom's team
-    doula_query = {
-        "$or": [
-            {"mom_user_id": user.user_id},
-        ]
-    }
-    if provider_ids:
-        doula_query["$or"].append({"doula_id": {"$in": provider_ids}})
-    
-    doula_contracts = await db.doula_contracts.find(doula_query).to_list(100)
-    
-    for contract in doula_contracts:
-        contract.pop("_id", None)
-        # Add provider info
-        provider = await db.users.find_one(
-            {"user_id": contract.get("doula_id")},
-            {"_id": 0, "full_name": 1, "role": 1}
-        )
-        if provider:
-            contract["provider_name"] = provider.get("full_name", "Unknown")
-            contract["provider_role"] = "DOULA"
-        contracts.append(contract)
-    
-    # Fetch midwife contracts - where mom_user_id matches OR midwife is in mom's team
-    midwife_query = {
-        "$or": [
-            {"mom_user_id": user.user_id},
-        ]
-    }
-    if provider_ids:
-        midwife_query["$or"].append({"midwife_id": {"$in": provider_ids}})
-    
-    midwife_contracts = await db.midwife_contracts.find(midwife_query).to_list(100)
-    
-    for contract in midwife_contracts:
-        contract.pop("_id", None)
-        # Add provider info
-        provider = await db.users.find_one(
-            {"user_id": contract.get("midwife_id")},
-            {"_id": 0, "full_name": 1, "role": 1}
-        )
-        if provider:
-            contract["provider_name"] = provider.get("full_name", "Unknown")
-            contract["provider_role"] = "MIDWIFE"
-        contracts.append(contract)
-    
-    # Sort by created_at descending
-    contracts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
-    
-    return contracts
-
-
-# ============== MOM INVOICES ENDPOINT ==============
-
-@router.get("/invoices")
-async def get_mom_invoices(user: User = Depends(get_current_user())):
-    """
-    Get all invoices for the Mom user.
-    This includes invoices where:
-    1. The Mom is listed as mom_user_id on the invoice
-    2. The invoice is from a provider in the Mom's team
-    """
-    # Get Mom's team to find linked providers
-    mom_doc = await db.users.find_one(
-        {"user_id": user.user_id},
-        {"_id": 0, "team": 1}
-    )
-    
-    # Collect provider IDs from mom's team
-    provider_ids = []
-    if mom_doc and "team" in mom_doc:
-        for team_member in mom_doc.get("team", []):
-            if team_member.get("provider_id"):
-                provider_ids.append(team_member["provider_id"])
-    
-    # Build query: invoices where mom_user_id matches OR provider is in team
-    query = {
-        "$or": [
-            {"mom_user_id": user.user_id},
-        ]
-    }
-    if provider_ids:
-        query["$or"].append({"provider_id": {"$in": provider_ids}})
-        query["$or"].append({"pro_user_id": {"$in": provider_ids}})
-    
-    invoices_cursor = db.invoices.find(query)
-    
-    invoices = []
-    async for invoice in invoices_cursor:
-        invoice.pop("_id", None)
-        # Add provider info
-        provider_id = invoice.get("provider_id") or invoice.get("pro_user_id")
-        if provider_id:
-            provider = await db.users.find_one(
-                {"user_id": provider_id},
-                {"_id": 0, "full_name": 1, "role": 1}
-            )
-            if provider:
-                invoice["provider_name"] = provider.get("full_name", "Unknown")
-                invoice["provider_role"] = provider.get("role", "DOULA")
-        invoices.append(invoice)
-    
-    # Sort by created_at descending
-    invoices.sort(key=lambda x: x.get("created_at", ""), reverse=True)
-    
-    return invoices

@@ -355,11 +355,11 @@ async def get_doula_client(client_id: str, user: User = Depends(check_role(["DOU
         if mom and mom.get("picture"):
             client["picture"] = mom["picture"]
     
-    # Get related data
-    contracts = await db.contracts.find({"client_id": client_id}, {"_id": 0}).to_list(100)
-    invoices = await db.invoices.find({"client_id": client_id}, {"_id": 0}).to_list(100)
-    appointments = await db.appointments.find({"client_id": client_id}, {"_id": 0}).to_list(100)
-    notes = await db.notes.find({"client_id": client_id}, {"_id": 0}).to_list(100)
+    # Get related data — scoped to this provider to prevent cross-provider data leaks
+    contracts = await db.contracts.find({"client_id": client_id, "provider_id": user.user_id}, {"_id": 0}).to_list(100)
+    invoices = await db.invoices.find({"client_id": client_id, "provider_id": user.user_id}, {"_id": 0}).to_list(100)
+    appointments = await db.appointments.find({"client_id": client_id, "provider_id": user.user_id}, {"_id": 0}).to_list(100)
+    notes = await db.notes.find({"client_id": client_id, "provider_id": user.user_id}, {"_id": 0}).to_list(100)
     
     return {
         **client,

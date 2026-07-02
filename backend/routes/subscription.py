@@ -558,6 +558,17 @@ async def validate_receipt(request: ValidateReceiptRequest, user: User = Depends
         subscription_status = "active"
         trial_end = None
 
+    # --- replay prevention: reject duplicate transaction IDs ---
+    if transaction_id:
+        existing = await db.subscriptions.find_one({
+            "store_transaction_id": transaction_id
+        })
+        if existing:
+            raise HTTPException(
+                status_code=400,
+                detail="This receipt has already been processed",
+            )
+
     # --- persist subscription ---
     subscription = {
         "subscription_id": f"sub_{uuid.uuid4().hex[:12]}",

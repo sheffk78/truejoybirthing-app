@@ -48,7 +48,16 @@ def validate_base64_image(data_url: str) -> tuple[str, str]:
         # Check file size (max 5MB)
         if len(decoded) > 5 * 1024 * 1024:
             raise ValueError("Image too large. Maximum size is 5MB.")
+        # Verify the decoded bytes are a real, non-corrupted image
+        from PIL import Image
+        import io as _io
+        try:
+            Image.open(_io.BytesIO(decoded)).verify()
+        except Exception:
+            raise ValueError("Invalid image file - corrupted or not a real image")
     except Exception as e:
+        if isinstance(e, ValueError):
+            raise
         raise ValueError(f"Invalid base64 data: {str(e)}")
     
     return mime_type, base64_data

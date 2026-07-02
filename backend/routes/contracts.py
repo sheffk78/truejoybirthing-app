@@ -441,6 +441,7 @@ async def create_doula_contract(contract_data: ContractCreate, user: User = Depe
         "doula_signature": None,
         "sent_at": None,
         "signed_at": None,
+        "signing_token": f"st_{uuid.uuid4().hex[:16]}",
         "created_at": now,
         "updated_at": now
     }
@@ -611,7 +612,7 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
     return {
         "message": "Contract sent",
         "email_sent": email_sent,
-        "signing_url": f"/contract/{contract_id}"
+        "signing_url": f"/contract/{contract_id}?signingToken={contract.get('signing_token', '')}"
     }
 
 
@@ -621,6 +622,7 @@ async def sign_doula_contract(contract_id: str, request: Request):
     body = await request.json()
     signer_name = body.get("signer_name", "")
     signature_data = body.get("signature_data", "")
+    signing_token = body.get("signing_token", "")
     
     if not signer_name.strip():
         raise HTTPException(status_code=400, detail="Signer name is required")
@@ -636,6 +638,13 @@ async def sign_doula_contract(contract_id: str, request: Request):
     
     if contract.get("status") != "Sent":
         raise HTTPException(status_code=400, detail="Contract must be sent before signing")
+    
+    # Validate signing token to prevent forged signatures
+    # Backward compat: contracts created before this fix have no signing_token,
+    # so only enforce if the contract actually has one stored
+    stored_token = contract.get("signing_token")
+    if stored_token and stored_token != signing_token:
+        raise HTTPException(status_code=403, detail="Invalid signing token")
     
     client_signature = {
         "signer_type": "client",
@@ -875,6 +884,7 @@ async def create_midwife_contract(contract_data: MidwifeContractCreate, user: Us
         "partner_signature": None,
         "sent_at": None,
         "signed_at": None,
+        "signing_token": f"st_{uuid.uuid4().hex[:16]}",
         "created_at": now,
         "updated_at": now
     }
@@ -1130,7 +1140,7 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
     return {
         "message": "Contract sent",
         "email_sent": email_sent,
-        "signing_url": f"/sign-midwife-contract?contractId={contract_id}"
+        "signing_url": f"/sign-midwife-contract?contractId={contract_id}&signingToken={contract.get('signing_token', '')}"
     }
 
 
@@ -1140,6 +1150,7 @@ async def sign_midwife_contract(contract_id: str, request: Request):
     body = await request.json()
     signer_name = body.get("signer_name", "")
     signature_data = body.get("signature_data", "")
+    signing_token = body.get("signing_token", "")
     
     if not signer_name.strip():
         raise HTTPException(status_code=400, detail="Signer name is required")
@@ -1155,6 +1166,13 @@ async def sign_midwife_contract(contract_id: str, request: Request):
     
     if contract.get("status") != "Sent":
         raise HTTPException(status_code=400, detail="Contract must be sent before signing")
+    
+    # Validate signing token to prevent forged signatures
+    # Backward compat: contracts created before this fix have no signing_token,
+    # so only enforce if the contract actually has one stored
+    stored_token = contract.get("signing_token")
+    if stored_token and stored_token != signing_token:
+        raise HTTPException(status_code=403, detail="Invalid signing token")
     
     client_signature = {
         "signer_type": "client",

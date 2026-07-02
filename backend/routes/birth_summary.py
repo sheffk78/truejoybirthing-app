@@ -484,15 +484,15 @@ async def generate_birth_summary_report(client_id: str, user: User = Depends(che
     # Get client name
     client_name = client.get("name", "Client")
     
-    # Get labor records
+    # Get labor records — scoped to this provider to prevent cross-provider data leaks
     labor_records = await db.labor_records.find(
-        {"client_id": client_id},
+        {"client_id": client_id, "provider_id": user.user_id},
         {"_id": 0}
     ).to_list(length=100)
-    
+
     # Get birth record
     birth_record = await db.birth_records.find_one(
-        {"client_id": client_id},
+        {"client_id": client_id, "provider_id": user.user_id},
         {"_id": 0}
     )
     
@@ -540,12 +540,12 @@ async def preview_birth_summary(client_id: str, user: User = Depends(check_role(
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     
-    # Get labor records count
-    labor_count = await db.labor_records.count_documents({"client_id": client_id})
-    
+    # Get labor records count — scoped to this provider to prevent cross-provider data leaks
+    labor_count = await db.labor_records.count_documents({"client_id": client_id, "provider_id": user.user_id})
+
     # Get birth record
     birth_record = await db.birth_records.find_one(
-        {"client_id": client_id},
+        {"client_id": client_id, "provider_id": user.user_id},
         {"_id": 0}
     )
     

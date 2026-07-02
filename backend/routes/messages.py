@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 import uuid
 
 from .dependencies import db, generate_id, get_now, create_notification, ws_manager, get_current_user, check_role, User
+from .relationship_utils import verify_active_relationship, get_active_mom_ids_for_provider, get_active_relationship
 
 router = APIRouter(prefix="/messages", tags=["Messages"])
 
@@ -29,23 +30,19 @@ class MessageCreate(BaseModel):
 
 async def check_provider_can_message(provider_id: str, mom_id: str) -> bool:
     """Check if a provider has messaging permission with a mom"""
-    # Check for accepted share request with can_message permission
-    share_request = await db.share_requests.find_one({
-        "provider_id": provider_id,
-        "mom_user_id": mom_id,
-        "status": "accepted"
-    })
-    
+    # Check for active share request with can_message permission
+    share_request = await get_active_relationship(provider_id, mom_id)
+
     if share_request:
         # Check if can_message permission is granted (defaults to True if not specified)
         return share_request.get("can_message", True)
-    
+
     # Also check for linked clients
     client = await db.clients.find_one({
         "provider_id": provider_id,
         "linked_mom_id": mom_id
     })
-    
+
     return client is not None
 
 
@@ -200,11 +197,9 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
             raise HTTPException(status_code=403, detail="You don't have an active connection with this client")
     # Doula <-> Midwife messaging only allowed if they share a common client
     elif sender_role in ["DOULA", "MIDWIFE"] and receiver_role in ["DOULA", "MIDWIFE"]:
-        sender_clients = await db.share_requests.find({"provider_id": user.user_id, "status": "accepted"}).to_list(1000)
-        receiver_clients = await db.share_requests.find({"provider_id": message_data.receiver_id, "status": "accepted"}).to_list(1000)
-        sender_mom_ids = {c["mom_user_id"] for c in sender_clients}
-        receiver_mom_ids = {c["mom_user_id"] for c in receiver_clients}
-        shared_clients = sender_mom_ids & receiver_mom_ids
+        sender_moms = set(await get_active_mom_ids_for_provider(user.user_id))
+        receiver_moms = set(await get_active_mom_ids_for_provider(message_data.receiver_id))
+        shared_clients = sender_moms & receiver_moms
         if not shared_clients:
             raise HTTPException(status_code=403, detail="You can only message providers who share a common client with you")
     
