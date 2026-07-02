@@ -168,28 +168,13 @@ async def get_provider_leads(
             lead["planned_birth_setting"] = profile.get("planned_birth_setting")
             lead["number_of_children"] = profile.get("number_of_children")
         
-        # Get birth plan key details for provider to consider working together
+        # Get birth plan completion percentage only (full sections not exposed until share_request accepted)
         birth_plan = await db.birth_plans.find_one(
             {"user_id": lead["mom_user_id"]},
-            {"_id": 0, "sections": 1, "completion_percentage": 1}
+            {"_id": 0, "completion_percentage": 1}
         )
         if birth_plan:
             lead["birth_plan_completion"] = birth_plan.get("completion_percentage", 0)
-            
-            # Extract key details from "about_me" section
-            sections = birth_plan.get("sections", [])
-            about_me = next((s for s in sections if s.get("section_id") == "about_me"), None)
-            if about_me and about_me.get("data"):
-                data = about_me["data"]
-                lead["birth_plan_due_date"] = data.get("dueDate")
-                lead["birth_plan_location"] = data.get("birthLocation")
-                lead["birth_plan_hospital_name"] = data.get("hospitalName")
-            
-            # Extract previous birth experience from "other_considerations" section
-            other_considerations = next((s for s in sections if s.get("section_id") == "other_considerations"), None)
-            if other_considerations and other_considerations.get("data"):
-                data = other_considerations["data"]
-                lead["previous_birth_experience"] = data.get("previousBirthExperience")
         
         # If consultation scheduled, get appointment info
         if lead.get("consultation_appointment_id"):
@@ -439,6 +424,7 @@ async def convert_lead_to_client(
             "provider_name": user.full_name,
             "provider_role": user.role,
             "status": "accepted",
+            "relationship_status": "active",
             "created_at": now,
             "responded_at": now,
             "source": "lead_conversion"
@@ -448,7 +434,7 @@ async def convert_lead_to_client(
         # Update existing share request to accepted
         await db.share_requests.update_one(
             {"request_id": existing_share["request_id"]},
-            {"$set": {"status": "accepted", "responded_at": now}}
+            {"$set": {"status": "accepted", "relationship_status": "active", "responded_at": now}}
         )
     
     # Update mom's team

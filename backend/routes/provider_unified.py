@@ -19,6 +19,7 @@ from .dependencies import (
     db, check_role, User, create_notification, get_now, generate_id,
     is_client_active, calculate_client_active_status
 )
+from .relationship_utils import get_active_mom_ids_for_provider
 
 router = APIRouter(tags=["Provider Unified"])
 
@@ -41,26 +42,34 @@ async def get_provider_clients(
         query["status"] = status_filter
     
     clients = await db.clients.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
-    
+
+    # Get active relationship mom IDs to filter out terminated relationships
+    active_mom_ids = set(await get_active_mom_ids_for_provider(user.user_id))
+
     # Add is_active computed field and filter if needed
     # Also enrich with linked mom's picture
     result = []
     for client in clients:
         client["is_active"] = is_client_active(client)
-        
+
+        # Skip clients whose relationship has been terminated
+        linked_mom_id = client.get("linked_mom_id")
+        if linked_mom_id and linked_mom_id not in active_mom_ids:
+            continue
+
         # Always fetch the latest picture from linked mom's user record
         # This ensures the picture stays in sync if mom updates their profile
-        if client.get("linked_mom_id"):
+        if linked_mom_id:
             mom = await db.users.find_one(
-                {"user_id": client["linked_mom_id"]},
+                {"user_id": linked_mom_id},
                 {"_id": 0, "picture": 1}
             )
             if mom and mom.get("picture"):
                 client["picture"] = mom["picture"]
-        
+
         if include_inactive or client["is_active"]:
             result.append(client)
-    
+
     return result
 
 
@@ -654,9 +663,13 @@ async def get_dashboard(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     # Get all clients and count active
     all_clients = await db.clients.find(
         {"provider_id": user.user_id},
-        {"_id": 0, "client_id": 1, "due_date": 1, "birth_date": 1, "edd": 1, "status": 1}
+        {"_id": 0, "client_id": 1, "due_date": 1, "birth_date": 1, "edd": 1, "status": 1, "linked_mom_id": 1}
     ).to_list(500)
-    
+
+    # Filter out clients with terminated relationships
+    active_mom_ids = set(await get_active_mom_ids_for_provider(user.user_id))
+    all_clients = [c for c in all_clients if not c.get("linked_mom_id") or c["linked_mom_id"] in active_mom_ids]
+
     active_clients = [c for c in all_clients if is_client_active(c)]
     
     # Count upcoming appointments for active clients

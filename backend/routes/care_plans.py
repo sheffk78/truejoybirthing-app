@@ -22,6 +22,7 @@ from reportlab.platypus import Paragraph, Spacer
 
 from .dependencies import db, check_role, User, create_notification, send_notification_email, get_now
 from .pdf_branding import create_branded_pdf_buffer
+from .relationship_utils import verify_active_relationship, get_active_relationship, get_active_mom_ids_for_provider, terminate_relationship
 
 router = APIRouter(tags=["Care Plans"])
 
@@ -247,12 +248,16 @@ def get_share_request_email_html(mom_name: str, provider_name: str):
 
 async def notify_providers_birth_plan_complete(mom_user_id: str, mom_name: str):
     """Notify all connected providers when Mom completes her birth plan"""
+    # Get active relationships only (excludes terminated/expired)
     connections = await db.share_requests.find({
         "mom_user_id": mom_user_id,
         "status": "accepted"
     }).to_list(100)
-    
+
     for conn in connections:
+        # Skip terminated relationships
+        if conn.get("relationship_status", "active") != "active":
+            continue
         if conn.get("can_view_birth_plan", True):
             await create_notification(
                 user_id=conn["provider_id"],
@@ -604,6 +609,7 @@ async def share_birth_plan(share_data: ShareRequestCreate, user: User = Depends(
         "provider_name": provider["full_name"],
         "provider_role": provider["role"],
         "status": "pending",
+        "relationship_status": None,  # Set to "active" when accepted
         "created_at": now,
         "responded_at": None
     }
@@ -752,28 +758,13 @@ async def get_provider_share_requests(user: User = Depends(check_role(["DOULA", 
             req["planned_birth_setting"] = profile.get("planned_birth_setting")
             req["number_of_children"] = profile.get("number_of_children")
         
-        # Get birth plan key details for provider to consider working together
+        # Get birth plan completion (sections NOT exposed pre-acceptance)
         birth_plan = await db.birth_plans.find_one(
             {"user_id": mom_user_id},
-            {"_id": 0, "sections": 1, "completion_percentage": 1}
+            {"_id": 0, "completion_percentage": 1}
         )
         if birth_plan:
             req["birth_plan_completion"] = birth_plan.get("completion_percentage", 0)
-            
-            # Extract key details from "about_me" section
-            sections = birth_plan.get("sections", [])
-            about_me = next((s for s in sections if s.get("section_id") == "about_me"), None)
-            if about_me and about_me.get("data"):
-                data = about_me["data"]
-                req["birth_plan_due_date"] = data.get("dueDate")
-                req["birth_plan_location"] = data.get("birthLocation")
-                req["birth_plan_hospital_name"] = data.get("hospitalName")
-            
-            # Extract previous birth experience from "other_considerations" section
-            other_considerations = next((s for s in sections if s.get("section_id") == "other_considerations"), None)
-            if other_considerations and other_considerations.get("data"):
-                data = other_considerations["data"]
-                req["previous_birth_experience"] = data.get("previousBirthExperience")
     
     return {"requests": requests}
 
@@ -793,10 +784,14 @@ async def respond_to_share_request(
     
     now = get_now()
     new_status = "accepted" if action == "accept" else "rejected"
-    
+
+    update_set = {"status": new_status, "responded_at": now}
+    if action == "accept":
+        update_set["relationship_status"] = "active"
+
     result = await db.share_requests.update_one(
         {"request_id": request_id, "provider_id": user.user_id, "status": "pending"},
-        {"$set": {"status": new_status, "responded_at": now}}
+        {"$set": update_set}
     )
     
     if result.matched_count == 0:
@@ -868,6 +863,95 @@ async def respond_to_share_request(
                     })
     
     return {"message": f"Share request {new_status}"}
+
+
+@router.put("/provider/share-requests/{request_id}/terminate")
+async def terminate_share_request(
+    request_id: str,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "MOM"]))
+):
+    """Terminate an active relationship. Sets relationship_status to 'terminated'.
+
+    Either the provider or the mom can terminate. The share_request document
+    is preserved for history (not deleted).
+    """
+    # Find the share_request
+    share_request = await db.share_requests.find_one(
+        {"request_id": request_id},
+        {"_id": 0}
+    )
+
+    if not share_request:
+        raise HTTPException(status_code=404, detail="Share request not found")
+
+    # Verify the user is a party to this relationship
+    is_provider = share_request.get("provider_id") == user.user_id
+    is_mom = share_request.get("mom_user_id") == user.user_id
+
+    if not is_provider and not is_mom:
+        raise HTTPException(status_code=403, detail="You are not a party to this relationship")
+
+    # Only terminate if currently active
+    current_status = share_request.get("relationship_status", "active")
+    if current_status == "terminated":
+        raise HTTPException(status_code=400, detail="Relationship already terminated")
+
+    if share_request.get("status") != "accepted":
+        raise HTTPException(status_code=400, detail="Can only terminate accepted relationships")
+
+    # Terminate the relationship
+    now = get_now()
+    result = await db.share_requests.update_one(
+        {"request_id": request_id, "status": "accepted"},
+        {
+            "$set": {
+                "relationship_status": "terminated",
+                "terminated_at": now,
+                "terminated_by": user.user_id
+            }
+        }
+    )
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Share request not found or already responded")
+
+    # Notify the other party
+    other_party_id = share_request["mom_user_id"] if is_provider else share_request["provider_id"]
+    other_party_name = user.full_name
+    relationship_type = "client" if is_provider else "provider"
+
+    await create_notification(
+        user_id=other_party_id,
+        notif_type="relationship_terminated",
+        title=f"Relationship Ended",
+        message=f"{other_party_name} has ended your {relationship_type} relationship.",
+        data={"request_id": request_id}
+    )
+
+    return {"message": "Relationship terminated", "terminated_at": now}
+
+
+@router.put("/mom/relationships/{provider_id}/terminate")
+async def mom_terminate_relationship(
+    provider_id: str,
+    user: User = Depends(check_role(["MOM"]))
+):
+    """Mom terminates a relationship with a provider by provider_id."""
+    success = await terminate_relationship(provider_id, user.user_id, terminated_by=user.user_id)
+
+    if not success:
+        raise HTTPException(status_code=404, detail="No active relationship found with this provider")
+
+    # Notify provider
+    await create_notification(
+        user_id=provider_id,
+        notif_type="relationship_terminated",
+        title="Client Ended Relationship",
+        message=f"{user.full_name} has ended your client relationship.",
+        data={"mom_user_id": user.user_id}
+    )
+
+    return {"message": "Relationship terminated"}
 
 
 # ============== WELLNESS ROUTES ==============
@@ -1098,9 +1182,12 @@ async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDW
         {"provider_id": user.user_id, "status": "accepted"},
         {"_id": 0}
     ).to_list(100)
-    
+
     birth_plans = []
     for req in accepted_requests:
+        # Skip terminated relationships
+        if req.get("relationship_status", "active") != "active":
+            continue
         # Check if provider has permission to view birth plan
         if not req.get("can_view_birth_plan", True):
             continue
@@ -1140,19 +1227,15 @@ async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDW
 @router.get("/provider/shared-birth-plan/{mom_user_id}")
 async def get_shared_birth_plan_detail(mom_user_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Get a specific shared birth plan with provider notes (read-only view)"""
-    # Verify access via share request OR client relationship
-    share_request = await db.share_requests.find_one({
-        "mom_user_id": mom_user_id,
-        "provider_id": user.user_id,
-        "status": "accepted"
-    })
-    
+    # Verify access via active share request OR client relationship
+    share_request = await get_active_relationship(user.user_id, mom_user_id)
+
     # Also check if they have a client with this linked_mom_id
     client = await db.clients.find_one({
         "provider_id": user.user_id,
         "linked_mom_id": mom_user_id
     })
-    
+
     if not share_request and not client:
         raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
     
@@ -1184,41 +1267,31 @@ async def get_shared_birth_plan_detail(mom_user_id: str, user: User = Depends(ch
 @router.get("/provider/client/{mom_user_id}/birth-plan")
 async def get_client_birth_plan(mom_user_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Get a client's birth plan (simplified view for client list)"""
-    # Verify the provider has access via share request or client relationship
-    share_request = await db.share_requests.find_one({
-        "mom_user_id": mom_user_id,
-        "provider_id": user.user_id,
-        "status": "accepted"
-    })
-    
+    # Verify the provider has access via active share request or client relationship
+    share_request = await get_active_relationship(user.user_id, mom_user_id)
+
     # Also check if they have a client with this linked_mom_id
     client = await db.clients.find_one({
         "provider_id": user.user_id,
         "linked_mom_id": mom_user_id
     })
-    
+
     if not share_request and not client:
         raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
-    
+
     plan = await db.birth_plans.find_one({"user_id": mom_user_id}, {"_id": 0})
-    
+
     if not plan:
         raise HTTPException(status_code=404, detail="Birth plan not found")
-    
+
     return plan
 
 
 @router.get("/provider/client/{mom_id}/birth-plan/pdf")
 async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Generate and download a TJB-branded PDF version of a client's birth plan for providers"""
-    # Verify provider has access to this mom's birth plan
-    share_request = await db.share_requests.find_one({
-        "mom_user_id": mom_id,
-        "provider_id": user.user_id,
-        "status": "accepted"
-    })
-    
-    if not share_request:
+    # Verify provider has an active relationship with this mom
+    if not await verify_active_relationship(user.user_id, mom_id):
         raise HTTPException(status_code=403, detail="You don't have access to this client's birth plan")
     
     plan = await db.birth_plans.find_one({"user_id": mom_id}, {"_id": 0})
@@ -1251,14 +1324,8 @@ async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check
 @router.post("/provider/birth-plan/{mom_user_id}/notes")
 async def add_provider_note(mom_user_id: str, note_data: ProviderNoteCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
     """Add a note to a section of a shared birth plan"""
-    # Verify access
-    share_request = await db.share_requests.find_one({
-        "mom_user_id": mom_user_id,
-        "provider_id": user.user_id,
-        "status": "accepted"
-    })
-    
-    if not share_request:
+    # Verify active relationship
+    if not await verify_active_relationship(user.user_id, mom_user_id):
         raise HTTPException(status_code=403, detail="Access not granted to this birth plan")
     
     now = get_now()

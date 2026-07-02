@@ -30,6 +30,7 @@ from .dependencies import (
     db, get_current_user, check_role, generate_id, get_now,
     create_notification, User
 )
+from .relationship_utils import verify_active_relationship, get_active_mom_ids_for_provider
 
 router = APIRouter(prefix="/contractions", tags=["contractions"])
 
@@ -302,7 +303,11 @@ async def notify_team_water_broke(mom_id: str, mom_name: str, session_id: str, w
         for request in share_requests:
             provider_id = request.get("provider_id")
             provider_role = request.get("provider_role", "").upper()
-            
+
+            # Skip terminated relationships
+            if request.get("relationship_status", "active") != "active":
+                continue
+
             if provider_role == "DOULA" and session.get("is_shared_with_doula"):
                 await create_notification(
                     user_id=provider_id,
@@ -335,7 +340,11 @@ async def notify_team_session_start(mom_id: str, mom_name: str, session: dict):
         for request in share_requests:
             provider_id = request.get("provider_id")
             provider_role = request.get("provider_role", "").upper()
-            
+
+            # Skip terminated relationships
+            if request.get("relationship_status", "active") != "active":
+                continue
+
             # Check if mom opted to share with this provider type
             if provider_role == "DOULA" and session.get("is_shared_with_doula"):
                 await create_notification(
@@ -372,7 +381,11 @@ async def notify_team_511_reached(mom_id: str, mom_name: str, session_id: str):
         for request in share_requests:
             provider_id = request.get("provider_id")
             provider_role = request.get("provider_role", "").upper()
-            
+
+            # Skip terminated relationships
+            if request.get("relationship_status", "active") != "active":
+                continue
+
             if provider_role == "DOULA" and session.get("is_shared_with_doula"):
                 await create_notification(
                     user_id=provider_id,
@@ -1242,14 +1255,8 @@ async def get_client_contraction_data(
     if user.role not in ["DOULA", "MIDWIFE"]:
         raise HTTPException(status_code=403, detail="Only providers can access client data")
     
-    # Verify provider has access to this client
-    share_request = await db.share_requests.find_one({
-        "mom_id": mom_id,
-        "provider_id": user.user_id,
-        "status": "accepted"
-    })
-    
-    if not share_request:
+    # Verify provider has an active relationship with this client
+    if not await verify_active_relationship(user.user_id, mom_id):
         raise HTTPException(status_code=403, detail="You don't have access to this client's data")
     
     provider_role = user.role.upper()
@@ -1301,20 +1308,14 @@ async def get_clients_with_active_sessions(
     provider_role = user.role.upper()
     share_field = f"is_shared_with_{provider_role.lower()}"
     
-    # Get all accepted clients
-    share_requests = await db.share_requests.find({
-        "provider_id": user.user_id,
-        "status": "accepted"
-    }).to_list(100)
-    
-    mom_ids = [sr.get("mom_id") for sr in share_requests if sr.get("mom_id")]
-    
-    if not mom_ids:
+    # Get all clients with active relationships
+    active_mom_ids = await get_active_mom_ids_for_provider(user.user_id)
+    if not active_mom_ids:
         return {"active_clients": []}
     
     # Find active sessions shared with this provider
     active_sessions = await db.contraction_sessions.find({
-        "mom_id": {"$in": mom_ids},
+        "mom_id": {"$in": list(active_mom_ids)},
         "status": {"$in": ["ACTIVE", "PAUSED"]},
         share_field: True
     }, {"_id": 0}).to_list(100)
@@ -1374,14 +1375,8 @@ async def get_client_session_history(
     if user.role not in ["DOULA", "MIDWIFE"]:
         raise HTTPException(status_code=403, detail="Only providers can access client data")
     
-    # Verify provider has access to this client
-    share_request = await db.share_requests.find_one({
-        "mom_id": mom_id,
-        "provider_id": user.user_id,
-        "status": "accepted"
-    })
-    
-    if not share_request:
+    # Verify provider has an active relationship with this client
+    if not await verify_active_relationship(user.user_id, mom_id):
         raise HTTPException(status_code=403, detail="You don't have access to this client's data")
     
     provider_role = user.role.upper()
