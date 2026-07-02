@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { API_BASE, API_ENDPOINTS } from '../constants/api';
 import { getSubscriptionProvider } from '../../app/services/billing';
 
@@ -48,10 +48,15 @@ interface SubscriptionState {
   hasProAccess: () => boolean;
   isMom: () => boolean;
   getSubscriptionManageUrl: () => string | null;
+  reset: () => void;
 }
 
 const getAuthToken = async (): Promise<string | null> => {
-  return await AsyncStorage.getItem('session_token');
+  try {
+    return await SecureStore.getItemAsync('session_token');
+  } catch {
+    return null;
+  }
 };
 
 export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
@@ -272,6 +277,8 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         return null;
     }
   },
+  
+  reset: () => set({ status: null, pricing: null, isLoading: false, error: null }),
 }));
 
 export default useSubscriptionStore;

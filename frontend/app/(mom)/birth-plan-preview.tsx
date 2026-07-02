@@ -76,7 +76,7 @@ export default function BirthPlanPreviewScreen() {
   const handleDownloadPDF = async () => {
     if (Platform.OS === 'web') {
       try {
-        const token = sessionToken || localStorage.getItem('session_token');
+        const token = sessionToken;
         const pdfUrl = `${API_BASE}${API_ENDPOINTS.BIRTH_PLAN_EXPORT}/pdf`;
         
         const response = await fetch(pdfUrl, {
@@ -133,7 +133,7 @@ export default function BirthPlanPreviewScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header - Hidden on print */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton}>
           <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Birth Plan Preview</Text>

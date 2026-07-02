@@ -1,6 +1,9 @@
 import { create } from 'zustand';
+import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE, API_ENDPOINTS } from '../constants/api';
+import { wsClient } from '../utils/websocket';
+import { useSubscriptionStore } from './subscriptionStore';
 
 export interface User {
   user_id: string;
@@ -71,8 +74,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       const data = await response.json();
       
-      // Save token to AsyncStorage for persistence
-      await AsyncStorage.setItem('session_token', data.session_token);
+      // Save token to SecureStore for persistence (encrypted on device)
+      await SecureStore.setItemAsync('session_token', data.session_token);
       
       set({
         user: {
@@ -111,8 +114,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       const data = await response.json();
       
-      // Save token to AsyncStorage for persistence
-      await AsyncStorage.setItem('session_token', data.session_token);
+      // Save token to SecureStore for persistence (encrypted on device)
+      await SecureStore.setItemAsync('session_token', data.session_token);
       
       set({
         user: {
@@ -151,7 +154,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       const data = await response.json();
       
-      await AsyncStorage.setItem('session_token', data.session_token);
+      await SecureStore.setItemAsync('session_token', data.session_token);
       
       set({
         user: {
@@ -174,8 +177,40 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
   
   logout: async () => {
+    // 1. Disconnect WebSocket (prevents stale socket leaking data to next session)
     try {
-      const token = get().sessionToken || await AsyncStorage.getItem('session_token');
+      wsClient.disconnect();
+    } catch (e) {
+      // best effort
+    }
+
+    // 2. Unregister push notifications token from backend
+    try {
+      const pushToken = await AsyncStorage.getItem('expo_push_token');
+      if (pushToken) {
+        try {
+          await fetch(`${API_BASE}/api/push/unregister`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: pushToken }),
+          });
+        } catch (e) { /* best effort */ }
+        await AsyncStorage.removeItem('expo_push_token');
+      }
+    } catch (e) {
+      // best effort
+    }
+
+    // 3. Reset all user-specific Zustand stores (prevents cross-role data leak)
+    try {
+      useSubscriptionStore.getState().reset();
+    } catch (e) {
+      // best effort
+    }
+
+    // 4. Call backend logout API and clear stored session token
+    try {
+      const token = get().sessionToken || await SecureStore.getItemAsync('session_token');
       if (token) {
         await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_LOGOUT}`, {
           method: 'POST',
@@ -187,7 +222,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Ignore logout errors
     }
     
-    await AsyncStorage.removeItem('session_token');
+    try {
+      await SecureStore.deleteItemAsync('session_token');
+    } catch (e) {
+      // best effort
+    }
     set({
       user: null,
       sessionToken: null,
@@ -199,7 +238,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   deleteAccount: async () => {
     try {
       set({ isLoading: true });
-      const token = get().sessionToken || await AsyncStorage.getItem('session_token');
+      const token = get().sessionToken || await SecureStore.getItemAsync('session_token');
       if (!token) throw new Error('Not authenticated');
       
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_DELETE_ACCOUNT}`, {
@@ -214,7 +253,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       // Clear local storage and reset state
-      await AsyncStorage.removeItem('session_token');
+      try {
+        await SecureStore.deleteItemAsync('session_token');
+      } catch (e) { /* best effort */ }
       set({
         user: null,
         sessionToken: null,
@@ -231,10 +272,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ isLoading: true });
       
-      // Try to get token from store first, then from AsyncStorage
+      // Try to get token from store first, then from SecureStore
       let token = get().sessionToken;
       if (!token) {
-        token = await AsyncStorage.getItem('session_token');
+        token = await SecureStore.getItemAsync('session_token');
       }
       
       if (!token) {
@@ -248,7 +289,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
       
       if (!response.ok) {
-        await AsyncStorage.removeItem('session_token');
+        try {
+          await SecureStore.deleteItemAsync('session_token');
+        } catch (e) { /* best effort */ }
         set({ isLoading: false, isAuthenticated: false, user: null, sessionToken: null });
         return;
       }
@@ -271,14 +314,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     } catch (error) {
       console.log('Auth check error:', error);
-      await AsyncStorage.removeItem('session_token');
+      try {
+        await SecureStore.deleteItemAsync('session_token');
+      } catch (e) { /* best effort */ }
       set({ isLoading: false, isAuthenticated: false, user: null, sessionToken: null });
     }
   },
   
   setRole: async (role) => {
     try {
-      const token = get().sessionToken || await AsyncStorage.getItem('session_token');
+      const token = get().sessionToken || await SecureStore.getItemAsync('session_token');
       if (!token) throw new Error('Not authenticated');
       
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_SET_ROLE}`, {

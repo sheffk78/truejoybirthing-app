@@ -19,9 +19,20 @@ class WebSocketClient {
   }
 
   connect(token: string) {
+    // If already connected with a DIFFERENT token, disconnect first so we
+    // reconnect with the new token (prevents cross-user data leak).
+    if (this.token && this.token !== token && this.ws?.readyState === WebSocket.OPEN) {
+      this.disconnect();
+    }
+
+    // If already connected (or connecting) with the same token, nothing to do.
     if (this.ws?.readyState === WebSocket.OPEN || this.ws?.readyState === WebSocket.CONNECTING) {
       return;
     }
+
+    // Reset reconnect counter here, before the socket is created, so a failed
+    // connect() after a previous disconnect() still gets fresh attempts.
+    this.reconnectAttempts = 0;
 
     this.token = token;
     const wsUrl = `${this.baseUrl}/ws/messages/${token}`;

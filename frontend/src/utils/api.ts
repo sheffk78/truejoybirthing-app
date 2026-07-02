@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { API_BASE } from '../constants/api';
 import { Platform } from 'react-native';
 
@@ -16,7 +16,7 @@ export function getApiBaseUrl(): string {
 export async function apiRequest<T = any>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   const { method = 'GET', body, headers = {}, timeoutMs } = options;
   
-  const token = await AsyncStorage.getItem('session_token');
+  const token = await SecureStore.getItemAsync('session_token');
   
   const requestHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
