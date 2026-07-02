@@ -59,7 +59,7 @@ interface MidwifeContractData {
 }
 
 export default function SignMidwifeContractScreen() {
-  const { contractId } = useLocalSearchParams<{ contractId: string }>();
+  const { contractId, signingToken } = useLocalSearchParams<{ contractId: string; signingToken: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [contractData, setContractData] = useState<MidwifeContractData | null>(null);
@@ -113,6 +113,7 @@ export default function SignMidwifeContractScreen() {
         body: {
           signer_name: signerName.trim(),
           signature_data: signerName.trim(),
+          signing_token: signingToken || '',
         },
       });
       

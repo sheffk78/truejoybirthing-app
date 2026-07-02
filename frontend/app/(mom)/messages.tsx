@@ -13,8 +13,10 @@ import {
   ActivityIndicator,
   Image,
   Keyboard,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
@@ -59,6 +61,8 @@ interface TeamMember {
 export default function MessagesScreen() {
   const colors = useColors();
   const styles = getStyles(colors);
+  const router = useRouter();
+  const params = useLocalSearchParams<{ userId?: string; openConversation?: string }>();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
@@ -272,6 +276,30 @@ export default function MessagesScreen() {
     };
     loadInitialData();
   }, []);
+  
+  // Handle deep link params: open conversation from push notification or marketplace
+  useEffect(() => {
+    if (!params.userId) return;
+    // Wait until conversations are loaded, then find and open the matching one
+    const targetUserId = params.userId as string;
+    const existingConv = conversations.find(c => c.other_user_id === targetUserId);
+    if (existingConv) {
+      openConversation(existingConv);
+      // Clear the param so it doesn't re-trigger on re-render
+      router.setParams({ userId: undefined });
+    }
+  }, [params.userId, conversations]);
+  
+  // Fix 5.10: Intercept Android hardware back when a conversation is open,
+  // so back closes the chat instead of navigating away from the screen
+  useEffect(() => {
+    if (!selectedConversation) return;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      setSelectedConversation(null);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [selectedConversation]);
   
   const onRefresh = async () => {
     setRefreshing(true);

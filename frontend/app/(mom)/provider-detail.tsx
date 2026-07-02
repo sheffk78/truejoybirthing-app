@@ -109,7 +109,7 @@ export default function ProviderDetailScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton}>
             <Icon name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Provider Profile</Text>
@@ -126,7 +126,7 @@ export default function ProviderDetailScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton}>
             <Icon name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Provider Profile</Text>
@@ -135,7 +135,7 @@ export default function ProviderDetailScreen() {
         <View style={styles.errorContainer}>
           <Icon name="alert-circle-outline" size={48} color={colors.error} />
           <Text style={styles.errorText}>{error || 'Provider not found'}</Text>
-          <Button title="Go Back" onPress={() => router.back()} style={{ marginTop: SIZES.lg }} />
+          <Button title="Go Back" onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={{ marginTop: SIZES.lg }} />
         </View>
       </SafeAreaView>
     );
@@ -148,7 +148,7 @@ export default function ProviderDetailScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton}>
           <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Provider Profile</Text>

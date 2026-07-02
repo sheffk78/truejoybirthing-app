@@ -53,7 +53,7 @@ interface ContractData {
 }
 
 export default function SignContractScreen() {
-  const { contractId } = useLocalSearchParams<{ contractId: string }>();
+  const { contractId, signingToken } = useLocalSearchParams<{ contractId: string; signingToken: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [contractData, setContractData] = useState<ContractData | null>(null);
@@ -107,13 +107,14 @@ export default function SignContractScreen() {
         body: {
           signer_name: signerName.trim(),
           signature_data: `Electronically signed by ${signerName.trim()} on ${new Date().toISOString()}`,
+          signing_token: signingToken || '',
         },
       });
       
       Alert.alert(
         'Contract Signed!',
         'Thank you for signing the contract. The provider has been notified.',
-        [{ text: 'OK', onPress: () => router.back() }]
+        [{ text: 'OK', onPress: () => { router.canGoBack() ? router.back() : router.replace('/'); } }]
       );
     } catch (err: any) {
       Alert.alert('Error', err.message || 'Failed to sign contract');
@@ -143,7 +144,7 @@ export default function SignContractScreen() {
       <SafeAreaView style={styles.errorContainer}>
         <Icon name="alert-circle-outline" size={64} color={colors.error} />
         <Text style={styles.errorText}>{error || 'Contract not found'}</Text>
-        <Button title="Go Back" onPress={() => router.back()} variant="outline" />
+        <Button title="Go Back" onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} variant="outline" />
       </SafeAreaView>
     );
   }
@@ -156,7 +157,7 @@ export default function SignContractScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']} data-testid="sign-contract-screen">
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} data-testid="back-btn">
+        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} data-testid="back-btn">
           <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Review & Sign</Text>

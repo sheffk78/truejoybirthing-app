@@ -298,8 +298,6 @@ async def notify_team_water_broke(mom_id: str, mom_name: str, session_id: str, w
             "status": "accepted"
         }).to_list(100)
         
-        note_part = f" Note: {water_note}" if water_note else ""
-        
         for request in share_requests:
             provider_id = request.get("provider_id")
             provider_role = request.get("provider_role", "").upper()
@@ -313,7 +311,7 @@ async def notify_team_water_broke(mom_id: str, mom_name: str, session_id: str, w
                     user_id=provider_id,
                     notif_type="water_broke",
                     title="Client's Water Broke",
-                    message=f"{mom_name}'s water has broken.{note_part}",
+                    message=f"{mom_name} has an important update about their labor",
                     data={"mom_id": mom_id, "session_id": session_id}
                 )
             elif provider_role == "MIDWIFE" and session.get("is_shared_with_midwife"):
@@ -321,7 +319,7 @@ async def notify_team_water_broke(mom_id: str, mom_name: str, session_id: str, w
                     user_id=provider_id,
                     notif_type="water_broke",
                     title="Client's Water Broke",
-                    message=f"{mom_name}'s water has broken.{note_part}",
+                    message=f"{mom_name} has an important update about their labor",
                     data={"mom_id": mom_id, "session_id": session_id}
                 )
     except Exception as e:

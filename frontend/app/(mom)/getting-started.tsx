@@ -106,9 +106,9 @@ export default function GettingStartedScreen() {
             {/* Back Button */}
             <Pressable
               style={styles.backButton}
-              onPress={() => router.back()}
+              onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }}
               // @ts-ignore
-              onClick={Platform.OS === 'web' ? () => router.back() : undefined}
+              onClick={Platform.OS === 'web' ? () => { router.canGoBack() ? router.back() : router.replace('/'); } : undefined}
               data-testid="back-btn"
             >
               <Icon name="arrow-back" size={24} color={colors.text} />
