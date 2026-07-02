@@ -75,6 +75,13 @@ export default function MessagesScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const currentUserIdRef = useRef<string>('');
   const isNearBottomRef = useRef(true);
+  const selectedConversationRef = useRef<Conversation | null>(null);
+  
+  // Keep selectedConversationRef in sync so the WebSocket subscription callback
+  // always reads the current value instead of a stale closure capture
+  useEffect(() => {
+    selectedConversationRef.current = selectedConversation;
+  }, [selectedConversation]);
   
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -91,14 +98,11 @@ export default function MessagesScreen() {
   };
   
   const fetchCurrentUser = async () => {
-    try {
-      const data = await apiRequest<{ user_id: string }>(API_ENDPOINTS.AUTH_ME);
-      if (data && data.user_id) {
-        setCurrentUserId(data.user_id);
-        currentUserIdRef.current = data.user_id;
-      }
-    } catch (error) {
-      console.error('[Messages] Error fetching current user:', error);
+    // Use user_id from authStore instead of making a redundant AUTH_ME API call
+    const { user } = useAuthStore.getState();
+    if (user && user.user_id) {
+      setCurrentUserId(user.user_id);
+      currentUserIdRef.current = user.user_id;
     }
   };
 
@@ -224,7 +228,7 @@ export default function MessagesScreen() {
     const unsubscribe = wsClient.subscribe('new_message', (data) => {
       try {
         if (!data || !data.message || !data.message.sender_id) return;
-        if (selectedConversation && data.message.sender_id === selectedConversation.other_user_id) {
+        if (selectedConversationRef.current && data.message.sender_id === selectedConversationRef.current.other_user_id) {
           const newMsg: Message = {
             message_id: data.message.message_id || '',
             sender_id: data.message.sender_id || '',

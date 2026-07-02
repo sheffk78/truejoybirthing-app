@@ -596,12 +596,12 @@ class IAPService {
   }
 
   /**
-   * Get session token from AsyncStorage
+   * Get session token from SecureStore
    */
   private async getSessionToken(): Promise<string | null> {
     try {
-      const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-      return await AsyncStorage.getItem('session_token');
+      const SecureStore = require('expo-secure-store');
+      return await SecureStore.getItemAsync('session_token');
     } catch {
       return null;
     }

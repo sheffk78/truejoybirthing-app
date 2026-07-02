@@ -9,6 +9,7 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { apiRequest } from '../utils/api';
@@ -146,6 +147,13 @@ export function usePushNotifications() {
 
       setExpoPushToken(token);
 
+      // Save push token to AsyncStorage so logout can unregister it
+      try {
+        await AsyncStorage.setItem('expo_push_token', token);
+      } catch (e) {
+        console.warn('[Push] Failed to save push token to AsyncStorage:', e);
+      }
+
       // Register with backend
       const registered = await registerTokenWithBackend(token);
       setIsRegistered(registered);
@@ -180,6 +188,13 @@ export function usePushNotifications() {
 
       const token = tokenData.data;
       setExpoPushToken(token);
+
+      // Save refreshed push token to AsyncStorage so logout can unregister it
+      try {
+        await AsyncStorage.setItem('expo_push_token', token);
+      } catch (e) {
+        console.warn('[Push] Failed to save push token to AsyncStorage:', e);
+      }
 
       // Re-register with backend (tokens can rotate)
       const registered = await registerTokenWithBackend(token);
@@ -300,7 +315,11 @@ function handleNotificationResponse(data: Record<string, any>, userRole?: string
       break;
     case 'contract':
     case 'contract_signed':
-      router.push(`/${rolePrefix}/contracts` as any);
+      if (rolePrefix === '(mom)') {
+        router.push('/sign-contract' as any);
+      } else {
+        router.push(`/${rolePrefix}/contracts` as any);
+      }
       break;
     case 'invoice':
     case 'payment':
