@@ -53,7 +53,7 @@ interface ContractData {
 }
 
 export default function SignContractScreen() {
-  const { contractId } = useLocalSearchParams<{ contractId: string }>();
+  const { contractId, signingToken } = useLocalSearchParams<{ contractId: string; signingToken: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [contractData, setContractData] = useState<ContractData | null>(null);
@@ -107,6 +107,7 @@ export default function SignContractScreen() {
         body: {
           signer_name: signerName.trim(),
           signature_data: `Electronically signed by ${signerName.trim()} on ${new Date().toISOString()}`,
+          signing_token: signingToken || '',
         },
       });
       
