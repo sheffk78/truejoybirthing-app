@@ -42,6 +42,7 @@ class ProcessedArticleItem(BaseModel):
     practice_takeaway: str = Field(default="", max_length=200)
     tags: List[str] = []
     quality_score: int = Field(default=0, ge=0, le=100)
+    audience: str = Field(default="all")  # "mom", "provider", or "all"
     blog_title: Optional[str] = None
     blog_slug: Optional[str] = None
     blog_content: Optional[str] = None
@@ -64,15 +65,23 @@ async def get_articles(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
     tag: Optional[str] = Query(None),
+    audience: Optional[str] = Query(None),
     current_user: User = Depends(get_current_user),
 ):
     """
     Get paginated research feed articles.
     Available to all authenticated users (doula, midwife, mom).
+
+    Optional audience filter: "mom" returns articles tagged for moms
+    (audience field is "mom" or "all"). "provider" returns articles
+    tagged for providers (audience field is "provider" or "all").
+    If audience is omitted, returns all published articles (backward compat).
     """
     query = {}
     if tag:
         query["tags"] = tag
+    if audience:
+        query["audience"] = {"$in": [audience, "all"]}
 
     skip = (page - 1) * limit
     cursor = db.articles.find(
@@ -239,6 +248,7 @@ async def process_articles(
                 "practice_takeaway": item.practice_takeaway,
                 "tags": item.tags,
                 "quality_score": item.quality_score,
+                "audience": item.audience,
                 "processed_at": now,
                 "status": "published",
                 

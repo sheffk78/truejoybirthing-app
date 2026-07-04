@@ -493,9 +493,10 @@ async def get_weekly_content(user: User = Depends(check_role(["MOM"]))):
     # Calculate conception date (roughly 40 weeks before due date)
     conception_date = due_date - timedelta(weeks=40)
     
-    # Calculate current week
+    # Calculate current week and day within the week
     days_pregnant = (today - conception_date).days
     current_week = days_pregnant // 7
+    current_day = days_pregnant % 7  # 0-6, days into the current week
     
     # Check if postpartum
     is_postpartum = today > due_date
@@ -515,7 +516,7 @@ async def get_weekly_content(user: User = Depends(check_role(["MOM"]))):
         clamped_week = max(1, min(current_week, 42))
         tip = get_full_weekly_tip(clamped_week)
         affirmation = get_full_weekly_affirmation(clamped_week)
-        display_week = f"Week {clamped_week}"
+        display_week = f"{clamped_week} weeks {current_day} days"
     
     # Baby development data (pregnancy weeks 4-40 only)
     baby_development = None
@@ -528,6 +529,7 @@ async def get_weekly_content(user: User = Depends(check_role(["MOM"]))):
 
     return {
         "week": current_week,
+        "current_day": current_day,
         "display_week": display_week,
         "is_postpartum": is_postpartum,
         "postpartum_week": postpartum_week,

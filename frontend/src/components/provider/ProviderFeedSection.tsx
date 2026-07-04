@@ -79,7 +79,7 @@ export default function ProviderFeedSection({ primaryColor }: ProviderFeedSectio
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const data = await apiRequest(`${API_ENDPOINTS.FEED_ARTICLES}?page=1&limit=1`);
+      const data = await apiRequest(`${API_ENDPOINTS.FEED_ARTICLES}?page=1&limit=1&audience=provider`);
       if (data?.articles) {
         setArticles(data.articles);
         cacheArticles(data.articles);

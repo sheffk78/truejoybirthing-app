@@ -153,7 +153,7 @@ export default function TimelineScreen() {
           <Text style={styles.title}>Pregnancy Timeline</Text>
           {timeline?.current_week && (
             <View style={styles.weekBadge}>
-              <Text style={styles.weekBadgeText}>Week {timeline.current_week}</Text>
+              <Text style={styles.weekBadgeText}>{timeline.current_week}w {timeline.current_day ?? 0}d</Text>
             </View>
           )}
         </View>

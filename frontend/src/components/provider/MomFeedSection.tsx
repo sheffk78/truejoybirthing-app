@@ -19,7 +19,7 @@ import { API_ENDPOINTS } from '../../constants/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CACHE_KEY = '@mom_feed_cache';
-const CACHE_COUNT = 50;
+const CACHE_COUNT = 1; // Only cache the single current article
 
 interface FeedArticle {
   article_id: string;
@@ -75,7 +75,7 @@ export default function MomFeedSection() {
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const data = await apiRequest(`${API_ENDPOINTS.FEED_ARTICLES}?page=1&limit=10`);
+      const data = await apiRequest(`${API_ENDPOINTS.FEED_ARTICLES}?page=1&limit=1&audience=mom`);
       if (data?.articles) {
         setArticles(data.articles);
         cacheArticles(data.articles);
@@ -102,7 +102,7 @@ export default function MomFeedSection() {
         <View style={styles.headerLeft}>
           <Icon name="book-outline" size={18} color={colors.primary} />
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Birth & Baby Reads
+            What's New for You
           </Text>
         </View>
         <Icon name="information-circle-outline" size={16} color={colors.textLight} />
@@ -118,8 +118,8 @@ export default function MomFeedSection() {
         </View>
       )}
 
-      {/* Article Cards */}
-      {articles.slice(0, 5).map((article) => (
+      {/* Article Card — single current excerpt for moms */}
+      {articles.slice(0, 1).map((article) => (
         <ProviderFeedCard
           key={article.article_id}
           article={article}

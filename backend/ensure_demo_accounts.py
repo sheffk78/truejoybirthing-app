@@ -109,8 +109,14 @@ def is_demo_account(email: str) -> bool:
 async def ensure_demo_accounts(db):
     """
     Ensure all demo accounts exist and are fully functional.
-    Called on every server startup.
+    Called on every server startup, but only runs if ENABLE_DEMO_ACCOUNTS env var is set.
+    Set ENABLE_DEMO_ACCOUNTS=true in Railway for App Store review builds only.
     """
+    import os
+    if os.environ.get("ENABLE_DEMO_ACCOUNTS", "false").lower() != "true":
+        logger.info("Demo accounts disabled (ENABLE_DEMO_ACCOUNTS not set). Skipping.")
+        return
+
     logger.info("Ensuring demo accounts exist and are functional...")
     now = datetime.now(timezone.utc)
 

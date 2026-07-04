@@ -178,7 +178,9 @@ export default function WeeklyTipsScreen() {
         {/* Selected Week Header */}
         <View style={styles.selectedWeekHeader}>
           <Text style={styles.selectedWeekTitle}>
-            {showPostpartum ? `Postpartum Week ${selectedWeek}` : `Week ${selectedWeek}`}
+            {showPostpartum
+              ? `Postpartum Week ${selectedWeek}`
+              : `Week ${selectedWeek}${isCurrentWeek && currentContent?.current_day != null ? `, Day ${currentContent.current_day + 1}` : ''}`}
           </Text>
           {isCurrentWeek && (
             <View style={styles.currentBadge}>

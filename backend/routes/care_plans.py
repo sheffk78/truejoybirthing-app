@@ -1109,9 +1109,10 @@ async def get_timeline(user: User = Depends(check_role(["MOM"]))):
     conception_date = due_date - timedelta(weeks=40)
     today = datetime.now()
     
-    # Calculate current week
+    # Calculate current week and day within the week
     days_pregnant = (today - conception_date).days
     current_week = max(1, min(42, days_pregnant // 7))
+    current_day = days_pregnant % 7  # 0-6, days into the current week
     
     # Generate milestones with dates
     milestones = []
@@ -1132,6 +1133,7 @@ async def get_timeline(user: User = Depends(check_role(["MOM"]))):
     
     return {
         "current_week": current_week,
+        "current_day": current_day,
         "due_date": due_date_str,
         "milestones": milestones,
         "custom_events": custom_events

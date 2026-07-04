@@ -167,7 +167,10 @@ export default function MomHomeScreen() {
             <View>
               <Text style={[styles.greeting, { color: colors.text }]}>Hello, {firstName}</Text>
               {timeline?.current_week && (
-                <Text style={[styles.weekText, { color: colors.textSecondary }]}>Week {timeline.current_week} of pregnancy</Text>
+                <Text style={[styles.weekText, { color: colors.textSecondary }]}>
+                  {timeline.current_week} weeks{' '}
+                  {timeline.current_day ?? 0} days pregnant
+                </Text>
               )}
             </View>
           </View>
@@ -414,7 +417,7 @@ export default function MomHomeScreen() {
             </View>
             <Text style={styles.actionTitle}>Timeline</Text>
             <Text style={styles.actionSubtitle}>
-              {timeline?.current_week ? `Week ${timeline.current_week}` : 'Track progress'}
+              {timeline?.current_week ? `${timeline.current_week} weeks ${timeline.current_day ?? 0} days` : 'Track progress'}
             </Text>
           </TouchableOpacity>
           
