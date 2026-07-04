@@ -30,6 +30,8 @@ export const API_ENDPOINTS = {
   AUTH_DELETE_ACCOUNT: '/auth/delete-account',
   AUTH_FORGOT_PASSWORD: '/auth/forgot-password',
   AUTH_RESET_PASSWORD: '/auth/reset-password',
+  AUTH_VERIFY_EMAIL: '/auth/verify-email',
+  AUTH_RESEND_VERIFICATION: '/auth/resend-verification',
   
   // Mom
   MOM_ONBOARDING: '/mom/onboarding',
@@ -146,6 +148,9 @@ export const API_ENDPOINTS = {
   // Contract Templates
   CONTRACT_TEMPLATES: '/contract-templates',
   
+  // Invites (Invite Your Doula)
+  INVITES: '/invites',
+
   // Research Feed
   FEED_ARTICLES: '/feed/articles',
   FEED_ARTICLE: '/feed/articles',  // Append /{id}

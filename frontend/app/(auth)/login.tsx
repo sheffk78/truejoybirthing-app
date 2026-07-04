@@ -63,6 +63,11 @@ export default function LoginScreen() {
     try {
       await login(email, password);
     } catch (error: any) {
+      // If email not verified, redirect to verification screen
+      if (error.message === 'EMAIL_NOT_VERIFIED') {
+        router.replace({ pathname: '/(auth)/verify-email', params: { email: email.trim().toLowerCase() } });
+        return;
+      }
       if (Platform.OS === 'web') {
         window.alert(error.message || 'Please check your credentials and try again.');
       } else {

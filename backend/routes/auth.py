@@ -35,6 +35,7 @@ class UserCreate(BaseModel):
     password: Optional[str] = None
     full_name: str
     role: Optional[str] = None
+    invite_id: Optional[str] = None
 
 
 class UserLogin(BaseModel):
@@ -52,14 +53,46 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 
+class VerifyEmailRequest(BaseModel):
+    email: EmailStr
+    code: str
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr
+
+
 # Password reset config
 RESET_CODE_EXPIRY_MINUTES = 15
+VERIFICATION_CODE_EXPIRY_MINUTES = 15
 
 
 # ============== HELPER FUNCTIONS ==============
 
 def generate_user_id() -> str:
     return f"user_{uuid.uuid4().hex[:12]}"
+
+
+async def check_rate_limit(request: Request, endpoint_name: str, max_requests: int, window_seconds: int):
+    """Simple MongoDB-based rate limiter."""
+    ip = request.client.host if request.client else "unknown"
+    now = get_now()
+    window_start = now - timedelta(seconds=window_seconds)
+    
+    count = await db.rate_limits.count_documents({
+        "ip": ip,
+        "endpoint": endpoint_name,
+        "timestamp": {"$gte": window_start}
+    })
+    
+    if count >= max_requests:
+        raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
+    
+    await db.rate_limits.insert_one({
+        "ip": ip,
+        "endpoint": endpoint_name,
+        "timestamp": now
+    })
 
 
 async def create_session(user_id: str, response: Response) -> str:
@@ -88,11 +121,26 @@ async def create_session(user_id: str, response: Response) -> str:
     return session_token
 
 
+async def try_redeem_invite(invite_id: Optional[str], user_id: str):
+    """Best-effort invite redemption after signup. Never raises — logs on failure."""
+    if not invite_id:
+        return
+    try:
+        from routes.invites import redeem_invite
+        await redeem_invite(invite_id, user_id)
+    except ImportError:
+        logger.warning("routes.invites module not available — skipping invite redemption")
+    except Exception as e:
+        logger.error(f"Failed to redeem invite {invite_id} for user {user_id}: {e}")
+
+
 # ============== ROUTES ==============
 
 @router.post("/register")
-async def register(user_data: UserCreate, response: Response):
+async def register(user_data: UserCreate, request: Request, response: Response):
     """Register with email/password"""
+    await check_rate_limit(request, "register", 5, 3600)
+    
     # Check if user exists
     existing = await db.users.find_one({"email": user_data.email}, {"_id": 0})
     if existing:
@@ -112,28 +160,54 @@ async def register(user_data: UserCreate, response: Response):
         "password_hash": get_password_hash(user_data.password),
         "picture": None,
         "onboarding_completed": False,
+        "email_verified": False,
         "created_at": now,
         "updated_at": now
     }
     
     await db.users.insert_one(user_doc)
     
-    # Create session
-    session_token = await create_session(user_id, response)
+    # Generate and store a 6-digit verification code
+    code = f"{random.randint(0, 999999):06d}"
+    await db.email_verifications.delete_many({"email": user_data.email})
+    await db.email_verifications.insert_one({
+        "email": user_data.email,
+        "user_id": user_id,
+        "code": code,
+        "expires_at": now + timedelta(minutes=VERIFICATION_CODE_EXPIRY_MINUTES),
+        "created_at": now,
+        "used": False,
+    })
+    
+    # Send verification email
+    try:
+        from services.email_service import send_verification_email
+        await send_verification_email(
+            to_email=user_data.email,
+            user_name=user_data.full_name,
+            code=code,
+            expiry_minutes=VERIFICATION_CODE_EXPIRY_MINUTES,
+        )
+    except Exception as e:
+        logger.error(f"Failed to send verification email to {user_data.email}: {e}")
+    
+    # Best-effort invite redemption — never blocks signup
+    await try_redeem_invite(user_data.invite_id, user_id)
     
     return {
         "user_id": user_id,
         "email": user_data.email,
         "full_name": user_data.full_name,
         "role": user_data.role,
-        "onboarding_completed": False,
-        "session_token": session_token
+        "needs_verification": True
     }
 
 
 @router.post("/login")
-async def login(login_data: UserLogin, response: Response):
+async def login(login_data: UserLogin, request: Request, response: Response):
     """Login with email/password"""
+    await check_rate_limit(request, "login", 10, 60)
+    
     user_doc = await db.users.find_one({"email": login_data.email}, {"_id": 0})
     
     if not user_doc:
@@ -145,6 +219,10 @@ async def login(login_data: UserLogin, response: Response):
     if not verify_password(login_data.password, user_doc["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
+    # Check if email is verified
+    if not user_doc.get("email_verified", False):
+        raise HTTPException(status_code=403, detail="EMAIL_NOT_VERIFIED")
+    
     # Create session
     session_token = await create_session(user_doc["user_id"], response)
     
@@ -155,6 +233,7 @@ async def login(login_data: UserLogin, response: Response):
         "role": user_doc["role"],
         "picture": user_doc.get("picture"),
         "onboarding_completed": user_doc.get("onboarding_completed", False),
+        "email_verified": True,
         "session_token": session_token
     }
 
@@ -164,6 +243,7 @@ async def process_google_session(request: Request, response: Response):
     """Process Google OAuth session_id and create user session"""
     body = await request.json()
     session_id = body.get("session_id")
+    invite_id = body.get("invite_id")
     
     if not session_id:
         raise HTTPException(status_code=400, detail="session_id required")
@@ -194,12 +274,13 @@ async def process_google_session(request: Request, response: Response):
     
     if existing_user:
         user_id = existing_user["user_id"]
-        # Update user info
+        # Update user info — Google already verified the email
         await db.users.update_one(
             {"user_id": user_id},
             {"$set": {
                 "full_name": name or existing_user.get("full_name"),
                 "picture": picture,
+                "email_verified": True,
                 "updated_at": now
             }}
         )
@@ -215,6 +296,7 @@ async def process_google_session(request: Request, response: Response):
             "role": "MOM",  # Default, can be changed during onboarding
             "picture": picture,
             "onboarding_completed": False,
+            "email_verified": True,  # Google already verified
             "created_at": now,
             "updated_at": now
         }
@@ -225,6 +307,10 @@ async def process_google_session(request: Request, response: Response):
     # Create session
     session_token = await create_session(user_id, response)
     
+    # Best-effort invite redemption — never blocks signup (new users only)
+    if not existing_user:
+        await try_redeem_invite(invite_id, user_id)
+    
     return {
         "user_id": user_id,
         "email": email,
@@ -232,6 +318,7 @@ async def process_google_session(request: Request, response: Response):
         "role": role,
         "picture": picture,
         "onboarding_completed": onboarding_completed,
+        "email_verified": True,
         "session_token": session_token
     }
 
@@ -263,6 +350,7 @@ async def get_me(user: User = Depends(get_current_user())):
         "picture": user.picture,
         "onboarding_completed": user.onboarding_completed,
         "tutorial_completed": user.tutorial_completed,
+        "email_verified": getattr(user, "email_verified", True),
         "profile": profile_data
     }
 
@@ -378,8 +466,10 @@ async def delete_account(user: User = Depends(get_current_user())):
 # ============== PASSWORD RESET ==============
 
 @router.post("/forgot-password")
-async def forgot_password(data: ForgotPasswordRequest):
+async def forgot_password(data: ForgotPasswordRequest, request: Request):
     """Request a password reset code. Always returns success to prevent user enumeration."""
+    await check_rate_limit(request, "forgot-password", 3, 3600)
+    
     now = get_now()
 
     user_doc = await db.users.find_one({"email": data.email}, {"_id": 0})
@@ -453,3 +543,83 @@ async def reset_password(data: ResetPasswordRequest):
     await db.password_resets.delete_many({"email": data.email})
 
     return {"message": "Password has been reset successfully. You can now log in with your new password."}
+
+
+# ============== EMAIL VERIFICATION ==============
+
+@router.post("/verify-email")
+async def verify_email(data: VerifyEmailRequest, response: Response):
+    """Verify email with a 6-digit code."""
+    now = get_now()
+    
+    verification_doc = await db.email_verifications.find_one({
+        "email": data.email,
+        "code": data.code,
+        "used": False,
+    })
+    
+    if not verification_doc:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+    
+    if verification_doc["expires_at"] < now:
+        await db.email_verifications.delete_one({"_id": verification_doc["_id"]})
+        raise HTTPException(status_code=400, detail="Verification code has expired. Please request a new one.")
+    
+    # Mark user as verified
+    result = await db.users.update_one(
+        {"email": data.email},
+        {"$set": {"email_verified": True, "updated_at": now}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=400, detail="Failed to verify email")
+    
+    # Mark code as used and clean up
+    await db.email_verifications.delete_many({"email": data.email})
+    
+    # Get user and create session
+    user_doc = await db.users.find_one({"email": data.email}, {"_id": 0})
+    session_token = await create_session(user_doc["user_id"], response)
+    
+    return {
+        "user_id": user_doc["user_id"],
+        "email": user_doc["email"],
+        "full_name": user_doc["full_name"],
+        "role": user_doc["role"],
+        "onboarding_completed": user_doc.get("onboarding_completed", False),
+        "email_verified": True,
+        "session_token": session_token
+    }
+
+
+@router.post("/resend-verification")
+async def resend_verification(data: ResendVerificationRequest, request: Request):
+    """Resend email verification code. Always returns success to prevent enumeration."""
+    await check_rate_limit(request, "resend-verification", 3, 3600)
+    
+    now = get_now()
+    user_doc = await db.users.find_one({"email": data.email}, {"_id": 0})
+    
+    if user_doc and not user_doc.get("email_verified", False):
+        code = f"{random.randint(0, 999999):06d}"
+        await db.email_verifications.delete_many({"email": data.email})
+        await db.email_verifications.insert_one({
+            "email": data.email,
+            "user_id": user_doc["user_id"],
+            "code": code,
+            "expires_at": now + timedelta(minutes=VERIFICATION_CODE_EXPIRY_MINUTES),
+            "created_at": now,
+            "used": False,
+        })
+        try:
+            from services.email_service import send_verification_email
+            await send_verification_email(
+                to_email=data.email,
+                user_name=user_doc.get("full_name", ""),
+                code=code,
+                expiry_minutes=VERIFICATION_CODE_EXPIRY_MINUTES,
+            )
+        except Exception as e:
+            logger.error(f"Failed to send verification email to {data.email}: {e}")
+    
+    return {"message": "If an account with that email exists, a verification code has been sent."}

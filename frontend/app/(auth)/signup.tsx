@@ -115,6 +115,8 @@ export default function SignupScreen() {
     
     try {
       await register(email, password, fullName, selectedRole!);
+      // Registration successful — navigate to email verification screen
+      router.replace({ pathname: '/(auth)/verify-email', params: { email } });
     } catch (error: any) {
       if (Platform.OS === 'web') {
         window.alert(error.message || 'Registration failed. Please try again.');

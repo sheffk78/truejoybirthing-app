@@ -17,6 +17,7 @@ export default function AuthLayout() {
       <Stack.Screen name="onboarding-intro" />
       <Stack.Screen name="notification-permission" />
       <Stack.Screen name="forgot-password" />
+      <Stack.Screen name="verify-email" />
       <Stack.Screen name="mom-onboarding" />
       <Stack.Screen name="doula-onboarding" />
       <Stack.Screen name="midwife-onboarding" />

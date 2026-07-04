@@ -49,6 +49,7 @@ class User(BaseModel):
     picture: Optional[str] = None
     onboarding_completed: Optional[bool] = False
     tutorial_completed: Optional[bool] = False
+    email_verified: Optional[bool] = True
 
 
 def init_dependencies(

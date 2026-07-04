@@ -467,6 +467,7 @@ class User(BaseModel):
     picture: Optional[str] = None
     onboarding_completed: bool = False
     tutorial_completed: Optional[bool] = False
+    email_verified: bool = True
     created_at: datetime
     updated_at: Optional[datetime] = None
 
@@ -1172,6 +1173,8 @@ NOTIFICATION_TYPES = [
     "birth_plan_updated",  # Mom updated her birth plan (optional)
     "appointment_invite",  # Provider invited Mom to appointment
     "appointment_response", # Mom responded to appointment
+    "invite_accepted",     # Provider accepted invite (redeemed via signup)
+    "provider_joined",      # Provider joined TJB via mom's invite
 ]
 
 # Birth plan status values
@@ -1496,6 +1499,7 @@ from routes import admin_dashboard as admin_dashboard_routes
 from routes import admin_analytics as admin_analytics_routes
 from routes import admin_ambassador as admin_ambassador_routes
 from routes import feed as feed_routes
+from routes import invites as invites_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1523,6 +1527,7 @@ api_router.include_router(uploads_routes.router)
 api_router.include_router(newborn_exam_routes.router)
 api_router.include_router(contractions_routes.router)
 api_router.include_router(feed_routes.router)
+api_router.include_router(invites_routes.router)
 # Admin dashboard routes mounted directly on app (not under /api prefix)
 # so frontend paths match: /admin/api/dashboard/*
 
@@ -1972,6 +1977,19 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup_ensure_demo_accounts():
     """Ensure demo accounts exist on every server startup for Apple review."""
+
+    # Auto-verify existing users (one-time migration for email verification feature)
+    unverified_count = await db.users.count_documents({"email_verified": {"$ne": True}})
+    if unverified_count > 0:
+        await db.users.update_many(
+            {"email_verified": {"$ne": True}},
+            {"$set": {"email_verified": True}}
+        )
+        logger.info(f"Auto-verified {unverified_count} existing users")
+
+    # Create TTL index for rate limit entries (expire after 1 hour)
+    await db.rate_limits.create_index("timestamp", expireAfterSeconds=3600)
+
     await ensure_demo_accounts(db)
     
     # Research feed: raw article fetching runs on the server.

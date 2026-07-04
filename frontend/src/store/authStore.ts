@@ -13,6 +13,7 @@ export interface User {
   picture?: string;
   onboarding_completed: boolean;
   tutorial_completed?: boolean;
+  email_verified: boolean;
   profile?: any;
 }
 
@@ -30,6 +31,8 @@ interface AuthState {
   setHasHydrated: (state: boolean) => void;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, fullName: string, role: string) => Promise<void>;
+  verifyEmail: (email: string, code: string) => Promise<void>;
+  resendVerification: (email: string) => Promise<void>;
   loginWithGoogle: (sessionId: string) => Promise<void>;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
@@ -86,6 +89,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           picture: data.picture,
           onboarding_completed: data.onboarding_completed,
           tutorial_completed: data.tutorial_completed ?? false,
+          email_verified: data.email_verified ?? true,
         },
         sessionToken: data.session_token,
         isAuthenticated: true,
@@ -112,9 +116,33 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         throw new Error(error.detail || 'Registration failed');
       }
       
+      // Registration now returns without a session — user must verify email first.
+      // No session token to save, no user state to set.
+      // The signup screen will navigate to the verification screen.
+      set({ isLoading: false });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+  
+  verifyEmail: async (email, code) => {
+    try {
+      set({ isLoading: true });
+      const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_VERIFY_EMAIL}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, code }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Verification failed');
+      }
+      
       const data = await response.json();
       
-      // Save token to SecureStore for persistence (encrypted on device)
       await SecureStore.setItemAsync('session_token', data.session_token);
       
       set({
@@ -124,8 +152,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           full_name: data.full_name,
           role: data.role,
           picture: undefined,
-          onboarding_completed: false,
+          onboarding_completed: data.onboarding_completed,
           tutorial_completed: false,
+          email_verified: true,
         },
         sessionToken: data.session_token,
         isAuthenticated: true,
@@ -133,6 +162,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     } catch (error) {
       set({ isLoading: false });
+      throw error;
+    }
+  },
+  
+  resendVerification: async (email) => {
+    try {
+      const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_RESEND_VERIFICATION}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to resend code');
+      }
+    } catch (error) {
       throw error;
     }
   },
@@ -165,6 +212,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           picture: data.picture,
           onboarding_completed: data.onboarding_completed,
           tutorial_completed: data.tutorial_completed ?? false,
+          email_verified: data.email_verified ?? true,
         },
         sessionToken: data.session_token,
         isAuthenticated: true,
@@ -313,6 +361,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           picture: data.picture,
           onboarding_completed: data.onboarding_completed,
           tutorial_completed: data.tutorial_completed ?? false,
+          email_verified: data.email_verified ?? true,
           profile: data.profile,
         },
         sessionToken: token,

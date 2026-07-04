@@ -74,6 +74,17 @@ function ThemedLayout() {
       // Not authenticated, redirect to welcome
       router.replace('/(auth)/welcome');
     } else if (isAuthenticated && user) {
+      // Check if email needs verification (but allow Google users who are auto-verified)
+      if (!user.email_verified) {
+        const isOnVerifyEmail = currentScreen === 'verify-email';
+        if (!isOnVerifyEmail) {
+          router.replace({ pathname: '/(auth)/verify-email', params: { email: user.email } });
+          return;
+        }
+        // If already on verify-email screen, let them stay
+        return;
+      }
+
       // Check if onboarding is needed
       if (!user.onboarding_completed) {
         // First show intro walkthrough, then role-specific profile setup,

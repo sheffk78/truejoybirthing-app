@@ -198,6 +198,78 @@ async def send_password_reset_email(
     )
 
 
+async def send_verification_email(
+    to_email: str,
+    user_name: str,
+    code: str,
+    expiry_minutes: int = 15
+) -> bool:
+    """Send email verification code email"""
+
+    display_name = user_name if user_name else "there"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f8f8f8; font-family: 'Quicksand', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            {get_email_header()}
+
+            <div style="padding: 30px;">
+                <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0;">
+                    Verify Your Email
+                </h2>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Hi {display_name},
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Welcome to True Joy Birthing! Please use the code below to verify your email address:
+                </p>
+
+                <div style="background: linear-gradient(135deg, {BRAND_COLOR}, {ACCENT_COLOR}); color: white; padding: 25px; border-radius: 8px; text-align: center; margin: 25px 0;">
+                    <p style="margin: 0 0 8px 0; font-size: 14px; opacity: 0.9;">YOUR VERIFICATION CODE</p>
+                    <p style="margin: 0; font-size: 36px; font-weight: bold; letter-spacing: 8px; font-family: monospace;">
+                        {code}
+                    </p>
+                </div>
+
+                <div style="background: #FFF3E0; padding: 15px; border-radius: 8px; border-left: 4px solid #FF9800; margin: 20px 0;">
+                    <p style="color: #E65100; margin: 0; font-size: 14px;">
+                        This code expires in <strong>{expiry_minutes} minutes</strong>. If you didn't create an account, you can safely ignore this email.
+                    </p>
+                </div>
+
+                <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
+                    If you continue to have trouble, please contact us at
+                    <a href="mailto:{SUPPORT_EMAIL}" style="color: {BRAND_COLOR};">{SUPPORT_EMAIL}</a>.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
+                    With care,<br>
+                    <strong style="color: {BRAND_COLOR};">The True Joy Birthing Team</strong>
+                </p>
+            </div>
+
+            {get_email_footer()}
+        </div>
+    </body>
+    </html>
+    """
+
+    return await send_email(
+        to=to_email,
+        subject="Verify Your Email - True Joy Birthing",
+        html=html,
+        reply_to=SUPPORT_EMAIL,
+    )
+
+
 # ============== CLIENT CONVERSION EMAILS ==============
 
 async def send_welcome_client_email(
