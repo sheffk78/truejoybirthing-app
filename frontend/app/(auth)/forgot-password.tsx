@@ -95,8 +95,42 @@ export default function ForgotPasswordScreen() {
     if (Object.keys(newErrors).length > 0) return;
 
     // Strip any non-digit characters (copy-paste may include spaces)
-    setCode(trimmedCode.replace(/[^0-9]/g, '').slice(0, 6));
-    setStep('newPassword');
+    const cleanCode = trimmedCode.replace(/[^0-9]/g, '').slice(0, 6);
+    setCode(cleanCode);
+
+    // Verify the code against the backend before advancing
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_VERIFY_RESET_CODE}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          code: cleanCode,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMsg = 'Invalid or expired reset code';
+        try {
+          const error = await response.json();
+          errorMsg = error.detail || errorMsg;
+        } catch {
+          errorMsg = `Server error (${response.status}). Please try again.`;
+        }
+        throw new Error(errorMsg);
+      }
+
+      setStep('newPassword');
+    } catch (error: any) {
+      if (error.message?.includes('expired')) {
+        showError('Your reset code has expired. Please go back and request a new code.');
+      } else {
+        showError(error.message || 'Invalid reset code. Please check and try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleResetPassword = async () => {

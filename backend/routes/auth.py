@@ -11,6 +11,7 @@ from typing import Optional
 from datetime import datetime, timezone, timedelta
 import uuid
 import random
+import secrets
 import logging
 import httpx
 
@@ -58,6 +59,11 @@ class VerifyEmailRequest(BaseModel):
     code: str
 
 
+class VerifyResetCodeRequest(BaseModel):
+    email: EmailStr
+    code: str
+
+
 class ResendVerificationRequest(BaseModel):
     email: EmailStr
 
@@ -65,6 +71,11 @@ class ResendVerificationRequest(BaseModel):
 # Password reset config
 RESET_CODE_EXPIRY_MINUTES = 15
 VERIFICATION_CODE_EXPIRY_MINUTES = 15
+
+
+def generate_secure_code() -> str:
+    """Generate a cryptographically secure 6-digit code."""
+    return f"{secrets.randbelow(1000000):06d}"
 
 
 # ============== HELPER FUNCTIONS ==============
@@ -168,7 +179,7 @@ async def register(user_data: UserCreate, request: Request, response: Response):
     await db.users.insert_one(user_doc)
     
     # Generate and store a 6-digit verification code
-    code = f"{random.randint(0, 999999):06d}"
+    code = generate_secure_code()
     await db.email_verifications.delete_many({"email": user_data.email})
     await db.email_verifications.insert_one({
         "email": user_data.email,
@@ -476,7 +487,7 @@ async def forgot_password(data: ForgotPasswordRequest, request: Request):
 
     if user_doc:
         # Generate a 6-digit code
-        code = f"{random.randint(0, 999999):06d}"
+        code = generate_secure_code()
 
         # Store the reset code
         await db.password_resets.delete_many({"email": data.email})
@@ -505,9 +516,42 @@ async def forgot_password(data: ForgotPasswordRequest, request: Request):
     return {"message": "If an account with that email exists, a reset code has been sent."}
 
 
+@router.post("/verify-reset-code")
+async def verify_reset_code(data: VerifyResetCodeRequest, request: Request):
+    """Verify a reset code is valid before the user enters a new password."""
+    await check_rate_limit(request, "verify-reset-code", 10, 3600)
+
+    now = get_now()
+    code = data.code.strip()
+
+    reset_doc = await db.password_resets.find_one({
+        "email": data.email,
+        "code": code,
+        "used": False,
+    })
+
+    if not reset_doc:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset code")
+
+    # Normalize expires_at — MongoDB returns naive datetimes by default
+    expires_at = reset_doc["expires_at"]
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+    if expires_at < now:
+        await db.password_resets.delete_one({"_id": reset_doc["_id"]})
+        raise HTTPException(status_code=400, detail="Reset code has expired. Please request a new one.")
+
+    return {"valid": True, "message": "Code verified. You can now set a new password."}
+
+
 @router.post("/reset-password")
-async def reset_password(data: ResetPasswordRequest):
+async def reset_password(data: ResetPasswordRequest, request: Request):
     """Reset password using a valid reset code."""
+    await check_rate_limit(request, "reset-password", 10, 3600)
+
     now = get_now()
 
     # Strip whitespace from code (copy-paste from email may add spaces/newlines)
@@ -558,8 +602,10 @@ async def reset_password(data: ResetPasswordRequest):
 # ============== EMAIL VERIFICATION ==============
 
 @router.post("/verify-email")
-async def verify_email(data: VerifyEmailRequest, response: Response):
+async def verify_email(data: VerifyEmailRequest, response: Response, request: Request):
     """Verify email with a 6-digit code."""
+    await check_rate_limit(request, "verify-email", 10, 3600)
+
     now = get_now()
     
     verification_doc = await db.email_verifications.find_one({
@@ -618,7 +664,7 @@ async def resend_verification(data: ResendVerificationRequest, request: Request)
     user_doc = await db.users.find_one({"email": data.email}, {"_id": 0})
     
     if user_doc and not user_doc.get("email_verified", False):
-        code = f"{random.randint(0, 999999):06d}"
+        code = generate_secure_code()
         await db.email_verifications.delete_many({"email": data.email})
         await db.email_verifications.insert_one({
             "email": data.email,

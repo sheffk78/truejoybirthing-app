@@ -29,6 +29,7 @@ export const API_ENDPOINTS = {
   AUTH_UPDATE_PROFILE: '/auth/update-profile',
   AUTH_DELETE_ACCOUNT: '/auth/delete-account',
   AUTH_FORGOT_PASSWORD: '/auth/forgot-password',
+  AUTH_VERIFY_RESET_CODE: '/auth/verify-reset-code',
   AUTH_RESET_PASSWORD: '/auth/reset-password',
   AUTH_VERIFY_EMAIL: '/auth/verify-email',
   AUTH_RESEND_VERIFICATION: '/auth/resend-verification',
