@@ -64,8 +64,15 @@ export default function ForgotPasswordScreen() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Failed to send reset code');
+        let errorMsg = 'Failed to send reset code';
+        try {
+          const error = await response.json();
+          errorMsg = error.detail || errorMsg;
+        } catch {
+          // Response is not JSON (e.g., proxy error page)
+          errorMsg = `Server error (${response.status}). Please try again.`;
+        }
+        throw new Error(errorMsg);
       }
 
       setStep('code');
@@ -78,14 +85,17 @@ export default function ForgotPasswordScreen() {
 
   const handleVerifyCode = async () => {
     const newErrors: Record<string, string> = {};
-    if (!code.trim()) {
+    const trimmedCode = code.trim();
+    if (!trimmedCode) {
       newErrors.code = 'Reset code is required';
-    } else if (code.trim().length !== 6) {
-      newErrors.code = 'Please enter the 6-digit code';
+    } else if (trimmedCode.replace(/\s/g, '').length !== 6) {
+      newErrors.code = 'Please enter the 6-digit code from your email';
     }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
+    // Strip any non-digit characters (copy-paste may include spaces)
+    setCode(trimmedCode.replace(/[^0-9]/g, '').slice(0, 6));
     setStep('newPassword');
   };
 
@@ -111,19 +121,32 @@ export default function ForgotPasswordScreen() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: email.trim().toLowerCase(),
-          code: code.trim(),
+          code: code.trim().replace(/[^0-9]/g, ''),
           new_password: newPassword,
         }),
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Failed to reset password');
+        let errorMsg = 'Failed to reset password';
+        try {
+          const error = await response.json();
+          errorMsg = error.detail || errorMsg;
+        } catch {
+          // Response is not JSON (e.g., proxy error page)
+          errorMsg = `Server error (${response.status}). Please try again.`;
+        }
+        throw new Error(errorMsg);
       }
 
       setStep('success');
     } catch (error: any) {
-      showError(error.message || 'Something went wrong. Please try again.');
+      if (error.message?.includes('Invalid or expired reset code')) {
+        showError('Your reset code is invalid or expired. Please go back and request a new code.');
+      } else if (error.message?.includes('Reset code has expired')) {
+        showError('Your reset code has expired. Please go back and request a new code.');
+      } else {
+        showError(error.message || 'Something went wrong. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

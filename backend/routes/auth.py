@@ -510,17 +510,27 @@ async def reset_password(data: ResetPasswordRequest):
     """Reset password using a valid reset code."""
     now = get_now()
 
+    # Strip whitespace from code (copy-paste from email may add spaces/newlines)
+    code = data.code.strip()
+
     # Find the reset record
     reset_doc = await db.password_resets.find_one({
         "email": data.email,
-        "code": data.code,
+        "code": code,
         "used": False,
     })
 
     if not reset_doc:
         raise HTTPException(status_code=400, detail="Invalid or expired reset code")
 
-    if reset_doc["expires_at"] < now:
+    # Normalize expires_at — MongoDB returns naive datetimes by default
+    expires_at = reset_doc["expires_at"]
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+    if expires_at < now:
         # Clean up expired code
         await db.password_resets.delete_one({"_id": reset_doc["_id"]})
         raise HTTPException(status_code=400, detail="Reset code has expired. Please request a new one.")
@@ -536,7 +546,7 @@ async def reset_password(data: ResetPasswordRequest):
         {"$set": {"password_hash": new_hash, "updated_at": now}}
     )
 
-    if result.modified_count == 0:
+    if result.matched_count == 0:
         raise HTTPException(status_code=400, detail="Failed to update password")
 
     # Mark the reset code as used and clean up
@@ -561,7 +571,14 @@ async def verify_email(data: VerifyEmailRequest, response: Response):
     if not verification_doc:
         raise HTTPException(status_code=400, detail="Invalid verification code")
     
-    if verification_doc["expires_at"] < now:
+    # Normalize expires_at — MongoDB returns naive datetimes by default
+    expires_at = verification_doc["expires_at"]
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+    if expires_at < now:
         await db.email_verifications.delete_one({"_id": verification_doc["_id"]})
         raise HTTPException(status_code=400, detail="Verification code has expired. Please request a new one.")
     
@@ -571,7 +588,7 @@ async def verify_email(data: VerifyEmailRequest, response: Response):
         {"$set": {"email_verified": True, "updated_at": now}}
     )
     
-    if result.modified_count == 0:
+    if result.matched_count == 0:
         raise HTTPException(status_code=400, detail="Failed to verify email")
     
     # Mark code as used and clean up
