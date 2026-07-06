@@ -193,6 +193,17 @@ export default function MyTeamScreen() {
           <Icon name="chevron-forward" size={16} color={colors.white} />
         </TouchableOpacity>
 
+        {/* Invite Provider Button */}
+        <TouchableOpacity
+          style={[styles.inviteButton, { borderColor: colors.primary, borderWidth: 1 }]}
+          onPress={() => router.push('/(mom)/invite-provider')}
+          data-testid="invite-provider-btn"
+        >
+          <Icon name="mail-outline" size={20} color={colors.primary} />
+          <Text style={styles.inviteButtonText}>Invite a Provider by Email</Text>
+          <Icon name="chevron-forward" size={16} color={colors.primary} />
+        </TouchableOpacity>
+
         {/* Birth Team Summary */}
         {allTeamProviders.length > 0 && (
           <View style={styles.section}>
@@ -447,6 +458,21 @@ const getStyles = createThemedStyles((colors) => ({
     fontWeight: '600', 
     fontSize: SIZES.fontMd, 
     marginLeft: SIZES.sm 
+  },
+  inviteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    padding: SIZES.md,
+    borderRadius: SIZES.radiusMd,
+    marginBottom: SIZES.lg,
+  },
+  inviteButtonText: {
+    flex: 1,
+    color: colors.primary,
+    fontWeight: '600',
+    fontSize: SIZES.fontMd,
+    marginLeft: SIZES.sm,
   },
   section: { marginBottom: SIZES.lg },
   sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text, marginBottom: SIZES.xs },
