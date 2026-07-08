@@ -9,11 +9,18 @@ from fastapi import APIRouter, HTTPException, Depends, Request, Response
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime, timezone, timedelta
+import os
 import uuid
 import random
 import secrets
 import logging
 import httpx
+
+# Environment-based URL configuration (Phase 2: remove hardcoded demo URLs)
+EMERGENT_AUTH_URL = os.environ.get("EMERGENT_AUTH_URL", "").rstrip("/")
+if not EMERGENT_AUTH_URL:
+    logger = logging.getLogger(__name__)
+    logger.warning("EMERGENT_AUTH_URL not set — Google OAuth will not work. Set it to the production Emergent auth base URL.")
 
 from .dependencies import (
     db, get_now, get_current_user, verify_password, get_password_hash,
@@ -260,11 +267,12 @@ async def process_google_session(request: Request, response: Response):
         raise HTTPException(status_code=400, detail="session_id required")
     
     # Call Emergent Auth to get user data
-    # REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+    if not EMERGENT_AUTH_URL:
+        raise HTTPException(status_code=500, detail="Google OAuth is not configured. EMERGENT_AUTH_URL must be set.")
     async with httpx.AsyncClient() as client_http:
         try:
             auth_response = await client_http.get(
-                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                f"{EMERGENT_AUTH_URL}/auth/v1/env/oauth/session-data",
                 headers={"X-Session-ID": session_id}
             )
             if auth_response.status_code != 200:
@@ -595,6 +603,13 @@ async def reset_password(data: ResetPasswordRequest, request: Request):
 
     # Mark the reset code as used and clean up
     await db.password_resets.delete_many({"email": data.email})
+
+    # Invalidate all active sessions for this user (Phase 2 security fix)
+    # This ensures any attacker sessions from before the password reset are killed
+    user_id = reset_doc.get("user_id")
+    if user_id:
+        session_result = await db.user_sessions.delete_many({"user_id": user_id})
+        logger.info(f"Password reset: invalidated {session_result.deleted_count} session(s) for user {user_id}")
 
     return {"message": "Password has been reset successfully. You can now log in with your new password."}
 

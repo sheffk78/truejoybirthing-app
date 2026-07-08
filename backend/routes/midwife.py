@@ -41,7 +41,6 @@ class MidwifeProfileUpdate(BaseModel):
     more_about_me: Optional[str] = None
     in_marketplace: Optional[bool] = None
     accepting_new_clients: Optional[bool] = None
-    accepting_clients: Optional[bool] = None
     practice_name: Optional[str] = None
     years_in_practice: Optional[int] = None
     picture: Optional[str] = None  # Profile photo URL or base64
@@ -151,6 +150,15 @@ async def get_midwife_profile(user: User = Depends(check_role(["MIDWIFE"]))):
 async def update_midwife_profile(profile_data: MidwifeProfileUpdate, user: User = Depends(check_role(["MIDWIFE"]))):
     """Update midwife profile"""
     update_data = {k: v for k, v in profile_data.dict().items() if v is not None}
+
+    # Normalize legacy accepting_clients → accepting_new_clients (Phase 2 fix)
+    # Old frontend versions may still send accepting_clients; map it to the canonical field
+    if "accepting_clients" in update_data:
+        if "accepting_new_clients" not in update_data:
+            update_data["accepting_new_clients"] = update_data.pop("accepting_clients")
+        else:
+            update_data.pop("accepting_clients")  # canonical field already present, drop legacy
+
     update_data["updated_at"] = get_now()
     
     # If picture is being updated, also update in users collection

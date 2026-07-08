@@ -140,7 +140,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
       setVideoIntroUrl(data.video_intro_url || '');
       setMoreAboutMe(data.more_about_me || '');
       setProfilePicture(data.picture || null);
-      setAcceptingClients(data.accepting_clients !== false && data.accepting_new_clients !== false);
+      setAcceptingClients(data.accepting_new_clients !== false);
       
       if (isMidwife) {
         setCredentials(data.credentials || '');
@@ -332,11 +332,9 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         more_about_me: moreAboutMe || null,
       };
       
+      body.accepting_new_clients = acceptingClients;
       if (isMidwife) {
         body.credentials = credentials;
-        body.accepting_clients = acceptingClients;
-      } else {
-        body.accepting_new_clients = acceptingClients;
       }
       
       await apiRequest(config.endpoints.profile, {
@@ -651,7 +649,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
                 <View style={styles.infoText}>
                   <Text style={styles.infoLabel}>Accepting Clients</Text>
                   <Text style={styles.infoValue}>
-                    {(isMidwife ? profile?.accepting_clients : profile?.accepting_new_clients) !== false ? 'Yes' : 'No'}
+                    {profile?.accepting_new_clients !== false ? 'Yes' : 'No'}
                   </Text>
                 </View>
               </View>
