@@ -376,7 +376,10 @@ async def get_doula_contract_template_route(user: User = Depends(check_role(["DO
 @router.post("/doula/contracts")
 async def create_doula_contract(contract_data: ContractCreate, user: User = Depends(check_role(["DOULA"]))):
     """Create a new Doula Service Agreement"""
-    client = await db.clients.find_one({"client_id": contract_data.client_id}, {"_id": 0})
+    client = await db.clients.find_one(
+        {"client_id": contract_data.client_id, "provider_id": user.user_id, "provider_type": "DOULA"},
+        {"_id": 0}
+    )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
     

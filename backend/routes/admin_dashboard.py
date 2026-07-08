@@ -16,6 +16,7 @@ from datetime import datetime, timezone, timedelta
 from bson import ObjectId
 
 from .dependencies import db, get_now, get_current_user, check_role, User, verify_password
+from .auth import check_rate_limit
 
 router = APIRouter(prefix="/admin/api/dashboard", tags=["Admin Dashboard"])
 
@@ -32,11 +33,12 @@ class AdminLoginRequest(BaseModel):
 # ============== AUTH ROUTES ==============
 
 @router.post("/auth/login")
-async def admin_login(request: AdminLoginRequest):
+async def admin_login(request: Request, body: AdminLoginRequest):
     """Admin login endpoint. Verifies credentials and checks ADMIN role.
     Returns a session token for subsequent API calls."""
+    await check_rate_limit(request, "admin-login", 5, 900)
     # Find user by email
-    user_doc = await db.users.find_one({"email": request.email}, {"_id": 0, "password_hash": 1, "user_id": 1, "email": 1, "full_name": 1, "role": 1, "onboarding_completed": 1})
+    user_doc = await db.users.find_one({"email": body.email}, {"_id": 0, "password_hash": 1, "user_id": 1, "email": 1, "full_name": 1, "role": 1, "onboarding_completed": 1})
 
     if not user_doc:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -44,7 +46,7 @@ async def admin_login(request: AdminLoginRequest):
     if not user_doc.get("password_hash"):
         raise HTTPException(status_code=401, detail="Please use Google login for this account")
 
-    if not verify_password(request.password, user_doc["password_hash"]):
+    if not verify_password(body.password, user_doc["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if user_doc.get("role") != "ADMIN":

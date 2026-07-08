@@ -160,6 +160,10 @@ async def register(user_data: UserCreate, request: Request, response: Response):
     if not user_data.password:
         raise HTTPException(status_code=400, detail="Password required for registration")
     
+    ALLOWED_SELF_REGISTER_ROLES = {"MOM", "DOULA", "MIDWIFE"}
+    if user_data.role not in ALLOWED_SELF_REGISTER_ROLES:
+        raise HTTPException(status_code=400, detail="Invalid role")
+    
     user_id = generate_user_id()
     now = get_now()
     
