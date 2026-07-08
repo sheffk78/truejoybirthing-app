@@ -403,11 +403,13 @@ async def get_upcoming_count(user: User = Depends(get_current_user)):
         }
     else:
         query = {
-            "provider_id": user.user_id,
-            "status": {"$in": ["scheduled", "confirmed", "accepted", "pending"]},
-            "$or": [
-                {"appointment_date": {"$gte": today}},
-                {"start_datetime": {"$gte": today}}
+            "$and": [
+                {"provider_id": user.user_id},
+                {"status": {"$in": ["scheduled", "confirmed", "accepted", "pending"]}},
+                {"$or": [
+                    {"appointment_date": {"$gte": today}},
+                    {"start_datetime": {"$gte": today}}
+                ]}
             ]
         }
     
