@@ -3,10 +3,11 @@
 Simple backend connectivity test
 """
 
+import os
 import requests
 import json
 
-BASE_URL = "https://bundle-resolve.preview.emergentagent.com/api"
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '').rstrip('/') + '/api'
 
 def test_basic_connectivity():
     """Test basic server connectivity"""

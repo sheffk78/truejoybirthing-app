@@ -15,7 +15,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bundle-resolve.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '')
 
 # Test credentials
 MOM_EMAIL = "demo.mom@truejoybirthing.com"

@@ -1,7 +1,7 @@
 """
 Authentication Routes Module
 
-Handles user registration, login, Google OAuth, session management, and profile updates.
+Handles user registration, login, session management, and profile updates.
 Feature parity with original server.py auth routes.
 """
 
@@ -14,13 +14,6 @@ import uuid
 import random
 import secrets
 import logging
-import httpx
-
-# Environment-based URL configuration (Phase 2: remove hardcoded demo URLs)
-EMERGENT_AUTH_URL = os.environ.get("EMERGENT_AUTH_URL", "").rstrip("/")
-if not EMERGENT_AUTH_URL:
-    logger = logging.getLogger(__name__)
-    logger.warning("EMERGENT_AUTH_URL not set — Google OAuth will not work. Set it to the production Emergent auth base URL.")
 
 from .dependencies import (
     db, get_now, get_current_user, verify_password, get_password_hash,
@@ -251,92 +244,6 @@ async def login(login_data: UserLogin, request: Request, response: Response):
         "role": user_doc["role"],
         "picture": user_doc.get("picture"),
         "onboarding_completed": user_doc.get("onboarding_completed", False),
-        "email_verified": True,
-        "session_token": session_token
-    }
-
-
-@router.post("/google-session")
-async def process_google_session(request: Request, response: Response):
-    """Process Google OAuth session_id and create user session"""
-    body = await request.json()
-    session_id = body.get("session_id")
-    invite_id = body.get("invite_id")
-    
-    if not session_id:
-        raise HTTPException(status_code=400, detail="session_id required")
-    
-    # Call Emergent Auth to get user data
-    if not EMERGENT_AUTH_URL:
-        raise HTTPException(status_code=500, detail="Google OAuth is not configured. EMERGENT_AUTH_URL must be set.")
-    async with httpx.AsyncClient() as client_http:
-        try:
-            auth_response = await client_http.get(
-                f"{EMERGENT_AUTH_URL}/auth/v1/env/oauth/session-data",
-                headers={"X-Session-ID": session_id}
-            )
-            if auth_response.status_code != 200:
-                raise HTTPException(status_code=401, detail="Invalid session_id")
-            
-            auth_data = auth_response.json()
-        except Exception as e:
-            raise HTTPException(status_code=401, detail="Authentication failed")
-    
-    email = auth_data.get("email")
-    name = auth_data.get("name")
-    picture = auth_data.get("picture")
-    
-    now = get_now()
-    
-    # Check if user exists
-    existing_user = await db.users.find_one({"email": email}, {"_id": 0})
-    
-    if existing_user:
-        user_id = existing_user["user_id"]
-        # Update user info — Google already verified the email
-        await db.users.update_one(
-            {"user_id": user_id},
-            {"$set": {
-                "full_name": name or existing_user.get("full_name"),
-                "picture": picture,
-                "email_verified": True,
-                "updated_at": now
-            }}
-        )
-        role = existing_user["role"]
-        onboarding_completed = existing_user.get("onboarding_completed", False)
-    else:
-        # Create new user (default role is MOM, will be set during onboarding)
-        user_id = generate_user_id()
-        user_doc = {
-            "user_id": user_id,
-            "email": email,
-            "full_name": name or "User",
-            "role": "MOM",  # Default, can be changed during onboarding
-            "picture": picture,
-            "onboarding_completed": False,
-            "email_verified": True,  # Google already verified
-            "created_at": now,
-            "updated_at": now
-        }
-        await db.users.insert_one(user_doc)
-        role = "MOM"
-        onboarding_completed = False
-    
-    # Create session
-    session_token = await create_session(user_id, response)
-    
-    # Best-effort invite redemption — never blocks signup (new users only)
-    if not existing_user:
-        await try_redeem_invite(invite_id, user_id)
-    
-    return {
-        "user_id": user_id,
-        "email": email,
-        "full_name": name,
-        "role": role,
-        "picture": picture,
-        "onboarding_completed": onboarding_completed,
         "email_verified": True,
         "session_token": session_token
     }

@@ -15,7 +15,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://bundle-resolve.preview.emergentagent.com')
+BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '')
 
 # Test credentials
 DOULA_EMAIL = "demo.doula@truejoybirthing.com"

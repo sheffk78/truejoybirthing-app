@@ -28,11 +28,11 @@ print('User ID: ' + userId);
 ## Step 2: Test Backend API
 ```bash
 # Test auth endpoint
-curl -X GET "https://bundle-resolve.preview.emergentagent.com/api/auth/me" \
+curl -X GET "https://YOUR_BACKEND_URL/api/auth/me" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 
 # Test protected endpoints
-curl -X GET "https://bundle-resolve.preview.emergentagent.com/api/users/profile" \
+curl -X GET "https://YOUR_BACKEND_URL/api/users/profile" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 ```
 
@@ -42,13 +42,13 @@ curl -X GET "https://bundle-resolve.preview.emergentagent.com/api/users/profile"
 await page.context.add_cookies([{
     "name": "session_token",
     "value": "YOUR_SESSION_TOKEN",
-    "domain": "joy-birth-v1.preview.emergentagent.com",
+    "domain": "YOUR_FRONTEND_DOMAIN",
     "path": "/",
     "httpOnly": true,
     "secure": true,
     "sameSite": "None"
 }]);
-await page.goto("https://bundle-resolve.preview.emergentagent.com");
+await page.goto("https://YOUR_FRONTEND_URL");
 ```
 
 ## Quick Debug

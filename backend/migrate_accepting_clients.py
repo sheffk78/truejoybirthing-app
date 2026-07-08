@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 
 async def migrate():
     mongo_url = os.environ.get("MONGO_URL")
-    db_name = os.environ.get("DB_NAME", "trustoffice")
+    db_name = os.environ.get("DB_NAME", "test_database")
 
     if not mongo_url:
         print("ERROR: MONGO_URL environment variable not set.")

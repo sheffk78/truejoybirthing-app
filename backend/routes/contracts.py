@@ -583,6 +583,8 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
+                if not FRONTEND_BASE_URL:
+                    raise HTTPException(status_code=500, detail="Cannot send contract email: FRONTEND_BASE_URL is not set.")
                 signing_url = f"{FRONTEND_BASE_URL}/contract/{contract_id}"
                 email_sent = await postmark_send_email(
                     to=mom["email"],
@@ -1111,6 +1113,8 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
             try:
+                if not FRONTEND_BASE_URL:
+                    raise HTTPException(status_code=500, detail="Cannot send contract email: FRONTEND_BASE_URL is not set.")
                 signing_url = f"{FRONTEND_BASE_URL}/sign-midwife-contract?contractId={contract_id}"
                 email_sent = await postmark_send_email(
                     to=mom["email"],

@@ -60,7 +60,7 @@ Production deployment (Expo/EAS) is failing. The application is suffering from d
 7. Added `"deploymentTarget": "13.4"` to ios config
 
 ### Why previous patching approaches failed:
-1. **postinstall script**: Emergent deployment replaces it with their own `apply-expo-patch.js`
+1. **postinstall script**: The deployment platform replaces postinstall scripts with its own `apply-expo-patch.js`
 2. **eas-build-post-install**: For iOS, this runs AFTER `pod install` (too late!)
 3. **Podfile pre_install hook**: Ruby hook wasn't executing properly on EAS
 4. **Config plugins**: Run during prebuild but EAS skips prebuild when `ios/` dir exists

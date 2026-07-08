@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 
 BASE_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://bundle-resolve.preview.emergentagent.com"
+    BASE_URL = ''
 
 class TestAppointmentsE2E:
     """End-to-End tests for appointment system"""

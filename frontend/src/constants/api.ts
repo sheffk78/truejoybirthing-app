@@ -22,7 +22,6 @@ export const API_ENDPOINTS = {
   // Auth
   AUTH_REGISTER: '/auth/register',
   AUTH_LOGIN: '/auth/login',
-  AUTH_GOOGLE_SESSION: '/auth/google-session',
   AUTH_ME: '/auth/me',
   AUTH_LOGOUT: '/auth/logout',
   AUTH_SET_ROLE: '/auth/set-role',

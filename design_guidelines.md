@@ -7,9 +7,16 @@
 - **Keywords**: Gentle, Empowering, Natural, Connected, Safe
 
 ## Logo
-- **SVG**: https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/ccxz8is7_Logo%20TJB.svg
-- **JPG**: https://customer-assets.emergentagent.com/job_377ad6ce-3198-4a5b-87cd-5e06eae39f9e/artifacts/oqwstugf_true-joy-birthing-full-color-200%20%281%29.jpg
+- **Local assets** (preferred — Emergent CDN URLs are deprecated and must not be used):
+  - `frontend/assets/images/logo-wordmark.svg` — full color logo (SVG)
+  - `frontend/assets/images/logo-wordmark-white.svg` — white variant for dark backgrounds
+  - `frontend/assets/images/logo-wordmark-black.svg` — black variant
+  - `frontend/assets/images/logo-icon.svg` — icon mark only
+  - `frontend/assets/images/logo-icon.png` — icon mark (PNG)
+  - `frontend/assets/images/logo.png` — rasterized full color logo (PNG)
+  - `frontend/assets/images/wordmark-horizontal.svg` — horizontal wordmark layout
 - **Elements**: Lavender pregnant silhouette + Pink cursive "True Joy Birthing" text
+- **Deprecated (do not use)**: The logo was previously hosted at `customer-assets.emergentagent.com` (Emergent CDN). Those URLs are no longer authoritative — use the local assets above.
 
 ## Color Palette
 

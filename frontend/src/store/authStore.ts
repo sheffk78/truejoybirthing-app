@@ -33,7 +33,6 @@ interface AuthState {
   register: (email: string, password: string, fullName: string, role: string) => Promise<void>;
   verifyEmail: (email: string, code: string) => Promise<void>;
   resendVerification: (email: string) => Promise<void>;
-  loginWithGoogle: (sessionId: string) => Promise<void>;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -183,47 +182,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       throw error;
     }
   },
-  
-  loginWithGoogle: async (sessionId) => {
-    try {
-      set({ isLoading: true });
-      const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_GOOGLE_SESSION}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ session_id: sessionId }),
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Google login failed');
-      }
-      
-      const data = await response.json();
-      
-      await SecureStore.setItemAsync('session_token', data.session_token);
-      
-      set({
-        user: {
-          user_id: data.user_id,
-          email: data.email,
-          full_name: data.full_name,
-          role: data.role,
-          picture: data.picture,
-          onboarding_completed: data.onboarding_completed,
-          tutorial_completed: data.tutorial_completed ?? false,
-          email_verified: data.email_verified ?? true,
-        },
-        sessionToken: data.session_token,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    } catch (error) {
-      set({ isLoading: false });
-      throw error;
-    }
-  },
-  
+
   logout: async () => {
     // 1. Disconnect WebSocket (prevents stale socket leaking data to next session)
     try {

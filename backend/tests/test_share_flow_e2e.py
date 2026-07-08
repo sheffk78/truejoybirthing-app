@@ -7,7 +7,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get("EXPO_PUBLIC_BACKEND_URL", "https://bundle-resolve.preview.emergentagent.com")
+BASE_URL = os.environ.get("EXPO_PUBLIC_BACKEND_URL", '')
 
 # Test credentials provided
 FLOW_TEST_MOM = {

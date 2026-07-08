@@ -10,8 +10,9 @@ import uuid
 import sys
 from datetime import datetime, timezone
 
+import os
 # Backend URL from frontend .env (EXPO_PUBLIC_BACKEND_URL + /api)
-BACKEND_URL = "https://bundle-resolve.preview.emergentagent.com/api"
+BACKEND_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', '').rstrip('/') + '/api'
 
 class TestResults:
     def __init__(self):
