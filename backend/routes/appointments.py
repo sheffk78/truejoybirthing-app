@@ -392,11 +392,13 @@ async def get_upcoming_count(user: User = Depends(get_current_user)):
     
     if user.role == "MOM":
         query = {
-            "$or": [{"mom_user_id": user.user_id}, {"mom_id": user.user_id}],
-            "status": {"$in": ["scheduled", "confirmed", "accepted", "pending"]},
-            "$or": [
-                {"appointment_date": {"$gte": today}},
-                {"start_datetime": {"$gte": today}}
+            "$and": [
+                {"$or": [{"mom_user_id": user.user_id}, {"mom_id": user.user_id}]},
+                {"status": {"$in": ["scheduled", "confirmed", "accepted", "pending"]}},
+                {"$or": [
+                    {"appointment_date": {"$gte": today}},
+                    {"start_datetime": {"$gte": today}}
+                ]}
             ]
         }
     else:

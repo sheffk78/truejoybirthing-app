@@ -294,10 +294,10 @@ async def notify_team_water_broke(mom_id: str, mom_name: str, session_id: str, w
             return
             
         share_requests = await db.share_requests.find({
-            "mom_id": mom_id,
+            "mom_user_id": mom_id,
             "status": "accepted"
         }).to_list(100)
-        
+
         for request in share_requests:
             provider_id = request.get("provider_id")
             provider_role = request.get("provider_role", "").upper()
@@ -331,10 +331,10 @@ async def notify_team_session_start(mom_id: str, mom_name: str, session: dict):
     try:
         # Get mom's team from share_requests
         share_requests = await db.share_requests.find({
-            "mom_id": mom_id,
+            "mom_user_id": mom_id,
             "status": "accepted"
         }).to_list(100)
-        
+
         for request in share_requests:
             provider_id = request.get("provider_id")
             provider_role = request.get("provider_role", "").upper()
@@ -372,10 +372,10 @@ async def notify_team_511_reached(mom_id: str, mom_name: str, session_id: str):
             return
             
         share_requests = await db.share_requests.find({
-            "mom_id": mom_id,
+            "mom_user_id": mom_id,
             "status": "accepted"
         }).to_list(100)
-        
+
         for request in share_requests:
             provider_id = request.get("provider_id")
             provider_role = request.get("provider_role", "").upper()
