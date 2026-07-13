@@ -85,10 +85,21 @@ def generate_user_id() -> str:
 
 
 async def check_rate_limit(request: Request, endpoint_name: str, max_requests: int, window_seconds: int):
-    """Simple MongoDB-based rate limiter."""
-    ip = request.client.host if request.client else "unknown"
+    """MongoDB-based rate limiter with atomic insert-then-count to prevent race conditions."""
+    # Get real client IP from proxy headers (Railway uses Hikari reverse proxy)
+    ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or \
+        request.headers.get("X-Real-IP", "").strip() or \
+        (request.client.host if request.client else "unknown")
     now = get_now()
     window_start = now - timedelta(seconds=window_seconds)
+    
+    # Insert first, then count — this eliminates the TOCTOU race condition
+    # where concurrent requests all pass the count check before any insert
+    await db.rate_limits.insert_one({
+        "ip": ip,
+        "endpoint": endpoint_name,
+        "timestamp": now
+    })
     
     count = await db.rate_limits.count_documents({
         "ip": ip,
@@ -96,14 +107,8 @@ async def check_rate_limit(request: Request, endpoint_name: str, max_requests: i
         "timestamp": {"$gte": window_start}
     })
     
-    if count >= max_requests:
+    if count > max_requests:
         raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
-    
-    await db.rate_limits.insert_one({
-        "ip": ip,
-        "endpoint": endpoint_name,
-        "timestamp": now
-    })
 
 
 async def create_session(user_id: str, response: Response) -> str:
