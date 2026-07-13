@@ -248,6 +248,7 @@ async def login(login_data: UserLogin, request: Request, response: Response):
         "role": user_doc["role"],
         "picture": user_doc.get("picture"),
         "onboarding_completed": user_doc.get("onboarding_completed", False),
+        "tutorial_completed": user_doc.get("tutorial_completed", False),
         "email_verified": True,
         "session_token": session_token
     }
@@ -576,6 +577,7 @@ async def verify_email(data: VerifyEmailRequest, response: Response, request: Re
         "full_name": user_doc["full_name"],
         "role": user_doc["role"],
         "onboarding_completed": user_doc.get("onboarding_completed", False),
+        "tutorial_completed": user_doc.get("tutorial_completed", False),
         "email_verified": True,
         "session_token": session_token
     }

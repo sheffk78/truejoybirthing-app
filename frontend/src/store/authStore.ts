@@ -94,6 +94,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isAuthenticated: true,
         isLoading: false,
       });
+
+      // Fetch full profile (including mom profile data) from /auth/me
+      await get().checkAuth();
     } catch (error) {
       set({ isLoading: false });
       throw error;
@@ -152,7 +155,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           role: data.role,
           picture: undefined,
           onboarding_completed: data.onboarding_completed,
-          tutorial_completed: false,
+          tutorial_completed: data.tutorial_completed ?? false,
           email_verified: true,
         },
         sessionToken: data.session_token,

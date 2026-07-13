@@ -61,10 +61,10 @@ export default function TutorialScreen() {
     try {
       await apiRequest(API_ENDPOINTS.AUTH_UPDATE_PROFILE, {
         method: 'PUT',
-        body: JSON.stringify({
+        body: {
           onboarding_completed: true,
           tutorial_completed: true,
-        }),
+        },
       });
     } catch (e) {
       // Local state is already set — backend sync is best-effort

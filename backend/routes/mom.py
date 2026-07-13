@@ -73,6 +73,7 @@ async def mom_onboarding(profile_data: MomProfileUpdate, user: User = Depends(ch
         "zip_code": profile_data.zip_code,
         "location_city": profile_data.location_city,
         "location_state": profile_data.location_state,
+        "number_of_children": profile_data.number_of_children,
         "connected_doula_id": None,
         "connected_midwife_id": None,
         "updated_at": now
