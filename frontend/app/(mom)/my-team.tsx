@@ -193,15 +193,28 @@ export default function MyTeamScreen() {
           <Icon name="chevron-forward" size={16} color={colors.white} />
         </TouchableOpacity>
 
-        {/* Invite Provider Button */}
+        {/* Invite Provider Card */}
         <TouchableOpacity
-          style={[styles.inviteButton, { borderColor: colors.primary, borderWidth: 1 }]}
           onPress={() => router.push('/(mom)/invite-provider')}
+          activeOpacity={0.8}
           data-testid="invite-provider-btn"
         >
-          <Icon name="mail-outline" size={20} color={colors.primary} />
-          <Text style={styles.inviteButtonText}>Invite a Provider by Email</Text>
-          <Icon name="chevron-forward" size={16} color={colors.primary} />
+          <Card style={styles.inviteCard}>
+            <View style={styles.inviteCardHeader}>
+              <View style={[styles.inviteIconContainer, { backgroundColor: colors.primary + '15' }]}>
+                <Icon name="person-add-outline" size={24} color={colors.primary} />
+              </View>
+              <View style={styles.inviteCardContent}>
+                <Text style={[styles.inviteCardTitle, { color: colors.text }]}>
+                  Invite a Provider by Email
+                </Text>
+                <Text style={[styles.inviteCardDesc, { color: colors.textSecondary }]}>
+                  Know a doula or midwife who isn't on TJB yet? Send them an email invitation to join and connect with you.
+                </Text>
+              </View>
+              <Icon name="chevron-forward" size={18} color={colors.textLight} />
+            </View>
+          </Card>
         </TouchableOpacity>
 
         {/* Birth Team Summary */}
@@ -459,20 +472,33 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd, 
     marginLeft: SIZES.sm 
   },
-  inviteButton: {
+  inviteCard: {
+    marginBottom: SIZES.lg,
+    padding: SIZES.md,
+  },
+  inviteCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent',
-    padding: SIZES.md,
-    borderRadius: SIZES.radiusMd,
-    marginBottom: SIZES.lg,
   },
-  inviteButtonText: {
+  inviteIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inviteCardContent: {
     flex: 1,
-    color: colors.primary,
-    fontWeight: '600',
+    marginLeft: SIZES.md,
+  },
+  inviteCardTitle: {
     fontSize: SIZES.fontMd,
-    marginLeft: SIZES.sm,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  inviteCardDesc: {
+    fontSize: SIZES.fontSm,
+    lineHeight: 18,
   },
   section: { marginBottom: SIZES.lg },
   sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text, marginBottom: SIZES.xs },

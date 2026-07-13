@@ -158,6 +158,12 @@ export default function MomLayout() {
           href: null,  // Hide from tab bar, accessible from profile
         }}
       />
+      <Tabs.Screen
+        name="invite-provider"
+        options={{
+          href: null,  // Hide from tab bar, accessible from my-team
+        }}
+      />
     </Tabs>
   );
 }

@@ -104,7 +104,7 @@ export default function InviteProviderScreen() {
   };
 
   const handleBackHome = () => {
-    router.push('/(mom)/home');
+    router.push('/(mom)/my-team');
   };
 
   // ── Success State ──────────────────────────────────────────────
@@ -122,10 +122,10 @@ export default function InviteProviderScreen() {
                 onPress={handleBackHome}
                 style={styles.backButton}
                 accessibilityRole="button"
-                accessibilityLabel="Back to home"
+                accessibilityLabel="Back to My Team"
               >
                 <Icon name="chevron-back" size={22} color={colors.primary} />
-                <Text style={styles.backButtonText}>Home</Text>
+                <Text style={styles.backButtonText}>My Team</Text>
               </TouchableOpacity>
             </View>
 
@@ -148,7 +148,7 @@ export default function InviteProviderScreen() {
                   testID="send-another-btn"
                 />
                 <Button
-                  title="Back to Home"
+                  title="Back to My Team"
                   onPress={handleBackHome}
                   variant="outline"
                   style={styles.successBtn}
@@ -178,13 +178,13 @@ export default function InviteProviderScreen() {
           >
             {/* Back Button */}
             <TouchableOpacity
-              onPress={() => router.back()}
+              onPress={() => router.push('/(mom)/my-team')}
               style={styles.backButton}
               accessibilityRole="button"
-              accessibilityLabel="Go back"
+              accessibilityLabel="Back to My Team"
             >
               <Icon name="chevron-back" size={22} color={colors.primary} />
-              <Text style={styles.backButtonText}>Back</Text>
+              <Text style={styles.backButtonText}>My Team</Text>
             </TouchableOpacity>
 
             {/* Header */}
