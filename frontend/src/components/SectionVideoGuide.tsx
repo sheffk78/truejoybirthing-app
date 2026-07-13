@@ -42,6 +42,7 @@ export const SECTION_VIDEOS: Record<string, {
   duration?: string;
   title?: string;
 }> = {
+  // 9-section model videos
   labor_delivery: {
     embedUrl: 'https://iframe.mediadelivery.net/embed/602267/a3436e3f-6adb-4f95-b90b-8893ddf930a6?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
     duration: '5:54 min',
@@ -82,6 +83,22 @@ export const SECTION_VIDEOS: Record<string, {
     duration: '3:59 min',
     title: 'How to fill out this section',
   },
+  // 5-section model videos (mapped to most relevant existing content)
+  labor_support: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/a3436e3f-6adb-4f95-b90b-8893ddf930a6?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '5:54 min',
+    title: 'How to fill out this section',
+  },
+  birth_preferences: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/6edeb988-f28f-4ea8-ade5-9350f0044c10?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '4:31 min',
+    title: 'How to fill out this section',
+  },
+  after_birth: {
+    embedUrl: 'https://iframe.mediadelivery.net/embed/602267/17f016ce-aa4c-4db9-97ba-4e1a422cd807?autoplay=true&loop=false&muted=false&preload=true&responsive=true',
+    duration: '5:24 min',
+    title: 'How to fill out this section',
+  },
   // No video for about_me section
 };
 
@@ -112,7 +129,9 @@ export default function SectionVideoGuide({ sectionId, sectionTitle }: VideoGuid
     setVideoLoading(true);
   };
 
-  // Build HTML wrapper for the Bunny.net embed to ensure proper sizing in WebView
+  // Build HTML wrapper for the Bunny.net video player
+  // Use the direct embed URL (Bunny.net player handles HLS + fallback)
+  // The origin parameter helps with Referer-based CDN security
   const videoHtml = `
     <!DOCTYPE html>
     <html>
