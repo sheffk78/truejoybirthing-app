@@ -9,8 +9,9 @@ Handles visit management for Midwife providers, including:
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Request
-from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from pydantic import BaseModel, Field, field_validator
+from typing import Optional, Dict, Any, Literal
+import re
 from datetime import datetime, timezone
 import uuid
 
@@ -30,7 +31,7 @@ router = APIRouter(tags=["Visits"])
 class VisitCreate(BaseModel):
     client_id: str
     visit_date: str
-    visit_type: str  # Prenatal, Postpartum
+    visit_type: Literal["Prenatal", "Postpartum"]
     gestational_age: Optional[str] = None
     blood_pressure: Optional[str] = None
     weight: Optional[str] = None
@@ -38,29 +39,48 @@ class VisitCreate(BaseModel):
     summary_for_mom: Optional[str] = None
     private_note: Optional[str] = None
 
+    @field_validator("blood_pressure")
+    @classmethod
+    def validate_blood_pressure(cls, v):
+        if v is None or v == "":
+            return v
+        # Accept formats like "120/80", "120/80 mmHg", "110/70"
+        if not re.match(r'^\d{2,3}/\d{2,3}(\s*mmHg)?$', v.strip()):
+            raise ValueError("Blood pressure must be in format like '120/80'")
+        return v.strip()
+
 
 class PrenatalVisitAssessmentCreate(BaseModel):
     visit_date: str
     urinalysis: Optional[str] = None
     urinalysis_note: Optional[str] = None
     blood_pressure: Optional[str] = None
-    fetal_heart_rate: Optional[int] = None
-    fundal_height: Optional[float] = None
-    weight: Optional[float] = None
+    fetal_heart_rate: Optional[int] = Field(None, ge=40, le=250)
+    fundal_height: Optional[float] = Field(None, ge=0, le=50)
+    weight: Optional[float] = Field(None, ge=0, le=1000)
     weight_unit: Optional[str] = "lbs"
-    eating_score: Optional[int] = None
+    eating_score: Optional[int] = Field(None, ge=1, le=5)
     eating_note: Optional[str] = None
-    water_score: Optional[int] = None
+    water_score: Optional[int] = Field(None, ge=1, le=5)
     water_note: Optional[str] = None
-    emotional_score: Optional[int] = None
+    emotional_score: Optional[int] = Field(None, ge=1, le=5)
     emotional_note: Optional[str] = None
-    physical_score: Optional[int] = None
+    physical_score: Optional[int] = Field(None, ge=1, le=5)
     physical_note: Optional[str] = None
-    mental_score: Optional[int] = None
+    mental_score: Optional[int] = Field(None, ge=1, le=5)
     mental_note: Optional[str] = None
-    spiritual_score: Optional[int] = None
+    spiritual_score: Optional[int] = Field(None, ge=1, le=5)
     spiritual_note: Optional[str] = None
     general_notes: Optional[str] = None
+
+    @field_validator("blood_pressure")
+    @classmethod
+    def validate_blood_pressure(cls, v):
+        if v is None or v == "":
+            return v
+        if not re.match(r'^\d{2,3}/\d{2,3}(\s*mmHg)?$', v.strip()):
+            raise ValueError("Blood pressure must be in format like '120/80'")
+        return v.strip()
 
 
 class PrenatalVisitAssessmentUpdate(BaseModel):
@@ -68,23 +88,32 @@ class PrenatalVisitAssessmentUpdate(BaseModel):
     urinalysis: Optional[str] = None
     urinalysis_note: Optional[str] = None
     blood_pressure: Optional[str] = None
-    fetal_heart_rate: Optional[int] = None
-    fundal_height: Optional[float] = None
-    weight: Optional[float] = None
+    fetal_heart_rate: Optional[int] = Field(None, ge=40, le=250)
+    fundal_height: Optional[float] = Field(None, ge=0, le=50)
+    weight: Optional[float] = Field(None, ge=0, le=1000)
     weight_unit: Optional[str] = None
-    eating_score: Optional[int] = None
+    eating_score: Optional[int] = Field(None, ge=1, le=5)
     eating_note: Optional[str] = None
-    water_score: Optional[int] = None
+    water_score: Optional[int] = Field(None, ge=1, le=5)
     water_note: Optional[str] = None
-    emotional_score: Optional[int] = None
+    emotional_score: Optional[int] = Field(None, ge=1, le=5)
     emotional_note: Optional[str] = None
-    physical_score: Optional[int] = None
+    physical_score: Optional[int] = Field(None, ge=1, le=5)
     physical_note: Optional[str] = None
-    mental_score: Optional[int] = None
+    mental_score: Optional[int] = Field(None, ge=1, le=5)
     mental_note: Optional[str] = None
-    spiritual_score: Optional[int] = None
+    spiritual_score: Optional[int] = Field(None, ge=1, le=5)
     spiritual_note: Optional[str] = None
     general_notes: Optional[str] = None
+
+    @field_validator("blood_pressure")
+    @classmethod
+    def validate_blood_pressure(cls, v):
+        if v is None or v == "":
+            return v
+        if not re.match(r'^\d{2,3}/\d{2,3}(\s*mmHg)?$', v.strip()):
+            raise ValueError("Blood pressure must be in format like '120/80'")
+        return v.strip()
 
 
 class BirthSummaryCreate(BaseModel):

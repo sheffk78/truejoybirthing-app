@@ -12,7 +12,7 @@ Handles contract management for both Doula and Midwife providers, including:
 
 from fastapi import APIRouter, HTTPException, Depends, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 from io import BytesIO
@@ -65,8 +65,8 @@ class ContractCreate(BaseModel):
     client_name: str
     doula_name: Optional[str] = None
     estimated_due_date: str
-    total_fee: float
-    retainer_amount: float
+    total_fee: float = Field(ge=0)
+    retainer_amount: float = Field(ge=0)
     remaining_balance: Optional[float] = None
     final_payment_due_description: str = "Day after birth"
     prenatal_visit_description: Optional[str] = None
@@ -95,8 +95,8 @@ class MidwifeContractCreate(BaseModel):
     estimated_due_date: str
     planned_birth_location: str
     scope_description: Optional[str] = None
-    total_fee: float
-    retainer_amount: float
+    total_fee: float = Field(ge=0)
+    retainer_amount: float = Field(ge=0)
     remaining_balance: Optional[float] = None
     remaining_balance_due_description: Optional[str] = None
     fee_coverage_description: Optional[str] = None
@@ -520,6 +520,12 @@ async def get_contract_pdf(contract_id: str):
 async def update_doula_contract(contract_id: str, request: Request, user: User = Depends(check_role(["DOULA"]))):
     """Update a doula contract"""
     body = await request.json()
+    
+    # Validate fee fields if present
+    if "total_fee" in body and (not isinstance(body["total_fee"], (int, float)) or body["total_fee"] < 0):
+        raise HTTPException(status_code=422, detail="total_fee must be a non-negative number")
+    if "retainer_amount" in body and (not isinstance(body["retainer_amount"], (int, float)) or body["retainer_amount"] < 0):
+        raise HTTPException(status_code=422, detail="retainer_amount must be a non-negative number")
     
     protected_fields = ["contract_id", "doula_id", "created_at", "client_signature", "doula_signature", "signed_at"]
     update_data = {k: v for k, v in body.items() if k not in protected_fields}
@@ -977,6 +983,12 @@ async def get_midwife_contract_pdf(contract_id: str):
 async def update_midwife_contract(contract_id: str, request: Request, user: User = Depends(check_role(["MIDWIFE"]))):
     """Update a midwife contract"""
     body = await request.json()
+    
+    # Validate fee fields if present
+    if "total_fee" in body and (not isinstance(body["total_fee"], (int, float)) or body["total_fee"] < 0):
+        raise HTTPException(status_code=422, detail="total_fee must be a non-negative number")
+    if "retainer_amount" in body and (not isinstance(body["retainer_amount"], (int, float)) or body["retainer_amount"] < 0):
+        raise HTTPException(status_code=422, detail="retainer_amount must be a non-negative number")
     
     protected_fields = ["contract_id", "midwife_id", "created_at", "client_signature", "midwife_signature", "signed_at"]
     update_data = {k: v for k, v in body.items() if k not in protected_fields}
