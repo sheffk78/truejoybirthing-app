@@ -83,11 +83,14 @@ export default function AdminContentScreen() {
     const titles: Record<string, string> = {
       'about_me': 'About Me & My Preferences',
       'labor_delivery': 'Labor & Delivery Preferences',
+      'labor_support': 'Labor Support',
       'pain_management': 'Pain Management',
       'monitoring_iv': 'Monitoring & IV / Saline Lock',
       'induction_interventions': 'Induction & Birth Interventions',
       'pushing_safe_word': 'Pushing & Safe Word',
+      'birth_preferences': 'Birth Preferences',
       'post_delivery': 'Post-Delivery Preferences',
+      'after_birth': 'After Birth',
       'newborn_care': 'Newborn Care Preferences',
       'other_considerations': 'Other Considerations',
     };

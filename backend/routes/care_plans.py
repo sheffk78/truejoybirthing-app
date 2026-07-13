@@ -32,11 +32,14 @@ router = APIRouter(tags=["Care Plans"])
 PDF_SECTION_NAMES = {
     "about_me": "About Me & My Preferences",
     "labor_delivery": "Labor & Delivery Preferences",
+    "labor_support": "Labor Support",
     "pain_management": "Pain Management",
     "monitoring_iv": "Labor Environment & Comfort",
     "induction_interventions": "Induction & Birth Interventions",
     "pushing_safe_word": "Pushing, Delivery & Safe Word",
+    "birth_preferences": "Birth Preferences",
     "post_delivery": "Post-Delivery Preferences",
+    "after_birth": "After Birth",
     "newborn_care": "Newborn Care Preferences",
     "other_considerations": "Other Important Considerations",
 }
@@ -111,6 +114,14 @@ PDF_FIELD_LABELS = {
     "medicalConditions": "Medical Conditions or Allergies",
     "emergencyContact": "Emergency Contact (besides partner)",
     "musicPreferences": "Music Preferences",
+    # Labor Support (5-section model)
+    "supportPeople": "Who will be present during labor?",
+    "doulaSupport": "Do you plan to have a doula?",
+    "partnerRole": "Partner/Support Person Role",
+    "communicationStyle": "Communication Style Preference",
+    "advocacyConcerns": "Advocacy Concerns",
+    # After Birth (5-section model)
+    "postpartumSupport": "Postpartum Support Plans",
 }
 
 

@@ -961,6 +961,336 @@ export const SECTION_FORMS: Record<string, {
   },
 
   // ============================================
+  // SECTION: LABOR SUPPORT
+  // (5-section model — used when birth plan created via mom onboarding)
+  // ============================================
+  labor_support: {
+    description: 'Who will support you during labor and what kind of support do you want?',
+    fields: [
+      {
+        key: 'supportPeople',
+        type: 'textarea',
+        label: 'Who will be present during labor?',
+        placeholder: 'List names and relationships (e.g., John - Partner, Jane - Doula, Dr. Smith - OB/GYN)',
+      },
+      {
+        key: 'doulaSupport',
+        type: 'singleselect',
+        label: 'Do you plan to have a doula?',
+        options: [
+          'Yes, I have a doula',
+          'I am looking for a doula',
+          'I am considering it',
+          'No, I will not have a doula',
+        ],
+      },
+      {
+        key: 'partnerRole',
+        type: 'multiselect',
+        label: 'What role would you like your partner/support person to play?',
+        options: [
+          'Physical support (massage, positioning)',
+          'Emotional support and encouragement',
+          'Advocate and communicate with medical staff',
+          'Take photos or video',
+          'Help with breathing techniques',
+          'Cut the cord',
+          'Stay by my side the entire time',
+        ],
+      },
+      {
+        key: 'communicationStyle',
+        type: 'singleselect',
+        label: 'How do you prefer your care team communicate with you during labor?',
+        options: [
+          'Explain everything before it happens',
+          'Give me options and let me decide',
+          'Quiet, minimal narration',
+          'Check in regularly but give me space',
+        ],
+      },
+      {
+        key: 'advocacyConcerns',
+        type: 'textarea',
+        label: 'Is there anything specific you want your support team to advocate for?',
+        placeholder: 'e.g., "Make sure I am offered all options before any intervention" or "Remind me to change positions regularly"',
+      },
+    ],
+  },
+
+  // ============================================
+  // SECTION: BIRTH PREFERENCES
+  // (5-section model — used when birth plan created via mom onboarding)
+  // ============================================
+  birth_preferences: {
+    description: 'Your preferences for the labor and birth experience itself.',
+    fields: [
+      {
+        key: 'laborEnvironment',
+        type: 'multiselect',
+        label: 'Labor Environment Preferences',
+        options: [
+          'Dim lighting',
+          'Quiet atmosphere',
+          'Music playing',
+          'Aromatherapy',
+          'Limited visitors',
+          'Freedom to move around',
+          'Access to shower/tub',
+          'Birth ball available',
+        ],
+      },
+      {
+        key: 'laborPositions',
+        type: 'multiselect',
+        label: 'Labor Positions You Want to Try',
+        options: [
+          'Walking',
+          'Standing',
+          'Squatting',
+          'Hands and knees',
+          'Side lying',
+          'Using birth ball',
+          'In water/tub',
+          'Whatever feels right',
+        ],
+      },
+      {
+        key: 'painManagementApproach',
+        type: 'singleselect',
+        label: 'Overall Approach to Pain Management',
+        options: [
+          'I prefer to avoid medication if possible',
+          'I am open to medication if needed',
+          'I plan to use an epidural',
+          'I want to decide during labor',
+        ],
+      },
+      {
+        key: 'naturalMethods',
+        type: 'multiselect',
+        label: 'Non-Medication Pain Relief Methods',
+        options: [
+          'Breathing techniques',
+          'Massage',
+          'Counter-pressure',
+          'Hydrotherapy (shower/tub)',
+          'TENS unit',
+          'Birthing ball',
+          'Position changes',
+          'Aromatherapy',
+          'Hypnobirthing techniques',
+          'Meditation/visualization',
+          'Hot/cold compresses',
+        ],
+      },
+      {
+        key: 'pushingApproach',
+        type: 'singleselect',
+        label: 'Pushing Approach',
+        options: [
+          'Spontaneous pushing (push when I feel the urge)',
+          'Directed/coached pushing',
+          'Laboring down (wait for urge)',
+          'Whatever feels right',
+        ],
+      },
+      {
+        key: 'pushingPositions',
+        type: 'multiselect',
+        label: 'Pushing Positions to Try',
+        options: [
+          'Semi-reclined',
+          'Side lying',
+          'Squatting',
+          'Hands and knees',
+          'Using squat bar',
+          'Standing',
+          'In water',
+          'Whatever works best',
+        ],
+      },
+      {
+        key: 'fetalMonitoring',
+        type: 'singleselect',
+        label: 'Fetal Monitoring Preference',
+        options: [
+          'Intermittent monitoring (more freedom to move)',
+          'Continuous monitoring',
+          'Wireless/waterproof monitoring if available',
+          'Whatever is medically recommended',
+        ],
+      },
+      {
+        key: 'ivPreference',
+        type: 'singleselect',
+        label: 'IV/Hep-Lock Preference',
+        options: [
+          'Hep-lock only (no fluids unless needed)',
+          'IV fluids',
+          'No IV unless medically necessary',
+          'Whatever is recommended',
+        ],
+      },
+      {
+        key: 'episiotomy',
+        type: 'singleselect',
+        label: 'Episiotomy Preferences',
+        options: [
+          'Prefer to tear naturally',
+          'Okay if necessary to prevent tearing',
+          'Only in emergency',
+          'Please discuss with me',
+        ],
+      },
+      {
+        key: 'cesareanPreferences',
+        type: 'multiselect',
+        label: 'If Cesarean Becomes Necessary',
+        options: [
+          'Partner present in OR',
+          'Clear drape to see baby born',
+          'Immediate skin-to-skin if possible',
+          'Delayed cord clamping if possible',
+          'Music in operating room',
+          'Narrate what is happening',
+          'Lower the drape at birth',
+        ],
+      },
+    ],
+  },
+
+  // ============================================
+  // SECTION: AFTER BIRTH
+  // (5-section model — used when birth plan created via mom onboarding)
+  // ============================================
+  after_birth: {
+    description: 'Your preferences for immediately after birth and the postpartum period.',
+    fields: [
+      {
+        key: 'skinToSkin',
+        type: 'singleselect',
+        label: 'Immediate Skin-to-Skin',
+        options: [
+          'Yes, immediately after birth',
+          'After baby is briefly assessed',
+          'Partner does skin-to-skin first',
+          'Flexible based on circumstances',
+        ],
+      },
+      {
+        key: 'cordClamping',
+        type: 'singleselect',
+        label: 'Cord Clamping',
+        options: [
+          'Delayed cord clamping (wait until cord stops pulsing)',
+          'Delayed 1-3 minutes',
+          'Immediate clamping',
+          'Whatever is recommended',
+        ],
+      },
+      {
+        key: 'cordCutting',
+        type: 'singleselect',
+        label: 'Who would you like to cut the cord?',
+        options: [
+          'Partner',
+          'Mother',
+          'Doctor/Midwife',
+          'No preference',
+        ],
+      },
+      {
+        key: 'cordBloodBanking',
+        type: 'singleselect',
+        label: 'Cord Blood Banking',
+        options: [
+          'Private cord blood banking',
+          'Public cord blood donation',
+          'Not banking cord blood',
+          'Still deciding',
+        ],
+      },
+      {
+        key: 'goldenHour',
+        type: 'multiselect',
+        label: 'Golden Hour Preferences',
+        options: [
+          'Uninterrupted skin-to-skin for at least one hour',
+          'Delay routine procedures',
+          'Breastfeed within first hour',
+          'Dim lights in room',
+          'Quiet environment',
+          'Limit visitors',
+          'Photos welcome',
+        ],
+      },
+      {
+        key: 'feedingPlan',
+        type: 'singleselect',
+        label: 'Feeding Plan',
+        options: [
+          'Exclusive breastfeeding',
+          'Breastfeeding with supplementation if needed',
+          'Formula feeding',
+          'Combination feeding',
+          'Still deciding',
+        ],
+      },
+      {
+        key: 'roomingIn',
+        type: 'singleselect',
+        label: 'Rooming In',
+        options: [
+          'Baby stays with me 24/7',
+          'Baby goes to nursery at night',
+          'Flexible based on my needs',
+        ],
+      },
+      {
+        key: 'delayedBathing',
+        type: 'singleselect',
+        label: "Baby's First Bath",
+        options: [
+          'Delay 24+ hours',
+          'Delay 8-12 hours',
+          'After initial bonding period',
+          'Parent wants to give first bath',
+          'Standard hospital timing',
+        ],
+      },
+      {
+        key: 'vitaminK',
+        type: 'singleselect',
+        label: 'Vitamin K',
+        options: [
+          'Yes, injection',
+          'Oral vitamin K',
+          'Decline (discuss with provider)',
+          'Follow hospital protocol',
+        ],
+      },
+      {
+        key: 'eyeOintment',
+        type: 'singleselect',
+        label: 'Eye Prophylaxis (Erythromycin)',
+        options: [
+          'Yes, administer',
+          'Delay 1 hour for bonding',
+          'Decline (discuss with provider)',
+          'Follow hospital protocol',
+        ],
+      },
+      {
+        key: 'postpartumSupport',
+        type: 'textarea',
+        label: 'Postpartum Support Plans',
+        placeholder: 'Any support you have lined up for after birth (e.g., family visiting, postpartum doula, meal train, etc.)',
+      },
+    ],
+  },
+
+  // ============================================
   // SECTION 9: OTHER IMPORTANT CONSIDERATIONS
   // ============================================
   other_considerations: {

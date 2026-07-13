@@ -42,11 +42,14 @@ const STATUS_ICONS: Record<string, string> = {
 const SECTION_ICONS: Record<string, string> = {
   'about_me': 'person',
   'labor_delivery': 'body',
+  'labor_support': 'body',
   'pain_management': 'medical',
   'monitoring_iv': 'pulse',
   'induction_interventions': 'medkit',
   'pushing_safe_word': 'fitness',
+  'birth_preferences': 'fitness',
   'post_delivery': 'heart',
+  'after_birth': 'heart',
   'newborn_care': 'happy',
   'other_considerations': 'list',
 };
