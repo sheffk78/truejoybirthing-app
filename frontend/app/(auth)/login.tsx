@@ -162,6 +162,17 @@ export default function LoginScreen() {
                       style={styles.loginButton}
                       testID="login-submit-btn"
                     />
+                    {/* App Store rating — real data, not inflated */}
+                    <View style={styles.appStoreBadge}>
+                      <View style={styles.starsRow}>
+                        <Icon name="star" size={12} color={colors.secondary} />
+                        <Icon name="star" size={12} color={colors.secondary} />
+                        <Icon name="star" size={12} color={colors.secondary} />
+                        <Icon name="star" size={12} color={colors.secondary} />
+                        <Icon name="star" size={12} color={colors.secondary} />
+                      </View>
+                      <Text style={styles.appStoreRatingText}>5.0 · 2 ratings on App Store</Text>
+                    </View>
                   </View>
 
                   <View style={styles.signupSection}>
@@ -174,6 +185,16 @@ export default function LoginScreen() {
                       <Text style={styles.signupLink}>Sign Up</Text>
                     </Pressable>
                   </View>
+
+                  {/* See how it works — preview before signup */}
+                  <Pressable
+                    style={styles.seeHowContainer}
+                    onPress={() => router.push('/tutorial?role=MOM&preview=true')}
+                    // @ts-ignore
+                    onClick={Platform.OS === 'web' ? () => router.push('/tutorial?role=MOM&preview=true') : undefined}
+                  >
+                    <Text style={styles.seeHowLink}>See how it works</Text>
+                  </Pressable>
                 </View>
               </ScrollView>
             </KeyboardAvoidingView>
@@ -266,6 +287,17 @@ export default function LoginScreen() {
                   style={styles.loginButton}
                   testID="login-submit-btn"
                 />
+                {/* App Store rating — real data, not inflated */}
+                <View style={styles.appStoreBadge}>
+                  <View style={styles.starsRow}>
+                    <Icon name="star" size={12} color={colors.secondary} />
+                    <Icon name="star" size={12} color={colors.secondary} />
+                    <Icon name="star" size={12} color={colors.secondary} />
+                    <Icon name="star" size={12} color={colors.secondary} />
+                    <Icon name="star" size={12} color={colors.secondary} />
+                  </View>
+                  <Text style={styles.appStoreRatingText}>5.0 · 2 ratings on App Store</Text>
+                </View>
               </View>
               
               <View style={styles.signupSection}>
@@ -278,6 +310,16 @@ export default function LoginScreen() {
                   <Text style={styles.signupLink}>Sign Up</Text>
                 </Pressable>
               </View>
+
+              {/* See how it works — preview before signup */}
+              <Pressable
+                style={styles.seeHowContainer}
+                onPress={() => router.push('/tutorial?role=MOM&preview=true')}
+                // @ts-ignore
+                onClick={Platform.OS === 'web' ? () => router.push('/tutorial?role=MOM&preview=true') : undefined}
+              >
+                <Text style={styles.seeHowLink}>See how it works</Text>
+              </Pressable>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -459,5 +501,34 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.primary,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
+  },
+  // Subtle "See how it works" preview link
+  seeHowContainer: {
+    alignItems: 'center',
+    marginTop: SIZES.md,
+    paddingVertical: SIZES.xs,
+  },
+  seeHowLink: {
+    fontSize: SIZES.fontSm,
+    color: colors.textSecondary,
+    fontFamily: FONTS.body,
+    textDecorationLine: 'underline',
+  },
+  // App Store social proof badge
+  appStoreBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: SIZES.md,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    marginRight: 6,
+  },
+  appStoreRatingText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    marginLeft: 6,
   },
 }));

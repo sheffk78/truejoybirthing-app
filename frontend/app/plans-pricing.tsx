@@ -52,7 +52,7 @@ export default function PlansPricingScreen() {
   };
   
   const { status, pricing, isLoading, fetchStatus, fetchPricing, startTrial, activateSubscription } = useSubscriptionStore();
-  const [selectedPlan, setSelectedPlan] = useState<string>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<string>('annual');
   const [processingAction, setProcessingAction] = useState(false);
   const colors = useColors();
   const styles = getStyles(colors);
@@ -245,6 +245,31 @@ export default function PlansPricingScreen() {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* App Store rating — real data, not inflated */}
+        <View style={styles.appStoreBadge}>
+          <View style={styles.badgeHeader}>
+            <View style={styles.starsRow}>
+              <Icon name="star" size={14} color={colors.secondary} />
+              <Icon name="star" size={14} color={colors.secondary} />
+              <Icon name="star" size={14} color={colors.secondary} />
+              <Icon name="star" size={14} color={colors.secondary} />
+              <Icon name="star" size={14} color={colors.secondary} />
+            </View>
+            <Text style={styles.badgeRatingText}>5.0 · 2 ratings on App Store</Text>
+          </View>
+          <Text style={styles.badgeReviewText}>
+            "This app has it ALL. From daily tips and affirmations to being able to put together a full birth plan so simply."
+          </Text>
+          <Text style={styles.badgeReviewerText}>— Dnsnakdb</Text>
+        </View>
+
+        {/* External price comparison — real market rates */}
+        <View style={styles.priceComparison}>
+          <Text style={styles.priceComparisonText}>
+            Comprehensive birth classes typically cost $200-500+. Private doula support: $500-1,500+. TJB gives you both, starting at {getDisplayPriceForSelected()}/{selectedPlan === 'annual' ? 'yr' : 'mo'}.
+          </Text>
+        </View>
+
         {/* Current Status Banner */}
         {status && !isMom && (
           <View style={[styles.statusBanner, hasAccess ? styles.statusActive : styles.statusInactive]}>
@@ -824,5 +849,53 @@ const getStyles = createThemedStyles((colors) => ({
   manageLinkText: {
     fontSize: 13,
     fontWeight: '500',
+  },
+  // App Store social proof badge
+  appStoreBadge: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  badgeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    marginRight: 8,
+  },
+  badgeRatingText: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  badgeReviewText: {
+    fontSize: 14,
+    fontFamily: FONTS.body,
+    color: colors.text,
+    lineHeight: 20,
+    fontStyle: 'italic',
+    marginBottom: 6,
+  },
+  badgeReviewerText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    fontFamily: FONTS.body,
+  },
+  // External price comparison — real market rates
+  priceComparison: {
+    paddingHorizontal: 4,
+    marginBottom: 20,
+  },
+  priceComparisonText: {
+    fontSize: 13,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    lineHeight: 18,
+    textAlign: 'center',
   },
 }));

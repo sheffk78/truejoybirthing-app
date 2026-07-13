@@ -47,6 +47,10 @@ export default function MomOnboardingScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLookingUpZip, setIsLookingUpZip] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Progress tracks this form only: dueDate (34%), birthSetting (33%), zipCode (33%)
+  const progressPct = (dueDate ? 34 : 0) + (plannedBirthSetting ? 33 : 0) + (zipCode ? 33 : 0);
   
   // Format date as YYYY-MM-DD for API storage (ISO format)
   const formatDate = (date: Date) => {
@@ -148,9 +152,13 @@ export default function MomOnboardingScreen() {
         },
       });
       
-      // Don't set onboarding_completed until tutorial is done — prevents
-      // root guard from redirecting to dashboard mid-flow
-      router.replace('/tutorial?role=MOM');
+      // Show brief celebration before navigating (peak-end principle)
+      setShowSuccess(true);
+      setTimeout(() => {
+        // Don't set onboarding_completed until tutorial is done — prevents
+        // root guard from redirecting to dashboard mid-flow
+        router.replace('/tutorial?role=MOM');
+      }, 1500);
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to save your information');
     } finally {
@@ -172,7 +180,7 @@ export default function MomOnboardingScreen() {
           {/* Header */}
           <View style={styles.headerSection}>
             <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: '100%' }]} />
+              <View style={[styles.progressFill, { width: `${progressPct}%` }]} />
             </View>
             <Text style={styles.title}>Welcome, {user?.full_name?.split(' ')[0]}!</Text>
             <Text style={styles.subtitle}>
@@ -367,6 +375,19 @@ export default function MomOnboardingScreen() {
           />
         </ScrollView>
       </KeyboardAvoidingView>
+      
+      {/* Success celebration overlay (peak-end principle) */}
+      {showSuccess && (
+        <View style={styles.successOverlay}>
+          <View style={styles.successCard}>
+            <Icon name="checkmark-circle" size={64} color={colors.success} />
+            <Text style={styles.successTitle}>You're all set!</Text>
+            <Text style={styles.successSubtitle}>
+              Your journey to {dueDate ? formatDateDisplay(dueDate) : 'birth'} starts now!
+            </Text>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -549,5 +570,43 @@ const getStyles = createThemedStyles((colors) => ({
   },
   continueButton: {
     marginTop: SIZES.md,
+  },
+  // Success celebration overlay (peak-end principle)
+  successOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+  },
+  successCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 24,
+    padding: SIZES.xl,
+    alignItems: 'center',
+    marginHorizontal: SIZES.xl,
+    shadowColor: '#4A3B4E',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  successTitle: {
+    fontSize: SIZES.fontTitle,
+    fontFamily: FONTS.heading,
+    color: colors.text,
+    marginTop: SIZES.md,
+    marginBottom: SIZES.xs,
+  },
+  successSubtitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 24,
   },
 }));
