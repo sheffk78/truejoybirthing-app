@@ -9,6 +9,7 @@ import os
 import base64
 import json
 import logging
+import re
 from typing import Optional
 from datetime import datetime, timezone
 
@@ -77,23 +78,63 @@ def get_button_html(text: str, url: str, color: str = BRAND_COLOR) -> str:
     """
 
 
+def html_to_text(html: str) -> str:
+    """Convert HTML email to a plain-text fallback.
+
+    Strips tags, preserves visible text, converts links to 'text (url)' format.
+    Used when no explicit TextBody is provided to send_email().
+    """
+    # Remove script and style blocks entirely
+    text = re.sub(r'<script[^>]*>.*?</script>', '', html, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<style[^>]*>.*?</style>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    # Convert <br> and <br/> to newlines
+    text = re.sub(r'<br\s*/?>', '\n', text, flags=re.IGNORECASE)
+    # Convert <p> and </p> to newlines
+    text = re.sub(r'</?p[^>]*>', '\n', text, flags=re.IGNORECASE)
+    # Convert block-level closing tags to newlines
+    text = re.sub(r'</(div|h[1-6]|li|tr|td|th)>', '\n', text, flags=re.IGNORECASE)
+    # Convert links: <a href="url">text</a> -> text (url)
+    text = re.sub(r'<a\s+[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', r'\2 (\1)', text, flags=re.DOTALL | re.IGNORECASE)
+    # Remove all remaining tags
+    text = re.sub(r'<[^>]+>', '', text)
+    # Decode common HTML entities
+    text = text.replace('&nbsp;', ' ').replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
+    text = text.replace('&quot;', '"').replace('&#39;', "'")
+    # Collapse whitespace: multiple blank lines to single, strip trailing spaces
+    text = re.sub(r'[ \t]+', ' ', text)
+    text = re.sub(r'\n[ \t]+', '\n', text)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    return text.strip()
+
+
 async def send_email(
     to: str,
     subject: str,
     html: str,
     reply_to: Optional[str] = None,
     attachments: Optional[list[dict]] = None,
+    text_body: Optional[str] = None,
 ) -> bool:
-    """Send an email using PostMark API"""
+    """Send an email using PostMark API.
+
+    Always includes a TextBody fallback so email clients that strip HTML
+    (notably live.com, hotmail.com, outlook.com) still show the content.
+    If text_body is not provided, auto-generates one from the HTML.
+    """
     if not POSTMARK_API_KEY:
         logger.warning("POSTMARK_API_KEY not configured - email not sent")
         return False
+
+    # Auto-generate plaintext fallback if not explicitly provided
+    if text_body is None:
+        text_body = html_to_text(html)
 
     payload = {
         "From": SENDER_EMAIL,
         "To": to,
         "Subject": subject,
         "HtmlBody": html,
+        "TextBody": text_body,
         "MessageStream": "outbound",
     }
 
@@ -195,6 +236,19 @@ async def send_password_reset_email(
         subject="Your Password Reset Code - True Joy Birthing",
         html=html,
         reply_to=SUPPORT_EMAIL,
+        text_body=f"""Hi {display_name},
+
+We received a request to reset your password. Use the code below to set a new password:
+
+YOUR RESET CODE: {reset_code}
+
+This code expires in {expiry_minutes} minutes. If you didn't request a password reset, you can safely ignore this email.
+
+If you continue to have trouble, please contact us at {SUPPORT_EMAIL}.
+
+With care,
+The True Joy Birthing Team
+""",
     )
 
 
@@ -267,6 +321,19 @@ async def send_verification_email(
         subject="Verify Your Email - True Joy Birthing",
         html=html,
         reply_to=SUPPORT_EMAIL,
+        text_body=f"""Hi {display_name},
+
+Welcome to True Joy Birthing! Please use the code below to verify your email address:
+
+YOUR VERIFICATION CODE: {code}
+
+This code expires in {expiry_minutes} minutes. If you didn't create an account, you can safely ignore this email.
+
+If you continue to have trouble, please contact us at {SUPPORT_EMAIL}.
+
+With care,
+The True Joy Birthing Team
+""",
     )
 
 
