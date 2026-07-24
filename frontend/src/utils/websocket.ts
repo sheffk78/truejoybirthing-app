@@ -15,7 +15,8 @@ class WebSocketClient {
   constructor() {
     // Convert HTTP URL to WebSocket URL
     const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || process.env.REACT_APP_BACKEND_URL || '';
-    this.baseUrl = apiUrl.replace('https://', 'wss://').replace('http://', 'ws://');
+    // Always use secure WebSocket (wss://) â both http:// and https:// map to wss://
+    this.baseUrl = apiUrl.replace(/^http(s)?:\/\//, 'wss://');
   }
 
   connect(token: string) {

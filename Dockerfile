@@ -22,4 +22,9 @@ RUN printf '#!/bin/sh\nPORT=${PORT:-8000}\necho "Starting uvicorn on port $PORT"
 
 EXPOSE 8000
 
+# Create non-root user for security
+RUN groupadd -r appgroup && useradd -r -g appgroup -d /app -s /bin/false appuser && \
+    chown -R appuser:appgroup /app
+
+USER appuser
 CMD ["/app/start.sh"]
