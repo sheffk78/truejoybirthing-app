@@ -17,7 +17,8 @@ COPY . .
 COPY assets/ /app/assets/
 
 # Admin frontend — copy pre-built React SPA so /admin/ routes work
-COPY admin-frontend/dist/ /app/admin-frontend/dist/
+# The admin-frontend is built at repo root and copied here for the Docker build context
+COPY admin-frontend-dist/ /app/admin-frontend/dist/
 
 # Railway assigns a dynamic PORT — use a start script to expand $PORT at runtime
 RUN printf '#!/bin/sh\nPORT=${PORT:-8000}\necho "Starting uvicorn on port $PORT"\nexec uvicorn server:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"\n' > /app/start.sh && chmod +x /app/start.sh
