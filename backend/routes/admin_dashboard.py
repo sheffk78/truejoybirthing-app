@@ -720,3 +720,18 @@ async def analytics_acquisition(
         }
         for row in _rows_to_dicts(acq_response)
     ]
+
+
+# ============== ONE-TIME ADMIN SETUP ==============
+# Temporary endpoint to promote a user to ADMIN role. Remove after first use.
+@router.post("/setup-admin")
+async def setup_admin(body: dict = None):
+    """Promote a user to ADMIN role. One-time setup endpoint — no auth required."""
+    email = (body or {}).get("email", "admin@truejoybirthing.com")
+    result = await db.users.update_one(
+        {"email": email},
+        {"$set": {"role": "ADMIN", "onboarding_completed": True, "updated_at": get_now()}},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail=f"User {email} not found. Register first via /api/auth/register")
+    return {"message": f"User {email} promoted to ADMIN", "modified_count": result.modified_count}
