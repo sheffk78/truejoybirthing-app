@@ -8,6 +8,7 @@ import UsersPage from '@/pages/UsersPage';
 import UserDetailPage from '@/pages/UserDetailPage';
 import AnalyticsPage from '@/pages/AnalyticsPage';
 import AmbassadorsPage from '@/pages/AmbassadorsPage';
+import ShelbiLeadsPage from '@/pages/ShelbiLeadsPage';
 import type { ReactNode } from 'react';
 
 const queryClient = new QueryClient({
@@ -53,6 +54,7 @@ function AppRoutes() {
         <Route path="users/:id" element={<UserDetailPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="ambassadors" element={<AmbassadorsPage />} />
+        <Route path="shelbi-leads" element={<ShelbiLeadsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/admin" replace />} />
     </Routes>

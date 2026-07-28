@@ -112,7 +112,9 @@ export default function WelcomeScreen() {
               onPress={() => Linking.openURL('https://truejoybirthing.com/terms')}
             >
               Terms
-            </Text>{' '}\n            and{' '}\n            <Text
+            </Text>{' '}
+            and{' '}
+            <Text
               style={styles.linkText}
               onPress={() => Linking.openURL('https://truejoybirthing.com/privacy')}
             >

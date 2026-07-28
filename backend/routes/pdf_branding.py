@@ -233,8 +233,6 @@ def _header_footer(canvas, doc):
 
     # Left: brand name
     canvas.drawString(0.75 * inch, FOOTER_TEXT_Y, "True Joy Birthing")
-    # Center: URL
-    canvas.drawCentredString(width / 2, FOOTER_TEXT_Y, "truejoybirthing.com")
     # Right: page number
     page_num = canvas.getPageNumber()
     canvas.drawRightString(width - 0.75 * inch, FOOTER_TEXT_Y, f"Page {page_num}")

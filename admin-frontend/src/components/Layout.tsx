@@ -5,6 +5,7 @@ import {
   Users,
   BarChart3,
   Heart,
+  MessageSquare,
   LogOut,
   Menu,
   X,
@@ -19,6 +20,7 @@ const navItems = [
   { to: '/admin/users', icon: Users, label: 'Users' },
   { to: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
   { to: '/admin/ambassadors', icon: Heart, label: 'Ambassadors' },
+  { to: '/admin/shelbi-leads', icon: MessageSquare, label: 'Shelbi Leads' },
 ];
 
 export default function Layout() {

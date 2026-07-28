@@ -1499,6 +1499,7 @@ from routes import admin_analytics as admin_analytics_routes
 from routes import admin_ambassador as admin_ambassador_routes
 from routes import feed as feed_routes
 from routes import invites as invites_routes
+from routes import shelbi_leads as shelbi_leads_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1527,6 +1528,8 @@ api_router.include_router(newborn_exam_routes.router)
 api_router.include_router(contractions_routes.router)
 api_router.include_router(feed_routes.router)
 api_router.include_router(invites_routes.router)
+# Public Shelbi lead submission endpoint
+api_router.include_router(shelbi_leads_routes.public_router)
 # Admin dashboard routes mounted directly on app (not under /api prefix)
 # so frontend paths match: /admin/api/dashboard/*
 
@@ -1925,6 +1928,8 @@ app.include_router(api_router)
 app.include_router(admin_dashboard_routes.router)
 app.include_router(admin_analytics_routes.router)
 app.include_router(admin_ambassador_routes.router)
+# Admin Shelbi lead management endpoints
+app.include_router(shelbi_leads_routes.admin_router)
 
 app.add_middleware(
     CORSMiddleware,

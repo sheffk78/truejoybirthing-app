@@ -252,7 +252,10 @@ export default function BirthPlanPreviewScreen() {
             body {
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
+              padding: 0.75in;
             }
+            /* Suppress browser default headers/footers (URL, date, page numbers) */
+            @page { margin: 0; }
           }
         `}} />
       )}

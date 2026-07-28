@@ -164,4 +164,36 @@ export const api = {
     request<any>(`/admin/api/ambassadors/${ambassadorId}`, {
       method: 'DELETE',
     }),
+
+  // Shelbi Leads
+  getShelbiLeads: (params: { status?: string; lead_type?: string; search?: string; page?: number; limit?: number } = {}) => {
+    const searchParams = new URLSearchParams();
+    if (params.status) searchParams.set('status', params.status);
+    if (params.lead_type) searchParams.set('lead_type', params.lead_type);
+    if (params.search) searchParams.set('search', params.search);
+    if (params.page) searchParams.set('page', String(params.page));
+    if (params.limit) searchParams.set('limit', String(params.limit));
+    const qs = searchParams.toString();
+    return request<{ leads: Array<any>; total: number; page: number; limit: number; pages: number }>(
+      `/admin/api/shelbi-leads${qs ? `?${qs}` : ''}`
+    );
+  },
+
+  getShelbiLead: (leadId: string) =>
+    request<any>(`/admin/api/shelbi-leads/${leadId}`),
+
+  updateShelbiLeadStatus: (leadId: string, status: string) =>
+    request<any>(`/admin/api/shelbi-leads/${leadId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    }),
+
+  addShelbiLeadNote: (leadId: string, text: string, author: string) =>
+    request<any>(`/admin/api/shelbi-leads/${leadId}/notes`, {
+      method: 'POST',
+      body: JSON.stringify({ text, author }),
+    }),
+
+  getShelbiLeadsStats: () =>
+    request<any>(`/admin/api/shelbi-leads/stats`),
 };
