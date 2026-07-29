@@ -6,7 +6,7 @@ Feature parity with original server.py auth routes.
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Request, Response
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 import os
@@ -33,7 +33,7 @@ ROLES = ["MOM", "DOULA", "MIDWIFE", "ADMIN"]
 
 class UserCreate(BaseModel):
     email: EmailStr
-    password: Optional[str] = None
+    password: str = Field(..., min_length=8)
     full_name: str
     role: Optional[str] = None
     invite_id: Optional[str] = None

@@ -62,12 +62,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (email, password) => {
     try {
       set({ isLoading: true });
+      const normalizedEmail = email.trim().toLowerCase();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_LOGIN}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: normalizedEmail, password }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         const error = await response.json();
@@ -106,12 +111,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (email, password, fullName, role) => {
     try {
       set({ isLoading: true });
+      const normalizedEmail = email.trim().toLowerCase();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_REGISTER}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email, password, full_name: fullName, role }),
+        body: JSON.stringify({ email: normalizedEmail, password, full_name: fullName, role }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         const error = await response.json();
@@ -131,12 +141,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   verifyEmail: async (email, code) => {
     try {
       set({ isLoading: true });
+      const normalizedEmail = email.trim().toLowerCase();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_VERIFY_EMAIL}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email, code }),
+        body: JSON.stringify({ email: normalizedEmail, code }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         const error = await response.json();
@@ -170,12 +185,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   
   resendVerification: async (email) => {
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_RESEND_VERIFICATION}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: normalizedEmail }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         const error = await response.json();
