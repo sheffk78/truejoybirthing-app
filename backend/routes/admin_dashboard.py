@@ -448,7 +448,9 @@ def get_ga4_client():
         from google.oauth2 import service_account
         from google.analytics.data_v1beta import BetaAnalyticsDataClient
         sa_info = json.loads(sa_json)
-        credentials = service_account.Credentials.from_service_account_info(sa_info)
+        credentials = service_account.Credentials.from_service_account_info(
+            sa_info, scopes=["https://www.googleapis.com/auth/analytics.readonly"]
+        )
         _ga4_client = BetaAnalyticsDataClient(credentials=credentials)
         return _ga4_client
     except Exception:
