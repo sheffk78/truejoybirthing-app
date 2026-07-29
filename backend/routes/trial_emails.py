@@ -78,6 +78,7 @@ def is_test_account(email: str) -> bool:
 @router.post("/process")
 async def process_provider_emails(
     dry_run: bool = Query(False, description="If true, report what would be sent without actually sending"),
+    backfill: bool = Query(False, description="If true, send all missed onboarding emails to providers past their schedule day"),
     user: User = Depends(check_role(["ADMIN"])),
 ):
     """
@@ -86,6 +87,7 @@ async def process_provider_emails(
 
     ONBOARDING: Finds all doulas/midwives, calculates days since signup,
     sends the appropriate onboarding email if not already sent.
+    With backfill=true, sends all missed emails for providers past schedule.
 
     TRIAL: Finds all active trial subscriptions, sends trial-ending email
     at day 12 if not already sent.
@@ -119,71 +121,76 @@ async def process_provider_emails(
 
         signup_day = calculate_day(created_at, now)
 
-        # Check if this day has a scheduled email
-        if signup_day not in ONBOARDING_SCHEDULE:
-            continue
+        # Determine which days need emails
+        if backfill:
+            # Send all scheduled emails that should have been sent by now
+            days_to_send = [d for d in ONBOARDING_SCHEDULE if d <= signup_day]
+        else:
+            # Only send if today matches a scheduled day exactly
+            days_to_send = [signup_day] if signup_day in ONBOARDING_SCHEDULE else []
 
-        # Check if already sent for this day
-        day_key = f"onboarding_day_{signup_day}"
-        already_sent = await db.provider_emails.find_one({
-            "user_id": user_id,
-            "email_type": day_key,
-        })
-
-        if already_sent:
-            results["onboarding"]["skipped_already_sent"].append({
+        for scheduled_day in days_to_send:
+            # Check if already sent for this day
+            day_key = f"onboarding_day_{scheduled_day}"
+            already_sent = await db.provider_emails.find_one({
                 "user_id": user_id,
-                "email": email,
-                "day": signup_day,
+                "email_type": day_key,
             })
-            continue
 
-        if dry_run:
-            results["onboarding"]["sent"].append({
-                "user_id": user_id,
-                "email": email,
-                "name": name,
-                "day": signup_day,
-                "dry_run": True,
-            })
-            continue
-
-        # Send the email
-        email_fn = ONBOARDING_SCHEDULE[signup_day]
-        try:
-            success = await email_fn(
-                provider_email=email,
-                provider_name=name,
-            )
-
-            if success:
-                # Record in provider_emails collection
-                await db.provider_emails.insert_one({
+            if already_sent:
+                results["onboarding"]["skipped_already_sent"].append({
                     "user_id": user_id,
                     "email": email,
-                    "email_type": day_key,
-                    "sent_at": now,
+                    "day": scheduled_day,
                 })
+                continue
+
+            if dry_run:
                 results["onboarding"]["sent"].append({
                     "user_id": user_id,
                     "email": email,
                     "name": name,
-                    "day": signup_day,
+                    "day": scheduled_day,
+                    "dry_run": True,
                 })
-                logger.info(f"Sent onboarding day {signup_day} email to {email}")
-            else:
+                continue
+
+            # Send the email
+            email_fn = ONBOARDING_SCHEDULE[scheduled_day]
+            try:
+                success = await email_fn(
+                    provider_email=email,
+                    provider_name=name,
+                )
+
+                if success:
+                    # Record in provider_emails collection
+                    await db.provider_emails.insert_one({
+                        "user_id": user_id,
+                        "email": email,
+                        "email_type": day_key,
+                        "sent_at": now,
+                    })
+                    results["onboarding"]["sent"].append({
+                        "user_id": user_id,
+                        "email": email,
+                        "name": name,
+                        "day": scheduled_day,
+                    })
+                    logger.info(f"Sent onboarding day {scheduled_day} email to {email}")
+                else:
+                    results["onboarding"]["errors"].append({
+                        "user_id": user_id,
+                        "email": email,
+                        "error": "send_email returned False",
+                    })
+            except Exception as e:
                 results["onboarding"]["errors"].append({
                     "user_id": user_id,
                     "email": email,
-                    "error": "send_email returned False",
+                    "error": str(e),
                 })
-        except Exception as e:
-            results["onboarding"]["errors"].append({
-                "user_id": user_id,
-                "email": email,
-                "error": str(e),
-            })
-            logger.error(f"Failed to send onboarding email to {email}: {e}")
+                logger.error(f"Failed to send onboarding email to {email}: {e}")
 
     # === TRIAL CONVERSION SEQUENCE ===
     trial_subs = await db.subscriptions.find({
