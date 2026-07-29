@@ -2006,3 +2006,4 @@ async def startup_ensure_demo_accounts():
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+# Force rebuild for POSTMARK_API_KEY env var
