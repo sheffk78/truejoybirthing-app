@@ -859,3 +859,343 @@ async def send_trial_started_email(
         html=html,
         reply_to=SUPPORT_EMAIL,
     )
+
+
+# ============== TRIAL ONBOARDING SEQUENCE ==============
+# Emails sent at Day 3, Day 7, Day 10, Day 13 of the 14-day trial.
+# Goal: guide doulas/midwives through features, collect feedback, drive conversion.
+
+async def send_trial_day3_email(
+    provider_email: str,
+    provider_name: str,
+    days_remaining: int,
+    trial_end_date: datetime,
+) -> bool:
+    """Day 3 — Feature highlight: Client Management + Contracts"""
+    end_date_str = trial_end_date.strftime("%B %d, %Y")
+    display_name = provider_name if provider_name else "there"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f8f8f8; font-family: 'Quicksand', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            {get_email_header()}
+
+            <div style="padding: 30px;">
+                <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0;">
+                    Your First Feature Deep-Dive: Client Management
+                </h2>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Hi {display_name},
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    You're <strong>{days_remaining} days</strong> into your trial — let's make sure you're getting the most out of True Joy Pro.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    <strong>Today's highlight: Client Management & Digital Contracts</strong>
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    One of the biggest time-savers in True Joy Pro is the client management system. Here's what to try today:
+                </p>
+
+                <ul style="color: #555; line-height: 1.8; margin: 0 0 20px 0; padding-left: 20px;">
+                    <li><strong>Add a client</strong> — Invite moms to join your team with a single tap. They'll get a welcome email automatically.</li>
+                    <li><strong>Create a digital contract</strong> — Send a professional doula/midwife agreement with e-signatures. No more printing, scanning, or chasing paperwork.</li>
+                    <li><strong>Share birth plans</strong> — Your clients can share their birth plans with you in real-time, so you're always on the same page.</li>
+                </ul>
+
+                <div style="background: linear-gradient(135deg, {BRAND_COLOR}10, {ACCENT_COLOR}10); padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <p style="color: #333; margin: 0; font-weight: 600;">
+                        💡 Quick tip:
+                    </p>
+                    <p style="color: #555; margin: 10px 0 0 0; line-height: 1.5;">
+                        Try adding one client today — even a past client. You'll see how the whole workflow connects: contract → appointments → visit notes → invoicing.
+                    </p>
+                </div>
+
+                {get_button_html("Try It Now", "https://truejoybirthing.com/app")}
+
+                <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
+                    Your trial ends <strong>{end_date_str}</strong>. Everything you set up now stays with you when you subscribe.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
+                    Warmly,<br>
+                    <strong style="color: {BRAND_COLOR};">The True Joy Birthing Team</strong>
+                </p>
+            </div>
+
+            {get_email_footer()}
+        </div>
+    </body>
+    </html>
+    """
+
+    return await send_email(
+        to=provider_email,
+        subject="Day 3 of your trial: Set up your first client 📋",
+        html=html,
+        reply_to=SUPPORT_EMAIL,
+    )
+
+
+async def send_trial_day7_email(
+    provider_email: str,
+    provider_name: str,
+    days_remaining: int,
+    trial_end_date: datetime,
+) -> bool:
+    """Day 7 — Feature highlight: Invoicing + Marketplace + Feedback request"""
+    end_date_str = trial_end_date.strftime("%B %d, %Y")
+    display_name = provider_name if provider_name else "there"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f8f8f8; font-family: 'Quicksand', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            {get_email_header()}
+
+            <div style="padding: 30px;">
+                <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0;">
+                    You're Halfway Through Your Trial!
+                </h2>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Hi {display_name},
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    You have <strong>{days_remaining} days</strong> left in your free trial. Let's explore two more features that can transform your practice:
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    <strong>Professional Invoicing</strong>
+                </p>
+                <ul style="color: #555; line-height: 1.8; margin: 0 0 15px 0; padding-left: 20px;">
+                    <li>Send polished invoices directly from the app</li>
+                    <li>Track payment status automatically</li>
+                    <li>Accept payments — no more chasing checks</li>
+                </ul>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    <strong>Provider Marketplace</strong>
+                </p>
+                <ul style="color: #555; line-height: 1.8; margin: 0 0 15px 0; padding-left: 20px;">
+                    <li>Your profile is visible to moms searching for doulas and midwives in your area</li>
+                    <li>Get lead notifications when a mom requests a consultation</li>
+                    <li>Convert leads to clients with one tap</li>
+                </ul>
+
+                <div style="background: linear-gradient(135deg, {BRAND_COLOR}15, {ACCENT_COLOR}15); padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center;">
+                    <p style="color: #333; margin: 0 0 10px 0; font-weight: 600; font-size: 18px;">
+                        We'd love your feedback 💬
+                    </p>
+                    <p style="color: #555; margin: 0; line-height: 1.5;">
+                        How is the app working for you so far? What's missing? What would make you want to subscribe?
+                        Reply to this email — we read every response and use it to improve.
+                    </p>
+                </div>
+
+                {get_button_html("Explore Features", "https://truejoybirthing.com/app")}
+
+                <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
+                    Trial ends <strong>{end_date_str}</strong>. Have questions? Just reply to this email.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
+                    Warmly,<br>
+                    <strong style="color: {BRAND_COLOR};">The True Joy Birthing Team</strong>
+                </p>
+            </div>
+
+            {get_email_footer()}
+        </div>
+    </body>
+    </html>
+    """
+
+    return await send_email(
+        to=provider_email,
+        subject="Day 7: You're halfway through your trial — we'd love your feedback 💬",
+        html=html,
+        reply_to=SUPPORT_EMAIL,
+    )
+
+
+async def send_trial_day10_email(
+    provider_email: str,
+    provider_name: str,
+    days_remaining: int,
+    trial_end_date: datetime,
+) -> bool:
+    """Day 10 — Value reinforcement + social proof + early conversion pitch"""
+    end_date_str = trial_end_date.strftime("%B %d, %Y")
+    display_name = provider_name if provider_name else "there"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f8f8f8; font-family: 'Quicksand', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            {get_email_header()}
+
+            <div style="padding: 30px;">
+                <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0;">
+                    4 Days Left — Don't Lose Your Progress
+                </h2>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Hi {display_name},
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Your trial ends <strong>{end_date_str}</strong> — just <strong>{days_remaining} days</strong> from now. Here's what happens if you subscribe before then:
+                </p>
+
+                <ul style="color: #555; line-height: 1.8; margin: 0 0 20px 0; padding-left: 20px;">
+                    <li><strong>All your data stays</strong> — clients, contracts, notes, invoices, everything carries over seamlessly</li>
+                    <li><strong>Your marketplace profile stays live</strong> — keep receiving leads from moms in your area</li>
+                    <li><strong>No interruption</strong> — no re-setup, no lost data, just continued access</li>
+                </ul>
+
+                <div style="background: linear-gradient(135deg, {BRAND_COLOR}10, {ACCENT_COLOR}10); padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <p style="color: #333; margin: 0; font-weight: 600;">
+                        What doulas are saying:
+                    </p>
+                    <p style="color: #555; margin: 12px 0 0 0; line-height: 1.5; font-style: italic;">
+                        "I used to spend hours on paperwork — contracts, invoices, notes. Now it's all in one place and I have more time with my clients."
+                    </p>
+                </div>
+
+                <div style="background: {BRAND_COLOR}; color: white; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                    <p style="margin: 0 0 5px 0; font-size: 14px; opacity: 0.9;">SUBSCRIBE NOW</p>
+                    <p style="margin: 5px 0; font-size: 22px; font-weight: bold;">
+                        ${PRO_MONTHLY_PRICE}/mo or ${PRO_ANNUAL_PRICE}/yr
+                    </p>
+                    <p style="margin: 5px 0 0 0; font-size: 14px;">
+                        Annual saves you ${(PRO_MONTHLY_PRICE * 12) - PRO_ANNUAL_PRICE:.0f}/year
+                    </p>
+                </div>
+
+                {get_button_html("Subscribe Now", "https://truejoybirthing.com/app")}
+
+                <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
+                    Still exploring? No pressure — you still have {days_remaining} days. But don't wait until the last minute!
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
+                    Warmly,<br>
+                    <strong style="color: {BRAND_COLOR};">The True Joy Birthing Team</strong>
+                </p>
+            </div>
+
+            {get_email_footer()}
+        </div>
+    </body>
+    </html>
+    """
+
+    return await send_email(
+        to=provider_email,
+        subject=f"Day 10: {days_remaining} days left — keep your practice running smoothly",
+        html=html,
+        reply_to=SUPPORT_EMAIL,
+    )
+
+
+async def send_trial_day13_email(
+    provider_email: str,
+    provider_name: str,
+    days_remaining: int,
+    trial_end_date: datetime,
+) -> bool:
+    """Day 13 — Last-chance conversion email"""
+    end_date_str = trial_end_date.strftime("%B %d, %Y")
+    display_name = provider_name if provider_name else "there"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f8f8f8; font-family: 'Quicksand', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            {get_email_header()}
+
+            <div style="padding: 30px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="font-size: 48px;">⏰</span>
+                </div>
+
+                <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0; text-align: center;">
+                    Your Trial Ends Tomorrow
+                </h2>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0; text-align: center;">
+                    Hi {display_name}, your free trial ends <strong>{end_date_str}</strong>.
+                </p>
+
+                <div style="background: #FFF3E0; padding: 20px; border-radius: 8px; border-left: 4px solid #FF9800; margin: 20px 0;">
+                    <p style="color: #E65100; margin: 0; font-weight: 600;">
+                        After your trial ends:
+                    </p>
+                    <ul style="color: #666; margin: 10px 0 0 0; padding-left: 20px; line-height: 1.8;">
+                        <li>You'll lose access to Pro features (contracts, invoicing, visit notes)</li>
+                        <li>Your marketplace profile will be hidden from new leads</li>
+                        <li>Your client data is preserved — subscribe anytime to regain full access</li>
+                    </ul>
+                </div>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    <strong>Don't lose momentum.</strong> You've already set up your practice in the app — keep it running with True Joy Pro:
+                </p>
+
+                <ul style="color: #555; line-height: 1.8; margin: 0 0 20px 0; padding-left: 20px;">
+                    <li>Monthly: ${PRO_MONTHLY_PRICE}/mo — cancel anytime</li>
+                    <li>Annual: ${PRO_ANNUAL_PRICE}/yr — save ${(PRO_MONTHLY_PRICE * 12) - PRO_ANNUAL_PRICE:.0f}/year</li>
+                </ul>
+
+                {get_button_html("Subscribe Before It's Too Late", "https://truejoybirthing.com/app")}
+
+                <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
+                    Questions before you decide? Reply to this email and we'll help you choose the right plan for your practice.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
+                    Warmly,<br>
+                    <strong style="color: {BRAND_COLOR};">The True Joy Birthing Team</strong>
+                </p>
+            </div>
+
+            {get_email_footer()}
+        </div>
+    </body>
+    </html>
+    """
+
+    return await send_email(
+        to=provider_email,
+        subject="⏰ Your free trial ends tomorrow — subscribe now",
+        html=html,
+        reply_to=SUPPORT_EMAIL,
+    )

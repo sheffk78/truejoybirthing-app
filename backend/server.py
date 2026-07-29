@@ -1500,6 +1500,7 @@ from routes import admin_ambassador as admin_ambassador_routes
 from routes import feed as feed_routes
 from routes import invites as invites_routes
 from routes import shelbi_leads as shelbi_leads_routes
+from routes import trial_emails as trial_emails_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1930,6 +1931,8 @@ app.include_router(admin_analytics_routes.router)
 app.include_router(admin_ambassador_routes.router)
 # Admin Shelbi lead management endpoints
 app.include_router(shelbi_leads_routes.admin_router)
+# Admin trial email sequence endpoints
+app.include_router(trial_emails_routes.router)
 
 app.add_middleware(
     CORSMiddleware,
