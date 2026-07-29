@@ -1,15 +1,21 @@
 """
-Trial Email Sequence Scheduler
+Provider Onboarding & Trial Email Sequences
 
-Sends automated emails to doulas/midwives during their 14-day trial:
-- Day 0:  Trial started (already sent by start_trial endpoint)
-- Day 3:  Feature deep-dive: Client Management + Contracts
-- Day 7:  Feature highlight: Invoicing + Marketplace + Feedback request
-- Day 10: Value reinforcement + social proof + conversion pitch
-- Day 13: Last-chance conversion email
+Two sequences for doulas/midwives:
 
-Designed to be called by a daily cron job (Hermes) hitting the /admin/api/trial-emails/process endpoint.
-Also supports manual triggering for specific users.
+1. ONBOARDING SEQUENCE (all doulas/midwives, triggered at signup):
+   - Day 0:  Welcome — what moms see when they open the app
+   - Day 3:  How moms use the app — birth plans, contractions, wellness
+   - Day 7:  Feedback request — how can we make this better for moms?
+   - Day 10: Mom experience spotlight — what your clients are feeling
+   - Day 14: Final feedback + what's coming next
+
+2. TRIAL CONVERSION SEQUENCE (trial users only, triggered at trial start):
+   - Day 0:  Trial started (already sent by start_trial endpoint)
+   - Day 12: Trial ending soon — subscribe to keep your practice running
+
+Both sequences track sent emails in a `provider_emails` collection to prevent duplicates.
+Designed to be called daily by a cron job hitting /admin/api/provider-emails/process.
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Query
@@ -19,25 +25,31 @@ import logging
 
 from .dependencies import db, get_now, check_role, User
 from services.email_service import (
-    send_trial_day3_email,
-    send_trial_day7_email,
-    send_trial_day10_email,
-    send_trial_day13_email,
+    send_provider_onboarding_day0,
+    send_provider_onboarding_day3,
+    send_provider_onboarding_day7,
+    send_provider_onboarding_day10,
+    send_provider_onboarding_day14,
+    send_trial_ending_email,
 )
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/admin/api/trial-emails", tags=["Admin Trial Emails"])
+router = APIRouter(prefix="/admin/api/provider-emails", tags=["Admin Provider Emails"])
 
 TRIAL_DURATION_DAYS = 14
 
-# Email schedule: maps trial day -> email function
-EMAIL_SCHEDULE = {
-    3: send_trial_day3_email,
-    7: send_trial_day7_email,
-    10: send_trial_day10_email,
-    13: send_trial_day13_email,
+# Onboarding schedule: maps day -> email function
+ONBOARDING_SCHEDULE = {
+    0: send_provider_onboarding_day0,
+    3: send_provider_onboarding_day3,
+    7: send_provider_onboarding_day7,
+    10: send_provider_onboarding_day10,
+    14: send_provider_onboarding_day14,
 }
+
+# Trial conversion: sent 2 days before trial ends
+TRIAL_ENDING_DAY = 12  # Day 12 of 14-day trial
 
 
 def ensure_aware(dt: datetime) -> datetime:
@@ -47,115 +59,191 @@ def ensure_aware(dt: datetime) -> datetime:
     return dt
 
 
-def calculate_trial_day(trial_start: datetime, now: datetime) -> int:
-    """Calculate which day of the trial the user is on (0-indexed)."""
-    trial_start = ensure_aware(trial_start)
+def calculate_day(start_date: datetime, now: datetime) -> int:
+    """Calculate days since a given date."""
+    start = ensure_aware(start_date)
     now = ensure_aware(now)
-    delta = now - trial_start
+    delta = now - start
     return delta.days
 
 
+def is_test_account(email: str) -> bool:
+    """Check if an email belongs to a test/demo account."""
+    email_lower = email.lower()
+    test_patterns = ["test", "demo", "guerrillamail", "web-library", "edge-test",
+                     "example.com", "tjb-verify", "trustoffice"]
+    return any(x in email_lower for x in test_patterns)
+
+
 @router.post("/process")
-async def process_trial_emails(
+async def process_provider_emails(
     dry_run: bool = Query(False, description="If true, report what would be sent without actually sending"),
     user: User = Depends(check_role(["ADMIN"])),
 ):
     """
-    Process trial email sequence for all active trial users.
-    Called daily by cron job. Sends the appropriate email based on trial day.
+    Process both onboarding and trial email sequences.
+    Called daily by cron job.
 
-    - Finds all users with subscription_status='trial'
-    - For each, calculates which day of the trial they're on
-    - If that day matches an email in the schedule, sends it (if not already sent)
-    - Tracks sent emails in the subscription document to prevent duplicates
+    ONBOARDING: Finds all doulas/midwives, calculates days since signup,
+    sends the appropriate onboarding email if not already sent.
+
+    TRIAL: Finds all active trial subscriptions, sends trial-ending email
+    at day 12 if not already sent.
     """
     now = get_now()
+    results = {
+        "onboarding": {"checked": 0, "sent": [], "skipped_already_sent": [], "skipped_not_scheduled": [], "errors": []},
+        "trial": {"checked": 0, "sent": [], "skipped_already_sent": [], "skipped_not_scheduled": [], "errors": []},
+        "dry_run": dry_run,
+    }
 
-    # Find all active trial subscriptions
+    # === ONBOARDING SEQUENCE ===
+    # Find all doulas and midwives
+    providers = await db.users.find({
+        "role": {"$in": ["DOULA", "MIDWIFE"]},
+    }).to_list(200)
+
+    results["onboarding"]["checked"] = len(providers)
+
+    for provider in providers:
+        user_id = provider.get("user_id", "")
+        email = provider.get("email", "")
+        name = provider.get("full_name", "")
+        created_at = provider.get("created_at")
+
+        if not email or not created_at:
+            continue
+
+        if is_test_account(email):
+            continue
+
+        signup_day = calculate_day(created_at, now)
+
+        # Check if this day has a scheduled email
+        if signup_day not in ONBOARDING_SCHEDULE:
+            continue
+
+        # Check if already sent for this day
+        day_key = f"onboarding_day_{signup_day}"
+        already_sent = await db.provider_emails.find_one({
+            "user_id": user_id,
+            "email_type": day_key,
+        })
+
+        if already_sent:
+            results["onboarding"]["skipped_already_sent"].append({
+                "user_id": user_id,
+                "email": email,
+                "day": signup_day,
+            })
+            continue
+
+        if dry_run:
+            results["onboarding"]["sent"].append({
+                "user_id": user_id,
+                "email": email,
+                "name": name,
+                "day": signup_day,
+                "dry_run": True,
+            })
+            continue
+
+        # Send the email
+        email_fn = ONBOARDING_SCHEDULE[signup_day]
+        try:
+            success = await email_fn(
+                provider_email=email,
+                provider_name=name,
+            )
+
+            if success:
+                # Record in provider_emails collection
+                await db.provider_emails.insert_one({
+                    "user_id": user_id,
+                    "email": email,
+                    "email_type": day_key,
+                    "sent_at": now,
+                })
+                results["onboarding"]["sent"].append({
+                    "user_id": user_id,
+                    "email": email,
+                    "name": name,
+                    "day": signup_day,
+                })
+                logger.info(f"Sent onboarding day {signup_day} email to {email}")
+            else:
+                results["onboarding"]["errors"].append({
+                    "user_id": user_id,
+                    "email": email,
+                    "error": "send_email returned False",
+                })
+        except Exception as e:
+            results["onboarding"]["errors"].append({
+                "user_id": user_id,
+                "email": email,
+                "error": str(e),
+            })
+            logger.error(f"Failed to send onboarding email to {email}: {e}")
+
+    # === TRIAL CONVERSION SEQUENCE ===
     trial_subs = await db.subscriptions.find({
         "subscription_status": "trial",
     }).to_list(100)
 
-    results = {
-        "checked": 0,
-        "sent": [],
-        "skipped_already_sent": [],
-        "skipped_not_scheduled": [],
-        "skipped_no_user": [],
-        "errors": [],
-        "dry_run": dry_run,
-    }
+    results["trial"]["checked"] = len(trial_subs)
 
     for sub in trial_subs:
-        results["checked"] += 1
         sub_id = sub.get("subscription_id", "unknown")
         user_id = sub.get("user_id", "")
         trial_start = sub.get("trial_start_date")
         trial_end = sub.get("trial_end_date")
 
         if not trial_start:
-            logger.warning(f"Subscription {sub_id} has no trial_start_date, skipping")
-            results["skipped_not_scheduled"].append({"sub_id": sub_id, "reason": "no trial_start_date"})
             continue
 
-        trial_day = calculate_trial_day(trial_start, now)
+        trial_day = calculate_day(trial_start, now)
 
-        # Check if this day has a scheduled email
-        if trial_day not in EMAIL_SCHEDULE:
-            results["skipped_not_scheduled"].append({
+        # Only send trial-ending email at day 12
+        if trial_day != TRIAL_ENDING_DAY:
+            results["trial"]["skipped_not_scheduled"].append({
                 "sub_id": sub_id,
                 "user_id": user_id,
                 "trial_day": trial_day,
             })
             continue
 
-        # Check if already sent for this day
-        sent_emails = sub.get("trial_emails_sent", {})
-        day_key = f"day_{trial_day}"
-        if sent_emails.get(day_key):
-            results["skipped_already_sent"].append({
+        # Check if already sent
+        already_sent = await db.provider_emails.find_one({
+            "user_id": user_id,
+            "email_type": "trial_ending",
+        })
+
+        if already_sent:
+            results["trial"]["skipped_already_sent"].append({
                 "sub_id": sub_id,
                 "user_id": user_id,
-                "trial_day": trial_day,
             })
             continue
 
-        # Get user details
+        # Get user
         user_doc = await db.users.find_one({"user_id": user_id})
         if not user_doc:
-            results["skipped_no_user"].append({"sub_id": sub_id, "user_id": user_id})
+            results["trial"]["errors"].append({
+                "sub_id": sub_id,
+                "error": "user not found",
+            })
             continue
 
         provider_email = user_doc.get("email", "")
         provider_name = user_doc.get("full_name", "")
 
-        if not provider_email:
-            results["errors"].append({
-                "sub_id": sub_id,
-                "user_id": user_id,
-                "error": "no email address",
-            })
+        if not provider_email or is_test_account(provider_email):
             continue
 
-        # Skip test/demo accounts
-        email_lower = provider_email.lower()
-        if any(x in email_lower for x in ["test", "demo", "guerrillamail", "web-library", "edge-test", "example.com"]):
-            results["skipped_not_scheduled"].append({
-                "sub_id": sub_id,
-                "user_id": user_id,
-                "reason": "test/demo account",
-            })
-            continue
-
-        # Calculate days remaining
-        if trial_end:
-            trial_end_aware = ensure_aware(trial_end)
-            days_remaining = max(0, (trial_end_aware - now).days)
-        else:
-            days_remaining = TRIAL_DURATION_DAYS - trial_day
+        days_remaining = max(0, TRIAL_DURATION_DAYS - trial_day)
 
         if dry_run:
-            results["sent"].append({
+            results["trial"]["sent"].append({
                 "sub_id": sub_id,
                 "user_id": user_id,
                 "email": provider_email,
@@ -166,10 +254,8 @@ async def process_trial_emails(
             })
             continue
 
-        # Send the email
-        email_fn = EMAIL_SCHEDULE[trial_day]
         try:
-            success = await email_fn(
+            success = await send_trial_ending_email(
                 provider_email=provider_email,
                 provider_name=provider_name,
                 days_remaining=days_remaining,
@@ -177,18 +263,13 @@ async def process_trial_emails(
             )
 
             if success:
-                # Mark as sent in the subscription document
-                await db.subscriptions.update_one(
-                    {"subscription_id": sub_id},
-                    {
-                        "$set": {
-                            f"trial_emails_sent.{day_key}": True,
-                            f"trial_emails_sent.{day_key}_sent_at": now,
-                            "updated_at": now,
-                        }
-                    },
-                )
-                results["sent"].append({
+                await db.provider_emails.insert_one({
+                    "user_id": user_id,
+                    "email": provider_email,
+                    "email_type": "trial_ending",
+                    "sent_at": now,
+                })
+                results["trial"]["sent"].append({
                     "sub_id": sub_id,
                     "user_id": user_id,
                     "email": provider_email,
@@ -196,76 +277,98 @@ async def process_trial_emails(
                     "trial_day": trial_day,
                     "days_remaining": days_remaining,
                 })
-                logger.info(f"Sent trial day {trial_day} email to {provider_email}")
+                logger.info(f"Sent trial ending email to {provider_email}")
             else:
-                results["errors"].append({
+                results["trial"]["errors"].append({
                     "sub_id": sub_id,
-                    "user_id": user_id,
                     "email": provider_email,
-                    "error": "send_email returned False (Postmark error or not configured)",
+                    "error": "send_email returned False",
                 })
         except Exception as e:
-            results["errors"].append({
+            results["trial"]["errors"].append({
                 "sub_id": sub_id,
-                "user_id": user_id,
                 "email": provider_email,
                 "error": str(e),
             })
-            logger.error(f"Failed to send trial day {trial_day} email to {provider_email}: {e}")
+            logger.error(f"Failed to send trial ending email to {provider_email}: {e}")
 
     return results
 
 
 @router.get("/status")
-async def get_trial_email_status(
+async def get_provider_email_status(
     user: User = Depends(check_role(["ADMIN"])),
 ):
     """
-    Get the status of trial email sequence for all active trial users.
+    Get the status of both email sequences for all doulas/midwives.
     Shows which emails have been sent and which are pending.
     """
     now = get_now()
 
-    trial_subs = await db.subscriptions.find({
-        "subscription_status": "trial",
-    }).to_list(100)
+    providers = await db.users.find({
+        "role": {"$in": ["DOULA", "MIDWIFE"]},
+    }).to_list(200)
 
     statuses = []
-    for sub in trial_subs:
-        user_id = sub.get("user_id", "")
-        user_doc = await db.users.find_one({"user_id": user_id})
+    for provider in providers:
+        user_id = provider.get("user_id", "")
+        email = provider.get("email", "")
+        name = provider.get("full_name", "")
+        role = provider.get("role", "")
+        created_at = provider.get("created_at")
 
-        trial_start = sub.get("trial_start_date")
-        trial_end = sub.get("trial_end_date")
-        trial_day = calculate_trial_day(trial_start, now) if trial_start else None
+        if not created_at or not email:
+            continue
 
-        if trial_end:
-            trial_end_aware = ensure_aware(trial_end)
-            days_remaining = max(0, (trial_end_aware - now).days)
-        else:
-            days_remaining = None
+        if is_test_account(email):
+            continue
 
-        sent_emails = sub.get("trial_emails_sent", {})
+        signup_day = calculate_day(created_at, now)
+
+        # Get all sent emails for this user
+        sent_docs = await db.provider_emails.find({
+            "user_id": user_id,
+        }).to_list(50)
+        sent_types = {doc.get("email_type") for doc in sent_docs}
+
+        # Check for trial subscription
+        sub = await db.subscriptions.find_one({"user_id": user_id})
+        has_trial = sub and sub.get("subscription_status") == "trial"
+        trial_day = None
+        trial_end = None
+        if has_trial and sub.get("trial_start_date"):
+            trial_day = calculate_day(sub.get("trial_start_date"), now)
+            trial_end = sub.get("trial_end_date")
+
+        # Calculate pending onboarding emails
+        pending_onboarding = [
+            f"onboarding_day_{d}" for d in ONBOARDING_SCHEDULE
+            if f"onboarding_day_{d}" not in sent_types and signup_day >= d
+        ]
+
+        # Calculate pending trial emails
+        pending_trial = []
+        if has_trial and "trial_ending" not in sent_types and trial_day is not None:
+            if trial_day >= TRIAL_ENDING_DAY:
+                pending_trial.append("trial_ending")
 
         statuses.append({
-            "sub_id": sub.get("subscription_id"),
             "user_id": user_id,
-            "email": user_doc.get("email") if user_doc else None,
-            "name": user_doc.get("full_name") if user_doc else None,
-            "role": user_doc.get("role") if user_doc else None,
+            "email": email,
+            "name": name,
+            "role": role,
+            "signup_day": signup_day,
+            "has_trial": has_trial,
             "trial_day": trial_day,
-            "days_remaining": days_remaining,
-            "trial_start": trial_start.isoformat() if trial_start else None,
             "trial_end": trial_end.isoformat() if trial_end else None,
-            "emails_sent": sent_emails,
-            "pending_emails": [
-                f"day_{d}" for d in EMAIL_SCHEDULE
-                if not sent_emails.get(f"day_{d}") and (trial_day is not None and trial_day >= d)
-            ],
+            "emails_sent": sorted(sent_types),
+            "pending_onboarding": pending_onboarding,
+            "pending_trial": pending_trial,
         })
 
     return {
-        "total_trial_users": len(trial_subs),
-        "email_schedule_days": list(EMAIL_SCHEDULE.keys()),
+        "total_providers": len(statuses),
+        "onboarding_schedule_days": list(ONBOARDING_SCHEDULE.keys()),
+        "trial_ending_day": TRIAL_ENDING_DAY,
         "statuses": statuses,
     }

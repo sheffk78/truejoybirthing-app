@@ -861,18 +861,18 @@ async def send_trial_started_email(
     )
 
 
-# ============== TRIAL ONBOARDING SEQUENCE ==============
-# Emails sent at Day 3, Day 7, Day 10, Day 13 of the 14-day trial.
-# Goal: guide doulas/midwives through features, collect feedback, drive conversion.
 
-async def send_trial_day3_email(
+
+# ============== PROVIDER ONBOARDING SEQUENCE ==============
+# Sent to ALL doulas/midwives at signup — mom-experience focused, feedback-driven.
+# Goal: help providers understand what moms experience, collect feedback, build connection.
+# Day 0, 3, 7, 10, 14 after signup.
+
+async def send_provider_onboarding_day0(
     provider_email: str,
     provider_name: str,
-    days_remaining: int,
-    trial_end_date: datetime,
 ) -> bool:
-    """Day 3 — Feature highlight: Client Management + Contracts"""
-    end_date_str = trial_end_date.strftime("%B %d, %Y")
+    """Day 0 — Welcome + what moms see when they open the app"""
     display_name = provider_name if provider_name else "there"
 
     html = f"""
@@ -887,49 +887,51 @@ async def send_trial_day3_email(
             {get_email_header()}
 
             <div style="padding: 30px;">
-                <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0;">
-                    Your First Feature Deep-Dive: Client Management
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="font-size: 48px;">🌱</span>
+                </div>
+
+                <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0; text-align: center;">
+                    Welcome to True Joy Birthing, {display_name}
                 </h2>
 
                 <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
-                    Hi {display_name},
+                    You're now part of a community built around one belief: <strong>every mom deserves a joyful, supported birth.</strong>
                 </p>
 
                 <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
-                    You're <strong>{days_remaining} days</strong> into your trial — let's make sure you're getting the most out of True Joy Pro.
+                    As a birth professional, you already know that the relationship between a provider and a mom is everything. True Joy Birthing exists to strengthen that relationship — and we want your help shaping it.
                 </p>
 
-                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
-                    <strong>Today's highlight: Client Management & Digital Contracts</strong>
-                </p>
-
-                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
-                    One of the biggest time-savers in True Joy Pro is the client management system. Here's what to try today:
-                </p>
-
-                <ul style="color: #555; line-height: 1.8; margin: 0 0 20px 0; padding-left: 20px;">
-                    <li><strong>Add a client</strong> — Invite moms to join your team with a single tap. They'll get a welcome email automatically.</li>
-                    <li><strong>Create a digital contract</strong> — Send a professional doula/midwife agreement with e-signatures. No more printing, scanning, or chasing paperwork.</li>
-                    <li><strong>Share birth plans</strong> — Your clients can share their birth plans with you in real-time, so you're always on the same page.</li>
-                </ul>
-
-                <div style="background: linear-gradient(135deg, {BRAND_COLOR}10, {ACCENT_COLOR}10); padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <p style="color: #333; margin: 0; font-weight: 600;">
-                        💡 Quick tip:
+                <div style="background: linear-gradient(135deg, {BRAND_COLOR}10, {ACCENT_COLOR}10); padding: 25px; border-radius: 8px; margin: 25px 0;">
+                    <p style="color: #333; margin: 0 0 10px 0; font-weight: 600; font-size: 17px;">
+                        What moms see when they open the app:
                     </p>
-                    <p style="color: #555; margin: 10px 0 0 0; line-height: 1.5;">
-                        Try adding one client today — even a past client. You'll see how the whole workflow connects: contract → appointments → visit notes → invoicing.
-                    </p>
+                    <ul style="color: #555; line-height: 1.8; margin: 10px 0 0 0; padding-left: 20px;">
+                        <li><strong>Weekly pregnancy guidance</strong> — personalized tips and affirmations for each week</li>
+                        <li><strong>Birth plan builder</strong> — they document their preferences and share them with you</li>
+                        <li><strong>Contraction timer</strong> — simple, reliable tracking during labor</li>
+                        <li><strong>Wellness check-ins</strong> — mood and wellbeing tracking through pregnancy and postpartum</li>
+                        <li><strong>Provider search</strong> — moms find doulas and midwives in their area (that's you)</li>
+                    </ul>
                 </div>
 
-                {get_button_html("Try It Now", "https://truejoybirthing.com/app")}
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Over the next two weeks, we'll send you a few emails about what your moms are experiencing in the app — and ask for your feedback on how we can make it better for them.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    <strong>Your voice matters here.</strong> You're the expert on what moms need. We're building this for you and your clients.
+                </p>
+
+                {get_button_html("Explore the App", "https://truejoybirthing.com/app")}
 
                 <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
-                    Your trial ends <strong>{end_date_str}</strong>. Everything you set up now stays with you when you subscribe.
+                    Reply to this email anytime — we read every response.
                 </p>
 
                 <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
-                    Warmly,<br>
+                    With joy,<br>
                     <strong style="color: {BRAND_COLOR};">The True Joy Birthing Team</strong>
                 </p>
             </div>
@@ -942,20 +944,17 @@ async def send_trial_day3_email(
 
     return await send_email(
         to=provider_email,
-        subject="Day 3 of your trial: Set up your first client 📋",
+        subject="Welcome to True Joy Birthing — let's support moms together 🌿",
         html=html,
         reply_to=SUPPORT_EMAIL,
     )
 
 
-async def send_trial_day7_email(
+async def send_provider_onboarding_day3(
     provider_email: str,
     provider_name: str,
-    days_remaining: int,
-    trial_end_date: datetime,
 ) -> bool:
-    """Day 7 — Feature highlight: Invoicing + Marketplace + Feedback request"""
-    end_date_str = trial_end_date.strftime("%B %d, %Y")
+    """Day 3 — How moms use the app: birth plans, contractions, wellness"""
     display_name = provider_name if provider_name else "there"
 
     html = f"""
@@ -971,7 +970,7 @@ async def send_trial_day7_email(
 
             <div style="padding: 30px;">
                 <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0;">
-                    You're Halfway Through Your Trial!
+                    What Your Moms Are Doing Right Now
                 </h2>
 
                 <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
@@ -979,41 +978,137 @@ async def send_trial_day7_email(
                 </p>
 
                 <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
-                    You have <strong>{days_remaining} days</strong> left in your free trial. Let's explore two more features that can transform your practice:
+                    The moms on True Joy Birthing aren't just reading articles — they're actively using the app throughout their pregnancy. Here's what they're experiencing:
                 </p>
 
-                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
-                    <strong>Professional Invoicing</strong>
-                </p>
-                <ul style="color: #555; line-height: 1.8; margin: 0 0 15px 0; padding-left: 20px;">
-                    <li>Send polished invoices directly from the app</li>
-                    <li>Track payment status automatically</li>
-                    <li>Accept payments — no more chasing checks</li>
-                </ul>
+                <div style="background: linear-gradient(135deg, {BRAND_COLOR}10, {ACCENT_COLOR}10); padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <p style="color: #333; margin: 0 0 15px 0; font-weight: 600;">
+                        📋 Birth Plans
+                    </p>
+                    <p style="color: #555; margin: 0 0 15px 0; line-height: 1.5;">
+                        Moms build their birth preferences step by step — pain management, labor positions, postpartum care. When they connect with a provider, they can share the plan directly. <strong>You see exactly what they want before the first conversation.</strong>
+                    </p>
 
-                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
-                    <strong>Provider Marketplace</strong>
-                </p>
-                <ul style="color: #555; line-height: 1.8; margin: 0 0 15px 0; padding-left: 20px;">
-                    <li>Your profile is visible to moms searching for doulas and midwives in your area</li>
-                    <li>Get lead notifications when a mom requests a consultation</li>
-                    <li>Convert leads to clients with one tap</li>
-                </ul>
+                    <p style="color: #333; margin: 15px 0 10px 0; font-weight: 600;">
+                        ⏱️ Contraction Timer
+                    </p>
+                    <p style="color: #555; margin: 0 0 15px 0; line-height: 1.5;">
+                        During labor, moms use a simple one-tap timer. It tracks frequency and duration automatically — no more clipboard and pen. The data stays with their pregnancy record.
+                    </p>
 
-                <div style="background: linear-gradient(135deg, {BRAND_COLOR}15, {ACCENT_COLOR}15); padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center;">
-                    <p style="color: #333; margin: 0 0 10px 0; font-weight: 600; font-size: 18px;">
-                        We'd love your feedback 💬
+                    <p style="color: #333; margin: 15px 0 10px 0; font-weight: 600;">
+                        💚 Wellness Check-ins
                     </p>
                     <p style="color: #555; margin: 0; line-height: 1.5;">
-                        How is the app working for you so far? What's missing? What would make you want to subscribe?
-                        Reply to this email — we read every response and use it to improve.
+                        Moms log their mood, energy, and physical symptoms weekly. This gives you a window into how they're really doing — not just at appointments, but between them.
                     </p>
                 </div>
 
-                {get_button_html("Explore Features", "https://truejoybirthing.com/app")}
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    <strong>Here's our question for you:</strong> When a mom shares her birth plan with you, what's the first thing you look for? What information is usually missing that you wish was there?
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Your answer helps us design a better birth plan template for every mom on the app.
+                </p>
+
+                <div style="background: #FFF8E1; padding: 20px; border-radius: 8px; border-left: 4px solid #FFB300; margin: 20px 0;">
+                    <p style="color: #333; margin: 0; font-weight: 600;">
+                        💬 Just hit reply
+                    </p>
+                    <p style="color: #555; margin: 8px 0 0 0; line-height: 1.5;">
+                        Tell us: what's missing from the mom experience that would make your job easier and their birth better?
+                    </p>
+                </div>
 
                 <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
-                    Trial ends <strong>{end_date_str}</strong>. Have questions? Just reply to this email.
+                    Warmly,<br>
+                    <strong style="color: {BRAND_COLOR};">The True Joy Birthing Team</strong>
+                </p>
+            </div>
+
+            {get_email_footer()}
+        </div>
+    </body>
+    </html>
+    """
+
+    return await send_email(
+        to=provider_email,
+        subject="What your moms are doing in the app right now 📋",
+        html=html,
+        reply_to=SUPPORT_EMAIL,
+    )
+
+
+async def send_provider_onboarding_day7(
+    provider_email: str,
+    provider_name: str,
+) -> bool:
+    """Day 7 — Feedback request: how can we make this better for moms?"""
+    display_name = provider_name if provider_name else "there"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f8f8f8; font-family: 'Quicksand', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            {get_email_header()}
+
+            <div style="padding: 30px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="font-size: 48px;">💬</span>
+                </div>
+
+                <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0; text-align: center;">
+                    How Can We Make This Better for Moms?
+                </h2>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Hi {display_name}, it's been a week since you joined. We have one simple ask:
+                </p>
+
+                <div style="background: linear-gradient(135deg, {BRAND_COLOR}15, {ACCENT_COLOR}15); padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center;">
+                    <p style="color: #333; margin: 0; font-size: 18px; font-weight: 600; line-height: 1.6;">
+                        What would make True Joy Birthing better for the moms you serve?
+                    </p>
+                </div>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    You work with moms every day. You see what they worry about, what they forget, what they wish they'd known. That knowledge is exactly what we need.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Some things we're already hearing from providers:
+                </p>
+
+                <ul style="color: #555; line-height: 1.8; margin: 0 0 20px 0; padding-left: 20px;">
+                    <li>"Moms need more guidance on what to expect postpartum, not just during labor."</li>
+                    <li>"I wish the birth plan had a section for emergency preferences and cesarean births."</li>
+                    <li>"The wellness check-ins are great, but moms forget to fill them out."</li>
+                </ul>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    What would <em>you</em> add? What do your moms struggle with that an app could help with?
+                </p>
+
+                <div style="background: #FFF8E1; padding: 20px; border-radius: 8px; border-left: 4px solid #FFB300; margin: 20px 0;">
+                    <p style="color: #333; margin: 0; font-weight: 600;">
+                        No form. No survey. Just reply.
+                    </p>
+                    <p style="color: #555; margin: 8px 0 0 0; line-height: 1.5;">
+                        Type your thoughts and hit reply. We read every email and use them to shape what we build next.
+                    </p>
+                </div>
+
+                {get_button_html("Open the App", "https://truejoybirthing.com/app")}
+
+                <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
+                    Thank you for being part of this — your experience is what makes it better.
                 </p>
 
                 <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
@@ -1030,20 +1125,17 @@ async def send_trial_day7_email(
 
     return await send_email(
         to=provider_email,
-        subject="Day 7: You're halfway through your trial — we'd love your feedback 💬",
+        subject="💬 One question: how can we make this better for moms?",
         html=html,
         reply_to=SUPPORT_EMAIL,
     )
 
 
-async def send_trial_day10_email(
+async def send_provider_onboarding_day10(
     provider_email: str,
     provider_name: str,
-    days_remaining: int,
-    trial_end_date: datetime,
 ) -> bool:
-    """Day 10 — Value reinforcement + social proof + early conversion pitch"""
-    end_date_str = trial_end_date.strftime("%B %d, %Y")
+    """Day 10 — Mom experience spotlight: what your clients are feeling"""
     display_name = provider_name if provider_name else "there"
 
     html = f"""
@@ -1059,7 +1151,7 @@ async def send_trial_day10_email(
 
             <div style="padding: 30px;">
                 <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0;">
-                    4 Days Left — Don't Lose Your Progress
+                    Through a Mom's Eyes
                 </h2>
 
                 <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
@@ -1067,41 +1159,47 @@ async def send_trial_day10_email(
                 </p>
 
                 <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
-                    Your trial ends <strong>{end_date_str}</strong> — just <strong>{days_remaining} days</strong> from now. Here's what happens if you subscribe before then:
+                    We've been talking to moms on the app, and we want to share what we're hearing — because you're the one who can turn these insights into better care.
                 </p>
 
-                <ul style="color: #555; line-height: 1.8; margin: 0 0 20px 0; padding-left: 20px;">
-                    <li><strong>All your data stays</strong> — clients, contracts, notes, invoices, everything carries over seamlessly</li>
-                    <li><strong>Your marketplace profile stays live</strong> — keep receiving leads from moms in your area</li>
-                    <li><strong>No interruption</strong> — no re-setup, no lost data, just continued access</li>
-                </ul>
+                <div style="background: linear-gradient(135deg, {BRAND_COLOR}10, {ACCENT_COLOR}10); padding: 25px; border-radius: 8px; margin: 20px 0;">
+                    <p style="color: #333; margin: 0 0 15px 0; font-weight: 600; font-size: 16px;">
+                        What moms are telling us:
+                    </p>
 
-                <div style="background: linear-gradient(135deg, {BRAND_COLOR}10, {ACCENT_COLOR}10); padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <p style="color: #333; margin: 0; font-weight: 600;">
-                        What doulas are saying:
+                    <p style="color: #555; margin: 0 0 12px 0; line-height: 1.5; font-style: italic;">
+                        "I love my doula, but between appointments I forget everything we discussed. I wish I had somewhere to keep track."
                     </p>
-                    <p style="color: #555; margin: 12px 0 0 0; line-height: 1.5; font-style: italic;">
-                        "I used to spend hours on paperwork — contracts, invoices, notes. Now it's all in one place and I have more time with my clients."
+                    <p style="color: #999; margin: 0 0 20px 0; font-size: 13px;">— Mom, 24 weeks</p>
+
+                    <p style="color: #555; margin: 0 0 12px 0; line-height: 1.5; font-style: italic;">
+                        "The weekly tips make me feel less alone. But I want to know what's actually happening in <em>my</em> body, not just generic advice."
                     </p>
+                    <p style="color: #999; margin: 0 0 20px 0; font-size: 13px;">— Mom, 16 weeks</p>
+
+                    <p style="color: #555; margin: 0 0 12px 0; line-height: 1.5; font-style: italic;">
+                        "I found my midwife through the app and it changed everything. I didn't know I could have this level of support."
+                    </p>
+                    <p style="color: #999; margin: 0; font-size: 13px;">— Mom, 32 weeks</p>
                 </div>
 
-                <div style="background: {BRAND_COLOR}; color: white; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
-                    <p style="margin: 0 0 5px 0; font-size: 14px; opacity: 0.9;">SUBSCRIBE NOW</p>
-                    <p style="margin: 5px 0; font-size: 22px; font-weight: bold;">
-                        ${PRO_MONTHLY_PRICE}/mo or ${PRO_ANNUAL_PRICE}/yr
-                    </p>
-                    <p style="margin: 5px 0 0 0; font-size: 14px;">
-                        Annual saves you ${(PRO_MONTHLY_PRICE * 12) - PRO_ANNUAL_PRICE:.0f}/year
-                    </p>
-                </div>
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Here's the pattern: <strong>moms want connection, not just information.</strong> They want to feel known, not just educated. Every feature in True Joy Birthing is built around that idea.
+                </p>
 
-                {get_button_html("Subscribe Now", "https://truejoybirthing.com/app")}
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    When you connect with a mom through the app, you're not just a contact — you're her team. The birth plan she shares with you, the wellness logs she keeps, the questions she asks — they all give you context that most providers never get.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    <strong>What's the one thing you wish you knew about a mom before your first meeting?</strong> That's what we want to build next.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Reply and tell us.
+                </p>
 
                 <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
-                    Still exploring? No pressure — you still have {days_remaining} days. But don't wait until the last minute!
-                </p>
-
-                <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
                     Warmly,<br>
                     <strong style="color: {BRAND_COLOR};">The True Joy Birthing Team</strong>
                 </p>
@@ -1115,19 +1213,111 @@ async def send_trial_day10_email(
 
     return await send_email(
         to=provider_email,
-        subject=f"Day 10: {days_remaining} days left — keep your practice running smoothly",
+        subject="Through a mom's eyes — what your clients are feeling 💜",
         html=html,
         reply_to=SUPPORT_EMAIL,
     )
 
 
-async def send_trial_day13_email(
+async def send_provider_onboarding_day14(
+    provider_email: str,
+    provider_name: str,
+) -> bool:
+    """Day 14 — Final feedback + what's coming next"""
+    display_name = provider_name if provider_name else "there"
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f8f8f8; font-family: 'Quicksand', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            {get_email_header()}
+
+            <div style="padding: 30px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="font-size: 48px;">🌿</span>
+                </div>
+
+                <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0; text-align: center;">
+                    Two Weeks In — What's Next?
+                </h2>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Hi {display_name}, it's been two weeks since you joined True Joy Birthing. We hope you've had a chance to explore what the app offers — and we'd love to know what you think.
+                </p>
+
+                <div style="background: linear-gradient(135deg, {BRAND_COLOR}10, {ACCENT_COLOR}10); padding: 25px; border-radius: 8px; margin: 25px 0;">
+                    <p style="color: #333; margin: 0 0 15px 0; font-weight: 600; font-size: 16px;">
+                        What we're building next:
+                    </p>
+                    <ul style="color: #555; line-height: 1.8; margin: 0 0 10px 0; padding-left: 20px;">
+                        <li><strong>Postpartum care pathways</strong> — guided support for the 4th trimester, built with input from doulas and midwives</li>
+                        <li><strong>Enhanced birth plans</strong> — including emergency preferences and cesarean sections (based on provider feedback)</li>
+                        <li><strong>Better provider-mom messaging</strong> — real-time communication that keeps everything in one place</li>
+                        <li><strong>Visit notes that moms can see</strong> — shared documentation that keeps everyone informed</li>
+                    </ul>
+                    <p style="color: #555; margin: 10px 0 0 0; line-height: 1.5; font-size: 14px;">
+                        Every item on this list came from a provider like you.
+                    </p>
+                </div>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    <strong>One last ask:</strong> If you could add or change one thing in the app to better serve the moms you work with, what would it be?
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
+                    Your feedback directly shapes what we build. The postpartum pathway, the birth plan improvements, the messaging — all of it started with a provider hitting "reply" and telling us what they needed.
+                </p>
+
+                <div style="background: #FFF8E1; padding: 20px; border-radius: 8px; border-left: 4px solid #FFB300; margin: 20px 0;">
+                    <p style="color: #333; margin: 0; font-weight: 600;">
+                        This isn't the last you'll hear from us
+                    </p>
+                    <p style="color: #555; margin: 8px 0 0 0; line-height: 1.5;">
+                        We'll keep you posted as new features launch. And if you ever have an idea, just reply to any email — it goes straight to our team.
+                    </p>
+                </div>
+
+                {get_button_html("Open the App", "https://truejoybirthing.com/app")}
+
+                <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
+                    Thank you for being here, {display_name}. The moms you support deserve the best — and so do you.
+                </p>
+
+                <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
+                    With gratitude,<br>
+                    <strong style="color: {BRAND_COLOR};">The True Joy Birthing Team</strong>
+                </p>
+            </div>
+
+            {get_email_footer()}
+        </div>
+    </body>
+    </html>
+    """
+
+    return await send_email(
+        to=provider_email,
+        subject="Two weeks in — what's next for True Joy Birthing 🌿",
+        html=html,
+        reply_to=SUPPORT_EMAIL,
+    )
+
+
+# ============== TRIAL CONVERSION EMAIL ==============
+# Sent only to trial users, 2 days before trial ends.
+
+async def send_trial_ending_email(
     provider_email: str,
     provider_name: str,
     days_remaining: int,
     trial_end_date: datetime,
 ) -> bool:
-    """Day 13 — Last-chance conversion email"""
+    """Trial ending soon — keep your practice running"""
     end_date_str = trial_end_date.strftime("%B %d, %Y")
     display_name = provider_name if provider_name else "there"
 
@@ -1148,37 +1338,38 @@ async def send_trial_day13_email(
                 </div>
 
                 <h2 style="font-family: 'Playfair Display', Georgia, serif; color: #333; margin: 0 0 20px 0; text-align: center;">
-                    Your Trial Ends Tomorrow
+                    Your Trial Ends Soon
                 </h2>
 
                 <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0; text-align: center;">
-                    Hi {display_name}, your free trial ends <strong>{end_date_str}</strong>.
+                    Hi {display_name}, your free trial ends <strong>{end_date_str}</strong> — just <strong>{days_remaining} days</strong> from now.
                 </p>
-
-                <div style="background: #FFF3E0; padding: 20px; border-radius: 8px; border-left: 4px solid #FF9800; margin: 20px 0;">
-                    <p style="color: #E65100; margin: 0; font-weight: 600;">
-                        After your trial ends:
-                    </p>
-                    <ul style="color: #666; margin: 10px 0 0 0; padding-left: 20px; line-height: 1.8;">
-                        <li>You'll lose access to Pro features (contracts, invoicing, visit notes)</li>
-                        <li>Your marketplace profile will be hidden from new leads</li>
-                        <li>Your client data is preserved — subscribe anytime to regain full access</li>
-                    </ul>
-                </div>
 
                 <p style="color: #555; line-height: 1.6; margin: 0 0 15px 0;">
-                    <strong>Don't lose momentum.</strong> You've already set up your practice in the app — keep it running with True Joy Pro:
+                    You've had a chance to explore the app — client management, contracts, invoicing, the marketplace. If it's working for your practice, don't let it lapse:
                 </p>
 
+                <div style="background: {BRAND_COLOR}; color: white; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                    <p style="margin: 0 0 5px 0; font-size: 14px; opacity: 0.9;">TRUE JOY PRO</p>
+                    <p style="margin: 5px 0; font-size: 22px; font-weight: bold;">
+                        ${PRO_MONTHLY_PRICE}/mo or ${PRO_ANNUAL_PRICE}/yr
+                    </p>
+                    <p style="margin: 5px 0 0 0; font-size: 14px;">
+                        Annual saves you ${(PRO_MONTHLY_PRICE * 12) - PRO_ANNUAL_PRICE:.0f}/year
+                    </p>
+                </div>
+
                 <ul style="color: #555; line-height: 1.8; margin: 0 0 20px 0; padding-left: 20px;">
-                    <li>Monthly: ${PRO_MONTHLY_PRICE}/mo — cancel anytime</li>
-                    <li>Annual: ${PRO_ANNUAL_PRICE}/yr — save ${(PRO_MONTHLY_PRICE * 12) - PRO_ANNUAL_PRICE:.0f}/year</li>
+                    <li>Keep receiving leads from moms in your area</li>
+                    <li>Keep your client management, contracts, and invoicing</li>
+                    <li>Keep your marketplace profile visible</li>
+                    <li>All your data stays — no re-setup</li>
                 </ul>
 
-                {get_button_html("Subscribe Before It's Too Late", "https://truejoybirthing.com/app")}
+                {get_button_html("Subscribe Now", "https://truejoybirthing.com/app")}
 
                 <p style="color: #555; line-height: 1.6; margin: 20px 0 0 0;">
-                    Questions before you decide? Reply to this email and we'll help you choose the right plan for your practice.
+                    Not ready yet? No worries — your data is preserved. You can subscribe anytime to regain full access. And we'd still love your feedback on how the app can better serve moms. Just reply to this email.
                 </p>
 
                 <p style="color: #555; line-height: 1.6; margin: 15px 0 0 0;">
@@ -1195,7 +1386,7 @@ async def send_trial_day13_email(
 
     return await send_email(
         to=provider_email,
-        subject="⏰ Your free trial ends tomorrow — subscribe now",
+        subject=f"⏰ Your trial ends in {days_remaining} days — keep your practice running",
         html=html,
         reply_to=SUPPORT_EMAIL,
     )
