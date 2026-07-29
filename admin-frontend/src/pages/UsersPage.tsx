@@ -87,13 +87,13 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-tjb-charcoal">Users</h1>
-        <p className="text-muted-foreground mt-1">Manage and view all platform users</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-tjb-charcoal">Users</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-1">Manage and view all platform users</p>
       </div>
 
       {/* Search and filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col gap-3">
+        <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by name or email..."
@@ -102,24 +102,26 @@ export default function UsersPage() {
             className="pl-9 h-10"
           />
         </div>
-        <Tabs value={role} onValueChange={(v) => { setRole(v); setPage(1); }}>
-          <TabsList className="h-10">
-            {roleTabs.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value} className="text-sm">
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <Button
-          variant={showTestAccounts ? 'default' : 'outline'}
-          size="sm"
-          className="h-10 gap-2"
-          onClick={() => { setShowTestAccounts(!showTestAccounts); setPage(1); }}
-        >
-          <FlaskConical className="h-4 w-4" />
-          {showTestAccounts ? 'Hiding test' : 'Show test'}
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Tabs value={role} onValueChange={(v) => { setRole(v); setPage(1); }}>
+            <TabsList className="h-10 w-full sm:w-auto">
+              {roleTabs.map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.value} className="text-sm flex-1 sm:flex-none">
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          <Button
+            variant={showTestAccounts ? 'default' : 'outline'}
+            size="sm"
+            className="h-10 gap-2"
+            onClick={() => { setShowTestAccounts(!showTestAccounts); setPage(1); }}
+          >
+            <FlaskConical className="h-4 w-4" />
+            {showTestAccounts ? 'Hiding test' : 'Show test'}
+          </Button>
+        </div>
       </div>
 
       {/* Table */}
@@ -195,8 +197,8 @@ export default function UsersPage() {
 
             {/* Pagination */}
             {data && data.pages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/10">
-                <p className="text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t bg-muted/10 gap-3">
+                <p className="text-sm text-muted-foreground text-center sm:text-left">
                   Showing {(page - 1) * limit + 1}–{Math.min(page * limit, data.total)} of {data.total}
                 </p>
                 <div className="flex items-center gap-2">
@@ -210,7 +212,7 @@ export default function UsersPage() {
                     Prev
                   </Button>
                   <span className="text-sm text-muted-foreground">
-                    Page {page} of {data.pages}
+                    {page}/{data.pages}
                   </span>
                   <Button
                     variant="outline"

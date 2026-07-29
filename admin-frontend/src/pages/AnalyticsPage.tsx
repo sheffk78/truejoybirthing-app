@@ -121,8 +121,8 @@ function ConnectGA4Card() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-tjb-charcoal">Analytics</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-xl sm:text-2xl font-bold text-tjb-charcoal">Analytics</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-1">
           Website traffic and location analytics
         </p>
       </div>
@@ -265,10 +265,10 @@ export default function AnalyticsPage() {
           value={period}
           onValueChange={(v) => setPeriod(v as '7d' | '30d' | '90d')}
         >
-          <TabsList>
-            <TabsTrigger value="7d">7 days</TabsTrigger>
-            <TabsTrigger value="30d">30 days</TabsTrigger>
-            <TabsTrigger value="90d">90 days</TabsTrigger>
+          <TabsList className="w-full sm:w-auto">
+            <TabsTrigger value="7d" className="flex-1 sm:flex-none">7d</TabsTrigger>
+            <TabsTrigger value="30d" className="flex-1 sm:flex-none">30d</TabsTrigger>
+            <TabsTrigger value="90d" className="flex-1 sm:flex-none">90d</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -336,10 +336,10 @@ export default function AnalyticsPage() {
                 No traffic data available
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={250}>
                 <LineChart
                   data={chartData}
-                  margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                  margin={{ top: 5, right: 10, left: -10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                   <XAxis
@@ -401,13 +401,14 @@ export default function AnalyticsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Page</TableHead>
                     <TableHead className="text-right">Views</TableHead>
-                    <TableHead className="text-right">Bounce Rate</TableHead>
-                    <TableHead className="text-right">Avg Time</TableHead>
+                    <TableHead className="text-right hidden sm:table-cell">Bounce</TableHead>
+                    <TableHead className="text-right hidden sm:table-cell">Avg Time</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -444,6 +445,7 @@ export default function AnalyticsPage() {
                   )}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -458,12 +460,13 @@ export default function AnalyticsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Source</TableHead>
                     <TableHead className="text-right">Users</TableHead>
-                    <TableHead className="text-right">Sessions</TableHead>
+                    <TableHead className="text-right hidden sm:table-cell">Sessions</TableHead>
                     <TableHead className="text-right">Bounce Rate</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -499,6 +502,7 @@ export default function AnalyticsPage() {
                   )}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -522,7 +526,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             {locationPagesData.count > 0 && (
-              <div className="mb-4 flex gap-4 text-sm">
+              <div className="mb-4 flex flex-col sm:flex-row gap-2 sm:gap-4 text-sm">
                 <span className="text-muted-foreground">
                   Total pageviews: <span className="font-semibold text-tjb-charcoal">{formatNumber(locationPagesData.total_location_pageviews)}</span>
                 </span>
@@ -531,6 +535,7 @@ export default function AnalyticsPage() {
                 </span>
               </div>
             )}
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -581,6 +586,7 @@ export default function AnalyticsPage() {
                 )}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -596,11 +602,12 @@ export default function AnalyticsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Country</TableHead>
-                  <TableHead>Region</TableHead>
+                  <TableHead className="hidden sm:table-cell">Region</TableHead>
                   <TableHead className="text-right">Users</TableHead>
                   <TableHead className="text-right">Sessions</TableHead>
                   <TableHead className="text-right">Pageviews</TableHead>
@@ -637,6 +644,7 @@ export default function AnalyticsPage() {
                 )}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
       )}

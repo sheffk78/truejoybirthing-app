@@ -155,9 +155,9 @@ export default function UserDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Email</span>
-              <span className="text-sm font-medium">{user.email}</span>
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-sm text-muted-foreground shrink-0">Email</span>
+              <span className="text-sm font-medium break-all text-right">{user.email}</span>
             </div>
             {user.phone && (
               <div className="flex justify-between items-center">
@@ -239,9 +239,9 @@ export default function UserDetailPage() {
               </div>
             )}
             <Separator />
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Stripe Customer ID</span>
-              <span className="text-sm font-mono text-muted-foreground">
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-sm text-muted-foreground shrink-0">Stripe Customer ID</span>
+              <span className="text-xs font-mono text-muted-foreground break-all text-right">
                 {user.stripe_customer_id || '—'}
               </span>
             </div>
@@ -334,9 +334,9 @@ export default function UserDetailPage() {
               </div>
             )}
             <Separator />
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">User ID</span>
-              <span className="text-xs font-mono text-muted-foreground">{user.id}</span>
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-sm text-muted-foreground shrink-0">User ID</span>
+              <span className="text-xs font-mono text-muted-foreground break-all text-right">{user.id}</span>
             </div>
           </CardContent>
         </Card>

@@ -243,14 +243,14 @@ export default function AmbassadorsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-tjb-charcoal">Ambassadors</h1>
-          <p className="text-muted-foreground mt-1">Referral and ambassador program management</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-tjb-charcoal">Ambassadors</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">Referral and ambassador program management</p>
         </div>
         <Button
           onClick={() => { setAddForm(emptyForm); setAddError(''); setAddOpen(true); }}
-          className="gap-2"
+          className="gap-2 w-full sm:w-auto"
           style={{ backgroundColor: '#2CB67D' }}
         >
           <Plus className="w-4 h-4" />
@@ -423,8 +423,8 @@ export default function AmbassadorsPage() {
 
             {/* Pagination */}
             {data && data.pages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/10">
-                <p className="text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 border-t bg-muted/10 gap-3">
+                <p className="text-sm text-muted-foreground text-center sm:text-left">
                   Showing {(page - 1) * limit + 1}–{Math.min(page * limit, data.total)} of {data.total}
                 </p>
                 <div className="flex items-center gap-2">
@@ -438,7 +438,7 @@ export default function AmbassadorsPage() {
                     Prev
                   </Button>
                   <span className="text-sm text-muted-foreground">
-                    Page {page} of {data.pages}
+                    {page}/{data.pages}
                   </span>
                   <Button
                     variant="outline"

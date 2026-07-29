@@ -222,12 +222,12 @@ export default function ShelbiLeadsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-tjb-charcoal">Shelbi Leads</h1>
-        <p className="text-muted-foreground mt-1">CRM for leads from the Shelbi chatbot — moms and providers</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-tjb-charcoal">Shelbi Leads</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-1">CRM for leads from the Shelbi chatbot — moms and providers</p>
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <StatsCard
           title="Total"
           value={statsLoading ? '—' : (statsData?.total ?? 0)}
@@ -293,39 +293,43 @@ export default function ShelbiLeadsPage() {
       {/* Filters */}
       <div className="flex flex-col gap-3">
         {/* Status tabs */}
-        <Tabs value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
-          <TabsList className="h-10">
-            {statusTabs.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value} className="text-sm">
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-
-        {/* Lead type toggle + search */}
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-          <Tabs value={leadTypeFilter} onValueChange={(v) => { setLeadTypeFilter(v); setPage(1); }}>
-            <TabsList className="h-10">
-              {leadTypeTabs.map((tab) => (
+        <div className="overflow-x-auto -mx-1 px-1 pb-1">
+          <Tabs value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+            <TabsList className="h-10 whitespace-nowrap">
+              {statusTabs.map((tab) => (
                 <TabsTrigger key={tab.value} value={tab.value} className="text-sm">
                   {tab.label}
                 </TabsTrigger>
               ))}
             </TabsList>
           </Tabs>
+        </div>
 
-          <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 ml-auto">
-            <div className="relative">
+        {/* Lead type toggle + search */}
+        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <div className="overflow-x-auto -mx-1 px-1 pb-1 w-full sm:w-auto">
+            <Tabs value={leadTypeFilter} onValueChange={(v) => { setLeadTypeFilter(v); setPage(1); }}>
+              <TabsList className="h-10 whitespace-nowrap">
+                {leadTypeTabs.map((tab) => (
+                  <TabsTrigger key={tab.value} value={tab.value} className="text-sm">
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
+
+          <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto">
+            <div className="relative flex-1 sm:flex-none">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search name, email, phone..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-9 w-64"
+                className="pl-9 w-full sm:w-64"
               />
             </div>
-            <Button type="submit" variant="outline" size="sm">
+            <Button type="submit" variant="outline" size="sm" className="shrink-0">
               Search
             </Button>
             {search && (
@@ -333,6 +337,7 @@ export default function ShelbiLeadsPage() {
                 type="button"
                 variant="ghost"
                 size="sm"
+                className="shrink-0"
                 onClick={() => { setSearch(''); setSearchInput(''); setPage(1); }}
               >
                 Clear

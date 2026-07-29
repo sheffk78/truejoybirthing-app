@@ -13,7 +13,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-tjb-charcoal">Dashboard</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-tjb-charcoal">Dashboard</h1>
         <div className="p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20">
           Failed to load dashboard data. Please try refreshing the page.
         </div>
@@ -27,8 +27,8 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-tjb-charcoal">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Overview of your True Joy Birthing platform</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-tjb-charcoal">Dashboard</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-1">Overview of your True Joy Birthing platform</p>
       </div>
 
       {/* Top stats row */}
