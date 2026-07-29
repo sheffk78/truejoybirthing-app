@@ -364,7 +364,7 @@ export default function ShelbiLeadsPage() {
                     <TableHead className="font-semibold">Name</TableHead>
                     <TableHead className="font-semibold">Type</TableHead>
                     <TableHead className="font-semibold hidden md:table-cell">Email</TableHead>
-                    <TableHead className="font-semibold hidden lg:table-cell">Phone</TableHead>
+                    <TableHead className="font-semibold">Phone</TableHead>
                     <TableHead className="font-semibold hidden md:table-cell">Topic</TableHead>
                     <TableHead className="font-semibold">Status</TableHead>
                     <TableHead className="font-semibold hidden lg:table-cell">Created</TableHead>
@@ -394,7 +394,7 @@ export default function ShelbiLeadsPage() {
                         <TableCell className="text-muted-foreground hidden md:table-cell">
                           {lead.email || '—'}
                         </TableCell>
-                        <TableCell className="text-muted-foreground hidden lg:table-cell">
+                        <TableCell className="text-muted-foreground">
                           {lead.phone || '—'}
                         </TableCell>
                         <TableCell className="text-muted-foreground hidden md:table-cell">
@@ -536,6 +536,28 @@ export default function ShelbiLeadsPage() {
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Email quote — the verbatim text where the person asked to be contacted */}
+              {detailData.email_quote && (
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground font-medium">Quote from request</p>
+                  <blockquote className="text-sm text-tjb-charcoal italic whitespace-pre-wrap bg-tjb-lavender-50 rounded-lg p-3 border border-tjb-lavender-200">
+                    "{detailData.email_quote}"
+                  </blockquote>
+                </div>
+              )}
+
+              {/* Full original email body (collapsible) */}
+              {detailData.original_email_body && (
+                <details className="space-y-2">
+                  <summary className="text-xs text-muted-foreground font-medium cursor-pointer hover:text-tjb-charcoal">
+                    View full original email
+                  </summary>
+                  <pre className="text-xs text-muted-foreground whitespace-pre-wrap bg-muted/30 rounded-lg p-3 border border-border/60 overflow-x-auto mt-2">
+                    {detailData.original_email_body}
+                  </pre>
+                </details>
+              )}
 
               {/* Additional info if present */}
               {detailData.message && (

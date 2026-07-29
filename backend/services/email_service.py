@@ -1103,6 +1103,9 @@ async def send_provider_onboarding_day7(
                     <p style="color: #555; margin: 8px 0 0 0; line-height: 1.5;">
                         Type your thoughts and hit reply. We read every email and use them to shape what we build next.
                     </p>
+                    <p style="color: #555; margin: 12px 0 0 0; line-height: 1.5;">
+                        <strong>Want to talk to Shelbi directly?</strong> Just reply with "I'd like to talk to Shelbi" and include your phone number — she'll reach out personally.
+                    </p>
                 </div>
 
                 {get_button_html("Open the App", "https://truejoybirthing.com/app")}
@@ -1279,6 +1282,9 @@ async def send_provider_onboarding_day14(
                     </p>
                     <p style="color: #555; margin: 8px 0 0 0; line-height: 1.5;">
                         We'll keep you posted as new features launch. And if you ever have an idea, just reply to any email — it goes straight to our team.
+                    </p>
+                    <p style="color: #555; margin: 12px 0 0 0; line-height: 1.5;">
+                        <strong>Want to talk to Shelbi?</strong> Reply with "I'd like to talk to Shelbi" and your phone number — she'll call you personally.
                     </p>
                 </div>
 
