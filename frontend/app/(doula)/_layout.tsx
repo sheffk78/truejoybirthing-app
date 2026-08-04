@@ -63,6 +63,7 @@ export default function DoulaLayout() {
   const newLeads = useBadgeStore((s) => s.newLeads);
   const unreadMessages = useBadgeStore((s) => s.unreadMessages);
   const pendingShareRequests = useBadgeStore((s) => s.pendingShareRequests);
+  const subscriptionExpiring = useBadgeStore((s) => s.subscriptionExpiring);
   const clearBadge = useBadgeStore((s) => s.clearBadge);
 
   // Render-time guard: redirect before any screen tree mounts to prevent
@@ -134,9 +135,10 @@ export default function DoulaLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="person-outline" size={size} color={color} />
+            <TabIconWithBadge name="person-outline" color={color} size={size} showDot={subscriptionExpiring > 0} />
           ),
         }}
+        listeners={{ tabPress: () => clearBadge('subscriptionExpiring') }}
       />
 
       {/* Hidden screens - accessed via navigation, not tab bar */}

@@ -50,6 +50,8 @@ export default function MomLayout() {
   useNotificationBadges();
   const unreadMessages = useBadgeStore((s) => s.unreadMessages);
   const unreadNotifications = useBadgeStore((s) => s.unreadNotifications);
+  const pendingBirthPlanShares = useBadgeStore((s) => s.pendingBirthPlanShares);
+  const newTeamMembers = useBadgeStore((s) => s.newTeamMembers);
   const clearBadge = useBadgeStore((s) => s.clearBadge);
 
   // Render-time guard: redirect before any screen tree mounts to prevent
@@ -92,9 +94,10 @@ export default function MomLayout() {
         options={{
           title: 'Birth Plan',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="document-text-outline" size={size} color={color} />
+            <TabIconWithBadge name="document-text-outline" color={color} size={size} showDot={pendingBirthPlanShares > 0} />
           ),
         }}
+        listeners={{ tabPress: () => clearBadge('pendingBirthPlanShares') }}
       />
       <Tabs.Screen
         name="contraction-timer"
@@ -122,9 +125,10 @@ export default function MomLayout() {
         options={{
           title: 'My Team',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="people-outline" size={size} color={color} />
+            <TabIconWithBadge name="people-outline" color={color} size={size} showDot={newTeamMembers > 0} />
           ),
         }}
+        listeners={{ tabPress: () => clearBadge('newTeamMembers') }}
       />
       <Tabs.Screen
         name="invoices"
