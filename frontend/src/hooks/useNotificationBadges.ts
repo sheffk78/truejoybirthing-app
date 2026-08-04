@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { AppState, Platform } from 'react-native';
+import { AppState } from 'react-native';
 import { useBadgeStore } from '../store/badgeStore';
 import { useAuthStore } from '../store/authStore';
 

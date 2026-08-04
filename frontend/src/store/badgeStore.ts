@@ -34,7 +34,7 @@ interface BadgeState extends BadgeCounts {
 
 const SEEN_TEAM_KEY = 'badge:seen_team_members';
 
-export const useBadgeStore = create<BadgeState>((set, get) => ({
+export const useBadgeStore = create<BadgeState>((set) => ({
   unreadMessages: 0,
   unreadNotifications: 0,
   newLeads: 0,
@@ -78,9 +78,9 @@ export const useBadgeStore = create<BadgeState>((set, get) => ({
         promises.push(
           apiRequest<{ requests: any[] }>(API_ENDPOINTS.BIRTH_PLAN_SHARE_REQUESTS)
         );
-        // Team members
+        // Team members — endpoint returns a flat array, not { team: [...] }
         promises.push(
-          apiRequest<{ team: any[] }>(API_ENDPOINTS.MOM_TEAM)
+          apiRequest<any[]>(API_ENDPOINTS.MOM_TEAM)
         );
       }
 
@@ -116,7 +116,8 @@ export const useBadgeStore = create<BadgeState>((set, get) => ({
       // Team: compare against seen member IDs in AsyncStorage
       let newTeamMembers = 0;
       if (isMom && teamResult?.status === 'fulfilled') {
-        const team = teamResult.value.team || [];
+        // /mom/team returns a flat array of team member objects
+        const team = Array.isArray(teamResult.value) ? teamResult.value : [];
         const memberIds = team.map((m: any) => m.provider_id || m.user_id).filter(Boolean);
         try {
           const seenRaw = await AsyncStorage.getItem(SEEN_TEAM_KEY);
@@ -170,8 +171,9 @@ export const useBadgeStore = create<BadgeState>((set, get) => ({
         try {
           const { user } = useAuthStore.getState();
           if (!user || user.role !== 'MOM') return;
-          const team = await apiRequest<{ team: any[] }>(API_ENDPOINTS.MOM_TEAM);
-          const memberIds = (team.team || [])
+          // /mom/team returns a flat array
+          const team = await apiRequest<any[]>(API_ENDPOINTS.MOM_TEAM);
+          const memberIds = (Array.isArray(team) ? team : [])
             .map((m: any) => m.provider_id || m.user_id)
             .filter(Boolean);
           await AsyncStorage.setItem(SEEN_TEAM_KEY, JSON.stringify(memberIds));
