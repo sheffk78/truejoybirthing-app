@@ -299,7 +299,7 @@ export default function AppointmentsScreen() {
                 style={styles.providerAvatarImage}
               />
             ) : (
-              <View style={[styles.providerAvatar, { backgroundColor: appointment.provider_role === 'DOULA' ? colors.roleDoula : colors.roleMidwife }]}>
+              <View style={[styles.providerAvatar, { backgroundColor: appointment.provider_role === 'DOULA' ? colors.roleDoula : appointment.provider_role === 'MIDWIFE' ? colors.roleMidwife : appointment.provider_role === 'LACTATION' ? colors.roleLactation : colors.primary }]}>
                 <Icon name={appointment.provider_role === 'DOULA' ? 'heart' : 'medical'} size={20} color={colors.white} />
               </View>
             )}
@@ -554,7 +554,7 @@ export default function AppointmentsScreen() {
                     {provider.picture ? (
                       <Image source={{ uri: provider.picture }} style={styles.providerOptionAvatar} />
                     ) : (
-                      <View style={[styles.providerOptionAvatar, { backgroundColor: provider.role === 'DOULA' ? colors.roleDoula : colors.roleMidwife, justifyContent: 'center', alignItems: 'center' }]}>
+                      <View style={[styles.providerOptionAvatar, { backgroundColor: provider.role === 'DOULA' ? colors.roleDoula : provider.role === 'MIDWIFE' ? colors.roleMidwife : provider.role === 'LACTATION' ? colors.roleLactation : colors.primary, justifyContent: 'center', alignItems: 'center' }]}>
                         <Icon name={provider.role === 'DOULA' ? 'heart' : 'medical'} size={20} color={colors.white} />
                       </View>
                     )}
@@ -654,13 +654,13 @@ export default function AppointmentsScreen() {
                         <DateTimePicker
                           value={appointmentDate}
                           mode="date"
-                          display="spinner"
+                          display="default"
                           minimumDate={new Date()}
                           onChange={(event, date) => {
                             if (date) setAppointmentDate(date);
                           }}
                           textColor={colors.text}
-                          style={{ width: '100%', height: 200 }}
+                          style={{ width: '100%', height: 320 }}
                         />
                       </View>
                     )}
@@ -735,7 +735,7 @@ export default function AppointmentsScreen() {
                         <DateTimePicker
                           value={appointmentTime}
                           mode="time"
-                          display="spinner"
+                          display="default"
                           onChange={(event, date) => {
                             if (date) setAppointmentTime(date);
                           }}

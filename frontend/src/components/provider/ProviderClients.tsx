@@ -99,7 +99,7 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   const STATUS_COLORS = isMidwife ? getMidwifeStatusColors(colors) : getDoulaStatusColors(colors);
   
   const { checkAndAlert, isSubscribed, refreshStatus } = useSubscriptionGate();
-  const subscriptionRoute = isMidwife ? '/(midwife)/subscription' : '/(doula)/subscription';
+  const subscriptionRoute = config.routes.profile.replace('/profile', '/subscription');
   
   const navigateToSubscription = () => {
     router.push(subscriptionRoute as any);
@@ -211,8 +211,8 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
   };
 
   const handleClientPress = (client: ConnectedClient) => {
-    const baseRoute = isMidwife ? '/(midwife)' : '/(doula)';
-    router.push(`${baseRoute}/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+    const baseRoute = config.routes.clients.replace('/clients', '');
+    router.push(`${baseRoute}/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}` as any);
   };
   
   const filteredClients = connectedClients.filter(client => {
@@ -415,8 +415,8 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                         router.push(`/view-birth-plan?momId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
                       } else {
                         // Fallback to client detail if no linked mom
-                        const baseRoute = isMidwife ? '/(midwife)' : '/(doula)';
-                        router.push(`${baseRoute}/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}&tab=birthplan`);
+                        const baseRoute = config.routes.clients.replace('/clients', '');
+                        router.push(`${baseRoute}/client-detail?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}&tab=birthplan` as any);
                       }
                     }}
                   >
@@ -427,11 +427,11 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
                     style={[styles.actionButton, { backgroundColor: colors.accent + '10' }]}
                     onPress={() => {
                       // Navigate directly to messages for this client
-                      const baseRoute = isMidwife ? '/(midwife)' : '/(doula)';
+                      const baseRoute = config.routes.clients.replace('/clients', '');
                       if (client.linked_mom_id) {
-                        router.push(`${baseRoute}/messages?clientUserId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}`);
+                        router.push(`${baseRoute}/messages?clientUserId=${client.linked_mom_id}&clientName=${encodeURIComponent(client.name)}` as any);
                       } else {
-                        router.push(`${baseRoute}/messages?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}`);
+                        router.push(`${baseRoute}/messages?clientId=${client.client_id}&clientName=${encodeURIComponent(client.name)}` as any);
                       }
                     }}
                   >

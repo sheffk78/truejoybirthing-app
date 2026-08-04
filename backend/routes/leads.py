@@ -54,7 +54,7 @@ async def request_consultation(
     """
     # Verify provider exists
     provider = await db.users.find_one(
-        {"user_id": data.provider_id, "role": {"$in": ["DOULA", "MIDWIFE"]}},
+        {"user_id": data.provider_id, "role": {"$in": ["DOULA", "MIDWIFE", "LACTATION"]}},
         {"_id": 0, "user_id": 1, "full_name": 1, "email": 1, "role": 1}
     )
     
@@ -135,7 +135,7 @@ async def get_my_consultation_requests(user: User = Depends(check_role(["MOM"]))
 @router.get("", include_in_schema=True)
 async def get_provider_leads(
     status: Optional[str] = None,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
 ):
     """
     Get all leads for the provider.
@@ -190,7 +190,7 @@ async def get_provider_leads(
 
 
 @router.get("/stats")
-async def get_leads_stats(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_leads_stats(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get lead statistics for dashboard"""
     pipeline = [
         {"$match": {"provider_id": user.user_id}},
@@ -227,7 +227,7 @@ async def get_leads_stats(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
 async def update_lead_status(
     lead_id: str,
     data: LeadStatusUpdate,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
 ):
     """Update a lead's status"""
     if data.status not in LEAD_STATUSES:
@@ -278,7 +278,7 @@ async def update_lead_status(
 async def schedule_consultation(
     lead_id: str,
     appointment_id: str,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
 ):
     """
     Link a consultation appointment to a lead.
@@ -326,7 +326,7 @@ async def schedule_consultation(
 async def convert_lead_to_client(
     lead_id: str,
     data: ConvertToClientInput,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
 ):
     """
     Convert a lead to a full client.
@@ -491,7 +491,7 @@ async def get_lead_details(
     """Get details of a specific lead"""
     # Provider can see their own leads, mom can see leads they created
     query = {"lead_id": lead_id}
-    if user.role in ["DOULA", "MIDWIFE"]:
+    if user.role in ["DOULA", "MIDWIFE", "LACTATION"]:
         query["provider_id"] = user.user_id
     else:
         query["mom_user_id"] = user.user_id
@@ -517,3 +517,84 @@ async def get_lead_details(
         lead["mom_profile"] = profile
     
     return lead
+
+
+@router.get("/{lead_id}/birth-plan")
+async def get_lead_birth_plan(
+    lead_id: str,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
+):
+    """Get the full birth plan for a lead, so the provider can review it
+    BEFORE deciding whether to accept the consultation / take on the client.
+
+    A provider may only read the birth plan of a lead assigned to them, and
+    only while the lead is still open (not yet declined / not a fit / converted).
+    This is deliberately a separate endpoint from the client birth-plan route:
+    it works for leads that have NOT yet been accepted, which is the whole
+    point of reviewing a birth plan before accepting the client.
+    """
+    lead = await db.leads.find_one({
+        "lead_id": lead_id,
+        "provider_id": user.user_id
+    })
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    # Only allow review while the lead is still open (before a decision).
+    if lead.get("status") in ("declined", "not_a_fit", "converted_to_client"):
+        raise HTTPException(status_code=403, detail="Lead is no longer open")
+
+    plan = await db.birth_plans.find_one({"user_id": lead["mom_user_id"]}, {"_id": 0})
+    if not plan:
+        raise HTTPException(status_code=404, detail="Birth plan not found")
+
+    plan["lead_id"] = lead_id
+    plan["mom_user_id"] = lead["mom_user_id"]
+    return plan
+
+
+@router.get("/{lead_id}/birth-plan/pdf")
+async def get_lead_birth_plan_pdf(
+    lead_id: str,
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
+):
+    """Generate a PDF of a lead's birth plan for the provider to review before accepting."""
+    from routes.care_plans import (
+        create_branded_pdf_buffer,
+        PDF_SECTION_NAMES,
+        PDF_FIELD_LABELS,
+    )
+    from fastapi.responses import StreamingResponse
+
+    lead = await db.leads.find_one({
+        "lead_id": lead_id,
+        "provider_id": user.user_id
+    })
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    if lead.get("status") in ("declined", "not_a_fit", "converted_to_client"):
+        raise HTTPException(status_code=403, detail="Lead is no longer open")
+
+    plan = await db.birth_plans.find_one({"user_id": lead["mom_user_id"]}, {"_id": 0})
+    if not plan:
+        raise HTTPException(status_code=404, detail="Birth plan not found")
+
+    mom = await db.users.find_one({"user_id": lead["mom_user_id"]}, {"_id": 0, "full_name": 1})
+    mom_name = mom.get("full_name", "Client") if mom else "Client"
+    mom_profile = await db.mom_profiles.find_one({"user_id": lead["mom_user_id"]}, {"_id": 0})
+
+    buffer = create_branded_pdf_buffer(
+        user_name=mom_name,
+        mom_profile=mom_profile or {},
+        sections=plan.get("sections", []),
+        pdf_section_names=PDF_SECTION_NAMES,
+        pdf_field_labels=PDF_FIELD_LABELS,
+    )
+
+    filename = f"Birth_Plan_{mom_name.replace(' ', '_')}.pdf"
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )

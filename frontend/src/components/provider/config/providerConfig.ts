@@ -267,9 +267,97 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
   },
 };
 
+export const LACTATION_CONFIG: ProviderConfig = {
+  role: 'LACTATION',
+  roleLabel: 'Lactation Consultant',
+  roleLabelPlural: 'Lactation Consultants',
+  primaryColor: COLORS.roleLactation,
+  
+  features: {
+    showVisits: false,
+    showClinicalData: false,
+    showBirthSummaries: false,
+  },
+  
+  endpoints: {
+    dashboard: API_ENDPOINTS.LACTATION_DASHBOARD,
+    profile: API_ENDPOINTS.LACTATION_PROFILE,
+    clients: API_ENDPOINTS.LACTATION_CLIENTS,
+    invoices: API_ENDPOINTS.LACTATION_INVOICES,
+    contracts: API_ENDPOINTS.LACTATION_CONTRACTS,
+    notes: '/lactation/notes',
+    appointments: '/appointments',
+    visits: '',
+    // Unified endpoints
+    unifiedClients: '/provider/clients',
+    unifiedAppointments: '/appointments',
+    unifiedNotes: '/provider/notes',
+    unifiedVisits: '',
+    unifiedDashboard: '/provider/dashboard',
+  },
+  
+  routes: {
+    dashboard: '/(lactation)/dashboard',
+    profile: '/(lactation)/profile',
+    clients: '/(lactation)/clients',
+    clientDetail: '/(lactation)/client-detail',
+    invoices: '/(lactation)/invoices',
+    contracts: '/(lactation)/contracts',
+    messages: '/(lactation)/messages',
+    notes: '/(lactation)/notes',
+    appointments: '/(lactation)/appointments',
+    visits: '',
+    leads: '/(lactation)/leads',
+    clientBirthPlans: '/(lactation)/client-birth-plans',
+  },
+  
+  dashboard: {
+    title: 'Lactation Dashboard',
+    statsCards: [
+      { key: 'active_clients', label: 'Active Clients', colorKey: 'primary' },
+      { key: 'upcoming_appointments', label: 'Upcoming Appts', colorKey: 'accent' },
+      { key: 'contracts_pending_signature', label: 'Pending Contracts', colorKey: 'warning' },
+      { key: 'pending_invoices', label: 'Pending Invoices', colorKey: 'success' },
+    ],
+    quickActions: [
+      { label: 'See Clients', icon: 'people', route: '/(lactation)/clients', colorKey: 'primary' },
+      { label: 'Appointments', icon: 'calendar-outline', route: '/(lactation)/appointments', colorKey: 'accent' },
+    ],
+    tipTitle: 'Lactation Tip',
+    tipText: 'Go to Clients to manage contracts, invoices, notes and appointments for each client. The client-first workflow keeps everything organized.',
+  },
+  
+  clientDetailTabs: [
+    { key: 'timeline', label: 'Timeline', icon: 'time' },
+    { key: 'appointments', label: 'Appointments', icon: 'calendar' },
+    { key: 'notes', label: 'Notes', icon: 'document-text' },
+    { key: 'messages', label: 'Messages', icon: 'chatbubbles' },
+    { key: 'contracts', label: 'Contracts', icon: 'document' },
+    { key: 'invoices', label: 'Invoices', icon: 'cash' },
+    { key: 'birthplan', label: 'Birth Plan', icon: 'clipboard' },
+  ],
+  
+  clientStatuses: ['Active', 'Prenatal', 'Contract Sent', 'Contract Signed', 'Postpartum', 'Completed'],
+  
+  profileFields: {
+    specialtyField: 'specialties',
+    specialtyLabel: 'Specialties',
+    specialtyOptions: [
+      'Initial Lactation Consultation',
+      'Follow-Up Visits',
+      'Telehealth Lactation Support',
+      'Pump Fitting & Support',
+      'Tongue-Tie Assessment',
+      'Prenatal Breastfeeding Class',
+      'Support Group Facilitation',
+    ],
+  },
+};
+
 // Helper to get config by role
 export const getProviderConfig = (role: ProviderRole | string): ProviderConfig => {
   const normalizedRole = role.toUpperCase();
   if (normalizedRole === 'MIDWIFE') return MIDWIFE_CONFIG;
+  if (normalizedRole === 'LACTATION') return LACTATION_CONFIG;
   return DOULA_CONFIG;
 };

@@ -1250,7 +1250,7 @@ async def get_client_contraction_data(
     user: User = Depends(get_current_user())
 ):
     """Get contraction data for a specific client (for team members)"""
-    if user.role not in ["DOULA", "MIDWIFE"]:
+    if user.role not in ["DOULA", "MIDWIFE", "LACTATION"]:
         raise HTTPException(status_code=403, detail="Only providers can access client data")
     
     # Verify provider has an active relationship with this client
@@ -1300,7 +1300,7 @@ async def get_clients_with_active_sessions(
     user: User = Depends(get_current_user())
 ):
     """Get list of clients currently timing contractions (for dashboard card)"""
-    if user.role not in ["DOULA", "MIDWIFE"]:
+    if user.role not in ["DOULA", "MIDWIFE", "LACTATION"]:
         raise HTTPException(status_code=403, detail="Only providers can access this")
     
     provider_role = user.role.upper()
@@ -1370,7 +1370,7 @@ async def get_client_session_history(
     user: User = Depends(get_current_user())
 ):
     """Get historical contraction sessions for a specific client (for team members)"""
-    if user.role not in ["DOULA", "MIDWIFE"]:
+    if user.role not in ["DOULA", "MIDWIFE", "LACTATION"]:
         raise HTTPException(status_code=403, detail="Only providers can access client data")
     
     # Verify provider has an active relationship with this client

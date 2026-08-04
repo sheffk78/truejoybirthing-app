@@ -24,7 +24,7 @@ interface Provider {
   user_id: string;
   full_name: string;
   email: string;
-  role: 'DOULA' | 'MIDWIFE';
+  role: 'DOULA' | 'MIDWIFE' | 'LACTATION';
   picture?: string;
   profile?: any;
   already_shared: boolean;
@@ -180,7 +180,7 @@ export default function ShareBirthPlanScreen() {
         </View>
 
         <Text style={styles.subtitle}>
-          Share your birth plan with your doula or midwife so they can review and add notes.
+          Share your birth plan with your doula, midwife, or lactation consultant so they can review and add notes.
         </Text>
 
         {/* Search Section */}
@@ -207,10 +207,10 @@ export default function ShareBirthPlanScreen() {
               {searchResults.map((provider) => (
                 <View key={provider.user_id} style={styles.providerRow}>
                   <View style={styles.providerAvatar}>
-                    <Icon 
-                      name={provider.role === 'DOULA' ? 'people' : 'medkit'} 
-                      size={20} 
-                      color={colors.white} 
+                    <Icon
+                      name={provider.role === 'DOULA' ? 'people' : provider.role === 'LACTATION' ? 'water' : 'medkit'}
+                      size={20}
+                      color={colors.white}
                     />
                   </View>
                   <View style={styles.providerInfo}>
@@ -262,10 +262,10 @@ export default function ShareBirthPlanScreen() {
               <Card key={request.request_id} style={styles.requestCard}>
                 <View style={styles.requestRow}>
                   <View style={styles.requestIcon}>
-                    <Icon 
-                      name={request.provider_role === 'DOULA' ? 'people' : 'medkit'} 
-                      size={20} 
-                      color={colors.primary} 
+                    <Icon
+                      name={request.provider_role === 'DOULA' ? 'people' : request.provider_role === 'LACTATION' ? 'water' : 'medkit'}
+                      size={20}
+                      color={colors.primary}
                     />
                   </View>
                   <View style={styles.requestInfo}>
@@ -305,10 +305,10 @@ export default function ShareBirthPlanScreen() {
               <Card key={request.request_id} style={styles.requestCard}>
                 <View style={styles.requestRow}>
                   <View style={[styles.requestIcon, { backgroundColor: colors.warning + '20' }]}>
-                    <Icon 
-                      name={request.provider_role === 'DOULA' ? 'people' : 'medkit'} 
-                      size={20} 
-                      color={colors.warning} 
+                    <Icon
+                      name={request.provider_role === 'DOULA' ? 'people' : request.provider_role === 'LACTATION' ? 'water' : 'medkit'}
+                      size={20}
+                      color={colors.warning}
                     />
                   </View>
                   <View style={styles.requestInfo}>
@@ -338,7 +338,7 @@ export default function ShareBirthPlanScreen() {
             <Icon name="share-social" size={48} color={colors.textLight} />
             <Text style={styles.emptyTitle}>No Active Shares</Text>
             <Text style={styles.emptyText}>
-              Search for your doula or midwife above to share your birth plan with them.
+              Search for your doula, midwife, or lactation consultant above to share your birth plan with them.
             </Text>
           </View>
         )}

@@ -148,7 +148,7 @@ const DateInputField = ({
             <DateTimePicker
               value={dateValue}
               mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              display="default"
               onChange={handleDateChange}
             />
             {Platform.OS === 'ios' && (

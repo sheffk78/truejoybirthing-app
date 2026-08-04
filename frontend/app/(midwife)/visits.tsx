@@ -365,7 +365,7 @@ export default function MidwifeVisitsScreen() {
                       <DateTimePicker
                         value={visitDateObj || new Date()}
                         mode="date"
-                        display="spinner"
+                        display="default"
                         onChange={(event, date) => { if (date) setVisitDateObj(date); }}
                         style={{ width: '100%', height: 200 }}
                       />

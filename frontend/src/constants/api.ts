@@ -97,6 +97,16 @@ export const API_ENDPOINTS = {
   MIDWIFE_VISITS: '/midwife/visits',
   MIDWIFE_BIRTH_SUMMARIES: '/midwife/birth-summaries',
   MIDWIFE_NOTES: '/midwife/notes',
+
+  // Lactation
+  LACTATION_ONBOARDING: '/lactation/onboarding',
+  LACTATION_PROFILE: '/lactation/profile',
+  LACTATION_DASHBOARD: '/lactation/dashboard',
+  LACTATION_CLIENTS: '/lactation/clients',
+  LACTATION_CONTRACTS: '/lactation/contracts',
+  LACTATION_INVOICES: '/lactation/invoices',
+  LACTATION_NOTES: '/lactation/notes',
+  LACTATION_CONTRACT_DEFAULTS: '/lactation/contract-defaults',
   
   // Payment Instructions (shared by Doula & Midwife)
   PAYMENT_INSTRUCTIONS: '/payment-instructions',

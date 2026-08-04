@@ -27,7 +27,7 @@ interface OnboardingStep {
 }
 
 interface OnboardingWalkthroughProps {
-  role: 'MOM' | 'DOULA' | 'MIDWIFE';
+  role: 'MOM' | 'DOULA' | 'MIDWIFE' | 'LACTATION';
   onComplete: () => void;
 }
 
@@ -117,6 +117,32 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       icon: 'heart-half',
       colorKey: 'secondary',
       image: BIRTH_PHOTOS.newbornSleeping,
+    },
+  ],
+  LACTATION: [
+    {
+      id: '1',
+      title: 'Complete Your Profile',
+      description: 'Showcase your credentials, services, and availability to help families find the right lactation support.',
+      icon: 'water',
+      colorKey: 'primary',
+      image: BIRTH_PHOTOS.newbornSleeping,
+    },
+    {
+      id: '2',
+      title: 'Manage Your Clients',
+      description: 'Track consultations, follow-up visits, contracts, and invoices all in one place.',
+      icon: 'briefcase',
+      colorKey: 'secondary',
+      image: BIRTH_PHOTOS.familyMoment,
+    },
+    {
+      id: '3',
+      title: 'Support Feeding Journeys',
+      description: 'Review birth plans and contribute your lactation expertise to help families reach their feeding goals.',
+      icon: 'heart-circle',
+      colorKey: 'accent',
+      image: BIRTH_PHOTOS.skinToSkin,
     },
   ],
 };

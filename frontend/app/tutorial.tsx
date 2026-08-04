@@ -42,6 +42,13 @@ export default function TutorialScreen() {
           roleName: 'Midwife',
           homeRoute: '/(midwife)/dashboard',
         };
+      case 'LACTATION':
+        return {
+          steps: DOULA_TUTORIAL_STEPS,
+          roleColor: colors.roleLactation,
+          roleName: 'Lactation Consultant',
+          homeRoute: '/(lactation)/dashboard',
+        };
       default:
         return {
           steps: MOM_TUTORIAL_STEPS,

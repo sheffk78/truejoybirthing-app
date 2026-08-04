@@ -1,0 +1,509 @@
+import React, { useState, useCallback, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Icon } from '../../src/components/Icon';
+import Button from '../../src/components/Button';
+import Input from '../../src/components/Input';
+import Card from '../../src/components/Card';
+import { useAuthStore } from '../../src/store/authStore';
+import { apiRequest } from '../../src/utils/api';
+import { API_ENDPOINTS } from '../../src/constants/api';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+
+const SERVICES = [
+  { value: 'Initial Lactation Consultation', icon: 'water-outline' },
+  { value: 'Follow-Up Visits', icon: 'repeat-outline' },
+  { value: 'Telehealth Lactation Support', icon: 'videocam-outline' },
+  { value: 'Pump Fitting & Support', icon: 'hardware-chip-outline' },
+  { value: 'Tongue-Tie Assessment', icon: 'medical-outline' },
+  { value: 'Prenatal Breastfeeding Class', icon: 'school-outline' },
+  { value: 'Support Group Facilitation', icon: 'people-outline' },
+];
+
+const CREDENTIALS = ['IBCLC', 'CLC', 'CLE', 'CBE', 'ALE'];
+
+export default function LactationOnboardingScreen() {
+  const colors = useColors();
+  const styles = getStyles(colors);
+  const router = useRouter();
+  const { user, updateUser } = useAuthStore();
+  
+  const [practiceName, setPracticeName] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [locationCity, setLocationCity] = useState('');
+  const [locationState, setLocationState] = useState('');
+  const [servicesOffered, setServicesOffered] = useState<string[]>([]);
+  const [credentials, setCredentials] = useState<string[]>([]);
+  const [yearsInPractice, setYearsInPractice] = useState('');
+  const [acceptingNewClients, setAcceptingNewClients] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLookingUpZip, setIsLookingUpZip] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [zipLookupError, setZipLookupError] = useState('');
+  
+  // Lookup city/state from zip code (with request tracking to avoid stale responses)
+  const lookupRequestId = useRef(0);
+  const lookupZipCode = useCallback(async (zip: string) => {
+    if (zip.length !== 5 || !/^\d{5}$/.test(zip)) {
+      return;
+    }
+    
+    const thisRequestId = ++lookupRequestId.current;
+    setIsLookingUpZip(true);
+    setZipLookupError('');
+    try {
+      const result = await apiRequest(`/lookup/zipcode/${zip}`, {
+        method: 'GET',
+        timeoutMs: 8000,
+      });
+      
+      // Discard stale response if a newer request was made
+      if (lookupRequestId.current !== thisRequestId) return;
+      
+      if (result.city && result.state) {
+        setLocationCity(result.city);
+        setLocationState(result.state_abbreviation || result.state);
+      } else {
+        setLocationCity('');
+        setLocationState('');
+        setZipLookupError("We couldn't find that zip code. Please check it and try again.");
+      }
+    } catch (error: any) {
+      if (lookupRequestId.current !== thisRequestId) return;
+      console.log('Zip code lookup error:', error.message);
+      setLocationCity('');
+      setLocationState('');
+      setZipLookupError(error.message || 'Zip code lookup failed. Please try again.');
+    } finally {
+      if (lookupRequestId.current === thisRequestId) {
+        setIsLookingUpZip(false);
+      }
+    }
+  }, []);
+  
+  // Handle zip code change
+  const handleZipCodeChange = (text: string) => {
+    const cleaned = text.replace(/\D/g, '').slice(0, 5);
+    setZipCode(cleaned);
+    
+    if (cleaned.length === 5) {
+      lookupZipCode(cleaned);
+    } else {
+      setLocationCity('');
+      setLocationState('');
+      setZipLookupError('');
+    }
+  };
+  
+  const toggleService = (service: string) => {
+    setServicesOffered((prev) =>
+      prev.includes(service)
+        ? prev.filter((s) => s !== service)
+        : [...prev, service]
+    );
+  };
+
+  const toggleCredential = (credential: string) => {
+    setCredentials((prev) =>
+      prev.includes(credential)
+        ? prev.filter((c) => c !== credential)
+        : [...prev, credential]
+    );
+  };
+  
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!practiceName.trim()) {
+      newErrors.practiceName = 'Practice name is required';
+    }
+    
+    if (servicesOffered.length === 0) {
+      newErrors.services = 'Please select at least one service';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const handleContinue = async () => {
+    if (!validate()) return;
+    
+    setIsLoading(true);
+    try {
+      await apiRequest(API_ENDPOINTS.LACTATION_ONBOARDING, {
+        method: 'POST',
+        body: {
+          practice_name: practiceName,
+          zip_code: zipCode,
+          location_city: locationCity,
+          location_state: locationState,
+          services_offered: servicesOffered,
+          credentials: credentials,
+          years_in_practice: yearsInPractice ? Math.max(0, parseInt(yearsInPractice) || 0) : null,
+          accepting_new_clients: acceptingNewClients,
+        },
+      });
+      
+      // Don't set onboarding_completed until tutorial is done — prevents
+      // root guard from redirecting to dashboard before subscription/tutorial
+      router.replace('/plans-pricing?onboarding=true&role=LACTATION');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to save your information');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  return (
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <View style={styles.headerSection}>
+            <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={styles.backButton}>
+              <Icon name="arrow-back" size={24} color={colors.text} />
+            </TouchableOpacity>
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: '100%' }]} />
+            </View>
+            <Text style={styles.title}>Welcome, {user?.full_name?.split(' ')[0]}!</Text>
+            <Text style={styles.subtitle}>
+              Let's set up your lactation consultant profile.
+            </Text>
+          </View>
+          
+          {/* Practice Name */}
+          <Input
+            label="Practice Name"
+            placeholder="Enter your practice name"
+            value={practiceName}
+            onChangeText={setPracticeName}
+            leftIcon="briefcase-outline"
+            error={errors.practiceName}
+          />
+          
+          {/* Location with Zip Code Lookup */}
+          <View style={styles.locationSection}>
+            <Text style={styles.sectionLabel}>Location</Text>
+            <Text style={styles.helperText}>Enter your zip code and we'll find your city</Text>
+            
+            <View style={styles.zipCodeRow}>
+              <Input
+                placeholder="Zip Code"
+                value={zipCode}
+                onChangeText={handleZipCodeChange}
+                containerStyle={styles.zipInput}
+                leftIcon="location"
+                keyboardType="number-pad"
+                maxLength={5}
+              />
+              {isLookingUpZip && (
+                <ActivityIndicator size="small" color={colors.primary} style={styles.zipLoader} />
+              )}
+            </View>
+            
+            {locationCity && locationState && (
+              <View style={styles.locationResult}>
+                <Icon name="checkmark-circle" size={20} color={colors.success} />
+                <Text style={styles.locationResultText}>
+                  {locationCity}, {locationState}
+                </Text>
+              </View>
+            )}
+            {!!zipLookupError && (
+              <Text style={styles.errorText}>{zipLookupError}</Text>
+            )}
+          </View>
+
+          {/* Credentials */}
+          <View style={styles.servicesSection}>
+            <Text style={styles.sectionLabel}>Credentials</Text>
+            <Text style={styles.helperText}>Select all that apply</Text>
+            {CREDENTIALS.map((credential) => (
+              <TouchableOpacity
+                key={credential}
+                onPress={() => toggleCredential(credential)}
+                activeOpacity={0.8}
+              >
+                <Card
+                  style={[
+                    styles.serviceCard,
+                    credentials.includes(credential) && styles.serviceCardSelected,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.serviceLabel,
+                      credentials.includes(credential) && styles.serviceLabelSelected,
+                    ]}
+                  >
+                    {credential}
+                  </Text>
+                  <View style={[styles.checkbox, credentials.includes(credential) && styles.checkboxSelected]}>
+                    {credentials.includes(credential) && (
+                      <Icon name="checkmark" size={16} color={colors.white} />
+                    )}
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            ))}
+          </View>
+          
+          {/* Services */}
+          <View style={styles.servicesSection}>
+            <Text style={styles.sectionLabel}>Services Offered</Text>
+            {errors.services && <Text style={styles.errorText}>{errors.services}</Text>}
+            
+            {SERVICES.map((service) => (
+              <TouchableOpacity
+                key={service.value}
+                onPress={() => toggleService(service.value)}
+                activeOpacity={0.8}
+                data-testid={`service-${service.value.toLowerCase().replace(/\s/g, '-')}`}
+              >
+                <Card
+                  style={[
+                    styles.serviceCard,
+                    servicesOffered.includes(service.value) && styles.serviceCardSelected,
+                  ]}
+                >
+                  <Icon
+                    name={service.icon as any}
+                    size={24}
+                    color={servicesOffered.includes(service.value) ? colors.primary : colors.textSecondary}
+                  />
+                  <Text
+                    style={[
+                      styles.serviceLabel,
+                      servicesOffered.includes(service.value) && styles.serviceLabelSelected,
+                    ]}
+                  >
+                    {service.value}
+                  </Text>
+                  <View style={[styles.checkbox, servicesOffered.includes(service.value) && styles.checkboxSelected]}>
+                    {servicesOffered.includes(service.value) && (
+                      <Icon name="checkmark" size={16} color={colors.white} />
+                    )}
+                  </View>
+                </Card>
+              </TouchableOpacity>
+            ))}
+          </View>
+          
+          {/* Years in Practice */}
+          <Input
+            label="Years in Practice"
+            placeholder="e.g., 5"
+            value={yearsInPractice}
+            onChangeText={setYearsInPractice}
+            keyboardType="number-pad"
+            leftIcon="time-outline"
+          />
+          
+          {/* Accepting New Clients */}
+          <TouchableOpacity
+            onPress={() => setAcceptingNewClients(!acceptingNewClients)}
+            style={styles.toggleRow}
+            activeOpacity={0.8}
+            data-testid="toggle-accepting-clients"
+          >
+            <Text style={styles.toggleLabel}>Accepting new clients</Text>
+            <View style={[styles.toggle, acceptingNewClients && styles.toggleActive]}>
+              <View style={[styles.toggleKnob, acceptingNewClients && styles.toggleKnobActive]} />
+            </View>
+          </TouchableOpacity>
+          
+          {/* Continue Button */}
+          <Button
+            title="Continue"
+            onPress={handleContinue}
+            loading={isLoading}
+            fullWidth
+            style={styles.continueButton}
+            data-testid="lactation-onboarding-continue-btn"
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const getStyles = createThemedStyles((colors) => ({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: SIZES.lg,
+    paddingTop: SIZES.lg,
+    paddingBottom: SIZES.xl,
+  },
+  headerSection: {
+    marginBottom: SIZES.xl,
+  },
+  backButton: {
+    marginBottom: SIZES.md,
+    marginLeft: -SIZES.xs,
+  },
+  progressBar: {
+    height: 4,
+    backgroundColor: colors.border,
+    borderRadius: 2,
+    marginBottom: SIZES.lg,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: colors.roleLactation,
+    borderRadius: 2,
+  },
+  title: {
+    fontSize: SIZES.fontTitle,
+    fontFamily: FONTS.heading,
+    color: colors.text,
+    marginBottom: SIZES.xs,
+  },
+  subtitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    lineHeight: 24,
+  },
+  sectionLabel: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+    color: colors.text,
+    marginBottom: SIZES.sm,
+  },
+  helperText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: colors.textLight,
+    marginBottom: SIZES.sm,
+  },
+  errorText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: colors.error,
+    marginBottom: SIZES.sm,
+  },
+  locationSection: {
+    marginBottom: SIZES.lg,
+  },
+  zipCodeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  zipInput: {
+    flex: 1,
+  },
+  zipLoader: {
+    marginLeft: SIZES.sm,
+  },
+  locationResult: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: SIZES.sm,
+    paddingHorizontal: SIZES.sm,
+  },
+  locationResultText: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.success,
+    marginLeft: SIZES.xs,
+  },
+  servicesSection: {
+    marginBottom: SIZES.md,
+  },
+  serviceCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SIZES.sm,
+  },
+  serviceCardSelected: {
+    borderWidth: 2,
+    borderColor: colors.primary,
+  },
+  serviceLabel: {
+    flex: 1,
+    marginLeft: SIZES.md,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+  },
+  serviceLabelSelected: {
+    color: colors.primary,
+    fontFamily: FONTS.bodyBold,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxSelected: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: SIZES.md,
+    marginBottom: SIZES.lg,
+  },
+  toggleLabel: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.text,
+  },
+  toggle: {
+    width: 52,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.border,
+    padding: 2,
+  },
+  toggleActive: {
+    backgroundColor: colors.primary,
+  },
+  toggleKnob: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.surface,
+  },
+  toggleKnobActive: {
+    transform: [{ translateX: 20 }],
+  },
+  continueButton: {
+    marginTop: SIZES.md,
+  },
+}));

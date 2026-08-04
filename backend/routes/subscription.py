@@ -234,7 +234,7 @@ async def get_pricing():
 
 
 @router.post("/start-trial")
-async def start_trial(request: StartTrialRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def start_trial(request: StartTrialRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Start a 14-day free trial.
     
     NOTE: On iOS/Android, trials are initiated through In-App Purchase (StoreKit / Google Play Billing)
@@ -314,7 +314,7 @@ async def start_trial(request: StartTrialRequest, user: User = Depends(check_rol
 
 
 @router.post("/activate")
-async def activate_subscription(request: StartTrialRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def activate_subscription(request: StartTrialRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Activate a full subscription after trial.
     
     NOTE: On iOS/Android, subscriptions are purchased through In-App Purchase and
@@ -384,7 +384,7 @@ async def activate_subscription(request: StartTrialRequest, user: User = Depends
 
 
 @router.post("/cancel")
-async def cancel_subscription(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def cancel_subscription(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Cancel subscription (mock implementation)
     
     Note: For real IAP, cancellation is managed through the respective app stores.
@@ -444,7 +444,7 @@ async def cancel_subscription(user: User = Depends(check_role(["DOULA", "MIDWIFE
 
 
 @router.post("/validate-receipt")
-async def validate_receipt(request: ValidateReceiptRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def validate_receipt(request: ValidateReceiptRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Validate a store receipt and update subscription status.
 
     Apple receipts are JWS (JSON Web Signature) signed transactions from
@@ -559,11 +559,46 @@ async def validate_receipt(request: ValidateReceiptRequest, user: User = Depends
         trial_end = None
 
     # --- replay prevention: reject duplicate transaction IDs ---
+    # Idempotent restore handling: the SAME original transaction may be
+    # re-submitted by "Restore Purchases" (StoreKit getAvailablePurchases
+    # returns owned transactions on every restore). If that transaction is
+    # already recorded against THIS user, treat it as a refresh — re-grant/
+    # extend access and return success instead of a hard error. Only reject
+    # when a DIFFERENT user already owns the transaction.
     if transaction_id:
         existing = await db.subscriptions.find_one({
             "store_transaction_id": transaction_id
         })
         if existing:
+            if existing.get("user_id") == user.user_id:
+                # Same user restoring an already-recorded purchase — refresh
+                # dates so the restored subscription is active.
+                logging.info(
+                    f"[IAP] Restore: transaction {transaction_id} already owned by user "
+                    f"{user.user_id}; refreshing subscription."
+                )
+                await db.subscriptions.update_one(
+                    {"user_id": user.user_id},
+                    {"$set": {
+                        "subscription_status": subscription_status,
+                        "plan_type": plan_type,
+                        "trial_start_date": now if is_trial_period else existing.get("trial_start_date"),
+                        "trial_end_date": trial_end if is_trial_period else existing.get("trial_end_date"),
+                        "subscription_start_date": now if not is_trial_period else existing.get("subscription_start_date"),
+                        "subscription_end_date": sub_end if not is_trial_period else existing.get("subscription_end_date"),
+                        "auto_renewing": True,
+                        "updated_at": now,
+                    }},
+                )
+                return {
+                    "message": "Receipt validated successfully",
+                    "subscription_status": subscription_status,
+                    "plan_type": plan_type,
+                    "subscription_provider": provider,
+                    "subscription_end_date": (sub_end if not is_trial_period else trial_end).isoformat(),
+                    "auto_renewing": True,
+                    "restored": True,
+                }
             raise HTTPException(
                 status_code=400,
                 detail="This receipt has already been processed",
@@ -617,7 +652,7 @@ class ChangePlanRequest(BaseModel):
 # ============== PLAN CHANGE ROUTES ==============
 
 @router.post("/change-plan")
-async def change_subscription_plan(request: ChangePlanRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def change_subscription_plan(request: ChangePlanRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Change subscription plan (upgrade from monthly to annual, or downgrade)
     
     Note: For real IAP, plan changes are managed through the respective app stores.

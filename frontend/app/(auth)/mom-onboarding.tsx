@@ -269,7 +269,7 @@ export default function MomOnboardingScreen() {
                     <DateTimePicker
                       value={dueDate || new Date()}
                       mode="date"
-                      display="spinner"
+                      display="default"
                       onChange={handleDateChange}
                       minimumDate={new Date()}
                       maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
@@ -472,7 +472,7 @@ const getStyles = createThemedStyles((colors) => ({
   datePlaceholder: {
     color: colors.textLight,
   },
-  // Date modal styles for iOS spinner pickers
+  // Date modal styles for iOS calendar pickers
   dateModalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

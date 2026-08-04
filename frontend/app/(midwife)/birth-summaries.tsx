@@ -353,7 +353,7 @@ export default function MidwifeBirthSummariesScreen() {
                       <DateTimePicker
                         value={birthDate || new Date()}
                         mode="date"
-                        display="spinner"
+                        display="default"
                         onChange={(event, date) => { if (date) setBirthDate(date); }}
                         style={{ width: '100%', height: 200 }}
                       />
@@ -433,7 +433,7 @@ export default function MidwifeBirthSummariesScreen() {
                       <DateTimePicker
                         value={birthTime}
                         mode="time"
-                        display="spinner"
+                        display="default"
                         onChange={(event, date) => { if (date) setBirthTime(date); }}
                         style={{ width: '100%', height: 200 }}
                       />

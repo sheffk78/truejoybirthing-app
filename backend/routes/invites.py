@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/invites", tags=["Invites"])
 
 # Allowed invitee roles
-INVITEE_ROLES = ["DOULA", "MIDWIFE"]
+INVITEE_ROLES = ["DOULA", "MIDWIFE", "LACTATION"]
 
 # Invite status flow: sent -> opened -> signed_up -> connected
 INVITE_STATUSES = ["sent", "opened", "signed_up", "connected"]

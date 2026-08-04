@@ -192,8 +192,8 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
             <TouchableOpacity 
               onPress={() => {
                 // Navigate back to client detail page, not just router.back()
-                const baseRoute = config.role === 'MIDWIFE' ? '/(midwife)' : '/(doula)';
-                router.push(`${baseRoute}/client-detail?clientId=${params.clientId}&clientName=${encodeURIComponent(clientName)}`);
+                const baseRoute = config.routes.clients.replace('/clients', '');
+                router.push(`${baseRoute}/client-detail?clientId=${params.clientId}&clientName=${encodeURIComponent(clientName)}` as any);
               }}
               style={styles.breadcrumbItem}
             >

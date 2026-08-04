@@ -347,7 +347,7 @@ async def send_welcome_client_email(
 ) -> bool:
     """Send welcome email to Mom when converted from lead to client"""
 
-    role_display = "Doula" if provider_role == "DOULA" else "Midwife"
+    role_display = "Doula" if provider_role == "DOULA" else "Midwife" if provider_role == "MIDWIFE" else "Lactation Consultant"
 
     html = f"""
     <!DOCTYPE html>

@@ -9,7 +9,7 @@ export interface User {
   user_id: string;
   email: string;
   full_name: string;
-  role: 'MOM' | 'DOULA' | 'MIDWIFE' | 'ADMIN';
+  role: 'MOM' | 'DOULA' | 'MIDWIFE' | 'LACTATION' | 'ADMIN';
   picture?: string;
   onboarding_completed: boolean;
   tutorial_completed?: boolean;

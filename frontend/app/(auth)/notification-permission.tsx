@@ -42,6 +42,8 @@ export default function NotificationPermissionScreen() {
         return '/(auth)/doula-onboarding';
       case 'MIDWIFE':
         return '/(auth)/midwife-onboarding';
+      case 'LACTATION':
+        return '/(auth)/lactation-onboarding';
       default:
         return '/(auth)/mom-onboarding';
     }

@@ -19,6 +19,7 @@ import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
 import { ThemeProvider, useTheme } from '../src/contexts/ThemeContext';
 import { COLORS, BRAND } from '../src/constants/theme';
+import { usePushNotifications } from '../src/hooks/usePushNotifications';
 
 // Inner layout component that uses theme
 function ThemedLayout() {
@@ -28,6 +29,11 @@ function ThemedLayout() {
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
   const lastBackgroundedRef = useRef<number | null>(null);
+  
+  // Activate push notifications for all authenticated users.
+  // The hook handles permission status, token registration/refresh,
+  // and notification listeners (foreground + tap-to-navigate).
+  usePushNotifications();
   
   // Initialize the app
   useEffect(() => {
@@ -91,7 +97,7 @@ function ThemedLayout() {
         // then plans-pricing, then tutorial (all part of onboarding flow)
         const isOnIntro = currentScreen === 'onboarding-intro';
         const isOnNotificationPermission = currentScreen === 'notification-permission';
-        const isOnProfileSetup = !!currentScreen && ['mom-onboarding', 'doula-onboarding', 'midwife-onboarding'].includes(currentScreen);
+        const isOnProfileSetup = !!currentScreen && ['mom-onboarding', 'doula-onboarding', 'midwife-onboarding', 'lactation-onboarding'].includes(currentScreen);
         const isOnPlansPricing = segments[0] === 'plans-pricing';
         const isOnTutorial = segments[0] === 'tutorial';
         
@@ -108,13 +114,15 @@ function ThemedLayout() {
           router.replace('/(doula)/dashboard');
         } else if (user.role === 'MIDWIFE') {
           router.replace('/(midwife)/dashboard');
+        } else if (user.role === 'LACTATION') {
+          router.replace('/(lactation)/dashboard' as any);
         } else if (user.role === 'ADMIN') {
           router.replace('/(admin)/content');
         }
       } else {
         // Check if user is in wrong role group and redirect to correct one
         const userRoleGroup = `(${user.role.toLowerCase()})`;
-        const roleGroups = ['(mom)', '(doula)', '(midwife)', '(admin)'];
+        const roleGroups = ['(mom)', '(doula)', '(midwife)', '(lactation)', '(admin)'];
         
         if (roleGroups.includes(currentRoleGroup) && currentRoleGroup !== userRoleGroup) {
           // User is in wrong role group, redirect to correct dashboard
@@ -125,6 +133,8 @@ function ThemedLayout() {
             router.replace('/(doula)/dashboard');
           } else if (user.role === 'MIDWIFE') {
             router.replace('/(midwife)/dashboard');
+          } else if (user.role === 'LACTATION') {
+            router.replace('/(lactation)/dashboard' as any);
           } else if (user.role === 'ADMIN') {
             router.replace('/(admin)/content');
           }
@@ -174,6 +184,7 @@ function ThemedLayout() {
         <Stack.Screen name="(mom)" />
         <Stack.Screen name="(doula)" />
         <Stack.Screen name="(midwife)" />
+        <Stack.Screen name="(lactation)" />
         <Stack.Screen name="(admin)" />
         <Stack.Screen name="sign-midwife-contract" />
         <Stack.Screen name="plans-pricing" />

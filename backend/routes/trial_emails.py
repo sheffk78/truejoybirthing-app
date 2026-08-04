@@ -102,7 +102,7 @@ async def process_provider_emails(
     # === ONBOARDING SEQUENCE ===
     # Find all doulas and midwives
     providers = await db.users.find({
-        "role": {"$in": ["DOULA", "MIDWIFE"]},
+        "role": {"$in": ["DOULA", "MIDWIFE", "LACTATION"]},
     }).to_list(200)
 
     results["onboarding"]["checked"] = len(providers)
@@ -313,7 +313,7 @@ async def get_provider_email_status(
     now = get_now()
 
     providers = await db.users.find({
-        "role": {"$in": ["DOULA", "MIDWIFE"]},
+        "role": {"$in": ["DOULA", "MIDWIFE", "LACTATION"]},
     }).to_list(200)
 
     statuses = []

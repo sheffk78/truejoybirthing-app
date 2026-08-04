@@ -232,7 +232,10 @@ export default function PlansPricingScreen() {
         <TouchableOpacity onPress={() => {
           if (isOnboarding) {
             // In onboarding, back goes to role-specific profile setup
-            const backRoute = onboardingRole === 'MIDWIFE' ? '/(auth)/midwife-onboarding' : '/(auth)/doula-onboarding';
+            const backRoute =
+              onboardingRole === 'MIDWIFE' ? '/(auth)/midwife-onboarding'
+              : onboardingRole === 'LACTATION' ? '/(auth)/lactation-onboarding'
+              : '/(auth)/doula-onboarding';
             router.replace(backRoute as any);
           } else {
             router.back();

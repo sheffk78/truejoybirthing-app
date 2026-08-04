@@ -299,7 +299,7 @@ async def handle_inbound_email(request: Request):
 
     # Check if this is a provider (doula/midwife) by looking up the user
     user = await db.users.find_one(
-        {"email": from_email, "role": {"$in": ["DOULA", "MIDWIFE"]}},
+        {"email": from_email, "role": {"$in": ["DOULA", "MIDWIFE", "LACTATION"]}},
         {"_id": 0, "user_id": 1, "full_name": 1, "role": 1}
     )
 
@@ -311,9 +311,9 @@ async def handle_inbound_email(request: Request):
         )
 
     # Determine lead type
-    if user and user.get("role") in ["DOULA", "MIDWIFE"]:
+    if user and user.get("role") in ["DOULA", "MIDWIFE", "LACTATION"]:
         lead_type = "provider"
-        provider_type = "doula" if user["role"] == "DOULA" else "midwife"
+        provider_type = "doula" if user["role"] == "DOULA" else "midwife" if user["role"] == "MIDWIFE" else "lactation"
     else:
         lead_type = "mom"
         provider_type = None

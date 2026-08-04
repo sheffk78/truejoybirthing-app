@@ -61,6 +61,7 @@ export interface ColorTokens {
     mom: string;
     doula: string;
     midwife: string;
+    lactation: string;
     admin: string;
   };
   
@@ -137,6 +138,7 @@ export const LIGHT_COLORS: ColorTokens = {
     mom: '#B87AA0',          // Rose
     doula: '#8E8CB5',        // Lavender
     midwife: '#A8B5A0',      // Sage
+    lactation: '#6BAFA0',    // Teal-green
     admin: '#6A6B6C',        // Gray
   },
   
@@ -210,6 +212,7 @@ export const DARK_COLORS: ColorTokens = {
     mom: '#E0B8B8',          // Lighter rose
     doula: '#B899CC',        // Lighter lavender
     midwife: '#A3C9A3',      // Lighter sage
+    lactation: '#7BC9B8',    // Lighter teal-green
     admin: '#A89EA8',        // Lighter gray
   },
   

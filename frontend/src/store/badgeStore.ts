@@ -50,7 +50,7 @@ export const useBadgeStore = create<BadgeState>((set) => ({
     const { user } = useAuthStore.getState();
     if (!user) return;
 
-    const isProvider = user.role === 'DOULA' || user.role === 'MIDWIFE';
+    const isProvider = user.role === 'DOULA' || user.role === 'MIDWIFE' || user.role === 'LACTATION';
     const isMom = user.role === 'MOM';
 
     try {

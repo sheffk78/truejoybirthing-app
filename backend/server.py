@@ -119,10 +119,11 @@ class ConnectionManager:
 ws_manager = ConnectionManager()
 
 # ============== ENUMS ==============
-ROLES = ["MOM", "DOULA", "MIDWIFE", "ADMIN"]
+ROLES = ["MOM", "DOULA", "MIDWIFE", "LACTATION", "ADMIN"]
 BIRTH_SETTINGS = ["Home", "Hospital", "Birth Center", "Not sure"]
 CLIENT_STATUS_DOULA = ["Lead", "Contract Sent", "Contract Signed", "Active", "Postpartum", "Completed"]
 CLIENT_STATUS_MIDWIFE = ["Prenatal", "Contract Sent", "Contract Signed", "In Labor", "Postpartum", "Completed"]
+CLIENT_STATUS_LACTATION = ["Lead", "Contract Sent", "Contract Signed", "Active", "Postpartum", "Completed"]
 CONTRACT_STATUS = ["Draft", "Sent", "Signed"]
 INVOICE_STATUS = ["Draft", "Sent", "Paid", "Overdue"]
 MOOD_SCALE = ["Very low", "Low", "Neutral", "Good", "Great"]
@@ -131,6 +132,7 @@ VISIT_TYPES = ["Prenatal", "Postpartum"]
 BIRTH_MODES = ["Spontaneous Vaginal", "Assisted Vaginal", "Cesarean", "Other"]
 SERVICES_OFFERED = ["Birth Doula", "Postpartum Doula", "Virtual Doula"]
 MIDWIFE_CREDENTIALS = ["CPM", "LM", "CNM"]
+LACTATION_CREDENTIALS = ["IBCLC", "CLC", "CLE", "CBE", "ALE"]
 
 # Subscription constants
 SUBSCRIPTION_STATUS = ["none", "trial", "active", "expired", "cancelled"]
@@ -1471,6 +1473,7 @@ from routes import subscription as subscription_routes
 from routes import mom as mom_routes
 from routes import doula as doula_routes
 from routes import midwife as midwife_routes
+from routes import lactation as lactation_routes
 from routes import contracts as contracts_routes
 
 # Initialize contracts dependencies (for email sending)
@@ -1512,6 +1515,7 @@ api_router.include_router(subscription_routes.router)
 api_router.include_router(mom_routes.router)
 api_router.include_router(doula_routes.router)
 api_router.include_router(midwife_routes.router)
+api_router.include_router(lactation_routes.router)
 api_router.include_router(contracts_routes.router)
 api_router.include_router(invoices_routes.router)
 api_router.include_router(visits_routes.router)
@@ -1545,8 +1549,8 @@ api_router.include_router(shelbi_leads_routes.public_router)
 # ============== SUBSCRIPTION ROUTES ==============
 
 def is_pro_role(role: str) -> bool:
-    """Check if the role is a PRO role (DOULA or MIDWIFE)"""
-    return role in ["DOULA", "MIDWIFE"]
+    """Check if the role is a PRO role (DOULA, MIDWIFE, or LACTATION)"""
+    return role in ["DOULA", "MIDWIFE", "LACTATION"]
 
 def calculate_subscription_status(subscription: dict) -> dict:
     """Calculate current subscription status and access"""

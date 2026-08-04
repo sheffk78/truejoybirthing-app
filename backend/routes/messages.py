@@ -187,16 +187,16 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
     receiver_role = receiver.get("role")
     
     # Mom <-> Provider messaging requires an active connection with can_message permission
-    if sender_role == "MOM" and receiver_role in ["DOULA", "MIDWIFE"]:
+    if sender_role == "MOM" and receiver_role in ["DOULA", "MIDWIFE", "LACTATION"]:
         can_msg = await check_provider_can_message(message_data.receiver_id, user.user_id)
         if not can_msg:
             raise HTTPException(status_code=403, detail="You don't have an active connection with this provider")
-    elif sender_role in ["DOULA", "MIDWIFE"] and receiver_role == "MOM":
+    elif sender_role in ["DOULA", "MIDWIFE", "LACTATION"] and receiver_role == "MOM":
         can_msg = await check_provider_can_message(user.user_id, message_data.receiver_id)
         if not can_msg:
             raise HTTPException(status_code=403, detail="You don't have an active connection with this client")
     # Doula <-> Midwife messaging only allowed if they share a common client
-    elif sender_role in ["DOULA", "MIDWIFE"] and receiver_role in ["DOULA", "MIDWIFE"]:
+    elif sender_role in ["DOULA", "MIDWIFE", "LACTATION"] and receiver_role in ["DOULA", "MIDWIFE", "LACTATION"]:
         sender_moms = set(await get_active_mom_ids_for_provider(user.user_id))
         receiver_moms = set(await get_active_mom_ids_for_provider(message_data.receiver_id))
         shared_clients = sender_moms & receiver_moms
@@ -208,7 +208,7 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
     # Try to determine client_id from the conversation context
     resolved_client_id = message_data.client_id
     if not resolved_client_id:
-        if sender_role in ["DOULA", "MIDWIFE"] and receiver_role == "MOM":
+        if sender_role in ["DOULA", "MIDWIFE", "LACTATION"] and receiver_role == "MOM":
             # Provider -> Mom: find client by linked_mom_id
             client = await db.clients.find_one({
                 "provider_id": user.user_id,
@@ -216,7 +216,7 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
             })
             if client:
                 resolved_client_id = client.get("client_id")
-        elif sender_role == "MOM" and receiver_role in ["DOULA", "MIDWIFE"]:
+        elif sender_role == "MOM" and receiver_role in ["DOULA", "MIDWIFE", "LACTATION"]:
             # Mom -> Provider: find client by linked_mom_id
             client = await db.clients.find_one({
                 "provider_id": message_data.receiver_id,
@@ -282,7 +282,7 @@ async def send_message(message_data: MessageCreate, user: User = Depends(get_cur
 @router.get("/client/{client_id}")
 async def get_client_messages(
     client_id: str,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
 ):
     """Get all messages associated with a specific client (client-centric view)"""
     # Verify the provider has access to this client

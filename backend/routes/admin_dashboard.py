@@ -20,7 +20,7 @@ from .auth import check_rate_limit
 
 router = APIRouter(prefix="/admin/api/dashboard", tags=["Admin Dashboard"])
 
-ROLES = ["MOM", "DOULA", "MIDWIFE", "ADMIN"]
+ROLES = ["MOM", "DOULA", "MIDWIFE", "LACTATION", "ADMIN"]
 
 
 # ============== REQUEST MODELS ==============
@@ -206,7 +206,7 @@ async def get_signup_trend(user: User = Depends(check_role(["ADMIN"]))):
         count = item["count"]
 
         if date_str not in trend_data:
-            trend_data[date_str] = {"date": date_str, "total": 0, "MOM": 0, "DOULA": 0, "MIDWIFE": 0, "ADMIN": 0}
+            trend_data[date_str] = {"date": date_str, "total": 0, "MOM": 0, "DOULA": 0, "MIDWIFE": 0, "LACTATION": 0, "ADMIN": 0}
 
         if role in ROLES:
             trend_data[date_str][role] = count
@@ -226,6 +226,7 @@ async def get_signup_trend(user: User = Depends(check_role(["ADMIN"]))):
                 "MOM": 0,
                 "DOULA": 0,
                 "MIDWIFE": 0,
+                "LACTATION": 0,
                 "ADMIN": 0,
             })
         current_date += timedelta(days=1)
@@ -361,6 +362,11 @@ async def get_user_detail(user_id: str, user: User = Depends(check_role(["ADMIN"
         )
     elif role == "MIDWIFE":
         profile_data = await db.midwife_profiles.find_one(
+            {"user_id": user_id},
+            {"_id": 0}
+        )
+    elif role == "LACTATION":
+        profile_data = await db.lactation_profiles.find_one(
             {"user_id": user_id},
             {"_id": 0}
         )

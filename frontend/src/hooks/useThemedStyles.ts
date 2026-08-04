@@ -62,6 +62,8 @@ export const useColors = () => {
     roleDoula: colors.role.doula,
     midwifePrimary: colors.role.midwife,
     roleMidwife: colors.role.midwife,
+    lactationPrimary: colors.role.lactation,
+    roleLactation: colors.role.lactation,
     adminPrimary: colors.role.admin,
     roleAdmin: colors.role.admin,
     

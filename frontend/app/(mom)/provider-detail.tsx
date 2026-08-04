@@ -86,11 +86,11 @@ export default function ProviderDetailScreen() {
   };
 
   const getRoleColor = (role: string) => {
-    return role === 'DOULA' ? colors.roleDoula : colors.roleMidwife;
+    return role === 'DOULA' ? colors.roleDoula : role === 'MIDWIFE' ? colors.roleMidwife : role === 'LACTATION' ? colors.roleLactation : colors.primary;
   };
 
   const getRoleIcon = (role: string) => {
-    return role === 'DOULA' ? 'heart' : 'medkit';
+    return role === 'DOULA' ? 'heart' : role === 'MIDWIFE' ? 'medkit' : role === 'LACTATION' ? 'water' : 'person';
   };
 
   const handleMessage = () => {

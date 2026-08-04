@@ -112,17 +112,27 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
         fetchCurrentUser(),
       ]);
       
-      // If coming from client detail with clientUserId, auto-open conversation or show new message modal
+      // If coming from client detail or leads with clientUserId, auto-open
+      // conversation or show new message modal with the client pre-selected.
       if (params.clientUserId) {
         const existingConvo = convos.find((c: Conversation) => c.other_user_id === params.clientUserId);
         if (existingConvo) {
           openConversation(existingConvo);
         } else {
-          const client = clientsList.find((c: any) => c.linked_mom_id === params.clientUserId);
-          if (client) {
-            setSelectedClientForNewMessage(client);
-            setShowNewMessageModal(true);
+          // Look for the client in the provider's client list first
+          let client = clientsList.find((c: any) => c.linked_mom_id === params.clientUserId);
+          // If not found (e.g. leads not yet converted to clients), synthesize
+          // a minimal client object from the URL params so the new-message modal
+          // can still pre-select and pre-fill the recipient.
+          if (!client) {
+            client = {
+              client_id: `lead_${params.clientUserId}`,
+              linked_mom_id: params.clientUserId,
+              name: params.clientName || 'Client',
+            };
           }
+          setSelectedClientForNewMessage(client);
+          setShowNewMessageModal(true);
         }
       }
     };
@@ -238,7 +248,10 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
   };
   
   const getRoleColor = (role: string) => {
-    return role === 'MOM' ? colors.primary : role === 'MIDWIFE' ? colors.roleMidwife : colors.roleDoula;
+    if (role === 'MOM') return colors.primary;
+    if (role === 'MIDWIFE') return colors.roleMidwife;
+    if (role === 'LACTATION') return colors.roleLactation;
+    return colors.roleDoula;
   };
 
   const closeConversation = () => {
@@ -446,51 +459,72 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
             </View>
             <View style={{ width: 40 }} />
           </View>
-          
-          <ScrollView style={styles.newMessageContent}>
-            <Text style={[styles.newMessageLabel, { color: colors.text }]}>Select Client</Text>
+
+          {/* KeyboardAvoidingView keeps the message input above the keyboard
+              instead of letting the typing pad cover it (Issue: covered input). */}
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={0}
+          >
+            <ScrollView style={styles.newMessageContent} keyboardShouldPersistTaps="handled">
+              <Text style={[styles.newMessageLabel, { color: colors.text }]}>Select Client</Text>
             
-            {clientsWithoutConversation.length === 0 ? (
-              <Text style={[styles.noClientsText, { color: colors.textLight }]}>
-                All your clients already have conversations or no connected clients yet.
-              </Text>
-            ) : (
-              <View style={styles.clientList}>
-                {clientsWithoutConversation.map(client => (
-                  <TouchableOpacity
-                    key={client.client_id}
-                    style={[
-                      styles.clientSelectItem,
-                      { backgroundColor: colors.surface, borderColor: colors.border },
-                      selectedClientForNewMessage?.client_id === client.client_id && { borderColor: primaryColor, borderWidth: 2 }
-                    ]}
-                    onPress={() => setSelectedClientForNewMessage(client)}
-                  >
-                    {client.picture ? (
-                      <Image 
-                        source={{ uri: client.picture }} 
-                        style={styles.clientAvatarImage}
-                      />
-                    ) : (
-                      <View style={[styles.clientAvatar, { backgroundColor: colors.primary + '20' }]}>
-                        <Icon name="person" size={20} color={colors.primary} />
-                      </View>
-                    )}
-                    <View style={styles.clientSelectInfo}>
-                      <Text style={[styles.clientSelectName, { color: colors.text }]}>{client.name}</Text>
-                      {client.edd && (
-                        <Text style={[styles.clientSelectEdd, { color: colors.textSecondary }]}>
-                          Due: {new Date(client.edd).toLocaleDateString()}
-                        </Text>
+            {(() => {
+              // Build the list to show: existing clients without conversations
+              // plus the pre-selected client (if from lead params and not in list)
+              const list = [...clientsWithoutConversation];
+              const preSelectedInList = selectedClientForNewMessage &&
+                list.some(c => c.client_id === selectedClientForNewMessage.client_id);
+              if (selectedClientForNewMessage && !preSelectedInList) {
+                list.unshift(selectedClientForNewMessage);
+              }
+
+              if (list.length === 0) {
+                return (
+                  <Text style={[styles.noClientsText, { color: colors.textLight }]}>
+                    All your clients already have conversations or no connected clients yet.
+                  </Text>
+                );
+              }
+              return (
+                <View style={styles.clientList}>
+                  {list.map(client => (
+                    <TouchableOpacity
+                      key={client.client_id}
+                      style={[
+                        styles.clientSelectItem,
+                        { backgroundColor: colors.surface, borderColor: colors.border },
+                        selectedClientForNewMessage?.client_id === client.client_id && { borderColor: primaryColor, borderWidth: 2 }
+                      ]}
+                      onPress={() => setSelectedClientForNewMessage(client)}
+                    >
+                      {client.picture ? (
+                        <Image 
+                          source={{ uri: client.picture }} 
+                          style={styles.clientAvatarImage}
+                        />
+                      ) : (
+                        <View style={[styles.clientAvatar, { backgroundColor: colors.primary + '20' }]}>
+                          <Icon name="person" size={20} color={colors.primary} />
+                        </View>
                       )}
-                    </View>
-                    {selectedClientForNewMessage?.client_id === client.client_id && (
-                      <Icon name="checkmark-circle" size={24} color={primaryColor} />
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
+                      <View style={styles.clientSelectInfo}>
+                        <Text style={[styles.clientSelectName, { color: colors.text }]}>{client.name}</Text>
+                        {client.edd && (
+                          <Text style={[styles.clientSelectEdd, { color: colors.textSecondary }]}>
+                            Due: {new Date(client.edd).toLocaleDateString()}
+                          </Text>
+                        )}
+                      </View>
+                      {selectedClientForNewMessage?.client_id === client.client_id && (
+                        <Icon name="checkmark-circle" size={24} color={primaryColor} />
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              );
+            })()}
             
             {selectedClientForNewMessage && (
               <>
@@ -525,6 +559,7 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
               </Text>
             </TouchableOpacity>
           </View>
+          </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
     </SafeAreaView>

@@ -37,7 +37,7 @@ USER_PUBLIC_FIELDS = {
 
 @router.get("/providers")
 async def search_providers(
-    provider_type: Optional[str] = Query(None, description="Filter by DOULA or MIDWIFE"),
+    provider_type: Optional[str] = Query(None, description="Filter by DOULA, MIDWIFE, or LACTATION"),
     location_city: Optional[str] = Query(None, description="Filter by city"),
     location_state: Optional[str] = Query(None, description="Filter by state"),
     birth_setting: Optional[str] = Query(None, description="Filter by birth setting (midwives only)"),
@@ -49,6 +49,7 @@ async def search_providers(
     """
     doulas = []
     midwives = []
+    lactation = []
     
     # Search doulas
     if not provider_type or provider_type == "DOULA":
@@ -132,7 +133,44 @@ async def search_providers(
                     "profile": profile
                 })
     
-    return {"doulas": doulas, "midwives": midwives}
+    # Search lactation consultants
+    if not provider_type or provider_type == "LACTATION":
+        lactation_query = {"in_marketplace": True, "accepting_new_clients": True}
+        
+        lactation_profiles = await db.lactation_profiles.find(lactation_query, {"_id": 0}).to_list(100)
+        
+        lactation_user_ids = [p["user_id"] for p in lactation_profiles]
+        lactation_users = await db.users.find(
+            {"user_id": {"$in": lactation_user_ids}},
+            USER_PUBLIC_FIELDS
+        ).to_list(100)
+        lactation_users_by_id = {u["user_id"]: u for u in lactation_users}
+        
+        for profile in lactation_profiles:
+            user = lactation_users_by_id.get(profile["user_id"])
+            if user:
+                if search:
+                    search_lower = search.lower()
+                    name_match = (user.get("full_name") or "").lower().find(search_lower) >= 0
+                    city_match = (profile.get("location_city") or "").lower().find(search_lower) >= 0
+                    state_match = (profile.get("location_state") or "").lower().find(search_lower) >= 0
+                    zip_match = (profile.get("zip_code") or "").lower().find(search_lower) >= 0
+                    
+                    if not (name_match or city_match or state_match or zip_match):
+                        continue
+                
+                if location_city and (profile.get("location_city") or "").lower().find(location_city.lower()) < 0:
+                    continue
+                if location_state and (profile.get("location_state") or "").lower().find(location_state.lower()) < 0:
+                    continue
+                
+                lactation.append({
+                    "provider_type": "LACTATION",
+                    "user": user,
+                    "profile": profile
+                })
+    
+    return {"doulas": doulas, "midwives": midwives, "lactation": lactation}
 
 
 @router.get("/provider/{user_id}")
@@ -147,6 +185,9 @@ async def get_provider_profile(user_id: str):
         clients_served = await db.clients.count_documents({"provider_id": user_id, "status": "Completed"})
     elif user["role"] == "MIDWIFE":
         profile = await db.midwife_profiles.find_one({"user_id": user_id}, {"_id": 0})
+        clients_served = await db.clients.count_documents({"provider_id": user_id, "status": "Completed"})
+    elif user["role"] == "LACTATION":
+        profile = await db.lactation_profiles.find_one({"user_id": user_id}, {"_id": 0})
         clients_served = await db.clients.count_documents({"provider_id": user_id, "status": "Completed"})
     else:
         raise HTTPException(status_code=400, detail="User is not a provider")

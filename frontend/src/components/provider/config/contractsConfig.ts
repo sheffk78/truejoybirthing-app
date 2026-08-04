@@ -19,7 +19,7 @@ export interface ContractSection {
 }
 
 export interface ContractsConfig {
-  role: 'DOULA' | 'MIDWIFE';
+  role: 'DOULA' | 'MIDWIFE' | 'LACTATION';
   roleLabel: string;
   primaryColor: string;
   sections: ContractSection[];
@@ -264,7 +264,112 @@ export const MIDWIFE_CONTRACTS_CONFIG: ContractsConfig = {
   },
 };
 
+// ============ LACTATION CONTRACT CONFIG ============
+export const LACTATION_CONTRACT_SECTIONS: ContractSection[] = [
+  {
+    id: 'parties_basics',
+    title: 'Parties & Basic Details',
+    icon: 'person-outline',
+    fields: [
+      { id: 'client_name', label: 'Client Name(s)', type: 'text', required: true, placeholder: 'Full name(s) of the birthing parent and partner' },
+      { id: 'estimated_due_date', label: 'Estimated Due Date', type: 'date', required: true },
+      { id: 'total_fee', label: 'Total Fee ($)', type: 'number', required: true, placeholder: '0.00' },
+      { id: 'retainer_amount', label: 'Retainer Amount ($)', type: 'number', required: true, placeholder: '0.00' },
+    ]
+  },
+  {
+    id: 'services_scope',
+    title: 'Services & Scope',
+    icon: 'clipboard-outline',
+    fields: [
+      { id: 'initial_consultation_description', label: 'Initial Lactation Consultation', type: 'textarea', placeholder: 'e.g., One in-home or virtual initial assessment of 60-90 minutes within the first week after birth' },
+      { id: 'follow_up_visit_description', label: 'Follow-Up Visits', type: 'textarea', placeholder: 'e.g., Two follow-up visits of 45-60 minutes each to monitor feeding progress and adjust the plan' },
+      { id: 'telehealth_support_description', label: 'Telehealth Support', type: 'textarea', placeholder: 'e.g., Phone or video support between visits for urgent feeding questions' },
+      { id: 'personalized_feeding_plan_description', label: 'Personalized Feeding Plan', type: 'textarea', placeholder: 'e.g., A written, individualized feeding plan tailored to your goals and baby\'s needs' },
+    ]
+  },
+  {
+    id: 'boundaries_communication',
+    title: 'Boundaries & Communication',
+    icon: 'chatbubble-outline',
+    fields: [
+      { id: 'response_expectations_description', label: 'Response Expectations', type: 'textarea', placeholder: 'e.g., Respond to non-urgent messages within 24 hours' },
+      { id: 'scope_limits_description', label: 'Scope & Referral Limits', type: 'textarea', placeholder: 'e.g., The Consultant will refer to a physician or specialist for medical concerns outside the scope of lactation support' },
+    ]
+  },
+  {
+    id: 'payment_refunds',
+    title: 'Payment & Refunds',
+    icon: 'card-outline',
+    fields: [
+      { id: 'retainer_non_refundable_after_days', label: 'Retainer Non-Refundable After (days)', type: 'number', placeholder: '3' },
+      { id: 'cancellation_policy_description', label: 'Cancellation Policy', type: 'textarea', placeholder: 'e.g., Cancellations within 24 hours of a scheduled visit may incur a fee' },
+      { id: 'final_payment_due_detail', label: 'Final Payment Due Detail', type: 'text', placeholder: 'e.g., At the time of the final follow-up visit' },
+      { id: 'refund_policy_description', label: 'Refund Policy', type: 'textarea', placeholder: 'Terms for refunds if services end early' },
+    ]
+  },
+  {
+    id: 'special_circumstances',
+    title: 'Special Circumstances',
+    icon: 'alert-circle-outline',
+    fields: [
+      { id: 'backup_coverage_description', label: 'Backup Coverage', type: 'textarea', placeholder: 'e.g., A backup consultant may be arranged for extended absences' },
+      { id: 'other_absence_policy', label: 'Other Absence Policy', type: 'textarea', placeholder: 'How other absences are handled' },
+    ]
+  },
+  {
+    id: 'addendum',
+    title: 'Addendum / Special Arrangements',
+    icon: 'document-text-outline',
+    fields: [
+      { id: 'special_arrangements', label: 'Special Arrangements', type: 'textarea', placeholder: 'Any additional boundaries, services, or exceptions specific to this agreement' },
+    ]
+  },
+];
+
+export const LACTATION_CONTRACT_DEFAULTS: Record<string, any> = {
+  initial_consultation_description: 'One initial lactation consultation of 60-90 minutes to assess feeding, latch, and establish a care plan',
+  follow_up_visit_description: 'Two follow-up visits of 45-60 minutes each to monitor progress and adjust the feeding plan as needed',
+  telehealth_support_description: 'Phone or video support between visits for urgent feeding questions or concerns',
+  personalized_feeding_plan_description: 'A written, individualized feeding plan tailored to your feeding goals and your baby\'s needs',
+  response_expectations_description: 'Respond to non-urgent messages within 24 hours and as promptly as possible',
+  scope_limits_description: 'The Consultant will refer to a physician, IBCLC, or specialist for medical concerns outside the scope of lactation support',
+  retainer_non_refundable_after_days: 3,
+  cancellation_policy_description: 'Cancellations within 24 hours of a scheduled visit may incur a fee equal to 50% of the visit cost',
+  final_payment_due_detail: 'At the time of the final follow-up visit',
+  refund_policy_description: 'If services end early, the Consultant may provide a partial refund after subtracting the value of services already rendered and any non-refundable retainer',
+  backup_coverage_description: 'A backup consultant may be arranged for extended absences when possible',
+  other_absence_policy: "Reviewed case-by-case, any refund or waiver at the Consultant's discretion",
+  special_arrangements: 'None at this time',
+  final_payment_due_description: 'At the time of the final follow-up visit',
+};
+
+export const LACTATION_CONTRACTS_CONFIG: ContractsConfig = {
+  role: 'LACTATION',
+  roleLabel: 'Lactation Consultant',
+  primaryColor: COLORS.roleLactation,
+  sections: LACTATION_CONTRACT_SECTIONS,
+  defaultValues: LACTATION_CONTRACT_DEFAULTS,
+  endpoints: {
+    list: '/lactation/contracts',
+    create: '/lactation/contracts',
+    update: (id) => `/lactation/contracts/${id}`,
+    delete: (id) => `/lactation/contracts/${id}`,
+    send: (id) => `/lactation/contracts/${id}/send`,
+    duplicate: (id) => `/lactation/contracts/${id}/duplicate`,
+    pdf: (id, backendUrl) => `${backendUrl}/api/contracts/${id}/pdf`,
+    defaults: '/lactation/contract-defaults',
+  },
+  clientsEndpoint: '/lactation/clients',
+  routes: {
+    clients: '/(lactation)/clients',
+    clientDetail: '/(lactation)/client-detail',
+  },
+};
+
 // Helper to get config by role
-export function getContractsConfig(role: 'DOULA' | 'MIDWIFE'): ContractsConfig {
-  return role === 'DOULA' ? DOULA_CONTRACTS_CONFIG : MIDWIFE_CONTRACTS_CONFIG;
+export function getContractsConfig(role: 'DOULA' | 'MIDWIFE' | 'LACTATION'): ContractsConfig {
+  if (role === 'MIDWIFE') return MIDWIFE_CONTRACTS_CONFIG;
+  if (role === 'LACTATION') return LACTATION_CONTRACTS_CONFIG;
+  return DOULA_CONTRACTS_CONFIG;
 }

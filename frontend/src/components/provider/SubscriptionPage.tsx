@@ -1,5 +1,5 @@
 // Subscription Management Page - Shared by Midwife and Doula
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -28,7 +28,7 @@ const IS_EXPO_GO = Constants.appOwnership === 'expo';
 
 interface SubscriptionPageProps {
   primaryColor: string;
-  role: 'MIDWIFE' | 'DOULA';
+  role: 'MIDWIFE' | 'DOULA' | 'LACTATION';
 }
 
 export default function SubscriptionPage({ primaryColor, role }: SubscriptionPageProps) {
@@ -41,11 +41,45 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const autoRestoreAttemptedRef = useRef(false);
 
   useEffect(() => {
     fetchStatus();
     fetchPricing();
   }, []);
+
+  // Auto-restore: when a provider lands on the paywall with no recorded Pro
+  // access but the platform supports IAP, silently reconcile with the app store
+  // before making them tap "Subscribe". This fixes the coupon / promotional
+  // offer case (e.g. a gifted 12-month subscription): the store owns the
+  // product, but our backend never recorded it, so /status returns "none" and
+  // the user is stuck on the paywall. A restore picks up the owned purchase and
+  // re-validates it against the backend without the user needing to know.
+  useEffect(() => {
+    const statusReady = !isLoading && status !== null;
+    const noProAccess = !status?.has_pro_access;
+    const onNativeIap = Platform.OS === 'ios' || Platform.OS === 'android';
+    if (!statusReady || !noProAccess || !onNativeIap || autoRestoreAttemptedRef.current) {
+      return;
+    }
+    autoRestoreAttemptedRef.current = true;
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await restore();
+        if (!cancelled && result.success) {
+          await fetchStatus();
+        }
+      } catch (err) {
+        // Restore can fail if there is genuinely nothing to restore or the
+        // store is unreachable — that is expected and non-fatal. Stay on the
+        // paywall with the normal subscribe path available.
+        console.warn('[SubscriptionPage] Auto-restore did not find a purchase:', err);
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, status]);
 
   // Determine if user can upgrade (monthly to annual)
   const canUpgradeToAnnual = status?.has_pro_access && 
@@ -141,6 +175,29 @@ export default function SubscriptionPage({ primaryColor, role }: SubscriptionPag
         if (productId) {
           const offerToken = Platform.OS === 'android' ? `${selectedPlan}-offer` : undefined;
           const result = await purchase(productId, offerToken);
+          // "Item already owned" (StoreKit: E_ITEM_ALREADY_OWNED / 'already
+          // purchased') means the product is on the user's Apple ID but our
+          // backend never recorded it — the coupon/promotional-offer case.
+          // Don't dead-end on the paywall; reconcile via restore instead.
+          const alreadyOwned =
+            result.error &&
+            /already own|already purchase|item already|E_ITEM_ALREADY_OWNED|E_ALREADY_OWNED/i.test(result.error);
+          if (!result.success && result.error && alreadyOwned) {
+            const restoreResult = await restore();
+            if (restoreResult.success) {
+              await fetchStatus();
+              Alert.alert(
+                'Subscription Found',
+                'We found an existing subscription on your account and restored your access.',
+                [{ text: 'Continue', onPress: () => router.back() }]
+              );
+              setProcessing(false);
+              return;
+            }
+            throw new Error(
+              'Your Apple ID already owns this subscription, but we could not reconcile it. Tap "Restore Previous Purchase" below.'
+            );
+          }
           if (!result.success && result.error) {
             throw new Error(result.error);
           }

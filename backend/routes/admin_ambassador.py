@@ -19,7 +19,7 @@ from .dependencies import db, get_now, get_current_user, check_role, User
 
 router = APIRouter(prefix="/admin/api/ambassadors", tags=["Admin Ambassadors"])
 
-VALID_ROLES = ["DOULA", "MIDWIFE"]
+VALID_ROLES = ["DOULA", "MIDWIFE", "LACTATION"]
 VALID_STATUSES = ["applied", "approved", "active", "paused"]
 
 

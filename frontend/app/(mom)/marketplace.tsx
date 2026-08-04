@@ -25,7 +25,7 @@ import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../src/constants/api';
 
-const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE'];
+const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE', 'LACTATION'];
 
 export default function MarketplaceScreen() {
   const router = useRouter();
@@ -384,11 +384,17 @@ export default function MarketplaceScreen() {
   };
   
   const getRoleColor = (role: string) => {
-    return role === 'DOULA' ? colors.roleDoula : colors.roleMidwife;
+    if (role === 'DOULA') return colors.roleDoula;
+    if (role === 'MIDWIFE') return colors.roleMidwife;
+    if (role === 'LACTATION') return colors.roleLactation;
+    return colors.primary;
   };
   
   const getRoleIcon = (role: string) => {
-    return role === 'DOULA' ? 'heart' : 'medkit';
+    if (role === 'DOULA') return 'heart';
+    if (role === 'MIDWIFE') return 'medkit';
+    if (role === 'LACTATION') return 'water';
+    return 'person';
   };
   
   return (
@@ -405,7 +411,7 @@ export default function MarketplaceScreen() {
           <Image source={BRAND.logoIconPng} style={styles.headerLogo} resizeMode="contain" />
           <View>
             <Text style={styles.title}>Find Your Team</Text>
-            <Text style={styles.subtitle}>Connect with doulas and midwives in your area</Text>
+            <Text style={styles.subtitle}>Connect with doulas, midwives, and lactation consultants in your area</Text>
           </View>
         </View>
         
@@ -447,7 +453,7 @@ export default function MarketplaceScreen() {
                     selectedType === type && styles.typeChipTextActive,
                   ]}
                 >
-                  {type === 'All' ? 'All Providers' : type === 'DOULA' ? 'Doulas' : 'Midwives'}
+                  {type === 'All' ? 'All Providers' : type === 'DOULA' ? 'Doulas' : type === 'MIDWIFE' ? 'Midwives' : type === 'LACTATION' ? 'Lactation' : type}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -519,7 +525,17 @@ export default function MarketplaceScreen() {
                       <Text style={styles.tagText}>{service}</Text>
                     </View>
                   ))}
+                  {provider.role === 'LACTATION' && provider.profile?.services_offered?.slice(0, 3).map((service: string) => (
+                    <View key={service} style={styles.tag}>
+                      <Text style={styles.tagText}>{service}</Text>
+                    </View>
+                  ))}
                   {provider.role === 'MIDWIFE' && provider.profile?.credentials && (
+                    <View style={styles.tag}>
+                      <Text style={styles.tagText}>{provider.profile.credentials}</Text>
+                    </View>
+                  )}
+                  {provider.role === 'LACTATION' && provider.profile?.credentials && (
                     <View style={styles.tag}>
                       <Text style={styles.tagText}>{provider.profile.credentials}</Text>
                     </View>

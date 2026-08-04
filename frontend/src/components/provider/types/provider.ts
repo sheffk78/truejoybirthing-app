@@ -1,6 +1,6 @@
 // Shared types for Provider (Doula/Midwife) components
 
-export type ProviderRole = 'DOULA' | 'MIDWIFE';
+export type ProviderRole = 'DOULA' | 'MIDWIFE' | 'LACTATION';
 
 export interface ShareRequest {
   request_id: string;

@@ -91,7 +91,7 @@ async def get_appointments(user: User = Depends(get_current_user)):
                 appt["provider_name"] = provider.get("full_name")
                 appt["provider_role"] = provider.get("role")
                 appt["provider_picture"] = provider.get("picture")
-        elif user.role in ["DOULA", "MIDWIFE"]:
+        elif user.role in ["DOULA", "MIDWIFE", "LACTATION"]:
             # Get client info for Provider's view
             if appt.get("client_id"):
                 client = await db.clients.find_one(
@@ -326,7 +326,7 @@ async def respond_to_appointment(appointment_id: str, data: dict, user: User = D
             message=f"{user.full_name} has {status} the appointment",
             data={"appointment_id": appointment_id, "status": status}
         )
-    elif user.role in ["DOULA", "MIDWIFE"] and appt.get("mom_user_id"):
+    elif user.role in ["DOULA", "MIDWIFE", "LACTATION"] and appt.get("mom_user_id"):
         await create_notification(
             user_id=appt["mom_user_id"],
             notif_type="appointment_response",
@@ -371,7 +371,7 @@ async def cancel_appointment(appointment_id: str, user: User = Depends(get_curre
             message=f"{user.full_name} has cancelled the appointment",
             data={"appointment_id": appointment_id}
         )
-    elif user.role in ["DOULA", "MIDWIFE"] and appt.get("mom_user_id"):
+    elif user.role in ["DOULA", "MIDWIFE", "LACTATION"] and appt.get("mom_user_id"):
         await create_notification(
             user_id=appt["mom_user_id"],
             notif_type="appointment_cancelled",
@@ -418,7 +418,7 @@ async def get_upcoming_count(user: User = Depends(get_current_user)):
 
 
 @router.get("/appointments/client/{client_id}")
-async def get_client_appointments(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_client_appointments(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get appointments for a specific client (Provider only)"""
     # Verify client belongs to provider
     client = await db.clients.find_one(
@@ -443,7 +443,7 @@ async def get_client_appointments(client_id: str, user: User = Depends(check_rol
 
 
 @router.get("/appointments/has-upcoming/{client_id}")
-async def client_has_upcoming_appointment(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def client_has_upcoming_appointment(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Check if client has any upcoming appointments (for badge display)"""
     today = get_now().strftime("%Y-%m-%d")
     

@@ -47,6 +47,7 @@ export const COLORS = {
   roleMom: '#B87AA0',         // Rose for Mom
   roleDoula: '#8E8CB5',       // Lavender for Doula
   roleMidwife: '#A8B5A0',     // Sage for Midwife
+  roleLactation: '#6BAFA0',   // Teal-green for Lactation
   roleAdmin: '#6A6B6C',       // Gray for Admin
 };
 

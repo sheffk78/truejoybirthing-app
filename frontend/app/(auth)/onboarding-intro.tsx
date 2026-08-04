@@ -23,7 +23,7 @@ export default function OnboardingIntroScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <OnboardingWalkthrough 
-        role={user?.role as 'MOM' | 'DOULA' | 'MIDWIFE' || 'MOM'} 
+        role={user?.role as 'MOM' | 'DOULA' | 'MIDWIFE' | 'LACTATION' || 'MOM'} 
         onComplete={handleComplete} 
       />
     </SafeAreaView>

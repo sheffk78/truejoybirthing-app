@@ -1296,9 +1296,9 @@ async def save_midwife_contract_defaults(request: Request, user: User = Depends(
 # ============== CONTRACT TEMPLATES ROUTES ==============
 
 @router.get("/contract-templates")
-async def get_contract_templates(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_contract_templates(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get all contract templates for the current user"""
-    template_type = "doula" if user.role == "DOULA" else "midwife"
+    template_type = "doula" if user.role == "DOULA" else "midwife" if user.role == "MIDWIFE" else "lactation"
     
     templates = await db.contract_templates.find(
         {"provider_id": user.user_id, "template_type": template_type},
@@ -1309,10 +1309,10 @@ async def get_contract_templates(user: User = Depends(check_role(["DOULA", "MIDW
 
 
 @router.post("/contract-templates")
-async def create_contract_template(template_data: ContractTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def create_contract_template(template_data: ContractTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Create a new contract template"""
     now = get_now()
-    expected_type = "doula" if user.role == "DOULA" else "midwife"
+    expected_type = "doula" if user.role == "DOULA" else "midwife" if user.role == "MIDWIFE" else "lactation"
     
     if template_data.template_type != expected_type:
         raise HTTPException(status_code=400, detail=f"Template type must be '{expected_type}' for your role")
@@ -1357,7 +1357,7 @@ async def create_contract_template(template_data: ContractTemplateCreate, user: 
 
 
 @router.get("/contract-templates/{template_id}")
-async def get_contract_template_by_id(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_contract_template_by_id(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get a specific contract template"""
     template = await db.contract_templates.find_one(
         {"template_id": template_id, "provider_id": user.user_id},
@@ -1371,10 +1371,10 @@ async def get_contract_template_by_id(template_id: str, user: User = Depends(che
 
 
 @router.put("/contract-templates/{template_id}")
-async def update_contract_template(template_id: str, template_data: ContractTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def update_contract_template(template_id: str, template_data: ContractTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Update a contract template"""
     now = get_now()
-    expected_type = "doula" if user.role == "DOULA" else "midwife"
+    expected_type = "doula" if user.role == "DOULA" else "midwife" if user.role == "MIDWIFE" else "lactation"
     
     existing = await db.contract_templates.find_one(
         {"template_id": template_id, "provider_id": user.user_id}
@@ -1421,7 +1421,7 @@ async def update_contract_template(template_id: str, template_data: ContractTemp
 
 
 @router.delete("/contract-templates/{template_id}")
-async def delete_contract_template(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def delete_contract_template(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Delete a contract template"""
     result = await db.contract_templates.delete_one(
         {"template_id": template_id, "provider_id": user.user_id}
@@ -1434,10 +1434,10 @@ async def delete_contract_template(template_id: str, user: User = Depends(check_
 
 
 @router.post("/contract-templates/{template_id}/set-default")
-async def set_default_template(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def set_default_template(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Set a template as the default"""
     now = get_now()
-    expected_type = "doula" if user.role == "DOULA" else "midwife"
+    expected_type = "doula" if user.role == "DOULA" else "midwife" if user.role == "MIDWIFE" else "lactation"
     
     template = await db.contract_templates.find_one(
         {"template_id": template_id, "provider_id": user.user_id}

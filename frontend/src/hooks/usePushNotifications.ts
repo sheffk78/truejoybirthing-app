@@ -291,6 +291,7 @@ function handleNotificationResponse(data: Record<string, any>, userRole?: string
     switch (userRole) {
       case 'DOULA': return '(doula)';
       case 'MIDWIFE': return '(midwife)';
+      case 'LACTATION': return '(lactation)';
       case 'MOM':
       default: return '(mom)';
     }

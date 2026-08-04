@@ -517,7 +517,7 @@ async def search_providers(query: str, user: User = Depends(check_role(["MOM"]))
     # First search users by name/email
     providers = await db.users.find(
         {
-            "role": {"$in": ["DOULA", "MIDWIFE"]},
+            "role": {"$in": ["DOULA", "MIDWIFE", "LACTATION"]},
             "$or": [
                 {"full_name": search_regex},
                 {"email": search_regex}
@@ -545,8 +545,16 @@ async def search_providers(query: str, user: User = Depends(check_role(["MOM"]))
         {"_id": 0}
     ).to_list(20)
     
+    lactation_location_matches = await db.lactation_profiles.find(
+        {"$or": [
+            {"location_city": search_regex},
+            {"location_state": search_regex}
+        ]},
+        {"_id": 0}
+    ).to_list(20)
+    
     # Add location-matched providers
-    for profile in doula_location_matches + midwife_location_matches:
+    for profile in doula_location_matches + midwife_location_matches + lactation_location_matches:
         if profile.get("user_id") and profile["user_id"] not in provider_ids:
             user_data = await db.users.find_one(
                 {"user_id": profile["user_id"]},
@@ -564,6 +572,8 @@ async def search_providers(query: str, user: User = Depends(check_role(["MOM"]))
             profile = await db.doula_profiles.find_one({"user_id": provider["user_id"]}, {"_id": 0})
         elif provider["role"] == "MIDWIFE":
             profile = await db.midwife_profiles.find_one({"user_id": provider["user_id"]}, {"_id": 0})
+        elif provider["role"] == "LACTATION":
+            profile = await db.lactation_profiles.find_one({"user_id": provider["user_id"]}, {"_id": 0})
         
         # Check if already shared with this provider
         existing_share = await db.share_requests.find_one({
@@ -593,7 +603,7 @@ async def share_birth_plan(share_data: ShareRequestCreate, user: User = Depends(
     """Send a share request to a provider"""
     # Verify provider exists and is a doula or midwife
     provider = await db.users.find_one(
-        {"user_id": share_data.provider_id, "role": {"$in": ["DOULA", "MIDWIFE"]}},
+        {"user_id": share_data.provider_id, "role": {"$in": ["DOULA", "MIDWIFE", "LACTATION"]}},
         {"_id": 0}
     )
     
@@ -680,6 +690,11 @@ async def get_my_share_requests(user: User = Depends(check_role(["MOM"]))):
                 {"user_id": req.get("provider_id")},
                 {"_id": 0, "picture": 1}
             )
+        elif provider_role == "LACTATION":
+            profile = await db.lactation_profiles.find_one(
+                {"user_id": req.get("provider_id")},
+                {"_id": 0, "picture": 1}
+            )
         else:
             profile = None
         
@@ -746,7 +761,7 @@ async def revoke_share(request_id: str, user: User = Depends(check_role(["MOM"])
 # ============== PROVIDER SHARE REQUEST ROUTES ==============
 
 @router.get("/provider/share-requests")
-async def get_provider_share_requests(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_provider_share_requests(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get all share requests received by the provider"""
     requests = await db.share_requests.find(
         {"provider_id": user.user_id},
@@ -784,7 +799,7 @@ async def get_provider_share_requests(user: User = Depends(check_role(["DOULA", 
 async def respond_to_share_request(
     request_id: str,
     request: Request,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
 ):
     """Accept or reject a share request"""
     body = await request.json()
@@ -872,6 +887,29 @@ async def respond_to_share_request(
                         "created_at": now,
                         "updated_at": now
                     })
+            elif user.role == "LACTATION":
+                # Lactation consultants — no connection field on mom profile needed
+                # Create/update client entry in lactation consultant's clients list
+                existing_client = await db.clients.find_one({
+                    "provider_id": user.user_id,
+                    "linked_mom_id": mom_user_id
+                })
+                if not existing_client:
+                    await db.clients.insert_one({
+                        "client_id": "client_" + str(uuid.uuid4().hex)[:12],
+                        "provider_id": user.user_id,
+                        "provider_type": "LACTATION",
+                        "name": mom_name,
+                        "email": mom_user.get("email") if mom_user else None,
+                        "phone": "",
+                        "linked_mom_id": mom_user_id,
+                        "status": "Active",
+                        "edd": mom_profile.get("due_date") if mom_profile else None,
+                        "planned_birth_setting": mom_profile.get("planned_birth_setting") if mom_profile else None,
+                        "notes": "",
+                        "created_at": now,
+                        "updated_at": now
+                    })
     
     return {"message": f"Share request {new_status}"}
 
@@ -879,7 +917,7 @@ async def respond_to_share_request(
 @router.put("/provider/share-requests/{request_id}/terminate")
 async def terminate_share_request(
     request_id: str,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE", "MOM"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION", "MOM"]))
 ):
     """Terminate an active relationship. Sets relationship_status to 'terminated'.
 
@@ -1188,7 +1226,7 @@ async def delete_timeline_event(event_id: str, user: User = Depends(check_role([
 # ============== PROVIDER BIRTH PLAN ROUTES ==============
 
 @router.get("/provider/shared-birth-plans")
-async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get all birth plans shared with this provider (read-only)"""
     # Get accepted share requests where provider has view permission
     accepted_requests = await db.share_requests.find(
@@ -1238,7 +1276,7 @@ async def get_shared_birth_plans(user: User = Depends(check_role(["DOULA", "MIDW
 
 
 @router.get("/provider/shared-birth-plan/{mom_user_id}")
-async def get_shared_birth_plan_detail(mom_user_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_shared_birth_plan_detail(mom_user_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get a specific shared birth plan with provider notes (read-only view)"""
     # Verify access via active share request OR client relationship
     share_request = await get_active_relationship(user.user_id, mom_user_id)
@@ -1278,7 +1316,7 @@ async def get_shared_birth_plan_detail(mom_user_id: str, user: User = Depends(ch
 
 
 @router.get("/provider/client/{mom_user_id}/birth-plan")
-async def get_client_birth_plan(mom_user_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_client_birth_plan(mom_user_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get a client's birth plan (simplified view for client list)"""
     # Verify the provider has access via active share request or client relationship
     share_request = await get_active_relationship(user.user_id, mom_user_id)
@@ -1301,7 +1339,7 @@ async def get_client_birth_plan(mom_user_id: str, user: User = Depends(check_rol
 
 
 @router.get("/provider/client/{mom_id}/birth-plan/pdf")
-async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Generate and download a TJB-branded PDF version of a client's birth plan for providers"""
     # Verify provider has an active relationship with this mom
     if not await verify_active_relationship(user.user_id, mom_id):
@@ -1335,7 +1373,7 @@ async def provider_export_birth_plan_pdf(mom_id: str, user: User = Depends(check
 
 
 @router.post("/provider/birth-plan/{mom_user_id}/notes")
-async def add_provider_note(mom_user_id: str, note_data: ProviderNoteCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def add_provider_note(mom_user_id: str, note_data: ProviderNoteCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Add a note to a section of a shared birth plan"""
     # Verify active relationship
     if not await verify_active_relationship(user.user_id, mom_user_id):
@@ -1362,7 +1400,7 @@ async def add_provider_note(mom_user_id: str, note_data: ProviderNoteCreate, use
 
 
 @router.put("/provider/birth-plan-notes/{note_id}")
-async def update_birth_plan_note(note_id: str, request: Request, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def update_birth_plan_note(note_id: str, request: Request, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Update a provider note on a birth plan section"""
     body = await request.json()
     note_content = body.get("note_content")
@@ -1382,7 +1420,7 @@ async def update_birth_plan_note(note_id: str, request: Request, user: User = De
 
 
 @router.delete("/provider/birth-plan-notes/{note_id}")
-async def delete_birth_plan_note(note_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def delete_birth_plan_note(note_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Delete a provider note from a birth plan section"""
     result = await db.provider_notes.delete_one({
         "note_id": note_id,

@@ -70,10 +70,10 @@ export type SubscriptionProvider =
 export type PlanType = 'monthly' | 'annual';
 
 // ============== USER ROLE GATING ==============
-export type UserRole = 'MOM' | 'DOULA' | 'MIDWIFE';
+export type UserRole = 'MOM' | 'DOULA' | 'MIDWIFE' | 'LACTATION';
 
 // Roles that require Pro subscription
-export const PRO_REQUIRED_ROLES: UserRole[] = ['DOULA', 'MIDWIFE'];
+export const PRO_REQUIRED_ROLES: UserRole[] = ['DOULA', 'MIDWIFE', 'LACTATION'];
 
 // Check if a role requires Pro subscription
 export const requiresProSubscription = (role: UserRole): boolean => {

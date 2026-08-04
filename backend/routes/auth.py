@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 # Valid roles
-ROLES = ["MOM", "DOULA", "MIDWIFE", "ADMIN"]
+ROLES = ["MOM", "DOULA", "MIDWIFE", "LACTATION", "ADMIN"]
 
 
 # ============== REQUEST MODELS ==============
@@ -165,7 +165,7 @@ async def register(user_data: UserCreate, request: Request, response: Response):
     if not user_data.password:
         raise HTTPException(status_code=400, detail="Password required for registration")
     
-    ALLOWED_SELF_REGISTER_ROLES = {"MOM", "DOULA", "MIDWIFE"}
+    ALLOWED_SELF_REGISTER_ROLES = {"MOM", "DOULA", "MIDWIFE", "LACTATION"}
     if user_data.role not in ALLOWED_SELF_REGISTER_ROLES:
         raise HTTPException(status_code=400, detail="Invalid role")
     
@@ -277,6 +277,10 @@ async def get_me(user: User = Depends(get_current_user())):
         midwife_profile = await db.midwife_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
         if midwife_profile:
             profile_data = midwife_profile
+    elif user.role == "LACTATION":
+        lactation_profile = await db.lactation_profiles.find_one({"user_id": user.user_id}, {"_id": 0})
+        if lactation_profile:
+            profile_data = lactation_profile
     
     return {
         "user_id": user.user_id,
@@ -365,6 +369,7 @@ async def delete_account(user: User = Depends(get_current_user())):
     await db.mom_profiles.delete_many({"user_id": user_id})
     await db.doula_profiles.delete_many({"user_id": user_id})
     await db.midwife_profiles.delete_many({"user_id": user_id})
+    await db.lactation_profiles.delete_many({"user_id": user_id})
     
     # Delete provider-related data
     await db.clients.delete_many({"provider_id": user_id})

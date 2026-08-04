@@ -19,7 +19,7 @@ import { useAuthStore } from '../../src/store/authStore';
 import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
-type RoleOption = 'MOM' | 'DOULA' | 'MIDWIFE';
+type RoleOption = 'MOM' | 'DOULA' | 'MIDWIFE' | 'LACTATION';
 
 interface RoleData {
   value: RoleOption;
@@ -57,6 +57,15 @@ const getRoleOptions = (colors: ReturnType<typeof useColors>): RoleData[] => [
     icon: 'medkit',
     color: colors.accent,
     colorLight: colors.accent + '40',
+    pricing: 'Pro Features',
+  },
+  {
+    value: 'LACTATION',
+    label: "I'm a Lactation Consultant",
+    subtitle: 'Breastfeeding support & education',
+    icon: 'water-outline',
+    color: colors.roleLactation,
+    colorLight: colors.roleLactation + '40',
     pricing: 'Pro Features',
   },
 ];

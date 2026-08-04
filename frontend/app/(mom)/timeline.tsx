@@ -353,7 +353,7 @@ export default function TimelineScreen() {
           <DateTimePicker
             value={selectedDate}
             mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            display="default"
             onChange={handleDateChange}
           />
         )

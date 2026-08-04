@@ -516,6 +516,7 @@ async def seed_demo_data(reset: bool = False):
         await db.users.delete_many({"email": {"$in": demo_emails}})
         await db.doula_profiles.delete_many({"user_id": {"$regex": "^demo_"}})
         await db.midwife_profiles.delete_many({"user_id": {"$regex": "^demo_"}})
+        await db.lactation_profiles.delete_many({"user_id": {"$regex": "^demo_"}})
         await db.mom_profiles.delete_many({"user_id": {"$regex": "^demo_"}})
         await db.clients.delete_many({"client_id": {"$regex": "^demo_"}})
         await db.messages.delete_many({"message_id": {"$regex": "^demo_"}})
@@ -961,7 +962,7 @@ async def clear_demo_data():
     print(f"  Deleted {result.deleted_count} demo users")
     
     # Clear by demo_ prefix in IDs
-    collections = ["doula_profiles", "midwife_profiles", "mom_profiles", 
+    collections = ["doula_profiles", "midwife_profiles", "lactation_profiles", "mom_profiles", 
                    "clients", "messages", "invoices", "notes", "birth_plans",
                    "contracts", "subscriptions"]
     

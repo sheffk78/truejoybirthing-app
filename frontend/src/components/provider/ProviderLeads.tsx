@@ -92,12 +92,13 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
   const [statusFilter, setStatusFilter] = useState<string>('active');
 
   const primaryColor = config.primaryColor;
-  const appointmentsRoute = config.role === 'MIDWIFE' ? '/(midwife)/appointments' : '/(doula)/appointments';
-  const messagesRoute = config.role === 'MIDWIFE' ? '/(midwife)/messages' : '/(doula)/messages';
+  const baseRoute = config.routes.clients.replace('/clients', '');
+  const appointmentsRoute = `${baseRoute}/appointments`;
+  const messagesRoute = `${baseRoute}/messages`;
   
   // Subscription gatekeeping
   const { checkAndAlert, isSubscribed } = useSubscriptionGate();
-  const subscriptionRoute = config.role === 'MIDWIFE' ? '/(midwife)/subscription' : '/(doula)/subscription';
+  const subscriptionRoute = `${baseRoute}/subscription`;
   
   const navigateToSubscription = () => {
     router.push(subscriptionRoute as any);
@@ -290,7 +291,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
       try {
         await apiRequest(`/leads/${lead.lead_id}/convert-to-client`, {
           method: 'POST',
-          body: { initial_status: config.role === 'DOULA' ? 'Active' : 'Prenatal' }
+          body: { initial_status: config.role === 'MIDWIFE' ? 'Prenatal' : 'Active' }
         });
         fetchLeads();
         if (Platform.OS === 'web') {

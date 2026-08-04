@@ -21,6 +21,7 @@ const getRoleColors = (colors: ThemeColors): Record<string, string> => ({
   'MOM': colors.roleMom,
   'DOULA': colors.roleDoula,
   'MIDWIFE': colors.roleMidwife,
+  'LACTATION': colors.roleLactation || colors.primary,
   'ADMIN': colors.roleAdmin || colors.primary,
 });
 
@@ -69,7 +70,7 @@ export default function AdminUsersScreen() {
   };
   
   const confirmRoleChange = (userId: string, currentRole: string) => {
-    const roles = ['MOM', 'DOULA', 'MIDWIFE', 'ADMIN'].filter((r) => r !== currentRole);
+    const roles = ['MOM', 'DOULA', 'MIDWIFE', 'LACTATION', 'ADMIN'].filter((r) => r !== currentRole);
     
     Alert.alert(
       'Change Role',
@@ -125,7 +126,7 @@ export default function AdminUsersScreen() {
               All
             </Text>
           </TouchableOpacity>
-          {['MOM', 'DOULA', 'MIDWIFE', 'ADMIN'].map((role) => (
+          {['MOM', 'DOULA', 'MIDWIFE', 'LACTATION', 'ADMIN'].map((role) => (
             <TouchableOpacity
               key={role}
               style={[

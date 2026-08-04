@@ -30,7 +30,7 @@ router = APIRouter(tags=["Provider Unified"])
 async def get_provider_clients(
     include_inactive: bool = False,
     status_filter: Optional[str] = None,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
 ):
     """
     Get all clients for the logged-in provider (DOULA or MIDWIFE).
@@ -74,7 +74,7 @@ async def get_provider_clients(
 
 
 @router.get("/provider/clients/{client_id}")
-async def get_client_detail(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_client_detail(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get detailed info for a single client, including related data counts"""
     client = await db.clients.find_one(
         {"client_id": client_id, "provider_id": user.user_id},
@@ -130,7 +130,7 @@ async def get_client_detail(client_id: str, user: User = Depends(check_role(["DO
 
 
 @router.put("/provider/clients/{client_id}")
-async def update_client(client_id: str, update_data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def update_client(client_id: str, update_data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Update a client's information"""
     client = await db.clients.find_one(
         {"client_id": client_id, "provider_id": user.user_id}
@@ -155,7 +155,7 @@ async def update_client(client_id: str, update_data: dict, user: User = Depends(
 
 
 @router.get("/provider/clients/{client_id}/timeline")
-async def get_client_timeline(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_client_timeline(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """
     Get unified timeline for a client showing all activities:
     appointments, visits, notes, contracts, invoices
@@ -315,7 +315,7 @@ async def get_appointments(
     status: Optional[str] = None,
     upcoming_only: bool = False,
     include_inactive_clients: bool = False,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
 ):
     """
     Get appointments for the provider.
@@ -373,7 +373,7 @@ async def get_appointments(
 
 
 @router.post("/provider/appointments")
-async def create_appointment(data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def create_appointment(data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Create an appointment for a client using the unified model"""
     client_id = data.get("client_id")
     if not client_id:
@@ -445,7 +445,7 @@ async def create_appointment(data: dict, user: User = Depends(check_role(["DOULA
 
 
 @router.put("/provider/appointments/{appointment_id}")
-async def update_appointment(appointment_id: str, data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def update_appointment(appointment_id: str, data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Update an appointment"""
     appt = await db.appointments.find_one(
         {"appointment_id": appointment_id, "provider_id": user.user_id}
@@ -470,7 +470,7 @@ async def update_appointment(appointment_id: str, data: dict, user: User = Depen
 
 
 @router.delete("/provider/appointments/{appointment_id}")
-async def delete_appointment(appointment_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def delete_appointment(appointment_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Delete/cancel an appointment"""
     result = await db.appointments.delete_one(
         {"appointment_id": appointment_id, "provider_id": user.user_id}
@@ -487,7 +487,7 @@ async def delete_appointment(appointment_id: str, user: User = Depends(check_rol
 async def get_notes(
     client_id: Optional[str] = None,
     note_type: Optional[str] = None,
-    user: User = Depends(check_role(["DOULA", "MIDWIFE"]))
+    user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))
 ):
     """Get notes, optionally filtered by client or type"""
     query = {"provider_id": user.user_id}
@@ -513,7 +513,7 @@ async def get_notes(
 
 
 @router.post("/provider/notes")
-async def create_note(data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def create_note(data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Create a note for a client"""
     client_id = data.get("client_id")
     if not client_id:
@@ -549,7 +549,7 @@ async def create_note(data: dict, user: User = Depends(check_role(["DOULA", "MID
 
 
 @router.put("/provider/notes/{note_id}")
-async def update_note(note_id: str, data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def update_note(note_id: str, data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Update a note"""
     note = await db.notes.find_one(
         {"note_id": note_id, "provider_id": user.user_id}
@@ -572,7 +572,7 @@ async def update_note(note_id: str, data: dict, user: User = Depends(check_role(
 
 
 @router.delete("/provider/notes/{note_id}")
-async def delete_note(note_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def delete_note(note_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Delete a note"""
     result = await db.notes.delete_one(
         {"note_id": note_id, "provider_id": user.user_id}
@@ -586,7 +586,7 @@ async def delete_note(note_id: str, user: User = Depends(check_role(["DOULA", "M
 # ============== BIRTH RECORD ROUTES ==============
 
 @router.get("/provider/clients/{client_id}/birth-record")
-async def get_birth_record(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_birth_record(client_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get birth record for a client"""
     client = await db.clients.find_one(
         {"client_id": client_id, "provider_id": user.user_id}
@@ -603,7 +603,7 @@ async def get_birth_record(client_id: str, user: User = Depends(check_role(["DOU
 
 
 @router.post("/provider/clients/{client_id}/birth-record")
-async def create_or_update_birth_record(client_id: str, data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def create_or_update_birth_record(client_id: str, data: dict, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Create or update birth record for a client"""
     client = await db.clients.find_one(
         {"client_id": client_id, "provider_id": user.user_id}
@@ -655,7 +655,7 @@ async def create_or_update_birth_record(client_id: str, data: dict, user: User =
 # ============== DASHBOARD ROUTES ==============
 
 @router.get("/provider/dashboard")
-async def get_dashboard(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_dashboard(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get unified dashboard stats for provider"""
     now = get_now()
     today = now.strftime("%Y-%m-%d")

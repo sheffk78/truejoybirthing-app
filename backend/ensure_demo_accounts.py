@@ -14,6 +14,7 @@ are always present and functional. It runs on every server startup and:
 Demo Accounts:
     - Midwife: demo.midwife@truejoybirthing.com / DemoMidwife2024!
     - Doula: demo.doula@truejoybirthing.com / DemoDoula2024!
+    - Lactation: demo.lactation@truejoybirthing.com / DemoLactation2024!
     - Mom: demo.mom@truejoybirthing.com / DemoMom2024!
 """
 
@@ -68,6 +69,27 @@ DEMO_ACCOUNTS = [
             "years_in_practice": 8,
             "accepting_new_clients": True,
             "bio": "Certified doula providing compassionate, evidence-based support for your birth journey. Every family deserves to feel empowered.",
+            "in_marketplace": True,
+        },
+        "needs_subscription": True,
+    },
+    {
+        "email": "demo.lactation@truejoybirthing.com",
+        "password": "DemoLactation2024!",
+        "full_name": "Jessica Reyes",
+        "role": "LACTATION",
+        "profile_collection": "lactation_profiles",
+        "profile_data": {
+            "practice_name": "Nourish Lactation Care",
+            "certifications": ["IBCLC"],
+            "location_city": "Austin",
+            "location_state": "TX",
+            "services_offered": [
+                "Initial Lactation Consultation", "Follow-Up Visits", "Telehealth Lactation Support", "Pump Fitting & Support", "Tongue-Tie Assessment"
+            ],
+            "years_in_practice": 6,
+            "accepting_new_clients": True,
+            "bio": "IBCLC providing expert breastfeeding and chestfeeding support for the dyad. Evidence-based, compassionate care from prenatal through weaning.",
             "in_marketplace": True,
         },
         "needs_subscription": True,

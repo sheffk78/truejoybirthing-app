@@ -20,7 +20,7 @@ import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
 export default function ViewBirthPlanScreen() {
   const router = useRouter();
-  const { momId, clientName } = useLocalSearchParams<{ momId: string; clientName: string }>();
+  const { momId, clientName, leadId, mode } = useLocalSearchParams<{ momId: string; clientName: string; leadId: string; mode: string }>();
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,14 +29,21 @@ export default function ViewBirthPlanScreen() {
   const colors = useColors();
   const styles = getStyles(colors);
 
+  const isLeadMode = mode === 'lead';
+
   useEffect(() => {
     fetchBirthPlan();
-  }, [momId]);
+  }, [momId, leadId, isLeadMode]);
 
   const fetchBirthPlan = async () => {
     try {
       setLoading(true);
-      const data = await apiRequest(`/provider/client/${momId}/birth-plan`);
+      // Leads have their own endpoint so a provider can review the birth plan
+      // BEFORE accepting the client. Clients use the existing relationship-gated route.
+      const endpoint = isLeadMode && leadId
+        ? `/leads/${leadId}/birth-plan`
+        : `/provider/client/${momId}/birth-plan`;
+      const data = await apiRequest(endpoint);
       setBirthPlan(data);
     } catch (err: any) {
       console.error('Error fetching birth plan:', err);
@@ -51,7 +58,9 @@ export default function ViewBirthPlanScreen() {
     try {
       const baseUrl = getApiBaseUrl();
       // baseUrl already includes /api, so don't add it again
-      const pdfUrl = `${baseUrl}/provider/client/${momId}/birth-plan/pdf`;
+      const pdfUrl = isLeadMode && leadId
+        ? `${baseUrl}/leads/${leadId}/birth-plan/pdf`
+        : `${baseUrl}/provider/client/${momId}/birth-plan/pdf`;
       
       if (Platform.OS === 'web') {
         // For web, open in new tab with auth header via fetch

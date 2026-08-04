@@ -227,6 +227,7 @@ async def get_mom_team(user: User = Depends(check_role(["MOM"]))):
     # Batch fetch all profiles by role
     doula_ids = [p["user_id"] for p in providers if p.get("role") == "DOULA"]
     midwife_ids = [p["user_id"] for p in providers if p.get("role") == "MIDWIFE"]
+    lactation_ids = [p["user_id"] for p in providers if p.get("role") == "LACTATION"]
     
     doula_profiles = await db.doula_profiles.find(
         {"user_id": {"$in": doula_ids}},
@@ -238,10 +239,17 @@ async def get_mom_team(user: User = Depends(check_role(["MOM"]))):
         {"_id": 0}
     ).to_list(100) if midwife_ids else []
     
+    lactation_profiles = await db.lactation_profiles.find(
+        {"user_id": {"$in": lactation_ids}},
+        {"_id": 0}
+    ).to_list(100) if lactation_ids else []
+    
     profiles_by_id = {}
     for p in doula_profiles:
         profiles_by_id[p["user_id"]] = p
     for p in midwife_profiles:
+        profiles_by_id[p["user_id"]] = p
+    for p in lactation_profiles:
         profiles_by_id[p["user_id"]] = p
     
     # Build team list
@@ -311,6 +319,11 @@ async def _get_provider_profile(provider_id: str, role: str):
         )
     elif role == "MIDWIFE":
         return await db.midwife_profiles.find_one(
+            {"user_id": provider_id},
+            {"_id": 0}
+        )
+    elif role == "LACTATION":
+        return await db.lactation_profiles.find_one(
             {"user_id": provider_id},
             {"_id": 0}
         )

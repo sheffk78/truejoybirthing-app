@@ -111,7 +111,10 @@ export default function MyTeamScreen() {
   };
 
   const getProviderIcon = (role: string) => {
-    return role === 'DOULA' ? 'people' : 'medkit';
+    if (role === 'DOULA') return 'people';
+    if (role === 'MIDWIFE') return 'medkit';
+    if (role === 'LACTATION') return 'water';
+    return 'person';
   };
 
   const getRelationshipLabel = (type: string) => {
@@ -209,7 +212,7 @@ export default function MyTeamScreen() {
                   Invite a Provider by Email
                 </Text>
                 <Text style={[styles.inviteCardDesc, { color: colors.textSecondary }]}>
-                  Know a doula or midwife who isn't on TJB yet? Send them an email invitation to join and connect with you.
+                  Know a doula, midwife, or lactation consultant who isn't on TJB yet? Send them an email invitation to join and connect with you.
                 </Text>
               </View>
               <Icon name="chevron-forward" size={18} color={colors.textLight} />
@@ -247,11 +250,11 @@ export default function MyTeamScreen() {
                     <View style={styles.roleRow}>
                       <View style={[
                         styles.roleBadge,
-                        { backgroundColor: member.provider_role === 'DOULA' ? colors.primary + '20' : colors.success + '20' }
+                        { backgroundColor: member.provider_role === 'DOULA' ? colors.primary + '20' : member.provider_role === 'LACTATION' ? colors.roleLactation + '20' : colors.success + '20' }
                       ]}>
                         <Text style={[
                           styles.roleText,
-                          { color: member.provider_role === 'DOULA' ? colors.primary : colors.success }
+                          { color: member.provider_role === 'DOULA' ? colors.primary : member.provider_role === 'LACTATION' ? colors.roleLactation : colors.success }
                         ]}>
                           {member.provider_role}
                         </Text>
@@ -414,7 +417,7 @@ export default function MyTeamScreen() {
             </View>
             <Text style={styles.emptyTitle}>No Team Members Yet</Text>
             <Text style={styles.emptyText}>
-              Find and connect with a doula or midwife in the marketplace. They'll automatically get access to your birth plan once connected.
+              Find and connect with a doula, midwife, or lactation consultant in the marketplace. They'll automatically get access to your birth plan once connected.
             </Text>
             <Button
               title="Find Providers"

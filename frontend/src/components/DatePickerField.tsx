@@ -72,7 +72,7 @@ export default function DatePickerField({
       }
       return;
     }
-    // iOS: update immediately (spinner mode, user taps Done when finished)
+    // iOS: update immediately (calendar mode, user taps Done when finished)
     if (selectedDate) {
       onChange(selectedDate);
     }
@@ -170,7 +170,7 @@ export default function DatePickerField({
             </View>
           </Modal>
         ) : (
-          // iOS native: use modal with spinner for proper rendering
+          // iOS native: use modal with calendar picker for best usability
           <Modal
             visible={showPicker}
             transparent
@@ -188,12 +188,12 @@ export default function DatePickerField({
                 <View style={styles.iosPickerWrapper}>
                   <DateTimePicker
                     value={value || new Date()}
-                    mode={mode === 'datetime' ? 'date' : mode}
-                    display="spinner"
+                    mode={mode}
+                    display="default"
                     minimumDate={minimumDate}
                     maximumDate={maximumDate}
                     onChange={handleDateChange}
-                    style={{ width: '100%', height: 200 }}
+                    style={{ width: '100%', height: mode === 'datetime' ? 200 : 320 }}
                   />
                 </View>
                 <Button

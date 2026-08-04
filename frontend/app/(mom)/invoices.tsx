@@ -68,6 +68,7 @@ export default function MomInvoicesScreen() {
   const getProviderTypeLabel = (type: string) => {
     if (type === 'DOULA') return 'Doula';
     if (type === 'MIDWIFE') return 'Midwife';
+    if (type === 'LACTATION') return 'Lactation Consultant';
     return type;
   };
 

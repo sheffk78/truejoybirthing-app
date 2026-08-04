@@ -401,7 +401,7 @@ export default function MessagesScreen() {
   };
   
   const getRoleColor = (role: string) => {
-    return role === 'DOULA' ? colors.roleDoula : role === 'MIDWIFE' ? colors.roleMidwife : colors.primary;
+    return role === 'DOULA' ? colors.roleDoula : role === 'MIDWIFE' ? colors.roleMidwife : role === 'LACTATION' ? colors.roleLactation : colors.primary;
   };
 
   const closeConversation = () => {
@@ -667,7 +667,7 @@ export default function MessagesScreen() {
                     ) : (
                       <View style={[styles.avatar, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
                         <Icon 
-                          name={conv.other_user_role === 'DOULA' ? 'heart' : conv.other_user_role === 'MIDWIFE' ? 'medkit' : 'person'} 
+                          name={conv.other_user_role === 'DOULA' ? 'heart' : conv.other_user_role === 'MIDWIFE' ? 'medkit' : conv.other_user_role === 'LACTATION' ? 'water' : 'person'}
                           size={24} 
                           color={getRoleColor(conv.other_user_role)} 
                         />

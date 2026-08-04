@@ -666,7 +666,7 @@ export default function MomProfileScreen() {
                             <DateTimePicker
                               value={dueDateObj || new Date()}
                               mode="date"
-                              display="spinner"
+                              display="default"
                               onChange={handleDateChange}
                               minimumDate={new Date()}
                               maximumDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}

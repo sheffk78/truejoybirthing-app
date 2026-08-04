@@ -65,7 +65,7 @@ async def generate_invoice_number(user_id: str) -> str:
 # ============== PAYMENT INSTRUCTIONS TEMPLATE ROUTES ==============
 
 @router.get("/payment-instructions")
-async def get_payment_instructions(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_payment_instructions(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get all payment instructions templates for the user"""
     templates = await db.payment_instructions.find(
         {"user_id": user.user_id},
@@ -75,7 +75,7 @@ async def get_payment_instructions(user: User = Depends(check_role(["DOULA", "MI
 
 
 @router.post("/payment-instructions")
-async def create_payment_instructions(data: PaymentInstructionsTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def create_payment_instructions(data: PaymentInstructionsTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Create a new payment instructions template"""
     now = get_now()
     
@@ -101,7 +101,7 @@ async def create_payment_instructions(data: PaymentInstructionsTemplateCreate, u
 
 
 @router.put("/payment-instructions/{template_id}")
-async def update_payment_instructions(template_id: str, data: PaymentInstructionsTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def update_payment_instructions(template_id: str, data: PaymentInstructionsTemplateCreate, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Update a payment instructions template"""
     now = get_now()
     
@@ -128,7 +128,7 @@ async def update_payment_instructions(template_id: str, data: PaymentInstruction
 
 
 @router.delete("/payment-instructions/{template_id}")
-async def delete_payment_instructions(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def delete_payment_instructions(template_id: str, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Delete a payment instructions template"""
     result = await db.payment_instructions.delete_one(
         {"template_id": template_id, "user_id": user.user_id}

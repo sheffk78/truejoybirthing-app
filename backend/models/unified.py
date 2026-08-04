@@ -13,6 +13,7 @@ from enum import Enum
 class ProviderRole(str, Enum):
     DOULA = "DOULA"
     MIDWIFE = "MIDWIFE"
+    LACTATION = "LACTATION"
 
 class AppointmentType(str, Enum):
     PRENATAL_VISIT = "prenatal_visit"

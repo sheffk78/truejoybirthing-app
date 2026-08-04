@@ -14,7 +14,7 @@ from .dependencies import db, get_now, get_current_user, check_role, User
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
 # Valid roles constant (matches server.py)
-ROLES = ["MOM", "DOULA", "MIDWIFE", "ADMIN"]
+ROLES = ["MOM", "DOULA", "MIDWIFE", "LACTATION", "ADMIN"]
 
 # Birth plan sections for default content creation
 BIRTH_PLAN_SECTIONS = [

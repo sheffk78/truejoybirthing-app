@@ -29,9 +29,10 @@ export default function Index() {
     const dest = user.role === 'MOM' ? '/(mom)/home'
       : user.role === 'DOULA' ? '/(doula)/dashboard'
       : user.role === 'MIDWIFE' ? '/(midwife)/dashboard'
+      : user.role === 'LACTATION' ? '/(lactation)/dashboard'
       : user.role === 'ADMIN' ? '/(admin)/content'
       : '/(auth)/welcome';
-    router.replace(dest);
+    router.replace(dest as any);
   }, [isLoading, isAuthenticated, user]);
 
   return (

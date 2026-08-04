@@ -140,7 +140,7 @@ async def check_pro_access(user: User) -> bool:
 
 # ============== ROUTES ==============
 @router.post("/feedback")
-async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Submit feedback from Pro users - sends email to shelbi@truejoybirthing.com"""
     
     # Check if user has Pro access
@@ -159,7 +159,7 @@ async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends
     
     # Format the topic for subject line
     topic = feedback.feedback_topic or "General comment"
-    role_label = "Doula" if user.role == "DOULA" else "Midwife"
+    role_label = "Doula" if user.role == "DOULA" else "Midwife" if user.role == "MIDWIFE" else "Lactation Consultant"
     
     # Build email subject
     subject = f"Pro Feedback from {user.full_name} – {topic}"
@@ -248,7 +248,7 @@ async def submit_pro_feedback(feedback: ProFeedbackRequest, user: User = Depends
 
 
 @router.get("/feedback")
-async def get_feedback_history(user: User = Depends(check_role(["DOULA", "MIDWIFE"]))):
+async def get_feedback_history(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
     """Get user's feedback history"""
     feedback_list = await db.pro_feedback.find(
         {"user_id": user.user_id},
