@@ -24,6 +24,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
+import { RedDot } from '../RedDot';
 import { apiRequest } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
@@ -363,7 +364,10 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
               </View>
             )}
             <View style={{ flex: 1 }}>
-              <Text style={styles.clientName}>{appointment.client_name || appointment.mom_name}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.clientName}>{appointment.client_name || appointment.mom_name}</Text>
+                {isPending && <RedDot size={8} />}
+              </View>
               <Text style={styles.appointmentType}>
                 {APPOINTMENT_TYPES.find(t => t.value === appointment.appointment_type)?.label || appointment.appointment_type}
               </Text>
@@ -705,7 +709,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                           <DateTimePicker
                             value={appointmentDate}
                             mode="date"
-                            display="spinner"
+                            display="default"
                             onChange={(event: any, date?: Date) => {
                               if (date) setAppointmentDate(date);
                             }}
@@ -780,7 +784,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                           <DateTimePicker
                             value={appointmentTime}
                             mode="time"
-                            display="spinner"
+                            display="default"
                             onChange={(event: any, time?: Date) => {
                               if (time) setAppointmentTime(time);
                             }}
@@ -875,7 +879,7 @@ const getStyles = createThemedStyles((colors) => ({
     overflow: 'visible',
     zIndex: 1000,
   },
-  // Date modal styles for iOS spinner pickers
+  // Date modal styles for iOS calendar pickers
   dateModalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

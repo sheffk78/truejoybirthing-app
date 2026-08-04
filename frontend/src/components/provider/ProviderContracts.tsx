@@ -20,7 +20,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePickerField from '../DatePickerField';
+import { RedDot } from '../RedDot';
 import { apiRequest, getApiBaseUrl } from '../../utils/api';
 import useAuthStore from '../../store/authStore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -84,7 +85,6 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
   const [submitting, setSubmitting] = useState(false);
   const [isQuickEditMode, setIsQuickEditMode] = useState(false);
   const [quickEditData, setQuickEditData] = useState<Record<string, any>>({});
-  const [activeDateField, setActiveDateField] = useState<string | null>(null);
 
   const primaryColor = config.primaryColor;
   const sections = config.sections;
@@ -460,61 +460,17 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
               style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16, color: colors.text, backgroundColor: colors.surface }}
             />
           ) : (
-            <>
-              <TouchableOpacity
-                style={styles.datePickerButton}
-                onPress={() => setActiveDateField(field.id)}
-              >
-                <Icon name="calendar-outline" size={18} color={colors.primary} />
-                <Text style={[styles.datePickerText, { color: value ? colors.text : colors.textLight }]}>
-                  {value || 'Select date'}
-                </Text>
-              </TouchableOpacity>
-              {activeDateField === field.id && Platform.OS === 'android' && (
-                <DateTimePicker
-                  value={value ? new Date(value + 'T00:00:00') : new Date()}
-                  mode="date"
-                  display="default"
-                  onChange={(event: any, date?: Date) => {
-                    setActiveDateField(null);
-                    if (date) {
-                      const y = date.getFullYear();
-                      const m = String(date.getMonth() + 1).padStart(2, '0');
-                      const d = String(date.getDate()).padStart(2, '0');
-                      updateFormField(field.id, `${y}-${m}-${d}`);
-                    }
-                  }}
-                />
-              )}
-              {activeDateField === field.id && Platform.OS === 'ios' && (
-                <Modal transparent animationType="slide" onRequestClose={() => setActiveDateField(null)}>
-                  <View style={styles.dateModalOverlay}>
-                    <View style={styles.dateModalContent}>
-                      <View style={styles.dateModalHeader}>
-                        <Text style={styles.dateModalTitle}>Select Date</Text>
-                        <TouchableOpacity onPress={() => setActiveDateField(null)}>
-                          <Text style={[styles.dateModalTitle, { color: colors.primary }]}>Done</Text>
-                        </TouchableOpacity>
-                      </View>
-                      <DateTimePicker
-                        value={value ? new Date(value + 'T00:00:00') : new Date()}
-                        mode="date"
-                        display="spinner"
-                        onChange={(event: any, date?: Date) => {
-                          if (date) {
-                            const y = date.getFullYear();
-                            const m = String(date.getMonth() + 1).padStart(2, '0');
-                            const d = String(date.getDate()).padStart(2, '0');
-                            updateFormField(field.id, `${y}-${m}-${d}`);
-                          }
-                        }}
-                        textColor={colors.text}
-                      />
-                    </View>
-                  </View>
-                </Modal>
-              )}
-            </>
+            <DatePickerField
+              label={field.label}
+              value={value ? new Date(value + 'T00:00:00') : null}
+              onChange={(date) => {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                updateFormField(field.id, `${y}-${m}-${d}`);
+              }}
+              placeholder="Select date"
+            />
           )
         ) : field.type === 'number' ? (
           <TextInput
@@ -547,7 +503,10 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
     >
       <View style={styles.cardHeader}>
         <View>
-          <Text style={styles.clientName}>{contract.client_name}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.clientName}>{contract.client_name}</Text>
+            {contract.status === 'Sent' && <RedDot size={8} />}
+          </View>
           <Text style={styles.contractDate}>
             Created: {new Date(contract.created_at).toLocaleDateString()}
           </Text>
@@ -1415,7 +1374,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   datePickerButton: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radiusSm, paddingHorizontal: SIZES.md, paddingVertical: 14, backgroundColor: colors.surface, gap: SIZES.sm },
   datePickerText: { fontSize: SIZES.fontMd },
-  // Date modal styles for iOS spinner pickers
+  // Date modal styles for iOS calendar pickers
   dateModalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

@@ -19,7 +19,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePickerField from '../DatePickerField';
+import { RedDot } from '../RedDot';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
@@ -70,8 +71,6 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   const [dueDate, setDueDate] = useState('');
   const [paymentInstructions, setPaymentInstructions] = useState('');
   const [notesForClient, setNotesForClient] = useState('');
-  const [showIssueDatePicker, setShowIssueDatePicker] = useState(false);
-  const [showDueDatePicker, setShowDueDatePicker] = useState(false);
   
   // Payment Instructions Modal
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -558,7 +557,10 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               <View style={styles.invoiceHeader}>
                 <View style={styles.invoiceInfo}>
                   <Text style={styles.invoiceNumber}>{invoice.invoice_number}</Text>
-                  <Text style={styles.clientName}>{invoice.client_name}</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={styles.clientName}>{invoice.client_name}</Text>
+                    {invoice.status === 'Sent' && <RedDot size={8} />}
+                  </View>
                 </View>
                 <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[invoice.status] || '#9E9E9E') + '20' }]}>
                   <Text style={[styles.statusText, { color: STATUS_COLORS[invoice.status] || '#9E9E9E' }]}>
@@ -718,92 +720,30 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
 
             <View style={styles.dateRow}>
               <View style={styles.dateField}>
-                <Text style={styles.fieldLabel}>Issue Date</Text>
-                {Platform.OS === 'web' ? (
-                  <input
-                    type="date"
-                    value={issueDate}
-                    onChange={(e) => setIssueDate(e.target.value)}
-                    style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16 }}
-                  />
-                ) : (
-                  <>
-                    <TouchableOpacity
-                      style={styles.datePickerButton}
-                      onPress={() => setShowIssueDatePicker(true)}
-                    >
-                      <Icon name="calendar-outline" size={18} color={colors.primary} />
-                      <Text style={[styles.datePickerText, { color: issueDate ? colors.text : colors.textLight }]}>
-                        {issueDate || 'Select date'}
-                      </Text>
-                    </TouchableOpacity>
-                    {showIssueDatePicker && (
-                      <DateTimePicker
-                        value={issueDate ? new Date(issueDate + 'T00:00:00') : new Date()}
-                        mode="date"
-                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                        onChange={(event: any, date?: Date) => {
-                          setShowIssueDatePicker(Platform.OS === 'ios');
-                          if (date) {
-                            const y = date.getFullYear();
-                            const m = String(date.getMonth() + 1).padStart(2, '0');
-                            const d = String(date.getDate()).padStart(2, '0');
-                            setIssueDate(`${y}-${m}-${d}`);
-                          }
-                        }}
-                      />
-                    )}
-                    {Platform.OS === 'ios' && showIssueDatePicker && (
-                      <TouchableOpacity onPress={() => setShowIssueDatePicker(false)} style={styles.datePickerDone}>
-                        <Text style={[styles.datePickerDoneText, { color: colors.primary }]}>Done</Text>
-                      </TouchableOpacity>
-                    )}
-                  </>
-                )}
+                <DatePickerField
+                  label="Issue Date"
+                  value={issueDate ? new Date(issueDate + 'T00:00:00') : null}
+                  onChange={(date) => {
+                    const y = date.getFullYear();
+                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                    const d = String(date.getDate()).padStart(2, '0');
+                    setIssueDate(`${y}-${m}-${d}`);
+                  }}
+                  placeholder="Select date"
+                />
               </View>
               <View style={styles.dateField}>
-                <Text style={styles.fieldLabel}>Due Date</Text>
-                {Platform.OS === 'web' ? (
-                  <input
-                    type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    style={{ padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 8, fontSize: 16 }}
-                  />
-                ) : (
-                  <>
-                    <TouchableOpacity
-                      style={styles.datePickerButton}
-                      onPress={() => setShowDueDatePicker(true)}
-                    >
-                      <Icon name="calendar-outline" size={18} color={colors.primary} />
-                      <Text style={[styles.datePickerText, { color: dueDate ? colors.text : colors.textLight }]}>
-                        {dueDate || 'Select date'}
-                      </Text>
-                    </TouchableOpacity>
-                    {showDueDatePicker && (
-                      <DateTimePicker
-                        value={dueDate ? new Date(dueDate + 'T00:00:00') : new Date()}
-                        mode="date"
-                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                        onChange={(event: any, date?: Date) => {
-                          setShowDueDatePicker(Platform.OS === 'ios');
-                          if (date) {
-                            const y = date.getFullYear();
-                            const m = String(date.getMonth() + 1).padStart(2, '0');
-                            const d = String(date.getDate()).padStart(2, '0');
-                            setDueDate(`${y}-${m}-${d}`);
-                          }
-                        }}
-                      />
-                    )}
-                    {Platform.OS === 'ios' && showDueDatePicker && (
-                      <TouchableOpacity onPress={() => setShowDueDatePicker(false)} style={styles.datePickerDone}>
-                        <Text style={[styles.datePickerDoneText, { color: colors.primary }]}>Done</Text>
-                      </TouchableOpacity>
-                    )}
-                  </>
-                )}
+                <DatePickerField
+                  label="Due Date"
+                  value={dueDate ? new Date(dueDate + 'T00:00:00') : null}
+                  onChange={(date) => {
+                    const y = date.getFullYear();
+                    const m = String(date.getMonth() + 1).padStart(2, '0');
+                    const d = String(date.getDate()).padStart(2, '0');
+                    setDueDate(`${y}-${m}-${d}`);
+                  }}
+                  placeholder="Select date"
+                />
               </View>
             </View>
 

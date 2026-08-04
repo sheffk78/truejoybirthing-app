@@ -23,6 +23,7 @@ import { useRouter } from 'expo-router';
 import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
+import { RedDot } from '../RedDot';
 import { apiRequest } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
@@ -155,8 +156,25 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
   const handleMessage = (lead: Lead) => {
     router.push({
       pathname: messagesRoute as any,
-      params: { openConversation: lead.mom_user_id }
+      params: {
+        clientUserId: lead.mom_user_id,
+        clientName: lead.mom_name,
+      }
     });
+  };
+
+  const handleViewBirthPlan = (lead: Lead) => {
+    // Opens the shared birth-plan viewer in "lead" mode so the provider can
+    // review the full plan BEFORE accepting the client.
+    router.push({
+      pathname: '/view-birth-plan',
+      params: {
+        momId: lead.mom_user_id,
+        clientName: lead.mom_name,
+        leadId: lead.lead_id,
+        mode: 'lead',
+      },
+    } as any);
   };
 
   const handleDecline = async (lead: Lead) => {
@@ -336,7 +354,10 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
               </View>
             )}
             <View style={styles.momDetails}>
-              <Text style={styles.momName}>{lead.mom_name}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.momName}>{lead.mom_name}</Text>
+                {lead.status === 'consultation_requested' && <RedDot size={8} />}
+              </View>
               {lead.edd && (
                 <Text style={styles.momEdd}>EDD: {formatDate(lead.edd)}</Text>
               )}
@@ -451,6 +472,13 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
                 >
                   <Icon name="calendar-outline" size={16} color={colors.white} />
                   <Text style={styles.actionButtonText}>Schedule</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.actionButtonOutline]}
+                  onPress={() => handleViewBirthPlan(lead)}
+                >
+                  <Icon name="document-text-outline" size={16} color={primaryColor} />
+                  <Text style={[styles.actionButtonText, { color: primaryColor }]}>View Birth Plan</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.actionButton, { backgroundColor: colors.success }]}
