@@ -369,6 +369,10 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   // Swap / Exchange
   'swap-horizontal': 'ArrowLeftRight',
   'swap-horizontal-outline': 'ArrowLeftRight',
+  'bar-chart': 'BarChart3',
+  'bar-chart-outline': 'BarChart3',
+  'flask': 'FlaskConical',
+  'flask-outline': 'FlaskConical',
 
   // Briefcase
   'briefcase': 'Briefcase',

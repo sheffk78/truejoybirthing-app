@@ -24,6 +24,7 @@ import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { LaborSection, BirthRecordSection, PrenatalVisitSection, NewbornExamSection } from '../midwife';
+import { LatchSection, WeightTrackerSection, FeedingLogSection, OralExamSection, SoapNoteSection } from '../lactation';
 
 // ============== TYPES ==============
 interface Client {
@@ -68,6 +69,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
   
   const primaryColor = config.primaryColor;
   const isMidwife = config.role === 'MIDWIFE';
+  const isLactation = config.role === 'LACTATION';
   
   // Core state
   const [client, setClient] = useState<Client | null>(null);
@@ -363,8 +365,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             </TouchableOpacity>
           )}
           
-          {/* Placeholder for alignment - only for non-midwife */}
-          {!isMidwife && <View style={styles.actionButton} />}
+          {/* Placeholder for alignment - only for non-midwife, non-lactation */}
+          {!isMidwife && !isLactation && <View style={styles.actionButton} />}
           {!isMidwife && <View style={styles.actionButton} />}
         </View>
 
@@ -404,6 +406,63 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             <View style={styles.actionButton} />
           </View>
         )}
+
+        {/* Lactation quick actions row - Lactation only */}
+        {isLactation && (
+          <View style={styles.actionsRow}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => {
+                // Scroll to LATCH section
+              }}
+              data-testid="action-latch"
+            >
+              <View style={[styles.actionIcon, { backgroundColor: colors.lactationPrimary + '15' }]}>
+                <Icon name="water-outline" size={20} color={colors.lactationPrimary} />
+              </View>
+              <Text style={styles.actionLabel}>LATCH</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => {
+                // Scroll to Feeding Log section
+              }}
+              data-testid="action-feeding"
+            >
+              <View style={[styles.actionIcon, { backgroundColor: colors.lactationPrimary + '15' }]}>
+                <Icon name="nutrition-outline" size={20} color={colors.lactationPrimary} />
+              </View>
+              <Text style={styles.actionLabel}>Feeding</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => {
+                // Scroll to Weight section
+              }}
+              data-testid="action-weight"
+            >
+              <View style={[styles.actionIcon, { backgroundColor: colors.lactationPrimary + '15' }]}>
+                <Icon name="bar-chart-outline" size={20} color={colors.lactationPrimary} />
+              </View>
+              <Text style={styles.actionLabel}>Weight</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => {
+                // Scroll to Oral Exam section
+              }}
+              data-testid="action-oral-exam"
+            >
+              <View style={[styles.actionIcon, { backgroundColor: colors.lactationPrimary + '15' }]}>
+                <Icon name="medkit-outline" size={20} color={colors.lactationPrimary} />
+              </View>
+              <Text style={styles.actionLabel}>Oral Exam</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         
         {/* Prenatal Visits Section - Midwife Only */}
         {isMidwife && (
@@ -435,6 +494,43 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
         {/* Newborn Exam Section - Midwife Only */}
         {isMidwife && (
           <NewbornExamSection
+            clientId={clientId}
+            primaryColor={primaryColor}
+            onRefresh={fetchData}
+          />
+        )}
+
+        {/* LACTATION Clinical Sections - Lactation Only */}
+        {isLactation && (
+          <LatchSection
+            clientId={clientId}
+            primaryColor={primaryColor}
+            onRefresh={fetchData}
+          />
+        )}
+        {isLactation && (
+          <WeightTrackerSection
+            clientId={clientId}
+            primaryColor={primaryColor}
+            onRefresh={fetchData}
+          />
+        )}
+        {isLactation && (
+          <FeedingLogSection
+            clientId={clientId}
+            primaryColor={primaryColor}
+            onRefresh={fetchData}
+          />
+        )}
+        {isLactation && (
+          <OralExamSection
+            clientId={clientId}
+            primaryColor={primaryColor}
+            onRefresh={fetchData}
+          />
+        )}
+        {isLactation && (
+          <SoapNoteSection
             clientId={clientId}
             primaryColor={primaryColor}
             onRefresh={fetchData}

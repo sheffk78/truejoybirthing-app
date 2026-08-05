@@ -436,3 +436,417 @@ async def delete_lactation_note(note_id: str, user: User = Depends(check_role(["
         raise HTTPException(status_code=404, detail="Note not found")
 
     return {"message": "Note deleted"}
+
+
+# ============== LATCH SCORE ==============
+
+class LatchScoreCreate(BaseModel):
+    """LATCH breastfeeding assessment score (0-10)"""
+    client_id: str
+    assessment_date: Optional[str] = None  # YYYY-MM-DD
+    # L: Latch
+    latch_score: int  # 0-2 (0=no latch, 1=repeated attempts, 2=grasps and sustains)
+    latch_notes: Optional[str] = None
+    # A: Audible Swallow
+    swallow_score: int  # 0-2 (0=none, 1=few, 2=spontaneous/intermittent)
+    swallow_notes: Optional[str] = None
+    # T: Type of Nipple
+    nipple_type: int  # 0-2 (0=inverted, 1=flat, 2=everted)
+    nipple_notes: Optional[str] = None
+    # C: Comfort
+    comfort_score: int  # 0-2 (0=engorged/severe discomfort, 1=filling/moderate, 2=soft/no discomfort)
+    comfort_notes: Optional[str] = None
+    # H: Hold
+    hold_score: int  # 0-2 (0=full assist, 1=minimal assist, 2=self-positioning)
+    hold_notes: Optional[str] = None
+    general_notes: Optional[str] = None
+
+
+@router.post("/latch-scores")
+async def create_latch_score(score_data: LatchScoreCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Record a LATCH score assessment"""
+    now = get_now()
+
+    client = await db.clients.find_one(
+        {"client_id": score_data.client_id, "provider_id": user.user_id}
+    )
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    total = (score_data.latch_score + score_data.swallow_score +
+             score_data.nipple_type + score_data.comfort_score +
+             score_data.hold_score)
+
+    record = {
+        "score_id": f"latch_{uuid.uuid4().hex[:12]}",
+        "provider_id": user.user_id,
+        "client_id": score_data.client_id,
+        "client_name": client.get("name", ""),
+        "assessment_date": score_data.assessment_date or now.strftime("%Y-%m-%d"),
+        "latch_score": score_data.latch_score,
+        "latch_notes": score_data.latch_notes,
+        "swallow_score": score_data.swallow_score,
+        "swallow_notes": score_data.swallow_notes,
+        "nipple_type": score_data.nipple_type,
+        "nipple_notes": score_data.nipple_notes,
+        "comfort_score": score_data.comfort_score,
+        "comfort_notes": score_data.comfort_notes,
+        "hold_score": score_data.hold_score,
+        "hold_notes": score_data.hold_notes,
+        "total_score": total,
+        "general_notes": score_data.general_notes,
+        "created_at": now,
+    }
+
+    await db.latch_scores.insert_one(record)
+    record.pop("_id", None)
+    return record
+
+
+@router.get("/latch-scores")
+async def get_latch_scores(user: User = Depends(check_role(["LACTATION"])), client_id: Optional[str] = None):
+    """Get LATCH scores, optionally filtered by client"""
+    query = {"provider_id": user.user_id}
+    if client_id:
+        query["client_id"] = client_id
+    scores = await db.latch_scores.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return scores
+
+
+@router.delete("/latch-scores/{score_id}")
+async def delete_latch_score(score_id: str, user: User = Depends(check_role(["LACTATION"]))):
+    """Delete a LATCH score record"""
+    result = await db.latch_scores.delete_one(
+        {"score_id": score_id, "provider_id": user.user_id}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="LATCH score not found")
+    return {"message": "LATCH score deleted"}
+
+
+# ============== INFANT WEIGHT TRACKER ==============
+
+class InfantWeightCreate(BaseModel):
+    """Infant weight tracking entry"""
+    client_id: str
+    weight_date: Optional[str] = None  # YYYY-MM-DD
+    weight: float  # in grams or ounces
+    weight_unit: str = "g"  # "g" or "oz"
+    baby_age_days: Optional[int] = None
+    notes: Optional[str] = None
+
+
+@router.post("/infant-weights")
+async def create_infant_weight(weight_data: InfantWeightCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Record an infant weight measurement"""
+    now = get_now()
+
+    client = await db.clients.find_one(
+        {"client_id": weight_data.client_id, "provider_id": user.user_id}
+    )
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    weight_g = weight_data.weight
+    if weight_data.weight_unit == "oz":
+        weight_g = weight_data.weight * 28.3495
+
+    # Get birth weight if available to calculate % change
+    birth_entry = await db.infant_weights.find_one(
+        {"client_id": weight_data.client_id, "provider_id": user.user_id, "is_birth_weight": True},
+        {"_id": 0}
+    )
+
+    percent_change = None
+    if birth_entry:
+        birth_g = birth_entry["weight"]
+        if birth_data_unit := birth_entry.get("weight_unit", "g"):
+            if birth_data_unit == "oz":
+                birth_g = birth_entry["weight"] * 28.3495
+        if birth_g > 0:
+            percent_change = round(((weight_g - birth_g) / birth_g) * 100, 1)
+
+    record = {
+        "weight_id": f"weight_{uuid.uuid4().hex[:12]}",
+        "provider_id": user.user_id,
+        "client_id": weight_data.client_id,
+        "client_name": client.get("name", ""),
+        "weight_date": weight_data.weight_date or now.strftime("%Y-%m-%d"),
+        "weight": weight_data.weight,
+        "weight_unit": weight_data.weight_unit,
+        "weight_grams": round(weight_g, 1),
+        "baby_age_days": weight_data.baby_age_days,
+        "percent_change_from_birth": percent_change,
+        "notes": weight_data.notes,
+        "created_at": now,
+    }
+
+    await db.infant_weights.insert_one(record)
+    record.pop("_id", None)
+    return record
+
+
+@router.get("/infant-weights")
+async def get_infant_weights(user: User = Depends(check_role(["LACTATION"])), client_id: Optional[str] = None):
+    """Get infant weight entries, optionally filtered by client"""
+    query = {"provider_id": user.user_id}
+    if client_id:
+        query["client_id"] = client_id
+    weights = await db.infant_weights.find(query, {"_id": 0}).sort("weight_date", -1).to_list(200)
+    return weights
+
+
+@router.delete("/infant-weights/{weight_id}")
+async def delete_infant_weight(weight_id: str, user: User = Depends(check_role(["LACTATION"]))):
+    """Delete an infant weight entry"""
+    result = await db.infant_weights.delete_one(
+        {"weight_id": weight_id, "provider_id": user.user_id}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Weight entry not found")
+    return {"message": "Weight entry deleted"}
+
+
+# ============== FEEDING LOG ==============
+
+class FeedingLogCreate(BaseModel):
+    """Feeding session log entry"""
+    client_id: str
+    feeding_date: Optional[str] = None  # YYYY-MM-DD
+    feeding_time: Optional[str] = None  # HH:MM
+    feeding_type: str  # "breast", "bottle", "expressed", "mixed"
+    side: Optional[str] = None  # "left", "right", "both" (for breast)
+    duration_minutes: Optional[int] = None
+    amount_ml: Optional[float] = None  # for bottle/expressed
+    latch_quality: Optional[str] = None  # "good", "fair", "poor"
+    milk_type: Optional[str] = None  # "breast_milk", "formula", "donor", "mixed" (for bottle)
+    notes: Optional[str] = None
+
+
+@router.post("/feeding-logs")
+async def create_feeding_log(log_data: FeedingLogCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Record a feeding session"""
+    now = get_now()
+
+    client = await db.clients.find_one(
+        {"client_id": log_data.client_id, "provider_id": user.user_id}
+    )
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    record = {
+        "log_id": f"feed_{uuid.uuid4().hex[:12]}",
+        "provider_id": user.user_id,
+        "client_id": log_data.client_id,
+        "client_name": client.get("name", ""),
+        "feeding_date": log_data.feeding_date or now.strftime("%Y-%m-%d"),
+        "feeding_time": log_data.feeding_time,
+        "feeding_type": log_data.feeding_type,
+        "side": log_data.side,
+        "duration_minutes": log_data.duration_minutes,
+        "amount_ml": log_data.amount_ml,
+        "latch_quality": log_data.latch_quality,
+        "milk_type": log_data.milk_type,
+        "notes": log_data.notes,
+        "created_at": now,
+    }
+
+    await db.feeding_logs.insert_one(record)
+    record.pop("_id", None)
+    return record
+
+
+@router.get("/feeding-logs")
+async def get_feeding_logs(user: User = Depends(check_role(["LACTATION"])), client_id: Optional[str] = None):
+    """Get feeding logs, optionally filtered by client"""
+    query = {"provider_id": user.user_id}
+    if client_id:
+        query["client_id"] = client_id
+    logs = await db.feeding_logs.find(query, {"_id": 0}).sort("created_at", -1).to_list(200)
+    return logs
+
+
+@router.delete("/feeding-logs/{log_id}")
+async def delete_feeding_log(log_id: str, user: User = Depends(check_role(["LACTATION"]))):
+    """Delete a feeding log entry"""
+    result = await db.feeding_logs.delete_one(
+        {"log_id": log_id, "provider_id": user.user_id}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Feeding log not found")
+    return {"message": "Feeding log deleted"}
+
+
+# ============== ORAL EXAM ==============
+
+class OralExamCreate(BaseModel):
+    """Oral examination record for lactation assessment"""
+    client_id: str
+    exam_date: Optional[str] = None  # YYYY-MM-DD
+    # Tongue
+    tongue_appearance: Optional[str] = None  # "normal", "heart_shaped", "short_frenum", "thick_frenum"
+    tongue_tie: Optional[str] = None  # "none", "anterior", "posterior", "submucosal"
+    tongue_tie_severity: Optional[str] = None  # "mild", "moderate", "severe"
+    tongue_lift: Optional[str] = None  # "full", "partial", "limited"
+    lateralization: Optional[str] = None  # "full", "partial", "none"
+    # Lips
+    lip_tie: Optional[str] = None  # "none", "mild", "moderate", "severe"
+    lip_seal: Optional[str] = None  # "good", "fair", "poor"
+    # Palate
+    palate: Optional[str] = None  # "normal", "high_arched", "cleft", "other"
+    palate_notes: Optional[str] = None
+    # Gums
+    gums: Optional[str] = None  # "normal", "swollen", "other"
+    # Suck assessment
+    sucking_reflex: Optional[str] = None  # "strong", "moderate", "weak", "absent"
+    suck_pattern: Optional[str] = None  # "rhythmic", "disorganized", "weak", "jaw_clench"
+    # Recommendations
+    recommendation: Optional[str] = None  # "continue_breastfeeding", "refer_for_frenotomy", "refer_to_ent", "follow_up", "other"
+    referral_notes: Optional[str] = None
+    general_notes: Optional[str] = None
+
+
+@router.post("/oral-exams")
+async def create_oral_exam(exam_data: OralExamCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Record an oral examination"""
+    now = get_now()
+
+    client = await db.clients.find_one(
+        {"client_id": exam_data.client_id, "provider_id": user.user_id}
+    )
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    record = {
+        "exam_id": f"oral_{uuid.uuid4().hex[:12]}",
+        "provider_id": user.user_id,
+        "client_id": exam_data.client_id,
+        "client_name": client.get("name", ""),
+        "exam_date": exam_data.exam_date or now.strftime("%Y-%m-%d"),
+        "tongue_appearance": exam_data.tongue_appearance,
+        "tongue_tie": exam_data.tongue_tie,
+        "tongue_tie_severity": exam_data.tongue_tie_severity,
+        "tongue_lift": exam_data.tongue_lift,
+        "lateralization": exam_data.lateralization,
+        "lip_tie": exam_data.lip_tie,
+        "lip_seal": exam_data.lip_seal,
+        "palate": exam_data.palate,
+        "palate_notes": exam_data.palate_notes,
+        "gums": exam_data.gums,
+        "sucking_reflex": exam_data.sucking_reflex,
+        "suck_pattern": exam_data.suck_pattern,
+        "recommendation": exam_data.recommendation,
+        "referral_notes": exam_data.referral_notes,
+        "general_notes": exam_data.general_notes,
+        "created_at": now,
+    }
+
+    await db.oral_exams.insert_one(record)
+    record.pop("_id", None)
+    return record
+
+
+@router.get("/oral-exams")
+async def get_oral_exams(user: User = Depends(check_role(["LACTATION"])), client_id: Optional[str] = None):
+    """Get oral exam records, optionally filtered by client"""
+    query = {"provider_id": user.user_id}
+    if client_id:
+        query["client_id"] = client_id
+    exams = await db.oral_exams.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return exams
+
+
+@router.delete("/oral-exams/{exam_id}")
+async def delete_oral_exam(exam_id: str, user: User = Depends(check_role(["LACTATION"]))):
+    """Delete an oral exam record"""
+    result = await db.oral_exams.delete_one(
+        {"exam_id": exam_id, "provider_id": user.user_id}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Oral exam not found")
+    return {"message": "Oral exam deleted"}
+
+
+# ============== SOAP NOTES ==============
+
+class SoapNoteCreate(BaseModel):
+    """Lactation SOAP note"""
+    client_id: str
+    note_date: Optional[str] = None  # YYYY-MM-DD
+    # Subjective
+    subjective: str  # Parent's concerns, reported symptoms, feeding history
+    # Objective
+    objective: str  # Observations, exam findings, LATCH score reference, weight data
+    # Assessment
+    assessment: str  # Clinical impression, diagnosis
+    # Plan
+    plan: str  # Recommendations, follow-up, referrals
+    follow_up_date: Optional[str] = None  # YYYY-MM-DD
+    follow_up_notes: Optional[str] = None
+
+
+@router.post("/soap-notes")
+async def create_soap_note(note_data: SoapNoteCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Record a lactation SOAP note"""
+    now = get_now()
+
+    client = await db.clients.find_one(
+        {"client_id": note_data.client_id, "provider_id": user.user_id}
+    )
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+
+    record = {
+        "soap_id": f"soap_{uuid.uuid4().hex[:12]}",
+        "provider_id": user.user_id,
+        "client_id": note_data.client_id,
+        "client_name": client.get("name", ""),
+        "note_date": note_data.note_date or now.strftime("%Y-%m-%d"),
+        "subjective": note_data.subjective,
+        "objective": note_data.objective,
+        "assessment": note_data.assessment,
+        "plan": note_data.plan,
+        "follow_up_date": note_data.follow_up_date,
+        "follow_up_notes": note_data.follow_up_notes,
+        "created_at": now,
+    }
+
+    await db.lactation_soap_notes.insert_one(record)
+    record.pop("_id", None)
+    return record
+
+
+@router.get("/soap-notes")
+async def get_soap_notes(user: User = Depends(check_role(["LACTATION"])), client_id: Optional[str] = None):
+    """Get SOAP notes, optionally filtered by client"""
+    query = {"provider_id": user.user_id}
+    if client_id:
+        query["client_id"] = client_id
+    notes = await db.lactation_soap_notes.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return notes
+
+
+@router.put("/soap-notes/{soap_id}")
+async def update_soap_note(soap_id: str, note_data: SoapNoteCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Update a SOAP note"""
+    update_data = {k: v for k, v in note_data.dict().items() if v is not None}
+    update_data["updated_at"] = get_now()
+
+    result = await db.lactation_soap_notes.update_one(
+        {"soap_id": soap_id, "provider_id": user.user_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="SOAP note not found")
+    return {"message": "SOAP note updated"}
+
+
+@router.delete("/soap-notes/{soap_id}")
+async def delete_soap_note(soap_id: str, user: User = Depends(check_role(["LACTATION"]))):
+    """Delete a SOAP note"""
+    result = await db.lactation_soap_notes.delete_one(
+        {"soap_id": soap_id, "provider_id": user.user_id}
+    )
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="SOAP note not found")
+    return {"message": "SOAP note deleted"}

@@ -107,6 +107,11 @@ export const API_ENDPOINTS = {
   LACTATION_INVOICES: '/lactation/invoices',
   LACTATION_NOTES: '/lactation/notes',
   LACTATION_CONTRACT_DEFAULTS: '/lactation/contract-defaults',
+  LACTATION_LATCH_SCORES: '/lactation/latch-scores',
+  LACTATION_INFANT_WEIGHTS: '/lactation/infant-weights',
+  LACTATION_FEEDING_LOGS: '/lactation/feeding-logs',
+  LACTATION_ORAL_EXAMS: '/lactation/oral-exams',
+  LACTATION_SOAP_NOTES: '/lactation/soap-notes',
   
   // Payment Instructions (shared by Doula & Midwife)
   PAYMENT_INSTRUCTIONS: '/payment-instructions',
