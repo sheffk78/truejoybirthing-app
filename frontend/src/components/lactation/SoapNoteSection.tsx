@@ -73,7 +73,7 @@ export default function SoapNoteSection({ clientId, primaryColor, onRefresh }: S
     if (!clientId) return;
     setLoading(true);
     try {
-      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_SOAP_NOTES}/client/${clientId}`);
+      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_SOAP_NOTES}?client_id=${clientId}`);
       setNotes(data || []);
     } catch (error: any) {
       console.error('Error fetching SOAP notes:', error);

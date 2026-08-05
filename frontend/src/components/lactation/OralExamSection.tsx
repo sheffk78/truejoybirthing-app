@@ -165,7 +165,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
     if (!clientId) return;
     setLoading(true);
     try {
-      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_ORAL_EXAMS}/client/${clientId}`);
+      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_ORAL_EXAMS}?client_id=${clientId}`);
       setExams(data || []);
     } catch (error: any) {
       console.error('Error fetching oral exams:', error);

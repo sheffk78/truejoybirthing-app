@@ -93,7 +93,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
     if (!clientId) return;
     setLoading(true);
     try {
-      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_FEEDING_LOGS}/client/${clientId}`);
+      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_FEEDING_LOGS}?client_id=${clientId}`);
       setLogs(data || []);
     } catch (error: any) {
       console.error('Error fetching feeding logs:', error);

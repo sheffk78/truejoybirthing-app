@@ -524,6 +524,27 @@ async def delete_latch_score(score_id: str, user: User = Depends(check_role(["LA
     return {"message": "LATCH score deleted"}
 
 
+@router.put("/latch-scores/{score_id}")
+async def update_latch_score(score_id: str, score_data: LatchScoreCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Update a LATCH score record"""
+    now = get_now()
+    total = (score_data.latch_score + score_data.swallow_score +
+             score_data.nipple_type + score_data.comfort_score +
+             score_data.hold_score)
+
+    update_data = {k: v for k, v in score_data.dict().items() if v is not None}
+    update_data["total_score"] = total
+    update_data["updated_at"] = now
+
+    result = await db.latch_scores.update_one(
+        {"score_id": score_id, "provider_id": user.user_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="LATCH score not found")
+    return {"message": "LATCH score updated"}
+
+
 # ============== INFANT WEIGHT TRACKER ==============
 
 class InfantWeightCreate(BaseModel):
@@ -533,6 +554,7 @@ class InfantWeightCreate(BaseModel):
     weight: float  # in grams or ounces
     weight_unit: str = "g"  # "g" or "oz"
     baby_age_days: Optional[int] = None
+    is_birth_weight: Optional[bool] = False  # Mark as the birth weight entry
     notes: Optional[str] = None
 
 
@@ -560,9 +582,9 @@ async def create_infant_weight(weight_data: InfantWeightCreate, user: User = Dep
     percent_change = None
     if birth_entry:
         birth_g = birth_entry["weight"]
-        if birth_data_unit := birth_entry.get("weight_unit", "g"):
-            if birth_data_unit == "oz":
-                birth_g = birth_entry["weight"] * 28.3495
+        birth_data_unit = birth_entry.get("weight_unit", "g")
+        if birth_data_unit == "oz":
+            birth_g = birth_entry["weight"] * 28.3495
         if birth_g > 0:
             percent_change = round(((weight_g - birth_g) / birth_g) * 100, 1)
 
@@ -576,6 +598,7 @@ async def create_infant_weight(weight_data: InfantWeightCreate, user: User = Dep
         "weight_unit": weight_data.weight_unit,
         "weight_grams": round(weight_g, 1),
         "baby_age_days": weight_data.baby_age_days,
+        "is_birth_weight": weight_data.is_birth_weight or False,
         "percent_change_from_birth": percent_change,
         "notes": weight_data.notes,
         "created_at": now,
@@ -605,6 +628,43 @@ async def delete_infant_weight(weight_id: str, user: User = Depends(check_role([
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Weight entry not found")
     return {"message": "Weight entry deleted"}
+
+
+@router.put("/infant-weights/{weight_id}")
+async def update_infant_weight(weight_id: str, weight_data: InfantWeightCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Update an infant weight entry"""
+    now = get_now()
+
+    weight_g = weight_data.weight
+    if weight_data.weight_unit == "oz":
+        weight_g = weight_data.weight * 28.3495
+
+    birth_entry = await db.infant_weights.find_one(
+        {"client_id": weight_data.client_id, "provider_id": user.user_id, "is_birth_weight": True},
+        {"_id": 0}
+    )
+
+    percent_change = None
+    if birth_entry and not weight_data.is_birth_weight:
+        birth_g = birth_entry["weight"]
+        birth_data_unit = birth_entry.get("weight_unit", "g")
+        if birth_data_unit == "oz":
+            birth_g = birth_entry["weight"] * 28.3495
+        if birth_g > 0:
+            percent_change = round(((weight_g - birth_g) / birth_g) * 100, 1)
+
+    update_data = {k: v for k, v in weight_data.dict().items() if v is not None}
+    update_data["weight_grams"] = round(weight_g, 1)
+    update_data["percent_change_from_birth"] = percent_change
+    update_data["updated_at"] = now
+
+    result = await db.infant_weights.update_one(
+        {"weight_id": weight_id, "provider_id": user.user_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Weight entry not found")
+    return {"message": "Weight entry updated"}
 
 
 # ============== FEEDING LOG ==============
@@ -675,6 +735,21 @@ async def delete_feeding_log(log_id: str, user: User = Depends(check_role(["LACT
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Feeding log not found")
     return {"message": "Feeding log deleted"}
+
+
+@router.put("/feeding-logs/{log_id}")
+async def update_feeding_log(log_id: str, log_data: FeedingLogCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Update a feeding log entry"""
+    update_data = {k: v for k, v in log_data.dict().items() if v is not None}
+    update_data["updated_at"] = get_now()
+
+    result = await db.feeding_logs.update_one(
+        {"log_id": log_id, "provider_id": user.user_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Feeding log not found")
+    return {"message": "Feeding log updated"}
 
 
 # ============== ORAL EXAM ==============
@@ -765,6 +840,21 @@ async def delete_oral_exam(exam_id: str, user: User = Depends(check_role(["LACTA
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Oral exam not found")
     return {"message": "Oral exam deleted"}
+
+
+@router.put("/oral-exams/{exam_id}")
+async def update_oral_exam(exam_id: str, exam_data: OralExamCreate, user: User = Depends(check_role(["LACTATION"]))):
+    """Update an oral exam record"""
+    update_data = {k: v for k, v in exam_data.dict().items() if v is not None}
+    update_data["updated_at"] = get_now()
+
+    result = await db.oral_exams.update_one(
+        {"exam_id": exam_id, "provider_id": user.user_id},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Oral exam not found")
+    return {"message": "Oral exam updated"}
 
 
 # ============== SOAP NOTES ==============

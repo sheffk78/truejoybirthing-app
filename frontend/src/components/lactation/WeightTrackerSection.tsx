@@ -33,6 +33,7 @@ interface InfantWeight {
   weight_unit?: string;
   weight_grams?: number;
   baby_age_days?: number;
+  is_birth_weight?: boolean;
   percent_change_from_birth?: number;
   notes?: string;
   created_at?: string;
@@ -67,7 +68,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
     if (!clientId) return;
     setLoading(true);
     try {
-      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_INFANT_WEIGHTS}/client/${clientId}`);
+      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_INFANT_WEIGHTS}?client_id=${clientId}`);
       setWeights(data || []);
     } catch (error: any) {
       console.error('Error fetching infant weights:', error);
@@ -96,6 +97,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
     setFormData({
       weight_date: todayLocal(),
       weight_unit: 'g',
+      is_birth_weight: false,
     });
   };
 
@@ -280,6 +282,13 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                         <Text style={styles.detailChipValue}>{record.baby_age_days}d</Text>
                       </View>
                     )}
+
+                    {/* Birth weight badge */}
+                    {record.is_birth_weight && (
+                      <View style={[styles.detailChip, { backgroundColor: primaryColor + '15' }]}>
+                        <Text style={[styles.detailChipValue, { color: primaryColor }]}>Birth Weight</Text>
+                      </View>
+                    )}
                   </View>
 
                   {/* Percent change from birth */}
@@ -396,6 +405,31 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                 onChangeText={(text) => setFormData(prev => ({ ...prev, baby_age_days: text ? parseInt(text) : undefined }))}
                 keyboardType="numeric"
               />
+            </View>
+
+            {/* Birth Weight Toggle */}
+            <View style={styles.formSection}>
+              <Text style={styles.formSectionTitle}>Birth Weight?</Text>
+              <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
+                <TouchableOpacity
+                  style={[
+                    styles.unitOption,
+                    !formData.is_birth_weight && [styles.unitOptionSelected, { backgroundColor: primaryColor }],
+                  ]}
+                  onPress={() => setFormData(prev => ({ ...prev, is_birth_weight: false }))}
+                >
+                  <Text style={[styles.unitText, !formData.is_birth_weight && styles.unitTextSelected]}>No</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.unitOption,
+                    formData.is_birth_weight && [styles.unitOptionSelected, { backgroundColor: primaryColor }],
+                  ]}
+                  onPress={() => setFormData(prev => ({ ...prev, is_birth_weight: true }))}
+                >
+                  <Text style={[styles.unitText, formData.is_birth_weight && styles.unitTextSelected]}>Yes (Birth Weight)</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Notes */}

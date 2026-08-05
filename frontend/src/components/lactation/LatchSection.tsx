@@ -35,7 +35,7 @@ interface LatchScore {
   swallow_score?: number;
   swallow_notes?: string;
   nipple_type?: number;
-  nipple_type_notes?: string;
+  nipple_notes?: string;
   comfort_score?: number;
   comfort_notes?: string;
   hold_score?: number;
@@ -55,7 +55,7 @@ interface LatchSectionProps {
 const LATCH_ITEMS = [
   { key: 'latch_score', notesKey: 'latch_notes', label: 'Latch' },
   { key: 'swallow_score', notesKey: 'swallow_notes', label: 'Audible Swallow' },
-  { key: 'nipple_type', notesKey: 'nipple_type_notes', label: 'Type of Nipple' },
+  { key: 'nipple_type', notesKey: 'nipple_notes', label: 'Type of Nipple' },
   { key: 'comfort_score', notesKey: 'comfort_notes', label: 'Comfort' },
   { key: 'hold_score', notesKey: 'hold_notes', label: 'Hold' },
 ] as const;
@@ -82,7 +82,7 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
     if (!clientId) return;
     setLoading(true);
     try {
-      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_LATCH_SCORES}/client/${clientId}`);
+      const data = await apiRequest(`${API_ENDPOINTS.LACTATION_LATCH_SCORES}?client_id=${clientId}`);
       setScores(data || []);
     } catch (error: any) {
       console.error('Error fetching latch scores:', error);
