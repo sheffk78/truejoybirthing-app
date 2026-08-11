@@ -16,6 +16,7 @@ import {
   BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
@@ -37,6 +38,11 @@ interface Conversation {
   last_message_time: string;
   unread_count: number;
   is_sender: boolean;
+  thread_id?: string;
+  thread_status?: "pre_acceptance" | "accepted" | "declined" | null;
+  source?: string;
+  can_accept?: boolean;
+  can_decline?: boolean;
 }
 
 interface Message {
@@ -48,6 +54,7 @@ interface Message {
   content: string;
   read: boolean;
   created_at: string;
+  thread_id?: string;
 }
 
 interface TeamMember {
@@ -62,6 +69,7 @@ export default function MessagesScreen() {
   const colors = useColors();
   const styles = getStyles(colors);
   const router = useRouter();
+  const tabBarHeight = useBottomTabBarHeight();
   const params = useLocalSearchParams<{ userId?: string; openConversation?: string }>();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -76,6 +84,7 @@ export default function MessagesScreen() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loadingTeam, setLoadingTeam] = useState(false);
   const [pendingInvoices, setPendingInvoices] = useState<any[]>([]);
+  const [newMessageSearchQuery, setNewMessageSearchQuery] = useState('');
   const scrollViewRef = useRef<ScrollView>(null);
   const currentUserIdRef = useRef<string>('');
   const isNearBottomRef = useRef(true);
@@ -316,11 +325,24 @@ export default function MessagesScreen() {
     setLoadingMessages(true);
     setSendError(null);
     try {
-      const data = await apiRequest<{ messages: Message[] }>(
+      const data = await apiRequest<{
+        messages: Message[];
+        thread?: { thread_id: string; status: string; created_at: string; accepted_at?: string; can_accept?: boolean; can_decline?: boolean; decline_reason?: string };
+      }>(
         `${API_ENDPOINTS.MESSAGES}/${conversation.other_user_id}`
       );
       const msgs = (data && data.messages) ? data.messages : [];
       setMessages(Array.isArray(msgs) ? msgs : []);
+
+      // If thread data is returned, merge it into the conversation
+      if (data?.thread) {
+        setSelectedConversation((prev) => prev ? {
+          ...prev,
+          thread_id: data.thread?.thread_id,
+          thread_status: data.thread?.status as any,
+        } : prev);
+      }
+
       // Refresh conversations to update unread count
       fetchConversations();
     } catch (error) {
@@ -340,7 +362,7 @@ export default function MessagesScreen() {
     setNewMessage('');
     
     try {
-      const response = await apiRequest<{ message: Message }>(API_ENDPOINTS.MESSAGES, {
+      const response = await apiRequest<{ message: string; data: Message }>(API_ENDPOINTS.MESSAGES, {
         method: 'POST',
         body: {
           receiver_id: selectedConversation.other_user_id,
@@ -349,11 +371,26 @@ export default function MessagesScreen() {
       });
       
       // Add the sent message from the API response (avoids full re-fetch + deduplication issues)
-      if (response && response.message && response.message.message_id) {
+      // Backend returns { message: "Message sent", data: <message_doc> }
+      const sentMessage = response?.data || response?.message;
+      if (sentMessage && typeof sentMessage === 'object' && sentMessage.message_id) {
         setMessages((prev) => {
-          if (prev.some(m => m.message_id === response.message.message_id)) return prev;
-          return [...prev, response.message];
+          if (prev.some(m => m.message_id === sentMessage.message_id)) return prev;
+          return [...prev, sentMessage];
         });
+      } else {
+        // Fallback: optimistic append so the sent message is visible immediately
+        const optimistic: Message = {
+          message_id: `local_${Date.now()}`,
+          sender_id: currentUserId,
+          sender_name: '',
+          sender_role: '',
+          receiver_id: selectedConversation.other_user_id,
+          content: messageText,
+          read: true,
+          created_at: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, optimistic]);
       }
       
       // Scroll to bottom
@@ -453,12 +490,22 @@ export default function MessagesScreen() {
             </View>
             <View style={{ width: 24 }} />
           </View>
-          
+
+          {/* Pre-acceptance Banner */}
+          {selectedConversation.thread_status === 'pre_acceptance' && (
+            <View style={styles.preAcceptanceBanner}>
+              <Icon name="information-circle-outline" size={16} color={colors.warning} />
+              <Text style={styles.preAcceptanceBannerText}>
+                {selectedConversation.other_user_name} hasn't accepted you as a client yet. You can still chat to get to know each other!
+              </Text>
+            </View>
+          )}
+
           {/* Messages */}
           <KeyboardAvoidingView 
             style={styles.chatContent}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? tabBarHeight : 0}
           >
             {loadingMessages ? (
               <View style={styles.loadingContainer}>
@@ -508,24 +555,34 @@ export default function MessagesScreen() {
                   <Text style={styles.sendErrorText}>{sendError}</Text>
                 </TouchableOpacity>
               )}
-              <TextInput
-                style={styles.messageInput}
-                value={newMessage}
-                onChangeText={setNewMessage}
-                placeholder="Type a message..."
-                placeholderTextColor={colors.textLight}
-                multiline
-                maxLength={1000}
-                data-testid="message-input"
-              />
-              <TouchableOpacity 
-                style={[styles.sendButton, (!newMessage.trim() || sending) && styles.sendButtonDisabled]}
-                onPress={sendMessage}
-                disabled={!newMessage.trim() || sending}
-                data-testid="send-message-btn"
-              >
-                <Icon name="paper-plane" size={20} color={colors.white} />
-              </TouchableOpacity>
+              {selectedConversation.thread_status === 'declined' ? (
+                <View style={styles.declinedInputOverlay}>
+                  <Text style={styles.declinedInputText}>
+                    This provider is unable to work together at this time.
+                  </Text>
+                </View>
+              ) : (
+                <>
+                  <TextInput
+                    style={styles.messageInput}
+                    value={newMessage}
+                    onChangeText={setNewMessage}
+                    placeholder="Type a message..."
+                    placeholderTextColor={colors.textLight}
+                    multiline
+                    maxLength={1000}
+                    data-testid="message-input"
+                  />
+                  <TouchableOpacity
+                    style={[styles.sendButton, (!newMessage.trim() || sending) && styles.sendButtonDisabled]}
+                    onPress={sendMessage}
+                    disabled={!newMessage.trim() || sending}
+                    data-testid="send-message-btn"
+                  >
+                    <Icon name="paper-plane" size={20} color={colors.white} />
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
           </KeyboardAvoidingView>
         </View>
@@ -641,7 +698,7 @@ export default function MessagesScreen() {
               <Icon name="chatbubbles-outline" size={48} color={colors.textLight} />
               <Text style={styles.emptyText}>No messages yet</Text>
               <Text style={styles.emptySubtext}>
-                Tap the button above to message someone on your team
+                Tap the button above to start a conversation
               </Text>
               <Button
                 title="Start a Conversation"
@@ -681,6 +738,20 @@ export default function MessagesScreen() {
                             {conv.other_user_role}
                           </Text>
                         </View>
+                        {conv.thread_status === 'pre_acceptance' && (
+                          <View style={[styles.threadStatusBadge, { backgroundColor: colors.warning + '20' }]}>
+                            <Text style={[styles.threadStatusText, { color: colors.warning }]}>
+                              Getting to know each other
+                            </Text>
+                          </View>
+                        )}
+                        {conv.thread_status === 'accepted' && (
+                          <View style={[styles.threadStatusBadge, { backgroundColor: colors.success + '20' }]}>
+                            <Text style={[styles.threadStatusText, { color: colors.success }]}>
+                              Active Client
+                            </Text>
+                          </View>
+                        )}
                       </View>
                       <Text style={styles.lastMessage} numberOfLines={1}>
                         {conv.is_sender ? 'You: ' : ''}{conv.last_message_content}
@@ -720,7 +791,19 @@ export default function MessagesScreen() {
           
           <View style={styles.teamSelectionContent}>
             <Text style={styles.teamSelectionTitle}>Select a team member to message</Text>
-            
+
+            <View style={styles.teamSearchInputWrapper}>
+              <Icon name="search-outline" size={18} color={colors.textLight} />
+              <TextInput
+                style={styles.teamSearchInput}
+                value={newMessageSearchQuery}
+                onChangeText={setNewMessageSearchQuery}
+                placeholder="Search by name or role..."
+                placeholderTextColor={colors.textLight}
+                data-testid="team-search-input"
+              />
+            </View>
+
             {loadingTeam ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={colors.primary} />
@@ -735,7 +818,16 @@ export default function MessagesScreen() {
               </View>
             ) : (
               <ScrollView showsVerticalScrollIndicator={false}>
-                {teamMembers.map((member) => (
+                {teamMembers
+                  .filter((member) => {
+                    const q = newMessageSearchQuery.trim().toLowerCase();
+                    if (!q) return true;
+                    return (
+                      member.name.toLowerCase().includes(q) ||
+                      member.role.toLowerCase().includes(q)
+                    );
+                  })
+                  .map((member) => (
                   <TouchableOpacity
                     key={member.user_id}
                     style={styles.teamMemberCard}
@@ -1232,5 +1324,67 @@ const getStyles = createThemedStyles((colors) => ({
     fontFamily: FONTS.body,
     color: colors.error,
     textAlign: 'center',
+  },
+  // Pre-acceptance banner
+  preAcceptanceBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.xs,
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.xs,
+    backgroundColor: colors.warning + '15',
+    marginHorizontal: SIZES.md,
+    marginTop: SIZES.xs,
+    borderRadius: SIZES.radiusSm,
+  },
+  preAcceptanceBannerText: {
+    flex: 1,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.warning,
+    lineHeight: 20,
+  },
+  // Declined input overlay
+  declinedInputOverlay: {
+    paddingVertical: SIZES.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  declinedInputText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  // Thread status badge
+  threadStatusBadge: {
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: 2,
+    borderRadius: SIZES.radiusSm,
+    marginLeft: SIZES.xs,
+  },
+  threadStatusText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+  },
+  // Team selection modal search
+  teamSearchInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    borderRadius: SIZES.radiusMd,
+    paddingHorizontal: SIZES.md,
+    marginBottom: SIZES.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  teamSearchInput: {
+    flex: 1,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.sm,
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.body,
+    color: colors.text,
   },
 }));

@@ -213,39 +213,8 @@ export default function MarketplaceScreen() {
         });
       }
     } catch (error: any) {
-      // Messaging requires the provider to be an accepted member of the mom's team
-      const isConnectionError = error.message?.includes('connection') || error.message?.includes('403');
-      
-      if (isConnectionError || error.status === 403) {
-        const currentStatus = teamStatus[provider.user_id];
-        
-        if (currentStatus === 'pending') {
-          Alert.alert(
-            'Request Pending',
-            `${provider.full_name} hasn't accepted your team request yet. Once they accept, you'll be able to message them directly.`,
-            [{ text: 'OK' }]
-          );
-        } else if (currentStatus === 'accepted') {
-          // Shouldn't happen if accepted, but handle gracefully
-          Alert.alert(
-            'Unable to Message',
-            `There was a problem sending your message. Please try again.`,
-            [{ text: 'OK' }]
-          );
-        } else {
-          // Not on team at all
-          Alert.alert(
-            'Add to Your Team First',
-            `You can only message providers who are on your team. Would you like to send ${provider.full_name} a team request? Once they accept, you'll be able to message them.`,
-            [
-              { text: 'Send Team Request', onPress: () => handleAddToTeam(provider) },
-              { text: 'Cancel', style: 'cancel' }
-            ]
-          );
-        }
-      } else {
-        Alert.alert('Error', error.message || 'Failed to send message. Please try again.');
-      }
+      console.error('Error contacting provider:', error);
+      Alert.alert('Error', error.message || 'Failed to send message. Please try again.');
       // Don't close modal on error — user may want to try another action
     } finally {
       setContactingProvider(false);

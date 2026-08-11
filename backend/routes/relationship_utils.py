@@ -96,6 +96,33 @@ async def get_active_mom_ids_for_provider(provider_id: str) -> list[str]:
     return active_mom_ids
 
 
+async def get_thread_between(mom_user_id: str, provider_id: str) -> Optional[dict]:
+    """
+    Get the conversation_thread between a mom and a provider, regardless of status.
+
+    Returns the thread document or None if no thread exists.
+    """
+    return await db.conversation_threads.find_one({
+        "mom_user_id": mom_user_id,
+        "provider_id": provider_id,
+    })
+
+
+async def get_active_thread_between(mom_user_id: str, provider_id: str) -> Optional[dict]:
+    """
+    Get a conversation_thread between a mom and provider that is still active
+    for messaging (status is 'pre_acceptance' or 'accepted').
+
+    Returns the thread document or None.
+    """
+    thread = await get_thread_between(mom_user_id, provider_id)
+    if not thread:
+        return None
+    if thread.get("status") not in ("pre_acceptance", "accepted"):
+        return None
+    return thread
+
+
 async def terminate_relationship(provider_id: str, mom_user_id: str, terminated_by: str = None) -> bool:
     """
     Mark a share_request relationship as terminated.

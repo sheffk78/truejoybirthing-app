@@ -128,6 +128,7 @@ export default function LoginScreen() {
                       keyboardType="email-address"
                       autoCapitalize="none"
                       autoComplete="email"
+                      textContentType="username"
                       leftIcon="mail-outline"
                       error={errors.email}
                     />
@@ -253,6 +254,7 @@ export default function LoginScreen() {
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoComplete="email"
+                  textContentType="username"
                   leftIcon="mail-outline"
                   error={errors.email}
                 />
