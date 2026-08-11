@@ -71,7 +71,15 @@ ACCESS_TOKEN_EXPIRE_DAYS = 7
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Create the main app
-app = FastAPI(title="True Joy Birthing API")
+# Disable interactive API docs (/docs, /redoc) in production (Railway) to reduce
+# the public attack surface. Keep them enabled for local development.
+_is_railway = bool(os.environ.get("RAILWAY_PROJECT_ID") or os.environ.get("RAILWAY_SERVICE_ID"))
+app = FastAPI(
+    title="True Joy Birthing API",
+    docs_url=None if _is_railway else "/docs",
+    redoc_url=None if _is_railway else "/redoc",
+    openapi_url=None if _is_railway else "/openapi.json",
+)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -1948,6 +1956,15 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    """Add security headers to all responses (HSTS, X-Content-Type-Options)."""
+    response = await call_next(request)
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    return response
 
 # ============== ADMIN SPA ==============
 # Serve the React admin dashboard from the built frontend.

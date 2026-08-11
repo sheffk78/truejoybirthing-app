@@ -89,3 +89,6 @@ DARKMODE-FIX.md
 
 # Secrets (service account keys, etc.)
 backend/secrets/
+
+# Backup files
+*.bak
