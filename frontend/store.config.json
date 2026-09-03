@@ -1,0 +1,99 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "version": "1.5.0",
+    "copyright": "2025 True Joy Birthing LLC",
+    "release": {
+      "automaticRelease": true
+    },
+    "info": {
+      "en-US": {
+        "description": "True Joy Birthing is the birth plan app built by a real doula, with plain-language explanations that actually hold up in a hospital, a shared space for you and your care team to prepare together, and tools that carry you from your first trimester through postpartum.\n\nBUILD A BIRTH PLAN THAT WORKS WHEN IT MATTERS\n (1/3)\nWalk through 9 sections covering labor, delivery, pain management, interventions, pushing, post-delivery, and newborn care. Every option comes with a plain-language explanation of what it means in a hospital setting. No generic checklists. No medical jargon. Just honest guidance from a doula who has been in the room.\n\nInteractive birth plan builder with 9 comprehensive sections\nGuided video walkthroughs for each section\nExport a clean, branded PDF your care team can read in under 2 minutes\nPushing preferences and a personal safe word\nPostpartum planning built right into your birth plan\n\nTOOLS FOR EVERY STAGE\n\nContraction timer that tracks timing, duration, and patterns\nWeekly pregnancy tips tailored to your due date\nWellness journal to check in on how you are feeling\nPregnancy timeline with milestones and reminders\nPostpartum plan to prepare for life after birth\n\nFIND AND CONNECT WITH PROVIDERS\n\nBrowse a marketplace of doulas and midwives in your area. Watch video introductions, read about their philosophy, and connect directly through the app.\n\nSHARE YOUR PLAN WITH YOUR WHOLE TEAM\n\nInvite your partner, doula, or midwife to view and collaborate on your plan. Everyone stays on the same page, literally.\n\nFOR DOULAS AND MIDWIVES\n\nTrue Joy Birthing Pro gives birth workers a professional toolkit:\n\nClient management and visit tracking\nAppointment scheduling and clinical notes\nContracts with e-signature and invoicing\nShared birth plan access with clients\nLead tracking and client pipeline\nNewborn exams and prenatal visit documentation (midwives)\nBirth summaries\nProfessional profile with video introduction\n\nFree for moms. Pro tools for doulas and midwives.\n\nABOUT TRUE JOY BIRTHING\n\nFounded by a birth doula who watched too many moms walk into hospitals unprepared, not because they didn't care, but because nobody gave them the real information in plain language. True Joy Birthing exists to close that gap.\n (2/3)\nWe don't give medical advice. We don't shame any birth path. We help you make informed choices and give you the words to stand by them.\n\nTerms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
+        "keywords": [
+          "labor plan",
+          "natural birth",
+          "birth plan template",
+          "birth worker",
+          "midwife",
+          "birth preferences",
+          "doula tools"
+        ],
+        "releaseNotes": "Message providers before you commit. You can now reach out to any doula or midwife in the marketplace and start a conversation before formally accepting them as your care provider. Get to know each other, ask questions, and make sure it's the right fit — then accept them as your client right from the chat.\n\nChat with any provider before acceptance\n- Providers can accept or decline from within the conversation\n- Clear status on every thread so you always know where things stand\n- Security and stability improvements under the hood",
+        "marketingUrl": "https://truejoybirthing.com",
+        "supportUrl": "https://truejoybirthing.com/contact/",
+        "title": "True Joy Birthing",
+        "subtitle": "Birth Plan + Doula Support",
+        "privacyPolicyUrl": "https://truejoybirthing.com/privacy/",
+        "screenshots": {
+          "APP_IPAD_PRO_3GEN_129": [
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-doula-accept-client.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-doula-send-invoice.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-doula-profile.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-midwife-health-form-3.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-midwife-health-form-2.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-mom-contraction-timer.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-mom-dashboard.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-mom-marketplace.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-midwife-health-form-1.png",
+            "store/apple/screenshot/en-US/APP_IPAD_PRO_3GEN_129/ipad-mom-birth-plan.png"
+          ],
+          "APP_IPHONE_65": [
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-mom-dashboard.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-doula-profile.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-midwife-health-form-3.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-mom-marketplace.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-doula-accept-client.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-mom-birth-plan.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-midwife-health-form-1.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-doula-contract.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-mom-contraction-timer.png",
+            "store/apple/screenshot/en-US/APP_IPHONE_65/ios-mom-wellness-form.png"
+          ]
+        }
+      }
+    },
+    "categories": [
+      "HEALTH_AND_FITNESS",
+      "EDUCATION"
+    ],
+    "advisory": {
+      "ageRatingOverride": "NONE",
+      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+      "contests": "NONE",
+      "gambling": false,
+      "gamblingSimulated": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "kidsAgeBand": null,
+      "koreaAgeRatingOverride": "NONE",
+      "lootBox": false,
+      "matureOrSuggestiveThemes": "NONE",
+      "medicalOrTreatmentInformation": "INFREQUENT_OR_MILD",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "unrestrictedWebAccess": false,
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "advertising": false,
+      "ageAssurance": false,
+      "ageRatingOverrideV2": "NONE",
+      "developerAgeRatingInfoUrl": null,
+      "gunsOrOtherWeapons": "NONE",
+      "healthOrWellnessTopics": true,
+      "messagingAndChat": true,
+      "parentalControls": false,
+      "userGeneratedContent": false
+    },
+    "review": {
+      "firstName": "Jeff",
+      "lastName": "Kohler",
+      "email": "jeff@sheffkventures.com",
+      "phone": "4356551467",
+      "demoUsername": "demo.midwife@truejoybirthing.com",
+      "demoPassword": "DemoMidwife2024!",
+      "demoRequired": true,
+      "notes": "True Joy Birthing is a birth plan and birth education app for pregnant parents, doulas, and midwives.\n\nTo test the app:\n- Mom account: Create a new account (free) and select \"Mom\" as user type. The birth plan builder and guided videos are accessible immediately.\n- Pro account (doula/midwife): Create a new account and select \"Doula\" or \"Midwife.\" I gave you the Midwife login abut in the Sign-In information. Here is the Doula test login: demo.doula@truejoybirthing.com / DemoDoula2024!Pro features require a subscription (True Joy Pro). For a test Mom login: demo.mom@truejoybirthing.com / DemoMom2024!\n\nSubscription details:\n- Monthly: $29.99/month\n- Annual: $274.99/year\n- 14-day free trial included\n- Subscribers can manage/cancel through Settings > Subscriptions on their device.\n\nThe app includes embedded video content (birth plan walkthroughs) hosted externally via Bunny CDN. These are educational videos, not user-generated content.\n\nPrivacy Policy: https://truejoybirthing.com/privacy/\nTerms of Service: https://truejoybirthing.com/terms/\nSupport: support@truejoybirthing.com"
+    }
+  }
+}

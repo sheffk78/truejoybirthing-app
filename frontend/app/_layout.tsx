@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { Platform, StatusBar, View, BackHandler, Image, AppState } from 'react-native';
+import { Platform, StatusBar, View, BackHandler, AppState } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import {
@@ -17,8 +17,9 @@ import {
 } from '@expo-google-fonts/source-sans-3';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
+import BrandedLoader, { BrandedLoaderColors } from '../src/components/BrandedLoader';
 import { ThemeProvider, useTheme } from '../src/contexts/ThemeContext';
-import { COLORS, BRAND } from '../src/constants/theme';
+import { COLORS } from '../src/constants/theme';
 import { usePushNotifications } from '../src/hooks/usePushNotifications';
 
 // Inner layout component that uses theme
@@ -208,13 +209,21 @@ export default function RootLayout() {
     SourceSans3_700Bold,
   });
   
-  // Show simple loading screen while fonts are loading (before ThemeProvider is available)
+  // Show branded loading screen while fonts are loading (before ThemeProvider is available)
   if (!fontsLoaded) {
+    const fontLoaderColors: BrandedLoaderColors = {
+      background: COLORS.background,
+      text: COLORS.textPrimary,
+      textSecondary: COLORS.textSecondary,
+      primary: COLORS.primary,
+    };
     return (
       <SafeAreaProvider>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
-          <Image source={BRAND.logoPng} style={{ width: 200, height: 88 }} resizeMode="contain" />
-        </View>
+        <BrandedLoader
+          colors={fontLoaderColors}
+          fontsLoaded={false}
+          message="Preparing your experience..."
+        />
       </SafeAreaProvider>
     );
   }
