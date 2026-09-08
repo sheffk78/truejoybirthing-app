@@ -134,15 +134,29 @@ def creds_live_ok(creds_path, base_url):
     return ok, results, None
 
 
-def check_failure_replay():
-    if not FL_SCRIPT.exists():
-        return False, f"failure library not found at {FL_SCRIPT}"
-    r = subprocess.run([sys.executable, str(FL_SCRIPT), "replay"], capture_output=True, text=True, timeout=600)
+def check_failure_replay(fl_script=None):
+    """Release-scoped replay is BLOCKING: only the release-gate cases decide the
+    release, so an unrelated model outage (e.g. voice/accuracy eval) can't block
+    a legitimate submission. The FULL library replay still runs — recorded as
+    informational so pipeline drift stays visible without gate-coupling."""
+    fl = Path(fl_script) if fl_script else FL_SCRIPT
+    if not fl.exists():
+        return False, f"failure library not found at {fl}", None
+    r = subprocess.run([sys.executable, str(fl), "replay", "--eval", "release-gate"],
+                       capture_output=True, text=True, timeout=600)
     try:
         out = json.loads(r.stdout)
     except Exception:
-        return False, f"replay output unparseable: {r.stdout[:200]}"
-    return r.returncode == 0 and out.get("ok") is True, out.get("message", "replay failed")
+        return False, f"replay output unparseable: {r.stdout[:200]}", None
+    if not (r.returncode == 0 and out.get("ok") is True):
+        return False, out.get("message", "release-scoped replay failed"), None
+    full = subprocess.run([sys.executable, str(fl), "replay"], capture_output=True, text=True, timeout=600)
+    try:
+        full_out = json.loads(full.stdout)
+        full_msg = full_out.get("message", "full replay unparseable")
+    except Exception:
+        full_msg = "full replay output unparseable"
+    return True, f"release-scoped replay all-caught; full library: {full_msg}", full_msg
 
 
 # ---------------------------------------------------------------- self-test
@@ -188,14 +202,40 @@ def self_test():
         if not ok:
             caught.append("store-listing/banned-phrase")
     # 3. reviewer-creds catches a 401 (dead account) and passes a 200
-    ok, results, _ = creds_live_ok(_write_creds([{"email": "dead@x.com", "password": "z"}]), _serve(401)[1])
+    with _write_creds([{"email": "dead@x.com", "password": "z"}]) as cp:
+        ok, results, _ = creds_live_ok(cp, _serve(401)[1])
     if not ok:
         caught.append("reviewer-creds/dead-account")
     srv200, url200 = _serve(200)
-    pass_ok, _, err = creds_live_ok(_write_creds([{"email": "live@x.com", "password": "z"}]), url200)
+    with _write_creds([{"email": "live@x.com", "password": "z"}]) as cp:
+        pass_ok, _, err = creds_live_ok(cp, url200)
     srv200.shutdown()
+    # 4. git-clean catches a dirty tree: monkeypatch subprocess.run to return
+    #    porcelain output, as `git status --porcelain` would on a dirty repo.
+    #    Then prove the pass-through path too (clean output).
+    real_run = subprocess.run
 
-    expected = ["version-sync", "store-listing/missing", "store-listing/banned-phrase", "reviewer-creds/dead-account"]
+    def _dirty_run(cmd, **kw):
+        class R:
+            returncode = 0
+            stdout = " M frontend/app.json\n"
+            stderr = ""
+        return R()
+
+    subprocess.run = _dirty_run
+    try:
+        dirty_ok, _ = check_git_clean()
+    finally:
+        subprocess.run = real_run
+    if not dirty_ok:
+        caught.append("git-clean/dirty-tree")
+    # 5. failure-replay catches a missing/broken library (fast, offline case —
+    #    the pass-through path is proven live by the gate run itself)
+    fr_ok, fr_detail, _ = check_failure_replay(fl_script=Path(tempfile.gettempdir()) / "no-such-failure-library.py")
+    if not fr_ok:
+        caught.append("failure-replay/missing-library")
+
+    expected = ["version-sync", "store-listing/missing", "store-listing/banned-phrase", "reviewer-creds/dead-account", "git-clean/dirty-tree", "failure-replay/missing-library"]
     all_ok = sorted(caught) == sorted(expected) and pass_ok
     print(json.dumps({
         "ok": all_ok,
@@ -220,9 +260,18 @@ def _tmpfile(text):
 
 
 def _write_creds(entries):
+    """Context-managed so credential-shaped temp files never leak."""
     p = Path(tempfile.gettempdir()) / f"release-gate-creds-{time.time_ns()}.json"
-    p.write_text(json.dumps(entries))
-    return str(p)
+
+    @contextlib.contextmanager
+    def _ctx():
+        p.write_text(json.dumps(entries))
+        try:
+            yield str(p)
+        finally:
+            p.unlink(missing_ok=True)
+
+    return _ctx()
 
 
 # ---------------------------------------------------------------- main
@@ -253,8 +302,8 @@ def main():
     ok, results, err = creds_live_ok(args.creds, args.base_url)
     checks.append({"id": "reviewer-creds", "ok": ok, "detail": err or f"{sum(r['ok'] for r in results)}/{len(results)} credentials live-verified", "results": results})
 
-    replay_ok, replay_detail = check_failure_replay()
-    checks.append({"id": "failure-replay", "ok": replay_ok, "detail": replay_detail})
+    replay_ok, replay_detail, full_info = check_failure_replay()
+    checks.append({"id": "failure-replay", "ok": replay_ok, "detail": replay_detail, "full_library": full_info})
 
     ok = all(c["ok"] for c in checks)
     print(json.dumps({
