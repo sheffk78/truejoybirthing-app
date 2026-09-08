@@ -21,12 +21,15 @@ Usage:
   python3 scripts/release-gate.py --self-test   # offline detector proof (no network)
 """
 import argparse
+import contextlib
 import http.server
 import json
 import subprocess
 import sys
+import tempfile
 import threading
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -121,6 +124,8 @@ def creds_live_ok(creds_path, base_url):
         except urllib.error.HTTPError as e:
             code = e.code
             detail = f"HTTP {e.code} — declaration would ship a dead account"
+        except urllib.error.URLError as e:
+            code, detail = 0, f"unreachable: {e.reason}"
         except Exception as e:
             code, detail = 0, f"unreachable: {e}"
         good = code == 200
@@ -203,12 +208,10 @@ def self_test():
     sys.exit(0 if all_ok else 1)
 
 
-import contextlib
-
-
+# ---------------------------------------------------------------- helpers
 @contextlib.contextmanager
 def _tmpfile(text):
-    p = Path("/tmp") / f"release-gate-selftest-{time.time_ns()}.txt"
+    p = Path(tempfile.gettempdir()) / f"release-gate-selftest-{time.time_ns()}.txt"
     p.write_text(text)
     try:
         yield str(p)
@@ -217,7 +220,7 @@ def _tmpfile(text):
 
 
 def _write_creds(entries):
-    p = Path("/tmp") / f"release-gate-creds-{time.time_ns()}.json"
+    p = Path(tempfile.gettempdir()) / f"release-gate-creds-{time.time_ns()}.json"
     p.write_text(json.dumps(entries))
     return str(p)
 
