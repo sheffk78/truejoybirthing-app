@@ -39,6 +39,37 @@ FL_SCRIPT = REPO.parent / "truejoybirthing-website" / "scripts" / "failure-libra
 DEFAULT_BASE = "https://truejoybirthing-app-production.up.railway.app"
 # Grown only from real store rejections — never speculative.
 BANNED_PHRASES = ["hospital advocacy scripts"]
+FEATURE_MANIFEST = Path(__file__).resolve().parent / "feature-manifest.json"
+
+
+def check_listing_claims(listing_path):
+    """Listing-claim check (deterministic manifest, built 2026-09-08 from the
+    independent-review Pro-overclaim finding): every marketing claim must match
+    a manifest entry; forbidden claim phrases hard-fail. Complements the raw
+    banned-phrase scan with claim-level coverage."""
+    if not FEATURE_MANIFEST.exists():
+        return False, f"feature manifest missing: {FEATURE_MANIFEST}"
+    if not listing_path or not Path(listing_path).exists():
+        return False, f"store listing file missing: {listing_path} (required, fail-closed)"
+    text = Path(listing_path).read_text()
+    low = text.lower()
+    try:
+        manifest = json.loads(FEATURE_MANIFEST.read_text())
+    except Exception as e:
+        return False, f"feature manifest unparseable: {e}"
+    problems = []
+    for entry in manifest.get("forbidden_claims", []):
+        phrase = entry.get("phrase", "")
+        if phrase and phrase.lower() in low:
+            problems.append(f"forbidden claim {phrase!r}: {entry.get('reason', '')}")
+    # Pro sentences must reference at least one verified provider-only Pro feature
+    pro_mentioned = any(p in low for p in ("pro subscription", "true joy pro", "true joy pro —"))
+    if pro_mentioned:
+        ok_claims = [c["claim"].lower() for c in manifest.get("pro_features_provider_only", [])]
+        matched = [c for c in ok_claims if c in low]
+        if not matched:
+            problems.append("Pro mentioned but no claim matches the verified provider-only feature manifest")
+    return (not problems, "; ".join(problems) or "all claims match verified feature manifest")
 
 
 def fail(msg):
@@ -234,8 +265,14 @@ def self_test():
     fr_ok, fr_detail, _ = check_failure_replay(fl_script=Path(tempfile.gettempdir()) / "no-such-failure-library.py")
     if not fr_ok:
         caught.append("failure-replay/missing-library")
+    # 6. listing-claims catches a forbidden claim phrase (the Pro-overclaim
+    #    class caught by independent review 2026-09-08)
+    with _tmpfile("short: x\nfull: True Joy Pro unlocks unlimited provider matching\n") as p:
+        lc_ok, _ = check_listing_claims(p)
+    if not lc_ok:
+        caught.append("listing-claims/forbidden-claim")
 
-    expected = ["version-sync", "store-listing/missing", "store-listing/banned-phrase", "reviewer-creds/dead-account", "git-clean/dirty-tree", "failure-replay/missing-library"]
+    expected = ["version-sync", "store-listing/missing", "store-listing/banned-phrase", "reviewer-creds/dead-account", "git-clean/dirty-tree", "failure-replay/missing-library", "listing-claims/forbidden-claim"]
     all_ok = sorted(caught) == sorted(expected) and pass_ok
     print(json.dumps({
         "ok": all_ok,
@@ -298,6 +335,7 @@ def main():
     checks.append({"id": "version-sync", **dict(zip(("ok", "detail"), check_version_sync(app, args.version, args.build, args.platform)))})
     checks.append({"id": "git-clean", **dict(zip(("ok", "detail"), check_git_clean()))})
     checks.append({"id": "store-listing", **dict(zip(("ok", "detail"), check_store_listing(args.listing)))})
+    checks.append({"id": "listing-claims", **dict(zip(("ok", "detail"), check_listing_claims(args.listing)))})
 
     ok, results, err = creds_live_ok(args.creds, args.base_url)
     checks.append({"id": "reviewer-creds", "ok": ok, "detail": err or f"{sum(r['ok'] for r in results)}/{len(results)} credentials live-verified", "results": results})

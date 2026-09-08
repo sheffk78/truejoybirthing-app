@@ -1,0 +1,20 @@
+{
+  "_comment": "Verified feature-claim manifest for TJB store listings. Every Pro/marketing claim in store copy MUST match an entry here (substring match against shipped code truth). Curated 2026-09-08 from code inspection + independent review (deleg_05a07a79). Update whenever a feature ships or changes. Evidence = where the feature lives in code.",
+  "pro_features_provider_only": [
+    {"claim": "client management and history", "evidence": "frontend/src/services/billing/subscriptionConfig.ts proFeatures; backend/routes/subscription.py check_role([DOULA,MIDWIFE,LACTATION])"},
+    {"claim": "digital contracts with e-signatures", "evidence": "subscriptionConfig.ts proFeatures 'Digital contracts with e-signatures'"},
+    {"claim": "professional invoicing", "evidence": "subscriptionConfig.ts proFeatures 'Professional invoicing system'"},
+    {"claim": "client notes and visit summaries", "evidence": "subscriptionConfig.ts proFeatures 'Detailed client notes and history', 'Visit tracking and summaries'"},
+    {"claim": "marketplace profile visibility", "evidence": "subscriptionConfig.ts proFeatures 'Marketplace profile visibility'"},
+    {"claim": "$29.99/month", "evidence": "subscriptionConfig.ts plans.monthly.price 29.99"},
+    {"claim": "$274.99/year", "evidence": "subscriptionConfig.ts plans.annual.price 274.99"}
+  ],
+  "mom_free_truth": "Mothers always have free access — backend/routes/subscription.py /status returns has_pro_access=True, plan_type='mom_free' for role MOM. NEVER imply moms must pay for core features.",
+  "forbidden_claims": [
+    {"phrase": "unlocks unlimited provider matching", "reason": "No mom purchase path exists; provider matching is not Pro-gated for moms (2026-09-08 review finding)"},
+    {"phrase": "unlocks unlimited", "reason": "Pro-unlocks framing implies mom paywall that does not exist"},
+    {"phrase": "message history", "reason": "Messaging is not gated behind Pro in any mom-facing endpoint"},
+    {"phrase": "weekly content archives", "reason": "Weekly content is not gated behind Pro in any mom-facing endpoint"},
+    {"phrase": "hospital advocacy scripts", "reason": "Feature does not exist (2026-07-01 Play rejection)"}
+  ]
+}
