@@ -1,0 +1,8 @@
+{
+  "_comment": "Store review credentials — live-tested via POST /api/auth/login by scripts/release-gate.py BEFORE every submission. Never submit dead accounts (2026-09-04 Play rejection). Source of truth: memory/play-console-submit-pitfalls.md. demo.lactation@ currently 401 — excluded until ENABLE_DEMO_ACCOUNTS is fixed. Rotate here if a demo password changes.",
+  "accounts": [
+    {"email": "demo.midwife@truejoybirthing.com", "password": "DemoMidwife2024!"},
+    {"email": "demo.doula@truejoybirthing.com", "password": "DemoDoula2024!"},
+    {"email": "demo.mom@truejoybirthing.com", "password": "DemoMom2024!"}
+  ]
+}

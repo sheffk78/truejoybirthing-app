@@ -1,0 +1,23 @@
+# TJB Play Store listing — staged copy (verify every claim against the shipped build before submit)
+# History: 2026-07-01 rejection = listing claimed a feature that doesn't exist (see pitfalls memory).
+# Rule: only claims traceable to shipped features. Gate scans this file (scripts/release-gate.py).
+short: Birth plans, provider matching & weekly pregnancy guidance
+full: True Joy Birthing helps you plan, prepare, and navigate your pregnancy and birth with the people you trust.
+
+BUILD YOUR BIRTH PLAN
+Answer guided questions and create a shareable birth plan your care team can actually use. Export a clean PDF for your provider file.
+
+FIND AND INVITE PROVIDERS
+Search doulas and midwives, share your birth plan, and message directly in the app. Providers can accept or decline your invite from chat.
+
+STAY ON TRACK
+Weekly tips and affirmations matched to your week of pregnancy, a personal timeline, and simple check-ins to reflect on how you're feeling.
+
+FOR YOUR CARE TEAM
+Doulas, midwives, and lactation professionals get their own workspace: clients, appointments, contracts, invoices, notes, and clinical forms.
+
+PRIVATE BY DEFAULT
+Your birth plan is shared only with the providers you choose. Delete your account at any time from settings.
+
+SUBSCRIPTION (OPTIONAL)
+Mothers can use the core app free. True Joy Pro unlocks unlimited provider matching, message history, and weekly content archives — $29.99/month or $274.99/year, each with a 14-day free trial. Cancel anytime in Google Play subscriptions.
