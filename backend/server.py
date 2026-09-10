@@ -1512,6 +1512,7 @@ from routes import feed as feed_routes
 from routes import invites as invites_routes
 from routes import shelbi_leads as shelbi_leads_routes
 from routes import trial_emails as trial_emails_routes
+from routes import waiver as waiver_routes
 
 # Include modular routers in the api_router
 api_router.include_router(admin_routes.router)
@@ -1543,6 +1544,8 @@ api_router.include_router(feed_routes.router)
 api_router.include_router(invites_routes.router)
 # Public Shelbi lead submission endpoint
 api_router.include_router(shelbi_leads_routes.public_router)
+# DocuSeal waiver webhook (public, secret-token gated) + pilot status endpoint
+api_router.include_router(waiver_routes.router)
 # Admin dashboard routes mounted directly on app (not under /api prefix)
 # so frontend paths match: /admin/api/dashboard/*
 
