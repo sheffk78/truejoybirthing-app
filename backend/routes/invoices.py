@@ -16,12 +16,34 @@ import uuid
 import logging
 import asyncio
 
-from .dependencies import db, get_now, check_role, User, SENDER_EMAIL
+from .dependencies import db, get_now, check_role, User, SENDER_EMAIL, create_notification
 
 # Email sending via email_service
 from services.email_service import send_email as postmark_send_email
 
 router = APIRouter(tags=["Invoices"])
+
+
+async def notify_user(user_id: str, notif_type: str, title: str, message: str, data: Optional[dict] = None):
+    """Create an in-app notification + Expo push via create_notification.
+
+    Falls back to a direct insert (in-app only, no push) if route dependencies
+    were never initialized — matches the legacy behavior instead of crashing.
+    """
+    if create_notification is not None:
+        await create_notification(user_id, notif_type, title, message, data=data or {}, send_push=True)
+        return
+    now = get_now()
+    await db.notifications.insert_one({
+        "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "type": notif_type,
+        "title": title,
+        "message": message,
+        "data": data or {},
+        "read": False,
+        "created_at": now
+    })
 
 
 # ============== PYDANTIC MODELS ==============
@@ -267,17 +289,16 @@ async def send_doula_invoice(invoice_id: str, user: User = Depends(check_role(["
     
     client = await db.clients.find_one({"client_id": invoice["client_id"]}, {"_id": 0})
     if client and client.get("linked_mom_id"):
-        notification = {
-            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
-            "user_id": client["linked_mom_id"],
-            "type": "invoice_received",
-            "title": "New Invoice",
-            "message": f"You have received an invoice for ${invoice['amount']:.2f} from your doula.",
-            "data": {"invoice_id": invoice_id},
-            "read": False,
-            "created_at": now
-        }
-        await db.notifications.insert_one(notification)
+        # Route through create_notification so the mom also gets an Expo push
+        # (direct inserts here previously bypassed push entirely).
+        await notify_user(
+            client["linked_mom_id"],
+            "invoice_received",
+            "New Invoice",
+            f"You have received an invoice for ${invoice['amount']:.2f} from your doula.",
+            data={"invoice_id": invoice_id},
+            send_push=True
+        )
         
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
@@ -339,17 +360,13 @@ async def mark_doula_invoice_paid(invoice_id: str, user: User = Depends(check_ro
             {"$set": {"read": True, "resolved": True, "resolved_at": now}}
         )
         
-        paid_notification = {
-            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
-            "user_id": client["linked_mom_id"],
-            "type": "invoice_paid",
-            "title": "Payment Received",
-            "message": f"Your payment of ${invoice['amount']:.2f} has been confirmed. Thank you!",
-            "data": {"invoice_id": invoice_id},
-            "read": False,
-            "created_at": now
-        }
-        await db.notifications.insert_one(paid_notification)
+        await notify_user(
+            client["linked_mom_id"],
+            "invoice_paid",
+            "Payment Received",
+            f"Your payment of ${invoice['amount']:.2f} has been confirmed. Thank you!",
+            data={"invoice_id": invoice_id}
+        )
     
     return {"message": "Invoice marked as paid"}
 
@@ -393,17 +410,13 @@ async def send_doula_invoice_reminder(invoice_id: str, user: User = Depends(chec
     
     client = await db.clients.find_one({"client_id": invoice["client_id"]}, {"_id": 0})
     if client and client.get("linked_mom_id"):
-        notification = {
-            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
-            "user_id": client["linked_mom_id"],
-            "type": "invoice_reminder",
-            "title": "Payment Reminder",
-            "message": f"Friendly reminder: You have an unpaid invoice for ${invoice['amount']:.2f} due {invoice.get('due_date', 'soon')}.",
-            "data": {"invoice_id": invoice_id},
-            "read": False,
-            "created_at": now
-        }
-        await db.notifications.insert_one(notification)
+        await notify_user(
+            client["linked_mom_id"],
+            "invoice_reminder",
+            "Payment Reminder",
+            f"Friendly reminder: You have an unpaid invoice for ${invoice['amount']:.2f} due {invoice.get('due_date', 'soon')}.",
+            data={"invoice_id": invoice_id}
+        )
         
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
@@ -577,17 +590,13 @@ async def send_midwife_invoice(invoice_id: str, user: User = Depends(check_role(
     
     client = await db.clients.find_one({"client_id": invoice["client_id"], "provider_type": "MIDWIFE"}, {"_id": 0})
     if client and client.get("linked_mom_id"):
-        notification = {
-            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
-            "user_id": client["linked_mom_id"],
-            "type": "invoice_received",
-            "title": "New Invoice",
-            "message": f"You have received an invoice for ${invoice['amount']:.2f} from your midwife.",
-            "data": {"invoice_id": invoice_id},
-            "read": False,
-            "created_at": now
-        }
-        await db.notifications.insert_one(notification)
+        await notify_user(
+            client["linked_mom_id"],
+            "invoice_received",
+            "New Invoice",
+            f"You have received an invoice for ${invoice['amount']:.2f} from your midwife.",
+            data={"invoice_id": invoice_id}
+        )
         
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):
@@ -672,17 +681,13 @@ async def send_midwife_invoice_reminder(invoice_id: str, user: User = Depends(ch
     
     client = await db.clients.find_one({"client_id": invoice["client_id"]}, {"_id": 0})
     if client and client.get("linked_mom_id"):
-        notification = {
-            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
-            "user_id": client["linked_mom_id"],
-            "type": "invoice_reminder",
-            "title": "Payment Reminder",
-            "message": f"Friendly reminder: You have an unpaid invoice for ${invoice['amount']:.2f} due {invoice.get('due_date', 'soon')}.",
-            "data": {"invoice_id": invoice_id},
-            "read": False,
-            "created_at": now
-        }
-        await db.notifications.insert_one(notification)
+        await notify_user(
+            client["linked_mom_id"],
+            "invoice_reminder",
+            "Payment Reminder",
+            f"Friendly reminder: You have an unpaid invoice for ${invoice['amount']:.2f} due {invoice.get('due_date', 'soon')}.",
+            data={"invoice_id": invoice_id}
+        )
         
         mom = await db.users.find_one({"user_id": client["linked_mom_id"]}, {"_id": 0})
         if mom and mom.get("email"):

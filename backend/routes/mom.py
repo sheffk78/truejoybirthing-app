@@ -501,6 +501,79 @@ async def get_mom_invoice(invoice_id: str, user: User = Depends(check_role(["MOM
     return invoice
 
 
+class PaymentAcknowledgment(BaseModel):
+    method: Optional[str] = None
+    note: Optional[str] = None
+
+
+@router.post("/invoices/{invoice_id}/acknowledge-payment")
+async def acknowledge_mom_invoice_payment(
+    invoice_id: str,
+    ack: Optional[PaymentAcknowledgment] = None,
+    user: User = Depends(check_role(["MOM"])),
+):
+    """Mom indicates she made the payment (direct-to-provider payment model).
+
+    Marks the invoice as 'Payment Claimed' (never 'Paid' — only the provider
+    confirms actual payment) and notifies the provider to verify.
+    """
+    now = get_now()
+    
+    # Scope exactly like GET /mom/invoices/{invoice_id}: active relationships only
+    active_provider_ids = await get_active_provider_ids_for_mom(user.user_id)
+    
+    clients = await db.clients.find(
+        {"linked_mom_id": user.user_id, "provider_id": {"$in": list(active_provider_ids)}},
+        {"_id": 0, "client_id": 1}
+    ).to_list(100)
+    
+    client_ids = [c["client_id"] for c in clients]
+    
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "client_id": {"$in": client_ids}},
+        {"_id": 0}
+    )
+    
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    if invoice.get("status") in ("Cancelled",):
+        raise HTTPException(status_code=400, detail="This invoice was cancelled")
+    
+    if invoice.get("status") == "Paid":
+        return {"message": "Invoice already confirmed as paid", "status": "Paid"}
+    
+    if invoice.get("status") == "Payment Claimed":
+        return {"message": "Payment already acknowledged"}
+    
+    result = await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {
+            "status": "Payment Claimed",
+            "payment_claimed_at": now,
+            "payment_claimed_by": user.user_id,
+            "payment_claimed_method": ack.method if ack else None,
+            "payment_claimed_note": ack.note if ack else None,
+            "updated_at": now
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    # Notify the provider so they can verify and mark it truly Paid
+    await create_notification(
+        invoice["provider_id"],
+        "invoice_payment_claimed",
+        "Client Says They Paid",
+        f"{user.full_name} indicated they paid invoice {invoice['invoice_number']} (${invoice['amount']:.2f}). Verify and mark as paid.",
+        data={"invoice_id": invoice_id},
+        send_push=True
+    )
+    
+    return {"message": "Payment acknowledgment sent to your provider"}
+
+
 @router.post("/appointments")
 async def create_mom_appointment(request_data: dict, user: User = Depends(check_role(["MOM"]))):
     """Mom creates an appointment request to a provider"""
