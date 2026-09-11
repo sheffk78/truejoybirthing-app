@@ -8,19 +8,49 @@ import {
   Modal,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
+  Clipboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 // Maps invoice status to theme color tokens at render time
 const getStatusColor = (status: string, colors: ReturnType<typeof useColors>): string => {
   if (status === 'Paid') return colors.success;
   if (status === 'Sent') return colors.warning;
+  if (status === 'Payment Claimed') return colors.primary;
   return colors.textLight;
+};
+
+const getStatusLabel = (status: string): string => {
+  if (status === 'Payment Claimed') return 'Marked as Paid';
+  return status;
+};
+
+// Q3 (council 2026-09-11): provider direct-payment handles, copy-to-clipboard only.
+// No deep links — Zelle has no public scheme, Venmo pre-fill is unreliable, and
+// App Store reviewers flag P2P deep-link buttons. Showing the provider's name
+// next to each handle lets the mom verify the recipient before sending.
+const buildPaymentMethodRows = (methods: Record<string, any> | undefined | null) => {
+  if (!methods) return [];
+  const rows: { key: string; label: string; icon: string; value: string; copyValue: string }[] = [];
+  if (methods.venmo_handle) {
+    rows.push({ key: 'venmo', label: 'Venmo', icon: 'cash-outline', value: `@${methods.venmo_handle}`, copyValue: `@${methods.venmo_handle}` });
+  }
+  if (methods.cashapp_cashtag) {
+    rows.push({ key: 'cashapp', label: 'Cash App', icon: 'logo-usd', value: `$${methods.cashapp_cashtag}`, copyValue: `$${methods.cashapp_cashtag}` });
+  }
+  if (methods.paypal_link) {
+    rows.push({ key: 'paypal', label: 'PayPal', icon: 'globe-outline', value: methods.paypal_link, copyValue: methods.paypal_link });
+  }
+  if (methods.zelle_contact) {
+    rows.push({ key: 'zelle', label: 'Zelle', icon: 'phone-portrait-outline', value: methods.zelle_contact, copyValue: methods.zelle_contact });
+  }
+  return rows;
 };
 
 export default function MomInvoicesScreen() {
@@ -31,6 +61,7 @@ export default function MomInvoicesScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [ackingInvoiceId, setAckingInvoiceId] = useState<string | null>(null);
 
   const fetchInvoices = async () => {
     try {
@@ -58,11 +89,36 @@ export default function MomInvoicesScreen() {
     setShowDetailModal(true);
   };
 
+  const handleAcknowledgePayment = async (invoice: any) => {
+    try {
+      setAckingInvoiceId(invoice.invoice_id);
+      await apiRequest(`${API_ENDPOINTS.MOM_INVOICES}/${invoice.invoice_id}/acknowledge-payment`, {
+        method: 'POST',
+        body: {},
+      });
+      await fetchInvoices();
+      setShowDetailModal(false);
+      setSelectedInvoice(null);
+    } catch (error: any) {
+      console.error('Error acknowledging payment:', error);
+    } finally {
+      setAckingInvoiceId(null);
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(amount);
+  };
+
+  const copyPaymentHandle = (label: string, value: string, providerName?: string) => {
+    Clipboard.setString(value);
+    Alert.alert(
+      `${label} handle copied`,
+      `Pasted into your payment app, verify you're sending to ${providerName || 'your provider'} before confirming the payment.`,
+    );
   };
 
   const getProviderTypeLabel = (type: string) => {
@@ -128,7 +184,7 @@ export default function MomInvoicesScreen() {
                 </View>
                 <View style={[styles.statusBadge, { backgroundColor: getStatusColor(invoice.status, colors) + '20' }]}>
                   <Text style={[styles.statusText, { color: getStatusColor(invoice.status, colors) }]}>
-                    {invoice.status}
+                    {getStatusLabel(invoice.status)}
                   </Text>
                 </View>
               </View>
@@ -227,6 +283,58 @@ export default function MomInvoicesScreen() {
                         {selectedInvoice.payment_instructions_text}
                       </Text>
                     </View>
+                  </View>
+                )}
+
+                {/* Provider payment methods — copy-to-clipboard (Q3) */}
+                {buildPaymentMethodRows(selectedInvoice.provider_payment_methods).length > 0 && (
+                  <View style={styles.detailSection}>
+                    <Text style={styles.sectionTitle}>Pay {selectedInvoice.provider_name || 'Your Provider'} Directly</Text>
+                    {buildPaymentMethodRows(selectedInvoice.provider_payment_methods).map((row) => (
+                      <View key={row.key} style={styles.paymentMethodRow}>
+                        <View style={[styles.paymentMethodIcon, { backgroundColor: colors.primary + '15' }]}>
+                          <Icon name={row.icon} size={18} color={colors.primary} />
+                        </View>
+                        <View style={styles.paymentMethodInfo}>
+                          <Text style={styles.paymentMethodLabel}>{row.label}</Text>
+                          <Text style={styles.paymentMethodValue}>{row.value}</Text>
+                        </View>
+                        <TouchableOpacity
+                          style={styles.paymentMethodCopyButton}
+                          onPress={() => copyPaymentHandle(row.label, row.copyValue, selectedInvoice.provider_name)}
+                          accessibilityRole="button"
+                          accessibilityLabel={`Copy ${row.label} handle`}
+                        >
+                          <Text style={styles.paymentMethodCopyText}>Copy</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                    <Text style={styles.paymentMethodHint}>
+                      Copy the handle, open your payment app, and verify the recipient's name matches {selectedInvoice.provider_name || 'your provider'} before sending.
+                    </Text>
+                  </View>
+                )}
+
+                {/* I've Paid action — for invoices awaiting payment */}
+                {(selectedInvoice.status === 'Sent' || selectedInvoice.status === 'Overdue') && (
+                  <TouchableOpacity
+                    style={styles.ackPaymentButton}
+                    onPress={() => handleAcknowledgePayment(selectedInvoice)}
+                    disabled={ackingInvoiceId === selectedInvoice.invoice_id}
+                  >
+                    {ackingInvoiceId === selectedInvoice.invoice_id ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Text style={styles.ackPaymentButtonText}>I've Paid — Notify My Provider</Text>
+                    )}
+                  </TouchableOpacity>
+                )}
+                {selectedInvoice.status === 'Payment Claimed' && (
+                  <View style={styles.ackPaymentPendingBox}>
+                    <Icon name="time-outline" size={16} color={colors.primary} style={{ marginRight: 6 }} />
+                    <Text style={styles.ackPaymentPendingText}>
+                      Marked as paid. Your provider will confirm when payment is received.
+                    </Text>
                   </View>
                 )}
 
@@ -411,6 +519,78 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.sm,
     marginTop: SIZES.md,
     gap: 8,
+  },
+  ackPaymentButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: SIZES.md,
+  },
+  ackPaymentButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  ackPaymentPendingBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary + '10',
+    borderRadius: 12,
+    padding: SIZES.md,
+    marginTop: SIZES.md,
+  },
+  ackPaymentPendingText: {
+    flex: 1,
+    fontSize: 13,
+    color: colors.primary,
+  },
+  paymentMethodRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: SIZES.sm,
+    marginTop: SIZES.sm,
+  },
+  paymentMethodIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SIZES.sm,
+  },
+  paymentMethodInfo: {
+    flex: 1,
+  },
+  paymentMethodLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  paymentMethodValue: {
+    fontSize: 14,
+    fontFamily: FONTS.bodyBold,
+    color: colors.text,
+  },
+  paymentMethodCopyButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+  },
+  paymentMethodCopyText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  paymentMethodHint: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    marginTop: SIZES.sm,
+    lineHeight: 15,
   },
   modalDisclaimerText: {
     flex: 1,

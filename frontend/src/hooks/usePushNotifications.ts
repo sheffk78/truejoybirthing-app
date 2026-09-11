@@ -322,6 +322,15 @@ function handleNotificationResponse(data: Record<string, any>, userRole?: string
         router.push(`/${rolePrefix}/contracts` as any);
       }
       break;
+    case 'invoice_payment_claimed':
+      // Provider tapped "Client Says They Paid" push → invoices list,
+      // pre-filtered so the claimed invoice is front and center for one-tap Confirm.
+      if (data.invoice_id && userRole !== 'MOM') {
+        router.push(`/${rolePrefix}/invoices?highlight=${data.invoice_id}` as any);
+      } else {
+        router.push(`/${rolePrefix}/invoices` as any);
+      }
+      break;
     case 'invoice':
     case 'payment':
       router.push(`/${rolePrefix}/invoices` as any);

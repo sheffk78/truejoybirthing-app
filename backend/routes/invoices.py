@@ -11,7 +11,7 @@ Handles invoice management for both Doula and Midwife providers, including:
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import uuid
 import logging
 import asyncio
@@ -24,14 +24,14 @@ from services.email_service import send_email as postmark_send_email
 router = APIRouter(tags=["Invoices"])
 
 
-async def notify_user(user_id: str, notif_type: str, title: str, message: str, data: Optional[dict] = None):
+async def notify_user(user_id: str, notif_type: str, title: str, message: str, data: Optional[dict] = None, send_push: bool = True):
     """Create an in-app notification + Expo push via create_notification.
 
     Falls back to a direct insert (in-app only, no push) if route dependencies
     were never initialized — matches the legacy behavior instead of crashing.
     """
     if create_notification is not None:
-        await create_notification(user_id, notif_type, title, message, data=data or {}, send_push=True)
+        await create_notification(user_id, notif_type, title, message, data=data or {}, send_push=send_push)
         return
     now = get_now()
     await db.notifications.insert_one({
@@ -52,6 +52,19 @@ class PaymentInstructionsTemplateCreate(BaseModel):
     label: str
     instructions_text: str
     is_default: bool = False
+
+
+class PaymentMethodUpdate(BaseModel):
+    """Provider-configurable direct-payment handles (Q3, council 2026-09-11).
+
+    Copy-to-clipboard model only — TJB never processes payments; these are
+    informational handles the mom copies into her own payment app. Zelle is
+    text-only (phone/email) because it has no public deep-link scheme.
+    """
+    venmo_handle: Optional[str] = None
+    cashapp_cashtag: Optional[str] = None
+    paypal_link: Optional[str] = None
+    zelle_contact: Optional[str] = None
 
 
 class InvoiceCreate(BaseModel):
@@ -85,6 +98,49 @@ async def generate_invoice_number(user_id: str) -> str:
 
 
 # ============== PAYMENT INSTRUCTIONS TEMPLATE ROUTES ==============
+
+@router.get("/payment-methods")
+async def get_payment_methods(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
+    """Get this provider's direct-payment handles (Q3)"""
+    user_doc = await db.users.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0, "payment_methods": 1, "full_name": 1}
+    )
+    return {
+        "provider_name": user_doc.get("full_name") if user_doc else None,
+        "payment_methods": user_doc.get("payment_methods", {}) if user_doc else {},
+    }
+
+
+@router.put("/payment-methods")
+async def update_payment_methods(data: PaymentMethodUpdate, user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
+    """Set this provider's direct-payment handles (Q3).
+
+    Values are stored verbatim after light normalization (strip whitespace,
+    strip leading '@'/$ on handles so display formatting stays consistent).
+    Empty string clears a field.
+    """
+    methods = {}
+    if data.venmo_handle is not None:
+        methods["venmo_handle"] = (data.venmo_handle.strip().lstrip("@") if data.venmo_handle.strip() else "")
+    if data.cashapp_cashtag is not None:
+        methods["cashapp_cashtag"] = (data.cashapp_cashtag.strip().lstrip("$") if data.cashapp_cashtag.strip() else "")
+    if data.paypal_link is not None:
+        methods["paypal_link"] = data.paypal_link.strip()
+    if data.zelle_contact is not None:
+        methods["zelle_contact"] = data.zelle_contact.strip()
+
+    await db.users.update_one(
+        {"user_id": user.user_id},
+        {
+            "$set": {
+                "payment_methods": methods,
+                "payment_methods_updated_at": get_now(),
+            }
+        },
+    )
+    return {"message": "Payment methods updated", "payment_methods": methods}
+
 
 @router.get("/payment-instructions")
 async def get_payment_instructions(user: User = Depends(check_role(["DOULA", "MIDWIFE", "LACTATION"]))):
@@ -164,9 +220,55 @@ async def delete_payment_instructions(template_id: str, user: User = Depends(che
 
 # ============== DOULA INVOICE ROUTES ==============
 
+# ============== DOULA INVOICE ROUTES ==============
+
+async def nudge_stale_payment_claims(provider_id: str, provider_type: str):
+    """48h nudge: notify the provider once per stale 'Payment Claimed' invoice.
+
+    Council Q2 refinement — providers who ignore a payment claim leave moms in
+    limbo. Swept lazily on provider invoice-list fetch (event-driven, no cron).
+    Rate-limited to one nudge per 24h per invoice via payment_claimed_nudged_at.
+    """
+    if db is None:
+        return
+    cutoff = get_now() - timedelta(hours=48)
+    stale = await db.invoices.find(
+        {
+            "provider_id": provider_id,
+            "provider_type": provider_type,
+            "status": "Payment Claimed",
+            "payment_claimed_at": {"$lt": cutoff},
+            "$or": [
+                {"payment_claimed_nudged_at": {"$exists": False}},
+                {"payment_claimed_nudged_at": None},
+                {"payment_claimed_nudged_at": {"$lt": get_now() - timedelta(hours=24)}},
+            ],
+        },
+        {"_id": 0, "invoice_id": 1, "invoice_number": 1, "client_name": 1, "payment_claimed_at": 1}
+    ).to_list(10)
+
+    for invoice in stale:
+        await notify_user(
+            provider_id,
+            "invoice_payment_claimed_nudge",
+            "Payment Confirmation Pending",
+            f"{invoice.get('client_name', 'A client')}'s payment claim on invoice {invoice['invoice_number']} has been waiting 48+ hours. Confirm or reopen it.",
+            data={"invoice_id": invoice["invoice_id"]},
+            send_push=True
+        )
+        await db.invoices.update_one(
+            {"invoice_id": invoice["invoice_id"]},
+            {"$set": {"payment_claimed_nudged_at": get_now()}}
+        )
+
+
 @router.get("/doula/invoices")
 async def get_doula_invoices(user: User = Depends(check_role(["DOULA"])), status: Optional[str] = None):
     """Get all invoices, optionally filtered by status"""
+    # Lazy 48h-nudge sweep for unconfirmed payment claims (no cron dependency)
+    if status is None:
+        await nudge_stale_payment_claims(user.user_id, "DOULA")
+
     query = {"provider_id": user.user_id, "provider_type": "DOULA"}
     if status:
         query["status"] = status
@@ -465,6 +567,10 @@ async def send_doula_invoice_reminder(invoice_id: str, user: User = Depends(chec
 @router.get("/midwife/invoices")
 async def get_midwife_invoices(user: User = Depends(check_role(["MIDWIFE"])), status: Optional[str] = None):
     """Get all invoices, optionally filtered by status"""
+    # Lazy 48h-nudge sweep for unconfirmed payment claims (no cron dependency)
+    if status is None:
+        await nudge_stale_payment_claims(user.user_id, "MIDWIFE")
+
     query = {"provider_id": user.user_id, "provider_type": "MIDWIFE"}
     if status:
         query["status"] = status

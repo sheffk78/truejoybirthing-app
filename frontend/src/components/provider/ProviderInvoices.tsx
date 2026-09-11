@@ -31,11 +31,12 @@ import { ProviderConfig } from './config/providerConfig';
 const STATUS_COLORS: Record<string, string> = {
   'Draft': '#9E9E9E',
   'Sent': '#FF9800',
+  'Payment Claimed': '#3F51B5',
   'Paid': '#4CAF50',
   'Cancelled': '#f44336',
 };
 
-const STATUS_FILTERS = ['All', 'Draft', 'Sent', 'Paid', 'Cancelled'];
+const STATUS_FILTERS = ['All', 'Draft', 'Sent', 'Payment Claimed', 'Paid', 'Cancelled'];
 
 interface ProviderInvoicesProps {
   config: ProviderConfig;
@@ -45,7 +46,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   const colors = useColors();
   const styles = getStyles(colors);
   const router = useRouter();
-  const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
+  const params = useLocalSearchParams<{ clientId?: string; clientName?: string; highlight?: string }>();
   
   // Client-scoped mode
   const isClientScoped = !!params.clientId;
@@ -86,12 +87,13 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
 
   const fetchData = async () => {
     try {
-      const [invoicesData, clientsData, templatesData] = await Promise.all([
+      const [invoicesData, clientsData, templatesData, methodsData] = await Promise.all([
         apiRequest(invoicesEndpoint),
         apiRequest(clientsEndpoint),
         apiRequest(API_ENDPOINTS.PAYMENT_INSTRUCTIONS),
+        apiRequest(API_ENDPOINTS.PAYMENT_METHODS).catch(() => ({ payment_methods: {} })),
       ]);
-      
+
       // Filter invoices by client if client-scoped
       let filteredInvoices = invoicesData || [];
       if (isClientScoped && params.clientId) {
@@ -102,6 +104,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
       const clientList = clientsData || [];
       setClients(clientList);
       setPaymentTemplates(templatesData);
+      setPaymentMethods((methodsData as any)?.payment_methods || {});
 
       // Auto-select client from params or single-client fallback
       const active = clientList.filter((c: any) => c.linked_mom_id);
@@ -276,6 +279,25 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
     );
   };
 
+  const handleReopenInvoice = async (invoiceId: string) => {
+    showConfirm(
+      'Reopen Invoice',
+      'Client indicated they paid, but you disagree? Reopen puts this back to "Sent" so the client is asked again.',
+      async () => {
+        try {
+          await apiRequest(`${invoicesEndpoint}/${invoiceId}`, {
+            method: 'PUT',
+            body: { status: 'Sent' }
+          });
+          await fetchData();
+          showAlert('Reopened', 'Invoice status changed back to Sent');
+        } catch (error: any) {
+          showAlert('Error', error.message || 'Failed to update invoice status');
+        }
+      }
+    );
+  };
+
   const handleCancelInvoice = async (invoiceId: string) => {
     showConfirm(
       'Cancel Invoice',
@@ -325,11 +347,22 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   };
 
   // Payment Templates handlers
+  // Q3: provider direct-payment handles (copy-to-clipboard for moms)
+  const [paymentMethods, setPaymentMethods] = useState<Record<string, string>>({});
+  const [pmVenmo, setPmVenmo] = useState('');
+  const [pmCashApp, setPmCashApp] = useState('');
+  const [pmPaypal, setPmPaypal] = useState('');
+  const [pmZelle, setPmZelle] = useState('');
+
   const openCreateTemplate = () => {
     setEditingTemplate(null);
     setTemplateLabel('');
     setTemplateText('');
     setTemplateIsDefault(paymentTemplates.length === 0);
+    setPmVenmo(paymentMethods.venmo_handle || '');
+    setPmCashApp(paymentMethods.cashapp_cashtag || '');
+    setPmPaypal(paymentMethods.paypal_link || '');
+    setPmZelle(paymentMethods.zelle_contact || '');
     setShowPaymentModal(true);
   };
 
@@ -338,6 +371,10 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
     setTemplateLabel(template.label);
     setTemplateText(template.instructions_text);
     setTemplateIsDefault(template.is_default);
+    setPmVenmo(paymentMethods.venmo_handle || '');
+    setPmCashApp(paymentMethods.cashapp_cashtag || '');
+    setPmPaypal(paymentMethods.paypal_link || '');
+    setPmZelle(paymentMethods.zelle_contact || '');
     setShowPaymentModal(true);
   };
 
@@ -354,6 +391,21 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         instructions_text: templateText.trim(),
         is_default: templateIsDefault,
       };
+
+      // Q3: persist direct-payment handles alongside the template save
+      try {
+        await apiRequest(API_ENDPOINTS.PAYMENT_METHODS, {
+          method: 'PUT',
+          body: {
+            venmo_handle: pmVenmo.trim(),
+            cashapp_cashtag: pmCashApp.trim(),
+            paypal_link: pmPaypal.trim(),
+            zelle_contact: pmZelle.trim(),
+          },
+        });
+      } catch (pmError: any) {
+        console.warn('Payment methods save failed (template still saved):', pmError?.message);
+      }
 
       if (editingTemplate) {
         await apiRequest(`${API_ENDPOINTS.PAYMENT_INSTRUCTIONS}/${editingTemplate.template_id}`, {
@@ -406,6 +458,15 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   const filteredInvoices = statusFilter === 'All' 
     ? invoices 
     : invoices.filter(inv => inv.status === statusFilter);
+
+  // Push-highlight: when arriving from a "Client Says They Paid" notification,
+  // float the highlighted invoice to the top of the list so Confirm is one tap away.
+  const highlightId = typeof params.highlight === 'string' ? params.highlight : undefined;
+  const orderedInvoices = highlightId
+    ? [...filteredInvoices].sort((a, b) =>
+        (a.invoice_id === highlightId ? -1 : 0) - (b.invoice_id === highlightId ? -1 : 0)
+      )
+    : filteredInvoices;
 
   // Filter to active clients (those with linked_mom_id)
   const activeClients = clients.filter(c => c.linked_mom_id);
@@ -538,7 +599,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
         </ScrollView>
 
         {/* Invoice List */}
-        {filteredInvoices.length === 0 ? (
+        {orderedInvoices.length === 0 ? (
           <View style={styles.emptyCard}>
             <Icon name="receipt-outline" size={48} color={colors.textLight} />
             <Text style={styles.emptyText}>
@@ -548,10 +609,13 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             </Text>
           </View>
         ) : (
-          filteredInvoices.map((invoice) => (
+          orderedInvoices.map((invoice) => (
             <TouchableOpacity 
               key={invoice.invoice_id} 
-              style={styles.invoiceCard}
+              style={[
+                styles.invoiceCard,
+                invoice.invoice_id === highlightId && styles.highlightedInvoiceCard,
+              ]}
               onPress={() => openEditInvoice(invoice)}
             >
               <View style={styles.invoiceHeader}>
@@ -607,6 +671,18 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.actionButton} onPress={() => handleCancelInvoice(invoice.invoice_id)}>
                       <Icon name="close-circle-outline" size={18} color="#f44336" />
+                    </TouchableOpacity>
+                  </>
+                )}
+                {invoice.status === 'Payment Claimed' && (
+                  <>
+                    <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#4CAF50' }]} onPress={() => handleMarkPaid(invoice.invoice_id)}>
+                      <Icon name="checkmark-circle-outline" size={18} color="#fff" />
+                      <Text style={[styles.actionText, { color: '#fff' }]}>Confirm Paid</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.actionButton} onPress={() => handleReopenInvoice(invoice.invoice_id)}>
+                      <Icon name="refresh-outline" size={18} color={primaryColor} />
+                      <Text style={[styles.actionText, { color: primaryColor }]}>Reopen</Text>
                     </TouchableOpacity>
                   </>
                 )}
@@ -848,6 +924,55 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               />
               <Text style={styles.defaultToggleText}>Set as default for new invoices</Text>
             </TouchableOpacity>
+
+            {/* Q3: Direct-payment handles — moms see Copy buttons on invoices */}
+            <View style={{ marginTop: SIZES.lg }}>
+              <Text style={styles.fieldLabel}>Your Payment Handles (optional)</Text>
+              <Text style={styles.paymentMethodsHint}>
+                Clients see these as tap-to-copy rows on their invoice, with your name shown so they can verify the recipient. Leave blank to skip any.
+              </Text>
+
+              <Text style={styles.fieldLabel}>Venmo username</Text>
+              <TextInput
+                style={styles.input}
+                value={pmVenmo}
+                onChangeText={setPmVenmo}
+                placeholder="e.g., janemidwife"
+                placeholderTextColor={colors.textLight}
+                autoCapitalize="none"
+              />
+
+              <Text style={styles.fieldLabel}>Cash App cashtag</Text>
+              <TextInput
+                style={styles.input}
+                value={pmCashApp}
+                onChangeText={setPmCashApp}
+                placeholder="e.g., janemidwife"
+                placeholderTextColor={colors.textLight}
+                autoCapitalize="none"
+              />
+
+              <Text style={styles.fieldLabel}>PayPal link (paypal.me/…)</Text>
+              <TextInput
+                style={styles.input}
+                value={pmPaypal}
+                onChangeText={setPmPaypal}
+                placeholder="e.g., paypal.me/janemidwife"
+                placeholderTextColor={colors.textLight}
+                autoCapitalize="none"
+                keyboardType="url"
+              />
+
+              <Text style={styles.fieldLabel}>Zelle phone or email</Text>
+              <TextInput
+                style={styles.input}
+                value={pmZelle}
+                onChangeText={setPmZelle}
+                placeholder="e.g., (555) 123-4567 or jane@email.com"
+                placeholderTextColor={colors.textLight}
+                autoCapitalize="none"
+              />
+            </View>
           </ScrollView>
 
           <View style={styles.modalFooter}>
@@ -939,6 +1064,8 @@ const getStyles = createThemedStyles((colors) => ({
   emptyCard: { backgroundColor: colors.surface,borderRadius: SIZES.radiusMd, padding: SIZES.xl, alignItems: 'center' },
   emptyText: { fontSize: SIZES.fontMd, color: colors.textSecondary, textAlign: 'center', marginTop: SIZES.md },
   invoiceCard: { backgroundColor: colors.surface,borderRadius: SIZES.radiusMd, padding: SIZES.md, marginBottom: SIZES.sm, borderWidth: 1, borderColor: colors.border },
+  highlightedInvoiceCard: { borderWidth: 2, borderColor: '#3F51B5', backgroundColor: '#3F51B5' + '0A' },
+  paymentMethodsHint: { fontSize: 12, color: colors.textSecondary, marginTop: 4, marginBottom: SIZES.sm, lineHeight: 17 },
   invoiceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.sm },
   invoiceInfo: { flex: 1 },
   invoiceNumber: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.text },

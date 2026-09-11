@@ -39,6 +39,13 @@ interface PendingInvoice {
   due_date?: string;
 }
 
+interface RecentlyPaidInvoice {
+  invoice_id: string;
+  provider_name: string;
+  amount: number;
+  paid_at: string;
+}
+
 export default function MomHomeScreen() {
   const router = useRouter();
   const { user } = useAuthStore();
@@ -51,6 +58,8 @@ export default function MomHomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [pendingContracts, setPendingContracts] = useState<PendingContract[]>([]);
   const [pendingInvoices, setPendingInvoices] = useState<PendingInvoice[]>([]);
+  const [recentlyPaid, setRecentlyPaid] = useState<RecentlyPaidInvoice[]>([]);
+  const [dismissedPaid, setDismissedPaid] = useState<Set<string>>(new Set());
   const [loadError, setLoadError] = useState<string | null>(null);
   
   const fetchData = async () => {
@@ -87,9 +96,27 @@ export default function MomHomeScreen() {
         );
         console.log('Fetched invoices:', invoicesData.length, 'Pending:', pending.length);
         setPendingInvoices(pending);
+
+        // Recently Paid: invoices marked Paid in the last 5 days (auto-expires),
+        // minus ones the mom dismissed. Gives closure after a provider marks paid.
+        const fiveDaysAgo = Date.now() - 5 * 24 * 60 * 60 * 1000;
+        const paid = (invoicesData as any[])
+          .filter((i: any) =>
+            (i.status === 'Paid' || i.status === 'paid') &&
+            i.paid_at && new Date(i.paid_at).getTime() >= fiveDaysAgo
+          )
+          .map((i: any) => ({
+            invoice_id: i.invoice_id,
+            provider_name: i.provider_name || i.provider_email || 'Your provider',
+            amount: i.amount,
+            paid_at: i.paid_at,
+          }))
+          .sort((a: any, b: any) => new Date(b.paid_at).getTime() - new Date(a.paid_at).getTime());
+        setRecentlyPaid(paid);
       } catch (err) {
         console.log('Error fetching invoices:', err);
         setPendingInvoices([]);
+        setRecentlyPaid([]);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -111,6 +138,10 @@ export default function MomHomeScreen() {
     if (!birthPlan?.sections) return 'Start your birth plan';
     const incomplete = birthPlan.sections.find((s: any) => s.status !== 'Complete');
     return incomplete ? `Complete: ${incomplete.title}` : 'Review your birth plan';
+  };
+
+  const dismissRecentlyPaid = (invoiceId: string) => {
+    setDismissedPaid((prev) => new Set(prev).add(invoiceId));
   };
   
   const firstName = user?.full_name?.split(' ')[0] || 'there';
@@ -403,7 +434,40 @@ export default function MomHomeScreen() {
             ))}
           </>
         )}
-        
+
+        {/* Recently Paid ✓ — closure after a provider marks an invoice paid.
+            Auto-expires 5 days after paid_at; mom can dismiss early. */}
+        {recentlyPaid.filter((inv) => !dismissedPaid.has(inv.invoice_id)).length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Recently Paid ✓</Text>
+            {recentlyPaid
+              .filter((inv) => !dismissedPaid.has(inv.invoice_id))
+              .map((invoice) => (
+                <Card key={invoice.invoice_id} style={styles.recentlyPaidCard}>
+                  <View style={styles.actionRequiredHeader}>
+                    <View style={[styles.actionRequiredIcon, { backgroundColor: colors.success + '20' }]}>
+                      <Icon name="checkmark-circle" size={24} color={colors.success} />
+                    </View>
+                    <View style={styles.actionRequiredContent}>
+                      <Text style={styles.actionRequiredTitle}>Invoice Paid — ${invoice.amount}</Text>
+                      <Text style={styles.actionRequiredSubtitle}>
+                        From {invoice.provider_name} • {new Date(invoice.paid_at).toLocaleDateString()}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => dismissRecentlyPaid(invoice.invoice_id)}
+                      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Dismiss paid invoice of $${invoice.amount}`}
+                    >
+                      <Icon name="close-circle-outline" size={22} color={colors.textLight} />
+                    </TouchableOpacity>
+                  </View>
+                </Card>
+              ))}
+          </>
+        )}
+
         {/* Key Actions */}
         <Text style={styles.sectionTitle}>Key Actions</Text>
         <View style={styles.actionsGrid}>
@@ -661,6 +725,11 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.body,
     color: colors.textSecondary,
+  },
+  recentlyPaidCard: {
+    marginBottom: SIZES.sm,
+    padding: SIZES.md,
+    backgroundColor: colors.success + '08',
   },
   // Error State Styles
   errorContainer: {
