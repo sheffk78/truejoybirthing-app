@@ -347,7 +347,7 @@ export default function PlansPricingScreen() {
                 onPress={() => setSelectedPlan(plan.id)}
               >
                 {plan.id === 'annual' && (
-                  <View style={[styles.savingsBadge, { backgroundColor: colors.success }]}>
+                  <View style={[styles.savingsBadge, { backgroundColor: colors.primary }]}>
                     <Text style={styles.savingsText}>RECOMMENDED · Save ${plan.savings}</Text>
                   </View>
                 )}
@@ -433,7 +433,7 @@ export default function PlansPricingScreen() {
                     </View>
                   ) : (
                     <TouchableOpacity
-                      style={[styles.trialButton, { backgroundColor: colors.primary }]}
+                      style={[styles.trialButton, { backgroundColor: colors.secondary }]}
                       onPress={iapAvailable ? handleIAPPurchase : handleStartTrial}
                       disabled={processingAction || isPurchasing}
                     >
@@ -441,10 +441,9 @@ export default function PlansPricingScreen() {
                         <ActivityIndicator color={colors.white} />
                       ) : (
                         <>
-                          <Icon name="gift" size={20} color={colors.white} />
                           <Text style={styles.trialButtonText}>
-                            Start 14-day free trial
-                          </Text>
+                Start 14-day free trial →
+              </Text>
                         </>
                       )}
                     </TouchableOpacity>
