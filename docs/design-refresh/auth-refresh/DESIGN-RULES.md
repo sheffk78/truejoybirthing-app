@@ -59,6 +59,12 @@ Source of truth: `auth-screens-1.html` (welcome/login, approved) + `auth-screens
 
 ## 5. Approved-state discipline (added 2026-09-17 after overnight drift)
 
+## 6. Avatar circles = profile photos with initials fallback (Jeff directive 2026-09-17)
+Every circular avatar slot (care-team cards, messages list, composer) renders the member's profile photo when set; initials are ONLY the fallback for accounts without a photo. Never hardcode initials as a terminal state — when the real app loads a photo, the circle must show it. Verified in code 2026-09-17: initials fallback already implemented this way in my-team.tsx / messages.tsx.
+
+## 7. Header photo bands (approved treatment 2, 2026-09-17)
+Logged-in mom screens use a full-width color photo band directly under the status bar, fading into the page cream before content starts. Photos are city-page SECONDARY scenes (mom + professional together — e.g. midwife-heartbeat, acworth-ga-support-scene, lactation-consult). Never: skyline heroes, the app's B&W birth set (redundant with onboarding), circle medallions (read as profile images), or caption text on the band (duplicates the overline). Reference build: surfaces-2026-09-14/s7s8s9-mom-core-hbands.html (commit 397c372a).
+
 What Jeff saw overnight 09-16→09-17: an off-script re-derivation of already-approved screens
 (plans paywall restyled, then a revert to the pre-approval version) got posted as "fresh shots".
 None of it was a real repo change — it was re-designing from memory instead of from the approved
