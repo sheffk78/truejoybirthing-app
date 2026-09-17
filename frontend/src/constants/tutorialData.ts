@@ -1,10 +1,18 @@
-import { TutorialStep } from '../components/AppTutorial';
 import { COLORS } from './theme';
+
+export interface TutorialStep {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  iconColor?: string;
+  tips?: string[];
+}
 
 export const MOM_TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: 'welcome',
-    title: 'Welcome to True Joy Birthing',
+    title: 'Welcome to True Joy\nBirthing',
     description: 'Your personal companion for creating the birth experience you envision. Let us show you around!',
     icon: 'heart',
     iconColor: COLORS.secondary,
@@ -16,9 +24,9 @@ export const MOM_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'document-text',
     iconColor: COLORS.primary,
     tips: [
-      'Take your time with each section',
-      'You can save and return anytime',
-      'Share your plan with your care team',
+      'Your preferences|Ready to share with your team',
+      'Every section matters|Take your time, save anytime',
+      'Built around your week|Updates as your due date nears',
     ],
   },
   {
@@ -28,9 +36,9 @@ export const MOM_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'calendar',
     iconColor: COLORS.accent,
     tips: [
-      'Add custom events and appointments',
-      'Get weekly pregnancy updates',
-      'Never miss important milestones',
+      "Your baby's growth|A tip picked for your exact week",
+      'Milestones and reminders|Tailored to your due date',
+      'Appointments|Add your own events and visits',
     ],
   },
   {
@@ -40,21 +48,21 @@ export const MOM_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'heart-circle',
     iconColor: COLORS.secondary,
     tips: [
-      'Daily mood and energy tracking',
-      'Sleep quality monitoring',
-      'View your wellness trends over time',
+      'Daily check-ins|Mood and energy, tracked gently',
+      'Sleep quality|Notice patterns over time',
+      'Your trends|See how you have been feeling',
     ],
   },
   {
     id: 'find-team',
     title: 'Find Your Care Team',
-    description: 'Browse our marketplace to discover and connect with experienced doulas and midwives in your area.',
+    description: 'Browse our marketplace to discover and connect with experienced doulas, midwives and other birthing professionals in your area.',
     icon: 'people',
     iconColor: COLORS.roleDoula,
     tips: [
-      'Filter by location and services',
-      'View provider profiles and experience',
-      'Message providers directly',
+      'Search nearby|Filter by location and services',
+      'Real experience|View provider profiles',
+      'Say hello|Message providers directly',
     ],
   },
   {
@@ -64,9 +72,9 @@ export const MOM_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'chatbubbles',
     iconColor: COLORS.primary,
     tips: [
-      'Ask questions anytime',
-      'Share updates with your team',
-      'Keep all conversations in one place',
+      'Your team chat|Message everyone in one place',
+      'Ask anything|Questions answered anytime',
+      'Share updates|Keep your team close',
     ],
   },
 ];
@@ -86,9 +94,9 @@ export const DOULA_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'grid',
     iconColor: COLORS.roleDoula,
     tips: [
-      'View client statistics at a glance',
-      'Quick access to common actions',
-      'Stay on top of pending items',
+      'Practice at a glance|Clients, contracts, tasks',
+      'Quick actions|Common work in one tap',
+      'Nothing slips|Pending items surfaced',
     ],
   },
   {
@@ -98,9 +106,9 @@ export const DOULA_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'people',
     iconColor: COLORS.roleDoula,
     tips: [
-      'Add detailed client profiles',
-      'Track client status and progress',
-      'Access shared birth plans',
+      'Detailed profiles|Due dates, stories, needs',
+      'Status and progress|From contact to postpartum',
+      'Birth plans|Shared with their care team',
     ],
   },
   {
@@ -110,9 +118,9 @@ export const DOULA_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'create',
     iconColor: COLORS.primary,
     tips: [
-      'Create custom contract templates',
-      'Send contracts via shareable link',
-      'Track signature status',
+      'Custom templates|Create contracts once, reuse',
+      'Shareable links|Clients sign electronically',
+      'Live status|Track every signature',
     ],
   },
   {
@@ -122,9 +130,9 @@ export const DOULA_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'receipt',
     iconColor: COLORS.accent,
     tips: [
-      'Create itemized invoices',
-      'Track payment status',
-      'Send invoice reminders',
+      'Itemized invoices|Professional and clear',
+      'Payment tracking|Know what is paid and due',
+      'Gentle reminders|Send follow-ups in a tap',
     ],
   },
   {
@@ -134,9 +142,9 @@ export const DOULA_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'chatbubbles',
     iconColor: COLORS.roleDoula,
     tips: [
-      'Real-time messaging',
-      'Build strong client relationships',
-      'Keep conversation history',
+      'Real-time messaging|Answer clients instantly',
+      'Stronger relationships|Support between visits',
+      'Full history|Every conversation saved',
     ],
   },
 ];
@@ -156,9 +164,9 @@ export const MIDWIFE_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'grid',
     iconColor: COLORS.roleMidwife,
     tips: [
-      'Track prenatal and postpartum clients',
-      'Monitor monthly visit counts',
-      'Quick access to key actions',
+      'Practice at a glance|Prenatal and postpartum',
+      'Visit counts|Monthly numbers, clear',
+      'Quick actions|Key work in one tap',
     ],
   },
   {
@@ -168,9 +176,9 @@ export const MIDWIFE_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'people',
     iconColor: COLORS.roleMidwife,
     tips: [
-      'Comprehensive client profiles',
-      'Track pregnancy progression',
-      'View client birth plans',
+      'Detailed records|History, preferences, notes',
+      'Pregnancy progression|Week by week',
+      'Birth plans|Always viewable',
     ],
   },
   {
@@ -180,9 +188,9 @@ export const MIDWIFE_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'clipboard',
     iconColor: COLORS.primary,
     tips: [
-      'Record vitals: BP, weight, FHR',
-      'Track gestational age',
-      'Add detailed visit notes',
+      'Vitals|BP, weight, FHR recorded',
+      'Gestational age|Tracked at every visit',
+      'Visit notes|Detailed and organized',
     ],
   },
   {
@@ -192,9 +200,9 @@ export const MIDWIFE_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'document',
     iconColor: COLORS.secondary,
     tips: [
-      'Complete birth documentation',
-      'Record labor progression',
-      'Document newborn details',
+      'Full documentation|Labor through postpartum',
+      'Labor progression|Every stage captured',
+      'Newborn details|Recorded and saved',
     ],
   },
   {
@@ -204,9 +212,9 @@ export const MIDWIFE_TUTORIAL_STEPS: TutorialStep[] = [
     icon: 'chatbubbles',
     iconColor: COLORS.roleMidwife,
     tips: [
-      'Secure messaging platform',
-      'Respond to client questions',
-      'Build trusting relationships',
+      'Secure messaging|Private by design',
+      'Quick responses|Answer questions anytime',
+      'Trust|Built between visits',
     ],
   },
 ];

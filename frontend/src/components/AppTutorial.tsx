@@ -7,24 +7,26 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
-  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Icon } from './Icon';
 import Button from './Button';
 import { SIZES, FONTS } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
+import {
+  SprigOne,
+  SprigTiny,
+  SprigBud,
+  DocList,
+  TwoFigures,
+  SAGE,
+  ROSE,
+  LAV,
+  ORGANIC_ICONS,
+  type IconProps,
+} from './OrganicIcons';
+import type { TutorialStep } from '../constants/tutorialData';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-export interface TutorialStep {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  iconColor?: string;
-  tips?: string[];
-}
 
 interface AppTutorialProps {
   steps: TutorialStep[];
@@ -33,6 +35,29 @@ interface AppTutorialProps {
   roleColor?: string;
   roleName?: string;
 }
+
+// Organic icon per step id — the approved card vocabulary (auth-screens-5 Quick Tour)
+const STEP_ICONS: Record<string, React.ComponentType<IconProps>> = {
+  welcome: SprigBud,
+  'birth-plan': DocList,
+  timeline: SprigTiny,
+  wellness: SprigOne,
+  'find-team': TwoFigures,
+  messaging: TwoFigures,
+  dashboard: SprigTiny,
+  clients: TwoFigures,
+  contracts: DocList,
+  invoices: DocList,
+  visits: DocList,
+  'birth-summaries': DocList,
+};
+
+const STEP_ICON_COLORS: Record<string, string> = {
+  'birth-plan': ROSE,
+  'find-team': LAV,
+  messaging: LAV,
+  clients: LAV,
+};
 
 export default function AppTutorial({
   steps,
@@ -45,275 +70,175 @@ export default function AppTutorial({
   const [currentStep, setCurrentStep] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  
-  // Use provided roleColor or default to primary
+
   const activeRoleColor = roleColor || colors.primary;
-
-  const goToStep = (index: number) => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0.5,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    setCurrentStep(index);
-    scrollViewRef.current?.scrollTo({ x: index * SCREEN_WIDTH, animated: true });
-  };
+  const step = steps[currentStep];
+  const organic = step ? STEP_ICONS[step.id] || ORGANIC_ICONS[step.icon] || SprigBud : SprigBud;
+  const organicColor = (step && STEP_ICON_COLORS[step.id]) || activeRoleColor;
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
-      goToStep(currentStep + 1);
+      Animated.sequence([
+        Animated.timing(fadeAnim, { toValue: 0.35, duration: 150, useNativeDriver: true }),
+        Animated.timing(fadeAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
+      ]).start();
+      setCurrentStep(currentStep + 1);
     } else {
       onComplete();
     }
   };
 
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      goToStep(currentStep - 1);
-    }
-  };
-
-  const handleScroll = (event: any) => {
-    const offsetX = event.nativeEvent.contentOffset.x;
-    const newStep = Math.round(offsetX / SCREEN_WIDTH);
-    if (newStep !== currentStep && newStep >= 0 && newStep < steps.length) {
-      setCurrentStep(newStep);
-    }
-  };
+  const handleSkip = onSkip;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Welcome Tour</Text>
-        <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
-          <Text style={[styles.skipText, { color: colors.textSecondary }]}>Skip</Text>
-        </TouchableOpacity>
+      {/* Overline */}
+      <View style={styles.overlineRow}>
+        <Text style={[styles.overline, { color: colors.textLight }]}>QUICK TOUR</Text>
       </View>
 
-      {/* Progress Dots */}
-      <View style={styles.progressContainer}>
-        {steps.map((_, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => goToStep(index)}
-            style={[
-              styles.progressDot,
-              { backgroundColor: colors.border },
-              index === currentStep && { backgroundColor: activeRoleColor, width: 24 },
-            ]}
-          />
-        ))}
-      </View>
-
-      {/* Tutorial Steps */}
       <ScrollView
-        ref={scrollViewRef}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={handleScroll}
-        scrollEventThrottle={16}
+        scrollEnabled={false}
         style={styles.scrollView}
       >
-        {steps.map((step, index) => (
-          <Animated.View
-            key={step.id}
-            style={[styles.stepContainer, { opacity: index === currentStep ? fadeAnim : 0.7 }]}
-          >
-            <View style={[styles.iconCircle, { backgroundColor: (step.iconColor || activeRoleColor) + '20' }]}>
-              <Icon
-                name={step.icon as any}
-                size={64}
-                color={step.iconColor || activeRoleColor}
-              />
-            </View>
+        <Animated.View style={[styles.stepContainer, { opacity: fadeAnim, width: SCREEN_WIDTH }]}>
+          {/* Serif headline with accent tail (approved: 'Your week, |at a glance|') */}
+          {step.title.includes('\n') ? (
+            <Text style={[styles.headline, { color: colors.text }]}>
+              {step.title.split('\n')[0]}
+              {',\n'}
+              <Text style={[styles.headlineAccent, { color: activeRoleColor }]}>
+                {step.title.split('\n')[1]}
+              </Text>
+            </Text>
+            ) : (
+            <Text style={[styles.headline, { color: colors.text }]}>
+              <Text style={[styles.headlineAccent, { color: activeRoleColor }]}>{step.title}</Text>
+            </Text>
+          )}
 
-            <Text style={[styles.stepTitle, { color: colors.text }]}>{step.title}</Text>
-            <Text style={[styles.stepDescription, { color: colors.textSecondary }]}>{step.description}</Text>
+          {/* Description */}
+          <Text style={[styles.description, { color: colors.textSecondary }]}>{step.description}</Text>
 
-            {step.tips && step.tips.length > 0 && (
-              <View style={[styles.tipsContainer, { backgroundColor: colors.surface }]}>
-                <Text style={[styles.tipsHeader, { color: colors.text }]}>Quick Tips:</Text>
-                {step.tips.map((tip, tipIndex) => (
-                  <View key={tipIndex} style={styles.tipRow}>
-                    <Icon name="checkmark-circle" size={18} color={activeRoleColor} />
-                    <Text style={[styles.tipText, { color: colors.textSecondary }]}>{tip}</Text>
+          {/* Organic icon divider — the step's vocabulary mark */}
+          <View style={styles.iconRow}>
+            {React.createElement(organic, { size: 44, color: organicColor })}
+          </View>
+
+          {/* What you'll see — approved card stack */}
+          {step.tips && step.tips.length > 0 && (
+            <View style={styles.cardsWrap}>
+              <Text style={[styles.cardsHeader, { color: colors.textLight }]}>WHAT YOU'LL SEE</Text>
+              {step.tips.map((tip, i) => {
+                const CardIcon = i === 0 ? SprigTiny : i === 1 ? DocList : TwoFigures;
+                const CardColor = i === 0 ? SAGE : i === 1 ? ROSE : LAV;
+                const parts = tip.split('|');
+                const t = parts[0];
+                const d = parts[1] || '';
+                return (
+                  <View key={i} style={[styles.card, { backgroundColor: colors.surface }]}>
+                    <View style={styles.cardIcon}>
+                      {React.createElement(CardIcon, { size: 20, color: CardColor })}
+                    </View>
+                    <View style={styles.cardTextWrap}>
+                      <Text style={[styles.cardTitle, { color: colors.text }]}>{t}</Text>
+                      {d ? (
+                        <Text style={[styles.cardDesc, { color: colors.textSecondary }]}>{d}</Text>
+                      ) : null}
+                    </View>
                   </View>
-                ))}
-              </View>
-            )}
-          </Animated.View>
-        ))}
+                  );
+                })}
+            </View>
+          )}
+        </Animated.View>
       </ScrollView>
 
-      {/* Navigation Buttons */}
-      <View style={[styles.navigationContainer, { borderTopColor: colors.border }]}>
-        <TouchableOpacity
-          onPress={handlePrevious}
-          style={[
-            styles.navButton, 
-            { backgroundColor: colors.surface, borderColor: colors.border },
-            currentStep === 0 && styles.navButtonDisabled
-          ]}
-          disabled={currentStep === 0}
-        >
-          <Icon
-            name="chevron-back"
-            size={24}
-            color={currentStep === 0 ? colors.textLight : colors.text}
-          />
-        </TouchableOpacity>
-
-        <View style={styles.stepIndicator}>
-          <Text style={[styles.stepIndicatorText, { color: colors.textSecondary }]}>
-            {currentStep + 1} of {steps.length}
-          </Text>
+      {/* Footer — approved: Next →, Skip tour, replay note */}
+      <View style={styles.footer}>
+        <View style={styles.dotsRow}>
+          {steps.map((_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.dot,
+                { backgroundColor: i === currentStep ? activeRoleColor : colors.border },
+              ]}
+            />
+          ))}
         </View>
-
-        {currentStep < steps.length - 1 ? (
-          <TouchableOpacity onPress={handleNext} style={[styles.navButton, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Icon name="chevron-forward" size={24} color={colors.text} />
-          </TouchableOpacity>
-        ) : (
-          <Button
-            title="Get Started"
-            onPress={onComplete}
-            style={[styles.getStartedButton, { backgroundColor: activeRoleColor }]}
-            textStyle={styles.getStartedText}
-          />
-        )}
+        <Button title={currentStep < steps.length - 1 ? 'Next' : "Let's begin"} onPress={handleNext} style={styles.nextBtn} />
+        <TouchableOpacity onPress={handleSkip} style={styles.skipTourBtn}>
+          <Text style={[styles.skipTourText, { color: colors.textSecondary }]}>Skip tour</Text>
+        </TouchableOpacity>
+        <Text style={[styles.replayNote, { color: colors.textLight }]}>
+          You can replay this tour anytime from your profile.
+        </Text>
+        <Text style={styles.srOnly}>{roleName} tour, step {currentStep + 1} of {steps.length}</Text>
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1 },
+  overlineRow: { paddingHorizontal: SIZES.lg, paddingTop: SIZES.lg },
+  overline: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: SIZES.lg,
-    paddingVertical: SIZES.md,
-  },
-  headerTitle: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-  },
-  skipButton: {
-    padding: SIZES.sm,
-  },
-  skipText: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-  },
-  progressContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: SIZES.md,
-    gap: 8,
-  },
-  progressDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  stepContainer: {
-    width: SCREEN_WIDTH,
-    paddingHorizontal: SIZES.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconCircle: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: SIZES.xl,
-  },
-  stepTitle: {
+  scrollView: { flex: 1 },
+  stepContainer: { flex: 1, paddingHorizontal: SIZES.xl, justifyContent: 'center' },
+  headline: {
     fontSize: SIZES.fontXxl,
     fontFamily: FONTS.heading,
-    textAlign: 'center',
+    lineHeight: 40,
     marginBottom: SIZES.md,
   },
-  stepDescription: {
+  headlineAccent: {
+    fontFamily: FONTS.heading,
+  },
+  description: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    textAlign: 'center',
     lineHeight: 24,
-    paddingHorizontal: SIZES.md,
+    marginBottom: SIZES.xl,
   },
-  tipsContainer: {
-    marginTop: SIZES.xl,
-    borderRadius: SIZES.radiusLg,
-    padding: SIZES.md,
-    width: '100%',
-  },
-  tipsHeader: {
-    fontSize: SIZES.fontSm,
+  iconRow: { marginBottom: SIZES.xl },
+  cardsWrap: {},
+  cardsHeader: {
+    fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
+    letterSpacing: 1.5,
     marginBottom: SIZES.sm,
   },
-  tipRow: {
+  card: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SIZES.xs,
-    gap: 8,
+    borderRadius: SIZES.radiusMd,
+    padding: SIZES.md,
+    marginBottom: SIZES.sm,
   },
-  tipText: {
-    fontSize: SIZES.fontSm,
+  cardIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.md },
+  cardTextWrap: { flex: 1 },
+  cardTitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, marginBottom: 2 },
+  cardDesc: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, lineHeight: 19 },
+  footer: { paddingHorizontal: SIZES.lg, paddingBottom: SIZES.lg },
+  dotsRow: { flexDirection: 'row', gap: 6, justifyContent: 'center', marginBottom: SIZES.lg },
+  dot: { width: 7, height: 7, borderRadius: 3.5 },
+  nextBtn: {},
+  skipTourBtn: { alignSelf: 'center', padding: SIZES.sm, marginTop: SIZES.xs },
+  skipTourText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body },
+  replayNote: {
+    textAlign: 'center',
+    fontSize: SIZES.fontXs,
     fontFamily: FONTS.body,
-    flex: 1,
+    marginTop: SIZES.sm,
   },
-  navigationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: SIZES.lg,
-    paddingVertical: SIZES.lg,
-    borderTopWidth: 1,
-  },
-  navButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-  },
-  navButtonDisabled: {
-    opacity: 0.5,
-  },
-  stepIndicator: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  stepIndicatorText: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-  },
-  getStartedButton: {
-    paddingHorizontal: SIZES.lg,
-    minWidth: 120,
-  },
-  getStartedText: {
-    fontSize: SIZES.fontSm,
-  },
+  srOnly: { height: 0, opacity: 0 },
 });

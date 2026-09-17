@@ -46,7 +46,7 @@ const getMomQuickStart = (colors: ThemeColors): QuickStartItem[] => [
   {
     id: 'find-providers',
     title: 'Find Your Birth Team',
-    description: 'Search for experienced doulas and midwives in your area who align with your birth vision.',
+    description: 'Search for experienced doulas, midwives and other birthing professionals in your area who align with your birth vision.',
     icon: 'people',
     color: colors.primary,
     action: 'Browse Providers',

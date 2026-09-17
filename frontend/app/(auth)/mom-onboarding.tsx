@@ -16,6 +16,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from '../../src/components/Icon';
+import { SprigOne, SprigBud, House, ShieldPlus, Bassinet, QuestionSwirl, Calendar, ChevronDown, SAGE } from '../../src/components/OrganicIcons';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import Card from '../../src/components/Card';
@@ -26,10 +27,10 @@ import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const BIRTH_SETTINGS = [
-  { value: 'Home', label: 'Home Birth', icon: 'home' },
-  { value: 'Hospital', label: 'Hospital', icon: 'business' },
-  { value: 'Birth Center', label: 'Birth Center', icon: 'medkit' },
-  { value: 'Not sure', label: 'Not sure yet', icon: 'help-circle' },
+  { value: 'Home', label: 'Home Birth', icon: House },
+  { value: 'Hospital', label: 'Hospital', icon: ShieldPlus },
+  { value: 'Birth Center', label: 'Birth Center', icon: Bassinet },
+  { value: 'Not sure', label: 'Not sure yet', icon: QuestionSwirl },
 ];
 
 export default function MomOnboardingScreen() {
@@ -182,15 +183,16 @@ export default function MomOnboardingScreen() {
             <View style={styles.progressBar}>
               <View style={[styles.progressFill, { width: `${progressPct}%` }]} />
             </View>
-            <Text style={styles.title}>Welcome, {user?.full_name?.split(' ')[0]}!</Text>
+            <Text style={styles.overline}>Your pregnancy</Text>
+            <Text style={styles.title}>A few details to shape things</Text>
             <Text style={styles.subtitle}>
-              Let's set up your profile so we can personalize your experience.
+              Your week number, your team matches, and every tip will be built around these three answers.
             </Text>
           </View>
           
           {/* Due Date with Calendar Picker */}
           <View style={styles.formSection}>
-            <Text style={styles.sectionLabel}>When is your due date?</Text>
+            <Text style={styles.sectionLabel}>When are you due?</Text>
             {errors.dueDate && <Text style={styles.errorText}>{errors.dueDate}</Text>}
             
             <TouchableOpacity
@@ -198,13 +200,19 @@ export default function MomOnboardingScreen() {
               onPress={() => setShowDatePicker(true)}
               activeOpacity={0.7}
             >
-              <Icon name="calendar" size={22} color={colors.primary} />
+              <Calendar size={20} color={SAGE} />
               <Text style={[styles.dateText, !dueDate && styles.datePlaceholder]}>
                 {dueDate ? formatDateDisplay(dueDate) : 'Select your due date'}
               </Text>
-              <Icon name="chevron-down" size={20} color={colors.textSecondary} />
+              <ChevronDown size={18} />
             </TouchableOpacity>
             
+            <View style={styles.sageHintRow}>
+              <SprigOne size={14} color={SAGE} />
+              <Text style={styles.sageHintText}>
+                Not sure of the exact date? An estimate works fine — you can change it anytime.
+              </Text>
+            </View>
             {showDatePicker && Platform.OS === 'web' && (
               <Modal
                 visible={showDatePicker}
@@ -293,7 +301,7 @@ export default function MomOnboardingScreen() {
           
           {/* Birth Setting */}
           <View style={styles.settingSection}>
-            <Text style={styles.sectionLabel}>Where do you plan to give birth?</Text>
+            <Text style={styles.sectionLabel}>Where do you hope to give birth?</Text>
             {errors.birthSetting && <Text style={styles.errorText}>{errors.birthSetting}</Text>}
             
             <View style={styles.settingsGrid}>
@@ -311,11 +319,7 @@ export default function MomOnboardingScreen() {
                     ]}
                     padding="md"
                   >
-                    <Icon
-                      name={setting.icon as any}
-                      size={32}
-                      color={plannedBirthSetting === setting.value ? colors.primary : colors.textSecondary}
-                    />
+                    {React.createElement(setting.icon, { size: 30, color: SAGE })}
                     <Text
                       style={[
                         styles.settingLabel,
@@ -337,8 +341,8 @@ export default function MomOnboardingScreen() {
           
           {/* Zip Code Location */}
           <View style={styles.locationSection}>
-            <Text style={styles.sectionLabel}>Where are you located? (Optional)</Text>
-            <Text style={styles.helperText}>Enter your zip code and we'll find your city</Text>
+            <Text style={styles.sectionLabel}>Your zip code</Text>
+            <Text style={styles.helperText}>We'll match you with providers nearby</Text>
             
             <View style={styles.zipCodeRow}>
               <Input
@@ -346,7 +350,7 @@ export default function MomOnboardingScreen() {
                 value={zipCode}
                 onChangeText={handleZipCodeChange}
                 containerStyle={styles.zipInput}
-                leftIcon="location"
+                leftIcon="organic:sprigOne"
                 keyboardType="number-pad"
                 maxLength={5}
               />
@@ -357,9 +361,8 @@ export default function MomOnboardingScreen() {
             
             {locationCity && locationState && (
               <View style={styles.locationResult}>
-                <Icon name="checkmark-circle" size={20} color={colors.success} />
                 <Text style={styles.locationResultText}>
-                  {locationCity}, {locationState}
+                  {locationCity}, {locationState} — matches found nearby
                 </Text>
               </View>
             )}
@@ -367,12 +370,13 @@ export default function MomOnboardingScreen() {
           
           {/* Continue Button */}
           <Button
-            title="Continue to Home"
+            title="Create my plan"
             onPress={handleContinue}
             loading={isLoading}
             fullWidth
             style={styles.continueButton}
           />
+          <Text style={styles.footNote}>Free forever — every birth tool, no paywall, ever.</Text>
         </ScrollView>
       </KeyboardAvoidingView>
       
@@ -419,6 +423,38 @@ const getStyles = createThemedStyles((colors) => ({
     height: '100%',
     backgroundColor: colors.primary,
     borderRadius: 2,
+  },
+  overline: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+    letterSpacing: 2,
+    color: colors.textLight,
+    textTransform: 'uppercase',
+    marginBottom: SIZES.xs,
+  },
+  sageHintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: SIZES.sm,
+  },
+  sageHintText: {
+    flex: 1,
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    lineHeight: 17,
+  },
+  footNote: {
+    textAlign: 'center',
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+    color: colors.success,
+    backgroundColor: colors.success + '18',
+    borderRadius: SIZES.radiusMd,
+    marginTop: SIZES.md,
+    padding: SIZES.sm,
+    overflow: 'hidden',
   },
   title: {
     fontSize: SIZES.fontTitle,

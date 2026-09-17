@@ -77,7 +77,15 @@ export default function TutorialScreen() {
       // Local state is already set — backend sync is best-effort
       console.warn('Failed to persist onboarding completion to backend:', e);
     }
-    router.replace(config.homeRoute as any);
+    // Pros: verify-email is the LAST onboarding step (skippable) — Jeff 2026-09-16.
+    // Unverified pros get one chance to verify here with the marketplace warning;
+    // verified users and moms go straight to their dashboard.
+    const isPro = userRole === 'DOULA' || userRole === 'MIDWIFE' || userRole === 'LACTATION';
+    if (isPro && !user?.email_verified) {
+      router.replace({ pathname: '/(auth)/verify-email', params: { email: user?.email || '', lastStep: '1' } });
+    } else {
+      router.replace(config.homeRoute as any);
+    }
   };
   
   const handleComplete = async () => {
