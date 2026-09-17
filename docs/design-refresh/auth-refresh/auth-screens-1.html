@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @font-face { font-family:'Cormorant'; font-weight:700; src:url('assets/CormorantGaramond_700Bold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant'; font-weight:600; src:url('assets/CormorantGaramond_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant'; font-weight:500; src:url('assets/CormorantGaramond_500Medium.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:400; src:url('assets/Quicksand_400Regular.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:500; src:url('assets/Quicksand_500Medium.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:600; src:url('assets/Quicksand_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:700; src:url('assets/Quicksand_700Bold.ttf') format('truetype'); }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+  body { background:#3A3A3A; font-family:'Quicksand',sans-serif; }
+  .phone { width:390px; margin:28px auto; background:#FAF8F5; border-radius:40px; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.35); }
+  .screen { height:auto; min-height:760px; display:flex; flex-direction:column; position:relative; }
+  .status { display:flex; justify-content:space-between; align-items:center; padding:14px 26px 6px; font-weight:600; font-size:14px; color:#2A2A2A; }
+  .status.onphoto { color:#fff; }
+  .grain { position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.05; }
+  .safe { padding:0 24px; }
+
+  /* ---------- shared buttons ---------- */
+  .btn-primary { display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    padding:15px 20px; border-radius:28px; background:#8E8CB5; color:#fff;
+    font-family:'Quicksand'; font-weight:700; font-size:15.5px; letter-spacing:.2px; }
+  .btn-primary:active { opacity:.9; }
+  .btn-ghost { display:block; width:100%; text-align:center; padding:14px 20px;
+    font-family:'Quicksand'; font-weight:600; font-size:15px; color:#8E8CB5; }
+  .btn-outline { display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    padding:14px 20px; border-radius:28px; border:1.4px solid #D5D3E8; background:#FDFCFA;
+    font-family:'Quicksand'; font-weight:600; font-size:15px; color:#6E6C99; }
+  .btn-rose { display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    padding:15px 20px; border-radius:28px; background:#B87AA0; color:#fff;
+    font-family:'Quicksand'; font-weight:700; font-size:15.5px; }
+
+  /* ---------- sprig colors ---------- */
+  .sprig-stroke { stroke:#A8B5A0; fill:none; stroke-width:2.6; stroke-linecap:round; }
+  .sprig-leaf { fill:#E8EDE5; stroke:#A8B5A0; stroke-width:1.4; stroke-linejoin:round; }
+
+  /* ============ SPLASH v2 (Jeff 09-16: icon-only, no wordmark, no status bar, no footer text) ============ */
+  .splash { background:linear-gradient(175deg,#FDFCFA 0%,#F4F2F9 62%,#EDEAF6 100%);
+    align-items:center; justify-content:center; text-align:center; }
+  .splash-inner { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .sp-halo { width:248px; height:248px; border-radius:124px;
+    background:radial-gradient(circle at 50% 44%, rgba(142,140,181,.16), rgba(142,140,181,0) 70%);
+    display:flex; align-items:center; justify-content:center; }
+  .sp-logo { width:128px; height:128px; }  /* natural square, NO crop, NO distortion */
+  .dots { display:flex; gap:9px; margin-top:34px; align-items:center; }
+  .dot { width:7px; height:7px; border-radius:4px; background:#D5D3E8; }
+  .dot.f { background:#8E8CB5; }
+
+  /* ============ WELCOME ============ */
+  .welcome-hero { position:absolute; top:0; left:0; right:0; height:54%;
+    background:url('assets/hero-newborn-sleeping.jpg') center 30%/cover no-repeat; }
+  .welcome-tint { position:absolute; top:0; left:0; right:0; height:54%;
+    background:linear-gradient(180deg, rgba(142,140,181,.18) 0%, rgba(184,122,160,.22) 100%); }
+  .welcome-card { position:absolute; bottom:0; left:0; right:0; background:#FAF8F5;
+    border-radius:28px 28px 40px 40px; padding:26px 24px 26px; }
+  .wc-overline { font-size:10px; letter-spacing:2.2px; text-transform:uppercase;
+    color:#B87AA0; font-weight:700; margin-bottom:8px; }
+  .wc-h1 { font-family:'Cormorant'; font-weight:700; font-size:27px; line-height:1.15; color:#2A2A2A; }
+  .wc-h1 em { font-style:normal; color:#B085A5; }
+  .wc-sub { font-size:13.5px; line-height:1.55; color:#4B4B4B; margin-top:9px; font-weight:500; }
+  .wc-pills { display:flex; gap:8px; margin:16px 0 20px; }
+  .wc-pill { display:flex; align-items:center; gap:6px; padding:7px 12px; border-radius:16px;
+    font-size:11.5px; font-weight:600; }
+  .wc-pill svg { width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:1.9;
+    stroke-linecap:round; stroke-linejoin:round; }
+  .pill-sage { background:#E8EDE5; color:#5C6B54; }
+  .pill-lav { background:#EDEAF6; color:#6E6C99; }
+  .pill-rose { background:#F6E9F0; color:#A25C86; }
+  .wc-footer { margin-top:14px; font-size:11px; line-height:1.5; color:#9A9B9C; text-align:center; }
+  .wc-footer b { color:#8E8CB5; font-weight:600; }
+</style>
+</head>
+<body>
+<svg class="grain" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+
+<!-- ══════════════ SCREEN A · SPLASH / APP LOADING (v2 icon-only) ══════════════ -->
+<div class="phone"><div class="screen splash">
+  <div class="splash-inner">
+    <div class="sp-halo">
+      <!-- the true icon mark (square, transparent) at its natural shape — nothing crosses it -->
+      <img class="sp-logo" src="assets/logo-icon.png">
+    </div>
+    <div class="dots"><div class="dot f"></div><div class="dot"></div><div class="dot"></div></div>
+  </div>
+</div></div>
+
+<!-- ══════════════ SCREEN B · WELCOME ══════════════ -->
+<div class="phone"><div class="screen" style="background:#FAF8F5;">
+  <div class="welcome-hero"></div>
+  <div class="welcome-tint"></div>
+  <div class="status onphoto" style="position:relative;z-index:2;"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+  <div style="position:relative;z-index:2;display:flex;justify-content:center;padding-top:2px;">
+    <img src="assets/logo-icon.png" style="width:64px;height:64px;border-radius:32px;
+      box-shadow:0 8px 24px rgba(42,42,42,.25);border:1px solid rgba(255,255,255,.4);">
+  </div>
+  <div class="welcome-card" style="z-index:2;">
+    <div class="wc-overline">Welcome to</div>
+    <div class="wc-h1" style="font-size:26px;">Your Birth Journey,<br><em>Supported Every Step</em></div>
+    <div class="wc-sub">Create your birth plan, connect with doulas and midwives, and experience the birth you envision.</div>
+    <div class="wc-pills">
+      <div class="wc-pill pill-sage">
+        <svg viewBox="0 0 24 24"><path d="M7 4.6 C10 4.2 14 4.2 17 4.6 C17.6 4.7 18 5.1 18 5.8 L18 18.9 C18 19.5 17.6 19.9 17 20 C14 20.3 10 20.3 7 20 C6.4 20 6 19.5 6 18.9 L6 5.8 C6 5.1 6.4 4.7 7 4.6 Z"/><path d="M9 9.4 C11 9.1 13 9.1 15 9.4"/><path d="M9 12.6 C10.4 12.4 11.8 12.4 13.2 12.6"/></svg>
+        Birth Plan</div>
+      <div class="wc-pill pill-lav">
+        <svg viewBox="0 0 24 24"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z"/><path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3"/><path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4"/><path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3"/></svg>
+        Your Team</div>
+      <div class="wc-pill pill-rose">
+        <svg viewBox="0 0 24 24"><path d="M12 20.4 C7 16.6 3.8 13.6 3.8 10.2 C3.8 7.6 5.8 5.8 8.2 5.8 C9.7 5.8 11.1 6.6 12 7.9 C12.9 6.6 14.3 5.8 15.8 5.8 C18.2 5.8 20.2 7.6 20.2 10.2 C20.2 13.6 17 16.6 12 20.4 Z"/></svg>
+        Support</div>
+    </div>
+    <div class="btn-primary">Get Started Free
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+    <div class="btn-ghost">I already have an account</div>
+    <div class="wc-footer">By continuing, you agree to our <b>Terms</b> and <b>Privacy Policy</b></div>
+  </div>
+</div></div>
+
+<!-- ══════════════ SCREEN C · LOG IN ══════════════ -->
+<div class="phone"><div class="screen" style="background:#FAF8F5;">
+  <div style="position:absolute;top:0;left:0;right:0;height:190px;
+    background:url('assets/hero-skin-to-skin.jpg') center 25%/cover no-repeat;"></div>
+  <div style="position:absolute;top:0;left:0;right:0;height:190px;
+    background:linear-gradient(180deg, rgba(142,140,181,.15) 0%, rgba(250,248,245,.0) 55%, #FAF8F5 100%);"></div>
+  <div style="position:relative;z-index:2;">
+    <div class="status onphoto"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+    <div style="padding:6px 24px 0;">
+      <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#2A2A2A;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.85;"><path d="M15 5 L8 12 L15 19"/></svg>
+    </div>
+  </div>
+  <div style="position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:96px 24px 24px;">
+    <div class="wc-overline" style="color:#6E6C99;">Welcome back</div>
+    <div class="wc-h1" style="font-size:26px;">Log <em>In</em></div>
+    <div class="wc-sub" style="margin-top:6px;">Your team is waiting for you.</div>
+
+    <div style="margin-top:24px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#8A8B8D;margin-bottom:7px;">Email</div>
+      <div style="display:flex;align-items:center;gap:10px;background:#FDFCFA;border:1px solid #E6E4F4;border-radius:14px;padding:14px 16px;">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#A8A9AC;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><path d="M4.5 7.2 C4.5 6 5.5 5 6.7 5.2 C10.1 5.8 13.9 5.8 17.3 5.2 C18.5 5 19.5 6 19.5 7.2 L19.5 16.8 C19.5 18 18.5 19 17.3 18.8 C13.6 18.3 10.4 18.3 6.8 18.8 C5.5 19 4.5 18 4.5 16.8 Z"/><path d="M5.2 7.4 C8.2 9.6 10.4 10.7 12 10.7 C13.6 10.7 15.8 9.6 18.8 7.4"/></svg>
+        <span style="font-size:14px;color:#9A9B9C;font-weight:500;">you@email.com</span>
+      </div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#8A8B8D;margin:18px 0 7px;">Password</div>
+      <div style="display:flex;align-items:center;gap:10px;background:#FDFCFA;border:1px solid #E6E4F4;border-radius:14px;padding:14px 16px;">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#A8A9AC;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><path d="M7.6 10.4 L7.6 8.2 C7.6 5.9 9.4 4.2 12 4.2 C14.6 4.2 16.4 5.9 16.4 8.2 L16.4 10.4"/><path d="M6.4 10.4 L17.6 10.4 C18.4 10.4 19 11 19 11.8 L19 18.4 C19 19.2 18.4 19.8 17.6 19.8 L6.4 19.8 C5.6 19.8 5 19.2 5 18.4 L5 11.8 C5 11 5.6 10.4 6.4 10.4 Z"/><circle cx="12" cy="14.6" r="1.2" fill="#A8A9AC" stroke="none"/></svg>
+        <span style="font-size:14px;color:#9A9B9C;font-weight:500;flex:1;">••••••••</span>
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#A8A9AC;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;"><path d="M3.5 12 C5.8 7.6 8.7 5.6 12 5.6 C15.3 5.6 18.2 7.6 20.5 12 C18.2 16.4 15.3 18.4 12 18.4 C8.7 18.4 5.8 16.4 3.5 12 Z"/><circle cx="12" cy="12" r="2.6"/></svg>
+      </div>
+      <div style="text-align:right;margin-top:10px;">
+        <span style="font-size:13px;font-weight:600;color:#8E8CB5;">Forgot password?</span>
+      </div>
+    </div>
+
+    <div style="margin-top:22px;">
+      <div class="btn-primary">Log In</div>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:16px;">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#B87AA0;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M12 3.6 L14.2 8.4 L19.4 9.1 L15.6 12.6 L16.6 17.7 L12 15.1 L7.4 17.7 L8.4 12.6 L4.6 9.1 L9.8 8.4 Z"/></svg>
+        <span style="font-size:12px;color:#8A8B8D;font-weight:600;">5.0 · 2 ratings on App Store</span>
+      </div>
+    </div>
+
+    <svg width="120" height="14" viewBox="0 0 120 14" style="display:block;margin:22px auto 16px;">
+      <path d="M3 8.2 C 30 6.4, 58 9.6, 117 6.9" stroke="#A8B5A0" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+      <path d="M46 7.9 C 44.2 6.7, 43.7 5.1, 44.3 3.3 C 46.5 4, 47.4 6, 46.2 8 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.1" stroke-linejoin="round"/>
+      <path d="M72 8.4 C 73.8 7.4, 74.4 5.9, 73.9 4.1 C 71.8 4.9, 70.9 6.7, 72 8.5 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.1" stroke-linejoin="round"/>
+    </svg>
+
+    <div style="text-align:center;font-size:13.5px;color:#6A6B6C;font-weight:500;">
+      New here? <span style="color:#8E8CB5;font-weight:700;">Create your account</span>
+    </div>
+    <div style="text-align:center;margin-top:12px;">
+      <span style="font-size:12.5px;color:#B87AA0;font-weight:600;">See how it works</span>
+    </div>
+  </div>
+</div></div>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TJB Dashboard — V3 Warm Editorial</title>
+<style>
+  @font-face { font-family: 'Cormorant'; src: url('assets/fonts/CormorantGaramond-SemiBold.ttf'); font-weight: 600; }
+  @font-face { font-family: 'Cormorant'; src: url('assets/fonts/CormorantGaramond-Bold.ttf'); font-weight: 700; }
+  @font-face { font-family: 'Cormorant'; src: url('assets/fonts/CormorantGaramond-SemiBoldItalic.ttf'); font-weight: 600; font-style: italic; }
+  @font-face { font-family: 'Cormorant'; src: url('assets/fonts/CormorantGaramond-BoldItalic.ttf'); font-weight: 700; font-style: italic; }
+  @font-face { font-family: 'Source Sans 3'; src: url('assets/fonts/SourceSans3-Regular.ttf'); font-weight: 400; }
+  @font-face { font-family: 'Source Sans 3'; src: url('assets/fonts/SourceSans3-SemiBold.ttf'); font-weight: 600; }
+  @font-face { font-family: 'Source Sans 3'; src: url('assets/fonts/SourceSans3-Italic.ttf'); font-weight: 400; font-style: italic; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  :root {
+    --cream: #FAF8F5; --cream100: #F5F3EF; --cream200: #EBE7E1;
+    --charcoal: #2A2A2A; --gray: #6A6B6C;
+    --lav500: #8E8CB5; --lav100: #F1F1FB;
+    --rose500: #B87AA0; --rose100: #F5E5EE; --rose400: #D8A0C4;
+    --sage: #A8B5A0; --sage100: #E8EDE5; --illBG: #F5F2EC;
+  }
+  body { background: #E8E4DE; font-family: 'Source Sans 3', sans-serif; display: flex; gap: 48px; padding: 48px; }
+
+  .phone { width: 375px; height: 900px; background: var(--cream); border-radius: 44px; overflow: hidden; position: relative; box-shadow: 0 24px 64px rgba(42,42,42,.18); display: flex; flex-direction: column; flex-shrink: 0; }
+  .status { height: 44px; display: flex; justify-content: space-between; align-items: center; padding: 0 28px; font-weight: 600; font-size: 14px; color: var(--charcoal); flex-shrink: 0; }
+  .status .icons { letter-spacing: 2px; font-size: 12px; }
+  .content { padding: 8px 20px 0; flex: 1; }
+
+  .greeting { font-family: 'Cormorant'; font-weight: 700; font-size: 30px; color: var(--charcoal); line-height: 1.1; }
+  .greet-sub { margin-top: 4px; font-size: 13px; }
+  .greet-sub .week { color: var(--rose500); font-weight: 600; }
+  .greet-sub .date { color: var(--gray); }
+
+  .card { border-radius: 20px; padding: 20px; margin-top: 16px; position: relative; }
+
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+
+  /* V3: color-blocked cards, alternating fills, illustration-forward */
+  .affirm { background: var(--sage100); height: 236px; }
+  .affirm .row { display: flex; gap: 16px; margin-top: 16px; align-items: flex-start; }
+  .affirm .chamomile { width: 96px; height: 122px; object-fit: contain; mix-blend-mode: multiply; flex-shrink: 0; }
+  .affirm .quote { font-family: 'Cormorant'; font-style: italic; font-weight: 600; font-size: 30px; line-height: 1.26; color: var(--charcoal); padding-top: 8px; }
+  .affirm .rule { width: 44px; height: 2px; background: var(--rose400); margin-top: 14px; border-radius: 1px; }
+  .affirm .attrib { margin-top: 14px; font-size: 12.5px; color: var(--gray); font-style: italic; font-weight: 600; }
+
+  .tip { background: var(--rose100); height: 214px; }
+  .tip .row { display: flex; gap: 18px; margin-top: 14px; }
+  .tip .booties { width: 100px; height: 126px; object-fit: contain; mix-blend-mode: multiply; flex-shrink: 0; }
+  .tip h3 { font-family: 'Cormorant'; font-weight: 700; font-size: 22px; line-height: 1.15; color: var(--charcoal); }
+  .tip p { margin-top: 10px; font-size: 13.5px; line-height: 1.5; color: var(--gray); padding-bottom: 6px; }
+  .read-more { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--rose500); font-weight: 600; font-size: 13px; }
+  .read-more .chev { font-family: 'Cormorant'; font-size: 16px; }
+
+  .baby { background: var(--lav100); height: 246px; }
+  .baby .row { display: flex; gap: 14px; margin-top: 10px; align-items: center; }
+  .baby .txt { flex: 1; min-width: 0; }
+  .baby h3 { font-family: 'Cormorant'; font-weight: 700; font-size: 22px; line-height: 1.15; color: var(--charcoal); margin-top: 12px; }
+  .baby p { margin-top: 8px; font-size: 13px; line-height: 1.5; color: var(--gray); }
+  .baby .learn { color: var(--lav500); font-weight: 600; font-size: 13px; display: inline-flex; gap: 6px; margin-top: 10px; }
+  .baby img.week20 { height: 148px; flex-shrink: 0; }
+
+  .home { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: var(--charcoal); opacity: .85; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="status"><span>9:41</span><span class="icons">▪▪ ⏻</span></div>
+  <div class="content">
+    <div class="greeting">Good morning, Emma</div>
+    <div class="greet-sub"><span class="week">Week 20 of pregnancy</span> <span class="date">· Thursday, Sep 11</span></div>
+
+    <div class="card affirm">
+      <div class="eyebrow" style="color: var(--rose500)">Weekly Affirmation</div>
+      <div class="row">
+        <img class="chamomile" src="assets/img/spot-chamomile.png" alt="">
+        <div>
+          <div class="quote">My body knows the way. I trust it.</div>
+          <div class="rule"></div>
+        </div>
+      </div>
+      <div class="attrib">From Shelbi, your doula</div>
+    </div>
+
+    <div class="card tip">
+      <div class="eyebrow" style="color: var(--rose500)">Weekly Tip</div>
+      <div class="row">
+        <img class="booties" src="assets/img/spot-booties.png" alt="">
+        <div>
+          <h3>One thing ready, whatever happens</h3>
+          <p>Booties by the door, snacks in the bag. Prepared without the spiral.</p>
+          <span class="read-more">Read more <span class="chev">›</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card baby">
+      <div class="eyebrow" style="color: var(--lav500)">Baby Development · Week 20</div>
+      <div class="row">
+        <div class="txt" style="flex:1">
+          <h3>Your baby is listening now</h3>
+          <p>Swallowing amniotic fluid and tuning in to the sound of your voice.</p>
+          <span class="learn">Learn more <span class="chev">›</span></span>
+        </div>
+        <img class="week20" src="assets/img/week20.webp" alt="Week 20 baby illustration">
+      </div>
+    </div>
+  </div>
+  <div class="home"></div>
+</div>
+
+</body>
+</html>

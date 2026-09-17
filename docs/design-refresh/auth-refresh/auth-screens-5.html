@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @font-face { font-family:'Cormorant'; font-weight:700; src:url('assets/CormorantGaramond_700Bold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant'; font-weight:600; src:url('assets/CormorantGaramond_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:400; src:url('assets/Quicksand_400Regular.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:500; src:url('assets/Quicksand_500Medium.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:600; src:url('assets/Quicksand_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:700; src:url('assets/Quicksand_700Bold.ttf') format('truetype'); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#2B2933; font-family:'Quicksand',sans-serif; padding:28px 0 28px 28px; }
+  .row { display:flex; gap:28px; }
+  .phone { align-self:center; width:390px; height:760px; border-radius:44px; background:#FAF8F5; position:relative; overflow:hidden; flex:0 0 auto; box-shadow:0 0 0 10px #17161B, 0 24px 60px rgba(0,0,0,.55); }
+  .phone.tall { height:966px; }
+  .fade { position:absolute; top:0; left:0; right:0; height:230px; z-index:2; pointer-events:none;
+    background:linear-gradient(180deg, rgba(142,140,181,.15) 0%, rgba(250,248,245,0) 55%, #FAF8F5 100%); }
+  .photo { position:relative; height:230px; background-size:cover; background-position:center; filter:grayscale(1); }
+  .statusbar { position:absolute; top:0; left:0; right:0; height:54px; display:flex; justify-content:space-between; align-items:center; padding:0 28px; z-index:3; color:#FFF; font-weight:700; font-size:15px; }
+  .statusbar .right { display:flex; gap:5px; align-items:center; }
+  .backchip { position:absolute; top:64px; left:20px; width:36px; height:36px; border-radius:18px; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; z-index:3; box-shadow:0 2px 8px rgba(42,42,42,.18); }
+  .steprow { display:flex; justify-content:flex-end; margin-bottom:10px; }
+  .stepchip { display:inline-block; background:#F2F1FA; border-radius:12px; padding:7px 12px; font-size:10px; font-weight:700; letter-spacing:2.2px; color:#5A5880; }
+  .sheet { position:relative; z-index:2; padding:20px 20px 24px; }
+  .overline { font-size:10px; font-weight:700; letter-spacing:2.4px; color:#B87AA0; text-transform:uppercase; text-align:center; margin-bottom:6px; }
+  .h1 { font-family:'Cormorant',serif; font-weight:700; font-size:26px; line-height:1.15; color:#2A2A2A; text-align:center; margin-bottom:5px; }
+  .h1 em { font-style:italic; color:#B085A5; font-weight:600; }
+  .sub { font-size:13.5px; line-height:1.5; color:#6B6560; text-align:center; margin-bottom:12px; font-weight:500; }
+  .lbl { font-size:10px; font-weight:700; letter-spacing:1.6px; color:#8E8CB5; text-transform:uppercase; margin:0 0 6px 4px; }
+  .input { background:#FFF; border:1.5px solid #E3DFDA; border-radius:14px; padding:11px 14px; font-size:13.5px; color:#2A2A2A; font-weight:500; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .input .ph { color:#A29B93; }
+  .input.filled { border-color:#C9C5E4; }
+  .ziprow { display:flex; gap:10px; }
+  .ziprow .input { flex:1; margin-bottom:8px; }
+  .zipfound { font-size:11px; color:#7C8F6F; font-weight:600; margin:0 4px 10px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+  .chip { padding:8px 14px; border-radius:16px; font-size:12px; font-weight:600; border:1.5px solid #E3DFDA; background:#FFF; color:#6B6560; }
+  .chip.on { background:#F2F1FA; border-color:#8E8CB5; color:#5A5880; }
+  .card { background:#FFF; border:1.5px solid #E3DFDA; border-radius:16px; padding:12px; margin-bottom:9px; display:flex; align-items:center; gap:12px; }
+  .card.on { border-color:#B87AA0; background:#FBF5F8; }
+  .card .ic { width:38px; height:38px; border-radius:12px; background:#F2F1FA; display:flex; align-items:center; justify-content:center; font-size:17px; flex:0 0 auto; }
+  .card.on .ic { background:#F6E9F0; }
+  .card .t { font-size:13.5px; font-weight:600; color:#2A2A2A; }
+  .card .d { font-size:11px; color:#8A827A; font-weight:500; margin-top:1px; }
+  .radio { width:20px; height:20px; border-radius:10px; border:1.5px solid #D8D2CA; margin-left:auto; flex:0 0 auto; }
+  .radio.on { border:6.5px solid #B87AA0; }
+  .row2 { display:flex; gap:10px; margin-bottom:14px; }
+  .row2 .card { flex:1; margin-bottom:0; flex-direction:column; text-align:center; gap:8px; }
+  .row2 .radio { margin-left:0; }
+  .cta { display:block; background:#8E8CB5; color:#FFF; border-radius:16px; padding:14px; text-align:center; font-size:14.5px; font-weight:700; box-shadow:0 8px 20px rgba(142,140,181,.35); margin-top:6px; }
+  .cta.rose { background:#B87AA0; box-shadow:0 8px 20px rgba(184,122,160,.35); }
+  .ghost { text-align:center; font-size:12.5px; color:#8A827A; font-weight:600; margin-top:10px; }
+  .foot { text-align:center; font-size:10.5px; color:#5F7048; font-weight:600; background:#E8EDE5; margin:12px 12px 0; border-radius:10px; padding:8px; }
+  .plan { background:#FFF; border:1.5px solid #E3DFDA; border-radius:18px; padding:14px; margin-bottom:10px; }
+  .plan.pop { border-color:#8E8CB5; box-shadow:0 10px 26px rgba(142,140,181,.16); position:relative; }
+  .plan .badge { position:absolute; top:-9px; right:14px; background:#8E8CB5; color:#FFF; font-size:9px; font-weight:700; letter-spacing:1.6px; padding:4px 10px; border-radius:8px; }
+  .plan .pname { font-family:'Cormorant',serif; font-size:19px; font-weight:700; color:#2A2A2A; }
+  .plan .pprice { font-size:21px; font-weight:700; color:#2A2A2A; margin:4px 0 2px; }
+  .plan .pprice span { font-size:12px; color:#8A827A; font-weight:600; }
+  .plan .psave { font-size:11px; color:#7C8F6F; font-weight:700; margin-bottom:8px; }
+  .plan ul { list-style:none; margin:6px 0 0; }
+  .plan li { font-size:12px; color:#6B6560; font-weight:500; padding:2px 0 2px 20px; position:relative; }
+  .plan li:before { content:'✓'; position:absolute; left:0; color:#7C8F6F; font-weight:700; }
+  .free { background:#FFF; border:1.5px solid #E3DFDA; border-radius:18px; padding:12px 14px; margin-bottom:12px; }
+  .free .fbadge { display:inline-block; background:#E8EDE5; color:#5F7048; font-size:9px; font-weight:700; letter-spacing:1.6px; padding:4px 10px; border-radius:8px; margin-bottom:6px; }
+  .free .ft { font-family:'Cormorant',serif; font-size:19px; font-weight:700; color:#2A2A2A; margin-bottom:4px; }
+  .free .fd { font-size:12px; color:#6B6560; font-weight:500; line-height:1.5; }
+  .trial { text-align:center; font-size:11px; color:#8A827A; font-weight:600; margin:0 0 8px; }
+  .sprigline { display:flex; justify-content:center; gap:14px; align-items:flex-end; margin:2px 0 12px; }
+</style>
+</head>
+<body>
+<div class="row">
+
+  <!-- 1. DOULA PROFILE -->
+  <div class="phone">
+    <div class="photo" style="background-image:url('assets/hero-water-birth-2.jpg')"></div>
+    <div class="fade"></div>
+    <div class="statusbar"><span>9:41</span><span class="right">▸▮</span></div>
+    <div class="backchip"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke="#2A2A2A" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="sheet">
+      <div class="steprow"><span class="stepchip">SETUP · 1 OF 2</span></div>
+      <div class="overline">Your Practice</div>
+      <div class="h1">Introduce your <em>practice</em></div>
+      <div class="sub">This is how moms will see you. You can change any of it later.</div>
+      <div class="lbl">Practice name</div>
+      <div class="input filled"><span>Birthlight Doula Care</span><span style="color:#C9C5E4">✎</span></div>
+      <div class="lbl">Services offered</div>
+      <div class="chips">
+        <span class="chip on">Birth Doula</span><span class="chip on">Postpartum Doula</span><span class="chip">Virtual Doula</span>
+      </div>
+      <div class="lbl">Location</div>
+      <div class="ziprow">
+        <div class="input filled"><svg viewBox="0 0 24 24" width="15" height="15" style="opacity:.75"><path d="M12 21V11" stroke="#7C8F6F" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M12 14c-3.6 0-5.5-2-6-5 3.6 0 5.5 2 6 5z" fill="#E8EDE5" stroke="#7C8F6F" stroke-width="1.6" stroke-linejoin="round"/></svg><span>84004</span></div>
+      </div>
+      <div class="zipfound">Alpine, Utah — we'll match you with nearby families</div>
+      <div class="row2">
+        <div class="card on"><div class="ic">✓</div><div class="t">Accepting new clients</div></div>
+        <div class="card"><div class="ic">—</div><div class="t">Waitlist only</div></div>
+      </div>
+      <div class="cta">Create my profile →</div>
+      <div class="ghost">Years in practice: 8 — shown on your profile</div>
+    </div>
+    <div class="foot" style="margin-top:12px">Free to join — Pro tools come later, after setup.</div>
+  </div>
+
+  <!-- 2. PLANS & PRICING (pro) -->
+  <div class="phone tall">
+    <div class="photo" style="background-image:url('assets/hero-family-moment.jpg')"></div>
+    <div class="fade"></div>
+    <div class="statusbar"><span>9:41</span><span class="right">▸▮</span></div>
+    <div class="backchip"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke="#2A2A2A" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="sheet">
+      <div class="steprow"><span class="stepchip">SETUP · 2 OF 2</span></div>
+      <div class="overline">Plans &amp; Pricing</div>
+      <div class="h1">Tools for your <em>practice</em></div>
+      <div class="sub">Start with a 14-day free trial. Cancel anytime.</div>
+      <div class="free">
+        <div class="fbadge">FREE FOREVER</div>
+        <div class="ft">For birthing moms</div>
+        <div class="fd">Birth plan builder, weekly tips, timeline and care-team chat — always free for the moms you serve.</div>
+      </div>
+      <div class="plan pop">
+        <div class="badge">RECOMMENDED</div>
+        <div class="pname">Pro — Annual</div>
+        <div class="pprice">$274.99 <span>/ year</span></div>
+        <div class="psave">Save $84.89 vs monthly</div>
+        <ul><li>Client management and history</li><li>Digital contracts and e-signatures</li><li>Invoices and payments</li><li>Notes and visit summaries</li><li>Marketplace profile and visibility</li></ul>
+      </div>
+      <div class="plan">
+        <div class="pname">Pro — Monthly</div>
+        <div class="pprice">$29.99 <span>/ month</span></div>
+        <ul><li>Everything in Pro, month to month</li></ul>
+      </div>
+      <div class="trial">14 days free, then your plan price · cancel anytime</div>
+      <div class="cta rose">Start 14-day free trial →</div>
+      <div class="ghost">Skip for now</div>
+    </div>
+  </div>
+
+  <!-- 3. TUTORIAL (first step, mom) -->
+  <div class="phone">
+    <div class="photo" style="background-image:url('assets/hero-skin-to-skin.jpg')"></div>
+    <div class="fade"></div>
+    <div class="statusbar"><span>9:41</span><span class="right">▸▮</span></div>
+    <div class="backchip"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke="#2A2A2A" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="sheet">
+      <div class="steprow"><span class="stepchip">QUICK TOUR</span></div>
+      <div class="overline">Quick Tour</div>
+      <div class="h1">Your week, <em>at a glance</em></div>
+      <div class="sub">Everything updates with your week — tips, your plan, and your team, all in one place.</div>
+      <div class="sprigline">
+        <svg viewBox="0 0 24 24" width="22" height="22" style="opacity:.55"><path d="M12 21V11" stroke="#7C8F6F" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M12 14c-3.6 0-5.5-2-6-5 3.6 0 5.5 2 6 5z" fill="#E8EDE5" stroke="#7C8F6F" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 24 24" width="22" height="22" style="opacity:.75"><path d="M12 21V9" stroke="#7C8F6F" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M12 13c-4.2 0-6.5-2.4-7-6 4.2 0 6.5 2.4 7 6z" fill="#E8EDE5" stroke="#7C8F6F" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 15.5c3.4 0 5.4-1.9 6-4.8-3.4 0-5.4 1.9-6 4.8z" fill="#F2F1FA" stroke="#7C8F6F" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 20V7" stroke="#7C8F6F" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="12" cy="5" r="1.4" fill="#B87AA0"/><path d="M9.6 7.2c.8-1.8 4-1.8 4.8 0-.8 1.8-4 1.8-4.8 0z" fill="#F6E9F0" stroke="#B87AA0" stroke-width="1.2"/></svg>
+      </div>
+      <div class="lbl">What you'll see</div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" width="20" height="20" style="stroke:#7C8F6F;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.9"><path d="M12 21V10"/><path d="M12 13c-3.4 0-5.2-1.8-5.6-4.6C9.4 8.4 11.6 10.2 12 13z"/><path d="M12 10.5c3-0.2 4.6-1.9 4.9-4.4-3-.1-4.7 1.5-4.9 4.4z"/></svg></div><div><div class="t">This week</div><div class="d">Your baby's growth and a tip picked for week 20</div></div></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" width="20" height="20" style="stroke:#B87AA0;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.9"><path d="M7 4.8C9.5 4.4 14.5 4.4 17 4.8c.4 4.9.4 9.5 0 14.4-2.5.4-7.5.4-10 0-.4-4.9-.4-9.5 0-14.4z"/><path d="M9.5 9.5h5M9.5 12.5h5M9.5 15.5h3"/></svg></div><div><div class="t">Birth plan</div><div class="d">Your preferences, ready to share with your team</div></div></div>
+      <div class="card"><div class="ic"><svg viewBox="0 0 24 24" width="20" height="20" style="stroke:#8E8CB5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.9"><path d="M9.5 11.5C7.5 11.5 6 10 6 8.2S7.5 5 9.5 5s3.5 1.4 3.5 3.2-1.5 3.3-3.5 3.3z"/><path d="M4 19.5c.4-3 2.6-4.8 5.5-4.8 1.6 0 3 .5 4 1.4"/><path d="M15.5 11c1.7-.3 2.9-1.5 2.9-3.1 0-1.5-1.2-2.7-2.8-2.9"/><path d="M16.5 14.6c2.1.5 3.4 2 3.6 4.4"/></svg></div><div><div class="t">Your team</div><div class="d">Message doulas, midwives, other birthing professionals and your care team</div></div></div>
+      <div class="cta" style="margin-top:14px">Next →</div>
+      <div class="ghost">Skip tour</div>
+    </div>
+    <div class="foot" style="margin-top:12px">You can replay this tour anytime from your profile.</div>
+  </div>
+
+</div>
+</body>
+</html>

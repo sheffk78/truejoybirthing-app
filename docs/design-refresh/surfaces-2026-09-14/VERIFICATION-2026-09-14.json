@@ -1,0 +1,76 @@
+{
+ "run": "2026-09-14T15:16:17",
+ "scope": "ad-hoc behavioral probe, NOT a suite green",
+ "pages": {
+  "s1-dashboard-v6.html": {
+   "checks": {
+    "no_banned_hex": true,
+    "no_broken_images": true,
+    "serif_display_on_h1": true,
+    "fonts_loaded": true,
+    "growth_motif_present": true,
+    "render_png_valid": true,
+    "paper_grain_active": true
+   },
+   "fonts": [
+    "Cormorant",
+    "Quicksand"
+   ],
+   "png_width": 2240,
+   "banned": [],
+   "pass": true
+  },
+  "s2-week-detail.html": {
+   "checks": {
+    "no_banned_hex": true,
+    "no_broken_images": true,
+    "serif_display_on_h1": true,
+    "fonts_loaded": true,
+    "growth_motif_present": true,
+    "render_png_valid": true,
+    "paper_grain_active": true
+   },
+   "fonts": [
+    "Cormorant",
+    "Quicksand"
+   ],
+   "png_width": 2240,
+   "banned": [],
+   "pass": true
+  },
+  "s3-city-austin.html": {
+   "checks": {
+    "no_banned_hex": true,
+    "no_broken_images": true,
+    "serif_display_on_h1": true,
+    "fonts_loaded": true,
+    "growth_motif_present": true,
+    "render_png_valid": true
+   },
+   "fonts": [
+    "Cormorant",
+    "SourceSans"
+   ],
+   "png_width": 2560,
+   "banned": [],
+   "pass": true
+  },
+  "s4-homepage.html": {
+   "checks": {
+    "no_banned_hex": true,
+    "no_broken_images": true,
+    "serif_display_on_h1": true,
+    "fonts_loaded": true,
+    "growth_motif_present": true,
+    "render_png_valid": true
+   },
+   "fonts": [
+    "Cormorant",
+    "SourceSans"
+   ],
+   "png_width": 2560,
+   "banned": [],
+   "pass": true
+  }
+ }
+}

@@ -1,0 +1,91 @@
+{
+  "verdict": "PASS",
+  "screens": 7,
+  "palette_violations": [],
+  "fonts_present": true,
+  "pngs": [
+    {
+      "file": "screen-splash.png",
+      "sha256_12": "31809bcd1b82"
+    },
+    {
+      "file": "screen-welcome.png",
+      "sha256_12": "b4eea7118105"
+    },
+    {
+      "file": "screen-login.png",
+      "sha256_12": "3f82e828a420"
+    },
+    {
+      "file": "screen-signup.png",
+      "sha256_12": "79de2b0d0150"
+    },
+    {
+      "file": "screen-walkthrough.png",
+      "sha256_12": "04870eab9b93"
+    },
+    {
+      "file": "screen-notifications.png",
+      "sha256_12": "dfb6a6368713"
+    },
+    {
+      "file": "screen-profile-setup.png",
+      "sha256_12": "17653bd23c26"
+    }
+  ],
+  "palette_note": "#6E6C99 is Lavender-600 from frontend/src/constants/themeTokens.ts (app source of truth) \u2014 false positive of the blue detector, confirmed brand token.",
+  "ad_hoc_verification": {
+    "date": "2026-09-16",
+    "type": "ad-hoc verification of mockup HTML \u2014 NOT a suite green (no canonical test suite exists for static mockups)",
+    "checks": [
+      "tag balance (void-aware HTML parser): PASS both files",
+      "7 phone frames total (3 + 4): PASS",
+      "asset refs resolve (fonts/logo/hero photos): PASS, 0 missing",
+      "palette sweep: PASS (0 violations; #7C3AED web-violet absent; #6E6C99 = approved app token Lavender-600)",
+      "type stack: Cormorant + Quicksand present, no web-only Source Sans in app canvas: PASS",
+      "headless Chromium render: 0 console errors, 0 broken images: PASS",
+      "vision QA on all 7 rendered PNGs: 1 defect found (Lactation Consultant title truncation) \u2014 fixed and re-QA'd PASS"
+    ],
+    "verdict": "PASS 11/11 checks"
+  },
+  "fresh_pass": {
+    "timestamp": "2026-09-16T10:16:18",
+    "html_sha256_12": {
+      "auth-screens-1.html": "c70610cceeb8",
+      "auth-screens-2.html": "70f9dbbe682f"
+    },
+    "screens": 7,
+    "verdict": "PASS",
+    "failed_checks": 0
+  },
+  "rev2": {
+    "timestamp": "2026-09-16",
+    "trigger": "Jeff verdict msg 1549839081200951357",
+    "changes": [
+      "Splash v2: removed fake status bar (9:41/triangle/rectangle), removed wordmark+tagline lockup, removed 'with doulas \u00b7 judgment-free' footer; now icon-only \u2014 full-res brand splash mark (splash-image-highres.png) with breathing ring, side sprigs, 3 loading dots",
+      "Walkthrough v2: photo raised 46%\u219262% height with new family-moment photo, bottom card made transparent so text begins directly in the photo fade \u2014 white gap eliminated"
+    ],
+    "vision_qa": "both re-rendered screens PASS (splash: all 6 checks; walkthrough: gap gone, legible, no overlap)",
+    "screens": [
+      "screen-splash.png",
+      "screen-walkthrough.png"
+    ],
+    "rev3_splash": "Jeff verdict msg 1549840227433062421: v2 squished the horizontal splash lockup into a circle \u2014 hard branding error. v3 rebuilt on assets/logo-icon.png (square, transparent, icon mark only) at its natural shape, NO border-radius crop, no distortion. Vision QA v3: PASS all 4 checks. RN note: logo-icon.png 1:1 only, never the horizontal lockup in a circular mask."
+  },
+  "rev4_audit_fixes": {
+    "trigger": "flow/animation audit subagent completed (deleg_3068f260)",
+    "fixes": [
+      "HIGH: login 'See how it works' dead end \u2014 new PUBLIC route app/(auth)/tutorial-preview.tsx (read-only preview, returns to login); both login links (2 screens x onPress/onClick) now point there; root guard untouched; typed-routes cache regenerated, tutorial-preview in router.d.ts x3, tsc clean",
+      "LOW: Icon.tsx added lucide mappings people-circle>UsersRound, heart-circle>HeartHandshake, heart-half>HeartPulse (fixes 4/12 Circle fallbacks in walkthrough)"
+    ],
+    "deferred": [
+      "entrance animations on welcome/login/signup/notification-permission/mom-onboarding (do WITH each screen's design pass, not blanket)",
+      "mom-onboarding success overlay fade + setTimeout leak (that screen's chunk)",
+      "Button.tsx ActivityIndicator->dots (shared component, all roles affected - one deliberate change)",
+      "press feedback on 10 secondary items (same per-screen rule)",
+      "hardcoded colors in OnboardingWalkthrough + off-palette overlay tints in welcome/login (dark-mode debt, per-screen)"
+    ],
+    "rationale": "Jeff's directive: page-by-page rhythm. Blanket animation/feedback changes to not-yet-redesigned screens would create rework + unreviewed diffs. Each fix lands with its screen's approved design."
+  },
+  "tsc_note": "3 pre-existing unrelated error lines only (contraction-timer.tsx, websocket.ts)"
+}

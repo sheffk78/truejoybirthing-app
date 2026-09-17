@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="../type-system.css">
+<style>
+/* S3 v3: city page (Austin) — type-system v1 + spot illustrations in non-photo sections */
+body.web { font-family:'SourceSans',sans-serif; }
+
+/* keep v2 directory card anatomy (approved 09-14), headings now governed by type-system.css */
+.pcard, .pavatar, .pname, .pcred, .pprac, .pcost, .pchips, .pchip, .pdesc, .pmedicaid, .pserve, .pbadges, .pbadge2, .paccept, .pcta, .dircopy, .hcard, .nicu, .growline, .crumb, .cityhero, .stat { /* v2 styles below */ }
+.crumb { padding:14px 56px 0; font-size:12.5px; color:#6A6B6C; display:flex; gap:8px; align-items:center; }
+.crumbsep { opacity:.5; }
+.crumb .cur { color:#2A2A2A; font-weight:600; }
+
+.cityhero { display:grid; grid-template-columns: 54% 46%; align-items:center; background:#FAF8F5; }
+.cityhero .txt { padding:46px 42px 46px 56px; }
+.cityhero .lede { font-size:16px; line-height:1.62; color:#55595F; margin-top:15px; max-width:540px; }
+.cityhero .statrow { display:flex; gap:26px; margin-top:22px; }
+.stat .n { font-family:'Cormorant',serif; font-weight:700; font-size:30px; color:#6E6C99; }
+.stat .l { font-size:11px; letter-spacing:1.8px; text-transform:uppercase; color:#6A6B6C; font-weight:600; margin-top:1px; }
+.cityhero .ctarow { display:flex; gap:14px; margin-top:26px; }
+.cityhero .imgwrap { height:100%; min-height:440px; padding:26px 26px 26px 0; }
+.cityhero .imgwrap img { width:100%; height:100%; object-fit:cover; border-radius:20px; box-shadow:0 14px 40px rgba(45,45,45,.12); }
+
+/* directory grid (v2 approved anatomy) */
+.dgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:26px; align-items:stretch; }
+.pcard { position:relative; background:#fff; border:1px solid rgba(142,140,181,.35); border-radius:16px; padding:26px 20px 20px; text-align:center; display:flex; flex-direction:column; align-items:center; box-shadow:0 2px 10px rgba(45,45,45,.05); box-sizing:border-box; }
+.pcard.amb { border:2px solid #D8A0C4; box-shadow:0 4px 14px rgba(184,122,160,.14); }
+.pbadge { position:absolute; top:12px; right:12px; display:inline-flex; align-items:center; gap:5px; background:#E8EDE5; color:#2A2A2A; font-size:10.5px; font-weight:600; padding:3px 10px; border-radius:999px; border:1px solid #A8B5A0; }
+.pbadge.webv { background:#F1EFEA; color:#6A6B6C; border-color:#D9D6CE; }
+.pavatar { width:60px; height:60px; border-radius:50%; overflow:hidden; margin-bottom:12px; background:#EDEAF6; display:flex; align-items:center; justify-content:center; }
+.pavatar img { width:100%; height:100%; object-fit:cover; display:block; }
+.pavatar.logo { border-radius:12px; background:#fff; border:1px solid #EDEAF6; padding:6px; }
+.pavatar.logo img { object-fit:contain; }
+.pmono { width:60px; height:60px; border-radius:50%; background:#EDEAF6; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+.pmono span { font-family:'Cormorant',serif; font-weight:700; font-size:24px; color:#2A2A2A; }
+.pname { font-family:'Cormorant',serif; font-weight:700; font-size:20px; color:#2A2A2A; line-height:1.15; }
+.pname.ambc { color:#A25C86; }
+.pcred { font-size:12.5px; color:#6E6C99; font-weight:600; margin-top:3px; }
+.pprac { font-size:12px; color:#6A6B6C; margin-top:2px; }
+.pcost { font-size:12.5px; color:#2A2A2A; font-weight:600; margin-top:6px; }
+.pchips { display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin-top:9px; }
+.pchip { background:#F4F3FA; color:#5A5885; font-size:10.5px; font-weight:600; padding:2px 9px; border-radius:999px; border:1px solid #E0DEEF; }
+.pdesc { font-size:12px; color:#6A6B6C; line-height:1.55; margin-top:10px; }
+.pmedicaid { display:inline-flex; align-items:center; gap:5px; background:#E8EDE5; color:#5F7154; font-size:10.5px; font-weight:600; padding:3px 10px; border-radius:999px; border:1px solid #D8E0D2; margin-top:10px; }
+.pbadges { display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin-top:10px; }
+.pbadge2 { font-size:10.5px; font-weight:600; padding:3px 10px; border-radius:999px; background:#EDEAF6; color:#5A5885; border:1px solid #E0DEEF; }
+.pbadge2.lac { background:#E8EDE5; color:#5F7154; border-color:#D8E0D2; }
+.pbadge2.city { background:#FBEEF5; color:#A25C86; border-color:#EFD5E5; }
+.paccept { display:flex; align-items:center; gap:6px; margin-top:10px; font-size:11px; font-weight:600; color:#5F7154; }
+.paccept .dot { width:7px; height:7px; border-radius:50%; background:#7C8F6F; }
+.pcta { margin-top:12px; background:#8E8CB5; color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:8px 18px; width:100%; box-sizing:border-box; text-align:center; }
+.pcta.dim { background:#EDEAF6; color:#8E8CB5; }
+.dircopy { font-size:11px; color:#9A9DA3; text-align:center; margin-top:14px; }
+
+.hcard .nicu { font-size:10px; font-weight:700; letter-spacing:1px; color:#5F7154; background:#E8EDE5; border-radius:999px; padding:3px 9px; text-transform:uppercase; }
+
+/* NEW v3: Medicaid/cost section with week-series illustration panel */
+.medgrid { display:grid; grid-template-columns: 300px 1fr; gap:32px; align-items:center; margin-top:24px; }
+.medgrid .art { background:#fff; border:1px solid #EDEAF6; border-radius:18px; padding:14px; }
+.medgrid .art img { width:100%; border-radius:12px; display:block; }
+.medgrid .art .cap { font-family:'Quicksand',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#6E6C99; text-align:center; margin-top:10px; }
+.medlist { display:grid; gap:12px; }
+.medrow { display:flex; gap:12px; align-items:flex-start; background:#fff; border:1px solid #EBE7E1; border-radius:14px; padding:14px 18px; }
+.medrow .n { font-family:'Cormorant',serif; font-weight:700; font-size:19px; color:#A25C86; min-width:22px; }
+.medrow .t { font-size:13.5px; font-weight:600; color:#2A2A2A; }
+.medrow .d { font-size:12.5px; color:#55595F; line-height:1.55; margin-top:2px; }
+</style>
+</head>
+<body class="web">
+
+<div class="weblabel">True Joy Birthing · Web Surface 3 of 4 · City Page — /birth-support/austin-tx/ · Mockup v3 · type-system v1 · spot illustrations</div>
+
+<div class="webpage">
+
+  <div class="wnav">
+    <img class="logo" src="assets/logo-mono.svg">
+    <div class="links">
+      <div>Birth Plan</div><div>Week by Week</div><div>Find a Doula</div><div>Courses</div>
+      <div class="cta">Get the App</div>
+    </div>
+  </div>
+
+  <div class="crumb">
+    Birth Support <span class="crumbsep">›</span> Texas <span class="crumbsep">›</span> <span class="cur">Austin</span>
+  </div>
+
+  <!-- S3 HERO -->
+  <div class="cityhero">
+    <div class="txt">
+      <div class="eyebrow-web">
+        <svg width="26" height="14" viewBox="0 0 26 14"><g fill="none" stroke="#A25C86" stroke-width="1.3" stroke-linecap="round"><path d="M3 12 Q10 7 16 5 Q20 3.5 23 2"/><path d="M10 8.5 q-2.5-4 0-6.5 q3 2 .5 6.5" fill="#E8EDE5" stroke-width="1.1"/></g></svg>
+        Texas Birth Guide · Austin
+      </div>
+      <h1>Birth support in <em>Austin</em>, grounded in what locals know</h1>
+      <div class="lede">From St. David's South to the birth centers, here's what Austin families should know — real costs, real hospitals, real doulas, and the free app that helps you plan it all with confidence.</div>
+      <div class="statrow">
+        <div class="stat"><div class="n">$1,000–3,000</div><div class="l">Typical doula cost</div></div>
+        <div class="stat"><div class="n">8</div><div class="l">Local doulas listed</div></div>
+        <div class="stat"><div class="n">Yes</div><div class="l">TX Medicaid covers doulas</div></div>
+      </div>
+      <div class="ctarow">
+        <div class="btn-web">Get the free birth plan app</div>
+        <div class="btn-web ghost">Browse Austin doulas</div>
+      </div>
+    </div>
+    <div class="imgwrap"><img src="assets/austin-hero.webp"></div>
+  </div>
+
+  <svg class="stemline" width="320" height="16" viewBox="0 0 320 16" style="margin:26px auto 0"><path d="M14 9 Q90 14 160 8 T306 7" fill="none" stroke="#A8B5A0" stroke-width="1.4" stroke-linecap="round" opacity=".8"/></svg>
+
+  <!-- DIRECTORY -->
+  <div class="wsec alt">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#5F7154" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M9 7.5 q-2-3.5.3-5.5 q2.2 2 .7 5.5" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      Doulas, Midwives &amp; Lactation Specialists in Austin
+    </div>
+    <h2>Meet the people who'll be <em>in the room</em></h2>
+    <div class="intro">Every provider below is listed with the details that matter — credentials, practice, cost, services, and whether they're accepting clients. Provider-verified listings have been confirmed directly; web-verified listings are confirmed from their public practice information.</div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:20px; padding:12px 14px; background:#fff; border:1px solid rgba(142,140,181,.3); border-radius:12px;">
+      <span style="font-size:11px; letter-spacing:1.6px; text-transform:uppercase; font-weight:700; color:#6A6B6C; margin-right:4px;">Filter</span>
+      <span style="font-size:11.5px; font-weight:600; color:#5A5885; background:#F4F3FA; border:1px solid #E0DEEF; padding:4px 12px; border-radius:999px;">Birth</span>
+      <span style="font-size:11.5px; font-weight:600; color:#5F7154; background:#E8EDE5; border:1px solid #D8E0D2; padding:4px 12px; border-radius:999px;">Medicaid ✓</span>
+      <span style="font-size:11.5px; font-weight:600; color:#5A5885; background:#F4F3FA; border:1px solid #E0DEEF; padding:4px 12px; border-radius:999px;">Accepting clients</span>
+      <span style="font-size:11.5px; font-weight:600; color:#5A5885; background:#F4F3FA; border:1px solid #E0DEEF; padding:4px 12px; border-radius:999px;">Midwife</span>
+      <span style="font-size:11.5px; font-weight:600; color:#5F7154; background:#E8EDE5; border:1px solid #D8E0D2; padding:4px 12px; border-radius:999px;">Lactation</span>
+      <span style="font-size:11.5px; font-weight:600; color:#A25C86; background:#FBEEF5; border:1px solid #EFD5E5; padding:4px 12px; border-radius:999px;">$1,000–$2,000</span>
+    </div>
+
+    <div class="dgrid">
+      <div class="pcard amb">
+        <div class="pbadge">Provider-verified</div>
+        <div class="pavatar"><img src="assets/doula-dreamteam.webp" alt="Dream Team Doulas logo"></div>
+        <div class="pname ambc">Dream Team Doulas</div>
+        <div class="pcred">Birth &amp; Postpartum Doula</div>
+        <div class="pprac">Dream Team Doulas LLC · Far West Blvd</div>
+        <div class="pcost">$1,200–$2,800</div>
+        <div class="pchips"><div class="pchip">Birth</div><div class="pchip">Postpartum</div><div class="pchip">Childbirth Ed</div></div>
+        <div class="pdesc">Serves Austin families with birth and postpartum doula support from their Far West Boulevard practice, plus childbirth education for first-time moms.</div>
+        <div class="pbadges"><div class="pbadge2">Ambassador</div><div class="pbadge2 city">Austin</div></div>
+        <div class="paccept"><div class="dot"></div>Accepting clients</div>
+        <div class="pcta">Visit website</div>
+      </div>
+
+      <div class="pcard">
+        <div class="pbadge">Provider-verified</div>
+        <div class="pavatar logo"><img src="assets/doula-circle.webp" alt="Circle Birth logo"></div>
+        <div class="pname">Circle Birth</div>
+        <div class="pcred">Birth &amp; Postpartum Doula</div>
+        <div class="pprac">Statewide network · Austin team</div>
+        <div class="pcost">$1,000–$3,000</div>
+        <div class="pchips"><div class="pchip">Birth</div><div class="pchip">Postpartum</div><div class="pchip">Lactation</div><div class="pchip">Placenta</div></div>
+        <div class="pdesc">Family-operated agency serving Dallas, Austin, Houston and San Antonio with birth doula support, overnight postpartum care and lactation support.</div>
+        <div class="pbadges"><div class="pbadge2 city">Austin</div></div>
+        <div class="pmedicaid">Accepts Medicaid</div>
+        <div class="pcta">Visit website</div>
+      </div>
+
+      <div class="pcard">
+        <div class="pbadge webv">Web-verified</div>
+        <div class="pmono"><span>AD</span></div>
+        <div class="pname">The Austin Doula</div>
+        <div class="pcred">Birth Doula · Home-birth collective</div>
+        <div class="pprac">4514 Speedway Unit A</div>
+        <div class="pcost">$2,500–$3,800</div>
+        <div class="pchips"><div class="pchip">Birth</div><div class="pchip">Home birth</div></div>
+        <div class="pdesc">Austin's home-birthing doula collective — continuous labor support for families planning birth center or home birth.</div>
+        <div class="pbadges"><div class="pbadge2 city">Austin</div></div>
+        <div class="paccept"><div class="dot"></div>Accepting clients</div>
+        <div class="pcta dim">No website listed</div>
+      </div>
+
+      <div class="pcard">
+        <div class="pbadge webv">Web-verified</div>
+        <div class="pmono"><span>MK</span></div>
+        <div class="pname">Marigold Kin Midwifery</div>
+        <div class="pcred">Licensed Midwife (LM CPM)</div>
+        <div class="pprac">Home birth practice · Austin metro</div>
+        <div class="pcost">$4,500–$6,500</div>
+        <div class="pchips"><div class="pchip">Home birth</div><div class="pchip">Prenatal</div><div class="pchip">Postpartum</div></div>
+        <div class="pdesc">Licensed midwife offering full prenatal, birth, and postpartum care for planned home births across the Austin metro.</div>
+        <div class="pbadges"><div class="pbadge2">Midwife</div><div class="pbadge2 city">Austin</div></div>
+        <div class="paccept"><div class="dot"></div>Accepting clients</div>
+        <div class="pcta dim">No website listed</div>
+      </div>
+
+      <div class="pcard">
+        <div class="pbadge webv">Web-verified</div>
+        <div class="pmono"><span>LW</span></div>
+        <div class="pname">Latched &amp; Well Lactation</div>
+        <div class="pcred">IBCLC · Lactation Consultant</div>
+        <div class="pprac">In-home &amp; virtual visits</div>
+        <div class="pcost">$150–$250 / visit</div>
+        <div class="pchips"><div class="pchip">Lactation</div><div class="pchip">Newborn</div></div>
+        <div class="pdesc">In-home and virtual lactation consultations for newborn feeding, latch, and pumping support across Austin.</div>
+        <div class="pbadges"><div class="pbadge2 lac">Lactation</div><div class="pbadge2 city">Austin</div></div>
+        <div class="paccept"><div class="dot"></div>Accepting clients</div>
+        <div class="pcta dim">No website listed</div>
+      </div>
+
+      <div class="pcard">
+        <div class="pbadge webv">Web-verified</div>
+        <div class="pmono"><span>BB</span></div>
+        <div class="pname">Bright Beginnings ATX</div>
+        <div class="pcred">Birth Doula (CD DONA)</div>
+        <div class="pprac">Serving East &amp; North Austin</div>
+        <div class="pcost">$900–$1,600</div>
+        <div class="pchips"><div class="pchip">Birth</div><div class="pchip">VBAC</div></div>
+        <div class="pdesc">Certified birth doula supporting hospital births at St. David's and Seton, with VBAC-experienced care and Spanish-language support.</div>
+        <div class="pbadges"><div class="pbadge2 city">Austin</div></div>
+        <div class="pmedicaid">Accepts Medicaid</div>
+        <div class="pcta">Visit website</div>
+      </div>
+    </div>
+
+    <div class="dircopy">This is a mockup with three real and three illustrative providers — the live page carries every listed Austin provider.</div>
+
+    <div class="appband" style="display:flex; align-items:center; gap:24px; background:#F4F3FA; border:2px solid #E0DEEF; border-radius:18px; padding:22px 26px; margin-top:22px;">
+      <img src="assets/app-dashboard.png" style="width:118px; border-radius:14px; border:1px solid #E0DEEF; box-shadow:0 6px 18px rgba(45,45,45,.1);">
+      <div>
+        <h3 style="font-size:22px;">Find a doula or midwife near you</h3>
+        <div style="font-size:13px; color:#6A6B6C; line-height:1.5; margin-top:4px;">The True Joy Birthing app lets you search for doulas, midwives, and birth professionals in your area. Filter by certification, services offered, and insurance coverage.</div>
+        <div class="btn-web" style="display:inline-block; margin-top:10px; padding:8px 18px; font-size:13px;">Try the free app →</div>
+      </div>
+    </div>
+
+    <div class="dircopy">Listed providers are independent practitioners. True Joy Birthing does not endorse any specific provider.</div>
+    <div style="background:linear-gradient(135deg,#FBEEF5,#F4F3FA); border:1px solid #EFD5E5; border-radius:14px; padding:16px; text-align:center; margin-top:12px;">
+      <span style="font-weight:600; color:#2A2A2A; font-size:13.5px;">Are you a doula or midwife serving Austin?</span>
+      <span style="color:#6A6B6C; font-size:12.5px; margin-left:6px;">Get listed and reach expecting families in your area.</span>
+      <span style="color:#A25C86; font-weight:700; font-size:12.5px; margin-left:8px;">Get listed →</span>
+    </div>
+  </div>
+
+  <!-- HOSPITALS -->
+  <div class="wsec alt">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#5F7154" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M12 7.5 q-1.5-3.5.5-5.5 q2 2 .5 5.5" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      Where You'll Give Birth in Austin
+    </div>
+    <h2>Hospitals &amp; birth centers, <em>honestly</em></h2>
+    <div class="intro">The real logistics from someone who's walked these halls with laboring moms — entrances, parking, NICU levels, and how doulas are treated.</div>
+    <div class="hosp2">
+      <div class="hcard">
+        <img src="assets/hosp-stdavids.webp">
+        <div class="in">
+          <div class="nm">St. David's South Austin</div>
+          <div class="meta">901 W Ben White Blvd · <span class="nicu">NICU III</span> · Medicaid ✓</div>
+          <div class="ds">One of the busiest L&D units in the city. Doulas welcome as part of your support team — bring your birth plan; the conversation goes easier with preferences written down. Tours run twice monthly; ask about the natural birth-friendly rooms on the north wing.</div>
+        </div>
+      </div>
+      <div class="hcard">
+        <img src="assets/hosp-seton.webp">
+        <div class="in">
+          <div class="nm">Seton Medical Center Austin</div>
+          <div class="meta">1201 W 38th St · <span class="nicu">NICU III</span> · Medicaid ✓</div>
+          <div class="ds">Central Austin near the UT campus, part of the Ascension/Seton system with Dell Children's right next door. A doula who knows your hospital's rhythm makes a real difference in labor — and Seton's lactation team is on staff seven days a week.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEDICAID / COST — v3 adds the week-series illustration panel -->
+  <div class="wsec">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#A25C86" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M9 7.5 q-2-3.5 0-6 q2.2 2 .7 6" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      Medicaid &amp; Insurance in Texas
+    </div>
+    <h2>Cost help, <em>without the runaround</em></h2>
+    <div class="intro">Texas Medicaid covers doula services as of 2024 — prenatal, labor, and postpartum support. Here's the path, step by step.</div>
+
+    <div class="medgrid">
+      <div class="art">
+        <img src="assets/week16.webp">
+        <div class="cap">From the week-by-week app</div>
+      </div>
+      <div class="medlist">
+        <div class="medrow"><div class="n">1</div><div><div class="t">Call your Medicaid managed care plan</div><div class="d">Ask for doulas enrolled as providers — the number's on the back of your card. Texas Medicaid covers prenatal, labor, and postpartum doula support as of 2024.</div></div></div>
+        <div class="medrow"><div class="n">2</div><div><div class="t">Ask any doula about Medicaid directly</div><div class="d">Providers flagged "Accepts Medicaid" in the directory above bill your plan first — you pay little or nothing out of pocket.</div></div></div>
+        <div class="medrow"><div class="n">3</div><div><div class="t">No Medicaid? Options still exist</div><div class="d">Private plans vary; HSA/FSA funds can often help cover out-of-pocket costs, and several Austin practices offer sliding-scale rates.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUOTE with portrait illustration -->
+  <div class="wsec">
+    <div class="quoteblock">
+      <div class="qav"><img src="assets/week22.webp"></div>
+      <div class="quote">
+        <div class="q">"My doula suggested I look up what Medicaid covers before assuming we couldn't afford help. The app walked me through it in one afternoon."</div>
+        <div class="who">— Austin mom, delivered at St. David's South</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="wsec alt">
+    <div class="ctacard">
+      <div>
+        <h3>Build your Austin birth plan tonight</h3>
+        <p>Free, doula-crafted, and takes about 20 minutes. Walk into St. David's or Seton with your preferences written down — and a doula-ready question list.</p>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+          <div class="btn-web">Get the app</div>
+          <div class="btn-web ghost">See the walkthrough</div>
+        </div>
+      </div>
+      <img src="assets/booklet-1.webp">
+    </div>
+  </div>
+
+  <div class="wfoot">
+    <img src="assets/logo-mono.svg">
+    <div>Judgment-free birth support · Built with doulas · Austin, TX</div>
+  </div>
+
+</div>
+
+<div class="legend" style="max-width:1280px;">
+  <div class="h">City page v3 — what changed from v2 (Jeff 09-15)</div>
+  <ul>
+    <li><b>Type system v1 live:</b> H1 52 / H2 34 / H3 22 Cormorant across hero, sections, and card titles — same tags as the homepage and app surfaces. Spec: TYPE-SYSTEM.md.</li>
+    <li><b>Spot illustrations added where photos don't belong:</b> the Medicaid/cost section now carries an approved week-16 watercolor panel beside a numbered 3-step "how to use coverage" list, and the Austin-mom testimonial (restored from the live page) gets a round week-22 watercolor portrait — this section was pure text in v2.</li>
+    <li><b>Kept from v2 (approved):</b> Austin photo hero (cities are real places), directory card anatomy, filter bar, hospital two-up with rich text, app band, list-your-business CTA.</li>
+    <li><b>No growth jargon:</b> per your 09-15 ruling — the sprig kicker accents and stem dividers stay as quiet vegetation, no stage names anywhere.</li>
+  </ul>
+</div>
+
+</body>
+</html>

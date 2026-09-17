@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="common.css">
+<style>
+/* S2: week-detail screen */
+.backrow { display:flex; justify-content:space-between; align-items:center; padding:8px 18px 0; font-size:13px; font-weight:600; color:#6E6C99; }
+.backrow .ic { width:34px; height:34px; border-radius:50%; background:#fff; border:1px solid #EFE0EB; display:flex; align-items:center; justify-content:center; }
+
+/* full-page (scrolled) phone for this mockup — shows every component, nothing cut */
+.screen.tall { height:1448px; }
+.screen.tall .content.scroll { position:absolute; top:44px; bottom:76px; left:0; right:0; overflow:hidden; }
+
+.wkhead { padding:6px 18px 0; }
+.wkhead .wk-label { font-size:10px; letter-spacing:2.5px; font-weight:700; color:#A25C86; text-transform:uppercase; }
+.wkhead h1 { font-family:'Cormorant',serif; font-weight:700; font-size:40px; line-height:1.05; color:#2A2A2A; margin-top:2px; }
+.wkhead h1 em { font-style:normal; color:#B085A5; }
+.wkhead .daysrow { display:flex; align-items:center; gap:8px; margin-top:6px; font-size:12px; font-weight:600; color:#6A6B6C; }
+.progresspill { background:#EDEAF6; border-radius:999px; padding:3px 11px; color:#5A5885; }
+
+/* hero illustration, portrait crop */
+.wkhero { margin:12px 18px 0; border-radius:22px; overflow:hidden; position:relative; background:#fff; border:1px solid #EFE0EB; }
+.wkhero img { width:100%; height:300px; object-fit:cover; object-position:center 30%; display:block; }
+.wkhero .cap { position:absolute; left:14px; bottom:12px; background:rgba(250,248,245,.92); border-radius:999px; padding:6px 14px; font-size:11px; font-weight:600; color:#5A5885; display:flex; gap:7px; align-items:center; }
+
+.factrow { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:12px 18px 0; }
+.factbox { background:#fff; border:1px solid #EFE0EB; border-radius:16px; padding:12px 8px 10px; text-align:center; }
+.factbox .l { font-size:9.5px; letter-spacing:1.8px; text-transform:uppercase; color:#6A6B6C; font-weight:600; }
+.factbox .v { font-family:'Cormorant',serif; font-weight:700; font-size:20px; color:#2A2A2A; margin-top:3px; }
+.factbox .cap { font-size:11px; color:#6A6B6C; margin-top:1px; }
+
+.seg { display:flex; background:#F1E9F5; border-radius:999px; padding:4px; margin:14px 18px 0; }
+.seg div { flex:1; text-align:center; font-size:12.5px; font-weight:600; color:#74716A; padding:7px 0; border-radius:999px; }
+.seg .on { background:#fff; color:#8E8CB5; box-shadow:0 1px 3px rgba(45,45,45,.08); }
+
+/* checklist rows with organic check icons */
+.checks { margin:10px 18px 0; display:flex; flex-direction:column; gap:8px; }
+.check { display:flex; gap:11px; align-items:flex-start; background:#fff; border:1px solid #EFE0EB; border-radius:16px; padding:11px 14px; box-sizing:border-box; width:100%; }
+.check .box { width:24px; height:24px; border-radius:8px 10px 9px 11px; flex-shrink:0; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+.check .bx-done { background:#E8EDE5; }
+.check .bx-todo { background:#F1F1FB; }
+.check .t { flex:1; min-width:0; }
+.check .tt { font-size:13px; font-weight:600; color:#2A2A2A; }
+.check .ts { font-size:11.5px; color:#6A6B6C; margin-top:2px; line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.check.done .tt { color:#4B4B4B; }
+
+.stagechip { display:inline-flex; align-items:center; gap:6px; background:#E8EDE5; border:1px solid #D8E0D2; color:#5F7154; border-radius:999px; font-size:10.5px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:4px 12px; }
+</style>
+</head>
+<body class="canvas">
+
+<div class="canvas-head">
+  <div class="eyebrow">True Joy Birthing · App Surface 2 of 4 · Week Detail</div>
+  <h1>Week-Detail Screen — <em>Week 28</em> · "For birth" lane</h1>
+  <div class="sub">The app's core content page in the new language: approved week-28 illustration, growth-stage chip, hand-drawn check rows, stem divider — proof the design holds beyond the dashboard</div>
+</div>
+
+<div class="pair">
+
+  <div class="col">
+    <div class="tag now">TODAY · PRODUCTION</div>
+    <div class="phone fixed"><div class="screen"><img class="cur" src="assets/app-dashboard.png"></div></div>
+  </div>
+
+  <div class="col">
+    <div class="tag new">PROPOSED · WEEK-DETAIL · SAME LANGUAGE, DEEPER SCREEN</div>
+    <div class="phone"><div class="screen tall">
+
+      <div class="statusbar">
+        <div>9:41</div>
+        <div class="right">
+          <svg width="16" height="11"><g fill="#2A2A2A"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="2.5" height="11" rx="1" opacity=".35"/></g></svg>
+          <div class="sb-batt"></div>
+        </div>
+      </div>
+
+      <div class="content scroll">
+        <div class="backrow">
+          <div class="ic"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 L5.5 8.5 L10.5 13.5"/></svg></div>
+          <div>Week 28 of 40</div>
+          <div class="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#6E6C99" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="5.6"/><circle cx="8" cy="8" r="1.2" fill="#6E6C99" stroke="none"/><path d="M8 4.8 v3.2 l2 1.3"/></svg></div>
+        </div>
+
+        <div class="wkhead">
+          <div class="wk-label">Your Pregnancy</div>
+          <h1>Week 28<svg width="120" height="7" viewBox="0 0 120 7" style="display:block;margin-top:2px"><path d="M2 4.5 Q31 2 61 4 Q92 6 118 3.5" fill="none" stroke="#D8A0C4" stroke-width="2.6" stroke-linecap="round" opacity=".75"/></svg></h1>
+          <div class="daysrow">
+            <svg width="13" height="12" viewBox="0 0 14 13"><g fill="none" stroke="#8E6FA8" stroke-width="1.3" stroke-linecap="round"><path d="M7 11.5 C3.5 8.5 1.5 6.5 1.5 4.2 C1.5 2.5 2.9 1.3 4.4 1.3 C5.5 1.3 6.5 2 7 2.9 C7.5 2 8.5 1.3 9.6 1.3 C11.1 1.3 12.5 2.5 12.5 4.2 C12.5 6.5 10.5 8.5 7 11.5 Z"/></g></svg>
+            98 days to go · trimester 3 of 3
+          </div>
+        </div>
+
+        <div class="wkhero">
+          <img src="assets/week28.webp">
+          <div class="cap">
+            <svg width="22" height="13" viewBox="0 0 22 13"><g fill="none" stroke="#7C8F6F" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5 Q17 4 19 2.5"/><path d="M9 8.5 q-2-3.5.5-5.5 q2 2 .5 5.5" fill="#E8EDE5" stroke-width="1"/></g></svg>
+            Your baby at week 28 — eyes opening for the first time
+          </div>
+        </div>
+
+        <div class="factrow">
+          <div class="factbox"><div class="l">Length</div><div class="v">14.8<span class="cap" style="font-family:'Quicksand';font-weight:500;font-size:11px"> in</span></div></div>
+          <div class="factbox"><div class="l">Weight</div><div class="v">2.2<span class="cap" style="font-family:'Quicksand';font-weight:500;font-size:11px"> lb</span></div></div>
+          <div class="factbox"><div class="l">Size of</div><div class="v">Squash</div></div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; margin:16px 18px 0;">
+          <div class="stagechip">
+            <svg width="15" height="14" viewBox="0 0 15 14"><g fill="none" stroke="#5F7154" stroke-width="1.2" stroke-linecap="round"><path d="M3 12 Q7 8 10 6.5 Q11.5 5.8 12.5 4.5"/><path d="M7 8.5 q-2.2-3.2.2-5.2 q2.2 2 .8 5.2" fill="#E8EDE5" stroke-width="1"/></g></svg>
+            Leafing stage · 12 of 40 weeks
+          </div>
+        </div>
+
+        <div class="seg"><div>For baby</div><div>For mom</div><div class="on">For birth</div></div>
+
+        <div class="card" style="margin:14px 18px 0; padding:15px 17px;">
+          <div class="k k-lav">This week for your birth
+            <svg class="sprig" width="42" height="24" viewBox="0 0 42 24"><g fill="none" stroke="#8E6FA8" stroke-width="1.4" stroke-linecap="round"><path d="M6 22 Q16 13 26 11 Q33 10 38 4"/><path d="M17 14 q1-3 4-3.6 M27 10.8 q2.8 .3 3.6-2.8"/><ellipse cx="21.5" cy="12.3" rx="2.9" ry="3.7" fill="#F1F1FB" stroke-width="1.2"/><ellipse cx="30" cy="9.6" rx="2.4" ry="3.1" fill="#F1F1FB" stroke-width="1.2"/></g></svg>
+          </div>
+          <p style="font-size:13.5px; line-height:1.55; color:#4B4B4B; font-weight:500;">Your baby's lungs are practicing breathing this week. Third-trimester appointments shift to every two weeks — a good moment to write your birth preferences into your plan and share them with your team.</p>
+          <p class="more" style="color:#6E6C99; font-size:12.5px; font-weight:600; margin-top:7px;">Open the guide ›</p>
+        </div>
+
+        <div style="margin:16px 18px 0;">
+          <div class="k k-rose" style="font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; color:#A25C86;">Birth-prep checklist</div>
+          <div class="checks">
+          <div class="check">
+            <div class="box bx-done"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#5F7154" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.6 L6 10.6 L11.2 4.6"/></svg></div>
+            <div class="t"><div class="tt">Tour your birth setting</div><div class="ts">Know the entrance, parking, and check-in desk before labor day.</div></div>
+          </div>
+          <div class="check">
+            <div class="box bx-done"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#5F7154" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.6 L6 10.6 L11.2 4.6"/></svg></div>
+            <div class="t"><div class="tt">Draft your birth preferences</div><div class="ts">Your Joyful Birth Plan is 100% complete — review and share it with your doula & provider.</div></div>
+          </div>
+          <div class="check">
+            <div class="box bx-todo"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#8E8CB5" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.2"/></svg></div>
+            <div class="t"><div class="tt">Pack the hospital bag</div><div class="ts">Two outfits you actually like, phone charger with the long cable, snacks you'll actually want.</div></div>
+          </div>
+          <div class="check">
+            <div class="box bx-todo"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#8E8CB5" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.2"/></svg></div>
+            <div class="t"><div class="tt">Pre-register at your hospital</div><div class="ts">Ten minutes of paperwork now skips the clipboard at 3am in triage.</div></div>
+          </div>
+          </div>
+        </div>
+
+        <!-- stem divider -->
+        <svg class="stemline" width="200" height="14" viewBox="0 0 200 14"><path d="M10 8 Q60 12 100 7 T190 6.5" fill="none" stroke="#A8B5A0" stroke-width="1.4" stroke-linecap="round" opacity=".75"/></svg>
+
+        <div class="card" style="margin:0 18px 16px;">
+          <div class="k k-sage">Weekly affirmation
+            <svg class="sprig" width="44" height="24" viewBox="0 0 44 24"><g fill="none" stroke="#B085A5" stroke-width="1.4" stroke-linecap="round"><path d="M5 22 Q16 13 27 11 Q35 10 40 4"/><ellipse cx="24" cy="12.5" rx="3.2" ry="4" fill="#FBEEF5" stroke-width="1.2"/><ellipse cx="33" cy="9" rx="2.6" ry="3.3" fill="#FBEEF5" stroke-width="1.2"/></g></svg>
+          </div>
+          <div class="affirm">"Every week, we grow closer to meeting you."</div>
+        </div>
+      </div>
+
+      <div class="tabbar">
+        <div class="tb"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#6A6B6C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 9.8 C5.6 7.4 7.8 5.4 10 3.5 C12.2 5.4 14.4 7.4 17.2 9.8 M5.2 8.9 V15.9 c0 .3.2.5.5.5 h8.6 c.3 0 .5-.2.5-.5 V8.9"/><path d="M8.6 16.2 v-3.2 c0-.7.6-1.3 1.4-1.3 s1.4.6 1.4 1.3 v3.2"/></svg><div>Home</div></div>
+        <div class="tb"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#6A6B6C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.4 2.9 h6.5 c.1 0 .3.1.4.2 l3.2 3.1 c.1.1.2.3.2.4 V16.6 c0 .3-.2.5-.5.5 H5.4 c-.3 0-.5-.2-.5-.5 V3.4 c0-.3.2-.5.5-.5 Z"/><path d="M11.9 3.1 V6.8 h3.6"/><path d="M7.4 11.2 h5.2 M7.4 13.8 h3.4"/></svg><div>Plan</div></div>
+        <div class="tb"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#6A6B6C" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="11.4" r="6.3"/><path d="M10 8.4 v3.1 l2.1 1.4 M8.1 1.9 h3.8 M10 1.9 v2.2"/></svg><div>Timer</div></div>
+        <div class="tb on"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#8E8CB5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7.6" r="2.5"/><circle cx="13.6" cy="8.6" r="1.9"/><path d="M2.9 16.1 c.5-2.9 2.3-4.4 4.1-4.4 1.8 0 3.6 1.5 4.1 4.4 M12.6 12 c1.9.2 3.4 1.4 4.1 4.1"/></svg><div>Team</div></div>
+        <div class="tb"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#6A6B6C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.1 5.7 c0-.9.7-1.6 1.6-1.6 h10.6 c.9 0 1.6.7 1.6 1.6 v7.9 c0 .9-.7 1.6-1.6 1.6 H4.7 c-.9 0-1.6-.7-1.6-1.6 Z"/><path d="M3.6 5.9 L10 10.4 L16.4 5.9"/></svg><div>Messages</div></div>
+      </div>
+
+    </div></div>
+  </div>
+
+</div>
+
+<div class="legend">
+  <div class="h">Week-detail — what this surface proves</div>
+  <ul>
+    <li><b>Content depth:</b> the same language (cream, serif display, hand-drawn icons, illustration hero) carries a full scrolling content page — not just the dashboard.</li>
+    <li><b>Growth-stage chip:</b> "Leafing · 12 of 40 weeks" — the motif becomes a system: sprout (wks 4–14) → leafing (15–27) → budding (28–36) → blossom (37–40). The stage updates as she does.</li>
+    <li><b>Checklist rows:</b> organic-radius check boxes, sage done / lavender to-do — custom-icon direction extended to task UI.</li>
+    <li><b>Stem divider:</b> the motif as a section break — delicate stem-line instead of a plain rule.</li>
+    <li><b>Real content:</b> week-28 facts from the approved week-by-week data file; birth-prep items a mom would actually see.</li>
+  </ul>
+</div>
+
+</body>
+</html>

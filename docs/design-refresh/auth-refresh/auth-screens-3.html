@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @font-face { font-family:'Cormorant'; font-weight:700; src:url('assets/CormorantGaramond_700Bold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant'; font-weight:600; src:url('assets/CormorantGaramond_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:400; src:url('assets/Quicksand_400Regular.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:500; src:url('assets/Quicksand_500Medium.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:600; src:url('assets/Quicksand_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:700; src:url('assets/Quicksand_700Bold.ttf') format('truetype'); }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+  body { background:#3A3A3A; font-family:'Quicksand',sans-serif; }
+  .phone { width:390px; margin:28px auto; background:#FAF8F5; border-radius:40px; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.35); }
+  .screen { height:auto; min-height:760px; display:flex; flex-direction:column; position:relative; }
+  .status { position:absolute; top:0; left:0; right:0; z-index:4; display:flex; justify-content:space-between; align-items:center; padding:14px 26px 6px; font-weight:600; font-size:14px; color:#2A2A2A; }
+  .status.onphoto { color:#fff; }
+  .grain { position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.05; }
+  .btn-primary { display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    padding:15px 20px; border-radius:28px; background:#8E8CB5; color:#fff;
+    font-family:'Quicksand'; font-weight:700; font-size:15.5px; letter-spacing:.2px; }
+  .btn-ghost { display:block; width:100%; text-align:center; padding:14px 20px;
+    font-family:'Quicksand'; font-weight:600; font-size:15px; color:#8E8CB5; }
+  .btn-rose { display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    padding:15px 20px; border-radius:28px; background:#B87AA0; color:#fff;
+    font-family:'Quicksand'; font-weight:700; font-size:15.5px; }
+
+  /* SIGNATURE TREATMENT (from approved welcome screen): photo on top, solid cream
+     card with 28px top radius slides up OVER the photo bottom edge. ALL text lives
+     on the card — nothing but the status bar + back chip ever touches the photo. */
+  .photo { position:relative; left:0; right:0; background-position:center 30%; background-size:cover; background-repeat:no-repeat; }
+  .sheet { position:relative; z-index:2;
+    padding:26px 24px 26px; margin-top:0; }
+  .back { position:absolute; top:56px; left:22px; z-index:4; width:38px; height:38px; border-radius:19px;
+    background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(42,42,42,.14); }
+  .ov { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; color:#B87AA0; font-weight:700; margin-bottom:7px; }
+  .h1 { font-family:'Cormorant'; font-weight:700; font-size:26px; line-height:1.15; color:#2A2A2A; }
+  .h1 em { font-style:normal; color:#B085A5; }
+  .sub { font-size:13.5px; line-height:1.55; color:#4B4B4B; font-weight:500; }
+
+  /* ============ 1 · SIGNUP ============ */
+  .roles { display:flex; gap:8px; margin:16px 0 6px; flex-wrap:wrap; }
+  .role { padding:8px 14px; border-radius:18px; font-size:12.5px; font-weight:600;
+    border:1.4px solid #E2E0EE; background:#FDFCFA; color:#6B6B6B; }
+  .role.sel { background:#8E8CB5; border-color:#8E8CB5; color:#fff; box-shadow:0 6px 16px rgba(142,140,181,.35); }
+  .role-note { font-size:11px; color:#9A9B9C; line-height:1.5; margin:6px 0 14px; }
+  .f-label { font-size:11.5px; font-weight:600; color:#6B6B6B; margin:12px 0 6px; letter-spacing:.2px; }
+  .f-input { display:flex; align-items:center; gap:9px; background:#FDFCFA; border:1.4px solid #E7E4F2;
+    border-radius:16px; padding:12px 14px; font-size:14px; color:#2A2A2A; }
+  .f-input.f { border-color:#8E8CB5; box-shadow:0 0 0 3px rgba(142,140,181,.12); }
+  .f-input svg { width:16px; height:16px; stroke:#B9B7CE; fill:none; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+  .f-input .ph { color:#B9B7CE; }
+  .trustline { display:flex; align-items:center; gap:7px; justify-content:center;
+    font-size:11px; color:#9A9B9C; margin-top:12px; line-height:1.5; }
+  .trustline b { color:#5C6B54; font-weight:600; }
+
+  /* ============ 2 · VERIFY EMAIL ============ */
+  .vf-halo { width:88px; height:88px; border-radius:44px; margin:2px auto 0;
+    background:radial-gradient(circle at 50% 44%, rgba(168,181,160,.35), rgba(168,181,160,0) 70%);
+    display:flex; align-items:center; justify-content:center; }
+  .vf-badge { width:64px; height:64px; border-radius:32px; background:#FDFCFA;
+    border:1px solid #E8EDE5; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 24px rgba(42,42,42,.10); }
+  .otp { display:flex; gap:9px; justify-content:center; margin:16px 0 8px; }
+  .otp .cell { width:46px; height:56px; border-radius:14px; background:#FDFCFA; border:1.4px solid #E7E4F2;
+    display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; color:#2A2A2A; }
+  .otp .cell.f { border-color:#8E8CB5; box-shadow:0 0 0 3px rgba(142,140,181,.14); }
+  .vf-meta { text-align:center; font-size:12.5px; color:#4B4B4B; line-height:1.6; }
+  .vf-meta b { color:#8E8CB5; font-weight:600; }
+  .vf-softnote { margin-top:12px; background:#E8EDE5; border-radius:16px; padding:10px 14px;
+    font-size:11.5px; line-height:1.55; color:#5C6B54; text-align:center; font-weight:500; }
+  .vf-links { display:flex; gap:18px; justify-content:center; margin-top:14px; font-size:12.5px; font-weight:600; }
+  .vf-links span { color:#8E8CB5; }
+  .vf-links span.dim { color:#B9B7CE; }
+
+  /* ============ 3 · NOTIFICATIONS ============ */
+  .nt { text-align:center; }
+  .nt-bell { width:84px; height:84px; border-radius:42px; background:#FDFCFA; margin:0 auto;
+    border:1px solid #F6E9F0; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 28px rgba(42,42,42,.12); }
+  .nt-card { margin:14px 0 0; background:#FDFCFA; border:1px solid #F0EDF7; border-radius:18px;
+    padding:13px 16px; text-align:left; display:flex; gap:11px; align-items:flex-start; }
+  .nt-card .dot-r { width:9px; height:9px; border-radius:5px; background:#B87AA0; margin-top:5px; flex:none; }
+  .nt-card b { font-size:12.5px; color:#2A2A2A; font-weight:600; display:block; }
+  .nt-card span { font-size:11.5px; color:#6B6B6B; line-height:1.5; }
+
+  /* ============ 4 · FIRST WIN ============ */
+  .fw-progress { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .fw-bar { flex:1; height:6px; border-radius:3px; background:#ECE9F4; overflow:hidden; }
+  .fw-bar i { display:block; height:100%; width:12%; border-radius:3px; background:linear-gradient(90deg,#8E8CB5,#B87AA0); }
+  .fw-progress span { font-size:10.5px; font-weight:700; color:#8E8CB5; letter-spacing:.4px; }
+  .fw-q { font-family:'Cormorant'; font-weight:700; font-size:24px; line-height:1.18; color:#2A2A2A; margin-top:6px; }
+  .fw-q em { font-style:normal; color:#B085A5; }
+  .fw-calm { font-size:12px; color:#6B6B6B; line-height:1.55; margin-top:8px; }
+  .opt { display:flex; align-items:center; gap:11px; background:#FDFCFA; border:1.4px solid #E7E4F2;
+    border-radius:18px; padding:14px 16px; margin-top:10px; font-size:14px; font-weight:600; color:#2A2A2A; }
+  .opt .radio { width:20px; height:20px; border-radius:10px; border:1.6px solid #D5D3E8; flex:none; }
+  .opt.sel { border-color:#8E8CB5; background:#F2F1FA; box-shadow:0 6px 16px rgba(142,140,181,.18); }
+  .opt.sel .radio { border:6px solid #8E8CB5; }
+  .opt .no-wrong { margin-left:auto; font-size:10px; font-weight:700; color:#5C6B54; background:#E8EDE5;
+    padding:4px 9px; border-radius:12px; flex:none; }
+  .fw-endow { margin-top:14px; font-size:11.5px; color:#9A9B9C; text-align:center; line-height:1.5; }
+  .fw-endow b { color:#A25C86; font-weight:600; }
+</style>
+</head>
+<body>
+<svg class="grain" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+
+<!-- ══════════════ 1 · SIGNUP ══════════════ -->
+<div class="phone"><div class="screen" style="background:#FAF8F5;">
+  <div class="photo" style="height:190px;
+       background:url('assets/hero-family-moment.jpg') center 30%/cover no-repeat;"></div>
+  <div style="position:absolute;top:0;left:0;right:0;height:190px;z-index:2;background:linear-gradient(180deg, rgba(142,140,181,.15) 0%, rgba(250,248,245,0) 55%, #FAF8F5 100%);"></div>
+  <div class="status onphoto" style="position:relative;z-index:4;"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+  <div class="back"><svg width="18" height="18" viewBox="0 0 24 24" style="stroke:#2A2A2A;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M15 6l-6 6 6 6"/></svg></div>
+  <div class="sheet">
+    <div class="ov">Let's begin</div>
+    <div class="h1">A little about <em>you</em></div>
+    <div class="sub" style="margin-top:8px;">Four quick fields and you're in. We'll shape everything around where you are.</div>
+    <div class="roles">
+      <div class="role sel">✦ Mom</div><div class="role">Doula</div><div class="role">Midwife</div><div class="role">Lactation</div>
+    </div>
+    <div class="role-note">You're free forever — every birth tool, no paywall, ever.</div>
+    <div class="f-label">First name</div>
+    <div class="f-input f"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 100-8 4 4 0 000 8z"/><path d="M5 20c.6-3.7 3.4-6 7-6s6.4 2.3 7 6"/></svg>Maya</div>
+    <div class="f-label">Email</div>
+    <div class="f-input"><svg viewBox="0 0 24 24"><path d="M4 6.5h16v11H4z"/><path d="M4 7l8 6 8-6"/></svg><span class="ph">you@email.com</span></div>
+    <div class="f-label">Password</div>
+    <div class="f-input"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5"/></svg><span class="ph">8+ characters</span>
+      <svg viewBox="0 0 24 24" style="margin-left:auto"><path d="M3 3l18 18"/><path d="M10.6 10.7a2.4 2.4 0 002.9 2.9"/><path d="M6.4 6.5C4.4 7.7 3 9.6 2.2 12c1.5 4 5.3 6.5 9.8 6.5 1.7 0 3.3-.4 4.7-1"/><path d="M17.6 17.5c1.9-1.2 3.3-3 4.2-5.5-.6-1.6-1.5-3-2.7-4.1"/></svg></div>
+    <div class="btn-primary" style="margin-top:18px;">Continue — it's free
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 6l6 6-6 6"/></svg></div>
+    <div class="trustline">
+      <svg width="13" height="13" viewBox="0 0 24 24" style="stroke:#5C6B54;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M12 3l7 3v6c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6z"/><path d="M9.2 12.2l2 2 3.6-4"/></svg>
+      Private &amp; secure — your details stay between us &nbsp;·&nbsp; <b>Terms</b> · <b>Privacy</b>
+    </div>
+  </div>
+</div></div>
+
+<!-- ══════════════ 2 · VERIFY EMAIL ══════════════ -->
+<div class="phone"><div class="screen" style="background:#FAF8F5;">
+  <div class="photo" style="height:170px;
+       background:url('assets/hero-skin-to-skin.jpg') center 25%/cover no-repeat;"></div>
+  <div style="position:absolute;top:0;left:0;right:0;height:170px;z-index:2;background:linear-gradient(180deg, rgba(142,140,181,.15) 0%, rgba(250,248,245,0) 55%, #FAF8F5 100%);"></div>
+  <div class="status onphoto" style="position:relative;z-index:4;"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+  <div class="sheet">
+    <div class="ov">One last step</div>
+    <div class="h1" style="font-size:24px;">Verify your <em>email</em></div>
+    <div class="sub" style="margin-top:8px;">We sent a 6-digit code to <b style="color:#2A2A2A;">maya@email.com</b>. Verified pros appear in the marketplace — moms trust the checkmark.</div>
+    <div class="vf-halo"><div class="vf-badge">
+      <svg width="30" height="30" viewBox="0 0 24 24" style="stroke:#5C6B54;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;"><path d="M4 6.5h16v11H4z"/><path d="M4 7l8 6 8-6"/><path d="M9 14.5l2 2 4-4.5" style="stroke:#A8B5A0"/></svg>
+    </div></div>
+    <div class="otp">
+      <div class="cell">7</div><div class="cell f">2</div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    </div>
+    <div class="vf-meta">Didn't get it? <b>Resend code</b> · <span style="color:#9A9B9C">in 0:42</span><br>Wrong email? <b>Change it</b></div>
+    <div class="vf-softnote">Not ready? <b>Skip for now</b> — you won't appear in the marketplace until you verify.</div>
+    <div class="btn-primary" style="margin-top:16px;">Verify &amp; finish setup</div>
+    <div class="vf-links"><span>Back to sign up</span><span class="dim">·</span><span class="dim">Help</span></div>
+  </div>
+</div></div>
+
+<!-- ══════════════ 3 · NOTIFICATIONS ══════════════ -->
+<div class="phone"><div class="screen nt" style="background:#FAF8F5;">
+  <div class="photo" style="height:200px;
+       background:url('assets/hero-water-birth-2.jpg') center 30%/cover no-repeat;"></div>
+  <div style="position:absolute;top:0;left:0;right:0;height:200px;z-index:2;background:linear-gradient(180deg, rgba(142,140,181,.15) 0%, rgba(250,248,245,0) 55%, #FAF8F5 100%);"></div>
+  <div class="status onphoto" style="position:relative;z-index:4;"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+  <div class="sheet" style="text-align:center;">
+    <div class="nt-bell">
+      <svg width="34" height="34" viewBox="0 0 24 24" style="stroke:#B87AA0;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;"><path d="M6 9.5a6 6 0 0112 0c0 4.2 1.6 5.8 2.2 6.4.4.4.1 1.1-.5 1.1H4.3c-.6 0-.9-.7-.5-1.1.6-.6 2.2-2.2 2.2-6.4z"/><path d="M10 20a2.2 2.2 0 004 0"/></svg>
+    </div>
+    <div class="ov" style="margin-top:16px;">Stay close</div>
+    <div class="h1" style="font-size:24px;">Never miss a <em>moment</em></div>
+    <div class="sub" style="margin-top:8px;max-width:300px;margin-left:auto;margin-right:auto;">Gentle nudges for your week, messages from your team, and the moments you'd hate to miss.</div>
+    <div class="nt-card"><div class="dot-r"></div><div><b>Week 26 · You're 26 weeks along</b><span>Your third trimester begins this week — here's what to expect.</span></div></div>
+    <div class="nt-card"><div class="dot-r"></div><div><b>Maya from Ayla Doula Care</b><span>"Loved your birth plan draft — ready to talk through it?"</span></div></div>
+    <div class="btn-rose" style="margin-top:18px;">Allow notifications
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 6l6 6-6 6"/></svg></div>
+    <div class="btn-ghost">Maybe later</div>
+  </div>
+</div></div>
+
+<!-- ══════════════ 4 · FIRST WIN ══════════════ -->
+<div class="phone"><div class="screen" style="background:#FAF8F5;">
+  <div class="photo" style="height:170px;
+       background:url('assets/hero-water-birth-2.jpg') center 30%/cover no-repeat;"></div>
+  <div style="position:absolute;top:0;left:0;right:0;height:170px;z-index:2;background:linear-gradient(180deg, rgba(142,140,181,.15) 0%, rgba(250,248,245,0) 55%, #FAF8F5 100%);"></div>
+  <div class="status onphoto" style="position:relative;z-index:4;"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+  <div class="sheet">
+    <div class="fw-progress">
+      <div class="fw-bar"><i></i></div><span>1 of 8</span>
+    </div>
+    <div class="ov">Your birth plan</div>
+    <div class="fw-q">How do you feel about pain <em>medication?</em></div>
+    <div class="fw-calm">There's no wrong answer — this is your plan, your words.</div>
+    <div class="opt"><div class="radio"></div>I'd like to try without it</div>
+    <div class="opt sel"><div class="radio"></div>Open to it if I need it<div class="no-wrong">NO WRONG ANSWER</div></div>
+    <div class="opt"><div class="radio"></div>Definitely planning on it</div>
+    <div class="opt"><div class="radio"></div>Still deciding — help me think</div>
+    <div class="btn-primary" style="margin-top:18px;">Next question
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 6l6 6-6 6"/></svg></div>
+    <div class="fw-endow">Nice — your plan is off the ground. <b>~10% written.</b></div>
+  </div>
+</div></div>
+
+</body></html>

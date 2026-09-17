@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family:'Cormorant'; src:url('fonts/CormorantGaramond_700Bold.ttf'); font-weight:700; }
+@font-face { font-family:'Cormorant'; src:url('fonts/CormorantGaramond_500Medium_Italic.ttf'); font-weight:500; font-style:italic; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_400Regular.ttf'); font-weight:400; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_500Medium.ttf'); font-weight:500; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_700Bold.ttf'); font-weight:700; }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#F1ECE6; font-family:'Quicksand',sans-serif; color:#2D2D2D; padding:46px 40px 40px; }
+
+.screen { width:100%; height:100%; border-radius:45px; overflow:hidden; background:#FAF8F5; position:relative; display:flex; flex-direction:column; }
+
+.canvas-head { text-align:center; margin-bottom:34px; }
+.canvas-head .eyebrow { font-size:11px; letter-spacing:3.5px; font-weight:700; color:#B085A5; text-transform:uppercase; margin-bottom:10px; }
+.canvas-head h1 { font-family:'Cormorant',serif; font-weight:700; font-size:34px; color:#2D2D2D; }
+.canvas-head h1 em { font-style:normal; color:#B085A5; }
+.canvas-head .sub { font-size:13.5px; color:#7A746E; margin-top:8px; }
+
+.pair { display:flex; gap:64px; justify-content:center; align-items:flex-start; }
+.col { display:flex; flex-direction:column; align-items:center; gap:16px; }
+.tag { font-size:11px; letter-spacing:3px; text-transform:uppercase; font-weight:700; }
+.tag.now { color:#74716A; }
+.tag.new { color:#8E8CB5; }
+
+.phone { width:390px; background:#2D2D2D; border-radius:54px; padding:9px; box-shadow:0 18px 50px rgba(45,45,45,.18); }
+.phone.fixed { height:844px; }
+.screen { width:100%; height:100%; border-radius:45px; overflow:hidden; background:#FAF8F5; position:relative; display:flex; flex-direction:column; }
+.screen::after { content:''; position:absolute; inset:0; pointer-events:none; z-index:40; opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.27 0 0 0 0 0.18 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px 160px; mix-blend-mode:multiply; }
+.screen.tall { height:auto; min-height:826px; }
+.screen.tall .content { flex:none; overflow:visible; }
+.screen img.cur { width:100%; height:100%; object-fit:cover; border-radius:45px; }
+
+/* ---------- NEW DASHBOARD ---------- */
+.statusbar { height:40px; display:flex; justify-content:space-between; align-items:center; padding:0 26px; font-family:'Quicksand'; font-weight:600; font-size:14px; color:#2D2D2D; flex-shrink:0; }
+.statusbar .right { display:flex; gap:5px; align-items:center; }
+.sb-batt { width:22px; height:11px; border:1.4px solid #2D2D2D; border-radius:3px; position:relative; }
+.sb-batt::after { content:''; position:absolute; left:1.5px; top:1.5px; bottom:1.5px; width:70%; background:#2D2D2D; border-radius:1px; }
+
+.content { flex:1; overflow:hidden; padding:0 18px; }
+
+.hdr { display:flex; justify-content:space-between; align-items:flex-start; padding-top:6px; }
+.hdr .hello { font-size:14px; font-weight:500; color:#6B7280; }
+.hdr .weekrow { display:flex; align-items:baseline; gap:10px; margin-top:3px; }
+.hdr .week { font-family:'Cormorant',serif; font-weight:700; font-size:42px; line-height:1; color:#2D2D2D; }
+.hdr .wd { font-size:12.5px; font-weight:600; color:#A25C86; }
+.avatar { width:42px; height:42px; border-radius:50%; background:#EDEAF6; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; color:#6E6C99; }
+
+.duechip { margin-top:9px; display:inline-flex; align-items:center; gap:7px; background:#EDEAF6; border:1px solid #D5D3E8; border-radius:999px; padding:5px 13px; font-size:11.5px; font-weight:600; color:#5A5885; }
+.weekunderline { display:block; margin-top:2px; }
+
+.stepper { display:flex; gap:8px; margin-top:14px; align-items:center; }
+.wk { width:31px; height:31px; border-radius:50%; background:#fff; border:1.4px solid #E5DCD5; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:#6A6B6C; flex-shrink:0; }
+.wk.active { background:#D8A0C4; border-color:#C48CA8; color:#4B2E42; font-weight:700; box-shadow:inset 0 0 0 2px rgba(255,255,255,.5), 0 0 0 2px #fff, 0 0 0 3.5px #C48CA8; }
+.wk.edge { opacity:.45; }
+
+.hero { margin-top:12px; background:#fff; border:1px solid #EFE0EB; border-radius:22px; padding:14px; display:flex; gap:16px; align-items:stretch; }
+.hero .art { width:168px; flex-shrink:0; border-radius:9px; overflow:hidden; background:#FAF0DC; }
+.hero .art img { width:100%; height:100%; object-fit:cover; display:block; }
+.hero .facts { flex:1; display:flex; flex-direction:column; justify-content:center; padding:4px 6px 4px 2px; }
+.facts .eyebrow { font-size:10px; letter-spacing:2.5px; font-weight:700; color:#A25C86; text-transform:uppercase; margin-bottom:10px; }
+.fact { display:flex; justify-content:space-between; align-items:baseline; padding:9px 0; border-top:1px solid #F4EDF3; }
+.fact:first-of-type { border-top:none; padding-top:2px; }
+.fact .l { font-size:10px; letter-spacing:1.8px; text-transform:uppercase; color:#6A6B6C; font-weight:600; }
+.fact .v { font-family:'Quicksand',sans-serif; font-weight:600; font-size:21px; color:#2A2A2A; }
+.fact .v.word { font-family:'Cormorant',serif; font-weight:700; font-size:23px; }
+.fact .cap { font-size:11px; color:#6A6B6C; font-weight:500; margin-left:5px; }
+
+.seg { display:flex; background:#F1E9F5; border-radius:999px; padding:4px; margin-top:14px; }
+.seg div { flex:1; text-align:center; font-size:12.5px; font-weight:600; color:#74716A; padding:7px 0; border-radius:999px; }
+
+.card { background:#fff; border:1px solid #EFE0EB; border-radius:20px; padding:15px 17px; margin-top:12px; }
+.card .k { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:7px; }
+.k-rose { color:#A25C86; } .k-sage { color:#5F7154; }
+.seg .on { background:#fff; color:#8E8CB5; box-shadow:0 1px 3px rgba(45,45,45,.08); }
+.card p { font-size:13.5px; line-height:1.55; color:#4B4B4B; font-weight:500; }
+.card p.more { color:#6E6C99; font-size:12.5px; font-weight:600; margin-top:7px; }
+.affirm { font-family:'Cormorant',serif; font-style:italic; font-weight:500; font-size:21px; line-height:1.4; color:#3E3650; }
+.sprig { margin-left:auto; flex-shrink:0; }
+
+.plan { display:flex; align-items:center; gap:14px; }
+.ring { width:56px; height:56px; flex-shrink:0; position:relative; }
+.ring svg { transform:rotate(-90deg); }
+.ring .pct { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Cormorant',serif; font-weight:700; font-size:16px; color:#2D2D2D; }
+.ring .track { stroke:#F0E6E2; stroke-width:5; stroke-linecap:round; }
+.ring .arc { stroke:#C48CA8; stroke-width:5; stroke-linecap:round; stroke-dasharray:150 157; }
+.ring .arc2 { stroke:#D8A0C4; stroke-width:2.2; stroke-linecap:round; stroke-dasharray:11 7; opacity:.55; }
+.plan .t { flex:1; }
+.plan .t .h { font-size:15px; font-weight:600; color:#2D2D2D; }
+.plan .t .s { font-size:12px; color:#6A6B6C; margin-top:2px; }
+.btn { background:#6E6C99; color:#fff; font-size:12.5px; font-weight:600; border-radius:999px; padding:10px 18px; }
+
+.actions { display:flex; gap:10px; margin-top:12px; padding-bottom:16px; }
+.act { flex:1; background:#fff; border:1px solid #EFE0EB; border-radius:18px; padding:13px 6px 11px; text-align:center; }
+.act .ic { width:38px; height:38px; border-radius:50%; margin:0 auto 7px; display:flex; align-items:center; justify-content:center; }
+.ic-sage { background:#E8EDE5; } .ic-lav { background:#EDEAF6; } .ic-rose { background:#FBEEF5; }
+.act .lb { font-size:11.5px; font-weight:600; color:#4B4B4B; }
+
+.tabbar { height:62px; background:#fff; border-top:1px solid #F0E9EE; display:flex; justify-content:space-around; align-items:center; padding:0 10px 8px; flex-shrink:0; border-radius:0 0 45px 45px; }
+.tb { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px; font-weight:600; color:#6A6B6C; }
+.tb.on { color:#8E8CB5; }
+
+.legend { max-width:880px; margin:34px auto 0; background:#fff; border:1px solid #EADFE8; border-radius:16px; padding:20px 26px; }
+.legend .h { font-family:'Cormorant',serif; font-weight:700; font-size:19px; margin-bottom:10px; }
+.legend ul { list-style:none; columns:2; column-gap:40px; }
+.legend li { font-size:12.5px; color:#55595F; margin-bottom:7px; padding-left:16px; position:relative; break-inside:avoid; }
+.legend li::before { content:'✦'; position:absolute; left:0; color:#D8A0C4; font-size:10px; top:2px; }
+</style>
+</head>
+<body>
+
+<div class="canvas-head">
+  <div class="eyebrow">True Joy Birthing · Dashboard Concept · v1</div>
+  <h1>Week-Spine Dashboard, <em>Illustration-First</em></h1>
+  <div class="sub">Left: current production dashboard · Right: proposed redesign — same palette, our approved watercolor illustrations, structure borrowed from My Pregnancy (flow only)</div>
+</div>
+
+<div class="pair">
+
+  <div class="col">
+    <div class="tag now">TODAY · PRODUCTION</div>
+    <div class="phone fixed"><div class="screen"><img class="cur" src="assets/current-dashboard.png"></div></div>
+  </div>
+
+  <div class="col">
+    <div class="tag new">PROPOSED · WEEK-SPINE + ILLUSTRATION-FIRST</div>
+    <div class="phone"><div class="screen tall">
+
+      <div class="statusbar">
+        <div>9:41</div>
+        <div class="right">
+          <svg width="16" height="11"><g fill="#2D2D2D"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="2.5" height="11" rx="1" opacity=".35"/></g></svg>
+          <div class="sb-batt"></div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="hdr">
+          <div>
+            <div class="hello">Good morning, Emma</div>
+            <div class="weekrow"><div class="week">Week 20<svg class="weekunderline" width="120" height="7" viewBox="0 0 120 7"><path d="M2 4.5 Q30 2 60 4 Q90 6 118 3.5" fill="none" stroke="#D8A0C4" stroke-width="2.6" stroke-linecap="round" opacity=".75"/></svg></div><div class="wd">20w + 0d</div></div>
+          </div>
+          <div class="avatar">E</div>
+        </div>
+        <div class="duechip"><svg width="14" height="13" viewBox="0 0 14 13"><g fill="none" stroke="#8E6FA8" stroke-width="1.3" stroke-linecap="round"><path d="M7 11.5 C3.5 8.5 1.5 6.5 1.5 4.2 C1.5 2.5 2.9 1.3 4.4 1.3 C5.5 1.3 6.5 2 7 2.9 C7.5 2 8.5 1.3 9.6 1.3 C11.1 1.3 12.5 2.5 12.5 4.2 C12.5 6.5 10.5 8.5 7 11.5 Z"/></g></svg> 140 days to go · due Jan 14</div>
+
+        <div class="stepper">
+          <div class="wk edge">17</div><div class="wk edge">18</div><div class="wk edge">19</div>
+          <div class="wk active">20</div>
+          <div class="wk">21</div><div class="wk">22</div><div class="wk">23</div>
+        </div>
+
+        <div class="hero">
+          <div class="art"><img src="assets/week20-trim.png"></div>
+          <div class="facts">
+            <div class="eyebrow">Your baby this week</div>
+            <div class="fact"><div class="l">Length</div><div><span class="v">10.1</span><span class="cap">in</span></div></div>
+            <div class="fact"><div class="l">Weight</div><div><span class="v">10.6</span><span class="cap">oz</span></div></div>
+            <div class="fact"><div class="l">Size of</div><div><span class="v word">Banana</span></div></div>
+          </div>
+        </div>
+
+        <div class="seg"><div>For baby</div><div class="on">For mom</div><div>For birth</div></div>
+
+        <div class="card">
+          <div class="k k-rose">Weekly tip
+            <svg class="sprig" width="46" height="26" viewBox="0 0 46 26"><g fill="none" stroke="#A8B5A0" stroke-width="1.6" stroke-linecap="round"><path d="M9 24 Q17 15 26 11 Q33 8 38 5"/><path d="M38 5 q4 -1 3.5 -4.5"/><path d="M17 16.5 q-5-4.5-1.5-8 q4 2.5 1.5 8" fill="#E8EDE5" stroke-width="1.4"/><path d="M26 11.5 q-3-6.5 1.5-8.5 q3 4 -1.5 8.5" fill="#E8EDE5" stroke-width="1.4"/></g></svg>
+          </div>
+          <p>Your body is nourishing two hearts now. Side-sleeping with a pillow between your knees eases the pressure on your back and hips — and helps you rest.</p>
+          <p class="more">Read more ›</p>
+        </div>
+
+        <div class="card">
+          <div class="k k-sage">Weekly affirmation
+            <svg class="sprig" width="44" height="24" viewBox="0 0 44 24"><g fill="none" stroke="#C9A8E8" stroke-width="1.5" stroke-linecap="round"><path d="M5 22 Q16 12 27 11 Q35 10 40 3"/><path d="M27 11 q1.5 -3 4.5 -3.5 M33 8.2 q3.2 .4 4 -3"/><circle cx="20" cy="12" r="2.4" fill="#FBEEF5" stroke-width="1.3"/><circle cx="28" cy="9.5" r="2.1" fill="#FBEEF5" stroke-width="1.3"/><path d="M35 6.5 q2.6 -1.6 1.2 -3.8 q-2.6 .4 -1.2 3.8" fill="#FBEEF5" stroke-width="1.3"/></g></svg>
+          </div>
+          <div class="affirm">"My body knows the way. I move through this week with calm and trust."</div>
+        </div>
+
+        <div class="card plan">
+          <div class="ring">
+            <svg width="56" height="56">
+              <circle class="track" cx="28" cy="28" r="25" fill="none"/>
+              <circle class="arc" cx="28" cy="28" r="25" fill="none"/>
+              <circle class="arc2" cx="28" cy="28" r="21" fill="none"/>
+            </svg>
+            <div class="pct">100</div>
+          </div>
+          <div class="t">
+            <div class="h">Joyful Birth Plan</div>
+            <div class="s">Complete · ready to review</div>
+          </div>
+          <div class="btn">Open</div>
+        </div>
+
+        <div class="actions">
+          <div class="act"><div class="ic ic-sage"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6F7F63" stroke-width="1.5" stroke-linecap="round"><path d="M10.2 2.6 c2.3.1 3.9 1.2 3.9 3.1 0 1-.5 1.9-1.3 2.5 1.9.5 3.2 1.9 3.2 3.8 0 2.6-2.4 4.4-5.8 4.4-3.4 0-5.8-1.8-5.8-4.4 0-1.9 1.3-3.3 3.2-3.8-.8-.6-1.3-1.5-1.3-2.5 0-1.9 1.6-3 3.9-3.1 Z" stroke="#6F7F63"/><path d="M7.3 12.3 l1.8 1.7 3.6-3.2" stroke="#6F7F63"/></svg></div><div class="lb">Timeline</div></div>
+          <div class="act"><div class="ic ic-lav"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#8E6FA8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16.5 C4.8 12.8 2.6 10.2 2.6 7.4 C2.6 5.1 4.4 3.5 6.5 3.5 C8 3.5 9.3 4.4 10 5.7 C10.7 4.4 12 3.5 13.5 3.5 C15.6 3.5 17.4 5.1 17.4 7.4 C17.4 10.2 15.2 12.8 10 16.5 Z"/><path d="M6.3 8.1 c.3-1.2 1.1-2 2.2-2.3"/></svg></div><div class="lb">Wellness</div></div>
+          <div class="act"><div class="ic ic-rose"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#B87AA0" stroke-width="1.5" stroke-linecap="round"><path d="M4.2 3.8 h11.6 c.9 0 1.6.7 1.6 1.6 v9.6 c0 .9-.7 1.6-1.6 1.6 H4.2 c-.9 0-1.6-.7-1.6-1.6 V5.4 c0-.9.7-1.6 1.6-1.6 Z"/><path d="M6.2 1.8 v3.4 M13.8 1.8 v3.4 M2.8 7.6 h14.4"/><path d="M6.6 11.4 l1.8 1.7 3.4-3" stroke-width="1.4"/></svg></div><div class="lb">Schedule</div></div>
+        </div>
+      </div>
+
+      <div class="tabbar">
+        <div class="tb on"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#8E8CB5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 9.8 C5.6 7.4 7.8 5.4 10 3.5 C12.2 5.4 14.4 7.4 17.2 9.8 M5.2 8.9 V15.9 c0 .3.2.5.5.5 h8.6 c.3 0 .5-.2.5-.5 V8.9"/><path d="M8.6 16.2 v-3.2 c0-.7.6-1.3 1.4-1.3 s1.4.6 1.4 1.3 v3.2"/></svg><div>Home</div></div>
+        <div class="tb"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#6A6B6C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.4 2.9 h6.5 c.1 0 .3.1.4.2 l3.2 3.1 c.1.1.2.3.2.4 V16.6 c0 .3-.2.5-.5.5 H5.4 c-.3 0-.5-.2-.5-.5 V3.4 c0-.3.2-.5.5-.5 Z"/><path d="M11.9 3.1 V6.8 h3.6"/><path d="M7.4 11.2 h5.2 M7.4 13.8 h3.4"/></svg><div>Plan</div></div>
+        <div class="tb"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#6A6B6C" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="11.4" r="6.3"/><path d="M10 8.4 v3.1 l2.1 1.4 M8.1 1.9 h3.8 M10 1.9 v2.2"/></svg><div>Timer</div></div>
+        <div class="tb"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#6A6B6C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7.6" r="2.5"/><circle cx="13.6" cy="8.6" r="1.9"/><path d="M2.9 16.1 c.5-2.9 2.3-4.4 4.1-4.4 1.8 0 3.6 1.5 4.1 4.4 M12.6 12 c1.9.2 3.4 1.4 4.1 4.1"/></svg><div>Team</div></div>
+        <div class="tb"><svg width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="#6A6B6C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.1 5.7 c0-.9.7-1.6 1.6-1.6 h10.6 c.9 0 1.6.7 1.6 1.6 v7.9 c0 .9-.7 1.6-1.6 1.6 H4.7 c-.9 0-1.6-.7-1.6-1.6 Z"/><path d="M3.6 5.9 L10 10.4 L16.4 5.9"/></svg><div>Messages</div></div>
+      </div>
+
+    </div></div>
+  </div>
+
+</div>
+
+<div class="legend">
+  <div class="h">What changed — My Pregnancy's flow, our identity</div>
+  <ul>
+    <li><b>Week spine:</b> greeting now leads with "Week 20" + browsable week stepper; tip & affirmation bind to the week</li>
+    <li><b>Hero illustration:</b> the approved week-20 watercolor cross-section leads the screen — same job as MP's 3D fetus, our style</li>
+    <li><b>Tangible data:</b> length · weight · "size of a banana" beside the illustration in clean data rows</li>
+    <li><b>Baby / Mom / Birth tabs:</b> their baby↔mom duality plus our birth-education lane</li>
+    <li><b>Rose progress ring:</b> replaces the flat bar for birth-plan completion</li>
+    <li><b>One accent per module:</b> sage tip, rose affirmation, lavender CTA — no accent bars, no blue, no cartoon art</li>
+  </ul>
+</div>
+
+</body>
+</html>

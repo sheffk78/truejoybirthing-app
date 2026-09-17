@@ -1,0 +1,44 @@
+{
+  "task": "TJB app-design concept image generation via Coverr.co UI (Nano Banana 2)",
+  "timestamp": "2026-09-11T14:50:00-06:00",
+  "status": "complete",
+  "login_state": "logged in (Pro account, no login wall)",
+  "model_selected": "Google Nano Banana 2",
+  "resolution_selected": "1K",
+  "generations_attempted": 0,
+  "generations_completed": 3,
+  "credits_shown_per_generate": 400,
+  "credits_used": 1200,
+  "blocker": "Public Visibility toggle is disabled and force-checked ON (input has disabled='' and checked=''); cannot be turned OFF. Attempted 4 ways (JS .click on inner/label/bar, real coordinate click at 572,652, remove-disabled + dispatch change/input/click events) \u00e2\u0080\u0094 component re-forces checked=True. Per mandatory instruction, generation was NOT performed while visibility was ON (proprietary TJB brand work must not publish to Coverr public gallery).",
+  "ui_quirks": [
+    "Prompt textarea is React-controlled: fill_input and value-setter both fail; CDP Input.insertText after programmatic setSelectionRange(0, len) REPLACES selection and syncs React state.",
+    "Aspect dropdown: acu-dropdown custom element; open via full pointer/mouse event sequence on wa-ai-prefference, select via .acu-option parent row click.",
+    "Generate button: JS .click() works; CDP mouse click at rect center is unreliable (unexplained).",
+    "Success toast can appear for a no-op generation \u2014 verify via credit counter drop + card creation, never trust toast alone.",
+    "Only ONE variation card per generation; card list caps at 12 items."
+  ],
+  "files_downloaded": [
+    {
+      "name": "concept1-dashboard.jpg",
+      "size": 190489,
+      "pixels": "2000x2678",
+      "cdn": "https://cdn.coverr.co/user-content/47njCCZtcKvh/images/MRfIApgYLzmB/Elbpwa552xmc.jpg"
+    },
+    {
+      "name": "concept2-affirmation-card.jpg",
+      "size": 122067,
+      "pixels": "2000x2000",
+      "cdn": "https://cdn.coverr.co/user-content/47njCCZtcKvh/images/xevJEfQF91uB/55EIOPJ2gQq0.jpg"
+    },
+    {
+      "name": "concept3-spot-illustrations.jpg",
+      "size": 213850,
+      "pixels": "2000x2000",
+      "cdn": "https://cdn.coverr.co/user-content/47njCCZtcKvh/images/7IzjM5HeqOhY/FwvGIjgJgyRi.jpg"
+    }
+  ],
+  "next_action": "Kenneth logs into Coverr (Pro account) in the agent Chrome profile window so the headless session inherits the login; then Kit retries toggle check + 3 generations. Alternative: Kenneth grants computer_use permission and Kit drives his personal logged-in Chrome.",
+  "root_cause_correction": "Kenneth logged into Coverr in agent Chrome; anonymous visibility lock resolved (toggle became interactive after session reload). Login-state diagnosis in earlier note was WRONG \u2014 the coverr_token cookie WAS present; 'Sign In' nav link is a persistent footer link that misleads auth-state heuristics. Toggle unlock mechanism: the disabled input was an anonymous lock; once logged in, clicking the label element flips it (input.click() re-checks it \u2014 use label).",
+  "timestamp_completed": "2026-09-11T15:35:00-06:00",
+  "credits_remaining": 123800
+}

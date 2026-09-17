@@ -1,0 +1,27 @@
+/* ============================================================
+   TJB Custom Icon Set — hand-drawn SVG glyphs (Kit, 2026-09-15)
+   Jeff's note (msg 1549523133218820129): tab-bar icons too small +
+   not custom; every birth-plan section showed a heart. Fix: one
+   hand-drawn set in the brand's sage-ink stroke style — organic,
+   rounded-cap strokes, 1.7px weight at 24px box, generous curves.
+
+   STYLE RULES (apply to every glyph):
+   - stroke: #2A2A2A (ink) or currentColor; fill: none
+   - stroke-width 1.7 (24 box) · stroke-linecap/linejoin: round
+   - curves preferred over straight lines; nothing geometric-sharp
+   - a tiny leaf/sprig curl is allowed on ONE glyph per family
+   - 24×24 viewBox, 2px safe inset
+
+   TAB BAR (6): home · birthplan · timer · team · messages · profile
+   BIRTH-PLAN SECTIONS (12): matches SECTION_ICONS in
+   app/(mom)/birth-plan.tsx 1:1 — about_me, labor_delivery,
+   labor_support, pain_management, monitoring_iv,
+   induction_interventions, pushing_safe_word, birth_preferences,
+   post_delivery, after_birth, newborn_care, other_considerations
+   STATUS (3): not-started · in-progress · complete
+   UTILITY: auto-share (custom mark, replaces generic share glyph)
+   ============================================================ */
+.ticon { display:inline-flex; align-items:center; justify-content:center; }
+.ticon svg { display:block; }
+.tico-lg svg { width:30px; height:30px; }   /* tab bar: bigger than live app */
+.tico-sec svg { width:22px; height:22px; }  /* section rows */

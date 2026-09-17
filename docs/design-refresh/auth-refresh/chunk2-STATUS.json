@@ -1,0 +1,35 @@
+{
+  "date": "2026-09-16",
+  "chunk": "2 of N \u2014 welcome + login implemented to approved mockups (auth-screens-1.html)",
+  "verification": {
+    "tsc": "0 errors in changed screens; 3 pre-existing unrelated (contraction-timer, websocket)",
+    "ad_hoc_script": "31/31 PASS (static spec vs mockup + tsc delta)",
+    "note": "no canonical test suite in repo; rendered visuals not machine-assertable statically"
+  },
+  "welcome": [
+    "hero photo top 55% with approved rose wash (off-palette rgba(159,131,182) removed)",
+    "icon mark floating on photo, natural square, never cropped",
+    "bottom card: Welcome to overline, serif headline w/ italic rose accent, subtitle",
+    "3 feature pills (Birth Plan / Your Team / Support) \u2014 sage/lavender/rose tokens",
+    "Get Started Free (lavender) \u2192 signup; ghost 'I already have an account' \u2192 login",
+    "Terms + Privacy footer links (old off-palette wash and abrupt entry replaced)",
+    "staggered entrance 60+90ms beats, 420ms cubic fades; press 0.97 on both CTAs"
+  ],
+  "login": [
+    "icon mark on cream w/ ring detail, natural square",
+    "serif 'Welcome back' headline + italic rose accent, subhead",
+    "email + password fields, eye toggle, focus rings, inline Forgot password",
+    "primary lavender Log In, 'New here? Create an account' swap link",
+    "'See how it works' \u2192 public (auth)/tutorial-preview route (dead-end fix from audit)",
+    "inline soft error banner (authStore has no error field \u2014 local authError state)",
+    "KeyboardAvoidingView + tap-to-dismiss; no spinners on screen; staggered entrance",
+    "press 0.97 on submit; 0.6 opacity feedback on links"
+  ],
+  "audit_fixes_included": [
+    "guard-dead-end preview route (chunk-1 audit HIGH)",
+    "off-palette overlays removed",
+    "press feedback added to all login/welcome links"
+  ],
+  "mockup_png": "/Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/docs/design-refresh/auth-refresh/chunk2-welcome-login-mockup.png",
+  "next": "signup + verify-email (chunk 3), then notification-permission + mom-onboarding polish"
+}

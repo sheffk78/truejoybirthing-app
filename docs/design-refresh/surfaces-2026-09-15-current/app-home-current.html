@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @font-face { font-family:'Cormorant Garamond'; font-weight:700; src:url('fonts/CormorantGaramond_700Bold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant Garamond'; font-weight:600; src:url('fonts/CormorantGaramond_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant Garamond'; font-weight:500; src:url('fonts/CormorantGaramond_500Medium.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:400; src:url('fonts/SourceSans3_400Regular.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:400; font-style:italic; src:url('fonts/SourceSans3_400Regular_Italic.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:500; src:url('fonts/SourceSans3_500Medium.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:600; src:url('fonts/SourceSans3_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:700; src:url('fonts/SourceSans3_700Bold.ttf') format('truetype'); }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+  body { background:#3A3A3A; font-family:'Source Sans 3',sans-serif; }
+  .phone { width:390px; margin:28px auto; background:#FAF8F5; border-radius:40px; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.35); }
+  .screen { height:auto; display:flex; flex-direction:column; position:relative; }
+  .status { display:flex; justify-content:space-between; align-items:center; padding:14px 26px 6px; font-weight:600; font-size:14px; color:#2A2A2A; }
+  .content { flex:1; overflow-y:scroll; padding:8px 16px 24px; scrollbar-width:none; }
+  .content::-webkit-scrollbar { display:none; }
+  .tabbar { background:#FDFCFA; border-top:1px solid #E6E4F4; display:flex; justify-content:space-around; padding:8px 6px 22px; }
+  .tab { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px; font-weight:500; color:#9A9B9C; }
+  .tab.active { color:#8E8CB5; }
+  .tab svg { width:23px; height:23px; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .card { background:#FDFCFA; border:1px solid #E6E4F4; border-radius:12px; padding:16px; margin-bottom:16px; }
+  .grain { position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.05; }
+</style>
+</head>
+<body>
+<svg class="grain" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+<div class="phone"><div class="screen">
+  <div class="status"><span>9:41</span><span style="letter-spacing:2px">􀙇 􀛨</span></div>
+  <div class="content">
+
+    <!-- Header (styles.header / headerLeft / greeting / weekText) -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="logo-icon.png" style="width:28px;height:28px;">
+        <div>
+          <div style="font-family:'Cormorant Garamond';font-weight:700;font-size:24px;color:#2A2A2A;">Hello, Shelbi</div>
+          <div style="font-size:14px;color:#8E8CB5;font-weight:500;margin-top:2px;">28 weeks 2 days pregnant</div>
+        </div>
+      </div>
+      <div style="width:48px;height:48px;border-radius:24px;background:rgba(213,211,232,.3);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+        <img src="https://i.pravatar.cc/96?img=47" style="width:48px;height:48px;border-radius:24px;">
+      </div>
+    </div>
+
+    <!-- Joyful Birth Plan card (styles.mainCard) -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+        <div style="flex:1;">
+          <div style="font-family:'Cormorant Garamond';font-weight:700;font-size:18px;color:#2A2A2A;">Joyful Birth Plan</div>
+          <div style="font-size:13px;color:#6A6B6C;margin-top:2px;">Complete: Support People &amp; Team</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span style="font-size:12px;font-weight:700;color:#6A6B6C;">42%</span>
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#8E8CB5;fill:none;stroke-width:2.2;"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+      <div style="height:8px;background:#E6E4F4;border-radius:4px;"><div style="height:8px;width:42%;background:#8E8CB5;border-radius:4px;"></div></div>
+    </div>
+
+    <!-- Baby Development card (styles.babyDevCard, bg=background cream) -->
+    <div class="card" style="background:#FAF8F5;">
+      <div style="display:flex;align-items:center;margin-bottom:8px;">
+        <div style="flex:1;">
+          <span style="font-size:14px;font-weight:700;color:#2A2A2A;">Baby Development</span>
+          <span style="font-size:12px;color:#B87AA0;margin-left:8px;">Week 28</span>
+        </div>
+      </div>
+      <!-- Growth-stage chip — the one motif anchor on Home (stageForWeek(28)='budding') -->
+      <div style="display:flex;align-items:center;align-self:flex-start;background:#E8EDE5;border-radius:8px;padding:3px 8px;margin-bottom:8px;width:fit-content;">
+        <span style="font-size:11px;font-weight:700;color:#6A6B6C;">Week 28 · Third trimester</span>
+      </div>
+      <img src="pregnancy-week-28-approved.webp" style="width:100%;height:220px;object-fit:contain;border-radius:12px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:#2A2A2A;margin-bottom:2px;">Your baby this week</div>
+      <div style="font-size:13px;color:#6A6B6C;line-height:22px;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;">Your baby is starting to put on weight more quickly now. You may also notice stronger kicks and stretches, partly because your baby is bigger and partly because movement patterns are getting more organized.</div>
+      <div style="display:flex;align-items:center;gap:2px;">
+        <span style="font-size:13px;font-weight:500;color:#B87AA0;">Learn more</span>
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#B87AA0;fill:none;stroke-width:2.2;"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </div>
+
+    <!-- GrowthDivider — the single divider motif use on Home -->
+    <svg width="120" height="14" viewBox="0 0 120 14" style="display:block;margin:4px auto;">
+      <path d="M3 8.2 C 30 6.4, 58 9.6, 117 6.9" stroke="#A8B5A0" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+      <path d="M46 7.9 C 44.2 6.7, 43.7 5.1, 44.3 3.3 C 46.5 4, 47.4 6, 46.2 8 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.1" stroke-linejoin="round"/>
+      <path d="M72 8.4 C 73.8 7.4, 74.4 5.9, 73.9 4.1 C 71.8 4.9, 70.9 6.7, 72 8.5 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.1" stroke-linejoin="round"/>
+    </svg>
+
+    <!-- Weekly Tip card (styles.weeklyCard) — 4-line clamp like numberOfLines={4} -->
+    <div class="card">
+      <div style="display:flex;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path d="M12 22 C 11.5 17, 12.5 10.5, 11.8 4.2" stroke="#A8B5A0" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M11.9 16.8 C 9.5 16.4, 8 14.9, 7.7 12.4 C 10.1 12.8, 11.7 14.4, 11.9 16.8 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4"/><path d="M12.2 12.2 C 14.5 11.8, 15.9 10.4, 16.2 8 C 13.9 8.4, 12.4 9.9, 12.2 12.2 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4"/><path d="M11.8 8.4 C 9.8 8, 8.6 6.8, 8.3 4.9 C 10.3 5.2, 11.6 6.4, 11.8 8.4 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3"/></svg><span style="font-size:14px;font-weight:700;color:#2A2A2A;margin-left:6px;">Weekly Tip</span></div>
+        <span style="font-size:12px;color:#8E8CB5;margin-left:auto;">Week 28</span>
+      </div>
+      <div style="font-size:13px;color:#6A6B6C;line-height:22px;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;">With the third trimester beginning and baby's lungs and brain rapidly maturing, make it a habit to notice your baby's movement pattern daily and learn what 'normal for your baby' feels like, because by 28 weeks more than 90% of babies could survive with advanced care if born early, and changes in movement are one of the first signs midwives and doctors want you to call about—not something to ignore.</div>
+      <div style="display:flex;align-items:center;gap:2px;">
+        <span style="font-size:13px;font-weight:500;color:#8E8CB5;">Read more</span>
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#8E8CB5;fill:none;stroke-width:2.2;"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </div>
+
+    <!-- Weekly Affirmation card -->
+    <div class="card">
+      <div style="display:flex;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path d="M12 22 C 11.6 18, 12.4 14.5, 12 10.8" stroke="#A8B5A0" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M11.9 17.4 C 9.7 17, 8.3 15.6, 8 13.4 C 10.2 13.8, 11.7 15.2, 11.9 17.4 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4"/><path d="M12.1 14.6 C 14.3 14.2, 15.7 12.9, 16 10.7 C 13.8 11.1, 12.3 12.4, 12.1 14.6 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(0 12 8)"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(72 12 8)"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(144 12 8)"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(216 12 8)"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(288 12 8)"/><circle cx="12" cy="8" r="1.5" fill="#A8B5A0"/></svg><span style="font-size:14px;font-weight:700;color:#2A2A2A;margin-left:6px;">Weekly Affirmation</span></div>
+        <span style="font-size:12px;color:#8E8CB5;margin-left:auto;">Week 28</span>
+      </div>
+      <div style="font-size:14px;color:#2A2A2A;line-height:24px;font-style:italic;">"I know my baby's normal patterns, and I trust myself to speak up if something doesn't feel right."</div>
+    </div>
+
+    <!-- Key Actions (styles.actionsGrid) -->
+    <div style="font-family:'Cormorant Garamond';font-weight:600;font-size:18px;color:#2A2A2A;margin-bottom:16px;">Key Actions</div>
+    <div style="display:flex;margin:0 -4px;margin-bottom:24px;">
+      <div class="card" style="flex:1;margin:0 4px;padding:16px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(168,181,160,.3);display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:#A8B5A0;fill:none;stroke-width:1.8;"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 11h16"/></svg>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:#2A2A2A;margin-bottom:2px;">Timeline</div>
+        <div style="font-size:12px;color:#6A6B6C;">28 weeks 2 days</div>
+      </div>
+      <div class="card" style="flex:1;margin:0 4px;padding:16px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(168,181,160,.3);display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:#A8B5A0;fill:none;stroke-width:1.8;"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 19l6.8-6.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:#2A2A2A;margin-bottom:2px;">Wellness</div>
+        <div style="font-size:12px;color:#6A6B6C;">How are you feeling?</div>
+      </div>
+      <div class="card" style="flex:1;margin:0 4px;padding:16px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(142,140,181,.3);display:flex;align-items:center;justify-content:center;margin-bottom:8px;">
+          <svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:#8E8CB5;fill:none;stroke-width:1.8;"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 11h16"/></svg>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:#2A2A2A;margin-bottom:2px;">Schedule</div>
+        <div style="font-size:12px;color:#6A6B6C;">With your provider</div>
+      </div>
+    </div>
+
+    <!-- Research Feed — What's New for You (MomFeedSection + ProviderFeedCard, real article) -->
+    <div style="margin-top:24px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:#8E8CB5;fill:none;stroke-width:1.8;"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg>
+          <span style="font-family:'Cormorant Garamond';font-weight:600;font-size:18px;color:#2A2A2A;">What's New for You</span>
+        </div>
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#9A9B9C;fill:none;stroke-width:1.8;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span style="font-size:11px;font-weight:500;color:#8E8CB5;">ACOG</span>
+        </div>
+        <span style="font-size:11px;color:#9A9B9C;">Jul 1</span>
+      </div>
+      <div style="font-family:'Cormorant Garamond';font-weight:600;font-size:15px;color:#2A2A2A;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">Awareness, knowledge, and preventive practices regarding cytomegalovirus among pregnant and previously pregnant women in Palestine: a cross-sectional study.</div>
+      <div style="font-size:13px;color:#6A6B6C;line-height:20px;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">Only 19% of Palestinian women aware of CMV; 10.8% received counseling. High-risk women (22.7%) more aware (vs 11.4%). University education strongly associated with awareness of preventive practices.</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="display:flex;gap:4px;align-items:center;">
+          <span style="background:#E6E4F4;padding:2px 6px;border-radius:4px;font-size:10px;color:#6A6B6C;">research</span>
+          <span style="background:#E6E4F4;padding:2px 6px;border-radius:4px;font-size:10px;color:#6A6B6C;">clinical</span>
+          <span style="background:#E6E4F4;padding:2px 6px;border-radius:4px;font-size:10px;color:#6A6B6C;">postpartum</span>
+          <span style="font-size:11px;color:#9A9B9C;font-weight:700;">AI</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- Tab bar (app/(mom)/_layout.tsx — Home active) -->
+  <div class="tabbar">
+    <div class="tab active"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Home</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Birth Plan</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9 2h6"/></svg>Timer</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 21c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="17" cy="9" r="2.8"/><path d="M16 15.2c2.8.3 5 2.4 5 5.8"/></svg>My Team</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>Messages</div>
+  </div>
+</div></div>
+</body>
+</html>

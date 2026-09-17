@@ -1,0 +1,36 @@
+{
+ "date": "2026-09-14",
+ "type": "ad-hoc verification (no canonical suite exists for static design mockups)",
+ "tool": "temporary hermes-verify-tjb-final3-*.py via Playwright + PIL, removed after run",
+ "note": "script exit 1 due to missing sys import on final line only; all checks passed before it",
+ "results": {
+  "s2-week-detail": {
+   "overflow_px": 0,
+   "checklist_rows": 4,
+   "row_heights": "58px uniform",
+   "all_rows_inside_frame": true,
+   "affirmation_inside": true,
+   "banned_hex": "none",
+   "render": "fresh, 2323KB"
+  },
+  "s3-city-austin-v2": {
+   "pcards": 6,
+   "hcards": 2,
+   "banned_hex": "none",
+   "images_all_load": true,
+   "render": "fresh, 2546KB"
+  },
+  "s4-homepage-v2": {
+   "wcells": 4,
+   "ccards": 3,
+   "idx_rows": 8,
+   "due_date_calc": true,
+   "trust_strip_no_sage_stroke": true,
+   "banned_hex": "none",
+   "images_all_load": true,
+   "render": "fresh, 1958KB"
+  }
+ },
+ "all_pass": true,
+ "scope": "structure + geometry + palette + asset integrity + render sanity; aesthetic sign-off is Jeff's"
+}

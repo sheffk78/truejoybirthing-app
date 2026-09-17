@@ -1,0 +1,62 @@
+/* ============================================================
+   TJB TYPE SYSTEM v1 — 2026-09-15
+   One scale for every surface: app mockups + web mockups.
+   Reference: assets/branding/VISUAL-TOKENS.md §Type Scale (Cormorant Garamond display / Quicksand app body / Source Sans 3 web body).
+   Usage: link AFTER common.css. Headings inherit automatically;
+   utilities .t-h1/.t-h2/.t-h3/.t-overline/.t-body/.t-caption for non-element spots.
+   ============================================================ */
+
+/* ---------- web element defaults (1280px artboard) ---------- */
+h1, .t-h1 {
+  font-family: 'Cormorant', serif; font-weight: 700;
+  font-size: 52px; line-height: 1.08; letter-spacing: -0.02em;
+  color: #2A2A2A;
+}
+h1 em, .t-h1 em { font-style: normal; color: #B085A5; } /* rose accent word */
+
+h2, .t-h2 {
+  font-family: 'Cormorant', serif; font-weight: 700;
+  font-size: 34px; line-height: 1.15; letter-spacing: -0.01em;
+  color: #2A2A2A;
+}
+h2 em, .t-h2 em { font-style: normal; color: #B085A5; }
+
+h3, .t-h3 {
+  font-family: 'Cormorant', serif; font-weight: 600;
+  font-size: 22px; line-height: 1.2; letter-spacing: 0;
+  color: #2A2A2A;
+}
+
+.t-overline { /* kickers / eyebrows / section labels */
+  font-family: 'Quicksand', sans-serif; font-weight: 700;
+  font-size: 11px; letter-spacing: 2.8px; text-transform: uppercase;
+  color: #A25C86;
+}
+.t-overline.lav { color: #6E6C99; }
+
+.t-body {
+  font-family: 'SourceSans', sans-serif; font-weight: 400;
+  font-size: 15.5px; line-height: 1.6; color: #55595F;
+}
+
+.t-caption {
+  font-family: 'SourceSans', sans-serif; font-weight: 400;
+  font-size: 12.5px; line-height: 1.5; color: #6A6B6C;
+}
+
+/* ---------- app canvas overrides (390px phone) ---------- */
+/* App body face is Quicksand; serif display is Cormorant. */
+body.canvas h1, body.canvas .t-h1 { font-size: 26px; line-height: 1.15; letter-spacing: -0.02em; }
+body.canvas h2, body.canvas .t-h2 { font-size: 21px; line-height: 1.2; }
+body.canvas h3, body.canvas .t-h3 { font-size: 17px; line-height: 1.25; }
+body.canvas .t-overline { font-size: 10px; letter-spacing: 2.2px; }
+body.canvas .t-body { font-family: 'Quicksand', sans-serif; font-weight: 500; font-size: 13.5px; line-height: 1.55; color: #4B4B4B; }
+body.canvas .t-caption { font-family: 'Quicksand', sans-serif; font-size: 11px; color: #6A6B6C; }
+
+/* ---------- production mapping (documented, not for mockups) ----------
+   WEB (live site, fluid):  H1 clamp(2.25rem,5vw,3.75rem) · H2 clamp(1.75rem,4vw,2.75rem)
+                            H3 clamp(1.25rem,3vw,1.625rem) — per VISUAL-TOKENS §Type Scale
+   APP (React Native):      H1 26 · H2 21 · H3 17 · overline 10 · body 13.5 · caption 11
+                            families: CormorantGaramond 700/600, Quicksand 400–700
+                            (app scale lands in src/constants/themeTokens.ts → themeTokens.typography)
+   ------------------------------------------------------------------- */

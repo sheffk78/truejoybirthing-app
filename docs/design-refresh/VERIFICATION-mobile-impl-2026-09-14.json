@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-14",
+  "kind": "AD-HOC verification (no canonical RN test suite; expo export = build gate). NOT a suite green.",
+  "script": "tempfile hermes-verify-tjb-mobile-*.sh, deleted after run",
+  "file_hashes": {
+    "app/(mom)/home.tsx": "2ee3c4dc526c",
+    "app/(mom)/weekly-tips.tsx": "7bc9413096a4",
+    "src/components/GrowthSprig.tsx": "79f83dc956ab"
+  },
+  "results": {
+    "1_tsc": "PASS \u2014 0 errors in changed files; 3 pre-existing elsewhere (contraction-timer x2, websocket.ts)",
+    "2_brand_compliance": "PASS \u2014 0 hex / 0 gradients / 0 shadows in all 3 changed files",
+    "3_metro_bundle": "PASS \u2014 npx expo export --platform ios exit 0",
+    "4_bytecode_probes": "PASS \u2014 7/7 content markers in Hermes .hbc"
+  },
+  "result": "ALL_PASS",
+  "note": "Production deploy NOT performed (Jeff approval gate)."
+}

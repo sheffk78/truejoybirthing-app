@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="common.css">
+<style>
+/* S4 v2: homepage — green demoted, content depth restored (live-section parity) */
+.homehero { display:grid; grid-template-columns: 55% 45%; align-items:center; background:#FAF8F5; }
+.homehero .txt { padding:54px 44px 54px 56px; }
+.homehero h1 { font-family:'Cormorant',serif; font-weight:700; font-size:54px; line-height:1.06; color:#2A2A2A; }
+.homehero h1 em { font-style:normal; color:#B085A5; }
+.homehero .lede { font-size:16px; line-height:1.65; color:#55595F; margin-top:16px; max-width:540px; }
+.homehero .lede a { color:#A25C86; text-decoration:underline; text-underline-offset:2px; }
+.homehero .ctarow { display:flex; gap:14px; margin-top:26px; }
+.homehero .imgwrap { height:100%; min-height:440px; padding:26px 26px 26px 0; }
+.homehero .imgwrap img { width:100%; height:100%; object-fit:cover; border-radius:20px; box-shadow:0 14px 40px rgba(45,45,45,.12); }
+
+.trustrow { display:flex; gap:0; background:#fff; border-top:1px solid #EBE7E1; border-bottom:1px solid #EBE7E1; padding:18px 56px; justify-content:space-between; align-items:center; }
+.trustrow .t { font-size:13px; font-weight:600; color:#4B4B4B; display:flex; align-items:center; gap:8px; }
+
+.feat3 { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:24px; }
+.feat { background:#fff; border:1px solid #EBE7E1; border-radius:18px; padding:22px 20px; box-shadow:0 6px 20px rgba(45,45,45,.05); }
+.feat .ic { width:46px; height:46px; border-radius:14px 16px 15px 17px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+.feat .h { font-size:16px; font-weight:600; color:#2A2A2A; }
+.feat .d { font-size:13px; line-height:1.55; color:#55595F; margin-top:6px; }
+
+/* live-section: due-date calculator */
+.calccard { display:grid; grid-template-columns:1fr 1fr; gap:0; background:#fff; border:1px solid #EBE7E1; border-radius:20px; overflow:hidden; box-shadow:0 8px 28px rgba(45,45,45,.07); margin-top:24px; }
+.calc-l { padding:30px 34px; }
+.calc-l h3 { font-family:'Cormorant',serif; font-size:26px; font-weight:700; color:#2A2A2A; margin:0 0 6px; }
+.calc-l p { font-size:13px; color:#6A6B6C; line-height:1.55; margin:0 0 14px; }
+.calc-in { display:flex; gap:10px; }
+.calc-in .field { flex:1; background:#FAF8F5; border:1px solid #E0DEEF; border-radius:10px; padding:10px 12px; font-size:13px; color:#6A6B6C; }
+.calc-r { background:#F4F3FA; padding:30px 26px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
+.calc-r .big { font-family:'Cormorant',serif; font-weight:700; font-size:30px; color:#6E6C99; }
+.calc-r .sub { font-size:11px; letter-spacing:1.8px; text-transform:uppercase; font-weight:600; color:#6A6B6C; margin-top:2px; }
+
+.weekstrip { display:flex; gap:10px; margin-top:20px; align-items:flex-end; }
+.wcell { flex:1; background:#fff; border:1px solid #EBE7E1; border-radius:14px; padding:12px 6px 10px; text-align:center; }
+.wcell-img { width:54px; height:54px; border-radius:12px; overflow:hidden; margin:0 auto 6px; }
+.wcell-img img { width:100%; height:100%; object-fit:cover; }
+.wcell-sprout { width:54px; height:54px; border-radius:12px; background:#EDEAF6; display:flex; align-items:center; justify-content:center; margin:0 auto 6px; }
+.wk-n { font-family:'Cormorant',serif; font-weight:700; font-size:17px; color:#2A2A2A; }
+.wk-l { font-size:9.5px; letter-spacing:1px; text-transform:uppercase; color:#6A6B6C; font-weight:600; margin-top:1px; }
+.wk-fruit { font-family:'Cormorant',serif; font-style:italic; font-size:11.5px; color:#A25C86; margin-top:2px; }
+
+/* live-section: resource index rows */
+.idx { max-width:900px; margin:0 auto; }
+.idx .row { display:flex; justify-content:space-between; align-items:baseline; gap:18px; padding:12px 4px; border-top:1px solid #E0DEEF; }
+.idx .row:first-child { border-top:none; }
+.idx .t { font-size:14.5px; font-weight:600; color:#2A2A2A; white-space:nowrap; }
+.idx .t:hover { color:#A25C86; }
+.idx .d { font-size:12.5px; color:#8A8D92; text-align:right; }
+
+/* live-section: city cards */
+.city3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:24px; }
+.ccard { background:#fff; border:1px solid #EBE7E1; border-radius:16px; overflow:hidden; box-shadow:0 4px 14px rgba(45,45,45,.05); }
+.ccard .img { height:120px; overflow:hidden; }
+.ccard .img img { width:100%; height:100%; object-fit:cover; }
+.ccard .in { padding:14px 16px 16px; }
+.ccard .cn { font-family:'Cormorant',serif; font-weight:700; font-size:19px; color:#2A2A2A; }
+.ccard .cs { font-size:12px; color:#6A6B6C; margin-top:3px; }
+
+.quote { max-width:760px; margin:0 auto; text-align:center; }
+.quote .q { font-family:'Cormorant',serif; font-style:italic; font-weight:500; font-size:26px; line-height:1.45; color:#3E3650; }
+.quote .who { font-size:13px; font-weight:600; color:#6A6B6C; margin-top:12px; }
+</style>
+</head>
+<body class="web">
+
+<div class="weblabel">True Joy Birthing · Web Surface 4 of 4 · Homepage · Static Mockup v2 · green demoted · content depth restored</div>
+
+<div class="webpage">
+
+  <div class="wnav">
+    <img class="logo" src="assets/logo-mono.svg">
+    <div class="links">
+      <div>Birth Plan</div><div>Week by Week</div><div>Find a Doula</div><div>Courses</div>
+      <div class="cta">Get the App</div>
+    </div>
+  </div>
+
+  <div class="homehero">
+    <div class="txt">
+      <div class="eyebrow-web">
+        <svg width="26" height="14" viewBox="0 0 26 14"><g fill="none" stroke="#A25C86" stroke-width="1.3" stroke-linecap="round"><path d="M3 12 Q10 7 16 5 Q20 3.5 23 2"/><path d="M10 8.5 q-2.5-4 0-6.5 q3 2 .5 6.5" fill="#E8EDE5" stroke-width="1.1"/></g></svg>
+        Free · Doula-crafted · Judgment-free
+      </div>
+      <h1>Build your joyful birth plan — <em>and grow</em> through every week</h1>
+      <div class="lede">The free app that walks with you from the first blush of pregnancy to the first cry. A doula-crafted birth plan in about 20 minutes, week-by-week guidance that grows with your baby, and a directory of verified doulas, midwives, and lactation specialists near you — <a>see how much a doula costs in your area</a>, or <a>jump straight to your city</a>.</div>
+      <div class="ctarow">
+        <div class="btn-web">Get the free app</div>
+        <div class="btn-web ghost">See the walkthrough</div>
+      </div>
+    </div>
+    <div class="imgwrap"><img src="assets/week28.webp"></div>
+  </div>
+
+  <div class="trustrow">
+    <div class="t"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="#6E6C99" stroke-width="1.4" stroke-linecap="round"><path d="M8.5 15 C4 13.2 1.8 10.4 1.8 7.2 C1.8 4.9 3.4 3.3 5.3 3.3 C6.6 3.3 7.7 4 8.5 5.1 C9.3 4 10.4 3.3 11.7 3.3 C13.6 3.3 15.2 4.9 15.2 7.2 C15.2 10.4 13 13.2 8.5 13.2" transform="translate(0,1.5)"/></svg> Built with doulas</div>
+    <div class="t"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="#6E6C99" stroke-width="1.4" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6.2"/><path d="M6 8.7 l1.8 1.8 3.4-3.8"/></svg> Judgment-free</div>
+    <div class="t"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="#6E6C99" stroke-width="1.4" stroke-linecap="round"><path d="M3.5 14 c0-4 2.5-7 5-7 s5 3 5 7"/><circle cx="8.5" cy="4.5" r="2.2"/></svg> Real doula guidance</div>
+    <div class="t"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="#6E6C99" stroke-width="1.4" stroke-linecap="round"><rect x="3" y="4.5" width="11" height="9.5" rx="2"/><path d="M6 2.8 v3.4 M11 2.8 v3.4 M3.4 8.5 h10.6"/></svg> Weekly rhythm</div>
+    <div class="t"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="#6E6C99" stroke-width="1.4" stroke-linecap="round"><path d="M8.5 14.5 c-3.4 0-5.8-1.8-5.8-4.4 0-1.9 1.3-3.3 3.2-3.8-.8-.6-1.3-1.5-1.3-2.5 0-1.9 1.6-3 3.9-3.1 2.3.1 3.9 1.2 3.9 3.1 0 1-.5 1.9-1.3 2.5 1.9.5 3.2 1.9 3.2 3.8 0 2.6-2.4 4.4-5.8 4.4 Z"/></svg> 100% free for moms</div>
+  </div>
+
+  <!-- stem divider -->
+  <svg class="stemline" width="320" height="16" viewBox="0 0 320 16" style="margin:30px auto 0"><path d="M14 9 Q90 14 160 8 T306 7" fill="none" stroke="#A8B5A0" stroke-width="1.4" stroke-linecap="round" opacity=".8"/></svg>
+
+  <div class="wsec alt">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#A25C86" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M9 7.5 q-2-3.5.3-5.5 q2.2 2 .7 5.5" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      What You Get
+    </div>
+    <h2>Everything you need, <em>nothing you don't</em></h2>
+    <div class="intro">The Joyful Birth Plan app — one calm home for your pregnancy, your plan, and your people. Here's what's inside.</div>
+    <div class="feat3">
+      <div class="feat">
+        <div class="ic" style="background:#F1F1FB;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6E6C99" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4 3.5 h7.8 c.1 0 .3.1.4.2 l3.8 3.7 c.1.1.2.3.2.4 V19.9 c0 .4-.2.6-.6.6 H6.4 c-.4 0-.6-.2-.6-.6 V3.6 c0-.4.2-.6.6-.6 Z"/><path d="M14 3.8 V8.2 h4.3"/><path d="M8.9 13.4 h6.2 M8.9 16.5 h4"/></svg>
+        </div>
+        <div class="h">The Joyful Birth Plan</div>
+        <div class="d">A doula-crafted plan that walks you through every decision — pain management, support people, hospital preferences, feeding plans — free, guided, and ready to share with your care team.</div>
+      </div>
+      <div class="feat">
+        <div class="ic" style="background:#F1F1FB;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6E6C99" stroke-width="1.5" stroke-linecap="round"><path d="M4 20 Q10 14 14 11.5 Q17 13.5 20 16.5"/><path d="M10 14 q-2.5-5 .5-8 q3 2.5.5 8" fill="#EDEAF6" stroke-width="1.2"/><path d="M14.5 12.5 q-1-4 1-6.5 q2.5 2 .5 6.5" fill="#EDEAF6" stroke-width="1.2"/></svg>
+        </div>
+        <div class="h">Week by week, with you</div>
+        <div class="d">Your week's illustration, your baby's size in everyday comparisons, one practical tip, one affirmation — a weekly rhythm that builds the daily-open habit and grows a garden alongside your pregnancy.</div>
+      </div>
+      <div class="feat">
+        <div class="ic" style="background:#FBEEF5;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B87AA0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="2.6"/><circle cx="16.4" cy="9.8" r="2"/><path d="M4.4 17.5 c.6-3.2 2.5-4.8 4.6-4.8 2 0 4 1.6 4.6 4.8 M13.6 13.2 c2 .2 3.7 1.5 4.5 4.4"/></svg>
+        </div>
+        <div class="h">Find your team</div>
+        <div class="d">Search real, verified doulas, midwives, and lactation specialists near you — filter by services, certification, Medicaid, and language, then message them right in the app.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wsec">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#A25C86" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M12 7.5 q-1.5-3.5.5-5.5 q2 2 .5 5.5" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      Start With Your Date
+    </div>
+    <h2>Find your week, <em>starting today</em></h2>
+    <div class="intro">Enter your due date and the app drops you into your current week — illustration, tip, affirmation, and checklist already waiting.</div>
+    <div class="calccard">
+      <div class="calc-l">
+        <h3>When is your baby due?</h3>
+        <p>We'll estimate your current week and show you exactly what's happening — your baby, your body, and your birth plan for this exact stage.</p>
+        <div class="calc-in">
+          <div class="field">Due date — MM / DD / YYYY</div>
+          <div class="btn-web" style="padding:10px 20px; font-size:13px;">Show my week</div>
+        </div>
+      </div>
+      <div class="calc-r">
+        <div class="big">Week 28</div>
+        <div class="sub">3rd Trimester · Leafing</div>
+        <div style="font-size:12px; color:#6A6B6C; margin-top:6px; max-width:220px; line-height:1.5;">Your baby is about the size of an eggplant — and this week's plan section covers pre-registration and birth preferences.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE GROWTH BAND: 4 stages of the motif, tied to the pregnancy -->
+  <div class="wsec alt">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#A25C86" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M9 7.5 q-2-3.5.3-5.5 q2.2 2 .7 5.5" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      The Growth Motif
+    </div>
+    <h2>A motif that grows <em>with her</em></h2>
+    <div class="intro">Every surface carries one hand-drawn language of growth — simple stems, leaves, buds, blossoms — so the design itself grows as the pregnancy does.</div>
+    <div class="weekstrip" style="margin-top:26px;">
+      <div class="wcell">
+        <div class="wcell-sprout"><svg width="30" height="30" viewBox="0 0 30 30"><g fill="none" stroke="#8E8CB5" stroke-width="1.5" stroke-linecap="round"><path d="M15 26 Q15 20 15 14"/><path d="M15 16 q-5-2-5.5-7 q5 .5 5.5 7" fill="#EDEAF6" stroke-width="1.2"/><path d="M15 12 q4.5-3 4.8-6.5 q-4.5 1-4.8 6.5" fill="#EDEAF6" stroke-width="1.2"/></g></svg></div>
+        <div class="wk-n">Sprout</div><div class="wk-l">Weeks 4–14</div><div class="wk-fruit">beginnings</div>
+      </div>
+      <div class="wcell">
+        <div class="wcell-sprout"><svg width="30" height="30" viewBox="0 0 30 30"><g fill="none" stroke="#8E8CB5" stroke-width="1.5" stroke-linecap="round"><path d="M15 26 Q14 20 13 13"/><path d="M13 15 q-5.5-2.5-5.5-8 q5.5 1.5 5.5 8" fill="#EDEAF6" stroke-width="1.2"/><path d="M13.5 11 q4-3 4.2-6 q-4 .8-4.2 6" fill="#EDEAF6" stroke-width="1.2"/><path d="M13 19 q-4 0-6-3 q4-.5 6 3" fill="#EDEAF6" stroke-width="1.2" transform="rotate(-8 13 19)"/></g></svg></div>
+        <div class="wk-n">Leafing</div><div class="wk-l">Weeks 15–27</div><div class="wk-fruit">growing</div>
+      </div>
+      <div class="wcell">
+        <div class="wcell-sprout"><svg width="30" height="30" viewBox="0 0 30 30"><g fill="none" stroke="#B085A5" stroke-width="1.4" stroke-linecap="round"><path d="M15 26 Q14.5 20 14 13"/><path d="M12 16 q-4.5-1-6-4.5 q4.5 0 6 4" fill="#EDEAF6" stroke-width="1.2"/><ellipse cx="14.5" cy="9.5" rx="3.4" ry="4.6" fill="#FBEEF5" stroke-width="1.2"/><path d="M14.5 5 q1.5 2 0 4" stroke-width="1"/></g></svg></div>
+        <div class="wk-n">Budding</div><div class="wk-l">Weeks 28–36</div><div class="wk-fruit">almost there</div>
+      </div>
+      <div class="wcell">
+        <div class="wcell-sprout"><svg width="30" height="30" viewBox="0 0 30 30"><g fill="none" stroke="#B87AA0" stroke-width="1.4" stroke-linecap="round"><path d="M15 26 Q14.5 20 14 14"/><path d="M12 18 q-4.5-.5-6-3.5 q4.5-.2 6 3.5" fill="#EDEAF6" stroke-width="1.2"/><g stroke-width="1.1"><ellipse cx="14" cy="9.5" rx="2" ry="3.2" fill="#FBEEF5"/><ellipse cx="17.5" cy="10.2" rx="2" ry="3" fill="#FBEEF5" transform="rotate(35 17.5 10.2)"/><ellipse cx="10.5" cy="10.2" rx="2" ry="3" fill="#FBEEF5" transform="rotate(-35 10.5 10.2)"/><circle cx="14" cy="10" r="1.4" fill="#B085A5" stroke="none"/></g></g></svg></div>
+        <div class="wk-n">Blossom</div><div class="wk-l">Weeks 37–40</div><div class="wk-fruit">arrival</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stem divider -->
+  <svg class="stemline" width="320" height="16" viewBox="0 0 320 16" style="margin:30px auto 0"><path d="M14 9 Q90 14 160 8 T306 7" fill="none" stroke="#A8B5A0" stroke-width="1.4" stroke-linecap="round" opacity=".8"/></svg>
+
+  <div class="wsec">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#A25C86" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M12 7.5 q-1.5-3.5.5-5.5 q2 2 .5 5.5" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      Find Your City
+    </div>
+    <h2>Birth support in <em>your city</em></h2>
+    <div class="intro">Local guides for the cities we know best — real costs, real hospitals, real providers. 187 cities and counting.</div>
+    <div class="city3">
+      <div class="ccard">
+        <div class="img"><img src="assets/austin-hero.webp"></div>
+        <div class="in"><div class="cn">Austin, TX</div><div class="cs">8 doulas listed · $1,000–3,000 typical</div></div>
+      </div>
+      <div class="ccard">
+        <div class="img" style="background:#EDEAF6; display:flex; align-items:center; justify-content:center;"><div style="font-family:'Cormorant',serif; font-weight:700; font-size:44px; color:#6E6C99;">D</div></div>
+        <div class="in"><div class="cn">Denver, CO</div><div class="cs">12 doulas listed · $1,200–3,500 typical</div></div>
+      </div>
+      <div class="ccard">
+        <div class="img" style="background:#FBEEF5; display:flex; align-items:center; justify-content:center;"><div style="font-family:'Cormorant',serif; font-weight:700; font-size:44px; color:#A25C86;">N</div></div>
+        <div class="in"><div class="cn">Nashville, TN</div><div class="cs">6 doulas listed · $900–2,400 typical</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wsec alt">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#A25C86" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M9 7.5 q-2-3.5 0-6 q2.2 2 .7 6" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      Keep Learning
+    </div>
+    <h2>Guides for every <em>step of the way</em></h2>
+    <div class="intro">Deep, doula-written guides on every part of the journey — the reading list behind the app.</div>
+    <div class="idx">
+      <div class="row"><div class="t">Birth Plan Template</div><div class="d">Free template built by a doula. Download and fill it out.</div></div>
+      <div class="row"><div class="t">What Is a Doula</div><div class="d">What doulas do, how they help, and why families hire one.</div></div>
+      <div class="row"><div class="t">Doula Cost Guide</div><div class="d">What doulas cost, what's included, and insurance coverage.</div></div>
+      <div class="row"><div class="t">Doula vs Midwife</div><div class="d">Key differences between doulas and midwives, and which you need.</div></div>
+      <div class="row"><div class="t">Hospital Birth Plan Guide</div><div class="d">What to include for a hospital birth, section by section.</div></div>
+      <div class="row"><div class="t">Medicaid Doula Coverage</div><div class="d">Which states cover doula services and how to access benefits.</div></div>
+      <div class="row"><div class="t">VBAC Birth Plan Guide</div><div class="d">Planning a vaginal birth after cesarean, with sample language.</div></div>
+      <div class="row"><div class="t">New Doula Start Here</div><div class="d">Everything a new doula needs to build their practice.</div></div>
+    </div>
+  </div>
+
+  <div class="wsec">
+    <div class="quote">
+      <div class="q">"We came for the birth plan. We stayed because every week, something in the app grew right along with our baby."</div>
+      <div class="who">— Austin mom, week 34</div>
+    </div>
+  </div>
+
+  <div class="wsec alt" style="padding-top:6px;">
+    <div class="ctacard">
+      <div>
+        <h3>Your joyful birth plan starts tonight</h3>
+        <p>Free, doula-crafted, about 20 minutes. Then every week after, the app grows with you — week by week, leaf by leaf.</p>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+          <div class="btn-web">Get the free app</div>
+          <div class="btn-web ghost">See the walkthrough</div>
+        </div>
+      </div>
+      <img src="assets/booklet-1.webp">
+    </div>
+  </div>
+
+  <div class="wfoot">
+    <img src="assets/logo-mono.svg">
+    <div>Judgment-free birth support · Built with doulas</div>
+  </div>
+
+</div>
+
+<div class="legend" style="max-width:1280px;">
+  <div class="h">Homepage v2 — what changed from your feedback</div>
+  <ul>
+    <li><b>Green demoted:</b> the trust strip went lavender/neutral, growth-strip sprouts now draw in lavender strokes, sage survives only as tiny kicker accents and fill washes — same hierarchy as the live site, where green appears almost nowhere.</li>
+    <li><b>Content depth restored:</b> added the live homepage's due-date calculator, city card grid, and resource index rows; hero lede now carries inline text links like the live SEO paragraph.</li>
+    <li><b>Longer, specific card copy:</b> the three feature cards describe real app capabilities (filters, Medicaid, messaging) instead of short taglines.</li>
+    <li><b>Scale-up test stands:</b> serif display headline, illustration hero, unified palette, production type system (Cormorant Garamond + Source Sans 3).</li>
+    <li><b>Motif:</b> 4-stage growth strip (sprout → leafing → budding → blossom, weeks mapped) — vegetation only.</li>
+  </ul>
+</div>
+
+</body>
+</html>

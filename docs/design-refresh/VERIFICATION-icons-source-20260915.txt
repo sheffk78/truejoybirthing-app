@@ -1,0 +1,11 @@
+{
+ "verdict": "PASS",
+ "pass": 11,
+ "fail": 0,
+ "sha256_12": {
+  "icons.css": "b6a05219b75f",
+  "icons.mjs": "d90a022c1eef",
+  "icons.js": "ABSENT"
+ },
+ "failed": []
+}

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @font-face { font-family:'Cormorant'; font-weight:700; src:url('assets/CormorantGaramond_700Bold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant'; font-weight:600; src:url('assets/CormorantGaramond_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant'; font-weight:500; src:url('assets/CormorantGaramond_500Medium.ttf'); }
+  @font-face { font-family:'Quicksand'; font-weight:400; src:url('assets/Quicksand_400Regular.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:500; src:url('assets/Quicksand_500Medium.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:600; src:url('assets/Quicksand_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Quicksand'; font-weight:700; src:url('assets/Quicksand_700Bold.ttf') format('truetype'); }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+  body { background:#3A3A3A; font-family:'Quicksand',sans-serif; }
+  .phone { width:390px; margin:28px auto; background:#FAF8F5; border-radius:40px; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.35); }
+  .screen { height:auto; min-height:760px; display:flex; flex-direction:column; position:relative; }
+  .status { display:flex; justify-content:space-between; align-items:center; padding:14px 26px 6px; font-weight:600; font-size:14px; color:#2A2A2A; }
+  .grain { position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.05; }
+  .safe { padding:0 24px; }
+  .wc-overline { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; color:#B87AA0; font-weight:700; margin-bottom:8px; }
+  .wc-overline.lav { color:#6E6C99; }
+  .wc-h1 { font-family:'Cormorant'; font-weight:700; font-size:26px; line-height:1.15; color:#2A2A2A; }
+  .wc-h1 em { font-style:normal; color:#B085A5; }
+  .wc-sub { font-size:13.5px; line-height:1.55; color:#4B4B4B; margin-top:8px; font-weight:500; }
+  .btn-primary { display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    padding:15px 20px; border-radius:28px; background:#8E8CB5; color:#fff;
+    font-family:'Quicksand'; font-weight:700; font-size:15.5px; }
+  .btn-outline { display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    padding:14px 20px; border-radius:28px; border:1.4px solid #D5D3E8; background:#FDFCFA;
+    font-family:'Quicksand'; font-weight:600; font-size:15px; color:#6E6C99; }
+  .btn-ghost { display:block; width:100%; text-align:center; padding:13px 20px;
+    font-family:'Quicksand'; font-weight:600; font-size:15px; color:#8E8CB5; }
+  .field-label { font-size:11px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:#8A8B8D; margin:0 0 7px; }
+  .input { display:flex; align-items:center; gap:10px; background:#FDFCFA; border:1px solid #E6E4F4; border-radius:14px; padding:14px 16px; }
+  .input svg { width:18px; height:18px; stroke:#A8A9AC; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+  .input span { font-size:14px; color:#9A9B9C; font-weight:500; }
+  .fieldwrap { margin-bottom:20px; }
+  .divider-sprig { display:block; margin:0 auto; }
+  .err { font-size:11.5px; color:#B0563E; font-weight:600; margin-top:6px; }
+
+  /* role cards */
+  .rolecard { display:flex; align-items:center; gap:14px; background:#FDFCFA; border:1.4px solid #E6E4F4;
+    border-radius:18px; padding:16px; margin-bottom:12px; position:relative; }
+  .rolecard .ric { width:46px; height:46px; border-radius:15px 17px 14px 16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .rolecard .ric svg { width:23px; height:23px; stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .rolecard .rl { font-family:'Cormorant'; font-weight:700; font-size:17px; color:#2A2A2A; padding-right:0; }
+  .rolecard .rs { font-size:12px; color:#6A6B6C; margin-top:2px; font-weight:500; line-height:1.4; }
+  .rolecard .badge { position:absolute; right:14px; top:14px; font-size:9.5px; font-weight:700; letter-spacing:.8px;
+    text-transform:uppercase; padding:4px 8px; border-radius:10px; }
+  .badge-free { background:#E8EDE5; color:#5C6B54; }
+  .badge-pro { background:#F6E9F0; color:#A25C86; }
+  .rolecard.sel { border:1.8px solid #8E8CB5; box-shadow:0 6px 18px rgba(142,140,181,.18); }
+  .rolecard.sel .radio { border-color:#8E8CB5; background:#8E8CB5; }
+  .radio { margin-left:auto; width:20px; height:20px; border-radius:10px; border:1.6px solid #D5D3E8; flex-shrink:0; }
+
+  /* walkthrough */
+  .wt-photo { position:absolute; top:0; left:0; right:0; height:62%;
+    background:url('assets/hero-family-moment.jpg') center 38%/cover no-repeat; }
+  .wt-tint { position:absolute; top:0; left:0; right:0; height:62%;
+    background:linear-gradient(180deg, rgba(142,140,181,.14) 0%, rgba(250,248,245,0) 55%, rgba(250,248,245,.55) 88%, #FAF8F5 100%); }
+  .wt-card { position:absolute; bottom:0; left:0; right:0; background:transparent; padding:24px 24px 26px; }
+  .wt-stepnum { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .wt-stepchip { background:#EDEAF6; border-radius:10px; padding:4px 10px; font-size:10.5px; font-weight:700; letter-spacing:1.2px; color:#6E6C99; }
+  .wt-h2 { font-family:'Cormorant'; font-weight:700; font-size:24px; line-height:1.2; color:#2A2A2A; }
+  .wt-h2 em { font-style:normal; color:#B085A5; }
+  .wt-desc { font-size:13.5px; line-height:1.55; color:#4B4B4B; margin-top:8px; font-weight:500; }
+  .wt-dots { display:flex; gap:7px; margin-top:20px; }
+  .wt-dot { width:7px; height:7px; border-radius:4px; background:#E6E4F4; }
+  .wt-dot.a { width:22px; background:#8E8CB5; }
+
+  /* notif */
+  .notif-card { display:flex; align-items:center; gap:12px; background:#FDFCFA; border:1px solid #E6E4F4;
+    border-radius:14px; padding:13px 16px; margin-bottom:10px; }
+  .notif-card .nic { width:38px; height:38px; border-radius:12px; background:#EDEAF6; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .notif-card .nic svg { width:19px; height:19px; stroke:#6E6C99; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .notif-card .nt { font-size:13.5px; font-weight:700; color:#2A2A2A; }
+  .notif-card .nd { font-size:11.5px; color:#6A6B6C; margin-top:1px; font-weight:500; line-height:1.4; }
+
+  /* onboarding profile */
+  .ob-progress { height:6px; background:#E6E4F4; border-radius:3px; overflow:hidden; margin-bottom:18px; }
+  .ob-progress .fill { height:6px; width:34%; background:linear-gradient(90deg,#8E8CB5,#B87AA0); border-radius:3px; }
+  .ob-label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#8A8B8D; font-weight:700; margin-bottom:6px; }
+  .chiprow { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { display:flex; align-items:center; gap:6px; padding:9px 13px; border-radius:16px;
+    background:#FDFCFA; border:1.4px solid #E6E4F4; font-size:12.5px; font-weight:600; color:#4B4B4B; }
+  .chip svg { width:14px; height:14px; stroke:#8A8B8D; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .chip.sel { background:#EDEAF6; border-color:#8E8CB5; color:#55537E; }
+  .chip.sel svg { stroke:#6E6C99; }
+  .datebtn { display:flex; align-items:center; gap:10px; background:#FDFCFA; border:1px solid #E6E4F4;
+    border-radius:14px; padding:14px 16px; }
+  .datebtn svg { width:18px; height:18px; stroke:#8E8CB5; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .datebtn span { font-size:13.5px; color:#9A9B9C; font-weight:500; }
+</style>
+</head>
+<body>
+<svg class="grain" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+
+<!-- ══════════════ SCREEN D · CREATE ACCOUNT (role select) ══════════════ -->
+<div class="phone"><div class="screen" style="background:#FAF8F5;">
+  <div class="status"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+  <div class="safe" style="flex:1;display:flex;flex-direction:column;padding-top:10px;">
+    <div class="wc-overline">Join True Joy</div>
+    <div class="wc-h1">Welcome! <em>Tell us who you are</em></div>
+    <div class="wc-sub">We'll shape the app around your role.</div>
+    <div style="margin-top:22px;">
+      <div class="rolecard sel">
+        <div class="ric" style="background:#F6E9F0;">
+          <svg viewBox="0 0 24 24" style="stroke:#A25C86;"><circle cx="12" cy="7.2" r="3.2"/><path d="M6.2 20.4 C6.4 16.4 8.8 14 12 14 C15.2 14 17.6 16.4 17.8 20.4"/></svg>
+        </div>
+        <div style="padding-right:64px;">
+          <div class="rl">I'm Expecting</div>
+          <div class="rs">Create your birth plan &amp; build your team</div>
+        </div>
+        <div class="badge badge-free" style="margin-left:auto;">Free Forever</div>
+      </div>
+      <div class="rolecard">
+        <div class="ric" style="background:#EDEAF6;">
+          <svg viewBox="0 0 24 24" style="stroke:#6E6C99;"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z"/><path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3"/><path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4"/><path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3"/></svg>
+        </div>
+        <div style="padding-right:64px;">
+          <div class="rl">I'm a Doula</div>
+          <div class="rs">Manage clients &amp; grow your practice</div>
+        </div>
+        <div class="badge badge-pro">Pro Features</div>
+      </div>
+      <div class="rolecard">
+        <div class="ric" style="background:#E8EDE5;">
+          <svg viewBox="0 0 24 24" style="stroke:#5C6B54;"><path d="M5 19.4 C5 15.2 7.4 12.4 12 12.4 C16.6 12.4 19 15.2 19 19.4"/><path d="M12 12.4 C13.9 12.4 15.3 10.9 15.3 9 C15.3 7.1 13.9 5.4 12 5.4 C10.1 5.4 8.7 7.1 8.7 9 C8.7 10.9 10.1 12.4 12 12.4 Z"/><path d="M9.5 19.4 L9.5 16.6 C9.5 15.9 10 15.4 10.7 15.4 L13.3 15.4 C14 15.4 14.5 15.9 14.5 16.6 L14.5 19.4"/></svg>
+        </div>
+        <div style="padding-right:64px;">
+          <div class="rl">I'm a Midwife</div>
+          <div class="rs">Track visits &amp; support birthing families</div>
+        </div>
+        <div class="badge badge-pro">Pro Features</div>
+      </div>
+      <div class="rolecard">
+        <div class="ric" style="background:#F6E9F0;">
+          <svg viewBox="0 0 24 24" style="stroke:#A25C86;"><path d="M12 20.4 C7 16.6 3.8 13.6 3.8 10.2 C3.8 7.6 5.8 5.8 8.2 5.8 C9.7 5.8 11.1 6.6 12 7.9 C12.9 6.6 14.3 5.8 15.8 5.8 C18.2 5.8 20.2 7.6 20.2 10.2 C20.2 13.6 17 16.6 12 20.4 Z"/><path d="M8.4 11.2 L10.8 11.2 L11.8 8.6 L13.2 13 L14.2 11.2 L15.8 11.2"/></svg>
+        </div>
+        <div style="padding-right:64px;">
+          <div class="rl">I'm a Lactation Consultant</div>
+          <div class="rs">Breastfeeding support &amp; education</div>
+        </div>
+        <div class="badge badge-pro">Pro Features</div>
+      </div>
+    </div>
+    <div style="flex:1;"></div>
+    <svg class="divider-sprig" width="120" height="14" viewBox="0 0 120 14" style="margin:6px auto 14px;">
+      <path d="M3 8.2 C 30 6.4, 58 9.6, 117 6.9" stroke="#A8B5A0" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+      <path d="M46 7.9 C 44.2 6.7, 43.7 5.1, 44.3 3.3 C 46.5 4, 47.4 6, 46.2 8 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.1" stroke-linejoin="round"/>
+      <path d="M72 8.4 C 73.8 7.4, 74.4 5.9, 73.9 4.1 C 71.8 4.9, 70.9 6.7, 72 8.5 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.1" stroke-linejoin="round"/>
+    </svg>
+    <div style="text-align:center;font-size:13.5px;color:#6A6B6C;font-weight:500;margin-bottom:10px;">
+      Already have an account? <span style="color:#8E8CB5;font-weight:700;">Log In</span>
+    </div>
+  </div>
+</div></div>
+
+<!-- ══════════════ SCREEN E · WALKTHROUGH (slide 1 of 3) ══════════════ -->
+<div class="phone"><div class="screen" style="background:#FAF8F5;">
+  <div class="wt-photo"></div>
+  <div class="wt-tint"></div>
+  <div class="status" style="position:relative;z-index:2;color:#fff;"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+  <div style="position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:4px 24px 0;">
+    <img src="assets/logo-icon.png" style="width:34px;height:34px;border-radius:17px;border:1px solid rgba(255,255,255,.4);">
+    <span style="font-size:13px;font-weight:600;color:#fff;opacity:.9;">Skip</span>
+  </div>
+  <div class="wt-card" style="z-index:2;">
+    <div class="wt-stepnum">
+      <span class="wt-stepchip">STEP 1 OF 3</span>
+      <svg width="26" height="26" viewBox="0 0 24 24">
+        <path d="M12 21.5 C 11.6 17, 12.4 12.5, 12 8.8" stroke="#A8B5A0" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+        <path d="M11.9 14.6 C 9.6 14.2, 8.2 12.7, 7.9 10.3 C 10.3 10.7, 11.8 12.2, 11.9 14.6 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M12.1 11.4 C 14.3 11, 15.7 9.7, 16 7.5 C 13.8 7.9, 12.3 9.2, 12.1 11.4 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="wt-h2">Create Your <em>Birth Plan</em></div>
+    <div class="wt-desc">Build a personalized birth plan that captures your preferences, values, and wishes for your special day.</div>
+    <div class="wt-dots">
+      <div class="wt-dot a"></div><div class="wt-dot"></div><div class="wt-dot"></div>
+    </div>
+    <div style="margin-top:22px;">
+      <div class="btn-primary">Continue
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ══════════════ SCREEN F · NOTIFICATION PERMISSION ══════════════ -->
+<div class="phone"><div class="screen" style="background:#FAF8F5;">
+  <div class="status"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+  <div class="safe" style="flex:1;display:flex;flex-direction:column;padding-top:14px;">
+    <div style="display:flex;justify-content:center;">
+      <div style="width:88px;height:88px;border-radius:44px;background:#EDEAF6;display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 24 24" style="width:40px;height:40px;stroke:#6E6C99;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;"><path d="M12 3.6 C8.6 3.6 6.4 6.2 6.4 9.6 L6.4 13.2 C6.4 14 5.6 15.6 4.8 16.6 C4.4 17.2 5 18.2 5.8 18.2 C9.4 18.8 14.6 18.8 19.2 18.2 C19.8 18.2 19.2 17.2 19.2 16.6 C18.4 15.6 17.6 14 17.6 13.2 L17.6 9 C17.6 6.2 15.4 3.6 12 3.6 Z"/><path d="M10 20.6 C10.4 21.4 11.1 21.8 12 21.8 C12.9 21.8 13.6 21.4 14 20.6"/></svg>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:18px;">
+      <div class="wc-overline lav" style="margin-bottom:6px;">One quick step</div>
+      <div class="wc-h1" style="font-size:24px;">Never Miss a <em>Message</em></div>
+      <div class="wc-sub" style="max-width:300px;margin:8px auto 0;">Turn on notifications so your team, appointments, and weekly updates reach you right away.</div>
+    </div>
+    <div style="margin-top:24px;">
+      <div class="notif-card">
+        <div class="nic"><svg viewBox="0 0 24 24"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z"/></svg></div>
+        <div><div class="nt">New messages</div><div class="nd">When your doula or midwife replies</div></div>
+      </div>
+      <div class="notif-card">
+        <div class="nic"><svg viewBox="0 0 24 24"><rect x="5" y="6" width="14" height="13" rx="2.6"/><path d="M8.6 3.8 L8.6 7"/><path d="M15.4 3.8 L15.4 7"/><path d="M5.4 10.4 L18.6 10.4"/></svg></div>
+        <div><div class="nt">Appointment reminders</div><div class="nd">Prenatal visits and classes</div></div>
+      </div>
+      <div class="notif-card">
+        <div class="nic"><svg viewBox="0 0 24 24"><path d="M12 3.8 L18.6 6.4 L18.6 11.4 C18.6 15.8 15.8 18.9 12 20.2 C8.2 18.9 5.4 15.8 5.4 11.4 L5.4 6.4 Z"/><path d="M9.4 11.8 L11.4 13.8 L15 10"/></svg></div>
+        <div><div class="nt">Weekly updates</div><div class="nd">Your week, tip, and affirmation</div></div>
+      </div>
+    </div>
+    <div style="flex:1;"></div>
+    <div class="btn-primary">Enable Notifications</div>
+    <div class="btn-ghost" style="color:#9A9B9C;font-size:14px;">Not now</div>
+  </div>
+</div></div>
+
+<!-- ══════════════ SCREEN G · MOM PROFILE SETUP ══════════════ -->
+<div class="phone"><div class="screen" style="background:#FAF8F5;">
+  <div class="status"><span>9:41</span><span style="letter-spacing:2px">▲ ▮</span></div>
+  <div class="safe" style="flex:1;display:flex;flex-direction:column;padding-top:8px;">
+    <div class="ob-progress"><div class="fill"></div></div>
+    <div class="wc-overline" style="margin-bottom:6px;">Setting up your journey</div>
+    <div class="wc-h1">Welcome, <em>Shelbi</em></div>
+    <div class="wc-sub">Three quick things so we can personalize your experience.</div>
+
+    <div style="margin-top:22px;" class="fieldwrap">
+      <div class="ob-label">WHEN IS YOUR DUE DATE?</div>
+      <div class="datebtn">
+        <svg viewBox="0 0 24 24"><rect x="5" y="6" width="14" height="13" rx="2.6"/><path d="M8.6 3.8 L8.6 7"/><path d="M15.4 3.8 L15.4 7"/><path d="M5.4 10.4 L18.6 10.4"/><path d="M9.6 13.6 L11 15 L14.4 14"/></svg>
+        <span>Select your due date</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;" class="fieldwrap">
+      <div class="ob-label">WHERE ARE YOU PLANNING TO BIRTH?</div>
+      <div class="chiprow">
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M5.2 19.6 L5.2 10.6 L12 4.8 L18.8 10.6 L18.8 19.6 C18.8 20.1 18.4 20.6 17.8 20.6 L6.2 20.6 C5.6 20.6 5.2 20.1 5.2 19.6 Z"/><path d="M10.2 20.4 L10.2 15.8 C10.2 15.2 10.7 15.4 11.3 15.4 L12.8 15.4 C13.4 15.4 14 15.8 14 15.8 L14 20.4"/></svg>
+          Home Birth</div>
+        <div class="chip sel"><svg viewBox="0 0 24 24"><rect x="6" y="4.6" width="12" height="15.8" rx="1.6"/><path d="M9.6 8 L14.4 8"/><path d="M9.6 11.2 L14.4 11.2"/><path d="M9.6 14.4 L12.4 14.4"/></svg>
+          Hospital</div>
+        <div class="chip"><svg viewBox="0 0 24 24"><path d="M10.4 3.8 L13.6 3.8 L13.6 7 L16.8 7 L16.8 10.2 L13.6 10.2 L13.6 13.4 L10.4 13.4 L10.4 10.2 L7.2 10.2 L7.2 7 L10.4 7 Z"/><rect x="5" y="13.4" width="14" height="6.8" rx="2"/></svg>
+          Birth Center</div>
+        <div class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.4"/><path d="M9.6 9.4 C9.9 8.2 10.7 8.6 12 8.6 C13.3 8.6 14.1 9.3 14.1 10.4 C14.1 12.6 12 12.2 12 13.8"/><circle cx="12" cy="16.2" r=".9" fill="#8A8B9C" stroke="none"/></svg>
+          Not sure yet</div>
+      </div>
+    </div>
+
+    <div class="fieldwrap" style="margin-bottom:0;">
+      <div class="ob-label">YOUR ZIP CODE</div>
+      <div class="input" style="max-width:170px;">
+        <svg viewBox="0 0 24 24"><path d="M12 20.6 C8 16.6 5.4 13.4 5.4 10.2 C5.4 7.2 8.1 4.8 12 4.8 C15.9 4.8 18.6 7.2 18.6 10.2 C18.6 13.4 16 16.6 12 20.6 Z"/><circle cx="12" cy="10.2" r="2.2"/></svg>
+        <span>84601</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;margin-top:7px;">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#5C6B54;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M5 12.6 L10 17.4 L19 7.8"/></svg>
+        <span style="font-size:11.5px;color:#5C6B54;font-weight:600;">Provo, UT</span>
+      </div>
+    </div>
+
+    <div style="flex:1;"></div>
+    <div class="btn-primary">Continue to Home</div>
+    <div style="height:10px;"></div>
+  </div>
+</div></div>
+
+</body>
+</html>

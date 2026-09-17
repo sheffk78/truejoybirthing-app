@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-16",
+  "chunk": "4 of N — onboarding walkthrough slides (3) + mom profile form; mockup packet, pre-Jeff review",
+  "screens": ["wt-slide1 (Create your Birth Plan)", "wt-slide2 (Build your Birth Team)", "wt-slide3 (Experience your Journey)", "mom-profile (due date / birth setting / zip)"],
+  "copy_source": "real app copy from src/components/OnboardingWalkthrough.tsx + (auth)/mom-onboarding.tsx",
+  "construction": "approved flow layout: photo 230px + fade covering photo only + content below (c3/c4 pattern)",
+  "verification": {
+    "script_metrics": "seam<60 (rows120-230), photo std>25, cream dev<6 (text-free strips), first-text>=246, bottom-fit",
+    "result": "ALL PASS — see VERIFY-chunk4.log",
+    "vision_review": "3 screens reviewed neutral: smooth dissolves, serif+rose accents correct, no overlaps; minor dot-row alignment note on slide 1 (subpixel, below action threshold)"
+  },
+  "files": ["auth-screens-4.html", "auth-screens-4-full.png", "p4-1-wt-slide1.png", "p4-2-wt-slide2.png", "p4-3-wt-slide3.png", "p4-4-mom-form.png"],
+  "posted_to_discord": true,
+  "jeff_approval": "PENDING",
+  "notes": "Chunk 5 (doula profile / plans-pricing / tutorial) built on same construction; see chunk5-STATUS.json"
+}

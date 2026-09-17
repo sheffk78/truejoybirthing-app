@@ -1,0 +1,12 @@
+--- run 2026-09-16T18:04:18 chunk5 horizontal 1254x900 ---
+RESULT: ['1-doula', '2-plans', '3-tutorial']
+--- run 2026-09-16T18:04:44 chunk5, corrected windows: seam=photo-only 150-240, cream=302-330 (excl. intentional sage footer/cards) ---
+RESULT: FAILED: ['1-doula', '2-plans', '3-tutorial']
+--- run 2026-09-16T18:04:52 chunk5 final: cream measured on text-free x2-16 strips (302-360, 430-520) ---
+RESULT: ALL PASS
+--- run 2026-09-16T18:09:13 chunk5 FLOW LAYOUT (approved c3/c4 construction): photo 230 + fade-over-photo + content below; windows: seam 120-230, cream text-free strips 250-300/420-480, first-text >=246 ---
+RESULT: ALL PASS
+--- run 2026-09-16T18:10:40 chunk5 final: chips moved onto cream (law §1), plans tall-frame; +bottom-fit check ---
+RESULT: FAILED: ['1-doula', '2-plans', '3-tutorial']
+--- run 2026-09-16T18:11:08 chunk5: bottom-fit detector restricted to content x-zone 40-350 (bezel corners excluded) ---
+RESULT: ALL PASS

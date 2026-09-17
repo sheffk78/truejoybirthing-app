@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="icons.css">
+<link rel="stylesheet" href="../type-system.css">
+<style>
+.tabbar { display:flex; justify-content:space-around; align-items:center; padding:8px 10px 12px; }
+.tb { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:9px; font-weight:700; letter-spacing:.4px; color:#9C9DA0; }
+.tb.on { color:#6E6C99; }
+.tbl { font-size:9px; }
+/* S5: app Birth Plan screen — type-system app scale (H1 26/H2 21/H3 17) + watercolor spot */
+.phone { height: auto; }
+.screen.tall { height: auto; min-height: 826px; }
+
+.bp-head { padding: 10px 20px 6px; }
+.a-overline { font-size:10px; letter-spacing:2.4px; text-transform:uppercase; font-weight:700; color:#A25C86; margin-bottom:5px; }
+.a-h1 { font-family:'Cormorant',serif; font-weight:700; font-size:26px; line-height:1.12; color:#2A2A2A; }
+.a-h1 em { font-style:normal; color:#B085A5; }
+.bp-sub { font-size:12.5px; color:#6A6B6C; margin-top:4px; font-weight:500; }
+
+/* progress card */
+.prog { margin:14px 20px 0; background:#fff; border:1px solid #EFE0EB; border-radius:20px; padding:15px 17px; }
+.prog .row { display:flex; justify-content:space-between; align-items:baseline; }
+.a-h2 { font-family:'Cormorant',serif; font-weight:700; font-size:21px; color:#2A2A2A; }
+.prog .pct { font-size:13px; font-weight:700; color:#6E6C99; }
+.pbar { height:8px; border-radius:999px; background:#F1F1FB; margin-top:9px; overflow:hidden; }
+.pbar > div { height:100%; width:67%; border-radius:999px; background:linear-gradient(90deg,#8E8CB5,#B085A5); }
+.prog .hint { font-size:11.5px; color:#6A6B6C; margin-top:7px; font-weight:500; }
+
+/* watercolor banner (labor preferences context) */
+.wash { margin:14px 20px 0; border-radius:20px; overflow:hidden; position:relative; }
+.wash img { width:100%; height:118px; object-fit:cover; display:block; }
+.wash .cap { position:absolute; left:0; right:0; bottom:0; padding:22px 16px 12px;
+  background:linear-gradient(180deg, rgba(42,42,42,0) 0%, rgba(42,42,42,.55) 100%); color:#fff;
+  font-size:12px; font-weight:600; }
+
+/* section rows */
+.sect { margin:16px 20px 0; }
+.sect .a-h2 { margin-bottom:2px; }
+.sect .sub { font-size:11.5px; color:#6A6B6C; font-weight:500; margin-bottom:10px; }
+.srow { background:#fff; border:1px solid #EFE0EB; border-radius:18px; padding:12px 14px; margin-bottom:8px;
+  display:flex; align-items:center; gap:12px; }
+.sico { width:34px; height:34px; border-radius:12px; background:#F1F1FB; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.sico.done { background:#E8EDE5; }
+.a-h3 { font-family:'Cormorant',serif; font-weight:600; font-size:17px; color:#2A2A2A; }
+.srow .mid { flex:1; min-width:0; }
+.smeta { display:flex; align-items:center; gap:6px; margin-top:2px; }
+.schip { font-size:9.5px; letter-spacing:.6px; font-weight:700; text-transform:uppercase; border-radius:999px; padding:2px 8px; }
+.schip.done { color:#5F7154; background:#E8EDE5; }
+.schip.wip  { color:#6E6C99; background:#F1F1FB; }
+.schip.todo { color:#8A8B8D; background:#F3F1EE; }
+.chev { color:#B9AFB8; font-size:16px; }
+
+/* download */
+.dl { margin:16px 20px 0; }
+.abtn { background:#6E6C99; color:#fff; text-align:center; font-size:13px; font-weight:600; border-radius:999px; padding:13px 18px; }
+.dl .hint { text-align:center; font-size:11px; color:#6A6B6C; margin-top:7px; font-weight:500; }
+.notice { display:flex; gap:9px; align-items:flex-start; background:#F1F1FB; border:1px solid #D5D3E8; border-radius:14px; padding:11px 13px; margin-top:10px; }
+.notice p { font-size:11.5px; line-height:1.5; color:#4B4B4B; font-weight:500; }
+.notice b { color:#3E3650; }
+
+.legend { max-width:560px; }
+</style></style>
+</head>
+<body class="canvas">
+
+<div class="canvas-head">
+  <div class="eyebrow">S5 · Mobile App · Birth Plan</div>
+  <h1>App <em>Birth Plan</em> — type system + custom icons</h1>
+  <div class="sub">H1 26 · H2 21 · H3 17 (Cormorant) · custom icon set · watercolor spot · real nav</div>
+</div>
+
+<div class="pair"><div class="col">
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+
+  <div class="bp-head">
+    <div class="a-overline">Your Plan</div>
+    <div class="a-h1"><em>Joyful</em> Birth Plan</div>
+    <div class="bp-sub">Your preferences, in your words — ready to share with your team</div>
+  </div>
+
+  <div class="prog">
+    <div class="row"><div class="a-h2">Your progress</div><div class="pct">67%</div></div>
+    <div class="pbar"><div></div></div>
+    <div class="hint">8 of 12 sections complete · saves as you go</div>
+  </div>
+
+  <div class="wash">
+    <img src="assets/breathing-surge-v2.png">
+    <div class="cap">Labor preferences — what you want, who you want near you</div>
+  </div>
+
+  <div class="sect">
+    <div class="a-h2">Birth plan sections</div>
+    <div class="sub">Tap each section to add your preferences</div>
+
+    <div class="srow"><div class="sico done"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20 C8.4 16.4 5.6 13.2 5.6 9.8 C5.6 6.9 7.8 4.8 10.4 4.8 C11 4.8 11.6 5 12 5.3 C12.4 5 13 4.8 13.6 4.8 C16.2 4.8 18.4 6.9 18.4 9.8 C18.4 13.2 15.6 16.4 12 20 Z" />
+<path d="M12 5.3 L12 9.4" />
+<path d="M12 9.4 C13.8 9.4 15 10.4 15 12" /></svg></div><div class="mid"><div class="a-h3">Labor preferences</div><div class="meta"><span class="schip done">Complete</span></div></div><div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6" />
+<path d="M8.4 12.2 L10.8 14.6 L15.6 9.6" /></svg></div></div>
+    <div class="srow"><div class="sico done"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6 C10 6.8 9 9 9 11.4 C9 14.4 10.3 16.4 12 16.4 C13.7 16.4 15 14.4 15 11.4 C15 9 14 6.8 12 4.6 Z" />
+<path d="M12 16.4 L12 19.4" />
+<path d="M9.6 18 C11.2 18.6 12.8 18.6 14.4 18" /></svg></div><div class="mid"><div class="a-h3">Pain management</div><div class="meta"><span class="schip done">Complete</span></div></div><div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6" />
+<path d="M8.4 12.2 L10.8 14.6 L15.6 9.6" /></svg></div></div>
+    <div class="srow"><div class="sico wip"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8.4 19.2 L8.4 10.6 C8.4 9.9 8.9 9.4 9.6 9.4 L14.4 9.4 C15.1 9.4 15.6 9.9 15.6 10.6 L15.6 19.2" />
+<path d="M8.4 12.6 L5.9 14.3 C5.3 14.7 5.2 15.5 5.6 16.1 L7.6 18.6" />
+<path d="M15.6 12.6 L18.1 14.3 C18.7 14.7 18.8 15.5 18.4 16.1 L16.4 18.6" />
+<path d="M12 9.4 C12 7.6 12.8 6.4 14.2 5.6" /></svg></div><div class="mid"><div class="a-h3">Support people</div><div class="meta"><span class="schip wip">In progress</span></div></div><div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.4 C15.9 4.4 19.6 7.7 19.6 12 C19.6 16.3 15.9 19.6 12 19.6" />
+<path d="M12 9.6 L12 13.4 L14.6 15.2" /></svg></div></div>
+    <div class="srow"><div class="sico wip"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5.4" y="4.6" width="13.2" height="15" rx="2.4" />
+<path d="M8.6 9.6 L10.8 11.8 L15.2 7.6" />
+<path d="M8.6 14.6 L15.4 14.6" />
+<path d="M8.6 16.8 L13 16.8" /></svg></div><div class="mid"><div class="a-h3">Environment &amp; music</div><div class="meta"><span class="schip wip">In progress</span></div></div><div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.4 C15.9 4.4 19.6 7.7 19.6 12 C19.6 16.3 15.9 19.6 12 19.6" />
+<path d="M12 9.6 L12 13.4 L14.6 15.2" /></svg></div></div>
+    <div class="srow"><div class="sico todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8A8B8D" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.2" r="6.4" />
+<path d="M9.9 5.6 C10.6 4.5 11.3 4 12 4 C12.7 4 13.4 4.5 14.1 5.6" />
+<path d="M9.8 12.4 C10.6 13 11.4 13.3 12 13.3 C12.6 13.3 13.4 13 14.2 12.4" />
+<path d="M9.6 15.6 C11.2 16.4 12.8 16.4 14.4 15.6" /></svg></div><div class="mid"><div class="a-h3">Newborn care</div><div class="meta"><span class="schip todo">Not started</span></div></div><div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6" /></svg></div></div>
+    <div class="srow"><div class="sico todo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8A8B8D" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.4 4.6 L14.6 4.6 L14.6 9.2 C14.6 11 15.6 12.2 15.6 14.4 C15.6 17.4 14.1 19.4 12 19.4 C9.9 19.4 8.4 17.4 8.4 14.4 C8.4 12.2 9.4 11 9.4 9.2 Z" />
+<path d="M9.4 6.8 L14.6 6.8" />
+<path d="M12 19.4 L12 21" /></svg></div><div class="mid"><div class="a-h3">Cesarean preferences</div><div class="meta"><span class="schip todo">Not started</span></div></div><div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6" /></svg></div></div>
+  </div>
+
+  <div class="dl">
+    <div class="abtn">Download Birth Plan PDF</div>
+    <div class="hint">Print it or share it — your doula and provider see updates automatically</div>
+    <div class="notice"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 10.6 L4.8 17.2 C4.8 18 5.4 18.6 6.2 18.6 L17.8 18.6 C18.6 18.6 19.2 18 19.2 17.2 L19.2 10.6" />
+<path d="M4.8 10.6 L10.6 14.2 C11.5 14.8 12.5 14.8 13.4 14.2 L19.2 10.6" />
+<path d="M12 9.2 C12 6.4 13.4 4.6 16 4.2" />
+<path d="M13.8 6.2 L16 4.2 L18.2 5.9" /></svg><p><b>Auto-share is on.</b> Your team gets a quiet update each time you finish a section — no extra sends needed.</p></div>
+  </div>
+
+  <div style="height:10px"></div>
+  <div class="tabbar"><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2" />
+<path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4" />
+<path d="M10.2 19.4 L10.2 15.6 C10.2 14.9 10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4" />
+<path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9" /></svg><div class="tbl">Home</div></div><div class="tb on"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z" />
+<path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2" />
+<path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4" />
+<path d="M8.8 15.6 C10 15.5 11 15.5 12 15.6" />
+<path d="M14.6 15.2 C15.4 14.4 16.2 14.3 16.6 14.9 C16.9 15.4 16.5 16 15.7 16.6" /></svg><div class="tbl">Birth Plan</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2" />
+<path d="M12 9.6 L12 13.4 L14.6 15.2" />
+<path d="M9.8 3.6 L14.2 3.6" />
+<path d="M12 3.6 L12 6.2" /></svg><div class="tbl">Timer</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z" />
+<path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3" />
+<path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4" />
+<path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3" /></svg><div class="tbl">My Team</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z" />
+<path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4" />
+<path d="M8.4 12.2 C9.4 12 10.4 12 11.4 12.2" /></svg><div class="tbl">Messages</div></div></div>
+</div></div>
+</div></div>
+
+<div class="legend">
+  <div class="h">Birth Plan v-new — what changed</div>
+  <ul>
+    <li><b>Type system:</b> H1 26 "Joyful Birth Plan" (rose accent) · H2 21 section titles · H3 17 row titles — same three tags as home + week-detail.</li>
+    <li><b>Custom icon set (new):</b> every section row carries its own hand-drawn glyph (12 distinct marks — no more all-hearts), matching the live app's SECTION_ICONS mapping 1:1. Tab bar icons are the same custom set at 26px — bigger than the live app's 24px Lucide, fixing "too small". Auto-share gets its own sprig-envelope mark, not a generic share glyph.</li>
+    <li><b>Watercolor spot:</b> breathing-rhythms art (approved Aug 14) sits over the labor-preferences context — one image, doing narrative work, not decoration.</li>
+    <li><b>Progress card</b> leads the screen (the live app buries it); lavender→rose fill ties to palette.</li>
+    <li><b>Tab bar matches real navigation</b> (Home · Birth Plan · Timer · My Team · Messages · Profile; Profile trimmed for width).</li>
+  </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @font-face { font-family:'Cormorant Garamond'; font-weight:700; src:url('fonts/CormorantGaramond_700Bold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant Garamond'; font-weight:600; src:url('fonts/CormorantGaramond_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Cormorant Garamond'; font-weight:500; src:url('fonts/CormorantGaramond_500Medium.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:400; src:url('fonts/SourceSans3_400Regular.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:400; font-style:italic; src:url('fonts/SourceSans3_400Regular_Italic.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:500; src:url('fonts/SourceSans3_500Medium.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:600; src:url('fonts/SourceSans3_600SemiBold.ttf') format('truetype'); }
+  @font-face { font-family:'Source Sans 3'; font-weight:700; src:url('fonts/SourceSans3_700Bold.ttf') format('truetype'); }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+  body { background:#3A3A3A; font-family:'Source Sans 3',sans-serif; }
+  .phone { width:390px; margin:28px auto; background:#FAF8F5; border-radius:40px; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.35); }
+  .screen { display:flex; flex-direction:column; position:relative; }
+  .status { display:flex; justify-content:space-between; align-items:center; padding:14px 26px 6px; font-weight:600; font-size:14px; color:#2A2A2A; }
+  .grain { position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.05; }
+  .card { background:#FDFCFA; border:1px solid #E6E4F4; border-radius:12px; padding:24px; margin-bottom:16px; }
+  .wpill { position:relative; width:44px; height:44px; border-radius:22px; background:#FDFCFA; border:1px solid #E6E4F4; display:flex; align-items:center; justify-content:center; margin-right:8px; flex-shrink:0; }
+  .wpill span { font-size:14px; font-weight:700; color:#2A2A2A; }
+  .wpill.current { border:2px solid #A8B5A0; }
+  .wpill.selected { background:#8E8CB5; border-color:#8E8CB5; }
+  .wpill.selected span { color:#fff; }
+</style>
+</head>
+<body>
+<svg class="grain" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+<div class="phone"><div class="screen">
+  <div class="status"><span>9:41</span><span style="letter-spacing:2px">􀙇 􀛨</span></div>
+
+  <!-- Header (styles.header) -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:#FDFCFA;border-bottom:1px solid #E6E4F4;">
+    <svg viewBox="0 0 24 24" style="width:24px;height:24px;padding:4px;stroke:#2A2A2A;fill:none;stroke-width:2;"><path d="M15 5l-7 7 7 7"/></svg>
+    <span style="font-family:'Cormorant Garamond';font-weight:700;font-size:18px;color:#2A2A2A;">Weekly Tips &amp; Affirmations</span>
+    <div style="width:32px;"></div>
+  </div>
+
+  <!-- Tab selector (styles.tabContainer) -->
+  <div style="display:flex;background:#FDFCFA;padding:0 16px 8px;">
+    <div style="flex:1;padding:8px 0;text-align:center;border-bottom:2px solid #8E8CB5;">
+      <span style="font-size:14px;font-weight:700;color:#8E8CB5;">Pregnancy (1-42)</span>
+    </div>
+    <div style="flex:1;padding:8px 0;text-align:center;border-bottom:2px solid transparent;">
+      <span style="font-size:14px;color:#6A6B6C;">Postpartum (1-6)</span>
+    </div>
+  </div>
+
+  <div style="padding:24px 24px 64px;">
+
+    <!-- Select Week (styles.sectionLabel) -->
+    <div style="font-size:13px;font-weight:700;color:#6A6B6C;margin-bottom:8px;">Select Week</div>
+    <div style="display:flex;overflow:hidden;margin-bottom:24px;">
+      <!-- Weeks 22-33 visible; completed weeks (<28) carry the sage dot marker -->
+      <div class="wpill"><span>26</span></div>
+      <div class="wpill"><span>27</span></div>
+      <div class="wpill current selected"><span>28</span></div>
+      <div class="wpill"><span>29</span></div>
+      <div class="wpill"><span>30</span></div>
+      <div class="wpill"><span>31</span></div>
+      <div class="wpill"><span>32</span></div>
+      <div class="wpill"><span>33</span></div>
+    </div>
+
+    <!-- Selected Week Header (styles.selectedWeekHeader) — chip is motif use #1 -->
+    <div style="display:flex;align-items:center;margin-bottom:24px;">
+      <span style="font-family:'Cormorant Garamond';font-weight:700;font-size:20px;color:#2A2A2A;white-space:nowrap;">Week 28, Day 3</span>
+      <div style="margin-left:8px;height:24px;background:#E8EDE5;padding:0 8px;border-radius:8px;display:flex;align-items:center;">
+        <span style="font-size:11px;font-weight:700;color:#6A6B6C;">Current</span>
+      </div>
+    </div>
+
+    <!-- Weekly Tip card (styles.contentCard, padding lg=24) -->
+    <div class="card">
+      <div style="margin-bottom:16px;"><div style="display:flex;align-items:center;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path d="M12 22 C 11.5 17, 12.5 10.5, 11.8 4.2" stroke="#A8B5A0" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M11.9 16.8 C 9.5 16.4, 8 14.9, 7.7 12.4 C 10.1 12.8, 11.7 14.4, 11.9 16.8 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4"/><path d="M12.2 12.2 C 14.5 11.8, 15.9 10.4, 16.2 8 C 13.9 8.4, 12.4 9.9, 12.2 12.2 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4"/><path d="M11.8 8.4 C 9.8 8, 8.6 6.8, 8.3 4.9 C 10.3 5.2, 11.6 6.4, 11.8 8.4 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3"/></svg><span style="font-size:16px;font-weight:700;color:#2A2A2A;margin-left:6px;">Weekly Tip</span></div></div>
+      <div style="font-size:15px;color:#6A6B6C;line-height:26px;">With the third trimester beginning and baby's lungs and brain rapidly maturing, make it a habit to notice your baby's movement pattern daily and learn what 'normal for your baby' feels like, because by 28 weeks more than 90% of babies could survive with advanced care if born early, and changes in movement are one of the first signs midwives and doctors want you to call about—not something to ignore.</div>
+    </div>
+
+    <!-- Weekly Affirmation card -->
+    <div class="card">
+      <div style="margin-bottom:16px;display:flex;align-items:center;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;flex-shrink:0;"><path d="M12 22 C 11.6 18, 12.4 14.5, 12 10.8" stroke="#A8B5A0" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M11.9 17.4 C 9.7 17, 8.3 15.6, 8 13.4 C 10.2 13.8, 11.7 15.2, 11.9 17.4 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4"/><path d="M12.1 14.6 C 14.3 14.2, 15.7 12.9, 16 10.7 C 13.8 11.1, 12.3 12.4, 12.1 14.6 Z" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.4"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(0 12 8)"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(72 12 8)"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(144 12 8)"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(216 12 8)"/><ellipse cx="12" cy="4.7" rx="2" ry="2.9" fill="#E8EDE5" stroke="#A8B5A0" stroke-width="1.3" transform="rotate(288 12 8)"/><circle cx="12" cy="8" r="1.5" fill="#A8B5A0"/></svg><span style="font-size:16px;font-weight:700;color:#2A2A2A;margin-left:6px;">Weekly Affirmation</span></div>
+      <div style="font-size:16px;color:#2A2A2A;line-height:28px;font-style:italic;">"I know my baby's normal patterns, and I trust myself to speak up if something doesn't feel right."</div>
+    </div>
+
+    <!-- Baby Development card (styles.babyDevCard — cream bg, padding 24) -->
+    <div class="card" style="background:#FAF8F5;">
+      <div style="margin-bottom:16px;"><span style="font-size:16px;font-weight:700;color:#2A2A2A;">Baby Development</span></div>
+      <div style="font-size:13px;font-weight:500;color:#B87AA0;margin-bottom:8px;">Week 28</div>
+      <img src="pregnancy-week-28-approved.webp" style="width:100%;height:260px;object-fit:contain;border-radius:12px;margin-bottom:16px;">
+      <div style="font-size:16px;font-weight:700;color:#2A2A2A;margin-bottom:4px;">Your baby this week</div>
+      <div style="font-size:15px;color:#6A6B6C;line-height:26px;">Your baby is starting to put on weight more quickly now. You may also notice stronger kicks and stretches, partly because your baby is bigger and partly because movement patterns are getting more organized.</div>
+    </div>
+
+    <!-- NOTE: empty-state sprig (motif use #2) only renders when a week has no content — not visible here -->
+
+  </div>
+</div></div>
+</body>
+</html>

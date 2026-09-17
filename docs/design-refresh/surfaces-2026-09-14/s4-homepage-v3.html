@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="../type-system.css">
+<style>
+/* S4 v3: homepage — type-system v1 + deeper illustration presence (week-series watercolors) */
+body.web { font-family:'SourceSans',sans-serif; }
+.wnav, .wsec, .wfoot { /* inherit common.css */ }
+
+/* HERO — illustration-led */
+.whero { grid-template-columns: 50% 50%; }
+.whero .imgwrap { padding:30px 30px 30px 0; }
+.heroart { width:100%; height:100%; min-height:460px; object-fit:cover; object-position:center 20%; border-radius:20px; box-shadow:0 14px 40px rgba(45,45,45,.12); }
+
+/* growth strip (sprout→blossom) with real week-series art, no jargon labels */
+.strip { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:26px; }
+.stage { background:#fff; border:1px solid #EDEAF6; border-radius:16px; padding:14px; text-align:center; }
+.stage img { width:100%; height:150px; object-fit:cover; object-position:center 25%; border-radius:10px; display:block; }
+.stage .wk { font-family:'Quicksand',sans-serif; font-weight:700; font-size:10.5px; letter-spacing:2px; color:#6E6C99; margin-top:10px; text-transform:uppercase; }
+
+/* feature cards with illustration chips */
+.cards3 .dcard .in { padding:18px 20px 20px; }
+.cards3 .ic { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; background:#F4F3FA; }
+.cards3 .ic img { width:100%; height:100%; object-fit:cover; border-radius:12px; }
+
+/* due-date calculator */
+.calc { background:#fff; border:1px solid #EBE7E1; border-radius:20px; padding:26px 28px; margin-top:24px; display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:center; }
+.calc .fld { border:1.5px solid #D5D3E8; border-radius:12px; padding:13px 16px; font-size:14.5px; font-weight:600; color:#2A2A2A; background:#fff; display:flex; justify-content:space-between; align-items:center; }
+.calc .fld .cal { width:16px; height:16px; border:1.6px solid #8E8CB5; border-radius:4px; position:relative; }
+.calc .fld .cal::before { content:''; position:absolute; top:-5px; left:3px; right:3px; height:2px; background:#8E8CB5; }
+.wks { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+.wk-chip { font-family:'Quicksand',sans-serif; font-size:12px; font-weight:600; color:#5A5885; background:#F4F3FA; border:1px solid #E0DEEF; border-radius:999px; padding:5px 12px; }
+.wk-chip.on { background:#EDEAF6; color:#4A4878; border-color:#B9B7D8; }
+
+/* quote block gets illustration presence */
+.quoteblock { display:grid; grid-template-columns: 92px 1fr; gap:22px; align-items:center; max-width:900px; margin:0 auto; }
+.quoteblock .qav { width:92px; height:92px; border-radius:50%; overflow:hidden; border:2px solid #EFD5E5; }
+.quoteblock .qav img { width:100%; height:100%; object-fit:cover; object-position:center 20%; }
+.quote { border-left:2px solid #D8A0C4; padding-left:20px; }
+.quote .q { font-family:'Cormorant',serif; font-weight:600; font-style:italic; font-size:24px; line-height:1.5; color:#2A2A2A; }
+.quote .who { font-size:13px; color:#6A6B6C; margin-top:10px; font-weight:600; }
+
+/* breathing guide band — edu-series illustration */
+.breath { display:grid; grid-template-columns: 240px 1fr; gap:30px; align-items:center; background:#fff; border:1px solid #EDEAF6; border-radius:20px; padding:24px 28px; margin-top:26px; }
+.breath img { width:100%; border-radius:14px; }
+.breath h3 { margin-bottom:6px; }
+</style>
+</head>
+<body class="web">
+
+<div class="weblabel">True Joy Birthing · Web Surface 4 of 4 · Homepage · Mockup v3 · type-system v1 · illustration-led</div>
+
+<div class="webpage">
+
+  <div class="wnav">
+    <img class="logo" src="assets/logo-mono.svg">
+    <div class="links">
+      <div>Birth Plan</div><div>Week by Week</div><div>Find a Doula</div><div>Courses</div>
+      <div class="cta">Get the App</div>
+    </div>
+  </div>
+
+  <!-- S4 HERO -->
+  <div class="whero">
+    <div class="txt">
+      <div class="eyebrow-web">
+        <svg width="26" height="14" viewBox="0 0 26 14"><g fill="none" stroke="#A25C86" stroke-width="1.3" stroke-linecap="round"><path d="M3 12 Q10 7 16 5 Q20 3.5 23 2"/><path d="M10 8.5 q-2.5-4 0-6.5 q3 2 .5 6.5" fill="#E8EDE5" stroke-width="1.1"/></g></svg>
+        Free · Built with doulas
+      </div>
+      <h1>Build your joyful birth plan — and <em>grow</em> through every week</h1>
+      <div class="lede">The week-by-week app that pairs your plan with real birth support — costs, hospitals, and doulas in your city, written by people who attend births for a living. <a href="#" style="color:#A25C86; font-weight:600;">Start with your due date</a> or <a href="#" style="color:#A25C86; font-weight:600;">browse your city's guide</a>.</div>
+      <div class="ctarow">
+        <div class="btn-web">Get the free app</div>
+        <div class="btn-web ghost">See the walkthrough</div>
+      </div>
+    </div>
+    <div class="imgwrap"><img class="heroart" src="assets/week28.webp"></div>
+  </div>
+
+  <!-- trust strip -->
+  <div class="wsec" style="padding:22px 56px; background:#fff; border-bottom:1px solid #EBE7E1;">
+    <div style="display:flex; gap:34px; justify-content:center; flex-wrap:wrap; font-size:12.5px; font-weight:600; color:#6E6C99;">
+      <span>✦ 187 city guides</span><span>✦ Doula-written content</span><span>✦ Medicaid-friendly</span><span>✦ Free forever</span>
+    </div>
+  </div>
+
+  <!-- FEATURE CARDS (illustration chips) -->
+  <div class="wsec alt">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#A25C86" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M9 7.5 q-2-3.5 0-6 q2.2 2 .7 6" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      What's inside
+    </div>
+    <h2>Everything you need, <em>nothing you don't</em></h2>
+    <div class="intro">Three things carry the app: your plan, your weeks, and your people. Each one gets its own space — and its own artwork from the week series.</div>
+    <div class="cards3">
+      <div class="dcard">
+        <img src="assets/week12.webp" style="height:150px;">
+        <div class="in">
+          <div class="nm">Birth plan, built in 20 minutes</div>
+          <div class="ds">A doula-crafted template walks you through every preference — pain management, support people, newborn care — and turns it into a one-page plan your care team actually reads.</div>
+        </div>
+      </div>
+      <div class="dcard">
+        <img src="assets/week22.webp" style="height:150px;">
+        <div class="in">
+          <div class="nm">Your weeks, illustrated</div>
+          <div class="ds">Every week from 4 to 40 gets a custom watercolor and plain-language guidance on your body, your baby, and what's worth asking your provider this month.</div>
+        </div>
+      </div>
+      <div class="dcard">
+        <img src="assets/week34.webp" style="height:150px;">
+        <div class="in">
+          <div class="nm">Real support, near you</div>
+          <div class="ds">Search doulas, midwives, and lactation consultants by city, service, and budget — with Medicaid-accepting providers flagged clearly, never buried.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DUE-DATE CALC → WEEK STRIP -->
+  <div class="wsec">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#5F7154" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M9 7.5 q-2-3.5.3-5.5 q2.2 2 .7 5.5" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      Find your week, starting today
+    </div>
+    <h2>The journey, <em>week by week</em></h2>
+    <div class="calc">
+      <div>
+        <h3>When is your baby due?</h3>
+        <div class="fld" style="margin-top:12px;">September 22, 2026 <div class="cal"></div></div>
+        <div class="btn-web" style="display:inline-block; margin-top:16px; font-size:14px;">Show my week →</div>
+      </div>
+      <div>
+        <div class="t-overline lav" style="margin-bottom:10px;">This week at a glance</div>
+        <div style="font-family:'Cormorant',serif; font-weight:700; font-size:26px; color:#2A2A2A;">Week 28</div>
+        <div class="t-body" style="margin-top:4px;">Third trimester begins. Baby's eyes open and lungs practice breathing — your body starts gearing up too.</div>
+        <div class="wks">
+          <div class="wk-chip">14</div><div class="wk-chip">18</div><div class="wk-chip">22</div><div class="wk-chip">26</div><div class="wk-chip on">28</div><div class="wk-chip">32</div><div class="wk-chip">36</div><div class="wk-chip">40</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4-stage strip: real week art, plain labels only (no growth jargon per Jeff 09-15) -->
+    <div class="strip">
+      <div class="stage"><img src="assets/week04.webp"><div class="wk">Weeks 4–13</div></div>
+      <div class="stage"><img src="assets/week16.webp"><div class="wk">Weeks 14–27</div></div>
+      <div class="stage"><img src="assets/week28.webp"><div class="wk">Weeks 28–36</div></div>
+      <div class="stage"><img src="assets/week38.webp"><div class="wk">Weeks 37–40</div></div>
+    </div>
+  </div>
+
+  <!-- CITY GRID -->
+  <div class="wsec alt">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#A25C86" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M9 7.5 q-2-3.5 0-6 q2.2 2 .7 6" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      Birth support in <em style="font-style:normal;">your city</em>
+    </div>
+    <h2>Birth support in <em>your city</em></h2>
+    <div class="intro">Local guides for the cities we know best — real costs, real hospitals, real providers. 187 cities and counting.</div>
+    <div class="city3">
+      <div class="ccard">
+        <div class="img"><img src="assets/austin-hero.webp"></div>
+        <div class="in"><div class="cn">Austin, TX</div><div class="cs">8 doulas listed · $1,000–3,000 typical</div></div>
+      </div>
+      <div class="ccard">
+        <div class="img" style="background:#EDEAF6; display:flex; align-items:center; justify-content:center;"><div style="font-family:'Cormorant',serif; font-weight:700; font-size:44px; color:#6E6C99;">D</div></div>
+        <div class="in"><div class="cn">Denver, CO</div><div class="cs">12 doulas listed · $1,200–3,500 typical</div></div>
+      </div>
+      <div class="ccard">
+        <div class="img" style="background:#FBEEF5; display:flex; align-items:center; justify-content:center;"><div style="font-family:'Cormorant',serif; font-weight:700; font-size:44px; color:#A25C86;">N</div></div>
+        <div class="in"><div class="cn">Nashville, TN</div><div class="cs">6 doulas listed · $900–2,400 typical</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUIDES + BREATHING ILLUSTRATION BAND -->
+  <div class="wsec">
+    <div class="kicker">
+      <svg width="24" height="13" viewBox="0 0 24 13"><g fill="none" stroke="#A25C86" stroke-width="1.2" stroke-linecap="round"><path d="M3 11 Q9 7 14 5.5 Q17 4.5 20 2.5"/><path d="M9 7.5 q-2-3.5 0-6 q2.2 2 .7 6" fill="#E8EDE5" stroke-width="1"/></g></svg>
+      Keep Learning
+    </div>
+    <h2>Guides for every <em>step of the way</em></h2>
+    <div class="intro">Deep, doula-written guides on every part of the journey — the reading list behind the app.</div>
+
+    <div class="breath">
+      <img src="assets/breathing-slow-v2.png">
+      <div>
+        <h3>Breathing rhythms for labor</h3>
+        <div class="t-body">Four breathing patterns from the app's labor course — slow breaths for early labor, surge breathing for active labor, and the transition set that gets you to pushing. Illustrated step by step in the app.</div>
+        <div class="btn-web ghost" style="display:inline-block; margin-top:12px; font-size:13px; padding:9px 20px;">Preview the labor course</div>
+      </div>
+    </div>
+
+    <div class="idx" style="margin-top:22px;">
+      <div class="row"><div class="t">Birth Plan Template</div><div class="d">Free template built by a doula. Download and fill it out.</div></div>
+      <div class="row"><div class="t">What Is a Doula</div><div class="d">What doulas do, how they help, and why families hire one.</div></div>
+      <div class="row"><div class="t">Doula Cost Guide</div><div class="d">What doulas cost, what's included, and insurance coverage.</div></div>
+      <div class="row"><div class="t">Medicaid Doula Coverage</div><div class="d">Which states cover doula services and how to access benefits.</div></div>
+    </div>
+  </div>
+
+  <!-- QUOTE with portrait illustration -->
+  <div class="wsec">
+    <div class="quoteblock">
+      <div class="qav"><img src="assets/week34.webp"></div>
+      <div class="quote">
+        <div class="q">"We came for the birth plan. We stayed because every week, something in the app grew right along with our baby."</div>
+        <div class="who">— Austin mom, week 34</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="wsec alt" style="padding-top:6px;">
+    <div class="ctacard">
+      <div>
+        <h3>Your joyful birth plan starts tonight</h3>
+        <p>Free, doula-crafted, about 20 minutes. Then every week after, the app grows with you — week by week, leaf by leaf.</p>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+          <div class="btn-web">Get the free app</div>
+          <div class="btn-web ghost">See the walkthrough</div>
+        </div>
+      </div>
+      <img src="assets/booklet-1.webp">
+    </div>
+  </div>
+
+  <div class="wfoot">
+    <img src="assets/logo-mono.svg">
+    <div>Judgment-free birth support · Built with doulas</div>
+  </div>
+
+</div>
+
+<div class="legend" style="max-width:1280px;">
+  <div class="h">Homepage v3 — what changed from v2 (Jeff 09-15)</div>
+  <ul>
+    <li><b>Type system v1 live:</b> every heading on this page renders from type-system.css (H1 52 / H2 34 / H3 22 Cormorant; Source Sans body). Same tags drive app mockups and, once approved, themeTokens in production. Spec: TYPE-SYSTEM.md.</li>
+    <li><b>Illustration hero:</b> photo replaced with the approved week-28 watercolor from the pregnancy series — the brand's art leads the page now, not stock photography.</li>
+    <li><b>More illustrations, no new jargon:</b> growth strip now shows real week art (4/16/28/38) with plain week-range labels only — "Budding/Leafing" stage names are gone per your 09-15 ruling; feature cards each carry a week-series image; testimonial gets a round watercolor portrait; breathing-guide band uses the Jeff-approved Aug-14 breathing illustration.</li>
+    <li><b>Kept from v2:</b> due-date calculator, city card grid, guide index, growth strip concept (labels now plain), CTA card, footer.</li>
+  </ul>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+
+--- run 2026-09-16T18:01:41 ---
+1-wt-slide1: seam 0.7 detail 56.4 cream 2.63 → PASS
+2-wt-slide2: seam 0.4 detail 65.8 cream 2.63 → PASS
+3-wt-slide3: seam 0.5 detail 44.0 cream 2.63 → PASS
+4-mom-form: seam 0.7 detail 65.9 cream 1.15 → PASS
+RESULT: ALL PASS

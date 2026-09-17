@@ -1,0 +1,23 @@
+PASS  feed-card has no book icon
+PASS  feed section header keeps book icon
+PASS  weekLeaf gone
+PASS  currentDot gone
+PASS  isCompleted flag gone
+PASS  title no-wrap
+PASS  title shrink allowed
+PASS  stageChip unified
+PASS  currentBadge unified
+PASS  badge text color = textSecondary
+PASS  home: Tip label has leafing sprig
+PASS  home: Affirmation label has blossom sprig
+PASS  weekly-tips: Tip label has leafing sprig
+PASS  weekly-tips: Affirmation label has blossom sprig
+PASS  home.tsx uses theme tokens only (no raw hex)
+PASS  weekly-tips.tsx uses theme tokens only (no raw hex)
+PASS  ProviderFeedCard.tsx uses theme tokens only (no raw hex)
+PASS  tsc: no new errors in changed files
+tsc total errors: 3 (pre-existing baseline: 3)
+--- hashes ---
+home.tsx: 3f8f126021c2
+weekly-tips.tsx: 01d69544e10f
+ProviderFeedCard.tsx: 2321fbe550d3

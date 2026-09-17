@@ -1,0 +1,16 @@
+{
+  "date": "2026-09-16",
+  "chunk": "5 of N — doula profile form + plans-pricing (pro) + tutorial first step; mockup packet, pre-Jeff review",
+  "screens": ["doula-profile (practice name / services chips / zip / accepting-new-clients)", "plans-pricing (free-forever + Pro annual $274.99 + Pro monthly $29.99, real backend pricing)", "tutorial-step1 (this week / birth plan / your team cards + growth sprigline)"],
+  "copy_source": "real copy from (auth)/doula-onboarding.tsx, app/plans-pricing.tsx, backend/routes/subscription.py (PRO_MONTHLY_PRICE 29.99, PRO_ANNUAL_PRICE 274.99, TRIAL 14d, feature lists)",
+  "construction": "approved flow layout (photo 230 + fade-over-photo + content below). Two violations caught by pixel+DOM verification and fixed before posting: (1) initial build had absolute content sheet inside 300px photo band — dark photos carried texture behind headings (margin std 13.7 vs approved 2.1); rebuilt to flow layout; (2) step chips were on the photo — moved in-flow onto cream (DESIGN-RULES §1: only status bar + back chip on photos).",
+  "verification": {
+    "script_metrics": "seam 3.1-6.0 (<60), photo std 55-77 (>25), cream dev 1.0-1.34 (<6), first-text 260 (>=246), bottom-fit all screens (last content 635-922 < h-14)",
+    "result": "ALL PASS — see VERIFY-chunk5.log (5 runs logged, one per fix iteration)",
+    "vision_review": "plans screen re-checked after fixes: bottom content fully in frame, hierarchy correct; DOM offsets confirm chip(250)/overline(287)/h1(306) all below 230px photo edge"
+  },
+  "files": ["auth-screens-5.html", "auth-screens-5-full.png", "p5-1-doula.png", "p5-2-plans.png", "p5-3-tutorial.png"],
+  "posted_to_discord": true,
+  "jeff_approval": "PENDING",
+  "notes": "Remaining after this: tutorial steps 2-3, verify-email polish check, then post-onboarding screens (home refresh, week-detail port, marketplace, provider dashboards)."
+}

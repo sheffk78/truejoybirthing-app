@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-15",
+  "kind": "AD-HOC verification (design-mockup static HTML renders; no canonical test suite for mockups). NOT a suite green.",
+  "script": "tempfile hermes-verify-tjb-thinned-mockups-*.py (in /private/var/folders/.../T), executed and deleted",
+  "file_hashes": {
+    "app-home-current.html": "16325f478dea",
+    "app-week-detail-current.html": "2ac9f8807dd1",
+    "VERIFICATION-2026-09-15.json": "61a2aaec8985"
+  },
+  "scope": "surfaces-2026-09-15-current/ mockup HTML + PNG renders (documentation renders of implemented app code; app source files unchanged this turn)",
+  "results": {
+    "assets_exist": "PASS — 8 refs (fonts/webp/png), 0 missing (3 missing Source Sans 3 weights found in round 1 and copied)",
+    "palette_tokens_only": "PASS — 0 off-palette hexes; no violet #7C3AED, no blues",
+    "home_motif_count": "PASS — 1 GrowthSprig (stage chip) + 1 GrowthDivider, exactly Jeff's thinned ruling",
+    "week_motif_count": "PASS — 1 GrowthSprig; completed-week markers are plain CSS sage dots, not plant art",
+    "no_repeated_sprig_paths": "PASS — budding-stem artwork appears once per screen, no same-stage side-by-side",
+    "font_faces": "PASS — 8 @font-face wired to real TTFs per file",
+    "png_home": "PASS — app-home-current.png 860x3262 rendered after font fix",
+    "png_week": "PASS — app-week-detail-current.png 860x3086 rendered after font fix"
+  },
+  "visual_qa": "vision review pass on both PNGs: serif headings + sans body confirmed, illustration renders, no broken images/overlap/clipping; italic affirmation correct",
+  "result": "ALL_PASS",
+  "note": "App source code (home.tsx, weekly-tips.tsx, GrowthSprig.tsx) was NOT modified this turn — verification covers the mockup renders only. App implementation verification: VERIFICATION-mobile-impl-2026-09-14.json. Not committed, not deployed."
+}

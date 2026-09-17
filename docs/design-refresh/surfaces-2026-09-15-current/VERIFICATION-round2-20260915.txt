@@ -1,0 +1,18 @@
+PASS  home chip: Week N + trimester, no jargon
+PASS  weekly-tips: stage chip + dead styles gone
+PASS  badge reads Current
+PASS  dead helpers removed from GrowthSprig
+PASS  trimesterForWeek present, cut points 13/27
+PASS  rail ref/state/onLayout wired
+PASS  stride matches weekButton metrics (44+8)
+PASS  center formula + guard + deps
+PASS  no book icon in feed card
+PASS  no weekLeaf/currentDot remnants
+PASS  title no-wrap kept
+PASS  Tip leafing + Affirmation blossom kept
+PASS  tsc: no new errors
+tsc total errors: 3 (pre-existing baseline: 3)
+--- hashes ---
+app/(mom)/home.tsx: 54f6f9b72ec3
+app/(mom)/weekly-tips.tsx: 21f3f752c6c2
+src/components/GrowthSprig.tsx: 9cef0abdd49a

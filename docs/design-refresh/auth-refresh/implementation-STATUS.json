@@ -1,0 +1,23 @@
+{
+  "job": "JOB-20260916-SCREENS-REMAINING",
+  "phase": "IMPLEMENTED",
+  "updated": "2026-09-16 19:52",
+  "approval": "Jeff approved implementation in Discord, msg 1549956764357894245 ('I approve. Please implement these.')",
+  "commit": "330b41bb + motif-fix commit (OnboardingWalkthrough wt-motif correction)",
+  "surfaces": {
+    "OnboardingWalkthrough": "audience widened + organic chip icons + CreamFade + approved CTAs",
+    "mom-onboarding": "approved mock rebuilt: organic setting icons, sprig zip, sage hints, Create my plan",
+    "doula-onboarding": "approved practice form: chip services, status cards, sprig zip, Create my profile",
+    "plans-pricing": "approved copy: Tools for your practice, RECOMMENDED, Pro \u2014 Annual/Monthly, trial disclaimer",
+    "AppTutorial + tutorialData": "Quick Tour rebuild: card stack, organic icons, Next/Skip tour, replay note; all tips converted to Title|Desc cards",
+    "welcome + getting-started": "audience copy widened (bonus sweep)"
+  },
+  "verification": [
+    "tsc --noEmit: 3 errors, all pre-existing/documented (contraction-timer, websocket)",
+    "expo export --platform web: exit 0, all routes incl. tutorial.html",
+    "grep sweep: zero 'doulas and midwives' narrowed copy anywhere in app/src",
+    "emoji sweep: none in onboarding surfaces (wellness mood faces pre-date this work, out of scope)",
+    "Ad-hoc verify script (hermes-verify-*.py): 12/12 green \u2014 tsc new-error gate, emoji/fleuron law, pin-usage law, motif fidelity, audience copy, Quick Tour markers, tutorial cards, icon router, vocabulary, CreamFade"
+  ],
+  "icon_law": "DESIGN-RULES \u00a74.0 \u2014 organic:* namespace in Icon.tsx is the only approved icon path for these screens"
+}
