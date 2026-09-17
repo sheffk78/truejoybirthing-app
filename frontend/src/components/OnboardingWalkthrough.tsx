@@ -15,7 +15,7 @@ import {
 import { Icon } from './Icon';
 import { SIZES, FONTS } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
-import { SprigTwo, DocList, TwoFigures, SAGE, ROSE, LAV } from './OrganicIcons';
+import { SprigOne, SprigTwo, DocList, TwoFigures, SAGE, ROSE, LAV } from './OrganicIcons';
 import CreamFade from './CreamFade';
 
 // ─────────────────────────────────────────────────────────────────────
@@ -277,11 +277,10 @@ export default function OnboardingWalkthrough({ role, onComplete }: OnboardingWa
               </Text>
             </View>
 
-            {/* Sprig divider */}
+            {/* Sprig motif — approved wt-motif (small sprig + faded two-lobe sprig) */}
             <View style={styles.sprigDivider}>
-              <View style={[styles.sprigLine, { backgroundColor: `${stepColor}55` }]} />
-              <Text style={[styles.sprigGlyph, { color: stepColor }]}>❧</Text>
-              <View style={[styles.sprigLine, { backgroundColor: `${stepColor}55` }]} />
+              <SprigOne size={15} color={SAGE} />
+              <SprigTwo size={15} color={SAGE} opacity={0.55} />
             </View>
 
             {/* Serif headline with accent tail */}
@@ -474,9 +473,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 1.5,
     borderRadius: 1,
-  },
-  sprigGlyph: {
-    fontSize: 14,
   },
   stepTitle: {
     fontSize: 30,
