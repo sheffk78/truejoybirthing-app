@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData, type BabyDevEntry } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
+import GrowthSprig from '../../src/components/GrowthSprig';
 
 interface WeekContent {
   week: number;
@@ -35,6 +36,8 @@ export default function WeeklyTipsScreen() {
   const [allContent, setAllContent] = useState<{ pregnancy: WeekContent[]; postpartum: WeekContent[] } | null>(null);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
   const [showPostpartum, setShowPostpartum] = useState(false);
+  const [railWidth, setRailWidth] = useState(0);
+  const weekRailRef = useRef<ScrollView | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -63,6 +66,16 @@ export default function WeeklyTipsScreen() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Auto-center the selected week pill in the rail (Jeff 09-15: selected pill must not
+  // start half-off-screen; it should sit centered in the visible rail on load and on change)
+  useEffect(() => {
+    if (!railWidth || selectedWeek == null) return;
+    // Pill metrics: 44px wide + SIZES.sm (8) margin-right; pills are 1-indexed (week N is pill N-1)
+    const pillStride = 44 + 8;
+    const targetX = Math.max(0, (selectedWeek - 1) * pillStride + 22 - railWidth / 2);
+    weekRailRef.current?.scrollTo({ x: targetX, animated: true });
+  }, [selectedWeek, railWidth, showPostpartum]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -140,9 +153,11 @@ export default function WeeklyTipsScreen() {
         <Text style={styles.sectionLabel}>Select Week</Text>
         <ScrollView
           horizontal
+          ref={weekRailRef}
           showsHorizontalScrollIndicator={false}
           style={styles.weekScrollContainer}
           contentContainerStyle={styles.weekScrollContent}
+          onLayout={(e) => setRailWidth(e.nativeEvent.layout.width)}
         >
           {(showPostpartum ? [1, 2, 3, 4, 5, 6] : Array.from({ length: 42 }, (_, i) => i + 1)).map((week) => {
             const isSelected = selectedWeek === week;
@@ -150,7 +165,6 @@ export default function WeeklyTipsScreen() {
               (showPostpartum && currentContent.is_postpartum && week === currentContent.postpartum_week) ||
               (!showPostpartum && !currentContent.is_postpartum && week === currentContent.week)
             );
-            
             return (
               <TouchableOpacity
                 key={week}
@@ -167,9 +181,6 @@ export default function WeeklyTipsScreen() {
                 ]}>
                   {week}
                 </Text>
-                {isCurrent && (
-                  <View style={styles.currentDot} />
-                )}
               </TouchableOpacity>
             );
           })}
@@ -184,7 +195,7 @@ export default function WeeklyTipsScreen() {
           </Text>
           {isCurrentWeek && (
             <View style={styles.currentBadge}>
-              <Text style={styles.currentBadgeText}>Your Current Week</Text>
+              <Text style={styles.currentBadgeText}>Current</Text>
             </View>
           )}
         </View>
@@ -193,9 +204,7 @@ export default function WeeklyTipsScreen() {
         {displayContent?.tip && (
           <Card style={styles.contentCard}>
             <View style={styles.contentHeader}>
-              <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
-                <Icon name="bulb" size={24} color={colors.primary} />
-              </View>
+              <GrowthSprig stage="leafing" size={18} stroke={colors.success} fill={colors.successLight} style={styles.cardSprig} />
               <Text style={styles.contentLabel}>Weekly Tip</Text>
             </View>
             <Text style={styles.tipText}>{displayContent.tip}</Text>
@@ -204,11 +213,9 @@ export default function WeeklyTipsScreen() {
 
         {/* Weekly Affirmation Card */}
         {displayContent?.affirmation && (
-          <Card style={[styles.contentCard, styles.affirmationCard]}>
+          <Card style={styles.contentCard}>
             <View style={styles.contentHeader}>
-              <View style={[styles.iconContainer, { backgroundColor: colors.roleDoula + '20' }]}>
-                <Icon name="heart" size={24} color={colors.roleDoula} />
-              </View>
+              <GrowthSprig stage="blossom" size={18} stroke={colors.success} fill={colors.successLight} style={styles.cardSprig} />
               <Text style={styles.contentLabel}>Weekly Affirmation</Text>
             </View>
             <Text style={styles.affirmationText}>"{displayContent.affirmation}"</Text>
@@ -230,9 +237,6 @@ export default function WeeklyTipsScreen() {
           return (
             <Card style={styles.babyDevCard}>
               <View style={styles.contentHeader}>
-                <View style={[styles.iconContainer, { backgroundColor: colors.secondary + '20' }]}>
-                  <Icon name="baby" size={24} color={colors.secondary} />
-                </View>
                 <Text style={styles.contentLabel}>Baby Development</Text>
               </View>
               
@@ -275,8 +279,8 @@ export default function WeeklyTipsScreen() {
 
         {!displayContent?.tip && !displayContent?.affirmation && (
           <View style={styles.emptyState}>
-            <Icon name="document-text-outline" size={48} color={colors.border} />
-            <Text style={styles.emptyText}>No content available for this week.</Text>
+            <GrowthSprig stage="sprout" size={44} stroke={colors.success} fill={colors.successLight} />
+            <Text style={styles.emptyText}>No content for this week yet — it's growing.</Text>
           </View>
         )}
       </ScrollView>
@@ -387,14 +391,6 @@ const getStyles = createThemedStyles((colors) => ({
   weekButtonTextSelected: {
     color: colors.white,
   },
-  currentDot: {
-    position: 'absolute',
-    bottom: -6,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.accent,
-  },
   selectedWeekHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -404,18 +400,25 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontXl,
     fontFamily: FONTS.heading,
     color: colors.text,
+    flexShrink: 1,
+    flexWrap: 'nowrap',
   },
   currentBadge: {
     marginLeft: SIZES.sm,
-    backgroundColor: colors.accent + '20',
+    backgroundColor: colors.successLight,
     paddingHorizontal: SIZES.sm,
-    paddingVertical: SIZES.xs / 2,
+    height: 24,
+    justifyContent: 'center',
     borderRadius: SIZES.radiusSm,
   },
   currentBadgeText: {
     fontSize: SIZES.fontXs,
     fontFamily: FONTS.bodyBold,
-    color: colors.accent,
+    color: colors.textSecondary,
+  },
+  // Growth-motif styles (design-refresh 2026-09-14; thinned per Jeff 09-14/09-15 — dot markers removed)
+  cardSprig: {
+    marginRight: SIZES.sm,
   },
   contentCard: {
     marginBottom: SIZES.md,
@@ -425,14 +428,6 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: SIZES.md,
-  },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SIZES.sm,
   },
   contentLabel: {
     fontSize: SIZES.fontLg,
@@ -444,11 +439,6 @@ const getStyles = createThemedStyles((colors) => ({
     fontFamily: FONTS.body,
     color: colors.textSecondary,
     lineHeight: 26,
-  },
-  affirmationCard: {
-    backgroundColor: colors.roleDoula + '08',
-    borderLeftWidth: 4,
-    borderLeftColor: colors.roleDoula,
   },
   affirmationText: {
     fontSize: SIZES.fontLg,

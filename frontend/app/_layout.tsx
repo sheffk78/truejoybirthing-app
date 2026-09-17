@@ -81,16 +81,10 @@ function ThemedLayout() {
       // Not authenticated, redirect to welcome
       router.replace('/(auth)/welcome');
     } else if (isAuthenticated && user) {
-      // Check if email needs verification (but allow Google users who are auto-verified)
-      if (!user.email_verified) {
-        const isOnVerifyEmail = currentScreen === 'verify-email';
-        if (!isOnVerifyEmail) {
-          router.replace({ pathname: '/(auth)/verify-email', params: { email: user.email } });
-          return;
-        }
-        // If already on verify-email screen, let them stay
-        return;
-      }
+      // Email verification is NOT a gate (Jeff decision 2026-09-16): unverified
+      // users onboard normally. Pros see a skippable verify step as the LAST
+      // onboarding step; unverified pros get a profile banner in-app instead.
+      // No redirect to verify-email from here.
 
       // Check if onboarding is needed
       if (!user.onboarding_completed) {

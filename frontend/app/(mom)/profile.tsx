@@ -539,6 +539,24 @@ export default function MomProfileScreen() {
             />
           </Card>
         )}
+
+        {/* Unverified email banner — subtle, never a gate (Jeff 2026-09-16).
+            Rare for moms (verification is pro-only), covers legacy unverified accounts. */}
+        {user && !user.email_verified && (
+          <TouchableOpacity
+            style={styles.unverifiedBanner}
+            onPress={() => router.push({ pathname: '/(auth)/verify-email', params: { email: user.email } } as any)}
+          >
+            <Icon name="mail-outline" size={18} color={colors.primary} />
+            <View style={{ flex: 1, marginLeft: SIZES.sm }}>
+              <Text style={styles.unverifiedTitle}>Verify your email</Text>
+              <Text style={styles.unverifiedBody}>
+                Keeps your account recoverable if you ever lose your login.
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size={18} color={colors.textSecondary} />
+          </TouchableOpacity>
+        )}
         
         {/* Header */}
         <View style={styles.header}>
@@ -940,6 +958,27 @@ const getStyles = createThemedStyles((colors) => ({
   scrollContent: {
     padding: SIZES.md,
     paddingBottom: SIZES.xxl,
+  },
+  // Unverified-email banner (sage soft-note per DESIGN-RULES.md)
+  unverifiedBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: SIZES.md,
+    borderRadius: 14,
+    backgroundColor: 'rgba(163,178,152,0.14)',
+    marginBottom: SIZES.md,
+  },
+  unverifiedTitle: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
+    color: colors.text,
+    marginBottom: 2,
+  },
+  unverifiedBody: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    lineHeight: 17,
   },
   header: {
     alignItems: 'center',

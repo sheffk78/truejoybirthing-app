@@ -128,10 +128,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         throw new Error(error.detail || 'Registration failed');
       }
       
-      // Registration now returns without a session — user must verify email first.
-      // No session token to save, no user state to set.
-      // The signup screen will navigate to the verification screen.
-      set({ isLoading: false });
+      // Backend now grants an IMMEDIATE session at register (email verification
+      // is no longer a gate — Jeff 2026-09-16). Save it exactly like login does.
+      const data = await response.json();
+      
+      await SecureStore.setItemAsync('session_token', data.session_token);
+      
+      set({
+        user: {
+          user_id: data.user_id,
+          email: data.email,
+          full_name: data.full_name,
+          role: data.role,
+          picture: undefined,
+          onboarding_completed: data.onboarding_completed ?? false,
+          tutorial_completed: data.tutorial_completed ?? false,
+          email_verified: data.email_verified ?? false,
+        },
+        sessionToken: data.session_token,
+        isAuthenticated: true,
+        isLoading: false,
+      });
     } catch (error) {
       set({ isLoading: false });
       throw error;

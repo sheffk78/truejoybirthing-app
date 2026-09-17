@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
+import { TjbIcon } from '../../src/components/TjbIcon';
 import { useColors, SIZES } from '../../src/hooks/useThemedStyles';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,15 +14,17 @@ function TabIconWithBadge({
   color,
   size,
   showDot,
+  tjb,
 }: {
   name: any;
   color: string;
   size: number;
   showDot: boolean;
+  tjb?: boolean;
 }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Icon name={name} size={size} color={color} />
+      {tjb ? <TjbIcon name={name} size={size} color={color} /> : <Icon name={name} size={size} color={color} />}
       {showDot && (
         <View
           style={{
@@ -84,7 +87,7 @@ export default function MomLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <TabIconWithBadge name="home-outline" color={color} size={size} showDot={unreadNotifications > 0} />
+            <TabIconWithBadge name="tjb-home" color={color} size={26} showDot={unreadNotifications > 0} tjb />
           ),
         }}
         listeners={{ tabPress: () => clearBadge('unreadNotifications') }}
@@ -94,7 +97,7 @@ export default function MomLayout() {
         options={{
           title: 'Birth Plan',
           tabBarIcon: ({ color, size }) => (
-            <TabIconWithBadge name="document-text-outline" color={color} size={size} showDot={pendingBirthPlanShares > 0} />
+            <TabIconWithBadge name="tjb-birthplan" color={color} size={26} showDot={pendingBirthPlanShares > 0} tjb />
           ),
         }}
         listeners={{ tabPress: () => clearBadge('pendingBirthPlanShares') }}
@@ -104,7 +107,7 @@ export default function MomLayout() {
         options={{
           title: 'Timer',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="stopwatch-outline" size={size} color={color} />
+            <TjbIcon name="tjb-timer" size={26} color={color} />
           ),
         }}
       />
@@ -125,7 +128,7 @@ export default function MomLayout() {
         options={{
           title: 'My Team',
           tabBarIcon: ({ color, size }) => (
-            <TabIconWithBadge name="people-outline" color={color} size={size} showDot={newTeamMembers > 0} />
+            <TabIconWithBadge name="tjb-team" color={color} size={26} showDot={newTeamMembers > 0} tjb />
           ),
         }}
         listeners={{ tabPress: () => clearBadge('newTeamMembers') }}
@@ -141,7 +144,7 @@ export default function MomLayout() {
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => (
-            <TabIconWithBadge name="mail-outline" color={color} size={size} showDot={unreadMessages > 0} />
+            <TabIconWithBadge name="tjb-messages" color={color} size={26} showDot={unreadMessages > 0} tjb />
           ),
         }}
         listeners={{ tabPress: () => clearBadge('unreadMessages') }}
@@ -151,7 +154,7 @@ export default function MomLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="person-circle-outline" size={size} color={color} />
+            <TjbIcon name="tjb-profile" size={26} color={color} />
           ),
         }}
       />

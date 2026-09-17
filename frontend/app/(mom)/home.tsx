@@ -22,6 +22,7 @@ import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
+import GrowthSprig, { trimesterForWeek, GrowthDivider } from '../../src/components/GrowthSprig';
 
 interface PendingContract {
   contract_id: string;
@@ -198,10 +199,12 @@ export default function MomHomeScreen() {
             <View>
               <Text style={[styles.greeting, { color: colors.text }]}>Hello, {firstName}</Text>
               {timeline?.current_week && (
-                <Text style={[styles.weekText, { color: colors.textSecondary }]}>
-                  {timeline.current_week} weeks{' '}
-                  {timeline.current_day ?? 0} days pregnant
-                </Text>
+                <View style={styles.weekRailRow}>
+                  <Text style={[styles.weekText, { color: colors.textSecondary }]}>
+                    {timeline.current_week} weeks{' '}
+                    {timeline.current_day ?? 0} days pregnant
+                  </Text>
+                </View>
               )}
             </View>
           </View>
@@ -267,9 +270,6 @@ export default function MomHomeScreen() {
           return (
             <Card style={styles.babyDevCard}>
               <View style={styles.weeklyHeader}>
-                <View style={[styles.weeklyIconContainer, { backgroundColor: colors.secondary + '20' }]}>
-                  <Icon name="baby" size={22} color={colors.secondary} />
-                </View>
                 <View style={styles.weeklyHeaderText}>
                   <Text style={styles.weeklyLabel}>Baby Development</Text>
                   <Text style={[styles.weeklyWeek, { color: colors.secondary }]}>
@@ -278,6 +278,11 @@ export default function MomHomeScreen() {
                 </View>
               </View>
               
+              {/* Week chip — plain week + trimester wording (Jeff 09-15: "Budding stage" jargon removed) */}
+              <View style={styles.stageChip}>
+                <Text style={styles.stageChipText}>Week {currentWeek} · {trimesterForWeek(currentWeek)}</Text>
+              </View>
+
               {/* Baby development illustration */}
               <View style={styles.babyDevImageContainer}>
                 {hasPregnancyIllustration(currentWeek) ? (
@@ -321,15 +326,17 @@ export default function MomHomeScreen() {
           );
         })()}
         
+        <GrowthDivider stroke={colors.success} fill={colors.successLight} style={styles.growthDivider} />
+
         {/* Weekly Tip Card */}
         {weeklyContent?.tip && (
           <Card style={styles.weeklyCard}>
             <View style={styles.weeklyHeader}>
-              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.primary + '20' }]}>
-                <Icon name="bulb" size={22} color={colors.primary} />
-              </View>
               <View style={styles.weeklyHeaderText}>
-                <Text style={styles.weeklyLabel}>Weekly Tip</Text>
+                <View style={styles.sprigLabelRow}>
+                  <GrowthSprig stage="leafing" size={16} stroke={colors.success} fill={colors.successLight} style={styles.cardSprig} />
+                  <Text style={styles.weeklyLabel}>Weekly Tip</Text>
+                </View>
                 <Text style={styles.weeklyWeek}>
                   {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
                 </Text>
@@ -350,13 +357,13 @@ export default function MomHomeScreen() {
         
         {/* Weekly Affirmation Card */}
         {weeklyContent?.affirmation && (
-          <Card style={[styles.weeklyCard, styles.affirmationCard]}>
+          <Card style={styles.weeklyCard}>
             <View style={styles.weeklyHeader}>
-              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.roleDoula + '20' }]}>
-                <Icon name="heart" size={22} color={colors.roleDoula} />
-              </View>
               <View style={styles.weeklyHeaderText}>
-                <Text style={styles.weeklyLabel}>Weekly Affirmation</Text>
+                <View style={styles.sprigLabelRow}>
+                  <GrowthSprig stage="blossom" size={16} stroke={colors.success} fill={colors.successLight} style={styles.cardSprig} />
+                  <Text style={styles.weeklyLabel}>Weekly Affirmation</Text>
+                </View>
                 <Text style={styles.weeklyWeek}>
                   {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
                 </Text>
@@ -619,6 +626,41 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.text,
     marginBottom: SIZES.md,
   },
+  // Growth-motif styles (design-refresh 2026-09-14; motif thinned 09-14 PM per Jeff —
+  // motif only on the stage chip + one divider; card headers are typographic now)
+  weekRailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  growthDivider: {
+    alignSelf: 'center',
+    marginVertical: SIZES.xs,
+  },
+  // Sprig-on-card-label styles (Jeff 09-15: distinct sprig per card label so Tip vs
+  // Affirmation read at a glance; sprigs kept off everything else to avoid redundancy)
+  sprigLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cardSprig: {
+    marginRight: SIZES.sm,
+  },
+  stageChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: colors.successLight,
+    borderRadius: SIZES.radiusSm,
+    paddingHorizontal: SIZES.sm,
+    paddingVertical: SIZES.xs / 2,
+    marginBottom: SIZES.sm,
+  },
+  stageChipText: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+    color: colors.textSecondary,
+    marginLeft: 6,
+  },
   actionsGrid: {
     flexDirection: 'row',
     marginHorizontal: -SIZES.xs,
@@ -657,9 +699,6 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     marginBottom: SIZES.sm,
   },
-  weeklyIconContainer: {
-    marginRight: SIZES.sm,
-  },
   weeklyHeaderText: {
     flex: 1,
   },
@@ -688,11 +727,6 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyMedium,
     color: colors.primary,
-  },
-  affirmationCard: {
-    backgroundColor: colors.roleDoula + '08',
-    borderLeftWidth: 3,
-    borderLeftColor: colors.roleDoula,
   },
   affirmationContent: {
     fontSize: SIZES.fontMd,

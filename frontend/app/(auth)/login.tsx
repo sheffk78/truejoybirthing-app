@@ -1,536 +1,362 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  ScrollView,
   Image,
-  ImageBackground,
-  Alert,
-  KeyboardAvoidingView,
+  TextInput,
+  Linking,
   Platform,
   Pressable,
-  Dimensions,
-  useWindowDimensions,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Animated,
+  Easing,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon } from '../../src/components/Icon';
-import Button from '../../src/components/Button';
-import Input from '../../src/components/Input';
-import { useAuthStore } from '../../src/store/authStore';
 import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { useAuthStore } from '../../src/store/authStore';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+/**
+ * Log In — implements the approved mockup (design-refresh/auth-refresh,
+ * SCREEN LOG IN, approved 2026-09-16):
+ *   • Icon mark on cream canvas (natural square, ring detail — no wordmark)
+ *   • Serif headline "Welcome back" + italic rose accent ("again.")
+ *   • Floating-label fields (email, password w/ eye toggle)
+ *   • Inline "Forgot password?" link, right-aligned under password
+ *   • Primary lavender button + "New here? Create an account" swap link
+ *   • "See how it works" preview link → public tutorial preview route
+ *   • Entrance: staggered calm fades (doctrine 2026-09-16); press 0.97;
+ *     inline error shake-free — soft inline banner, no spinners on screen
+ */
 
-// Mother holding newborn - intimate moment
-const LOGIN_IMAGE = require('../../assets/images/hero-skin-to-skin.jpg');
+const STAGGER_MS = 90;
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, isLoading } = useAuthStore();
-  const { width } = useWindowDimensions();
-  const isWideScreen = width > 768;
   const colors = useColors();
   const styles = getStyles(colors);
-  
+
+  const { login, isLoading } = useAuthStore();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  
-  const validate = () => {
-    const newErrors: { email?: string; password?: string } = {};
-    
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-    
-    if (!password) {
-      newErrors.password = 'Password is required';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  
+  const [showPassword, setShowPassword] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  // ── Staggered entrance ────────────────────────────────────────────────
+  const oLogo = useRef(new Animated.Value(0)).current;
+  const oHead = useRef(new Animated.Value(0)).current;
+  const oForm = useRef(new Animated.Value(0)).current;
+  const oFoot = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const rise = (v: Animated.Value, delay: number) =>
+      Animated.timing(v, {
+        toValue: 1,
+        duration: 420,
+        delay,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      });
+    const a1 = rise(oLogo, 60);
+    const a2 = rise(oHead, 60 + STAGGER_MS);
+    const a3 = rise(oForm, 60 + STAGGER_MS * 2);
+    const a4 = rise(oFoot, 60 + STAGGER_MS * 3);
+    a1.start(); a2.start(); a3.start(); a4.start();
+    return () => { a1.stop(); a2.stop(); a3.stop(); a4.stop(); };
+  }, [oLogo, oHead, oForm, oFoot]);
+
   const handleLogin = async () => {
-    if (!validate()) return;
-    
+    if (!email.trim() || !password || isLoading) return;
+    setAuthError(null);
     try {
-      await login(email, password);
-    } catch (error: any) {
-      // If email not verified, redirect to verification screen
-      if (error.message === 'EMAIL_NOT_VERIFIED') {
-        router.replace({ pathname: '/(auth)/verify-email', params: { email: email.trim().toLowerCase() } });
-        return;
-      }
-      if (Platform.OS === 'web') {
-        window.alert(error.message || 'Please check your credentials and try again.');
-      } else {
-        Alert.alert('Login Failed', error.message || 'Please check your credentials and try again.');
-      }
+      await login(email.trim(), password);
+      // Root guard forwards by auth state (onboarding or dashboard).
+      // No verify-email fallback — verification is no longer a gate (2026-09-16).
+    } catch (e: any) {
+      setAuthError(e?.message || 'Unable to log in. Please try again.');
     }
   };
-  
-  // Wide screen: Split layout
-  if (isWideScreen) {
-    return (
-      <View style={[styles.splitContainer, { backgroundColor: colors.background }]}>
-        {/* Left side - Image */}
-        <View style={styles.imageSection}>
-          <ImageBackground
-            source={LOGIN_IMAGE}
-            style={styles.imageBg}
-            resizeMode="cover"
-          >
-            <View style={[styles.imageOverlay, { backgroundColor: 'rgba(159, 131, 182, 0.35)' }]}>
-              <SafeAreaView style={styles.imageContent}>
-                <Image source={BRAND.logoIconPng} style={styles.logoIcon} resizeMode="contain" />
-                <View style={styles.imageTextContainer}>
-                  <Text style={styles.imageHeadline}>
-                    Welcome back to your birth journey
-                  </Text>
-                  <Text style={styles.imageSubtext}>
-                    Your team is waiting for you
-                  </Text>
-                </View>
-              </SafeAreaView>
-            </View>
-          </ImageBackground>
-        </View>
-        
-        {/* Right side - Form */}
-        <View style={styles.formSection}>
-          <SafeAreaView style={styles.formSafeArea}>
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              style={styles.formKeyboard}
-            >
-              <ScrollView
-                contentContainerStyle={styles.splitFormContent}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-              >
-                <View style={styles.formInner}>
-                  <Text style={styles.formTitle}>Log In</Text>
-                  <Text style={styles.formSubtitle}>Enter your credentials to continue</Text>
-                  
-                  <View style={styles.inputsContainer}>
-                    <Input
-                      label="Email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChangeText={setEmail}
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      autoComplete="email"
-                      textContentType="username"
-                      leftIcon="mail-outline"
-                      error={errors.email}
-                    />
-                    
-                    <Input
-                      label="Password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChangeText={setPassword}
-                      secureTextEntry
-                      autoCapitalize="none"
-                      autoComplete="current-password"
-                      textContentType="password"
-                      leftIcon="lock-closed-outline"
-                      error={errors.password}
-                    />
-                    
-                    <Pressable
-                      style={styles.forgotPassword}
-                      onPress={() => router.push('/(auth)/forgot-password')}
-                      // @ts-ignore
-                      onClick={Platform.OS === 'web' ? () => router.push('/(auth)/forgot-password') : undefined}
-                    >
-                      <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-                    </Pressable>
 
-                    <Button
-                      title="Log In"
-                      onPress={handleLogin}
-                      loading={isLoading}
-                      fullWidth
-                      style={styles.loginButton}
-                      testID="login-submit-btn"
-                    />
-                    {/* App Store rating — real data, not inflated */}
-                    <View style={styles.appStoreBadge}>
-                      <View style={styles.starsRow}>
-                        <Icon name="star" size={12} color={colors.secondary} />
-                        <Icon name="star" size={12} color={colors.secondary} />
-                        <Icon name="star" size={12} color={colors.secondary} />
-                        <Icon name="star" size={12} color={colors.secondary} />
-                        <Icon name="star" size={12} color={colors.secondary} />
-                      </View>
-                      <Text style={styles.appStoreRatingText}>5.0 · 2 ratings on App Store</Text>
-                    </View>
-                  </View>
+  const handleForgotPassword = () => {
+    router.push('/(auth)/forgot-password');
+  };
 
-                  <View style={styles.signupSection}>
-                    <Text style={styles.signupText}>Don't have an account? </Text>
-                    <Pressable
-                      onPress={() => router.push('/(auth)/signup')}
-                      // @ts-ignore
-                      onClick={Platform.OS === 'web' ? () => router.push('/(auth)/signup') : undefined}
-                    >
-                      <Text style={styles.signupLink}>Sign Up</Text>
-                    </Pressable>
-                  </View>
-
-                  {/* See how it works — preview before signup */}
-                  <Pressable
-                    style={styles.seeHowContainer}
-                    onPress={() => router.push('/tutorial?role=MOM&preview=true')}
-                    // @ts-ignore
-                    onClick={Platform.OS === 'web' ? () => router.push('/tutorial?role=MOM&preview=true') : undefined}
-                  >
-                    <Text style={styles.seeHowLink}>See how it works</Text>
-                  </Pressable>
-                </View>
-              </ScrollView>
-            </KeyboardAvoidingView>
-          </SafeAreaView>
-        </View>
-      </View>
-    );
-  }
-  
-  // Narrow screen: Stacked layout with background image
   return (
-    <View style={styles.container}>
-      {/* Background Image */}
-      <ImageBackground
-        source={LOGIN_IMAGE}
-        style={styles.mobileBg}
-        resizeMode="cover"
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        style={[styles.flex1, { backgroundColor: colors.background }]}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={[styles.mobileGradient, { backgroundColor: 'rgba(159, 131, 182, 0.35)' }]} />
-      </ImageBackground>
-      
-      <SafeAreaView style={styles.mobileSafeArea} edges={['top', 'bottom']}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardView}
-        >
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            {/* Header */}
-            <Pressable
-              style={styles.backButton}
-              onPress={() => router.back()}
-              // @ts-ignore
-              onClick={Platform.OS === 'web' ? () => router.back() : undefined}
-            >
-              <Icon name="arrow-back" size={24} color={colors.text} />
-            </Pressable>
-            
-            {/* Spacer for image */}
-            <View style={styles.mobileImageSpacer} />
-            
-            {/* Form Card */}
-            <View style={styles.mobileFormCard}>
-              <Text style={styles.title}>Welcome Back</Text>
-              <Text style={styles.subtitle}>Log in to continue your journey</Text>
-              
-              <View style={styles.mobileInputs}>
-                <Input
-                  label="Email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  textContentType="username"
-                  leftIcon="mail-outline"
-                  error={errors.email}
-                />
-                
-                <Input
-                  label="Password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                  autoCapitalize="none"
-                  autoComplete="current-password"
-                  textContentType="password"
-                  leftIcon="lock-closed-outline"
-                  error={errors.password}
-                />
-                
-                <Pressable
-                  style={styles.forgotPassword}
-                  onPress={() => router.push('/(auth)/forgot-password')}
-                  // @ts-ignore
-                  onClick={Platform.OS === 'web' ? () => router.push('/(auth)/forgot-password') : undefined}
-                >
-                  <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-                </Pressable>
-                
-                <Button
-                  title="Log In"
-                  onPress={handleLogin}
-                  loading={isLoading}
-                  fullWidth
-                  style={styles.loginButton}
-                  testID="login-submit-btn"
-                />
-                {/* App Store rating — real data, not inflated */}
-                <View style={styles.appStoreBadge}>
-                  <View style={styles.starsRow}>
-                    <Icon name="star" size={12} color={colors.secondary} />
-                    <Icon name="star" size={12} color={colors.secondary} />
-                    <Icon name="star" size={12} color={colors.secondary} />
-                    <Icon name="star" size={12} color={colors.secondary} />
-                    <Icon name="star" size={12} color={colors.secondary} />
-                  </View>
-                  <Text style={styles.appStoreRatingText}>5.0 · 2 ratings on App Store</Text>
-                </View>
-              </View>
-              
-              <View style={styles.signupSection}>
-                <Text style={styles.signupText}>Don't have an account? </Text>
-                <Pressable 
-                  onPress={() => router.push('/(auth)/signup')}
-                  // @ts-ignore
-                  onClick={Platform.OS === 'web' ? () => router.push('/(auth)/signup') : undefined}
-                >
-                  <Text style={styles.signupLink}>Sign Up</Text>
-                </Pressable>
-              </View>
+        <SafeAreaView style={styles.flex1} edges={['top', 'bottom']}>
+          {/* Icon mark */}
+          <Animated.View style={[styles.logoContainer, { opacity: oLogo as any }]}>
+            <View style={[styles.logoRing, { borderColor: colors.borderLight }]}>
+              <Image source={BRAND.logoIconPng} style={styles.logoIcon} resizeMode="contain" />
+            </View>
+          </Animated.View>
 
-              {/* See how it works — preview before signup */}
+          {/* Headline */}
+          <Animated.View style={[styles.headBlock, { opacity: oHead as any }]}>
+            <Text style={[styles.headline, { color: colors.text }]}>
+              Welcome back,{'\n'}
+              <Text style={[styles.headlineAccent, { color: colors._theme.accent.secondaryDark }]}>
+                friend.
+              </Text>
+            </Text>
+            <Text style={[styles.subhead, { color: colors.textSecondary }]}>
+              Log in to continue your journey.
+            </Text>
+          </Animated.View>
+
+          {/* Form */}
+          <Animated.View style={[styles.formBlock, { opacity: oForm as any }]}>
+            {authError ? (
+              <View style={[styles.errorBanner, { backgroundColor: colors.errorLight }]}>
+                <Icon name="alert-circle" size={16} color={colors.error} />
+                <Text style={[styles.errorText, { color: colors.error }]}>{authError}</Text>
+              </View>
+            ) : null}
+
+            {/* Email */}
+            <View
+              style={[
+                styles.field,
+                { borderColor: focused === 'email' ? colors.primary : colors.borderLight, backgroundColor: colors.surface },
+              ]}
+            >
+              <Icon name="mail" size={18} color={focused === 'email' ? colors.primary : colors.textLight} />
+              <TextInput
+                style={[styles.input, { color: colors.text }]}
+                placeholder="Email"
+                placeholderTextColor={colors.textLight}
+                value={email}
+                onChangeText={setEmail}
+                onFocus={() => setFocused('email')}
+                onBlur={() => setFocused(null)}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                textContentType="emailAddress"
+              />
+            </View>
+
+            {/* Password */}
+            <View
+              style={[
+                styles.field,
+                { borderColor: focused === 'password' ? colors.primary : colors.borderLight, backgroundColor: colors.surface },
+              ]}
+            >
+              <Icon name="lock-closed" size={18} color={focused === 'password' ? colors.primary : colors.textLight} />
+              <TextInput
+                style={[styles.input, { color: colors.text }]}
+                placeholder="Password"
+                placeholderTextColor={colors.textLight}
+                value={password}
+                onChangeText={setPassword}
+                onFocus={() => setFocused('password')}
+                onBlur={() => setFocused(null)}
+                secureTextEntry={!showPassword}
+                textContentType="password"
+              />
               <Pressable
-                style={styles.seeHowContainer}
-                onPress={() => router.push('/tutorial?role=MOM&preview=true')}
-                // @ts-ignore
-                onClick={Platform.OS === 'web' ? () => router.push('/tutorial?role=MOM&preview=true') : undefined}
+                onPress={() => setShowPassword(!showPassword)}
+                hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
               >
-                <Text style={styles.seeHowLink}>See how it works</Text>
+                <Icon name={showPassword ? 'eye-off' : 'eye'} size={18} color={colors.textLight} />
               </Pressable>
             </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </View>
+
+            {/* Forgot password — inline, right aligned */}
+            <Pressable
+              onPress={handleForgotPassword}
+              style={({ pressed }) => [styles.forgotWrap, pressed && { opacity: 0.6 }]}
+              accessibilityRole="link"
+            >
+              <Text style={[styles.forgotText, { color: colors.primary }]}>Forgot password?</Text>
+            </Pressable>
+
+            {/* Submit */}
+            <Pressable
+              onPress={handleLogin}
+              disabled={isLoading}
+              style={({ pressed }) => [
+                styles.submitButton,
+                pressed && styles.buttonPressed,
+                isLoading && { opacity: 0.7 },
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="Log in"
+            >
+              <Text style={[styles.submitText, { color: colors.white }]}>
+                {isLoading ? 'Signing you in…' : 'Log In'}
+              </Text>
+            </Pressable>
+
+            {/* Swap link */}
+            <Pressable
+              onPress={() => router.push('/(auth)/signup')}
+              style={({ pressed }) => [styles.swapLink, pressed && { opacity: 0.6 }]}
+              accessibilityRole="link"
+            >
+              <Text style={[styles.swapText, { color: colors.textSecondary }]}>
+                New here?{' '}
+                <Text style={[styles.swapLinkText, { color: colors.primary }]}>Create an account</Text>
+              </Text>
+            </Pressable>
+          </Animated.View>
+
+          {/* Footer preview link */}
+          <Animated.View style={[styles.footBlock, { opacity: oFoot as any }]}>
+            <Pressable
+              onPress={() => router.push('/(auth)/tutorial-preview?role=MOM')}
+              style={({ pressed }) => [styles.previewLink, pressed && { opacity: 0.6 }]}
+              accessibilityRole="link"
+            >
+              <Icon name="play-circle" size={18} color={colors.primary} />
+              <Text style={[styles.previewText, { color: colors.primary }]}>See how it works</Text>
+            </Pressable>
+          </Animated.View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const getStyles = createThemedStyles((colors) => ({
+  flex1: { flex: 1 },
+  logoContainer: {
+    alignItems: 'center',
+    paddingTop: SIZES.xl,
+  },
+  logoRing: {
+    padding: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
   logoIcon: {
     width: 64,
     height: 64,
+    borderRadius: 32,
   },
-  // Split screen styles (wide)
-  splitContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  imageSection: {
-    flex: 1,
-    maxWidth: '50%',
-  },
-  imageBg: {
-    flex: 1,
-  },
-  imageOverlay: {
-    flex: 1,
-  },
-  imageContent: {
-    flex: 1,
-    padding: SIZES.xl,
-    justifyContent: 'space-between',
-  },
-  imageTextContainer: {
-    marginBottom: SIZES.xxl,
-  },
-  imageHeadline: {
-    fontSize: 32,
-    fontFamily: FONTS.heading,
-    fontWeight: '700',
-    color: colors.white,
-    marginBottom: SIZES.sm,
-    textShadowColor: 'rgba(0,0,0,0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
-  imageSubtext: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.body,
-    color: 'rgba(255,255,255,0.9)',
-    textShadowColor: 'rgba(0,0,0,0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
-  formSection: {
-    flex: 1,
-    maxWidth: '50%',
-    backgroundColor: colors.background,
-  },
-  formSafeArea: {
-    flex: 1,
-  },
-  formKeyboard: {
-    flex: 1,
-  },
-  splitFormContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: SIZES.xxl,
-  },
-  formInner: {
-    maxWidth: 400,
-    width: '100%',
-    alignSelf: 'center',
-  },
-  formTitle: {
-    fontSize: 32,
-    fontFamily: FONTS.heading,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: SIZES.xs,
-  },
-  formSubtitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+  headBlock: {
+    alignItems: 'center',
+    marginTop: SIZES.lg,
     marginBottom: SIZES.xl,
-  },
-  inputsContainer: {
-    marginBottom: SIZES.lg,
-  },
-  
-  // Mobile styles
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  mobileBg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: SCREEN_HEIGHT * 0.45,
-  },
-  mobileGradient: {
-    flex: 1,
-  },
-  mobileSafeArea: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
     paddingHorizontal: SIZES.lg,
-    paddingTop: SIZES.md,
-    paddingBottom: SIZES.xl,
   },
-  backButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    marginBottom: SIZES.md,
-  },
-  mobileImageSpacer: {
-    height: SCREEN_HEIGHT * 0.18,
-  },
-  mobileFormCard: {
-    backgroundColor: colors.background,
-    borderRadius: 24,
-    padding: SIZES.lg,
-    shadowColor: '#4A3B4E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  title: {
+  headline: {
     fontSize: 28,
     fontFamily: FONTS.heading,
     fontWeight: '700',
-    color: colors.text,
-    marginBottom: SIZES.xs,
+    lineHeight: 36,
+    textAlign: 'center',
   },
-  subtitle: {
+  headlineAccent: {
+    fontStyle: 'italic',
+  },
+  subhead: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
     color: colors.textSecondary,
-    marginBottom: SIZES.lg,
-  },
-  mobileInputs: {
-    marginBottom: SIZES.md,
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: SIZES.lg,
-  },
-  forgotPasswordText: {
-    fontSize: SIZES.fontSm,
-    color: colors.primary,
-    fontFamily: FONTS.bodyMedium,
-  },
-  loginButton: {
+    textAlign: 'center',
     marginTop: SIZES.sm,
   },
-  signupSection: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+  formBlock: {
+    paddingHorizontal: SIZES.lg,
   },
-  signupText: {
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
+    paddingHorizontal: SIZES.md,
+    paddingVertical: SIZES.sm,
+    borderRadius: SIZES.radiusMd,
+    marginBottom: SIZES.md,
+  },
+  errorText: {
+    flex: 1,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+  },
+  field: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SIZES.sm,
+    paddingHorizontal: SIZES.md,
+    height: 54,
+    borderRadius: SIZES.radiusFull,
+    borderWidth: 1.5,
+    marginBottom: SIZES.md,
+  },
+  input: {
+    flex: 1,
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
-    color: colors.textSecondary,
   },
-  signupLink: {
-    fontSize: SIZES.fontMd,
-    color: colors.primary,
+  forgotWrap: {
+    alignSelf: 'flex-end',
+    paddingVertical: SIZES.xs,
+    marginBottom: SIZES.sm,
+  },
+  forgotText: {
+    fontSize: SIZES.fontSm,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
   },
-  // Subtle "See how it works" preview link
-  seeHowContainer: {
+  submitButton: {
     alignItems: 'center',
-    marginTop: SIZES.md,
-    paddingVertical: SIZES.xs,
+    paddingVertical: SIZES.md,
+    borderRadius: SIZES.radiusFull,
+    backgroundColor: colors.primary,
+    marginBottom: SIZES.md,
   },
-  seeHowLink: {
+  submitText: {
+    fontSize: SIZES.fontLg,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: '700',
+  },
+  buttonPressed: {
+    transform: [{ scale: 0.97 }],
+    opacity: 0.85,
+  },
+  swapLink: {
+    alignItems: 'center',
+    paddingVertical: SIZES.sm,
+  },
+  swapText: {
     fontSize: SIZES.fontSm,
-    color: colors.textSecondary,
     fontFamily: FONTS.body,
-    textDecorationLine: 'underline',
   },
-  // App Store social proof badge
-  appStoreBadge: {
+  swapLinkText: {
+    fontFamily: FONTS.bodyBold,
+    fontWeight: '700',
+  },
+  footBlock: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: SIZES.lg,
+  },
+  previewLink: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: SIZES.md,
+    gap: SIZES.xs,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.lg,
   },
-  starsRow: {
-    flexDirection: 'row',
-    marginRight: 6,
-  },
-  appStoreRatingText: {
-    fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
-    marginLeft: 6,
+  previewText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
+    fontWeight: '600',
   },
 }));

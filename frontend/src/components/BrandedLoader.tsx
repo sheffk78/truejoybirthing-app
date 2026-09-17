@@ -1,22 +1,26 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Image, StyleSheet, Animated, Easing, Text } from 'react-native';
+import { View, Image, StyleSheet, Animated, Easing, Text, Dimensions } from 'react-native';
 import { BRAND, COLORS, FONTS } from '../constants/theme';
 
 // ─────────────────────────────────────────────────────────────────────
-// BrandedLoader — shared branded loading experience
+// BrandedLoader — SplashMark v2 (approved 2026-09-16, Jeff verdict
+// msgs 1549839081200951357 → 1549841055648845927 → 1549843608402796688)
 // ─────────────────────────────────────────────────────────────────────
-// Used by both:
-//   • Font-loading screen in _layout.tsx (BEFORE ThemeProvider exists —
-//     pass `colors` prop with static COLORS values)
-//   • LoadingScreen.tsx (AFTER ThemeProvider exists — omit `colors` prop
-//     and the parent passes themed values)
+// Approved design: icon mark ONLY at its natural square shape (never the
+// horizontal lockup, never circle-cropped — see VERIFICATION-auth-20260916
+// rev3), soft lavender halo that breathes with the mark, three staggered
+// loading dots. No wordmark, no tagline, no status-bar chrome, no footer.
 //
-// Features:
-//   • Cream / branded background (configurable for dark mode)
-//   • Full logo (icon + wordmark) centered with gentle pulse animation
-//   • Tagline below logo in Cormorant Garamond serif
-//   • Three-dot animated loading indicator below the tagline
-//   • Optional loading message rendered below the dots
+// Animation (approved "calm breath" spec):
+//   • Mark:     scale 1.00 → 1.04 → 1.00 over 2.4 s, eased like breathing
+//   • Halo:     opacity 0.60 → 1.00 on the same 2.4 s rhythm
+//   • Dots:     staggered fade, 600 ms per dot, 260 ms offset
+//   • No spin, no zoom-out, no extra graphics crossing the mark.
+//
+// Used by both:
+//   • Font-loading screen in app/_layout.tsx (BEFORE ThemeProvider —
+//     pass `colors` prop with static COLORS values)
+//   • LoadingScreen.tsx (AFTER ThemeProvider — omit `colors` prop)
 // ─────────────────────────────────────────────────────────────────────
 
 export interface BrandedLoaderColors {
@@ -29,13 +33,22 @@ export interface BrandedLoaderColors {
 export interface BrandedLoaderProps {
   /** Optional loading message shown below the animated dots */
   message?: string;
-  /** Optional tagline override (defaults to BRAND.tagline) */
+  /** Opt-in tagline — approved splash shows NO text by default */
   tagline?: string;
   /** Colors — required when used outside ThemeProvider; optional otherwise */
   colors?: BrandedLoaderColors;
-  /** Whether fonts are loaded (controls serif vs system font for tagline) */
+  /** Whether fonts are loaded (controls serif vs system font for message) */
   fontsLoaded?: boolean;
 }
+
+// Brand tokens (mirrors theme.ts approved palette)
+const HALO = 'rgba(142, 140, 181, 0.16)';   // Lavender 500 @16% — approved halo
+const HALO_OUTER = 'rgba(142, 140, 181, 0.07)';
+const DOT_ACTIVE = '#8E8CB5';               // Lavender 500
+const DOT_INACTIVE = '#D5D3E8';             // Lavender 300
+
+// Breath rhythm (ms) — one full inhale/exhale cycle
+const BREATH_MS = 2400;
 
 export default function BrandedLoader({
   message,
@@ -51,34 +64,44 @@ export default function BrandedLoader({
     primary: COLORS.primary,
   };
 
-  // ── Pulse animation on the logo ──────────────────────────────
-  const pulseAnim = useRef(new Animated.Value(0.85)).current;
-
+  // ── Approved breath animation on the mark ─────────────────────
+  const breath = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const animation = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, {
+        Animated.timing(breath, {
           toValue: 1,
-          duration: 900,
-          easing: Easing.inOut(Easing.ease),
+          duration: BREATH_MS / 2,
+          easing: Easing.inOut(Easing.quad), // inhale — smooth both ends
           useNativeDriver: true,
         }),
-        Animated.timing(pulseAnim, {
-          toValue: 0.85,
-          duration: 900,
-          easing: Easing.inOut(Easing.ease),
+        Animated.timing(breath, {
+          toValue: 0,
+          duration: BREATH_MS / 2,
+          easing: Easing.inOut(Easing.quad), // exhale
           useNativeDriver: true,
         }),
       ]),
     );
     animation.start();
     return () => animation.stop();
-  }, [pulseAnim]);
+  }, [breath]);
 
-  // ── Three-dot loading animation ─────────────────────────────
-  const dot1 = useRef(new Animated.Value(0.3)).current;
-  const dot2 = useRef(new Animated.Value(0.3)).current;
-  const dot3 = useRef(new Animated.Value(0.3)).current;
+  // Scale 1.00 → 1.04 (a 4% breath — perceptible, never bouncy)
+  const markScale = breath.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.04],
+  });
+  // Halo breathes on the same rhythm, barely perceptible
+  const haloOpacity = breath.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.6, 1],
+  });
+
+  // ── Three-dot staggered loading animation ─────────────────────
+  const dot1 = useRef(new Animated.Value(0.35)).current;
+  const dot2 = useRef(new Animated.Value(0.35)).current;
+  const dot3 = useRef(new Animated.Value(0.35)).current;
 
   useEffect(() => {
     const createDotAnim = (dot: Animated.Value, delay: number) =>
@@ -87,13 +110,13 @@ export default function BrandedLoader({
           Animated.delay(delay),
           Animated.timing(dot, {
             toValue: 1,
-            duration: 400,
+            duration: 600,
             easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
           Animated.timing(dot, {
-            toValue: 0.3,
-            duration: 400,
+            toValue: 0.35,
+            duration: 600,
             easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
@@ -101,8 +124,8 @@ export default function BrandedLoader({
       );
 
     const a1 = createDotAnim(dot1, 0);
-    const a2 = createDotAnim(dot2, 200);
-    const a3 = createDotAnim(dot3, 400);
+    const a2 = createDotAnim(dot2, 260);
+    const a3 = createDotAnim(dot3, 520);
 
     a1.start();
     a2.start();
@@ -115,36 +138,58 @@ export default function BrandedLoader({
     };
   }, [dot1, dot2, dot3]);
 
-  const taglineText = tagline || BRAND.tagline;
+  // Icon at ~32% of screen width — natural square, NO crop, NO distortion
+  const iconSize = Math.round(Math.min(Dimensions.get('window').width, 430) * 0.32);
 
   return (
     <View style={[styles.container, { backgroundColor: c.background }]}>
       <View style={styles.content}>
-        {/* Logo with pulse animation */}
-        <Animated.View
-          style={[styles.logoWrapper, { opacity: pulseAnim, transform: [{ scale: pulseAnim }] }]}
-        >
-          <Image source={BRAND.logoPng} style={styles.logo} resizeMode="contain" />
-        </Animated.View>
-
-        {/* Tagline in serif font (if loaded) */}
-        <Text
-          style={[
-            styles.tagline,
-            { color: c.textSecondary, fontFamily: fontsLoaded ? FONTS.subheading : 'System' },
-          ]}
-        >
-          {taglineText}
-        </Text>
-
-        {/* Three-dot animated loading indicator */}
-        <View style={styles.dotsContainer}>
-          <Animated.View style={[styles.dot, { backgroundColor: c.primary, opacity: dot1 }]} />
-          <Animated.View style={[styles.dot, { backgroundColor: c.primary, opacity: dot2 }]} />
-          <Animated.View style={[styles.dot, { backgroundColor: c.primary, opacity: dot3 }]} />
+        {/* Breathing halo (outer + inner soft discs, animated in sync) */}
+        <View style={styles.haloStack}>
+          <Animated.View
+            style={[
+              styles.haloOuter,
+              { opacity: haloOpacity },
+            ]}
+          />
+          <Animated.View
+            style={[
+              styles.haloInner,
+              { opacity: haloOpacity },
+            ]}
+          />
+          {/* The mark: brand icon only, natural 1:1, breathing */}
+          <Animated.View
+            style={{ transform: [{ scale: markScale }] }}
+          >
+            <Image
+              source={BRAND.logoIconPng}
+              style={{ width: iconSize, height: iconSize }}
+              resizeMode="contain"
+            />
+          </Animated.View>
         </View>
 
-        {/* Optional loading message */}
+        {/* Opt-in tagline — approved splash default shows no text */}
+        {tagline ? (
+          <Text
+            style={[
+              styles.tagline,
+              { color: c.textSecondary, fontFamily: fontsLoaded ? FONTS.subheading : 'System' },
+            ]}
+          >
+            {tagline}
+          </Text>
+        ) : null}
+
+        {/* Three-dot loading indicator (lavender active on lavender-300 base) */}
+        <View style={styles.dotsContainer}>
+          <Animated.View style={[styles.dot, { backgroundColor: DOT_INACTIVE }, { opacity: dot1 }]} />
+          <Animated.View style={[styles.dot, { backgroundColor: DOT_INACTIVE }, { opacity: dot2 }]} />
+          <Animated.View style={[styles.dot, { backgroundColor: DOT_INACTIVE }, { opacity: dot3 }]} />
+        </View>
+
+        {/* Optional loading message (in-app usage) */}
         {message ? (
           <Text
             style={[
@@ -170,12 +215,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 32,
   },
-  logoWrapper: {
-    marginBottom: 20,
+  // Soft halo illusion: two translucent lavender discs stacked behind the mark
+  haloStack: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 248,
+    height: 248,
+    marginBottom: 28,
   },
-  logo: {
-    width: 220,
-    height: 97,
+  haloOuter: {
+    position: 'absolute',
+    width: 248,
+    height: 248,
+    borderRadius: 124,
+    backgroundColor: HALO_OUTER,
+  },
+  haloInner: {
+    position: 'absolute',
+    width: 196,
+    height: 196,
+    borderRadius: 98,
+    backgroundColor: HALO,
   },
   tagline: {
     fontSize: 16,
@@ -190,6 +250,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     height: 12,
+    marginTop: 20,
   },
   dot: {
     width: 8,

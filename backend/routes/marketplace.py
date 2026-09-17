@@ -60,13 +60,16 @@ async def search_providers(
         # Batch fetch all users for doula profiles (only public fields)
         doula_user_ids = [p["user_id"] for p in doula_profiles]
         doula_users = await db.users.find(
-            {"user_id": {"$in": doula_user_ids}}, 
+            {"user_id": {"$in": doula_user_ids}},
             USER_PUBLIC_FIELDS
         ).to_list(100)
         doula_users_by_id = {u["user_id"]: u for u in doula_users}
         
         for profile in doula_profiles:
             user = doula_users_by_id.get(profile["user_id"])
+            # Unverified pros never appear in the marketplace (Jeff 2026-09-16)
+            if user and not user.get("email_verified", False):
+                continue
             if user:
                 # Apply search filter
                 if search:
@@ -107,6 +110,9 @@ async def search_providers(
         
         for profile in midwife_profiles:
             user = midwife_users_by_id.get(profile["user_id"])
+            # Unverified pros never appear in the marketplace (Jeff 2026-09-16)
+            if user and not user.get("email_verified", False):
+                continue
             if user:
                 # Apply search filter
                 if search:
@@ -148,6 +154,9 @@ async def search_providers(
         
         for profile in lactation_profiles:
             user = lactation_users_by_id.get(profile["user_id"])
+            # Unverified pros never appear in the marketplace (Jeff 2026-09-16)
+            if user and not user.get("email_verified", False):
+                continue
             if user:
                 if search:
                     search_lower = search.lower()
@@ -178,6 +187,10 @@ async def get_provider_profile(user_id: str):
     """Get a provider's public profile with client count"""
     user = await db.users.find_one({"user_id": user_id}, USER_PUBLIC_FIELDS)
     if not user:
+        raise HTTPException(status_code=404, detail="Provider not found")
+    
+    # Unverified pros are invisible in the marketplace (Jeff 2026-09-16)
+    if not user.get("email_verified", False):
         raise HTTPException(status_code=404, detail="Provider not found")
     
     if user["role"] == "DOULA":

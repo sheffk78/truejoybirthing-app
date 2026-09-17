@@ -16,6 +16,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
+import { TjbIcon } from '../../src/components/TjbIcon';
+import type { TjbIconName } from '../../src/components/TjbIcon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { SECTION_FORMS, renderField } from '../../src/components/BirthPlanForms';
@@ -33,25 +35,25 @@ const getStatusColors = (colors: ThemeColors): Record<string, string> => ({
 });
 
 const STATUS_ICONS: Record<string, string> = {
-  'Not started': 'ellipse-outline',
-  'In progress': 'time-outline',
-  'Complete': 'checkmark-circle',
+  'Not started': 'tjb-status-todo',
+  'In progress': 'tjb-status-wip',
+  'Complete': 'tjb-status-done',
 };
 
 // Section icons mapping
 const SECTION_ICONS: Record<string, string> = {
-  'about_me': 'person',
-  'labor_delivery': 'body',
-  'labor_support': 'body',
-  'pain_management': 'medical',
-  'monitoring_iv': 'pulse',
-  'induction_interventions': 'medkit',
-  'pushing_safe_word': 'fitness',
-  'birth_preferences': 'fitness',
-  'post_delivery': 'heart',
-  'after_birth': 'heart',
-  'newborn_care': 'happy',
-  'other_considerations': 'list',
+  'about_me': 'tjb-about-me',
+  'labor_delivery': 'tjb-labor-delivery',
+  'labor_support': 'tjb-labor-support',
+  'pain_management': 'tjb-pain-management',
+  'monitoring_iv': 'tjb-monitoring-iv',
+  'induction_interventions': 'tjb-induction',
+  'pushing_safe_word': 'tjb-pushing-safe-word',
+  'birth_preferences': 'tjb-birth-preferences',
+  'post_delivery': 'tjb-post-delivery',
+  'after_birth': 'tjb-after-birth',
+  'newborn_care': 'tjb-newborn-care',
+  'other_considerations': 'tjb-other-considerations',
 };
 
 export default function BirthPlanScreen() {
@@ -358,8 +360,8 @@ export default function BirthPlanScreen() {
                   styles.sectionIconContainer,
                   section.status === 'Complete' && styles.sectionIconComplete,
                 ]}>
-                  <Icon 
-                    name={SECTION_ICONS[section.section_id] || 'document'} 
+                  <TjbIcon 
+                    name={(SECTION_ICONS[section.section_id] || 'tjb-birthplan') as any} 
                     size={20} 
                     color={section.status === 'Complete' ? colors.white : colors.primary} 
                   />
@@ -367,8 +369,8 @@ export default function BirthPlanScreen() {
                 <View style={styles.sectionInfo}>
                   <Text style={styles.sectionName}>{section.title}</Text>
                   <View style={styles.statusRow}>
-                    <Icon 
-                      name={STATUS_ICONS[section.status]} 
+                    <TjbIcon 
+                      name={STATUS_ICONS[section.status] as TjbIconName} 
                       size={14} 
                       color={STATUS_COLORS[section.status]} 
                     />
@@ -405,7 +407,7 @@ export default function BirthPlanScreen() {
           
           {/* Auto-share notice */}
           <View style={styles.autoShareNotice}>
-            <Icon name="information-circle" size={18} color={colors.primary} />
+            <TjbIcon name="tjb-autoshare" size={20} color={colors.primary} />
             <View style={styles.autoShareTextContainer}>
               <Text style={styles.autoShareText}>
                 Your birth plan is automatically shared with team members.
