@@ -518,6 +518,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   header: {
     // rows sit on the band's veil; padding-top set inline from safe-area insets
+    paddingHorizontal: 20, // Jeff-approved edge padding (matches S12 header)
     paddingBottom: 4,
     marginBottom: SIZES.md,
   },
