@@ -7,7 +7,14 @@ import {
   CormorantGaramond_500Medium,
   CormorantGaramond_600SemiBold,
   CormorantGaramond_700Bold,
+  CormorantGaramond_600SemiBold_Italic,
 } from '@expo-google-fonts/cormorant-garamond';
+import {
+  Quicksand_400Regular,
+  Quicksand_500Medium,
+  Quicksand_600SemiBold,
+  Quicksand_700Bold,
+} from '@expo-google-fonts/quicksand';
 import {
   SourceSans3_400Regular,
   SourceSans3_400Regular_Italic,
@@ -202,6 +209,11 @@ export default function RootLayout() {
     CormorantGaramond_500Medium,
     CormorantGaramond_600SemiBold,
     CormorantGaramond_700Bold,
+    CormorantGaramond_600SemiBold_Italic,
+    Quicksand_400Regular,
+    Quicksand_500Medium,
+    Quicksand_600SemiBold,
+    Quicksand_700Bold,
     SourceSans3_400Regular,
     SourceSans3_400Regular_Italic,
     SourceSans3_500Medium,

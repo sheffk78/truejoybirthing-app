@@ -9,7 +9,7 @@ import {
   Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
@@ -22,6 +22,8 @@ import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
+import HBand from '../../src/components/mom/HBand';
+import { BAND_HOME, C, F } from '../../src/constants/designRefresh';
 
 interface PendingContract {
   contract_id: string;
@@ -51,6 +53,7 @@ export default function MomHomeScreen() {
   const { user } = useAuthStore();
   const colors = useColors();
   const styles = getStyles(colors);
+  const insets = useSafeAreaInsets();
   
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [timeline, setTimeline] = useState<any>(null);
@@ -145,6 +148,14 @@ export default function MomHomeScreen() {
   };
   
   const firstName = user?.full_name?.split(' ')[0] || 'there';
+  const initials = (user?.full_name || 'EV')
+    .trim().split(/\s+/).slice(0, 2)
+    .map((p: string) => p[0]?.toUpperCase() ?? '').join('') || 'EV';
+  const weekNum = Number(weeklyContent?.week ?? timeline?.current_week ?? 0);
+  const trimesterSub =
+    weekNum >= 28 ? "Third trimester begins — let's keep it steady"
+    : weekNum >= 14 ? 'Second trimester — steady and strong'
+    : 'First trimester — welcome, mama';
   
   return (
     <ErrorBoundary
@@ -191,31 +202,31 @@ export default function MomHomeScreen() {
           </Card>
         )}
         
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-<Image source={BRAND.logoIconPng} style={styles.headerLogo} resizeMode="contain" />
-            <View>
-              <Text style={[styles.greeting, { color: colors.text }]}>Hello, {firstName}</Text>
-              {timeline?.current_week && (
-                <Text style={[styles.weekText, { color: colors.textSecondary }]}>
-                  {timeline.current_week} weeks{' '}
-                  {timeline.current_day ?? 0} days pregnant
-                </Text>
-              )}
+        {/* Header — approved S10: photo band under the status bar, greeting rows on the veil */}
+        <View style={[styles.bandWrap, { marginTop: -insets.top }]}>
+          <HBand source={BAND_HOME} height={190 + insets.top} />
+          <View style={[styles.header, { paddingTop: insets.top + 30 }]}>
+            <View style={styles.headerTopRow}>
+              <Text style={styles.overline}>
+                Week {timeline?.current_week ?? '—'} · Day {timeline?.current_day ?? 0}
+              </Text>
+              <TouchableOpacity
+                style={styles.avatarContainer}
+                onPress={() => router.push('/(mom)/profile')}
+                data-testid="profile-avatar-btn"
+              >
+                {user?.picture ? (
+                  <Image source={{ uri: user.picture }} style={styles.avatarImage} />
+                ) : (
+                  <Text style={styles.avatarInitials}>{initials}</Text>
+                )}
+              </TouchableOpacity>
             </View>
+            <Text style={styles.greeting}>
+              Hello, <Text style={styles.greetingAccent}>{firstName}</Text>
+            </Text>
+            <Text style={styles.weekText}>{trimesterSub}</Text>
           </View>
-          <TouchableOpacity 
-            style={styles.avatarContainer} 
-            onPress={() => router.push('/(mom)/profile')}
-            data-testid="profile-avatar-btn"
-          >
-            {user?.picture ? (
-              <Image source={{ uri: user.picture }} style={styles.avatarImage} />
-            ) : (
-              <Icon name="person-circle-outline" size={44} color={colors.primary} />
-            )}
-          </TouchableOpacity>
         </View>
         
         {/* Birth Plan Card */}
@@ -228,14 +239,14 @@ export default function MomHomeScreen() {
           <Card style={styles.mainCard}>
             <View style={styles.birthPlanTopRow}>
               <View style={styles.birthPlanTextGroup}>
+                <Text style={styles.kickerRose}>BIRTH PLAN</Text>
                 <Text style={styles.cardTitle}>Joyful Birth Plan</Text>
-                <Text style={styles.nextStep} numberOfLines={1}>{getNextStep()}</Text>
+                <Text style={styles.nextStep} numberOfLines={1}>
+                  Next: {getNextStep()}
+                </Text>
               </View>
               <View style={styles.birthPlanAction}>
-                <Text style={styles.progressText}>
-                  {Math.round(birthPlan?.completion_percentage || 0)}%
-                </Text>
-                <Icon name="chevron-forward" size={18} color={colors.primary} />
+                <Icon name="chevron-forward" size={18} color={C.chev} />
               </View>
             </View>
             <View style={styles.progressBar}>
@@ -266,25 +277,19 @@ export default function MomHomeScreen() {
           
           return (
             <Card style={styles.babyDevCard}>
-              <View style={styles.weeklyHeader}>
-                <View style={[styles.weeklyIconContainer, { backgroundColor: colors.secondary + '20' }]}>
-                  <Icon name="baby" size={22} color={colors.secondary} />
-                </View>
-                <View style={styles.weeklyHeaderText}>
-                  <Text style={styles.weeklyLabel}>Baby Development</Text>
-                  <Text style={[styles.weeklyWeek, { color: colors.secondary }]}>
-                    {weeklyContent.display_week || `Week ${currentWeek}`}
-                  </Text>
-                </View>
+              <View style={styles.cardKickerRow}>
+                <Text style={styles.kickerSage}>Baby Development</Text>
+                <Text style={styles.cardKickerMeta}>
+                  {weeklyContent.display_week || `Week ${currentWeek}`}
+                </Text>
               </View>
-              
-              {/* Baby development illustration */}
+              {/* Baby development illustration — full-width watercolor, 150px */}
               <View style={styles.babyDevImageContainer}>
                 {hasPregnancyIllustration(currentWeek) ? (
                   <Image
                     source={getPregnancyIllustration(currentWeek)}
                     style={styles.babyDevImage}
-                    resizeMode="contain"
+                    resizeMode="cover"
                     accessibilityLabel={
                       babyDev.phase === 'size_reference'
                         ? `Illustration showing the size of a ${babyDev.food} at week ${currentWeek} of pregnancy`
@@ -294,19 +299,16 @@ export default function MomHomeScreen() {
                   />
                 ) : (
                   <View style={styles.babyDevImagePlaceholder}>
-                    <Icon name="image-outline" size={48} color={colors.secondary + '40'} />
+                    <Icon name="image-outline" size={48} color={C.roseSoft} />
                   </View>
                 )}
               </View>
-              
-              {/* Size badge for early weeks */}
               {babyDev.phase === 'size_reference' && babyDev.sizeNote && (
                 <View style={styles.babyDevSizeBadge}>
                   <Text style={styles.babyDevSizeBadgeText}>{babyDev.sizeNote}</Text>
                 </View>
               )}
-              
-              <Text style={styles.babyDevTitle}>{babyDev.title}</Text>
+              <Text style={styles.cardH3}>{babyDev.title}</Text>
               <Text style={styles.babyDevDescription} numberOfLines={4}>
                 {babyDev.description}
               </Text>
@@ -314,8 +316,8 @@ export default function MomHomeScreen() {
                 style={styles.weeklyReadMore}
                 onPress={() => router.push('/(mom)/weekly-tips')}
               >
-                <Text style={[styles.weeklyReadMoreText, { color: colors.secondary }]}>Learn more</Text>
-                <Icon name="chevron-forward" size={16} color={colors.secondary} />
+                <Text style={styles.linkRose}>Learn more</Text>
+                <Icon name="chevron-forward" size={14} color={C.rose} />
               </TouchableOpacity>
             </Card>
           );
@@ -324,16 +326,11 @@ export default function MomHomeScreen() {
         {/* Weekly Tip Card */}
         {weeklyContent?.tip && (
           <Card style={styles.weeklyCard}>
-            <View style={styles.weeklyHeader}>
-              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.primary + '20' }]}>
-                <Icon name="bulb" size={22} color={colors.primary} />
-              </View>
-              <View style={styles.weeklyHeaderText}>
-                <Text style={styles.weeklyLabel}>Weekly Tip</Text>
-                <Text style={styles.weeklyWeek}>
-                  {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
-                </Text>
-              </View>
+            <View style={styles.cardKickerRow}>
+              <Text style={styles.kickerRose}>Weekly Tip</Text>
+              <Text style={styles.tipWeekChip}>
+                {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
+              </Text>
             </View>
             <Text style={styles.weeklyContent} numberOfLines={4}>
               {weeklyContent.tip}
@@ -342,8 +339,8 @@ export default function MomHomeScreen() {
               style={styles.weeklyReadMore}
               onPress={() => router.push('/(mom)/weekly-tips')}
             >
-              <Text style={styles.weeklyReadMoreText}>Read more</Text>
-              <Icon name="chevron-forward" size={16} color={colors.primary} />
+              <Text style={styles.linkRose}>Read more</Text>
+              <Icon name="chevron-forward" size={14} color={C.rose} />
             </TouchableOpacity>
           </Card>
         )}
@@ -351,17 +348,7 @@ export default function MomHomeScreen() {
         {/* Weekly Affirmation Card */}
         {weeklyContent?.affirmation && (
           <Card style={[styles.weeklyCard, styles.affirmationCard]}>
-            <View style={styles.weeklyHeader}>
-              <View style={[styles.weeklyIconContainer, { backgroundColor: colors.roleDoula + '20' }]}>
-                <Icon name="heart" size={22} color={colors.roleDoula} />
-              </View>
-              <View style={styles.weeklyHeaderText}>
-                <Text style={styles.weeklyLabel}>Weekly Affirmation</Text>
-                <Text style={styles.weeklyWeek}>
-                  {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
-                </Text>
-              </View>
-            </View>
+            <Text style={styles.kickerRose}>Weekly Affirmation</Text>
             <Text style={styles.affirmationContent}>
               "{weeklyContent.affirmation}"
             </Text>
@@ -392,16 +379,14 @@ export default function MomHomeScreen() {
               >
                 <Card style={styles.actionRequiredCard}>
                   <View style={styles.actionRequiredHeader}>
-                    <View style={[styles.actionRequiredIcon, { backgroundColor: colors.warning + '20' }]}>
-                      <Icon name="document-text" size={24} color={colors.warning} />
+                    <View style={styles.actionRequiredIcon}>
+                      <Icon name="document-text" size={18} color={C.rose} />
                     </View>
                     <View style={styles.actionRequiredContent}>
-                      <Text style={styles.actionRequiredTitle}>Contract to Sign</Text>
-                      <Text style={styles.actionRequiredSubtitle}>
-                        From {contract.provider_name} ({contract.provider_role})
-                      </Text>
+                      <Text style={styles.rowTitle}>Contract to sign</Text>
+                      <Text style={styles.rowMeta}>From {contract.provider_name} · {contract.provider_role}</Text>
                     </View>
-                    <Icon name="chevron-forward" size={24} color={colors.textLight} />
+                    <Icon name="chevron-forward" size={14} color={C.chev} />
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -417,17 +402,17 @@ export default function MomHomeScreen() {
               >
                 <Card style={styles.actionRequiredCard}>
                   <View style={styles.actionRequiredHeader}>
-                    <View style={[styles.actionRequiredIcon, { backgroundColor: colors.roleDoula + '20' }]}>
-                      <Icon name="receipt" size={24} color={colors.roleDoula} />
+                    <View style={styles.actionRequiredIcon}>
+                      <Icon name="receipt" size={18} color={C.rose} />
                     </View>
                     <View style={styles.actionRequiredContent}>
-                      <Text style={styles.actionRequiredTitle}>Invoice - ${invoice.amount}</Text>
-                      <Text style={styles.actionRequiredSubtitle}>
+                      <Text style={styles.rowTitle}>Invoice — ${invoice.amount}</Text>
+                      <Text style={styles.rowMeta}>
                         From {invoice.provider_name}
-                        {invoice.due_date ? ` • Due ${new Date(invoice.due_date).toLocaleDateString()}` : ''}
+                        {invoice.due_date ? ` · Due ${new Date(invoice.due_date).toLocaleDateString()}` : ''}
                       </Text>
                     </View>
-                    <Icon name="chevron-forward" size={24} color={colors.textLight} />
+                    <Icon name="chevron-forward" size={14} color={C.chev} />
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -439,19 +424,19 @@ export default function MomHomeScreen() {
             Auto-expires 5 days after paid_at; mom can dismiss early. */}
         {recentlyPaid.filter((inv) => !dismissedPaid.has(inv.invoice_id)).length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>Recently Paid ✓</Text>
+            <Text style={styles.sectionTitle}>Recently paid ✓</Text>
             {recentlyPaid
               .filter((inv) => !dismissedPaid.has(inv.invoice_id))
               .map((invoice) => (
                 <Card key={invoice.invoice_id} style={styles.recentlyPaidCard}>
                   <View style={styles.actionRequiredHeader}>
-                    <View style={[styles.actionRequiredIcon, { backgroundColor: colors.success + '20' }]}>
-                      <Icon name="checkmark-circle" size={24} color={colors.success} />
+                    <View style={[styles.actionRequiredIcon, styles.iconChipSage]}>
+                      <Icon name="checkmark-circle" size={18} color={C.sage} />
                     </View>
                     <View style={styles.actionRequiredContent}>
-                      <Text style={styles.actionRequiredTitle}>Invoice Paid — ${invoice.amount}</Text>
-                      <Text style={styles.actionRequiredSubtitle}>
-                        From {invoice.provider_name} • {new Date(invoice.paid_at).toLocaleDateString()}
+                      <Text style={styles.rowTitle}>Invoice paid — ${invoice.amount}</Text>
+                      <Text style={styles.rowMeta}>
+                        From {invoice.provider_name} · {new Date(invoice.paid_at).toLocaleDateString()}
                       </Text>
                     </View>
                     <TouchableOpacity
@@ -468,7 +453,7 @@ export default function MomHomeScreen() {
           </>
         )}
 
-        {/* Key Actions */}
+        {/* Key Actions — approved .acts grid */}
         <Text style={styles.sectionTitle}>Key Actions</Text>
         <View style={styles.actionsGrid}>
           <TouchableOpacity
@@ -476,8 +461,8 @@ export default function MomHomeScreen() {
             onPress={() => router.push('/(mom)/timeline')}
             activeOpacity={0.8}
           >
-            <View style={[styles.actionIcon, { backgroundColor: colors.accent + '30' }]}>
-              <Icon name="calendar" size={24} color={colors.accent} />
+            <View style={styles.iconChipLav}>
+              <Icon name="calendar" size={18} color={C.lavender} />
             </View>
             <Text style={styles.actionTitle}>Timeline</Text>
             <Text style={styles.actionSubtitle}>
@@ -490,11 +475,11 @@ export default function MomHomeScreen() {
             onPress={() => router.push('/(mom)/wellness')}
             activeOpacity={0.8}
           >
-            <View style={[styles.actionIcon, { backgroundColor: colors.success + '30' }]}>
-              <Icon name="heart" size={24} color={colors.success} />
+            <View style={styles.iconChipSage}>
+              <Icon name="heart" size={18} color={C.sage} />
             </View>
             <Text style={styles.actionTitle}>Wellness</Text>
-            <Text style={styles.actionSubtitle}>How are you feeling?</Text>
+            <Text style={styles.actionSubtitle}>How are you feeling today?</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
@@ -503,8 +488,8 @@ export default function MomHomeScreen() {
             activeOpacity={0.8}
             data-testid="key-action-schedule-provider"
           >
-            <View style={[styles.actionIcon, { backgroundColor: colors.primary + '30' }]}>
-              <Icon name="calendar-outline" size={24} color={colors.primary} />
+            <View style={styles.iconChipRose}>
+              <Icon name="calendar-outline" size={18} color={C.rose} />
             </View>
             <Text style={styles.actionTitle}>Schedule</Text>
             <Text style={styles.actionSubtitle}>With your provider</Text>
@@ -528,56 +513,119 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     paddingBottom: SIZES.xxl,
   },
+  bandWrap: {
+    marginHorizontal: -SIZES.md, // bleed to screen edges
+  },
   header: {
+    // rows sit on the band's veil; padding-top set inline from safe-area insets
+    paddingBottom: 4,
+    marginBottom: SIZES.md,
+  },
+  headerTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SIZES.lg,
   },
-  headerLogo: {
-    width: 28,
-    height: 28,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SIZES.sm,
+  overline: {
+    fontSize: 10,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    fontFamily: F.uiBold,
+    color: C.ink,
   },
   greeting: {
-    fontSize: SIZES.fontXxl,
-    fontFamily: FONTS.heading,
-    color: colors.text,
+    fontSize: 26,
+    lineHeight: 29,
+    fontFamily: F.serif,
+    color: C.ink,
+    marginTop: 4,
+  },
+  greetingAccent: {
+    color: C.roseSoft,
   },
   weekText: {
-    fontSize: SIZES.fontMd,
-    color: colors.primary,
-    fontFamily: FONTS.bodyMedium,
-    marginTop: 2,
+    fontSize: 12.5,
+    fontFamily: F.ui,
+    color: C.gray,
+    marginTop: 4,
   },
   avatarContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primaryLight + '30',
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: C.lavenderBg,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
   avatarImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+  },
+  avatarInitials: {
+    fontSize: 14,
+    fontFamily: F.uiBold,
+    color: C.lavender,
   },
   mainCard: {
     marginBottom: SIZES.md,
     padding: SIZES.md,
+  },
+  kickerRose: {
+    fontSize: 10,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    fontFamily: F.uiBold,
+    color: C.rose,
+    marginBottom: 4,
+  },
+  kickerSage: {
+    fontSize: 10,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    fontFamily: F.uiBold,
+    color: C.sage,
+  },
+  cardKickerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  cardKickerMeta: {
+    fontSize: 11,
+    fontFamily: F.ui,
+    color: C.gray,
+  },
+  tipWeekChip: {
+    fontSize: 9.5,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    fontFamily: F.uiBold,
+    color: C.sage,
+    backgroundColor: C.sageBg,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    overflow: 'hidden',
+  },
+  cardH3: {
+    fontSize: 17,
+    lineHeight: 21,
+    fontFamily: F.serifSemi,
+    color: C.ink,
+  },
+  linkRose: {
+    fontSize: 12,
+    fontFamily: F.uiBold,
+    color: C.rose,
   },
   birthPlanTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: SIZES.sm,
-    marginBottom: SIZES.sm,
   },
   birthPlanTextGroup: {
     flex: 1,
@@ -588,148 +636,157 @@ const getStyles = createThemedStyles((colors) => ({
     gap: SIZES.xs,
   },
   cardTitle: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
-    color: colors.text,
+    fontSize: 21,
+    lineHeight: 24,
+    fontFamily: F.serif,
+    color: C.ink,
   },
   progressBar: {
-    height: 8,
-    backgroundColor: colors.border,
-    borderRadius: 4,
+    height: 7,
+    backgroundColor: C.track,
+    borderRadius: 999,
+    overflow: 'hidden',
+    marginTop: 9,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: colors.primary,
-    borderRadius: 4,
-  },
-  progressText: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
-    color: colors.textSecondary,
+    backgroundColor: C.lavenderSoft,
+    borderRadius: 999,
   },
   nextStep: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontSize: 11.5,
+    fontFamily: F.ui,
+    color: C.gray,
     marginTop: 2,
   },
   sectionTitle: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontSize: 21,
+    lineHeight: 24,
+    fontFamily: F.serif,
+    color: C.ink,
     marginBottom: SIZES.md,
   },
   actionsGrid: {
     flexDirection: 'row',
-    marginHorizontal: -SIZES.xs,
+    gap: 10,
+    marginTop: 2,
     marginBottom: SIZES.lg,
   },
   actionCard: {
     flex: 1,
-    backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusMd,
-    padding: SIZES.md,
-    marginHorizontal: SIZES.xs,
+    backgroundColor: C.white,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.border,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    paddingBottom: 11,
   },
-  actionIcon: {
+  iconChipLav: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    backgroundColor: C.lavenderBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.sm,
+  },
+  iconChipSage: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    backgroundColor: C.sageBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: SIZES.sm,
+  },
+  iconChipRose: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    backgroundColor: C.roseBg,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: SIZES.sm,
   },
   actionTitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
+    fontSize: 15,
+    lineHeight: 18,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: 2,
   },
   actionSubtitle: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontSize: 11,
+    fontFamily: F.ui,
+    color: C.gray,
   },
-  // Weekly Tip & Affirmation Card Styles
+  // Weekly Tip & Affirmation — approved tipcard vocabulary
   weeklyCard: {
-    marginBottom: SIZES.md,
-    padding: SIZES.md,
-  },
-  weeklyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SIZES.sm,
-  },
-  weeklyIconContainer: {
-    marginRight: SIZES.sm,
-  },
-  weeklyHeaderText: {
-    flex: 1,
-  },
-  weeklyLabel: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
-  },
-  weeklyWeek: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.primary,
+    marginBottom: 8,
+    paddingVertical: 13,
+    paddingHorizontal: 15,
   },
   weeklyContent: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
-    lineHeight: 22,
-    marginBottom: SIZES.sm,
+    fontSize: 13,
+    lineHeight: 20,
+    fontFamily: F.ui,
+    color: C.body,
+    marginBottom: 8,
   },
   weeklyReadMore: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  weeklyReadMoreText: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.primary,
+    gap: 2,
   },
   affirmationCard: {
-    backgroundColor: colors.roleDoula + '08',
     borderLeftWidth: 3,
-    borderLeftColor: colors.roleDoula,
+    borderLeftColor: C.roseBorder,
   },
   affirmationContent: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyItalic || FONTS.body,
-    color: colors.text,
-    lineHeight: 24,
-    fontStyle: 'italic',
+    fontSize: 16.5,
+    lineHeight: 23,
+    fontFamily: F.serifItalic,
+    color: C.ink,
   },
   actionRequiredCard: {
-    marginBottom: SIZES.sm,
-    padding: SIZES.md,
+    marginBottom: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
   },
   actionRequiredHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
   },
   actionRequiredIcon: {
-    marginRight: SIZES.md,
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    backgroundColor: C.roseBg,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   actionRequiredContent: {
     flex: 1,
   },
-  actionRequiredTitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
-    marginBottom: 2,
+  rowTitle: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontFamily: F.uiSemi,
+    color: C.ink,
   },
-  actionRequiredSubtitle: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+  rowMeta: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontFamily: F.ui,
+    color: C.gray,
+    marginTop: 3,
   },
   recentlyPaidCard: {
-    marginBottom: SIZES.sm,
-    padding: SIZES.md,
-    backgroundColor: colors.success + '08',
+    marginBottom: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
   },
   // Error State Styles
   errorContainer: {
@@ -764,50 +821,47 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.xs,
     textAlign: 'center',
   },
-  // Baby Development Card Styles
+  // Baby Development — approved devart watercolor card
   babyDevCard: {
-    marginBottom: SIZES.md,
-    padding: SIZES.md,
-    backgroundColor: colors.background,
+    marginBottom: 8,
+    paddingVertical: 13,
+    paddingHorizontal: 15,
   },
   babyDevImage: {
     width: '100%',
-    height: 220,
-    borderRadius: SIZES.radiusMd,
+    height: 150,
+    borderRadius: 14,
   },
   babyDevImageContainer: {
-    marginBottom: SIZES.md,
+    marginBottom: 10,
   },
   babyDevImagePlaceholder: {
-    height: 200,
-    borderRadius: SIZES.radiusMd,
-    backgroundColor: colors.secondary + '12',
+    height: 150,
+    borderRadius: 14,
+    backgroundColor: C.roseBg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   babyDevSizeBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.accent + '20',
-    paddingHorizontal: SIZES.sm,
-    paddingVertical: SIZES.xs / 2,
-    borderRadius: SIZES.radiusSm,
-    marginBottom: SIZES.sm,
+    backgroundColor: C.sageBg,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+    marginBottom: 6,
   },
   babyDevSizeBadgeText: {
-    fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
-    color: colors.accent,
-  },
-  babyDevTitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
+    fontSize: 9.5,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    fontFamily: F.uiBold,
+    color: C.sage,
   },
   babyDevDescription: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
-    lineHeight: 22,
-    marginBottom: SIZES.sm,
+    fontSize: 13,
+    lineHeight: 20,
+    fontFamily: F.ui,
+    color: C.body,
+    marginBottom: 8,
   },
 }));

@@ -24,6 +24,8 @@ import { SIZES, FONTS, COLORS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-chart-kit';
+import Svg, { Circle } from 'react-native-svg';
+import { C, F } from '../../src/constants/designRefresh';
 
 // Types
 interface Contraction {
@@ -87,10 +89,28 @@ interface ChartData {
 }
 
 const INTENSITIES = [
-  { value: 'MILD', label: 'Mild', color: COLORS.accent },
-  { value: 'MODERATE', label: 'Moderate', color: COLORS.warning },
-  { value: 'STRONG', label: 'Strong', color: COLORS.error },
+  { value: 'MILD', label: 'Mild', color: C.sage },
+  { value: 'MODERATE', label: 'Moderate', color: C.lavender },
+  { value: 'STRONG', label: 'Strong', color: C.rose },
 ];
+
+// Approved S11 halo — 4 concentric rings behind the timer circle (mockup svg.halo verbatim)
+function HaloRings() {
+  return (
+    <Svg
+      width={420}
+      height={420}
+      viewBox="0 0 420 420"
+      fill="none"
+      style={StyleSheet.absoluteFill as any}
+    >
+      <Circle cx={210} cy={210} r={98} stroke={C.halo} strokeWidth={1.4} />
+      <Circle cx={210} cy={210} r={132} stroke={C.halo} strokeWidth={1.2} />
+      <Circle cx={210} cy={210} r={168} stroke={C.halo} strokeWidth={1.1} />
+      <Circle cx={210} cy={210} r={204} stroke={C.halo} strokeWidth={1} />
+    </Svg>
+  );
+}
 
 const BIRTH_WORDS = [
   { value: 'contractions', label: 'Contractions' },
@@ -152,7 +172,7 @@ export default function ContractionTimerScreen() {
   const [isContracting, setIsContracting] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [restingSeconds, setRestingSeconds] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   // Track real timestamps so timers survive app backgrounding
   const contractionStartTimeRef = useRef<number | null>(null);
@@ -580,14 +600,14 @@ export default function ContractionTimerScreen() {
   };
   
   const getPatternStatusColor = () => {
-    if (!patternStatus) return colors.textLight;
+    if (!patternStatus) return C.gray;
     switch (patternStatus.status) {
       case '511_reached':
-        return colors.error;
+        return C.rose;
       case 'progressing':
-        return colors.warning;
+        return C.lavender;
       default:
-        return colors.accent;
+        return C.sage;
     }
   };
   
@@ -762,11 +782,13 @@ export default function ContractionTimerScreen() {
   // Active session - main timer UI
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
-      {/* Header with Settings */}
+      {/* Header with Settings — approved tr-head: two-tone title, gear chip */}
       <View style={styles.headerRow}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>{birthWordCapitalized} Timer</Text>
+        <Text style={styles.headerTitle}>
+          {birthWordCapitalized} <Text style={styles.headerTitleAccent}>Timer</Text>
+        </Text>
         <Pressable style={styles.settingsBtn} onPress={() => setShowSettingsModal(true)}>
-          <Icon name="settings-outline" size={24} color={colors.text} />
+          <Icon name="settings-outline" size={19} color={C.lavender} />
         </Pressable>
       </View>
       
@@ -781,7 +803,7 @@ export default function ContractionTimerScreen() {
         </View>
       )}
       
-      {/* Header Stats Strip */}
+      {/* Header Stats Strip — approved .strip */}
       <View style={styles.statsStrip}>
         <View style={styles.statItem}>
           <Text style={styles.statValue}>{stats?.average_duration_formatted || '00:00'}</Text>
@@ -799,9 +821,11 @@ export default function ContractionTimerScreen() {
         </View>
       </View>
       
-      {/* Main Timer Display */}
+      {/* Main Timer Display — approved .thero/.twrap: halo rings behind circle */}
       <View style={styles.timerContainer}>
-        <Animated.View style={[styles.timerCircle, { transform: [{ scale: pulseAnim }] }]}>
+        <View style={styles.twrap}>
+          <HaloRings />
+          <Animated.View style={[styles.timerCircle, { transform: [{ scale: pulseAnim }] }]}>
           <Text style={styles.timerText}>
             {isContracting ? formatDuration(timerSeconds) : (
               session?.status === 'ACTIVE' && contractions.length > 0 
@@ -820,7 +844,8 @@ export default function ContractionTimerScreen() {
                 : 'Ready'
             )}
           </Text>
-        </Animated.View>
+          </Animated.View>
+        </View>
         
         {/* Main Button */}
         <Pressable
@@ -837,67 +862,64 @@ export default function ContractionTimerScreen() {
         </Pressable>
       </View>
       
-      {/* Bottom Actions */}
+      {/* Bottom Actions — approved .trow: icon above label */}
       <View style={styles.bottomActions}>
         <Pressable style={styles.actionBtn} onPress={() => setShowHistoryModal(true)}>
-          <Icon name="list-outline" size={24} color={colors.primary} />
+          <Icon name="list-outline" size={21} color={C.lavender} />
           <Text style={styles.actionBtnText}>History</Text>
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={() => setShowManualModal(true)}>
-          <Icon name="add-circle-outline" size={24} color={colors.primary} />
+          <Icon name="add-circle-outline" size={21} color={C.lavender} />
           <Text style={styles.actionBtnText}>Add Manual</Text>
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={exportSummary}>
-          <Icon name="share-outline" size={24} color={colors.primary} />
+          <Icon name="share-outline" size={21} color={C.lavender} />
           <Text style={styles.actionBtnText}>Share</Text>
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={endSession}>
-          <Icon name="flag-outline" size={24} color={colors.error} />
-          <Text style={[styles.actionBtnText, { color: colors.error }]}>End</Text>
+          <Icon name="flag-outline" size={21} color={C.rose} />
+          <Text style={[styles.actionBtnText, styles.actionBtnTextWarn]}>End</Text>
         </Pressable>
       </View>
       
-      {/* Phase 2: Secondary Actions Row */}
+      {/* Phase 2: Secondary Actions Row — approved .tpills ghost pills */}
       <View style={styles.secondaryActionsRow}>
         {!session?.water_broke_at && (
           <Pressable style={styles.secondaryActionBtn} onPress={() => setShowWaterBrokeModal(true)}>
-            <Icon name="water" size={20} color={colors.info || colors.primary} />
+            <Icon name="water" size={20} color={C.lavender} />
             <Text style={styles.secondaryActionText}>Water Broke</Text>
           </Pressable>
         )}
         
         <Pressable style={styles.secondaryActionBtn} onPress={() => setShowNotesModal(true)}>
-          <Icon name="create-outline" size={20} color={colors.primary} />
+          <Icon name="create-outline" size={20} color={C.lavender} />
           <Text style={styles.secondaryActionText}>Notes</Text>
         </Pressable>
         
         {(chartData?.duration_data?.length || 0) >= 3 && (
           <Pressable style={styles.secondaryActionBtn} onPress={() => setShowChartsModal(true)}>
-            <Icon name="stats-chart-outline" size={20} color={colors.primary} />
+            <Icon name="stats-chart-outline" size={20} color={C.lavender} />
             <Text style={styles.secondaryActionText}>Charts</Text>
           </Pressable>
         )}
       </View>
       
-      {/* Pattern Status - moved below actions, smaller and less intrusive */}
+      {/* Pattern status — approved .tchip: soft pill under the pills row */}
       {(stats?.contraction_count || 0) >= 1 && (
-        <View style={[styles.patternStatusCompact, { backgroundColor: getPatternStatusColor() + '15', borderColor: getPatternStatusColor() + '30' }]}>
-          <Icon 
-            name={patternStatus?.pattern_reached ? "alert-circle" : "pulse-outline"} 
-            size={16} 
-            color={getPatternStatusColor()} 
+        <View style={styles.patternStatusCompact}>
+          <Icon
+            name={patternStatus?.pattern_reached ? "alert-circle" : "pulse-outline"}
+            size={13}
+            color={getPatternStatusColor()}
           />
-          <Text style={[styles.patternStatusTextCompact, { color: getPatternStatusColor() }]}>
-            {getPatternStatusLabel()}
+          <Text style={[styles.patternStatusTextCompact, { color: getPatternStatusColor() }]} numberOfLines={1}>
+            {patternStatus?.pattern_reached
+              ? `${getPatternStatusLabel()} — ${patternStatus.message}`
+              : getPatternStatusLabel()}
           </Text>
-          {patternStatus?.pattern_reached && (
-            <Text style={[styles.patternAlertInline, { color: getPatternStatusColor() }]}>
-              - {patternStatus.message}
-            </Text>
-          )}
         </View>
       )}
       
@@ -1337,29 +1359,11 @@ export default function ContractionTimerScreen() {
 }
 
 const getStyles = createThemedStyles((colors) => ({
+  // —— Approved S11 shell (rev 3: no photo band; halo on cream) ——
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontFamily: FONTS.heading,
-    color: colors.text,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  
-  // Empty state
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -1394,165 +1398,208 @@ const getStyles = createThemedStyles((colors) => ({
     width: '100%',
     maxWidth: 300,
   },
-  
-  // Stats Strip
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 24,
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 8,
+  },
+  headerTitle: {
+    fontSize: 22,
+    lineHeight: 27,
+    fontFamily: F.serif,
+    color: C.ink,
+  },
+  headerTitleAccent: {
+    color: C.roseSoft,
+  },
+  settingsBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   statsStrip: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: C.white,
+    borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderColor: C.hairline,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
   },
   statItem: {
     flex: 1,
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 20,
-    fontFamily: FONTS.heading,
-    color: colors.primary,
+    fontSize: 19,
+    lineHeight: 21,
+    fontFamily: F.serif,
+    color: C.lavender,
   },
   statLabel: {
-    fontSize: 12,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
-    marginTop: 4,
+    fontSize: 9.5,
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+    fontFamily: F.uiBold,
+    color: C.grayLight,
+    marginTop: 2,
   },
   statDivider: {
     width: 1,
-    backgroundColor: colors.border,
-    marginVertical: 4,
+    backgroundColor: C.hairline,
+    marginVertical: 2,
   },
-  
-  // Timer Container
   timerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingTop: 4,
+  },
+  twrap: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   timerCircle: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: colors.surface,
+    width: 186,
+    height: 186,
+    borderRadius: 93,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowColor: C.lavender,
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.14,
+    shadowRadius: 34,
     elevation: 8,
-    marginBottom: 24,
   },
   timerText: {
-    fontSize: 48,
-    fontFamily: FONTS.heading,
-    color: colors.text,
+    fontSize: 52,
+    fontFamily: F.serif,
+    color: C.ink,
+    letterSpacing: 1,
   },
   timerLabel: {
-    fontSize: 16,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
-    marginTop: 4,
+    fontSize: 10,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    fontFamily: F.uiBold,
+    color: C.rose,
+    marginTop: 7,
   },
   mainButton: {
     width: '100%',
-    maxWidth: 300,
-    paddingVertical: 20,
-    borderRadius: 30,
-    backgroundColor: colors.primary,
+    maxWidth: 290,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderRadius: 999,
+    backgroundColor: C.lavender,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 16,
   },
   mainButtonActive: {
-    backgroundColor: colors.secondary,
+    backgroundColor: C.lavender,
   },
   mainButtonText: {
-    fontSize: 18,
-    fontFamily: FONTS.heading,
-    color: colors.white,
+    fontSize: 14,
+    fontFamily: F.uiBold,
+    color: C.white,
   },
-  
-  // Pattern Status
-  patternStatus: {
+  bottomActions: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    paddingBottom: 7,
+    borderTopWidth: 1,
+    borderTopColor: C.hairline,
+    backgroundColor: C.white,
+  },
+  actionBtn: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 3,
+  },
+  actionBtnText: {
+    fontSize: 9,
+    letterSpacing: 0.4,
+    fontFamily: F.uiBold,
+    color: C.lavender,
+  },
+  actionBtnTextWarn: {
+    color: C.rose,
+  },
+  secondaryActionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingTop: 9,
+    paddingBottom: 2,
+    paddingHorizontal: 20,
+    gap: 8,
+  },
+  secondaryActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginHorizontal: 20,
-    marginBottom: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    backgroundColor: colors.surface,
+    paddingVertical: 7,
+    paddingHorizontal: 13,
+    backgroundColor: C.cardBg,
+    borderRadius: 999,
+    borderWidth: 1.3,
+    borderColor: C.lavenderBorder,
   },
-  patternStatusText: {
-    fontSize: 14,
-    fontFamily: FONTS.body,
-    marginLeft: 8,
+  secondaryActionText: {
+    fontSize: 11.5,
+    fontFamily: F.uiBold,
+    color: C.lavender,
+    marginLeft: 6,
   },
-  patternAlert: {
-    backgroundColor: colors.error + '15',
-    marginHorizontal: 20,
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  patternAlertText: {
-    fontSize: 14,
-    fontFamily: FONTS.body,
-    color: colors.error,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-
-  // Compact Pattern Status (moved below actions)
   patternStatusCompact: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
+    alignSelf: 'center',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
     marginHorizontal: 20,
-    marginTop: 4,
+    marginTop: 6,
     marginBottom: 4,
-    borderRadius: 20,
+    borderRadius: 999,
     borderWidth: 1,
-    flexWrap: 'wrap',
+    borderColor: C.sageBg,
+    backgroundColor: C.cream,
+    gap: 6,
   },
   patternStatusTextCompact: {
-    fontSize: 13,
-    fontFamily: FONTS.bodyMedium,
-    marginLeft: 6,
+    fontSize: 10.5,
+    fontFamily: F.uiBold,
+    flexShrink: 1,
   },
   patternAlertInline: {
     fontSize: 12,
     fontFamily: FONTS.body,
     marginLeft: 4,
     flexShrink: 1,
-  },
-  
-  // Bottom Actions
-  bottomActions: {
-    flexDirection: 'row',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  actionBtn: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  actionBtnText: {
-    fontSize: 12,
-    fontFamily: FONTS.body,
-    color: colors.primary,
-    marginTop: 4,
   },
   
   // Modal styles
@@ -1810,19 +1857,6 @@ const getStyles = createThemedStyles((colors) => ({
   },
   
   // Phase 2 Styles
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  settingsBtn: {
-    padding: 8,
-  },
   waterBrokeBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1840,32 +1874,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginLeft: 8,
     flex: 1,
   },
-  secondaryActionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    gap: 12,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.background,
-  },
-  secondaryActionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: colors.surface,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  secondaryActionText: {
-    fontSize: 13,
-    fontFamily: FONTS.body,
-    color: colors.primary,
-    marginLeft: 6,
-  },
+
   
   // Settings Modal
   settingsSection: {

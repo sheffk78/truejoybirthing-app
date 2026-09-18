@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../src/store/authStore';
 import { useBadgeStore } from '../../src/store/badgeStore';
 import { useNotificationBadges } from '../../src/hooks/useNotificationBadges';
+import { C, F } from '../../src/constants/designRefresh';
 
 function TabIconWithBadge({
   name,
@@ -64,18 +65,20 @@ export default function MomLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textLight,
+        tabBarActiveTintColor: C.lavenderSoft,
+        tabBarInactiveTintColor: '#9C9DA0',
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
+          backgroundColor: C.white,
+          borderTopColor: C.hairline,
+          borderTopWidth: 1,
           height: (Platform.OS === 'ios' ? 60 : 56) + bottomInset,
           paddingBottom: bottomInset,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: SIZES.fontXs,
-          fontWeight: '500',
+          fontSize: 10.5,
+          fontWeight: '700',
+          fontFamily: F.uiBold,
         },
       }}
     >

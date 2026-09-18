@@ -19,6 +19,9 @@ import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData, type BabyDevEntry } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import HBand from '../../src/components/mom/HBand';
+import { C, F, BAND_TIPS, trimesterOf } from '../../src/constants/designRefresh';
 
 interface WeekContent {
   week: number;
@@ -37,6 +40,7 @@ export default function WeeklyTipsScreen() {
   const [showPostpartum, setShowPostpartum] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const fetchData = useCallback(async () => {
     try {
@@ -94,16 +98,19 @@ export default function WeeklyTipsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton}>
-          <Icon name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Weekly Tips & Affirmations</Text>
-        <View style={{ width: 32 }} />
+      {/* Header — approved S12: photo band under status bar, title on veil */}
+      <View style={[styles.bandWrap, { marginTop: -insets.top }]}>
+        <HBand source={BAND_TIPS} height={168 + insets.top} />
+        <View style={[styles.header, { paddingTop: insets.top + 24 }]}>
+          <Text style={styles.overline}>YOUR WEEK</Text>
+          <Text style={styles.headerTitle}>
+            Weekly Tips & <Text style={styles.headerTitleAccent}>Affirmations</Text>
+          </Text>
+          <Text style={styles.headerSub}>One steady rhythm of learning, all 42 weeks</Text>
+        </View>
       </View>
 
-      {/* Tab Selector */}
+      {/* Tab Selector — approved pills */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, !showPostpartum && styles.tabActive]}
@@ -113,7 +120,7 @@ export default function WeeklyTipsScreen() {
           }}
         >
           <Text style={[styles.tabText, !showPostpartum && styles.tabTextActive]}>
-            Pregnancy (1-42)
+            Pregnancy · 1–42
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -124,7 +131,7 @@ export default function WeeklyTipsScreen() {
           }}
         >
           <Text style={[styles.tabText, showPostpartum && styles.tabTextActive]}>
-            Postpartum (1-6)
+            Postpartum · 1–6
           </Text>
         </TouchableOpacity>
       </View>
@@ -136,8 +143,8 @@ export default function WeeklyTipsScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Week Selector */}
-        <Text style={styles.sectionLabel}>Select Week</Text>
+        {/* Week Selector — approved week strip */}
+        <Text style={styles.sectionLabel}>Select week</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -150,7 +157,10 @@ export default function WeeklyTipsScreen() {
               (showPostpartum && currentContent.is_postpartum && week === currentContent.postpartum_week) ||
               (!showPostpartum && !currentContent.is_postpartum && week === currentContent.week)
             );
-            
+            // Approved: show ±5 weeks around current, others faded
+            const currentWeekNum = showPostpartum ? currentContent?.postpartum_week : currentContent?.week;
+            const isFaded = !isCurrent && !isSelected && currentWeekNum &&
+              Math.abs(week - currentWeekNum) > 3;
             return (
               <TouchableOpacity
                 key={week}
@@ -164,112 +174,84 @@ export default function WeeklyTipsScreen() {
                 <Text style={[
                   styles.weekButtonText,
                   isSelected && styles.weekButtonTextSelected,
+                  isCurrent && !isSelected && styles.weekButtonTextCurrent,
+                  isFaded && styles.weekButtonTextFaded,
                 ]}>
                   {week}
                 </Text>
-                {isCurrent && (
-                  <View style={styles.currentDot} />
-                )}
               </TouchableOpacity>
             );
           })}
         </ScrollView>
 
-        {/* Selected Week Header */}
+        {/* Selected Week Header — approved layout */}
         <View style={styles.selectedWeekHeader}>
           <Text style={styles.selectedWeekTitle}>
             {showPostpartum
-              ? `Postpartum Week ${selectedWeek}`
-              : `Week ${selectedWeek}${isCurrentWeek && currentContent?.current_day != null ? `, Day ${currentContent.current_day + 1}` : ''}`}
+              ? `Postpartum Week ${selectedWeek ?? 1}`
+              : `Week ${selectedWeek ?? 1}`}
           </Text>
           {isCurrentWeek && (
             <View style={styles.currentBadge}>
-              <Text style={styles.currentBadgeText}>Your Current Week</Text>
+              <Text style={styles.currentBadgeText}>Your current week</Text>
             </View>
           )}
         </View>
+        <Text style={styles.selectedWeekSub}>
+          {showPostpartum
+            ? 'Postpartum recovery'
+            : `${trimesterOf(selectedWeek || 1)}${isCurrentWeek && currentContent?.current_day != null ? ` · day ${currentContent.current_day + 1}` : ''}`}
+        </Text>
 
-        {/* Weekly Tip Card */}
+        {/* Weekly Tip Card — approved tipcard */}
         {displayContent?.tip && (
-          <Card style={styles.contentCard}>
-            <View style={styles.contentHeader}>
-              <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
-                <Icon name="bulb" size={24} color={colors.primary} />
-              </View>
-              <Text style={styles.contentLabel}>Weekly Tip</Text>
-            </View>
-            <Text style={styles.tipText}>{displayContent.tip}</Text>
-          </Card>
+          <View style={styles.tipCard}>
+            <Text style={styles.kickerLav}>WEEKLY TIP</Text>
+            <Text style={styles.tipBody}>{displayContent.tip}</Text>
+          </View>
         )}
 
-        {/* Weekly Affirmation Card */}
+        {/* Affirmation Card — approved tipcard.affirm */}
         {displayContent?.affirmation && (
-          <Card style={[styles.contentCard, styles.affirmationCard]}>
-            <View style={styles.contentHeader}>
-              <View style={[styles.iconContainer, { backgroundColor: colors.roleDoula + '20' }]}>
-                <Icon name="heart" size={24} color={colors.roleDoula} />
-              </View>
-              <Text style={styles.contentLabel}>Weekly Affirmation</Text>
-            </View>
-            <Text style={styles.affirmationText}>"{displayContent.affirmation}"</Text>
-          </Card>
+          <View style={[styles.tipCard, styles.tipCardAffirm]}>
+            <Text style={styles.kickerRose}>AFFIRMATION</Text>
+            <Text style={styles.affirmQuote}>"{displayContent.affirmation}"</Text>
+          </View>
         )}
 
-        {/* Baby Development Card (pregnancy weeks 4-40 only) */}
+        {/* Baby Development — approved srow with thumbnail */}
         {!showPostpartum && (() => {
           const week = selectedWeek;
           if (!week || week < 4 || week > 40) return null;
-          
-          // Local data for offline-first, supplemented by API
           const localBabyDev = getBabyDevData(week);
           const apiBabyDev = displayContent?.baby_development;
-
           const babyDev = apiBabyDev || localBabyDev;
           if (!babyDev) return null;
-
           return (
-            <Card style={styles.babyDevCard}>
-              <View style={styles.contentHeader}>
-                <View style={[styles.iconContainer, { backgroundColor: colors.secondary + '20' }]}>
-                  <Icon name="baby" size={24} color={colors.secondary} />
-                </View>
-                <Text style={styles.contentLabel}>Baby Development</Text>
-              </View>
-              
-              {/* Phase label */}
-              <Text style={styles.babyDevPhaseLabel}>
-                {babyDev.food 
-                  ? `As small as a ${babyDev.food}${babyDev.sizeNote ? ` (${babyDev.sizeNote})` : ''}`
-                  : `Week ${week}`}
-              </Text>
-              
-              {/* Baby development illustration */}
+            <View style={styles.babyDevRow}>
               {hasPregnancyIllustration(week) ? (
                 <Image
                   source={getPregnancyIllustration(week)}
-                  style={styles.babyDevImage}
-                  resizeMode="contain"
-                  accessibilityLabel={
-                    babyDev.phase === 'size_reference'
-                      ? `Illustration showing the size of a ${babyDev.food} at week ${week} of pregnancy`
-                      : `Cross-section illustration showing baby at ${week} weeks inside the uterus`
-                  }
-                  onError={(e) => console.warn(`Failed to load pregnancy illustration for week ${week}:`, e.nativeEvent?.error)}
+                  style={styles.babyDevThumb}
+                  resizeMode="cover"
+                  accessibilityLabel={`Baby development illustration at week ${week}`}
                 />
               ) : (
-                <View style={styles.babyDevImagePlaceholder}>
-                  <Icon name="image-outline" size={48} color={colors.secondary + '40'} />
+                <View style={[styles.babyDevThumb, styles.babyDevThumbPlaceholder]}>
+                  <Icon name="image-outline" size={28} color={C.grayLight} />
                 </View>
               )}
-              
-              {/* For size_reference weeks, title duplicates the phase label — skip it */}
-              {babyDev.phase !== 'size_reference' && (
-                <Text style={styles.babyDevTitle}>{babyDev.title}</Text>
-              )}
-              <Text style={styles.babyDevDescription}>
-                {babyDev.description}
-              </Text>
-            </Card>
+              <View style={styles.babyDevMid}>
+                <Text style={styles.kickerSage}>BABY AT WEEK {week}</Text>
+                <Text style={styles.babyDevTitle}>
+                  {babyDev.phase !== 'size_reference' ? babyDev.title : `As small as a ${babyDev.food}`}
+                </Text>
+                <Text style={styles.babyDevDesc} numberOfLines={3}>
+                  {babyDev.description}
+                </Text>
+                <Text style={styles.babyDevLink}>Open this week's full guide</Text>
+              </View>
+            </View>
           );
         })()}
 
@@ -287,223 +269,278 @@ export default function WeeklyTipsScreen() {
 const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
+  },
+  // —— Approved S12 header (band + title on veil) ——
+  bandWrap: {
+    position: 'relative',
+    zIndex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SIZES.lg,
-    paddingVertical: SIZES.md,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    paddingHorizontal: 20,
+    paddingBottom: 8,
   },
-  backButton: {
-    padding: SIZES.xs,
+  overline: {
+    fontSize: 10,
+    letterSpacing: 2.4,
+    textTransform: 'uppercase',
+    fontWeight: '700',
+    color: C.rose,
+    marginBottom: 5,
+    fontFamily: F.uiBold,
   },
   headerTitle: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
-    color: colors.text,
+    fontSize: 26,
+    fontFamily: F.serif,
+    color: C.ink,
+    lineHeight: 32,
+  },
+  headerTitleAccent: {
+    color: C.roseSoft,
+  },
+  headerSub: {
+    fontSize: 12.5,
+    color: C.gray,
+    marginTop: 4,
+    fontFamily: F.ui,
+    fontWeight: '500',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: C.cream,
   },
   loadingText: {
-    marginTop: SIZES.md,
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    marginTop: 12,
+    fontSize: 13,
+    fontFamily: F.ui,
+    color: C.gray,
   },
+  // —— Approved tab pills (.tabs2 .t2) ——
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
-    paddingHorizontal: SIZES.md,
-    paddingBottom: SIZES.sm,
+    gap: 8,
+    marginHorizontal: 20,
+    marginTop: 14,
   },
   tab: {
     flex: 1,
-    paddingVertical: SIZES.sm,
     alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
+    paddingVertical: 9,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    borderWidth: 1.3,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.cardBg,
   },
   tabActive: {
-    borderBottomColor: colors.primary,
+    backgroundColor: C.lavender,
+    borderColor: C.lavender,
   },
   tabText: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: F.uiBold,
+    color: C.lavender,
   },
   tabTextActive: {
-    fontFamily: FONTS.bodyBold,
-    color: colors.primary,
+    color: C.white,
   },
   scrollContent: {
-    padding: SIZES.lg,
-    paddingBottom: SIZES.xl * 2,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 60,
   },
   sectionLabel: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
-    color: colors.textSecondary,
-    marginBottom: SIZES.sm,
+    fontSize: 11.5,
+    fontFamily: F.ui,
+    fontWeight: '500',
+    color: C.gray,
+    marginBottom: 7,
   },
+  // —— Approved week strip (.wstrip .wk) ——
   weekScrollContainer: {
-    marginBottom: SIZES.lg,
+    marginBottom: 14,
   },
   weekScrollContent: {
-    paddingRight: SIZES.lg,
+    paddingRight: 20,
+    gap: 7,
   },
   weekButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.surface,
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    backgroundColor: C.white,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: SIZES.sm,
     borderWidth: 1,
-    borderColor: colors.border,
-    position: 'relative',
+    borderColor: C.border,
   },
   weekButtonSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: C.lavender,
+    borderColor: C.lavender,
   },
   weekButtonCurrent: {
-    borderColor: colors.accent,
-    borderWidth: 2,
+    borderColor: C.roseSoft,
+    backgroundColor: '#FBF5F9',
   },
   weekButtonText: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
+    fontSize: 12,
+    fontWeight: '700',
+    fontFamily: F.uiBold,
+    color: C.gray,
   },
   weekButtonTextSelected: {
-    color: colors.white,
+    color: C.white,
   },
-  currentDot: {
-    position: 'absolute',
-    bottom: -6,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.accent,
+  weekButtonTextCurrent: {
+    color: C.rose,
   },
+  weekButtonTextFaded: {
+    opacity: 0.45,
+  },
+  // —— Approved selected week header ——
   selectedWeekHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SIZES.lg,
+    alignItems: 'baseline',
+    gap: 10,
+    marginBottom: 2,
   },
   selectedWeekTitle: {
-    fontSize: SIZES.fontXl,
-    fontFamily: FONTS.heading,
-    color: colors.text,
+    fontSize: 21,
+    fontFamily: F.serif,
+    color: C.ink,
+  },
+  selectedWeekSub: {
+    fontSize: 11.5,
+    fontFamily: F.ui,
+    fontWeight: '500',
+    color: C.gray,
+    marginBottom: 10,
   },
   currentBadge: {
-    marginLeft: SIZES.sm,
-    backgroundColor: colors.accent + '20',
-    paddingHorizontal: SIZES.sm,
-    paddingVertical: SIZES.xs / 2,
-    borderRadius: SIZES.radiusSm,
+    backgroundColor: C.lavenderBg,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
   },
   currentBadgeText: {
-    fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
-    color: colors.accent,
+    fontSize: 9.5,
+    letterSpacing: 0.6,
+    fontWeight: '700',
+    fontFamily: F.uiBold,
+    color: C.lavender,
+    textTransform: 'uppercase',
   },
-  contentCard: {
-    marginBottom: SIZES.md,
-    padding: SIZES.lg,
+  // —— Approved tip cards (.tipcard) ——
+  tipCard: {
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 18,
+    paddingVertical: 13,
+    paddingHorizontal: 15,
+    marginBottom: 8,
   },
-  contentHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SIZES.md,
+  tipCardAffirm: {
+    borderLeftWidth: 3,
+    borderLeftColor: C.roseBorder,
   },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SIZES.sm,
+  kickerLav: {
+    fontSize: 10,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    fontWeight: '700',
+    fontFamily: F.uiBold,
+    color: C.lavender,
+    marginBottom: 6,
   },
-  contentLabel: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
+  kickerRose: {
+    fontSize: 10,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    fontWeight: '700',
+    fontFamily: F.uiBold,
+    color: C.rose,
+    marginBottom: 6,
   },
-  tipText: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
-    lineHeight: 26,
+  kickerSage: {
+    fontSize: 10,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    fontWeight: '700',
+    fontFamily: F.uiBold,
+    color: C.sage,
+    marginBottom: 4,
   },
-  affirmationCard: {
-    backgroundColor: colors.roleDoula + '08',
-    borderLeftWidth: 4,
-    borderLeftColor: colors.roleDoula,
+  tipBody: {
+    fontSize: 13,
+    lineHeight: 20,
+    fontFamily: F.ui,
+    fontWeight: '500',
+    color: C.body,
   },
-  affirmationText: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    lineHeight: 28,
-    fontStyle: 'italic',
+  affirmQuote: {
+    fontSize: 16.5,
+    lineHeight: 23,
+    fontFamily: F.serifItalic,
+    color: C.ink,
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: SIZES.xl * 2,
+    paddingVertical: 80,
   },
   emptyText: {
-    marginTop: SIZES.md,
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    marginTop: 12,
+    fontSize: 13,
+    fontFamily: F.ui,
+    color: C.gray,
   },
-  // Baby Development Card Styles
-  babyDevCard: {
-    marginBottom: SIZES.md,
-    padding: SIZES.lg,
-    backgroundColor: colors.background,
+  // —— Approved baby dev row (.srow with thumbnail) ——
+  babyDevRow: {
+    flexDirection: 'row',
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 18,
+    padding: 12,
+    gap: 12,
+    alignItems: 'center',
+    marginTop: 4,
   },
-  babyDevPhaseLabel: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.secondary,
-    marginBottom: SIZES.sm,
+  babyDevThumb: {
+    width: 88,
+    height: 88,
+    borderRadius: 12,
+    flexShrink: 0,
   },
-  babyDevImage: {
-    width: '100%',
-    height: 260,
-    borderRadius: SIZES.radiusMd,
-    resizeMode: 'contain',
-    marginBottom: SIZES.md,
-  },
-  babyDevImagePlaceholder: {
-    height: 200,
-    borderRadius: SIZES.radiusMd,
-    backgroundColor: colors.secondary + '12',
+  babyDevThumbPlaceholder: {
+    backgroundColor: C.lavenderBg,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SIZES.md,
+  },
+  babyDevMid: {
+    flex: 1,
   },
   babyDevTitle: {
-    fontSize: SIZES.fontLg,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
-    marginBottom: SIZES.xs,
+    fontSize: 15.5,
+    fontFamily: F.serifSemi,
+    color: C.ink,
+    marginBottom: 4,
   },
-  babyDevDescription: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
-    lineHeight: 26,
+  babyDevDesc: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontFamily: F.ui,
+    fontWeight: '500',
+    color: C.gray,
+  },
+  babyDevLink: {
+    fontSize: 11,
+    fontFamily: F.uiSemi,
+    fontWeight: '600',
+    color: C.lavender,
+    marginTop: 6,
   },
 }));
