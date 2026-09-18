@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE, API_ENDPOINTS } from '../constants/api';
 import { wsClient } from '../utils/websocket';
+import { tokenStorage } from '../utils/tokenStorage';
 import { useSubscriptionStore } from './subscriptionStore';
 
 export interface User {
@@ -81,8 +81,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       const data = await response.json();
       
-      // Save token to SecureStore for persistence (encrypted on device)
-      await SecureStore.setItemAsync('session_token', data.session_token);
+      // Save session token (localStorage on web, SecureStore on native)
+      await tokenStorage.setItem(data.session_token);
       
       set({
         user: {
@@ -160,7 +160,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       const data = await response.json();
       
-      await SecureStore.setItemAsync('session_token', data.session_token);
+      await tokenStorage.setItem(data.session_token);
       
       set({
         user: {
@@ -240,7 +240,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     // 4. Call backend logout API and clear stored session token
     try {
-      const token = get().sessionToken || await SecureStore.getItemAsync('session_token');
+      const token = get().sessionToken || await tokenStorage.getItem();
       if (token) {
         await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_LOGOUT}`, {
           method: 'POST',
@@ -253,7 +253,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
     
     try {
-      await SecureStore.deleteItemAsync('session_token');
+      await tokenStorage.removeItem();
     } catch (e) {
       // best effort
     }
@@ -268,7 +268,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   deleteAccount: async () => {
     try {
       set({ isLoading: true });
-      const token = get().sessionToken || await SecureStore.getItemAsync('session_token');
+      const token = get().sessionToken || await tokenStorage.getItem();
       if (!token) throw new Error('Not authenticated');
       
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_DELETE_ACCOUNT}`, {
@@ -284,7 +284,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       // Clear local storage and reset state
       try {
-        await SecureStore.deleteItemAsync('session_token');
+        await tokenStorage.removeItem();
       } catch (e) { /* best effort */ }
       set({
         user: null,
@@ -305,7 +305,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Try to get token from store first, then from SecureStore
       let token = get().sessionToken;
       if (!token) {
-        token = await SecureStore.getItemAsync('session_token');
+        token = await tokenStorage.getItem();
       }
       
       if (!token) {
@@ -323,7 +323,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // Deleting on 500 would force logout when the server has a temporary hiccup
         if (response.status === 401 || response.status === 403) {
           try {
-            await SecureStore.deleteItemAsync('session_token');
+            await tokenStorage.removeItem();
           } catch (e) { /* best effort */ }
           set({ isLoading: false, isAuthenticated: false, user: null, sessionToken: null });
         } else {
@@ -361,7 +361,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   
   setRole: async (role) => {
     try {
-      const token = get().sessionToken || await SecureStore.getItemAsync('session_token');
+      const token = get().sessionToken || await tokenStorage.getItem();
       if (!token) throw new Error('Not authenticated');
       
       const response = await fetch(`${API_BASE}${API_ENDPOINTS.AUTH_SET_ROLE}`, {

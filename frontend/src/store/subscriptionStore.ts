@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
 import { API_BASE, API_ENDPOINTS } from '../constants/api';
+import { tokenStorage } from '../utils/tokenStorage';
 import { getSubscriptionProvider } from '../../app/services/billing';
 
 export interface SubscriptionStatus {
@@ -53,7 +53,7 @@ interface SubscriptionState {
 
 const getAuthToken = async (): Promise<string | null> => {
   try {
-    return await SecureStore.getItemAsync('session_token');
+    return await tokenStorage.getItem();
   } catch {
     return null;
   }

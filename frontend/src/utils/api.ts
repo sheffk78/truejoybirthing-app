@@ -1,5 +1,5 @@
-import * as SecureStore from 'expo-secure-store';
 import { API_BASE } from '../constants/api';
+import { tokenStorage } from './tokenStorage';
 import { Platform } from 'react-native';
 import { useAuthStore } from '../store/authStore';
 
@@ -24,7 +24,7 @@ export function getApiBaseUrl(): string {
 export async function apiRequest<T = any>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   const { method = 'GET', body, headers = {}, timeoutMs = 15000 } = options;
   
-  const token = await SecureStore.getItemAsync('session_token');
+  const token = await tokenStorage.getItem();
   
   const requestHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
