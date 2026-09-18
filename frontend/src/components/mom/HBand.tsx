@@ -14,15 +14,17 @@ interface HBandProps {
 
 export default function HBand({ source, height = 168 }: HBandProps) {
   // Web: RN-web Image ignores resizeMode for its background-image layer (renders
-  // intrinsic-size bg div → zoomed sliver). Bypass with real CSS background styles.
-  // Native: keep RN Image with cover.
+  // intrinsic-size bg div → zoomed sliver), and react-native-svg defaults to its
+  // intrinsic 300×150 size under absoluteFill (veil = misplaced white patch).
+  // Bypass BOTH with plain CSS: background-image photo + linear-gradient veil.
+  // Native: RN Image (cover) + SVG veil, which size correctly on native.
   const uri =
     Platform.OS === 'web' && typeof (source as any)?.uri === 'string'
       ? (source as any).uri
       : null;
-  return (
-    <View style={{ height, position: 'relative', overflow: 'hidden' }}>
-      {uri ? (
+  if (uri) {
+    return (
+      <View style={{ height, position: 'relative', overflow: 'hidden' }}>
         <View
           style={
             [
@@ -36,10 +38,24 @@ export default function HBand({ source, height = 168 }: HBandProps) {
             ] as any
           }
         />
-      ) : (
-        <Image source={source} resizeMode="cover" style={StyleSheet.absoluteFill} />
-      )}
-      <Svg style={StyleSheet.absoluteFill}>
+        <View
+          style={
+            [
+              StyleSheet.absoluteFill,
+              {
+                backgroundImage:
+                  'linear-gradient(to bottom, rgba(42,42,42,0.05) 0%, rgba(250,248,245,0) 45%, rgba(250,248,245,0.75) 92%, #FAF8F5 100%)',
+              },
+            ] as any
+          }
+        />
+      </View>
+    );
+  }
+  return (
+    <View style={{ height, position: 'relative', overflow: 'hidden' }}>
+      <Image source={source} resizeMode="cover" style={StyleSheet.absoluteFill} />
+      <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
         <Defs>
           <SvgGradient id="hbandVeil" x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0" stopColor="#2A2A2A" stopOpacity="0.05" />
