@@ -18,12 +18,14 @@ import { formatDateLocal, todayLocal } from '../../src/utils/date';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import TIcon from '../../src/components/TIcon';
+import HBand from '../../src/components/mom/HBand';
+import { C, F, BAND_APPOINTMENTS } from '../../src/constants/designRefresh';
 
 interface Appointment {
   appointment_id: string;
@@ -66,20 +68,26 @@ const APPOINTMENT_TYPES = [
   { value: 'home_visit', label: 'Home Visit' },
 ];
 
-const getStatusColors = (colors: ReturnType<typeof useColors>): Record<string, string> => ({
-  pending: colors.warning,
-  accepted: colors.success,
-  scheduled: colors.success,
-  confirmed: colors.success,
-  declined: colors.error,
-  cancelled: colors.textLight,
-  completed: colors.textLight,
-});
+// ---- Approved S7 chip law (mockup .schip): done sage / wip lavender / warn rose / todo gray ----
+const STATUS_CHIP: Record<string, { label: string; color: string; bg: string }> = {
+  accepted: { label: 'Confirmed', color: C.sage, bg: C.sageBg },
+  scheduled: { label: 'Confirmed', color: C.sage, bg: C.sageBg },
+  confirmed: { label: 'Confirmed', color: C.sage, bg: C.sageBg },
+  pending: { label: 'Pending', color: C.lavender, bg: C.lavenderBg },
+  declined: { label: 'Declined', color: C.rose, bg: C.roseBg },
+  cancelled: { label: 'Cancelled', color: C.grayLight, bg: C.track },
+  completed: { label: 'Visited', color: C.sage, bg: C.sageBg },
+};
+
+// ---- Approved S7 row icon law (mockup .sico): sage leaf for in-person, lavender video for virtual ----
+const rowIconFor = (apt: Appointment): { name: string; color: string; bg: string } => {
+  if (apt.is_virtual) return { name: 'messages', color: C.lavender, bg: C.lavenderBg };
+  return { name: 'k_timeline', color: C.sage, bg: C.sageBg };
+};
 
 export default function AppointmentsScreen() {
   const colors = useColors();
   const styles = getStyles(colors);
-  const STATUS_COLORS = getStatusColors(colors);
   const router = useRouter();
   const params = useLocalSearchParams<{ providerId?: string; providerName?: string }>();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -87,7 +95,8 @@ export default function AppointmentsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [respondingId, setRespondingId] = useState<string | null>(null);
-  
+  const insets = useSafeAreaInsets();
+
   // Create appointment modal state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
@@ -150,7 +159,7 @@ export default function AppointmentsScreen() {
       await apiRequest(`/appointments/${appointmentId}/respond?response=${response}`, {
         method: 'PUT',
       });
-      
+
       setAppointments(prev =>
         prev.map(apt =>
           apt.appointment_id === appointmentId
@@ -158,7 +167,7 @@ export default function AppointmentsScreen() {
             : apt
         )
       );
-      
+
       Alert.alert(
         'Success',
         response === 'accepted'
@@ -218,7 +227,7 @@ export default function AppointmentsScreen() {
     try {
       const dateStr = formatDateLocal(appointmentDate);
       const timeStr = `${appointmentTime.getHours().toString().padStart(2, '0')}:${appointmentTime.getMinutes().toString().padStart(2, '0')}`;
-      
+
       const result = await apiRequest('/appointments', {
         method: 'POST',
         body: {
@@ -231,13 +240,13 @@ export default function AppointmentsScreen() {
           notes: appointmentNotes,
         },
       });
-      
+
       const message = isPersonalAppointment
         ? 'Your personal appointment has been added to your timeline.'
         : `Your appointment request has been sent to ${selectedProvider?.full_name}. They will confirm shortly.`;
-      
+
       Alert.alert('Success!', message);
-      
+
       setShowCreateModal(false);
       resetForm();
       fetchData();
@@ -278,99 +287,67 @@ export default function AppointmentsScreen() {
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
+  // Approved S7 date law (mockup .mmeta): "Tue, Sep 22" — compact weekday form
+  const formatRowDate = (dateStr: string) => {
+    const date = new Date(dateStr + (dateStr.length === 10 ? 'T12:00:00' : ''));
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   const pendingAppointments = appointments.filter(a => a.status === 'pending' && a.created_by !== 'mom');
   const myRequestsPending = appointments.filter(a => a.status === 'pending' && a.created_by === 'mom');
   const upcomingAppointments = appointments.filter(a => ['accepted', 'scheduled', 'confirmed'].includes(a.status));
   const pastAppointments = appointments.filter(a => ['declined', 'cancelled', 'completed'].includes(a.status));
 
-  const renderAppointmentCard = (appointment: Appointment, showActions = true, showDelete = false) => {
+  const renderAppointmentRow = (appointment: Appointment, showActions = true) => {
     const isPending = appointment.status === 'pending' && appointment.created_by !== 'mom';
     const isMyRequest = appointment.status === 'pending' && appointment.created_by === 'mom';
     const isResponding = respondingId === appointment.appointment_id;
     const isUpcoming = ['accepted', 'scheduled', 'confirmed'].includes(appointment.status);
+    const chip = STATUS_CHIP[appointment.status] ?? {
+      label: appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1),
+      color: C.grayLight,
+      bg: C.track,
+    };
+    const ico = rowIconFor(appointment);
+    const title = isMyRequest && appointment.appointment_type === 'consultation'
+      ? 'Your Request'
+      : APPOINTMENT_TYPE_LABELS[appointment.appointment_type] || appointment.appointment_type;
 
     return (
-      <Card key={appointment.appointment_id} style={styles.appointmentCard} data-testid={`appointment-${appointment.appointment_id}`}>
-        <View style={styles.cardHeader}>
-          <View style={styles.providerInfo}>
-            {appointment.provider_picture ? (
-              <Image 
-                source={{ uri: appointment.provider_picture }} 
-                style={styles.providerAvatarImage}
-              />
-            ) : (
-              <View style={[styles.providerAvatar, { backgroundColor: appointment.provider_role === 'DOULA' ? colors.roleDoula : appointment.provider_role === 'MIDWIFE' ? colors.roleMidwife : appointment.provider_role === 'LACTATION' ? colors.roleLactation : colors.primary }]}>
-                <Icon name={appointment.provider_role === 'DOULA' ? 'heart' : 'medical'} size={20} color={colors.white} />
-              </View>
-            )}
-            <View style={{ flex: 1 }}>
-              <Text style={styles.providerName}>{appointment.provider_name}</Text>
-              <Text style={styles.providerRole}>{appointment.provider_role}</Text>
-            </View>
-          </View>
-          <View style={styles.cardHeaderRight}>
-            <View style={[styles.statusBadge, { backgroundColor: (STATUS_COLORS[appointment.status] || colors.textLight) + '20' }]}>
-              <Text style={[styles.statusText, { color: STATUS_COLORS[appointment.status] || colors.textLight }]}>
-                {isMyRequest ? 'Awaiting Response' : appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-              </Text>
-            </View>
-            {(showDelete || isUpcoming || isMyRequest) && (
-              <TouchableOpacity 
-                style={styles.deleteButton}
-                onPress={() => handleDeleteAppointment(appointment.appointment_id)}
-                data-testid={`delete-appointment-${appointment.appointment_id}`}
-              >
-                <Icon name="close-circle" size={24} color={colors.error} />
-              </TouchableOpacity>
-            )}
-          </View>
+      <TouchableOpacity
+        key={appointment.appointment_id}
+        style={styles.srow}
+        activeOpacity={0.7}
+        onPress={() => confirmResponse(appointment.appointment_id, 'declined')}
+        data-testid={`appointment-${appointment.appointment_id}`}
+      >
+        <View style={[styles.sico, { backgroundColor: ico.bg }]}>
+          <TIcon name={ico.name} size={20} color={ico.color} />
         </View>
-
-        <View style={styles.appointmentDetails}>
-          <View style={styles.detailRow}>
-            <Icon name="calendar" size={18} color={colors.primary} />
-            <Text style={styles.detailText}>{formatDate(appointment.appointment_date)}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Icon name="time" size={18} color={colors.primary} />
-            <Text style={styles.detailText}>{formatTime(appointment.appointment_time)}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Icon name="clipboard" size={18} color={colors.primary} />
-            <Text style={styles.detailText}>
-              {APPOINTMENT_TYPE_LABELS[appointment.appointment_type] || appointment.appointment_type}
+        <View style={styles.smid}>
+          <Text style={styles.sh3}>{title}</Text>
+          <View style={styles.smeta}>
+            <Text style={styles.mmeta}>
+              {appointment.provider_name || 'Personal'}
+              {appointment.provider_role ? ` · ${appointment.provider_role}` : ''}
             </Text>
           </View>
-          {appointment.location && (
-            <View style={styles.detailRow}>
-              <Icon name={appointment.is_virtual ? 'videocam' : 'location'} size={18} color={colors.primary} />
-              <Text style={styles.detailText}>
-                {appointment.is_virtual ? 'Virtual Meeting' : appointment.location}
-              </Text>
+          <View style={styles.smeta}>
+            <Text style={styles.mmeta}>
+              {formatRowDate(appointment.appointment_date)} · {formatTime(appointment.appointment_time)}
+            </Text>
+            <View style={[styles.schip, { backgroundColor: chip.bg }]}>
+              <Text style={[styles.schipText, { color: chip.color }]}>{chip.label}</Text>
             </View>
-          )}
-        </View>
-
-        {isPending && showActions && (
-          <View style={styles.actionButtons}>
-            <Button
-              title="Decline"
-              variant="outline"
-              onPress={() => confirmResponse(appointment.appointment_id, 'declined')}
-              style={styles.declineButton}
-              loading={isResponding}
-              disabled={isResponding}
-            />
-            <Button
-              title="Accept"
-              onPress={() => confirmResponse(appointment.appointment_id, 'accepted')}
-              style={styles.acceptButton}
-              loading={isResponding}
-              disabled={isResponding}
-            />
           </View>
-        )}
-      </Card>
+        </View>
+        <Text style={styles.chev}>›</Text>
+      </TouchableOpacity>
     );
   };
 
@@ -378,7 +355,7 @@ export default function AppointmentsScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator size="large" color={C.lavender} />
           <Text style={styles.loadingText}>Loading appointments...</Text>
         </View>
       </SafeAreaView>
@@ -387,118 +364,116 @@ export default function AppointmentsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton} data-testid="back-button">
-          <Icon name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Appointments</Text>
-        <TouchableOpacity 
-          onPress={() => setShowCreateModal(true)} 
-          style={styles.addButton}
-          data-testid="create-appointment-btn"
-        >
-          <Icon name="add" size={24} color={colors.primary} />
-        </TouchableOpacity>
+      {/* Approved S7 header: photo band + Your Care overline + H1 (hband variant, prior art S10/S11/S12) */}
+      <View style={[styles.bandWrap, { marginTop: -insets.top }]}>
+        <HBand source={BAND_APPOINTMENTS} height={168 + insets.top} focus="50% 45%" />
+        <View style={[styles.mhead, { paddingTop: insets.top + 24 }]}>
+          <Text style={styles.overline}>Your Care</Text>
+          <Text style={styles.headerTitle}>
+            Your <Text style={styles.headerTitleAccent}>Appointments</Text>
+          </Text>
+          <Text style={styles.headerSub}>Visits with your team — respond, reschedule, breathe</Text>
+        </View>
       </View>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} colors={[colors.primary]} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} colors={[C.lavender]} />
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Request Appointment CTA */}
-        {providers.length > 0 && (
-          <TouchableOpacity 
-            style={styles.requestCTA}
-            onPress={() => setShowCreateModal(true)}
-            data-testid="request-appointment-cta"
-          >
-            <View style={styles.ctaIcon}>
-              <Icon name="calendar-outline" size={24} color={colors.white} />
-            </View>
-            <View style={styles.ctaText}>
-              <Text style={styles.ctaTitle}>Request an Appointment</Text>
-              <Text style={styles.ctaSubtitle}>Schedule time with your doula or midwife</Text>
-            </View>
-            <Icon name="chevron-forward" size={24} color={colors.white} />
-          </TouchableOpacity>
-        )}
-
         {appointments.length === 0 && providers.length === 0 ? (
           <View style={styles.emptyState}>
-            <Icon name="calendar-outline" size={64} color={colors.border} />
-            <Text style={styles.emptyTitle}>No Appointments Yet</Text>
+            <View style={styles.emptyIco}>
+              <TIcon name="bell" size={34} color={C.lavender} />
+            </View>
+            <Text style={styles.emptyTitle}>No visits yet</Text>
             <Text style={styles.emptySubtitle}>
-              Connect with a doula or midwife through the Marketplace to start scheduling appointments.
+              Connect with a doula or midwife through the Marketplace to start scheduling visits.
             </Text>
-            <Button 
+            <Button
               title="Browse Marketplace"
               onPress={() => router.push('/(mom)/marketplace')}
-              style={{ marginTop: SIZES.md }}
+              style={{ marginTop: 16 }}
             />
-          </View>
-        ) : appointments.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Icon name="calendar-outline" size={64} color={colors.border} />
-            <Text style={styles.emptyTitle}>No Appointments Yet</Text>
-            <Text style={styles.emptySubtitle}>
-              Tap the button above to request an appointment with your care team.
-            </Text>
           </View>
         ) : (
           <>
-            {/* Pending Response from Providers */}
+            {/* Needs Your Response — approved srow + inline rbtn accept/decline */}
             {pendingAppointments.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Icon name="notifications" size={20} color={colors.warning} />
-                  <Text style={styles.sectionTitle}>Needs Your Response</Text>
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{pendingAppointments.length}</Text>
+              <View style={styles.sect}>
+                <Text style={styles.sh2}>Needs your response</Text>
+                <Text style={styles.sectSub}>{pendingAppointments.length} visit{pendingAppointments.length === 1 ? '' : 's'} waiting on you</Text>
+                {pendingAppointments.map(apt => (
+                  <View key={apt.appointment_id} style={styles.pendingBlock}>
+                    {renderAppointmentRow(apt, true)}
+                    <View style={styles.btnrow}>
+                      <TouchableOpacity
+                        style={styles.rbtnNo}
+                        disabled={respondingId === apt.appointment_id}
+                        onPress={() => confirmResponse(apt.appointment_id, 'declined')}
+                      >
+                        <Text style={styles.rbtnNoText}>Decline</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.rbtnYes}
+                        disabled={respondingId === apt.appointment_id}
+                        onPress={() => confirmResponse(apt.appointment_id, 'accepted')}
+                      >
+                        <Text style={styles.rbtnYesText}>
+                          {respondingId === apt.appointment_id ? 'Responding…' : 'Accept'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-                {pendingAppointments.map(apt => renderAppointmentCard(apt))}
+                ))}
               </View>
             )}
 
-            {/* My Pending Requests */}
+            {/* Your Requests */}
             {myRequestsPending.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Icon name="hourglass-outline" size={20} color={colors.warning} />
-                  <Text style={styles.sectionTitle}>Your Requests</Text>
-                </View>
-                {myRequestsPending.map(apt => renderAppointmentCard(apt, false))}
+              <View style={styles.sect}>
+                <Text style={styles.sh2}>Your requests</Text>
+                <Text style={styles.sectSub}>Waiting for your provider to confirm</Text>
+                {myRequestsPending.map(apt => renderAppointmentRow(apt, false))}
               </View>
             )}
 
-            {/* Upcoming Appointments */}
+            {/* Upcoming */}
             {upcomingAppointments.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Icon name="checkmark-circle" size={20} color={colors.success} />
-                  <Text style={styles.sectionTitle}>Upcoming</Text>
-                </View>
-                {upcomingAppointments.map(apt => renderAppointmentCard(apt, false))}
+              <View style={styles.sect}>
+                <Text style={styles.sh2}>Upcoming</Text>
+                <Text style={styles.sectSub}>
+                  {upcomingAppointments.length} visit{upcomingAppointments.length === 1 ? '' : 's'} on the calendar
+                </Text>
+                {upcomingAppointments.map(apt => renderAppointmentRow(apt, false))}
               </View>
             )}
 
-            {/* Past Appointments */}
+            {/* Past */}
             {pastAppointments.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Icon name="time-outline" size={20} color={colors.textLight} />
-                  <Text style={styles.sectionTitle}>Past</Text>
-                </View>
-                {pastAppointments.map(apt => renderAppointmentCard(apt, false))}
+              <View style={styles.sect}>
+                <Text style={styles.sh2}>Past</Text>
+                <Text style={styles.sectSub}>Your visit history</Text>
+                {pastAppointments.map(apt => renderAppointmentRow(apt, false))}
               </View>
             )}
           </>
         )}
       </ScrollView>
+
+      {/* Approved S7 footer CTA (mockup .dl .abtn + hint) */}
+      <View style={styles.dl}>
+        <TouchableOpacity
+          style={styles.abtn}
+          onPress={() => setShowCreateModal(true)}
+          data-testid="create-appointment-btn"
+        >
+          <Text style={styles.abtnText}>Schedule a Visit</Text>
+        </TouchableOpacity>
+        <Text style={styles.dlHint}>Your provider's openings, ready when you are</Text>
+      </View>
 
       {/* Create Appointment Modal */}
       <Modal
@@ -507,22 +482,22 @@ export default function AppointmentsScreen() {
         presentationStyle="pageSheet"
         onRequestClose={() => setShowCreateModal(false)}
       >
-        <KeyboardAvoidingView 
-          style={{ flex: 1 }} 
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
           <SafeAreaView style={styles.modalContainer} edges={['top']}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => { setShowCreateModal(false); resetForm(); }} data-testid="close-modal-btn">
-                <Icon name="close" size={24} color={colors.text} />
+                <Text style={styles.modalCloseX}>✕</Text>
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Request Appointment</Text>
               <View style={{ width: 24 }} />
             </View>
 
-            <ScrollView 
-              style={styles.modalContent} 
+            <ScrollView
+              style={styles.modalContent}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={{ paddingBottom: 120 }}
@@ -531,10 +506,10 @@ export default function AppointmentsScreen() {
             <Text style={styles.fieldLabel}>Select Provider</Text>
             {providers.length === 0 ? (
               <Card style={styles.noProvidersCard}>
-                <Icon name="people-outline" size={32} color={colors.textLight} />
+                <TIcon name="team" size={32} color={C.grayLight} />
                 <Text style={styles.noProvidersText}>No providers in your team yet</Text>
-                <Button 
-                  title="Find Providers" 
+                <Button
+                  title="Find Providers"
                   variant="outline"
                   onPress={() => { setShowCreateModal(false); router.push('/(mom)/marketplace'); }}
                 />
@@ -554,8 +529,12 @@ export default function AppointmentsScreen() {
                     {provider.picture ? (
                       <Image source={{ uri: provider.picture }} style={styles.providerOptionAvatar} />
                     ) : (
-                      <View style={[styles.providerOptionAvatar, { backgroundColor: provider.role === 'DOULA' ? colors.roleDoula : provider.role === 'MIDWIFE' ? colors.roleMidwife : provider.role === 'LACTATION' ? colors.roleLactation : colors.primary, justifyContent: 'center', alignItems: 'center' }]}>
-                        <Icon name={provider.role === 'DOULA' ? 'heart' : 'medical'} size={20} color={colors.white} />
+                      <View style={[styles.providerOptionAvatar, { backgroundColor: provider.role === 'DOULA' ? C.roseBg : provider.role === 'MIDWIFE' ? C.sageBg : C.lavenderBg, justifyContent: 'center', alignItems: 'center' }]}>
+                        <TIcon
+                          name={provider.role === 'DOULA' ? 'pushing_safe_word' : provider.role === 'MIDWIFE' ? 'k_timeline' : 'newborn_care'}
+                          size={20}
+                          color={provider.role === 'DOULA' ? C.rose : provider.role === 'MIDWIFE' ? C.sage : C.lavender}
+                        />
                       </View>
                     )}
                     <View style={styles.providerOptionInfo}>
@@ -563,7 +542,7 @@ export default function AppointmentsScreen() {
                       <Text style={styles.providerOptionRole}>{provider.role}</Text>
                     </View>
                     {selectedProvider?.user_id === provider.user_id && (
-                      <Icon name="checkmark-circle" size={24} color={colors.success} />
+                      <TIcon name="status_done" size={22} color={C.sage} />
                     )}
                   </TouchableOpacity>
                 ))}
@@ -573,22 +552,22 @@ export default function AppointmentsScreen() {
             {/* Date & Time */}
             <Text style={styles.fieldLabel}>Date & Time</Text>
             <View style={styles.dateTimeRow}>
-              <TouchableOpacity 
-                style={styles.dateTimeButton} 
+              <TouchableOpacity
+                style={styles.dateTimeButton}
                 onPress={() => setShowDatePicker(true)}
                 data-testid="date-picker-btn"
               >
-                <Icon name="calendar" size={20} color={colors.primary} />
+                <TIcon name="ar_contract" size={20} color={C.lavender} />
                 <Text style={styles.dateTimeText}>
                   {appointmentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.dateTimeButton} 
+              <TouchableOpacity
+                style={styles.dateTimeButton}
                 onPress={() => setShowTimePicker(true)}
                 data-testid="time-picker-btn"
               >
-                <Icon name="time" size={20} color={colors.primary} />
+                <TIcon name="timer" size={20} color={C.lavender} />
                 <Text style={styles.dateTimeText}>
                   {appointmentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                 </Text>
@@ -622,7 +601,7 @@ export default function AppointmentsScreen() {
                     <View style={styles.dateModalHeader}>
                       <Text style={styles.dateModalTitle}>Select Date</Text>
                       <TouchableOpacity onPress={() => setShowDatePicker(false)}>
-                        <Icon name="close" size={24} color={colors.text} />
+                        <Text style={styles.modalCloseX}>✕</Text>
                       </TouchableOpacity>
                     </View>
                     {Platform.OS === 'web' ? (
@@ -640,12 +619,13 @@ export default function AppointmentsScreen() {
                             width: '100%',
                             padding: 16,
                             fontSize: 18,
-                            border: `2px solid ${colors.primary}`,
+                            border: `2px solid ${C.lavender}`,
                             borderRadius: 12,
                             outline: 'none',
                             cursor: 'pointer',
-                            color: colors.text,
-                            backgroundColor: colors.surface,
+                            color: C.ink,
+                            backgroundColor: C.cardBg,
+                            fontFamily: 'Quicksand',
                           }}
                         />
                       </View>
@@ -659,7 +639,7 @@ export default function AppointmentsScreen() {
                           onChange={(event, date) => {
                             if (date) setAppointmentDate(date);
                           }}
-                          textColor={colors.text}
+                          textColor={C.ink}
                           style={{ width: '100%', height: 320 }}
                         />
                       </View>
@@ -701,7 +681,7 @@ export default function AppointmentsScreen() {
                     <View style={styles.dateModalHeader}>
                       <Text style={styles.dateModalTitle}>Select Time</Text>
                       <TouchableOpacity onPress={() => setShowTimePicker(false)}>
-                        <Icon name="close" size={24} color={colors.text} />
+                        <Text style={styles.modalCloseX}>✕</Text>
                       </TouchableOpacity>
                     </View>
                     {Platform.OS === 'web' ? (
@@ -721,12 +701,13 @@ export default function AppointmentsScreen() {
                             width: '100%',
                             padding: 16,
                             fontSize: 18,
-                            border: `2px solid ${colors.primary}`,
+                            border: `2px solid ${C.lavender}`,
                             borderRadius: 12,
                             outline: 'none',
                             cursor: 'pointer',
-                            color: colors.text,
-                            backgroundColor: colors.surface,
+                            color: C.ink,
+                            backgroundColor: C.cardBg,
+                            fontFamily: 'Quicksand',
                           }}
                         />
                       </View>
@@ -739,7 +720,7 @@ export default function AppointmentsScreen() {
                           onChange={(event, date) => {
                             if (date) setAppointmentTime(date);
                           }}
-                          textColor={colors.text}
+                          textColor={C.ink}
                           style={{ width: '100%', height: 200 }}
                         />
                       </View>
@@ -779,17 +760,17 @@ export default function AppointmentsScreen() {
             </View>
 
             {/* Virtual Toggle */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.virtualToggle}
               onPress={() => setIsVirtual(!isVirtual)}
               data-testid="virtual-toggle"
             >
-              <Icon name="videocam" size={20} color={isVirtual ? colors.primary : colors.textSecondary} />
+              <TIcon name="messages" size={20} color={isVirtual ? C.lavender : C.grayLight} />
               <Text style={styles.virtualToggleText}>Virtual Appointment</Text>
-              <Icon 
-                name={isVirtual ? 'checkbox' : 'square-outline'} 
-                size={24} 
-                color={isVirtual ? colors.primary : colors.textSecondary} 
+              <TIcon
+                name={isVirtual ? 'status_done' : 'status_todo'}
+                size={22}
+                color={isVirtual ? C.lavender : C.grayLight}
               />
             </TouchableOpacity>
 
@@ -798,7 +779,7 @@ export default function AppointmentsScreen() {
             <TextInput
               style={styles.notesInput}
               placeholder="Add any notes for your provider..."
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               value={appointmentNotes}
               onChangeText={setAppointmentNotes}
               multiline
@@ -824,102 +805,115 @@ export default function AppointmentsScreen() {
   );
 }
 
-const getStyles = createThemedStyles((colors) => ({
-  container: { flex: 1, backgroundColor: colors.background },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: SIZES.lg, paddingVertical: SIZES.md },
-  backButton: { padding: SIZES.xs },
-  headerTitle: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading, color: colors.text },
-  addButton: { padding: SIZES.xs },
-  headerRight: { width: 40 },
-  scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
-  
-  // CTA
-  requestCTA: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primary, borderRadius: SIZES.radiusMd, padding: SIZES.md, marginBottom: SIZES.lg },
-  ctaIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', marginRight: SIZES.md },
-  ctaText: { flex: 1 },
-  ctaTitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: colors.white },
-  ctaSubtitle: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: 'rgba(255,255,255,0.8)' },
-  
-  // Sections
-  section: { marginBottom: SIZES.lg },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: SIZES.sm },
-  sectionTitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.subheading, color: colors.text, marginLeft: SIZES.xs, flex: 1 },
-  badge: { backgroundColor: colors.warning, paddingHorizontal: SIZES.sm, paddingVertical: 2, borderRadius: 10 },
-  badgeText: { color: colors.white, fontSize: SIZES.fontXs, fontFamily: FONTS.bodyBold },
-  
-  // Cards
-  appointmentCard: { marginBottom: SIZES.sm },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.sm },
-  providerInfo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  providerAvatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.sm },
-  providerAvatarImage: { width: 40, height: 40, borderRadius: 20, marginRight: SIZES.sm },
-  providerName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: colors.text },
-  providerRole: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: colors.textSecondary },
-  cardHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: SIZES.sm },
-  statusBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusSm },
-  statusText: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyBold },
-  deleteButton: { padding: 4 },
-  appointmentDetails: { marginTop: SIZES.sm },
-  detailRow: { flexDirection: 'row', alignItems: 'center', marginBottom: SIZES.xs },
-  detailText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: colors.textSecondary, marginLeft: SIZES.sm },
-  actionButtons: { flexDirection: 'row', marginTop: SIZES.md, gap: SIZES.sm },
-  declineButton: { flex: 1 },
-  acceptButton: { flex: 1 },
-  
-  // Empty
-  emptyState: { alignItems: 'center', paddingVertical: SIZES.xxl },
-  emptyTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: colors.text, marginTop: SIZES.md },
-  emptySubtitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.textSecondary, textAlign: 'center', marginTop: SIZES.sm, paddingHorizontal: SIZES.lg },
-  
-  // Loading
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { marginTop: SIZES.md, fontSize: SIZES.fontMd, color: colors.textSecondary },
-  
-  // Modal
-  modalContainer: { flex: 1, backgroundColor: colors.background },
-  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.md, borderBottomWidth: 1, borderBottomColor: colors.border },
-  modalTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: colors.text },
-  modalContent: { flex: 1, padding: SIZES.md },
-  modalFooter: { padding: SIZES.md, borderTopWidth: 1, borderTopColor: colors.border },
-  
-  // Fields
-  fieldLabel: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: colors.text, marginBottom: SIZES.sm, marginTop: SIZES.md },
-  
-  // Provider Selection
-  providersList: { gap: SIZES.sm },
-  providerOption: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, borderWidth: 2, borderColor: 'transparent' },
-  providerOptionSelected: { borderColor: colors.primary, backgroundColor: colors.primary + '10' },
-  providerOptionAvatar: { width: 48, height: 48, borderRadius: 24, marginRight: SIZES.md },
+const getStyles = createThemedStyles(() => ({
+  container: { flex: 1, backgroundColor: C.cream },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: C.cream },
+  loadingText: { marginTop: 12, fontSize: 13, fontFamily: F.ui, color: C.gray },
+
+  // —— Approved S7 header (.hband + .m-head) ——
+  bandWrap: { position: 'relative', zIndex: 1 },
+  mhead: { paddingHorizontal: 20, paddingBottom: 6 },
+  overline: {
+    fontSize: 10,
+    letterSpacing: 2.4,
+    textTransform: 'uppercase',
+    fontWeight: '700',
+    color: C.rose,
+    marginBottom: 5,
+    fontFamily: F.uiBold,
+  },
+  headerTitle: { fontSize: 26, fontFamily: F.serif, color: C.ink, lineHeight: 30 },
+  headerTitleAccent: { color: C.roseSoft },
+  headerSub: { fontSize: 12.5, color: C.gray, marginTop: 4, fontFamily: F.ui, fontWeight: '500' },
+
+  scrollContent: { paddingBottom: 24 },
+
+  // —— Approved section (.sect) ——
+  sect: { marginHorizontal: 20, marginTop: 16 },
+  sh2: { fontFamily: F.serif, fontWeight: '700', fontSize: 21, color: C.ink, marginBottom: 2 },
+  sectSub: { fontSize: 11.5, color: C.gray, fontFamily: F.ui, fontWeight: '500', marginBottom: 10 },
+
+  // —— Approved schedule row (.srow) ——
+  srow: {
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  sico: { width: 34, height: 34, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  smid: { flex: 1, minWidth: 0 },
+  sh3: { fontFamily: F.serifSemi, fontSize: 17, color: C.ink },
+  smeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' },
+  mmeta: { fontSize: 11, color: C.gray, fontFamily: F.ui, fontWeight: '500' },
+  schip: { borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, marginLeft: 2 },
+  schipText: { fontSize: 9.5, letterSpacing: 0.6, fontWeight: '700', textTransform: 'uppercase', fontFamily: F.uiBold },
+  chev: { color: C.chev, fontSize: 16, flexShrink: 0, fontWeight: '300' },
+
+  // —— Approved inline respond buttons (.btnrow .rbtn) ——
+  pendingBlock: { marginBottom: 8 },
+  btnrow: { flexDirection: 'row', gap: 8, marginTop: 0 },
+  rbtnYes: { flex: 1, backgroundColor: C.lavenderSoft, borderRadius: 999, paddingVertical: 8, paddingHorizontal: 10, alignItems: 'center' },
+  rbtnYesText: { color: C.white, fontSize: 11.5, fontWeight: '700', fontFamily: F.uiBold },
+  rbtnNo: { flex: 1, borderWidth: 1.3, borderColor: C.lavenderBorder, backgroundColor: C.cardBg, borderRadius: 999, paddingVertical: 8, paddingHorizontal: 10, alignItems: 'center' },
+  rbtnNoText: { color: C.lavender, fontSize: 11.5, fontWeight: '700', fontFamily: F.uiBold },
+
+  // —— Approved footer CTA (.dl .abtn + .hint) ——
+  dl: { marginHorizontal: 20, marginTop: 16 },
+  abtn: { backgroundColor: C.lavender, borderRadius: 999, paddingVertical: 13, paddingHorizontal: 18, alignItems: 'center' },
+  abtnText: { color: C.white, fontSize: 13, fontWeight: '600', fontFamily: F.uiSemi },
+  dlHint: { textAlign: 'center', fontSize: 11, color: C.gray, marginTop: 7, fontFamily: F.ui, fontWeight: '500' },
+
+  // —— Empty state ——
+  emptyState: { alignItems: 'center', paddingVertical: 48, paddingHorizontal: 20 },
+  emptyIco: { width: 64, height: 64, borderRadius: 32, backgroundColor: C.lavenderBg, alignItems: 'center', justifyContent: 'center' },
+  emptyTitle: { fontSize: 21, fontFamily: F.serif, color: C.ink, marginTop: 12 },
+  emptySubtitle: { fontSize: 12.5, fontFamily: F.ui, color: C.gray, textAlign: 'center', marginTop: 6, lineHeight: 18 },
+
+  // —— Modal ——
+  modalContainer: { flex: 1, backgroundColor: C.cream },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: C.hairline },
+  modalTitle: { fontSize: 21, fontFamily: F.serif, fontWeight: '700', color: C.ink },
+  modalCloseX: { fontSize: 18, color: C.gray, fontWeight: '600', paddingHorizontal: 6 },
+  modalContent: { flex: 1, padding: 20 },
+  modalFooter: { padding: 20, borderTopWidth: 1, borderTopColor: C.hairline },
+
+  fieldLabel: { fontSize: 12, fontFamily: F.uiBold, fontWeight: '700', color: C.gray, marginBottom: 8, marginTop: 16, letterSpacing: 0.3 },
+
+  providersList: { gap: 8 },
+  providerOption: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.white, borderRadius: 18, borderWidth: 2, borderColor: 'transparent' },
+  providerOptionSelected: { borderColor: C.lavender, backgroundColor: C.lavenderBg },
+  providerOptionAvatar: { width: 44, height: 44, borderRadius: 22, marginRight: 12 },
   providerOptionInfo: { flex: 1 },
-  providerOptionName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: colors.text },
-  providerOptionRole: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: colors.textSecondary },
-  noProvidersCard: { alignItems: 'center', padding: SIZES.lg },
-  noProvidersText: { fontSize: SIZES.fontMd, color: colors.textSecondary, marginVertical: SIZES.md },
-  
-  // Date Time
-  dateTimeRow: { flexDirection: 'row', gap: SIZES.sm },
-  dateTimeButton: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, gap: SIZES.sm },
-  dateTimeText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text },
-  
-  // Date Modal (web & native)
-  dateModalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center', padding: SIZES.lg },
-  dateModalContent: { backgroundColor: colors.surface, borderRadius: SIZES.radiusLg, padding: SIZES.lg, width: '100%', maxWidth: 400 },
-  dateModalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.lg },
-  dateModalTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: colors.text },
-  webCalendarWrapper: { marginVertical: SIZES.md },
-  nativeTimePickerWrapper: { alignItems: 'center', justifyContent: 'center', marginVertical: SIZES.md },
-  
-  // Type Options
-  typeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.sm },
-  typeOption: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, borderWidth: 1, borderColor: colors.border },
-  typeOptionSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
-  typeOptionText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: colors.textSecondary },
-  typeOptionTextSelected: { color: colors.white, fontFamily: FONTS.bodyBold },
-  
-  // Virtual Toggle
-  virtualToggle: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, marginTop: SIZES.md },
-  virtualToggleText: { flex: 1, fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text, marginLeft: SIZES.sm },
-  
-  // Notes
-  notesInput: { backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text, minHeight: 100, textAlignVertical: 'top' },
+  providerOptionName: { fontSize: 14, fontFamily: F.uiSemi, fontWeight: '600', color: C.ink },
+  providerOptionRole: { fontSize: 11.5, fontFamily: F.ui, color: C.gray },
+  noProvidersCard: { alignItems: 'center', padding: 24 },
+  noProvidersText: { fontSize: 13, fontFamily: F.ui, color: C.gray, marginVertical: 16 },
+
+  dateTimeRow: { flexDirection: 'row', gap: 10 },
+  dateTimeButton: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.white, borderRadius: 18, borderWidth: 1, borderColor: C.border, gap: 10 },
+  dateTimeText: { fontSize: 13.5, fontFamily: F.ui, fontWeight: '600', color: C.ink },
+
+  dateModalOverlay: { flex: 1, backgroundColor: 'rgba(42,42,42,0.4)', justifyContent: 'center', alignItems: 'center', padding: 28 },
+  dateModalContent: { backgroundColor: C.white, borderRadius: 22, padding: 24, width: '100%', maxWidth: 400 },
+  dateModalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
+  dateModalTitle: { fontSize: 21, fontFamily: F.serif, fontWeight: '700', color: C.ink },
+  webCalendarWrapper: { marginVertical: 12 },
+  nativeTimePickerWrapper: { alignItems: 'center', justifyContent: 'center', marginVertical: 12 },
+
+  typeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  typeOption: { paddingHorizontal: 14, paddingVertical: 8, backgroundColor: C.white, borderRadius: 999, borderWidth: 1.3, borderColor: C.lavenderBorder },
+  typeOptionSelected: { backgroundColor: C.lavender, borderColor: C.lavender },
+  typeOptionText: { fontSize: 12, fontFamily: F.ui, fontWeight: '600', color: C.gray },
+  typeOptionTextSelected: { color: C.white, fontFamily: F.uiBold, fontWeight: '700' },
+
+  virtualToggle: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.white, borderRadius: 18, borderWidth: 1, borderColor: C.border, marginTop: 16 },
+  virtualToggleText: { flex: 1, fontSize: 13.5, fontFamily: F.ui, color: C.ink, marginLeft: 10 },
+
+  notesInput: { backgroundColor: C.white, borderRadius: 18, borderWidth: 1, borderColor: C.border, padding: 14, fontSize: 13.5, fontFamily: F.ui, color: C.ink, minHeight: 96, textAlignVertical: 'top' },
 }));

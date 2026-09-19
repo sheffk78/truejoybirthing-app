@@ -10,9 +10,11 @@ import Svg, { Defs, LinearGradient as SvgGradient, Rect, Stop } from 'react-nati
 interface HBandProps {
   source: ImageSourcePropType;
   height?: number;
+  /** CSS background-position for the web path, e.g. '50% 45%'. Default '50% 18%' (approved S10/S12 anchor). */
+  focus?: string;
 }
 
-export default function HBand({ source, height = 168 }: HBandProps) {
+export default function HBand({ source, height = 168, focus = '50% 18%' }: HBandProps) {
   // Web: RN-web Image ignores resizeMode for its background-image layer (renders
   // intrinsic-size bg div → zoomed sliver), and react-native-svg defaults to its
   // intrinsic 300×150 size under absoluteFill (veil = misplaced white patch).
@@ -32,7 +34,7 @@ export default function HBand({ source, height = 168 }: HBandProps) {
               {
                 backgroundImage: `url("${uri}")`,
                 backgroundSize: 'cover',
-                backgroundPosition: '50% 18%',
+                backgroundPosition: focus,
                 backgroundRepeat: 'no-repeat',
               },
             ] as any

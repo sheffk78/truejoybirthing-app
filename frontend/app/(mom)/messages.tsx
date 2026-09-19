@@ -15,7 +15,7 @@ import {
   Keyboard,
   BackHandler,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
@@ -28,6 +28,9 @@ import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 import wsClient from '../../src/utils/websocket';
+import HBand from '../../src/components/mom/HBand';
+import TIcon from '../../src/components/TIcon';
+import { C, F, BAND_MESSAGES, initialsOf } from '../../src/constants/designRefresh';
 
 interface Conversation {
   other_user_id: string;
@@ -70,6 +73,7 @@ export default function MessagesScreen() {
   const styles = getStyles(colors);
   const router = useRouter();
   const tabBarHeight = useBottomTabBarHeight();
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ userId?: string; openConversation?: string }>();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -595,23 +599,26 @@ export default function MessagesScreen() {
           }
           showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Image source={BRAND.logoIconPng} style={styles.headerLogo} resizeMode="contain" />
-              <View>
-                <Text style={styles.title}>Messages</Text>
-                <Text style={styles.subtitle}>Stay in touch with your care team</Text>
-              </View>
-            </View>
-            <TouchableOpacity 
-              style={styles.newMessageButton} 
-              onPress={openNewMessageModal}
-              data-testid="new-message-btn"
-            >
-              <Icon name="create-outline" size={20} color={colors.white} />
-            </TouchableOpacity>
+          {/* Approved S9 header — photo band + overline + Cormorant H1 (mockup m-head) */}
+          <HBand source={BAND_MESSAGES} height={168 + insets.top} focus="50% 30%" />
+          <View style={s9.mhead}>
+            <Text style={s9.overline}>Conversations</Text>
+            <Text style={s9.h1}>
+              <Text style={s9.h1em}>Your</Text> Messages
+            </Text>
+            <Text style={s9.msub}>Quiet questions, quick answers — with your team</Text>
           </View>
+
+          {/* Search pill (mockup .search) */}
+          <TouchableOpacity
+            style={s9.search}
+            onPress={openNewMessageModal}
+            activeOpacity={0.85}
+            data-testid="new-message-btn"
+          >
+            <TIcon name="about_me" size={16} color={C.grayLight} strokeWidth={1.7} />
+            <Text style={s9.searchTxt}>Search by name or role…</Text>
+          </TouchableOpacity>
           
           {/* Load Error Banner */}
           {loadError && conversations.length === 0 && (
@@ -692,85 +699,124 @@ export default function MessagesScreen() {
             </View>
           )}
           
-          {/* Conversations List */}
+          {/* Recent conversations — approved srow construction (mockup S9) */}
           {conversations.length === 0 ? (
-            <Card style={styles.emptyCard}>
-              <Icon name="chatbubbles-outline" size={48} color={colors.textLight} />
-              <Text style={styles.emptyText}>No messages yet</Text>
-              <Text style={styles.emptySubtext}>
-                Tap the button above to start a conversation
-              </Text>
-              <Button
-                title="Start a Conversation"
-                onPress={openNewMessageModal}
-                style={{ marginTop: SIZES.md }}
-                icon={<Icon name="add" size={18} color={colors.white} />}
-              />
-            </Card>
-          ) : (
-            conversations.map((conv) => (
+            <View style={s9.sect}>
+              <Text style={s9.h2}>Recent</Text>
+              <Text style={s9.sub}>No messages yet</Text>
               <TouchableOpacity
-                key={conv.other_user_id}
-                onPress={() => openConversation(conv)}
-                data-testid={`conversation-${conv.other_user_id}`}
+                style={s9.srow}
+                onPress={openNewMessageModal}
+                activeOpacity={0.85}
+                data-testid="start-conversation-btn"
               >
-                <Card style={[styles.conversationCard, conv.unread_count > 0 && styles.unreadCard]}>
-                  <View style={styles.conversationRow}>
+                <View style={s9.sico}>
+                  <TIcon name="messages" size={22} color={C.lavender} strokeWidth={1.7} />
+                </View>
+                <View style={s9.smid}>
+                  <Text style={s9.h3}>Message your team</Text>
+                  <View style={s9.smetaRow}>
+                    <Text style={s9.mmeta}>Reach anyone on your team — no forms, no phone tag</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={s9.sect}>
+              <Text style={s9.h2}>Recent</Text>
+              <Text style={s9.sub}>
+                {(() => {
+                  const unread = conversations.reduce((n, c) => n + (c.unread_count > 0 ? 1 : 0), 0);
+                  return unread === 0
+                    ? 'All caught up'
+                    : unread === 1
+                      ? '1 unread'
+                      : `${unread} unread`;
+                })()}
+              </Text>
+              {conversations.map((conv, idx) => {
+                const tint = avatarTintS9(idx);
+                const initials = conv.other_user_picture
+                  ? ''
+                  : initialsOf(conv.other_user_name) || '?';
+                return (
+                  <TouchableOpacity
+                    key={conv.other_user_id}
+                    style={s9.srow}
+                    onPress={() => openConversation(conv)}
+                    activeOpacity={0.85}
+                    data-testid={`conversation-${conv.other_user_id}`}
+                  >
                     {conv.other_user_picture ? (
-                      <Image 
-                        source={{ uri: conv.other_user_picture }} 
-                        style={styles.avatarImage}
+                      <Image
+                        source={{ uri: conv.other_user_picture }}
+                        style={s9.avatImg}
                       />
                     ) : (
-                      <View style={[styles.avatar, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
-                        <Icon 
-                          name={conv.other_user_role === 'DOULA' ? 'heart' : conv.other_user_role === 'MIDWIFE' ? 'medkit' : conv.other_user_role === 'LACTATION' ? 'water' : 'person'}
-                          size={24} 
-                          color={getRoleColor(conv.other_user_role)} 
-                        />
+                      <View style={[s9.avat, { backgroundColor: tint.bg }]}>
+                        <Text style={[s9.avatTxt, { color: tint.fg }]}>{initials}</Text>
                       </View>
                     )}
-                    <View style={styles.conversationInfo}>
-                      <View style={styles.nameRow}>
-                        <Text style={styles.userName}>{conv.other_user_name}</Text>
-                        <View style={[styles.roleBadge, { backgroundColor: getRoleColor(conv.other_user_role) + '20' }]}>
-                          <Text style={[styles.roleText, { color: getRoleColor(conv.other_user_role) }]}>
+                    <View style={s9.smid}>
+                      <Text style={s9.h3}>{conv.other_user_name}</Text>
+                      <View style={s9.smetaRow}>
+                        <View style={[s9.schip, s9.schipWip]}>
+                          <Text style={[s9.schipTxt, s9.schipTxtWip]}>
                             {conv.other_user_role}
                           </Text>
                         </View>
                         {conv.thread_status === 'pre_acceptance' && (
-                          <View style={[styles.threadStatusBadge, { backgroundColor: colors.warning + '20' }]}>
-                            <Text style={[styles.threadStatusText, { color: colors.warning }]}>
-                              Getting to know each other
-                            </Text>
-                          </View>
+                          <Text style={s9.mmeta}>Getting to know each other</Text>
                         )}
-                        {conv.thread_status === 'accepted' && (
-                          <View style={[styles.threadStatusBadge, { backgroundColor: colors.success + '20' }]}>
-                            <Text style={[styles.threadStatusText, { color: colors.success }]}>
-                              Active Client
-                            </Text>
-                          </View>
-                        )}
+                        {conv.thread_status === 'accepted' && null}
                       </View>
-                      <Text style={styles.lastMessage} numberOfLines={1}>
-                        {conv.is_sender ? 'You: ' : ''}{conv.last_message_content}
+                      <Text style={s9.lastMsg} numberOfLines={1}>
+                        {conv.is_sender ? 'You: ' : ''}
+                        {conv.last_message_content}
                       </Text>
                     </View>
-                    <View style={styles.metaColumn}>
-                      <Text style={styles.timeText}>{formatTime(conv.last_message_time)}</Text>
-                      {conv.unread_count > 0 && (
-                        <View style={styles.unreadBadge}>
-                          <Text style={styles.unreadText}>{conv.unread_count}</Text>
-                        </View>
-                      )}
+                    <View style={s9.metaCol}>
+                      <Text style={s9.time}>{formatTime(conv.last_message_time)}</Text>
+                      {conv.unread_count > 0 && <View style={s9.unreadDot} />}
                     </View>
-                  </View>
-                </Card>
-              </TouchableOpacity>
-            ))
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           )}
         </ScrollView>
+      )}
+
+      {/* Start a conversation — approved mockup section (S9) */}
+      {conversations.length > 0 && !selectedConversation && (
+        <View style={s9.sect} data-testid="start-conversation-section">
+          <Text style={s9.h2}>Start a conversation</Text>
+          <Text style={s9.sub}>Reach anyone on your team — no forms, no phone tag</Text>
+          <TouchableOpacity
+            style={s9.srow}
+            onPress={openNewMessageModal}
+            activeOpacity={0.85}
+            data-testid="start-conversation-btn"
+          >
+            <View style={s9.sico}>
+              <TIcon name="messages" size={22} color={C.lavender} strokeWidth={1.7} />
+            </View>
+            <View style={s9.smid}>
+              <Text style={s9.h3}>Message your team</Text>
+              <View style={s9.smetaRow}>
+                <Text style={s9.mmeta}>
+                  {teamMembers.length > 0
+                    ? `${teamMembers
+                        .slice(0, 3)
+                        .map((m) => m.name.split(/\s+/)[0])
+                        .join(', ')} ${teamMembers.length > 3 ? 'and more' : ''} are a tap away`
+                    : 'Anyone on your team is a tap away'}
+                </Text>
+              </View>
+            </View>
+            <TIcon name="status_done" size={15} color={C.chev} strokeWidth={1.7} />
+          </TouchableOpacity>
+        </View>
       )}
 
       {/* New Message Modal - Select Team Member */}
@@ -868,6 +914,104 @@ export default function MessagesScreen() {
     </ErrorBoundary>
   );
 }
+
+// Avatar tint rotates rose → lavender → sage (mockup order)
+const avatarTintS9 = (i: number) => {
+  const tints = [
+    { bg: C.roseBg, fg: C.rose },
+    { bg: C.lavenderBg, fg: C.lavender },
+    { bg: C.sageBg, fg: C.sage },
+  ];
+  return tints[i % tints.length];
+};
+
+// s9 — approved S9 mockup styles (s7s8s9-mom-core-hbands.html, verbatim hexes from C)
+const s9 = StyleSheet.create({
+  mhead: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 6 },
+  overline: {
+    fontSize: 10,
+    letterSpacing: 2.4,
+    textTransform: 'uppercase',
+    fontWeight: '700',
+    color: C.rose,
+    marginBottom: 5,
+  },
+  h1: { fontFamily: F.serif, fontWeight: '700', fontSize: 26, lineHeight: 30, color: C.ink },
+  h1em: { fontFamily: F.serif, fontWeight: '700', color: C.roseSoft },
+  msub: { fontSize: 12.5, color: C.gray, marginTop: 4, fontWeight: '500' },
+
+  search: {
+    marginHorizontal: 20,
+    marginTop: 12,
+    backgroundColor: C.white,
+    borderColor: C.roseBg,
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingVertical: 9,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  searchTxt: { fontSize: 12, color: C.grayLight, fontWeight: '500' },
+
+  sect: { paddingHorizontal: 20, marginTop: 14 },
+  h2: { fontFamily: F.serif, fontWeight: '700', fontSize: 21, color: C.ink, marginBottom: 2 },
+  sub: { fontSize: 11.5, color: C.gray, marginBottom: 8, fontWeight: '500' },
+
+  srow: {
+    backgroundColor: C.white,
+    borderColor: C.border,
+    borderWidth: 1,
+    borderRadius: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  avat: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  avatImg: { width: 38, height: 38, borderRadius: 19, flexShrink: 0 },
+  avatTxt: { fontSize: 14, fontWeight: '700' },
+  smid: { flex: 1, minWidth: 0 },
+  h3: { fontFamily: F.serifSemi, fontWeight: '600', fontSize: 17, color: C.ink },
+  smetaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 3, flexWrap: 'wrap' },
+  mmeta: { fontSize: 11, color: C.gray, fontWeight: '500', flexShrink: 1 },
+  lastMsg: { fontSize: 11.5, color: C.gray, marginTop: 2, fontWeight: '500' },
+
+  schip: {
+    borderRadius: 999,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    alignSelf: 'flex-start',
+    flexShrink: 0,
+  },
+  schipTxt: { fontSize: 9.5, letterSpacing: 0.6, fontWeight: '700', textTransform: 'uppercase' },
+  schipWip: { backgroundColor: C.lavenderBg },
+  schipTxtWip: { color: C.lavender },
+
+  sico: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
+    backgroundColor: C.lavenderBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+
+  metaCol: { alignItems: 'flex-end', gap: 5, flexShrink: 0 },
+  time: { fontSize: 10, color: C.grayLight, fontWeight: '600' },
+  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: C.roseBorder },
+});
 
 const getStyles = createThemedStyles((colors) => ({
   container: {
