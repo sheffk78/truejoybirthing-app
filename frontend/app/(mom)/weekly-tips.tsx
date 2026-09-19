@@ -293,7 +293,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: 26,
     fontFamily: F.serif,
     color: C.ink,
-    lineHeight: 32,
+    lineHeight: 29,
   },
   headerTitleAccent: {
     color: C.roseSoft,
@@ -383,7 +383,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   weekButtonCurrent: {
     borderColor: C.roseSoft,
-    backgroundColor: '#FBF5F9',
+    backgroundColor: C.gbandMid,
   },
   weekButtonText: {
     fontSize: 12,

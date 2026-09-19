@@ -30,3 +30,25 @@ Active-tab tint (#6E6C99) pixel centroids match markup `.tb.on` positions on all
 
 ## Status
 - [checkpointing → waiting] Mockups complete + verified; NOT implemented, NOT approved — awaiting Jeff review.
+
+---
+
+# CONSISTENCY DOUBLE-CHECK — mom section sweep — 2026-09-19
+
+Post-S10/S11/S12 sweep across all redesigned mom surfaces (home, timer, weekly-tips, birth-plan, appointments, my-team, messages, _layout tab bar) against CONSISTENCY-SPEC v1 + TYPE-SYSTEM.md + locked canon. Findings + fixes:
+
+1. **Chevron law violation (home):** S10 lock set the home "All Tools" arrow at 20px; four other home chevrons sat at 17px while every other redesigned screen used the 16px law value. Fixed all four 17px → 16px (rose rows keep C.rose, gray rows keep C.chev). The 20px S10 arrow stays as locked.
+2. **Birth-plan chevron:** single 22px hardcoded `#9C9DA0` chevron → 16px `C.chev` (law value + token, kills the last raw hex on that surface). Added the missing `C` import from designRefresh.
+3. **Weekly-tips current-chip band mismatch:** `weekButtonCurrent` used `C.roseSoft` border while every current-chip across the app uses `C.roseBorder`. One-line sync.
+4. **Dead import:** `Icon` imported in `(mom)/_layout.tsx` with zero usages → removed.
+5. **icons.mjs doc drift:** reference icon inventory was missing 9 utility glyphs that TIcon.tsx ships (ta_history, ta_add, ta_share, gear, k_timeline, bell, ar_contract, ar_invoice, ar_invoice_paid). Synced verbatim from source — TIcon ↔ icons.mjs now 31/31 (parity, mjs-only=∅, TIcon-only='name' type decl).
+6. **TS typing fix in the redesign patch set:** my-team `translate: [{y:-0.5}]` (invalid RN style key from the optical-alignment pass) → `translateY: -0.5`.
+7. **Pre-existing drift fixed en passant:** websocket.ts pingInterval typed as `number` vs `NodeJS.Timeout` → `ReturnType<typeof setInterval>`. tsc --noEmit now exits 0 on the whole frontend.
+
+## Scope note — remaining `<Icon>` usage (NOT a violation)
+messages.tsx still imports the legacy `Icon` component in 13 places — all in sub-flows with **no approved mockups yet**: inline chat view, new-message modal, ErrorBoundary fallback, invoice banners. Design law (mockup-first) forbids freestyle redesign, so these stay as-is and are logged as pending-mockup scope. S9 list surface itself is fully tokenized.
+
+## Final audits
+- Hex: 0 unapproved colors across 7 mom screens + designRefresh.ts (corpus = CONSISTENCY-SPEC palette).
+- Lucide: 0 legacy icon imports on the 7 redesigned surfaces.
+- tsc --noEmit: exit 0.

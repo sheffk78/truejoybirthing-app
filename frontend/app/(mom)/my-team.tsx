@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     flexShrink: 0,
   },
-  schipTxt: { fontSize: 9.5, letterSpacing: 0.6, fontWeight: '700', textTransform: 'uppercase' },
+  schipTxt: { fontSize: 9.5, letterSpacing: 0.6, fontWeight: '700', textTransform: 'uppercase', translateY: -0.5 },
   schipDone: { backgroundColor: C.sageBg },
   schipTxtDone: { color: C.sage },
   schipWip: { backgroundColor: C.lavenderSoft },

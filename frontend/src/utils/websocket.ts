@@ -8,7 +8,7 @@ class WebSocketClient {
   private maxReconnectAttempts = 5;
   private reconnectDelay = 3000;
   private handlers: Map<string, Set<MessageHandler>> = new Map();
-  private pingInterval: NodeJS.Timeout | null = null;
+  private pingInterval: ReturnType<typeof setInterval> | null = null;
   private token: string | null = null;
   private baseUrl: string;
 

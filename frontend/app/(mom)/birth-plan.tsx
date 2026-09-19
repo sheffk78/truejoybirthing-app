@@ -23,6 +23,7 @@ import SectionVideoGuide from '../../src/components/SectionVideoGuide';
 import { apiRequest, getApiBaseUrl } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
+import { C } from '../../src/constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 
@@ -383,7 +384,7 @@ export default function BirthPlanScreen() {
                     </Text>
                   </View>
                 </View>
-                <Text style={{ fontSize: 22, color: '#9C9DA0', fontWeight: '300' }}>›</Text>
+                <Text style={{ fontSize: 16, color: C.chev, fontWeight: '300' }}>›</Text>
               </View>
             </Card>
           </TouchableOpacity>

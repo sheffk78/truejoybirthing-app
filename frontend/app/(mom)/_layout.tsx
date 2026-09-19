@@ -1,6 +1,5 @@
 import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
-import { Icon } from '../../src/components/Icon';
 import TIcon from '../../src/components/TIcon';
 import { useColors, SIZES } from '../../src/hooks/useThemedStyles';
 import { Platform, View } from 'react-native';

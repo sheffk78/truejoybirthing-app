@@ -26,6 +26,7 @@ export const C = {
   hairline: '#F0E9EE', // strip / tab-bar hairline
   cardBg: '#FDFCFA', // ghost pill bg
   halo: '#EDEAF6', // S11 halo rings stroke (mockup svg.halo)
+  gbandMid: '#FBF5F9', // S11 gband gradient midpoint (mockup s10s11s12 .gband)
   chev: '#B9AFB8', // row chevron (mockup .chev)
   track: '#F3F1EE', // progress track
   white: '#FFFFFF',

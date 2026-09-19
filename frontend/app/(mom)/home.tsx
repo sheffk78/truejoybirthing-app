@@ -317,7 +317,7 @@ export default function MomHomeScreen() {
                 onPress={() => router.push('/(mom)/weekly-tips')}
               >
                 <Text style={styles.linkRose}>Learn more</Text>
-                <Text style={{ fontSize: 17, color: C.rose, fontWeight: '300' }}>›</Text>
+                <Text style={{ fontSize: 16, color: C.rose, fontWeight: '300' }}>›</Text>
               </TouchableOpacity>
             </Card>
           );
@@ -340,7 +340,7 @@ export default function MomHomeScreen() {
               onPress={() => router.push('/(mom)/weekly-tips')}
             >
               <Text style={styles.linkRose}>Read more</Text>
-              <Text style={{ fontSize: 17, color: C.rose, fontWeight: '300' }}>›</Text>
+              <Text style={{ fontSize: 16, color: C.rose, fontWeight: '300' }}>›</Text>
             </TouchableOpacity>
           </Card>
         )}
@@ -386,7 +386,7 @@ export default function MomHomeScreen() {
                       <Text style={styles.rowTitle}>Contract to sign</Text>
                       <Text style={styles.rowMeta}>From {contract.provider_name} · {contract.provider_role}</Text>
                     </View>
-                    <Text style={{ fontSize: 17, color: C.chev, fontWeight: '300' }}>›</Text>
+                    <Text style={{ fontSize: 16, color: C.chev, fontWeight: '300' }}>›</Text>
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -412,7 +412,7 @@ export default function MomHomeScreen() {
                         {invoice.due_date ? ` · Due ${new Date(invoice.due_date).toLocaleDateString()}` : ''}
                       </Text>
                     </View>
-                    <Text style={{ fontSize: 17, color: C.chev, fontWeight: '300' }}>›</Text>
+                    <Text style={{ fontSize: 16, color: C.chev, fontWeight: '300' }}>›</Text>
                   </View>
                 </Card>
               </TouchableOpacity>
