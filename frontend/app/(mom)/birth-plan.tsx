@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Icon } from '../../src/components/Icon';
+import TIcon from '../../src/components/TIcon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { SECTION_FORMS, renderField } from '../../src/components/BirthPlanForms';
@@ -33,25 +33,26 @@ const getStatusColors = (colors: ThemeColors): Record<string, string> => ({
 });
 
 const STATUS_ICONS: Record<string, string> = {
-  'Not started': 'ellipse-outline',
-  'In progress': 'time-outline',
-  'Complete': 'checkmark-circle',
+  'Not started': 'status_todo',
+  'In progress': 'status_wip',
+  'Complete': 'status_done',
 };
 
 // Section icons mapping
+// TIcon approved glyph names (docs/design-refresh/surfaces-2026-09-14/icons.mjs rev 2)
 const SECTION_ICONS: Record<string, string> = {
-  'about_me': 'person',
-  'labor_delivery': 'body',
-  'labor_support': 'body',
-  'pain_management': 'medical',
-  'monitoring_iv': 'pulse',
-  'induction_interventions': 'medkit',
-  'pushing_safe_word': 'fitness',
-  'birth_preferences': 'fitness',
-  'post_delivery': 'heart',
-  'after_birth': 'heart',
-  'newborn_care': 'happy',
-  'other_considerations': 'list',
+  'about_me': 'about_me',
+  'labor_delivery': 'labor_delivery',
+  'labor_support': 'labor_support',
+  'pain_management': 'pain_management',
+  'monitoring_iv': 'monitoring_iv',
+  'induction_interventions': 'induction_interventions',
+  'pushing_safe_word': 'pushing_safe_word',
+  'birth_preferences': 'birth_preferences',
+  'post_delivery': 'post_delivery',
+  'after_birth': 'after_birth',
+  'newborn_care': 'newborn_care',
+  'other_considerations': 'other_considerations',
 };
 
 export default function BirthPlanScreen() {
@@ -358,17 +359,17 @@ export default function BirthPlanScreen() {
                   styles.sectionIconContainer,
                   section.status === 'Complete' && styles.sectionIconComplete,
                 ]}>
-                  <Icon 
-                    name={SECTION_ICONS[section.section_id] || 'document'} 
-                    size={20} 
+                  <TIcon 
+                    name={SECTION_ICONS[section.section_id] || 'birthplan'} 
+                    size={22} 
                     color={section.status === 'Complete' ? colors.white : colors.primary} 
                   />
                 </View>
                 <View style={styles.sectionInfo}>
                   <Text style={styles.sectionName}>{section.title}</Text>
                   <View style={styles.statusRow}>
-                    <Icon 
-                      name={STATUS_ICONS[section.status]} 
+                    <TIcon 
+                      name={STATUS_ICONS[section.status] || 'status_todo'} 
                       size={14} 
                       color={STATUS_COLORS[section.status]} 
                     />
@@ -382,7 +383,7 @@ export default function BirthPlanScreen() {
                     </Text>
                   </View>
                 </View>
-                <Icon name="chevron-forward" size={20} color={colors.textLight} />
+                <Text style={{ fontSize: 22, color: '#9C9DA0', fontWeight: '300' }}>›</Text>
               </View>
             </Card>
           </TouchableOpacity>
@@ -395,7 +396,7 @@ export default function BirthPlanScreen() {
             onPress={handleDownloadPDF}
             loading={exporting}
             fullWidth
-            icon={<Icon name="download" size={20} color={colors.white} />}
+            icon={<Text style={{ color: colors.white, fontSize: 17, fontWeight: '700' }}>↓</Text>}
             style={styles.shareButton}
             data-testid="download-pdf-btn"
           />
@@ -405,7 +406,7 @@ export default function BirthPlanScreen() {
           
           {/* Auto-share notice */}
           <View style={styles.autoShareNotice}>
-            <Icon name="information-circle" size={18} color={colors.primary} />
+            <TIcon name="autoshare" size={18} color={'#5F7154'} />
             <View style={styles.autoShareTextContainer}>
               <Text style={styles.autoShareText}>
                 Your birth plan is automatically shared with team members.
@@ -445,7 +446,7 @@ export default function BirthPlanScreen() {
                 onPress={() => setModalVisible(false)}
                 style={styles.modalCloseButton}
               >
-                <Icon name="close" size={24} color={colors.text} />
+                <Text style={{ fontSize: 24, lineHeight: 28, color: '#2A2A2A', fontWeight: '300' }}>×</Text>
               </TouchableOpacity>
               <Text style={styles.modalTitle} numberOfLines={1}>
                 {selectedSection?.title}
@@ -462,7 +463,7 @@ export default function BirthPlanScreen() {
             >
               {/* Section Description */}
               <View style={styles.descriptionCard}>
-                <Icon name="information-circle" size={20} color={colors.primary} />
+                <TIcon name="autoshare" size={20} color={'#5F7154'} />
                 <Text style={styles.modalDescription}>
                   {getSectionDescription()}
                 </Text>
@@ -480,7 +481,7 @@ export default function BirthPlanScreen() {
               {/* Notes to Provider */}
               <View style={styles.notesSection}>
                 <Text style={styles.notesLabel}>
-                  <Icon name="chatbubble" size={16} color={colors.primary} /> Notes to Your Care Team
+                  <TIcon name="autoshare" size={16} color={'#5F7154'} /> Notes to Your Care Team
                 </Text>
                 <TextInput
                   style={[styles.textInput, styles.textArea]}
@@ -509,7 +510,7 @@ export default function BirthPlanScreen() {
                 onPress={saveSection}
                 loading={saving}
                 fullWidth
-                icon={!saving ? <Icon name="checkmark" size={20} color={colors.white} /> : undefined}
+                icon={!saving ? <Text style={{ color: colors.white, fontSize: 17, fontWeight: '700' }}>✓</Text> : undefined}
                 data-testid="save-section-btn"
               />
             </View>

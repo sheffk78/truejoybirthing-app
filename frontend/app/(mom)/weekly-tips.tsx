@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Icon } from '../../src/components/Icon';
+import TIcon from '../../src/components/TIcon';
 import Card from '../../src/components/Card';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
@@ -238,7 +238,7 @@ export default function WeeklyTipsScreen() {
                 />
               ) : (
                 <View style={[styles.babyDevThumb, styles.babyDevThumbPlaceholder]}>
-                  <Icon name="image-outline" size={28} color={C.grayLight} />
+                  <TIcon name="status_todo" size={28} color={C.grayLight} />
                 </View>
               )}
               <View style={styles.babyDevMid}>
@@ -257,7 +257,7 @@ export default function WeeklyTipsScreen() {
 
         {!displayContent?.tip && !displayContent?.affirmation && (
           <View style={styles.emptyState}>
-            <Icon name="document-text-outline" size={48} color={colors.border} />
+            <TIcon name="ar_contract" size={48} color={C.grayLight} />
             <Text style={styles.emptyText}>No content available for this week.</Text>
           </View>
         )}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
+import TIcon from '../../src/components/TIcon';
 import { useColors, SIZES } from '../../src/hooks/useThemedStyles';
 import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,14 +23,14 @@ function TabIconWithBadge({
 }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Icon name={name} size={size} color={color} />
+      <TIcon name={name} size={size} color={color} />
       {showDot && (
         <View
           style={{
             width: 8,
             height: 8,
             borderRadius: 4,
-            backgroundColor: '#EF4444',
+            backgroundColor: C.roseBorder,
             marginLeft: -4,
             marginTop: -6,
             borderWidth: 1.5,
@@ -87,7 +88,7 @@ export default function MomLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <TabIconWithBadge name="home-outline" color={color} size={size} showDot={unreadNotifications > 0} />
+            <TabIconWithBadge name="home" color={color} size={size} showDot={unreadNotifications > 0} />
           ),
         }}
         listeners={{ tabPress: () => clearBadge('unreadNotifications') }}
@@ -97,7 +98,7 @@ export default function MomLayout() {
         options={{
           title: 'Birth Plan',
           tabBarIcon: ({ color, size }) => (
-            <TabIconWithBadge name="document-text-outline" color={color} size={size} showDot={pendingBirthPlanShares > 0} />
+            <TabIconWithBadge name="birthplan" color={color} size={size} showDot={pendingBirthPlanShares > 0} />
           ),
         }}
         listeners={{ tabPress: () => clearBadge('pendingBirthPlanShares') }}
@@ -107,7 +108,7 @@ export default function MomLayout() {
         options={{
           title: 'Timer',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="stopwatch-outline" size={size} color={color} />
+            <TIcon name="timer" size={size} color={color} />
           ),
         }}
       />
@@ -128,7 +129,7 @@ export default function MomLayout() {
         options={{
           title: 'My Team',
           tabBarIcon: ({ color, size }) => (
-            <TabIconWithBadge name="people-outline" color={color} size={size} showDot={newTeamMembers > 0} />
+            <TabIconWithBadge name="team" color={color} size={size} showDot={newTeamMembers > 0} />
           ),
         }}
         listeners={{ tabPress: () => clearBadge('newTeamMembers') }}
@@ -144,7 +145,7 @@ export default function MomLayout() {
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => (
-            <TabIconWithBadge name="mail-outline" color={color} size={size} showDot={unreadMessages > 0} />
+            <TabIconWithBadge name="messages" color={color} size={size} showDot={unreadMessages > 0} />
           ),
         }}
         listeners={{ tabPress: () => clearBadge('unreadMessages') }}
@@ -154,7 +155,7 @@ export default function MomLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="person-circle-outline" size={size} color={color} />
+            <TIcon name="profile" size={size} color={color} />
           ),
         }}
       />

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Icon } from '../../src/components/Icon';
+import TIcon from '../../src/components/TIcon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import ErrorBoundary from '../../src/components/ErrorBoundary';
@@ -162,7 +162,7 @@ export default function MomHomeScreen() {
       fallback={
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
           <View style={styles.errorContainer}>
-            <Icon name="alert-circle-outline" size={48} color={colors.textLight} />
+            <TIcon name="status_todo" size={48} color={C.grayLight} />
             <Text style={styles.errorTitle}>Unable to Load Home</Text>
             <Text style={styles.errorMessage}>
               Something went wrong. Pull down to refresh or try again later.
@@ -171,7 +171,7 @@ export default function MomHomeScreen() {
               title="Try Again"
               onPress={fetchData}
               style={{ marginTop: SIZES.md }}
-              icon={<Icon name="refresh" size={18} color={colors.white} />}
+              icon={<Text style={{ color: colors.white, fontSize: 16, fontWeight: '700' }}>↻</Text>}
             />
           </View>
         </SafeAreaView>
@@ -191,13 +191,13 @@ export default function MomHomeScreen() {
         {/* Inline Error State */}
         {loadError && (
           <Card style={styles.errorCard}>
-            <Icon name="alert-circle-outline" size={32} color={colors.error} />
+            <TIcon name="status_todo" size={32} color={C.roseBorder} />
             <Text style={styles.errorText}>{loadError}</Text>
             <Button
               title="Retry"
               onPress={fetchData}
               style={{ marginTop: SIZES.sm }}
-              icon={<Icon name="refresh" size={16} color={colors.white} />}
+              icon={<Text style={{ color: colors.white, fontSize: 15, fontWeight: '600' }}>↻</Text>}
             />
           </Card>
         )}
@@ -246,7 +246,7 @@ export default function MomHomeScreen() {
                 </Text>
               </View>
               <View style={styles.birthPlanAction}>
-                <Icon name="chevron-forward" size={18} color={C.chev} />
+                <Text style={{ fontSize: 20, color: C.chev, fontWeight: '300' }}>›</Text>
               </View>
             </View>
             <View style={styles.progressBar}>
@@ -299,7 +299,7 @@ export default function MomHomeScreen() {
                   />
                 ) : (
                   <View style={styles.babyDevImagePlaceholder}>
-                    <Icon name="image-outline" size={48} color={C.roseSoft} />
+                    <TIcon name="status_todo" size={48} color={C.roseSoft} />
                   </View>
                 )}
               </View>
@@ -317,7 +317,7 @@ export default function MomHomeScreen() {
                 onPress={() => router.push('/(mom)/weekly-tips')}
               >
                 <Text style={styles.linkRose}>Learn more</Text>
-                <Icon name="chevron-forward" size={14} color={C.rose} />
+                <Text style={{ fontSize: 17, color: C.rose, fontWeight: '300' }}>›</Text>
               </TouchableOpacity>
             </Card>
           );
@@ -340,7 +340,7 @@ export default function MomHomeScreen() {
               onPress={() => router.push('/(mom)/weekly-tips')}
             >
               <Text style={styles.linkRose}>Read more</Text>
-              <Icon name="chevron-forward" size={14} color={C.rose} />
+              <Text style={{ fontSize: 17, color: C.rose, fontWeight: '300' }}>›</Text>
             </TouchableOpacity>
           </Card>
         )}
@@ -380,13 +380,13 @@ export default function MomHomeScreen() {
                 <Card style={styles.actionRequiredCard}>
                   <View style={styles.actionRequiredHeader}>
                     <View style={styles.actionRequiredIcon}>
-                      <Icon name="document-text" size={18} color={C.rose} />
+                      <TIcon name="ar_contract" size={18} color={C.rose} />
                     </View>
                     <View style={styles.actionRequiredContent}>
                       <Text style={styles.rowTitle}>Contract to sign</Text>
                       <Text style={styles.rowMeta}>From {contract.provider_name} · {contract.provider_role}</Text>
                     </View>
-                    <Icon name="chevron-forward" size={14} color={C.chev} />
+                    <Text style={{ fontSize: 17, color: C.chev, fontWeight: '300' }}>›</Text>
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -403,7 +403,7 @@ export default function MomHomeScreen() {
                 <Card style={styles.actionRequiredCard}>
                   <View style={styles.actionRequiredHeader}>
                     <View style={styles.actionRequiredIcon}>
-                      <Icon name="receipt" size={18} color={C.rose} />
+                      <TIcon name="ar_invoice" size={18} color={C.rose} />
                     </View>
                     <View style={styles.actionRequiredContent}>
                       <Text style={styles.rowTitle}>Invoice — ${invoice.amount}</Text>
@@ -412,7 +412,7 @@ export default function MomHomeScreen() {
                         {invoice.due_date ? ` · Due ${new Date(invoice.due_date).toLocaleDateString()}` : ''}
                       </Text>
                     </View>
-                    <Icon name="chevron-forward" size={14} color={C.chev} />
+                    <Text style={{ fontSize: 17, color: C.chev, fontWeight: '300' }}>›</Text>
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -431,7 +431,7 @@ export default function MomHomeScreen() {
                 <Card key={invoice.invoice_id} style={styles.recentlyPaidCard}>
                   <View style={styles.actionRequiredHeader}>
                     <View style={[styles.actionRequiredIcon, styles.iconChipSage]}>
-                      <Icon name="checkmark-circle" size={18} color={C.sage} />
+                      <TIcon name="ar_invoice_paid" size={18} color={C.sage} />
                     </View>
                     <View style={styles.actionRequiredContent}>
                       <Text style={styles.rowTitle}>Invoice paid — ${invoice.amount}</Text>
@@ -445,7 +445,7 @@ export default function MomHomeScreen() {
                       accessibilityRole="button"
                       accessibilityLabel={`Dismiss paid invoice of $${invoice.amount}`}
                     >
-                      <Icon name="close-circle-outline" size={22} color={colors.textLight} />
+                      <Text style={{ fontSize: 22, color: C.grayLight, fontWeight: '300' }}>×</Text>
                     </TouchableOpacity>
                   </View>
                 </Card>
@@ -462,7 +462,7 @@ export default function MomHomeScreen() {
             activeOpacity={0.8}
           >
             <View style={styles.iconChipLav}>
-              <Icon name="calendar" size={18} color={C.lavender} />
+              <TIcon name="k_timeline" size={18} color={C.lavender} />
             </View>
             <Text style={styles.actionTitle}>Timeline</Text>
             <Text style={styles.actionSubtitle}>
@@ -476,7 +476,7 @@ export default function MomHomeScreen() {
             activeOpacity={0.8}
           >
             <View style={styles.iconChipSage}>
-              <Icon name="heart" size={18} color={C.sage} />
+              <TIcon name="status_wip" size={18} color={C.sage} />
             </View>
             <Text style={styles.actionTitle}>Wellness</Text>
             <Text style={styles.actionSubtitle}>How are you feeling today?</Text>
@@ -489,7 +489,7 @@ export default function MomHomeScreen() {
             data-testid="key-action-schedule-provider"
           >
             <View style={styles.iconChipRose}>
-              <Icon name="calendar-outline" size={18} color={C.rose} />
+              <TIcon name="bell" size={18} color={C.rose} />
             </View>
             <Text style={styles.actionTitle}>Schedule</Text>
             <Text style={styles.actionSubtitle}>With your provider</Text>

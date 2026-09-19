@@ -1,4 +1,7 @@
 // TJB custom icon set — hand-drawn glyphs, sage-ink stroke style (2026-09-15)
+// REV 2 (2026-09-18, Jeff approved in Discord): pushing_safe_word → speech bubble +
+// pause bars; post_delivery → cradled newborn; after_birth → bassinet. Reason: the
+// three originals were mood-strokes, not objects (Jeff: "too abstract").
 // Each entry: [name, svg inner paths]. 24x24 viewBox, stroke=currentColor,
 // stroke-width 1.7, round caps/joins. Curves over straight lines.
 // Tab bar (6) + birth-plan sections (12, matches SECTION_ICONS 1:1) + status (3) + auto-share.
@@ -51,22 +54,23 @@ const GLYPHS = {
   induction_interventions: `<path d="M9.4 4.6 L14.6 4.6 L14.6 9.2 C14.6 11 15.6 12.2 15.6 14.4 C15.6 17.4 14.1 19.4 12 19.4 C9.9 19.4 8.4 17.4 8.4 14.4 C8.4 12.2 9.4 11 9.4 9.2 Z" />
 <path d="M9.4 6.8 L14.6 6.8" />
 <path d="M12 19.4 L12 21" />`,
-  pushing_safe_word: `<path d="M4.6 12.4 C7.2 10.2 9.8 9.2 12 9.2 C14.2 9.2 16.8 10.2 19.4 12.4" />
-<path d="M6.4 16.8 C8.6 15.2 10.4 14.4 12 14.4 C13.6 14.4 15.4 15.2 17.6 16.8" />
-<path d="M9 20 C10 19.3 11 19 12 19 C13 19 14 19.3 15 20" />
-<path d="M12 9.2 C12 6.6 12.6 4.9 14 3.8" />`,
+  pushing_safe_word: `<path d="M12 4.8 C7.6 4.8 4.4 7.3 4.4 10.4 C4.4 13 6.8 15 10.2 15.6 C9.4 17 8.3 18 6.8 18.8 C8.9 18.6 10.7 17.8 12.2 16.4 C16.5 15.9 19.6 13.4 19.6 10.4 C19.6 7.3 16.4 4.8 12 4.8 Z" />
+<path d="M10.2 8.5 C10.15 9.8 10.15 11.1 10.2 12.4" />
+<path d="M13.8 8.5 C13.85 9.8 13.85 11.1 13.8 12.4" />`,
   birth_preferences: `<rect x="5.4" y="4.6" width="13.2" height="15" rx="2.4" />
 <path d="M8.6 9.6 L10.8 11.8 L15.2 7.6" />
 <path d="M8.6 14.6 L15.4 14.6" />
 <path d="M8.6 16.8 L13 16.8" />`,
-  post_delivery: `<path d="M5.2 14.2 C7.6 12.6 10 11.8 12 11.8 C14 11.8 16.4 12.6 18.8 14.2" />
-<path d="M12 11.8 C12 9.8 12.9 8.5 14.6 7.8" />
-<path d="M4.9 17.6 C5.6 17.9 6.3 18 7 17.8" />
-<path d="M17 17.8 C17.7 18 18.4 17.9 19.1 17.6" />
-<path d="M12 19.8 C12.9 19.8 13.6 19.6 14.2 19.2" />`,
-  after_birth: `<path d="M12 19.2 C9 16.6 6.6 14 6.6 11 C6.6 8.3 8.6 6.4 11 6.4 C11.4 6.4 11.7 6.5 12 6.6 C12.3 6.5 12.6 6.4 13 6.4 C15.4 6.4 17.4 8.3 17.4 11 C17.4 14 15 16.6 12 19.2 Z" />
-<path d="M6.6 11 C4.9 10.9 3.8 10.1 3.6 8.8" />
-<path d="M17.4 11 C19.1 10.9 20.2 10.1 20.4 8.8" />`,
+  post_delivery: `<path d="M9.7 7.1 C9.7 5.6 10.8 4.2 12.4 4.2 C14.1 4.2 15.4 5.6 15.4 7.3 C15.4 9.2 14 10.7 12.3 10.7 C10.7 10.7 9.7 9.4 9.7 8.2 Z" />
+<path d="M11.5 7.6 C12.1 8.2 12.9 8.3 13.5 7.9" />
+<path d="M4.6 13.2 C5.4 16.4 8.4 18.4 12.1 18.4 C15.8 18.4 18.7 16.5 19.4 13.4" />
+<path d="M4.6 13.2 C5.9 12.6 7.3 12.9 8.2 13.9" />
+<path d="M19.4 13.4 C18.1 12.7 16.7 13 15.9 14" />`,
+  after_birth: `<path d="M6.2 10.6 C6.2 6.9 8.5 4.6 12 4.6" />
+<path d="M5.4 10.6 L18.6 10.6 C18.6 14.6 15.9 17.2 12 17.2 C8.1 17.2 5.4 14.6 5.4 10.6 Z" />
+<path d="M7.2 12.6 C10.4 13.8 13.6 13.8 16.8 12.6" />
+<path d="M7.4 17 C6.6 18.2 5.6 18.9 4.2 19.3" />
+<path d="M16.6 17 C17.4 18.2 18.4 18.9 19.8 19.3" />`,
   newborn_care: `<circle cx="12" cy="13.2" r="6.4" />
 <path d="M9.9 5.6 C10.6 4.5 11.3 4 12 4 C12.7 4 13.4 4.5 14.1 5.6" />
 <path d="M9.8 12.4 C10.6 13 11.4 13.3 12 13.3 C12.6 13.3 13.4 13 14.2 12.4" />

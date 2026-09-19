@@ -17,7 +17,7 @@ import {
   AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Icon } from '../../src/components/Icon';
+import TIcon from '../../src/components/TIcon';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { SIZES, FONTS, COLORS } from '../../src/constants/theme';
@@ -636,7 +636,7 @@ export default function ContractionTimerScreen() {
         
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconContainer}>
-            <Icon name="timer-outline" size={64} color={colors.primary} />
+            <TIcon name="timer" size={64} color={colors.primary} />
           </View>
           <Text style={styles.emptyTitle}>Ready to Time Contractions?</Text>
           <Text style={styles.emptyText}>
@@ -670,8 +670,8 @@ export default function ContractionTimerScreen() {
                   style={[styles.sharingOption, shareWithDoula && styles.sharingOptionActive]}
                   onPress={() => setShareWithDoula(!shareWithDoula)}
                 >
-                  <Icon 
-                    name={shareWithDoula ? "checkbox" : "square-outline"} 
+                  <TIcon
+                    name={shareWithDoula ? "status_done" : "status_todo"} 
                     size={24} 
                     color={shareWithDoula ? colors.primary : colors.textLight} 
                   />
@@ -682,8 +682,8 @@ export default function ContractionTimerScreen() {
                   style={[styles.sharingOption, shareWithMidwife && styles.sharingOptionActive]}
                   onPress={() => setShareWithMidwife(!shareWithMidwife)}
                 >
-                  <Icon 
-                    name={shareWithMidwife ? "checkbox" : "square-outline"} 
+                  <TIcon
+                    name={shareWithMidwife ? "status_done" : "status_todo"} 
                     size={24} 
                     color={shareWithMidwife ? colors.primary : colors.textLight} 
                   />
@@ -749,7 +749,7 @@ export default function ContractionTimerScreen() {
             
             {patternStatus?.pattern_reached && (
               <View style={styles.patternReachedBanner}>
-                <Icon name="alert-circle" size={24} color={colors.error} />
+                <TIcon name="status_todo" size={24} color={C.roseBorder} />
                 <Text style={styles.patternReachedText}>5-1-1 Pattern Was Reached</Text>
               </View>
             )}
@@ -759,7 +759,7 @@ export default function ContractionTimerScreen() {
             <Button
               title="Share Summary"
               onPress={exportSummary}
-              leftIcon={<Icon name="share-outline" size={20} color={colors.white} />}
+              leftIcon={<TIcon name="ta_share" size={20} color={colors.white} />}
               style={{ marginBottom: 12 }}
             />
             <Button
@@ -788,14 +788,14 @@ export default function ContractionTimerScreen() {
           {birthWordCapitalized} <Text style={styles.headerTitleAccent}>Timer</Text>
         </Text>
         <Pressable style={styles.settingsBtn} onPress={() => setShowSettingsModal(true)}>
-          <Icon name="settings-outline" size={19} color={C.lavender} />
+          <TIcon name="gear" size={19} color={C.lavender} />
         </Pressable>
       </View>
       
       {/* Water Broke Banner (if recorded) */}
       {session?.water_broke_at && (
         <View style={styles.waterBrokeBanner}>
-          <Icon name="water-outline" size={20} color={colors.info || colors.primary} />
+          {/* iconless per approved mockup — no water glyph in approved set */}
           <Text style={styles.waterBrokeText}>
             Water broke at {new Date(session.water_broke_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
             {session.water_broke_note ? ` - ${session.water_broke_note}` : ''}
@@ -865,22 +865,21 @@ export default function ContractionTimerScreen() {
       {/* Bottom Actions — approved .trow: icon above label */}
       <View style={styles.bottomActions}>
         <Pressable style={styles.actionBtn} onPress={() => setShowHistoryModal(true)}>
-          <Icon name="list-outline" size={21} color={C.lavender} />
+          <TIcon name="ta_history" size={21} color={C.lavender} />
           <Text style={styles.actionBtnText}>History</Text>
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={() => setShowManualModal(true)}>
-          <Icon name="add-circle-outline" size={21} color={C.lavender} />
+          <TIcon name="ta_add" size={21} color={C.lavender} />
           <Text style={styles.actionBtnText}>Add Manual</Text>
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={exportSummary}>
-          <Icon name="share-outline" size={21} color={C.lavender} />
+          <TIcon name="ta_share" size={21} color={C.lavender} />
           <Text style={styles.actionBtnText}>Share</Text>
         </Pressable>
         
         <Pressable style={styles.actionBtn} onPress={endSession}>
-          <Icon name="flag-outline" size={21} color={C.rose} />
           <Text style={[styles.actionBtnText, styles.actionBtnTextWarn]}>End</Text>
         </Pressable>
       </View>
@@ -889,19 +888,16 @@ export default function ContractionTimerScreen() {
       <View style={styles.secondaryActionsRow}>
         {!session?.water_broke_at && (
           <Pressable style={styles.secondaryActionBtn} onPress={() => setShowWaterBrokeModal(true)}>
-            <Icon name="water" size={20} color={C.lavender} />
             <Text style={styles.secondaryActionText}>Water Broke</Text>
           </Pressable>
         )}
         
         <Pressable style={styles.secondaryActionBtn} onPress={() => setShowNotesModal(true)}>
-          <Icon name="create-outline" size={20} color={C.lavender} />
           <Text style={styles.secondaryActionText}>Notes</Text>
         </Pressable>
         
         {(chartData?.duration_data?.length || 0) >= 3 && (
           <Pressable style={styles.secondaryActionBtn} onPress={() => setShowChartsModal(true)}>
-            <Icon name="stats-chart-outline" size={20} color={C.lavender} />
             <Text style={styles.secondaryActionText}>Charts</Text>
           </Pressable>
         )}
@@ -910,8 +906,8 @@ export default function ContractionTimerScreen() {
       {/* Pattern status — approved .tchip: soft pill under the pills row */}
       {(stats?.contraction_count || 0) >= 1 && (
         <View style={styles.patternStatusCompact}>
-          <Icon
-            name={patternStatus?.pattern_reached ? "alert-circle" : "pulse-outline"}
+          <TIcon
+            name={patternStatus?.pattern_reached ? "status_todo" : "status_wip"}
             size={13}
             color={getPatternStatusColor()}
           />
@@ -969,7 +965,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{birthWordCapitalized} History</Text>
               <Pressable onPress={() => setShowHistoryModal(false)}>
-                <Icon name="close" size={24} color={colors.text} />
+                <Text style={{ fontSize: 24, lineHeight: 28, color: C.ink, fontWeight: '300' }}>×</Text>
               </Pressable>
             </View>
             
@@ -1005,7 +1001,7 @@ export default function ContractionTimerScreen() {
                       style={styles.deleteBtn}
                       onPress={() => deleteContraction(c.contraction_id)}
                     >
-                      <Icon name="trash-outline" size={20} color={colors.error} />
+                      <Text style={{ fontSize: 20, color: C.roseBorder, fontWeight: '300' }}>×</Text>
                     </Pressable>
                   </View>
                 ))
@@ -1027,7 +1023,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Add Contraction Manually</Text>
               <Pressable onPress={() => setShowManualModal(false)}>
-                <Icon name="close" size={24} color={colors.text} />
+                <Text style={{ fontSize: 24, lineHeight: 28, color: C.ink, fontWeight: '300' }}>×</Text>
               </Pressable>
             </View>
             
@@ -1111,7 +1107,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Timer Settings</Text>
               <Pressable onPress={() => setShowSettingsModal(false)}>
-                <Icon name="close" size={24} color={colors.text} />
+                <Text style={{ fontSize: 24, lineHeight: 28, color: C.ink, fontWeight: '300' }}>×</Text>
               </Pressable>
             </View>
             
@@ -1151,8 +1147,8 @@ export default function ContractionTimerScreen() {
                     onPress={() => updatePreferences({ alert_threshold: option.value as any })}
                   >
                     <View style={styles.alertOptionLeft}>
-                      <Icon 
-                        name={preferences.alert_threshold === option.value ? "radio-button-on" : "radio-button-off"} 
+                      <TIcon
+                        name={preferences.alert_threshold === option.value ? "status_done" : "status_todo"} 
                         size={20} 
                         color={preferences.alert_threshold === option.value ? colors.primary : colors.textLight} 
                       />
@@ -1181,7 +1177,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Record Water Breaking</Text>
               <Pressable onPress={() => setShowWaterBrokeModal(false)}>
-                <Icon name="close" size={24} color={colors.text} />
+                <Text style={{ fontSize: 24, lineHeight: 28, color: C.ink, fontWeight: '300' }}>×</Text>
               </Pressable>
             </View>
             
@@ -1222,7 +1218,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Session Notes</Text>
               <Pressable onPress={() => setShowNotesModal(false)}>
-                <Icon name="close" size={24} color={colors.text} />
+                <Text style={{ fontSize: 24, lineHeight: 28, color: C.ink, fontWeight: '300' }}>×</Text>
               </Pressable>
             </View>
             
@@ -1257,7 +1253,7 @@ export default function ContractionTimerScreen() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{birthWordCapitalized} Charts</Text>
               <Pressable onPress={() => setShowChartsModal(false)}>
-                <Icon name="close" size={24} color={colors.text} />
+                <Text style={{ fontSize: 24, lineHeight: 28, color: C.ink, fontWeight: '300' }}>×</Text>
               </Pressable>
             </View>
             
