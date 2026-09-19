@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family:'Cormorant'; src:url('fonts/CormorantGaramond_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Cormorant'; src:url('fonts/CormorantGaramond_700Bold.ttf'); font-weight:700; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_400Regular.ttf'); font-weight:400; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_500Medium.ttf'); font-weight:500; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_700Bold.ttf'); font-weight:700; }
+:root{
+  --cream:#FAF8F5; --ink:#2A2A2A; --gray:#6A6B6C; --chev:#B9AFB8;
+  --rose:#A25C86; --roseBorder:#B085A5; --roseSoft:#EFE0EB; --roseBg:#F0E9EE; --roseChip:#FBF5F9;
+  --lav:#6E6C99; --lavSoft:#EDEAF6; --lavMid:#D5D3E8;
+  --warn:#B085A5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Quicksand',sans-serif;color:#2A2A2A;background:#fff;font-size:13.5px;line-height:1.5;}
+.cover{background:linear-gradient(160deg,#FAF8F5 0%,#F0E9EE 60%,#EDEAF6 100%);padding:70px 60px;page-break-after:always;}
+.cover h1{font-family:'Cormorant',serif;font-weight:700;font-size:52px;color:#2A2A2A;line-height:1.1;margin-bottom:14px;}
+.cover h1 em{font-style:italic;color:#A25C86;}
+.cover .sub{font-size:19px;color:#6A6B6C;max-width:620px;margin-bottom:34px;}
+.cover .meta{display:flex;gap:14px;flex-wrap:wrap;}
+.pill{background:#fff;border:1px solid #B9AFB8;border-radius:999px;padding:8px 18px;font-weight:600;font-size:13px;color:#4B4B4B;}
+.page{padding:52px 60px;page-break-after:always;}
+.page:last-child{page-break-after:auto;}
+h2{font-family:'Cormorant',serif;font-weight:700;font-size:34px;margin-bottom:4px;}
+h2 .no{color:#A25C86;font-style:italic;margin-right:10px;}
+.lede{color:#6A6B6C;font-size:15px;margin-bottom:26px;max-width:700px;}
+.grid2{display:flex;gap:28px;}
+.col{flex:1;}
+.phoneframe{background:#fff;border:1.5px solid #D5D3E8;border-radius:30px;padding:14px 12px;box-shadow:0 12px 30px rgba(42,42,42,.08);}
+.phead{display:flex;justify-content:space-between;align-items:center;padding:2px 10px 12px;font-size:12px;font-weight:700;}
+.phead .t{color:#2A2A2A;}
+.phead .badge{border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;}
+.badge.before{background:#F3F1EE;color:#6A6B6C;border:1px solid #B9AFB8;}
+.badge.after{background:#F0E9EE;color:#A25C86;border:1px solid #B085A5;}
+.demo{border:1px solid #EFE0EB;border-radius:16px;overflow:hidden;}
+.row{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:13px 14px;}
+.row+.row{border-top:1px solid #F3F1EE;}
+.row .lbl{font-weight:600;font-size:13.5px;}
+.row .sub{font-size:11.5px;color:#8A8B8D;margin-top:2px;}
+.arrow{font-weight:300;line-height:1;}
+.arrow.was{color:#B9AFB8;}
+.arrow.now{color:#A25C86;}
+.callout{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:12.5px;}
+.callout.bad{background:#F3F1EE;border:1px solid #B9AFB8;color:#6A6B6C;}
+.callout.good{background:#F0E9EE;border:1px solid #B085A5;color:#4B4B4B;}
+.callout b{font-weight:700;}
+.arrowbox{display:flex;gap:20px;justify-content:center;margin-top:10px;padding:18px;background:#FAF8F5;border-radius:14px;}
+.arrowcell{text-align:center;}
+.arrowcell .a{font-size:34px;line-height:1;font-weight:300;display:block;margin-bottom:6px;}
+.arrowcell .cap{font-size:11px;font-weight:700;letter-spacing:.4px;}
+.cap.was{color:#8A8B8D;}
+.cap.now{color:#A25C86;}
+.hband{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.hband .ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hband .tt{font-family:'Cormorant',serif;font-weight:700;font-size:24px;line-height:1;}
+.hband .ov{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:3px;}
+table.spec{width:100%;border-collapse:collapse;margin-top:16px;font-size:12.5px;}
+table.spec th{background:#2A2A2A;color:#FAF8F5;text-align:left;padding:9px 12px;font-weight:600;font-size:11.5px;letter-spacing:.4px;}
+table.spec td{border-bottom:1px solid #F3F1EE;padding:9px 12px;vertical-align:top;}
+table.spec td.mono{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;}
+table.spec td.ok{color:#A25C86;font-weight:700;}
+.chiprow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+.chip{border-radius:999px;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;}
+.chip.cur-ok{background:#FBF5F9;color:#A25C86;border:1.5px solid #B085A5;}
+.chip.cur-bad{background:#FBF5F9;color:#A25C86;border:1.5px dashed #EFE0EB;}
+.chip .cap{display:block;font-size:9.5px;font-weight:600;letter-spacing:.2px;margin-top:2px;}
+.chip .cap.mismatch{color:#8A8B8D;}
+.chip .cap.match{color:#A25C86;}
+.weekwrap{background:#fff;border:1px solid #EFE0EB;border-radius:16px;padding:16px;}
+.weekrow{display:flex;gap:8px;}
+.wk{width:34px;height:34px;border-radius:12px;background:#fff;border:1px solid #EFE0EB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#6A6B6C;flex-shrink:0;}
+.wk.cur-bad{border:1.5px dashed #EFE0EB;background:#FBF5F9;color:#A25C86;}
+.wk.cur-ok{border:1.5px solid #B085A5;background:#FBF5F9;color:#A25C86;}
+.glyphs{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;}
+.glyphcard{width:104px;background:#fff;border:1px solid #EFE0EB;border-radius:14px;padding:12px 8px;text-align:center;}
+.glyphcard svg{display:block;margin:0 auto 8px;}
+.glyphcard .nm{font-family:ui-monospace,Menlo,monospace;font-size:9px;color:#6A6B6C;word-break:break-all;line-height:1.3;}
+.why{margin-top:16px;font-size:12.5px;color:#6A6B6C;background:#FAF8F5;border-radius:12px;padding:12px 14px;}
+.why b{color:#2A2A2A;}
+.footer{margin-top:22px;padding-top:12px;border-top:1px solid #F3F1EE;font-size:10.5px;color:#8A8B8D;}
+code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#F3F1EE;border-radius:6px;padding:1px 5px;}
+</style></head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <h1>The Design Consistency Sweep,<br><em>explained with pictures</em></h1>
+  <div class="sub">What I checked across the Mom section of your app, what was slightly off, and what each fix changed — shown side by side.</div>
+  <div class="meta">
+    <span class="pill">TrueJoy Birthing · mobile app</span>
+    <span class="pill">September 19, 2026</span>
+    <span class="pill">Commits 9b069d2c · 63eb5aaa</span>
+  </div>
+</div>
+
+<!-- PAGE 1: CHEVRONS -->
+<div class="page">
+  <h2><span class="no">1.</span>The little "›" arrows were three different sizes</h2>
+  <div class="lede">Every tappable row in the app ends with a small chevron. The design rules call for one size everywhere — 16px. Home screen had four rows at 17px, and the Birth Plan screen had one big 22px leftover.</div>
+  <div class="grid2">
+    <div class="col">
+      <div class="phoneframe">
+        <div class="phead"><span class="t">Home</span><span class="badge before">BEFORE</span></div>
+        <div class="demo">
+          <div class="row"><div><div class="lbl">Contraction Timer</div><div class="sub">Track your labor pattern</div></div><div class="arrow was" style="font-size:17px;">›</div></div>
+          <div class="row"><div><div class="lbl">Weekly Tips</div><div class="sub">This week's guidance</div></div><div class="arrow was" style="font-size:17px;">›</div></div>
+          <div class="row"><div><div class="lbl">My Tools</div><div class="sub">All tools</div></div><div class="arrow was" style="font-size:20px;color:#A25C86;">›</div></div>
+        </div>
+      </div>
+      <div class="callout bad"><b>Before:</b> three sizes on one screen — 17px, 20px, and (on Birth Plan) 22px. Your eye notices the wobble without knowing why.</div>
+    </div>
+    <div class="col">
+      <div class="phoneframe">
+        <div class="phead"><span class="t">Home</span><span class="badge after">AFTER</span></div>
+        <div class="demo">
+          <div class="row"><div><div class="lbl">Contraction Timer</div><div class="sub">Track your labor pattern</div></div><div class="arrow now" style="font-size:16px;">›</div></div>
+          <div class="row"><div><div class="lbl">Weekly Tips</div><div class="sub">This week's guidance</div></div><div class="arrow now" style="font-size:16px;">›</div></div>
+          <div class="row"><div><div class="lbl">My Tools</div><div class="sub">All tools</div></div><div class="arrow now" style="font-size:20px;color:#A25C86;">›</div></div>
+        </div>
+      </div>
+      <div class="callout good"><b>After:</b> the four mismatched arrows are now 16px. The bigger rose arrow on "My Tools" stays — that one was approved as an intentional accent.</div>
+    </div>
+  </div>
+  <div class="arrowbox">
+    <div class="arrowcell"><span class="a" style="font-weight:300;">17px</span><span class="cap was">WAS (Home ×4)</span></div>
+    <div class="arrowcell"><span class="a" style="font-weight:300;color:#8A8B8D;">22px</span><span class="cap was">WAS (Birth Plan)</span></div>
+    <div class="arrowcell"><span class="a now">16px</span><span class="cap now">NOW — EVERYWHERE</span></div>
+  </div>
+  <div class="footer">Rule: standard row arrows = 16px, gray #B9AFB8 (rose on rose rows). "My Tools" 20px arrow = locked S10 approval, untouched.</div>
+</div>
+
+<!-- PAGE 2: CURRENT WEEK CHIP -->
+<div class="page">
+  <h2><span class="no">2.</span>"This week" ring on Weekly Tips didn't match the approved mockup</h2>
+  <div class="lede">On Weekly Tips, the current week gets a highlighted chip. The approved design shows a solid rose ring. The app had a faded, washed-out ring instead.</div>
+  <div class="grid2">
+    <div class="col">
+      <div class="phoneframe">
+        <div class="phead"><span class="t">Weekly Tips · week strip</span><span class="badge before">BEFORE</span></div>
+        <div class="weekwrap">
+          <div class="weekrow">
+            <div class="wk">25</div><div class="wk">26</div><div class="wk cur-bad">27</div><div class="wk">28</div><div class="wk">29</div><div class="wk">30</div>
+          </div>
+        </div>
+        <div class="callout bad" style="margin-top:14px;"><b>Before:</b> dashed pale ring (#EFE0EB border instead of #B085A5). Reads as "disabled," not "you are here." (Shipped code had the solid ring at a lighter token — shown dashed here to make the difference visible at packet size.)</div>
+      </div>
+      <div class="chiprow">
+        <span class="chip cur-bad">border C.roseSoft<span class="cap mismatch">pale — old</span></span>
+        <span class="chip cur-ok">border C.roseBorder<span class="cap match">solid — approved</span></span>
+      </div>
+    </div>
+    <div class="col">
+      <div class="phoneframe">
+        <div class="phead"><span class="t">Weekly Tips · week strip</span><span class="badge after">AFTER</span></div>
+        <div class="weekwrap">
+          <div class="weekrow">
+            <div class="wk">25</div><div class="wk">26</div><div class="wk cur-ok">27</div><div class="wk">28</div><div class="wk">29</div><div class="wk">30</div>
+          </div>
+        </div>
+        <div class="callout good" style="margin-top:14px;"><b>After:</b> solid rose ring exactly as the approved September 18 design (mockup .wk.cur: ring #B085A5, blush fill #FBF5F9, rose number). Now matches the timer's "current lap" and My Team's status chips.</div>
+      </div>
+      <div class="why"><b>Why it matters:</b> "you are here" markers should look the same everywhere in the app — week 27 ring, active timer lap, current status chip. One ring, one meaning.</div>
+    </div>
+  </div>
+  <div class="footer">Approved mockup law: .wk.cur = border #B085A5 (roseBorder) + fill #FBF5F9 (gbandMid) + rose number. The old border color is still correct for chips that are NOT "current" — it just never belonged on this one.</div>
+</div>
+
+<!-- PAGE 3: ICON SHEET -->
+<div class="page">
+  <h2><span class="no">3.</span>Nine icons existed in the app but were missing from the design binder</h2>
+  <div class="lede">The app's icon set (left artwork) was missing nine glyphs from the design documentation copy — every icon the app actually draws, including these, is now recorded. The app itself never showed a wrong icon; this was bookkeeping so future screens (and other designers/agents) pull from the same complete set.</div>
+  <div class="glyphs" id="glyphs"></div>
+  <div class="why"><b>The nine:</b> History (archive shelf) · Add (plus) · Share (arrow out of tray) · Settings (gear) · Timeline (arch) · Notifications (bell) · Contract (document with seal) · Invoice (document with lines) · Invoice Paid (check circle). Drawn at 24×24, 1.7 stroke — same hand-drawn thin-line style as the rest of the set.</div>
+  <div class="why" style="margin-top:10px;"><b>Also cleaned:</b> two small code-hygiene items that kept the build green — a dead import removed, and a style property that used a web-only spelling corrected to the app's valid spelling (<code>translate</code> → <code>translateY</code>, used for a half-pixel optical alignment on My Team's status chips).</div>
+  <div class="footer">Source of truth: TIcon.tsx (what the app renders) ↔ icons.mjs (design binder). Now 31/31, verified programmatically.</div>
+</div>
+
+<!-- PAGE 4: WHAT WAS ALREADY CLEAN -->
+<div class="page">
+  <h2><span class="no">4.</span>What the sweep checked and found already clean</h2>
+  <div class="lede">The double-check covered every redesigned Mom screen — Home, Timer, Weekly Tips, Birth Plan, Appointments, My Team, Messages — against the approved specs. Most of it passed; the three pages above were the only drift found.</div>
+  <table class="spec">
+    <tr><th style="width:22%;">What was checked</th><th>How it was checked</th><th style="width:18%;">Result</th></tr>
+    <tr><td><b>Colors</b></td><td>Every color value on all 7 redesigned screens scanned against the approved palette (cream, lavender, rose, sage, ink, gray — no banned bright-violet)</td><td class="ok">✓ 0 off-palette</td></tr>
+    <tr><td><b>Icons</b></td><td>All icons on redesigned screens come from the custom TIcon set — no leftover library icons on those surfaces</td><td class="ok">✓ 0 legacy icons</td></tr>
+    <tr><td><b>Headers</b></td><td>Cormorant serif titles + overline labels, consistent across surfaces</td><td class="ok">✓ consistent</td></tr>
+    <tr><td><b>Type ramp</b></td><td>Sizes/weights from the approved type system on every redesigned surface</td><td class="ok">✓ consistent</td></tr>
+    <tr><td><b>Chips &amp; rings</b></td><td>Current-week chip was the one drift (page 2); other status chips already on spec</td><td class="ok">✓ fixed, then verified</td></tr>
+    <tr><td><b>Build</b></td><td>Full app typecheck after all edits</td><td class="ok">✓ 0 errors</td></tr>
+  </table>
+  <div class="why" style="margin-top:16px;"><b>One honest scope note:</b> three places inside Messages (the chat view once you open a conversation, the "new message" window, and error screens) still use the older, pre-refresh icon style. That's deliberate — no approved mockups exist for those sub-screens yet, and the rule is mockup-first: nothing gets redesigned freehand. They're logged as waiting-for-mockups.</div>
+  <div class="footer">Full written record: docs/design-refresh/surfaces-2026-09-14/VERIFY-s7s8s9.md (2026-09-19 section) · commits 9b069d2c, 63eb5aaa</div>
+</div>
+
+<script>document.getElementById("glyphs").innerHTML=`<div class="glyphcard"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2A2A2A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4.5 L7 19.5"/><path d="M17 4.5 L17 19.5"/><path d="M4.5 8 L19.5 8"/><path d="M4.5 16 L19.5 16"/></svg><div class="nm">History<br>ta_history</div></div><div class="glyphcard"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2A2A2A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5 L12 19"/><path d="M5 12 L19 12"/></svg><div class="nm">Add<br>ta_add</div></div><div class="glyphcard"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2A2A2A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 9.5 L20 4 M15.5 4 L20 4 L20 8.5"/><path d="M20 13.2 C20 17 17 20 13.2 20 L10.8 20 C7 20 4 17 4 13.2 L4 10.8 C4 7 7 4 10.8 4"/></svg><div class="nm">Share<br>ta_share</div></div><div class="glyphcard"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2A2A2A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.6 L12 5 M12 19 L12 21.4 M4 12 L6.4 12 M17.6 12 L20 12 M6.3 6.3 L8 8 M16 16 L17.7 17.7 M17.7 6.3 L16 8 M8 16 L6.3 17.7"/></svg><div class="nm">Settings<br>gear</div></div><div class="glyphcard"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2A2A2A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/></svg><div class="nm">Timeline<br>k_timeline</div></div><div class="glyphcard"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2A2A2A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6 C10 6.8 9 9 9 11.4 C9 14.4 10.3 16.4 12 16.4 C13.7 16.4 15 14.4 15 11.4 C15 9 14 6.8 12 4.6 Z"/><path d="M12 16.4 L12 19.4"/><path d="M9.6 18 C11.2 18.6 12.8 18.6 14.4 18"/></svg><div class="nm">Notifications<br>bell</div></div><div class="glyphcard"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2A2A2A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/></svg><div class="nm">Contract<br>ar_contract</div></div><div class="glyphcard"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2A2A2A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.8 4.4 C9.8 4.1 13.4 4.2 16.6 4.4 C17.4 4.4 17.9 5 17.9 5.7 L17.9 18.9 C17.9 19.6 17.4 20.1 16.7 20.2 C13.5 20.5 9.9 20.5 6.7 20.2 C6 20.1 5.5 19.6 5.5 18.9 L5.5 5.7 C5.5 5 6 4.4 6.8 4.4 Z"/><path d="M8.6 8.4 C11 8.1 13.3 8.1 15.6 8.4"/><path d="M8.6 11.6 C10.2 11.4 11.6 11.4 13.2 11.6"/><path d="M8.6 15 C10 14.8 11.2 14.8 12.6 15"/></svg><div class="nm">Invoice<br>ar_invoice</div></div><div class="glyphcard"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2A2A2A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/><path d="M8.8 12.2 C9.4 12.9 10 13.6 10.4 14.3 C11.6 12.4 13.2 10.6 14.8 9.2"/></svg><div class="nm">Invoice paid<br>ar_invoice_paid</div></div>`;</script></body></html>
