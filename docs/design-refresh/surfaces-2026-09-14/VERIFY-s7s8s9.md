@@ -39,7 +39,7 @@ Post-S10/S11/S12 sweep across all redesigned mom surfaces (home, timer, weekly-t
 
 1. **Chevron law violation (home):** S10 lock set the home "All Tools" arrow at 20px; four other home chevrons sat at 17px while every other redesigned screen used the 16px law value. Fixed all four 17px → 16px (rose rows keep C.rose, gray rows keep C.chev). The 20px S10 arrow stays as locked.
 2. **Birth-plan chevron:** single 22px hardcoded `#9C9DA0` chevron → 16px `C.chev` (law value + token, kills the last raw hex on that surface). Added the missing `C` import from designRefresh.
-3. **Weekly-tips current-chip band mismatch:** `weekButtonCurrent` used `C.roseSoft` border while every current-chip across the app uses `C.roseBorder`. One-line sync.
+3. **Weekly-tips current-chip band mismatch:** `weekButtonCurrent` border was `C.roseSoft` but the approved S12 mockup (.wk.cur) sets border #B085A5 = `C.roseBorder` with bg #FBF5F9 (= `C.gbandMid`, already tokenized in the prior commit). Border synced to `C.roseBorder` per mockup.
 4. **Dead import:** `Icon` imported in `(mom)/_layout.tsx` with zero usages → removed.
 5. **icons.mjs doc drift:** reference icon inventory was missing 9 utility glyphs that TIcon.tsx ships (ta_history, ta_add, ta_share, gear, k_timeline, bell, ar_contract, ar_invoice, ar_invoice_paid). Synced verbatim from source — TIcon ↔ icons.mjs now 31/31 (parity, mjs-only=∅, TIcon-only='name' type decl).
 6. **TS typing fix in the redesign patch set:** my-team `translate: [{y:-0.5}]` (invalid RN style key from the optical-alignment pass) → `translateY: -0.5`.

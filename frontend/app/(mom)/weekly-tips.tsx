@@ -382,7 +382,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderColor: C.lavender,
   },
   weekButtonCurrent: {
-    borderColor: C.roseSoft,
+    borderColor: C.roseBorder,
     backgroundColor: C.gbandMid,
   },
   weekButtonText: {
