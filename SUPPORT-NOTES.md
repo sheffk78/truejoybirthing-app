@@ -10,6 +10,17 @@ or `{ resizeMode: 'cover' }` style key. Neither maps to `background-size: cover`
 Native keeps `<Image resizeMode="cover">`. Implemented in `src/components/mom/HBand.tsx`
 (the only band component — used by home + weekly-tips headers).
 
+## react-native-svg intrinsic-size bug on web (2026-09-18)
+`<Svg style={absoluteFill}>` on web renders at the SVG default 300×150 CSS px —
+`absoluteFill` insets do NOT stretch it. The HBand veil therefore appeared as a
+misplaced white patch over the photo. **Fix:** web branch uses a plain CSS
+`linear-gradient` View (identical stops); native branch keeps the SVG (sizes fine
+on native) with explicit `width="100%" height="100%"`.
+**Lesson:** Jeff flagged it twice; my first "fix" only changed the photo layer and
+the vision-model screenshot check rationalized the patch as intentional design.
+Geometry bugs must be verified by DOM measurement (getBoundingClientRect on every
+band child), not by asking a vision model "is there a stray rectangle".
+
 ## expo-secure-store throws on web (2026-09-18)
 `SecureStore.setItemAsync` etc. are not functions on web — login crashed post-auth
 and the guard bounced users to /welcome. Fix: `src/utils/tokenStorage.ts`
