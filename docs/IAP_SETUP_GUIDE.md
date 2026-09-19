@@ -3,12 +3,23 @@
 ## Overview
 True Joy Birthing uses Apple App Store and Google Play Store subscriptions for provider accounts (Doulas & Midwives).
 
+> **✅ Google Play setup COMPLETE (2026-09-11)** — product `truejoy_pro` is fully configured and Active.
+> Full completion record: `Kit/life/brands/TrueJoyBirthing/reports/play-console-iap-setup-2026-09-11.md`.
+> Root cause of the Sep 2026 "subscription invalid" errors: the app requests product `truejoy_pro`,
+> but the console only had legacy products (`truejoy.pro.monthly`, `truejoy.pro.annual`). The fix
+> below makes the store match the app — no app update needed (build 152 works as-is).
+
 ## Subscription Products
 
 | Plan | Price | Period | Apple Product ID | Google Product ID |
 |------|-------|--------|------------------|-------------------|
-| Pro Monthly | $29 | Monthly | `truejoy.pro.monthly` | `truejoy_pro` (base plan: `monthly`) |
-| Pro Annual | $276 | Annual | `truejoy.pro.annual` | `truejoy_pro` (base plan: `annual`) |
+| Pro Monthly | $29.99 | Monthly | `truejoy.pro.monthly` | `truejoy_pro` (base plan: `monthly`) |
+| Pro Annual | $274.99 | Annual | `truejoy.pro.annual` | `truejoy_pro` (base plan: `annual`) |
+
+**Google Play offers (created 2026-09-11, both Active):**
+- `monthly-offer` — 14-day free trial, eligibility: New customer acquisition → "Never had this subscription"
+- `annual-offer` — 14-day free trial, same eligibility
+- The app sends these exact offer tokens (verified in `SubscriptionPage.tsx`), so they must never be renamed.
 
 **Annual savings**: $72/year (21% discount)
 
@@ -63,8 +74,13 @@ True Joy Birthing uses Apple App Store and Google Play Store subscriptions for p
 **True Joy Pro**
 - Product ID: `truejoy_pro`
 - Create two Base Plans:
-  - `monthly`: $29.00/month, billing period 1 month
-  - `annual`: $276.00/year, billing period 1 year
+  - `monthly`: $29.99/month, billing period 1 month
+  - `annual`: $274.99/year, billing period 1 year
+
+**✅ DONE 2026-09-11** — both base plans Active, all 174 countries priced
+(US template + bulk USD/EUR groups), both offers (`monthly-offer`, `annual-offer`)
+Active with 14-day free trials. Account: developer ID 7073800881508405551,
+owner sheffkventures@gmail.com (2FA via Kenneth).
 
 ### 2. Configure Testing
 
