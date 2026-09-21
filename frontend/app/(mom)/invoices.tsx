@@ -17,13 +17,15 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+import { C, F, kickerStyle, srowBase } from '../../src/constants/designRefresh';
+const DF = F;
 
 // Maps invoice status to theme color tokens at render time
-const getStatusColor = (status: string, colors: ReturnType<typeof useColors>): string => {
-  if (status === 'Paid') return colors.success;
-  if (status === 'Sent') return colors.warning;
-  if (status === 'Payment Claimed') return colors.primary;
-  return colors.textLight;
+const getStatusColor = (status: string): string => {
+  if (status === 'Paid') return C.sage;
+  if (status === 'Sent') return C.rose;
+  if (status === 'Payment Claimed') return C.lavender;
+  return C.grayLight;
 };
 
 const getStatusLabel = (status: string): string => {
@@ -131,7 +133,7 @@ export default function MomInvoicesScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={C.lavender} />
       </View>
     );
   }
@@ -141,20 +143,21 @@ export default function MomInvoicesScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.lavender} />
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Header - S15 mockup: kicker + serif title */}
         <View style={styles.header}>
-          <Text style={styles.title}>Invoices</Text>
+          <Text style={styles.headerKicker}>Billing</Text>
+          <Text style={styles.headerTitle}>Invoices from your team</Text>
         </View>
 
-        {/* Disclaimer */}
+        {/* Disclaimer - lavender bg */}
         <View style={styles.disclaimerCard}>
-          <Icon name="information-circle" size={20} color={colors.primary} />
+          <Icon name="information-circle" size={20} color={C.lavender} />
           <Text style={styles.disclaimerText}>
-            Payments are made directly to your provider using the instructions they provide. 
+            Payments are made directly to your provider using the instructions they provide.{' '}
             True Joy Birthing does not process or guarantee payments between you and your provider.
           </Text>
         </View>
@@ -162,7 +165,7 @@ export default function MomInvoicesScreen() {
         {/* Invoice List */}
         {invoices.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Icon name="receipt-outline" size={48} color={colors.textLight} />
+            <Icon name="receipt-outline" size={48} color={C.grayLight} />
             <Text style={styles.emptyTitle}>No Invoices Yet</Text>
             <Text style={styles.emptyText}>
               When your doula or midwife sends you an invoice, it will appear here.
@@ -182,8 +185,8 @@ export default function MomInvoicesScreen() {
                     {getProviderTypeLabel(invoice.provider_type)}
                   </Text>
                 </View>
-                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(invoice.status, colors) + '20' }]}>
-                  <Text style={[styles.statusText, { color: getStatusColor(invoice.status, colors) }]}>
+                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(invoice.status) + '20' }]}>
+                  <Text style={[styles.statusText, { color: getStatusColor(invoice.status) }]}>
                     {getStatusLabel(invoice.status)}
                   </Text>
                 </View>
@@ -202,7 +205,7 @@ export default function MomInvoicesScreen() {
                 <Text style={styles.amountText}>{formatCurrency(invoice.amount)}</Text>
                 <View style={styles.viewButton}>
                   <Text style={styles.viewButtonText}>View Details</Text>
-                  <Icon name="chevron-forward" size={16} color={colors.primary} />
+                  <Icon name="chevron-forward" size={16} color={C.lavender} />
                 </View>
               </View>
             </TouchableOpacity>
@@ -216,7 +219,7 @@ export default function MomInvoicesScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setShowDetailModal(false)}>
-                <Icon name="close" size={24} color={colors.text} />
+                <Icon name="close" size={24} color={C.ink} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Invoice Details</Text>
               <View style={{ width: 24 }} />
@@ -255,8 +258,8 @@ export default function MomInvoicesScreen() {
                   )}
                   <View style={styles.detailRow}>
                     <Text style={styles.detailLabel}>Status:</Text>
-                    <View style={[styles.statusBadge, { backgroundColor: getStatusColor(selectedInvoice.status, colors) + '20' }]}>
-                      <Text style={[styles.statusText, { color: getStatusColor(selectedInvoice.status, colors) }]}>
+                    <View style={[styles.statusBadge, { backgroundColor: getStatusColor(selectedInvoice.status) + '20' }]}>
+                      <Text style={[styles.statusText, { color: getStatusColor(selectedInvoice.status) }]}>
                         {selectedInvoice.status}
                       </Text>
                     </View>
@@ -278,7 +281,7 @@ export default function MomInvoicesScreen() {
                   <View style={styles.detailSection}>
                     <Text style={styles.sectionTitle}>Payment Instructions</Text>
                     <View style={styles.paymentInstructionsBox}>
-                      <Icon name="card-outline" size={20} color={colors.primary} style={{ marginRight: 8 }} />
+                      <Icon name="card-outline" size={20} color={C.lavender} style={{ marginRight: 8 }} />
                       <Text style={styles.paymentInstructionsText}>
                         {selectedInvoice.payment_instructions_text}
                       </Text>
@@ -292,8 +295,8 @@ export default function MomInvoicesScreen() {
                     <Text style={styles.sectionTitle}>Pay {selectedInvoice.provider_name || 'Your Provider'} Directly</Text>
                     {buildPaymentMethodRows(selectedInvoice.provider_payment_methods).map((row) => (
                       <View key={row.key} style={styles.paymentMethodRow}>
-                        <View style={[styles.paymentMethodIcon, { backgroundColor: colors.primary + '15' }]}>
-                          <Icon name={row.icon} size={18} color={colors.primary} />
+                        <View style={[styles.paymentMethodIcon, { backgroundColor: C.lavender + '15' }]}>
+                          <Icon name={row.icon} size={18} color={C.lavender} />
                         </View>
                         <View style={styles.paymentMethodInfo}>
                           <Text style={styles.paymentMethodLabel}>{row.label}</Text>
@@ -331,7 +334,7 @@ export default function MomInvoicesScreen() {
                 )}
                 {selectedInvoice.status === 'Payment Claimed' && (
                   <View style={styles.ackPaymentPendingBox}>
-                    <Icon name="time-outline" size={16} color={colors.primary} style={{ marginRight: 6 }} />
+                    <Icon name="time-outline" size={16} color={C.lavender} style={{ marginRight: 6 }} />
                     <Text style={styles.ackPaymentPendingText}>
                       Marked as paid. Your provider will confirm when payment is received.
                     </Text>
@@ -348,7 +351,7 @@ export default function MomInvoicesScreen() {
 
                 {/* Disclaimer */}
                 <View style={styles.modalDisclaimerCard}>
-                  <Icon name="shield-checkmark-outline" size={16} color={colors.textSecondary} />
+                  <Icon name="shield-checkmark-outline" size={16} color={C.gray} />
                   <Text style={styles.modalDisclaimerText}>
                     Payments are made directly to your provider. True Joy Birthing does not process 
                     or guarantee payments between you and your provider.
@@ -364,15 +367,16 @@ export default function MomInvoicesScreen() {
 }
 
 const getStyles = createThemedStyles((colors) => ({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: C.cream },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
   header: { marginBottom: SIZES.md },
-  title: { fontSize: 28, fontWeight: '700', color: colors.text },
+  headerKicker: { ...kickerStyle(C.lavender), marginBottom: 4 },
+  headerTitle: { fontFamily: DF.serif, fontSize: 26, color: C.ink, marginBottom: 14 },
   disclaimerCard: {
     flexDirection: 'row',
-    backgroundColor: colors.primary + '10',
-    borderRadius: 12,
+    backgroundColor: C.lavenderBg,
+    borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     marginBottom: SIZES.lg,
     gap: 8,
@@ -380,34 +384,36 @@ const getStyles = createThemedStyles((colors) => ({
   disclaimerText: {
     flex: 1,
     fontSize: 13,
-    color: colors.textSecondary,
+    color: C.lavender,
     lineHeight: 18,
   },
   emptyCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
+    backgroundColor: C.white,
+    borderRadius: SIZES.radiusLg,
     padding: SIZES.xl,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: C.border,
   },
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.text,
+    color: C.ink,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.sm,
   },
   invoiceCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
+    backgroundColor: C.white,
+    borderRadius: SIZES.radiusLg,
     padding: SIZES.md,
     marginBottom: SIZES.sm,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.border,
   },
   invoiceHeader: {
     flexDirection: 'row',
@@ -416,8 +422,8 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.xs,
   },
   providerInfo: { flex: 1 },
-  providerName: { fontSize: 16, fontWeight: '600', color: colors.text },
-  providerType: { fontSize: 12, color: colors.textSecondary },
+  providerName: { fontSize: 16, fontWeight: '600', color: C.ink },
+  providerType: { fontSize: 12, color: C.gray },
   statusBadge: {
     paddingHorizontal: SIZES.sm,
     paddingVertical: 4,
@@ -429,42 +435,42 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     marginBottom: SIZES.xs,
   },
-  invoiceNumber: { fontSize: 12, color: colors.primary, fontWeight: '500' },
-  dueDate: { fontSize: 12, color: colors.textSecondary },
-  description: { fontSize: 14, color: colors.textSecondary, marginBottom: SIZES.sm },
+  invoiceNumber: { fontSize: 12, color: C.lavender, fontWeight: '500' },
+  dueDate: { fontSize: 12, color: C.gray },
+  description: { fontSize: 14, color: C.gray, marginBottom: SIZES.sm },
   invoiceFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.border,
   },
-  amountText: { fontSize: 20, fontWeight: '700', color: colors.success },
+  amountText: { fontSize: 20, fontWeight: '700', color: C.sage },
   viewButton: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  viewButtonText: { fontSize: 14, color: colors.primary, fontWeight: '500' },
+  viewButtonText: { fontSize: 14, color: C.lavender, fontWeight: '500' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: colors.surface, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '90%' },
+  modalContent: { backgroundColor: C.white, borderTopLeftRadius: SIZES.radiusLg, borderTopRightRadius: SIZES.radiusLg, maxHeight: '90%' },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.border,
   },
-  modalTitle: { fontSize: 18, fontWeight: '600', color: colors.text },
+  modalTitle: { fontSize: 18, fontWeight: '600', color: C.ink },
   modalBody: { padding: SIZES.md },
   detailSection: {
     marginBottom: SIZES.lg,
     paddingBottom: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.border,
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.primary,
+    color: C.lavender,
     marginBottom: SIZES.sm,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -475,83 +481,83 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     marginBottom: 4,
   },
-  detailLabel: { fontSize: 14, color: colors.textSecondary },
-  detailValue: { fontSize: 14, fontWeight: '500', color: colors.text },
-  detailSubtext: { fontSize: 13, color: colors.textSecondary },
+  detailLabel: { fontSize: 14, color: C.gray },
+  detailValue: { fontSize: 14, fontWeight: '500', color: C.ink },
+  detailSubtext: { fontSize: 13, color: C.gray },
   descriptionFull: {
     fontSize: 15,
-    color: colors.text,
+    color: C.ink,
     lineHeight: 22,
     marginBottom: SIZES.md,
   },
   amountBox: {
-    backgroundColor: colors.success + '10',
-    borderRadius: 12,
+    backgroundColor: C.sage + '10',
+    borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     alignItems: 'center',
   },
-  amountLabel: { fontSize: 12, color: colors.textSecondary, marginBottom: 4 },
-  amountLarge: { fontSize: 28, fontWeight: '700', color: colors.success },
+  amountLabel: { fontSize: 12, color: C.gray, marginBottom: 4 },
+  amountLarge: { fontSize: 28, fontWeight: '700', color: C.sage },
   paymentInstructionsBox: {
     flexDirection: 'row',
-    backgroundColor: colors.primary + '08',
-    borderRadius: 12,
+    backgroundColor: C.lavenderBg,
+    borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     borderLeftWidth: 3,
-    borderLeftColor: colors.primary,
+    borderLeftColor: C.lavender,
   },
   paymentInstructionsText: {
     flex: 1,
     fontSize: 14,
-    color: colors.text,
+    color: C.ink,
     lineHeight: 20,
   },
   notesText: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: C.gray,
     lineHeight: 20,
     fontStyle: 'italic',
   },
   modalDisclaimerCard: {
     flexDirection: 'row',
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
     borderRadius: 8,
     padding: SIZES.sm,
     marginTop: SIZES.md,
     gap: 8,
   },
   ackPaymentButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
+    backgroundColor: C.lavender,
+    borderRadius: SIZES.radiusMd,
     paddingVertical: 14,
     alignItems: 'center',
     marginTop: SIZES.md,
   },
   ackPaymentButtonText: {
-    color: '#fff',
+    color: C.white,
     fontSize: 15,
     fontWeight: '600',
   },
   ackPaymentPendingBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.primary + '10',
-    borderRadius: 12,
+    backgroundColor: C.lavenderBg,
+    borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     marginTop: SIZES.md,
   },
   ackPaymentPendingText: {
     flex: 1,
     fontSize: 13,
-    color: colors.primary,
+    color: C.lavender,
   },
   paymentMethodRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: 12,
+    backgroundColor: C.white,
+    borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.border,
     padding: SIZES.sm,
     marginTop: SIZES.sm,
   },
@@ -562,40 +568,32 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SIZES.sm,
+    backgroundColor: C.lavenderBg,
   },
-  paymentMethodInfo: {
-    flex: 1,
-  },
-  paymentMethodLabel: {
-    fontSize: 12,
-    color: colors.textSecondary,
-  },
-  paymentMethodValue: {
-    fontSize: 14,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
-  },
+  paymentMethodInfo: { flex: 1 },
+  paymentMethodLabel: { fontSize: 12, color: C.gray },
+  paymentMethodValue: { fontSize: 14, fontFamily: DF.ui, color: C.ink },
   paymentMethodCopyButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: C.lavender,
     borderRadius: 8,
     paddingHorizontal: 14,
     paddingVertical: 7,
   },
   paymentMethodCopyText: {
-    color: '#fff',
+    color: C.white,
     fontSize: 13,
     fontWeight: '600',
   },
   paymentMethodHint: {
     fontSize: 11,
-    color: colors.textSecondary,
+    color: C.gray,
     marginTop: SIZES.sm,
     lineHeight: 15,
   },
   modalDisclaimerText: {
     flex: 1,
     fontSize: 11,
-    color: colors.textSecondary,
+    color: C.gray,
     lineHeight: 16,
   },
 }));
