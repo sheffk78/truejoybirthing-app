@@ -984,20 +984,22 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
   },
   breadcrumbItem: { paddingVertical: 4 },
-  breadcrumbLink: { 
-    fontSize: SIZES.fontMd, 
-    color: colors.primary, 
-    fontWeight: '500' 
+  breadcrumbLink: {
+    fontSize: SIZES.fontMd,
+    color: colors.primary,
+    fontWeight: '500',
+    fontFamily: F.uiSemi
   },
-  breadcrumbSeparator: { 
-    fontSize: SIZES.fontMd, 
-    color: colors.textLight, 
-    marginHorizontal: SIZES.sm 
+  breadcrumbSeparator: {
+    fontSize: SIZES.fontMd,
+    color: colors.textLight,
+    marginHorizontal: SIZES.sm
   },
-  breadcrumbCurrent: { 
-    fontSize: SIZES.fontMd, 
-    color: colors.text, 
-    fontWeight: '600' 
+  breadcrumbCurrent: {
+    fontSize: SIZES.fontMd,
+    color: colors.text,
+    fontWeight: '600',
+    fontFamily: F.serifSemi 
   },
   header: {
     flexDirection: 'row',

@@ -25,6 +25,7 @@ import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
 import { SIZES } from '../../constants/theme';
+import { F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
@@ -906,14 +907,14 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
 // Themed styles using createThemedStyles
 const getStyles = createThemedStyles((colors) => ({
   container: { flex: 1 },
-  scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
+  scrollContent: { paddingHorizontal: 16, paddingBottom: SIZES.xxl },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.lg },
-  title: { fontSize: SIZES.fontXxl, fontWeight: '700' },
-  subtitle: { fontSize: SIZES.fontMd, marginTop: 4 },
+  title: { fontSize: SIZES.fontXxl, fontFamily: F.serif },
+  subtitle: { fontSize: SIZES.fontMd, fontFamily: F.ui, marginTop: 4 },
   newMessageButton: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   emptyCard: { alignItems: 'center', paddingVertical: SIZES.xl },
-  emptyText: { fontSize: SIZES.fontLg, fontWeight: '600', marginTop: SIZES.md },
-  emptySubtext: { fontSize: SIZES.fontSm, marginTop: SIZES.xs, textAlign: 'center', paddingHorizontal: SIZES.lg },
+  emptyText: { fontSize: SIZES.fontLg, fontFamily: F.uiSemi, marginTop: SIZES.md },
+  emptySubtext: { fontSize: SIZES.fontSm, fontFamily: F.ui, marginTop: SIZES.xs, textAlign: 'center', paddingHorizontal: SIZES.lg },
 
   // --- Section headers ---
   sectionHeaderRow: {
@@ -942,7 +943,7 @@ const getStyles = createThemedStyles((colors) => ({
   conversationInfo: { flex: 1 },
   nameRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 2 },
   nameRoleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 2 },
-  userName: { fontSize: SIZES.fontMd, fontWeight: '600', marginRight: SIZES.sm },
+  userName: { fontSize: SIZES.fontMd, fontFamily: F.uiSemi, marginRight: SIZES.sm },
   roleBadge: { paddingHorizontal: SIZES.xs, paddingVertical: 2, borderRadius: SIZES.radiusSm },
   roleText: { fontSize: SIZES.fontXs, fontWeight: '600' },
   statusBadge: { paddingHorizontal: SIZES.xs, paddingVertical: 2, borderRadius: SIZES.radiusSm },
@@ -957,7 +958,7 @@ const getStyles = createThemedStyles((colors) => ({
   modalContainer: { flex: 1 },
   chatHeader: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, borderBottomWidth: 1 },
   chatHeaderInfo: { flex: 1, alignItems: 'center' },
-  chatHeaderName: { fontSize: SIZES.fontLg, fontWeight: '600' },
+  chatHeaderName: { fontSize: SIZES.fontLg, fontFamily: F.uiSemi },
   messagesContainer: { padding: SIZES.md, paddingBottom: SIZES.xl },
   messageBubble: { maxWidth: '80%', padding: SIZES.md, borderRadius: 18, marginBottom: SIZES.sm },
   messageBubbleMe: { alignSelf: 'flex-end', borderBottomRightRadius: 4 },

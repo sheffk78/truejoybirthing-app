@@ -19,6 +19,7 @@ import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
+import { F } from '../../src/constants/designRefresh';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface ShareRequest {
@@ -629,17 +630,18 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'center',
   },
   scrollContent: {
-    padding: SIZES.md,
+    paddingHorizontal: 16,
     paddingBottom: SIZES.xxl,
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: SIZES.lg,
   },
@@ -648,7 +650,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
+    fontFamily: F.uiSemi,
     color: colors.text,
     marginBottom: SIZES.md,
   },
