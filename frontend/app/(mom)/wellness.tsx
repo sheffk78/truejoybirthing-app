@@ -180,6 +180,10 @@ export default function WellnessScreen() {
             <Text style={styles.statsKicker}>YOUR WEEK</Text>
             <View style={styles.statsGrid}>
               <View style={styles.statItem}>
+                <Text style={styles.statValue}>{stats.entries_count}</Text>
+                <Text style={styles.statLabel}>Check-ins</Text>
+              </View>
+              <View style={styles.statItem}>
                 <Text style={styles.statValue}>{stats.avg_mood?.toFixed(1) || '-'}</Text>
                 <Text style={styles.statLabel}>Avg Mood</Text>
               </View>
@@ -188,12 +192,8 @@ export default function WellnessScreen() {
                 <Text style={styles.statLabel}>Avg Energy</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{stats.avg_sleep?.toFixed(1) || '-'}</Text>
+                <Text style={styles.statValue}>{stats.avg_sleep ? stats.avg_sleep.toFixed(1).replace(/\.0$/, '') + 'h' : '-'}</Text>
                 <Text style={styles.statLabel}>Avg Sleep</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>{stats.entries_count}</Text>
-                <Text style={styles.statLabel}>Check-ins</Text>
               </View>
             </View>
           </Card>
@@ -220,7 +220,7 @@ export default function WellnessScreen() {
                         <Text style={styles.entryScore}>Energy: {entry.energy_level}/5</Text>
                       )}
                       {entry.sleep_quality && (
-                        <Text style={styles.entryScore}>Sleep: {entry.sleep_quality}/5</Text>
+                        <Text style={styles.entryScore}>Sleep: {entry.sleep_quality}h</Text>
                       )}
                     </View>
                   </View>
@@ -352,7 +352,7 @@ const getStyles = createThemedStyles((colors) => ({
   statsKicker: { fontSize: SIZES.fontSm, fontFamily: DF.ui, color: C.gray, marginBottom: SIZES.md, letterSpacing: 1 },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.sm },
   statItem: { width: '48%', backgroundColor: C.cardBg, borderRadius: SIZES.radiusMd, padding: SIZES.md, alignItems: 'center', borderWidth: 1, borderColor: C.border },
-  statValue: { fontSize: SIZES.fontXxl, fontWeight: '700', color: C.lavender },
+  statValue: { fontSize: SIZES.fontXxl, fontFamily: DF.serif, fontWeight: '700', color: C.rose },
   statLabel: { fontSize: SIZES.fontXs, color: C.grayLight, marginTop: SIZES.xs },
   section: { marginBottom: SIZES.lg },
   sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: C.ink, marginBottom: SIZES.md },

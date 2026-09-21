@@ -109,3 +109,12 @@ None beyond RN-platform constraints. All three screens use:
 - **Hex audit**: `grep -oE '#[0-9A-Fa-f]{6}'` on all three files â no output (all colors use designRefresh tokens)
 - **Mockup screenshots**: Generated via Playwright, saved under `docs/design-refresh/surfaces-2026-09-14/impl-s13s14s15/`
 - **Commit SHAs**: `460bf6f9`, `857b3bc5`, `5498e166`
+
+
+## Fix round 2026-09-21 (visual-review pass on real renders)
+Review of the implemented renders vs mockups caught 3 S14 deviations; all fixed in frontend/app/(mom)/wellness.tsx:
+1. YOUR WEEK grid order -> Check-ins, Avg Mood, Avg Energy, Avg Sleep (matches mockup; Check-ins top-left).
+2. Avg Sleep now renders with hours suffix (7.7h); entry sleep lines now "8h"/"7h" instead of "8/5" (sleep_quality is hours, not a 1-5 scale).
+3. statValue style -> rose serif numerals (C.rose #A25C86, DF.serif) per mockup.
+Verification: tsc --noEmit exit 0; re-export web dist; re-rendered logged-in demo mom; pixel audit of stat band shows dominant value color exactly #A25C86 (1413 sampled px). Updated impl-*.png + side-by-side-*.png regenerated.
+Honest deviations remaining (RN-platform/accepted): stat VALUES are numeric averages (3.6/3.6/7.7) not the mockup's word labels (mockup used illustrative words); entry cards keep emoji + tags (real data format); check-in button is rounded-rect with plus icon vs mockup pill.
