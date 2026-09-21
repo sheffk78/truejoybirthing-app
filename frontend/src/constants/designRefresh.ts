@@ -96,4 +96,6 @@ export const srowBase = {
   borderRadius: 18,
   paddingVertical: 12,
   paddingHorizontal: 14,
+  flexDirection: 'row',
+  alignItems: 'center',
 } as const;

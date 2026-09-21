@@ -214,7 +214,15 @@ export default function WellnessScreen() {
                 <View style={styles.entryHeader}>
                   <Text style={styles.entryEmoji}>{getMoodEmoji(entry.mood)}</Text>
                   <View style={styles.entryMeta}>
-                    <Text style={styles.entryDate}>{formatDate(entry.created_at)}</Text>
+                    <View style={styles.entryTitleRow}>
+                      <Text style={styles.entryDate}>{formatDate(entry.created_at)}</Text>
+                      <View style={styles.moodChip}>
+                        <Text style={styles.moodChipText}>
+                          {MOODS.find((m) => m.value === Math.round(entry.mood))?.emoji}{' '}
+                          {MOODS.find((m) => m.value === Math.round(entry.mood))?.label || 'Okay'}
+                        </Text>
+                      </View>
+                    </View>
                     <View style={styles.entryScores}>
                       {entry.energy_level && (
                         <Text style={styles.entryScore}>Energy: {entry.energy_level}/5</Text>
@@ -362,6 +370,9 @@ const getStyles = createThemedStyles((colors) => ({
   // Rowline entry card (S14 mockup style)
   entryCard: { backgroundColor: C.white, borderRadius: SIZES.radiusLg, borderWidth: 1, borderColor: C.border, padding: SIZES.md, marginBottom: SIZES.sm },
   entryHeader: { flexDirection: 'row', alignItems: 'center' },
+  entryTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  moodChip: { backgroundColor: C.roseBg, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
+  moodChipText: { fontSize: SIZES.fontXs, color: C.rose, fontWeight: '600' },
   entryEmoji: { fontSize: 32, marginRight: SIZES.md },
   entryMeta: { flex: 1 },
   entryDate: { fontSize: SIZES.fontMd, fontWeight: '600', color: C.ink },
