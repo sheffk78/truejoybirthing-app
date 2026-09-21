@@ -118,3 +118,8 @@ Review of the implemented renders vs mockups caught 3 S14 deviations; all fixed 
 3. statValue style -> rose serif numerals (C.rose #A25C86, DF.serif) per mockup.
 Verification: tsc --noEmit exit 0; re-export web dist; re-rendered logged-in demo mom; pixel audit of stat band shows dominant value color exactly #A25C86 (1413 sampled px). Updated impl-*.png + side-by-side-*.png regenerated.
 Honest deviations remaining (RN-platform/accepted): stat VALUES are numeric averages (3.6/3.6/7.7) not the mockup's word labels (mockup used illustrative words); entry cards keep emoji + tags (real data format); check-in button is rounded-rect with plus icon vs mockup pill.
+
+
+## JEFF APPROVAL — 2026-09-21 (msg 1551709007402635396)
+
+Jeff approved the v2 comparison set (S13 icon-centering via srowBase row+center; S14 mood chip emoji+word; S15 unchanged from prior approval). Fixes committed as 567fc335. Status: mom section design refresh APPROVED. No deployment per Jeff directive (no new app yet).
