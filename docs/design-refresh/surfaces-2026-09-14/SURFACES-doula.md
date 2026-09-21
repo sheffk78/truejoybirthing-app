@@ -75,3 +75,14 @@ All phone frames use `overflow: hidden` on the screen container and `flex-shrink
 ## JEFF APPROVAL — 2026-09-21 (msg 1551711543958179932)
 
 All 10 doula screens (D1-D10) APPROVED with one global note: side breathing room. Applied: pframe 8→14px, pbody 10→16px, mhead 3→12px, tabbar widened. Commit cfff5645. Standing design rule: minimum ~16px horizontal inset for all phone content (applies to future screens too).
+
+
+## DEFERRED-SCREEN DECISIONS — Jeff 2026-09-21 (msg 1551713032202223729, approving 9/21 recs)
+
+1. **Leads** → design as D11 in the approved language and refresh `app/(doula)/leads.tsx` in the implementation pass. Core doula business surface.
+2. **Subscription** → Profile fold-in (approved D10) stands as the design; standalone `subscription.tsx` also gets the visual skin for consistency (visual-only, no nav change).
+3. **Contract Templates** → hide from doula navigation; leave screen code intact (admin surface). Not part of the visual refresh.
+
+## IMPLEMENTATION GO — 2026-09-21
+
+Jeff approved implementation of D1-D10 into the real doula screens (visual-skin-only, same rules as mom S13/S14/S15 pass: no structure/logic changes, no deploy).
