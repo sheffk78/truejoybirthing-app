@@ -121,11 +121,14 @@ export default function SignupScreen() {
   
   const handleSignup = async () => {
     if (!validate()) return;
-    
+
     try {
       await register(email, password, fullName, selectedRole!);
-      // Registration successful — navigate to email verification screen
-      router.replace({ pathname: '/(auth)/verify-email', params: { email } });
+      // Registration now grants an immediate session (email verification is no
+      // longer a gate — Jeff 2026-09-16). Everyone goes straight into onboarding;
+      // pros hit the skippable verify step as the LAST step (after tutorial).
+      // Root guard routes by auth state; explicit replace is the stale-state fallback.
+      router.replace('/(auth)/onboarding-intro');
     } catch (error: any) {
       if (Platform.OS === 'web') {
         window.alert(error.message || 'Registration failed. Please try again.');

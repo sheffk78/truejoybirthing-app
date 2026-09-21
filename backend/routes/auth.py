@@ -187,7 +187,8 @@ async def register(user_data: UserCreate, request: Request, response: Response):
     
     await db.users.insert_one(user_doc)
     
-    # Generate and store a 6-digit verification code
+    # Generate and store a 6-digit verification code (sent for the pro last-step
+    # verification / profile banner — NOT a gate; Jeff decision 2026-09-16)
     code = generate_secure_code()
     await db.email_verifications.delete_many({"email": user_data.email})
     await db.email_verifications.insert_one({
@@ -214,12 +215,19 @@ async def register(user_data: UserCreate, request: Request, response: Response):
     # Best-effort invite redemption — never blocks signup
     await try_redeem_invite(user_data.invite_id, user_id)
     
+    # Grant an IMMEDIATE session — email verification is no longer a gate
+    # (Jeff decision 2026-09-16: verification is a pro-only last step, skippable)
+    session_token = await create_session(user_id, response)
+    
     return {
         "user_id": user_id,
         "email": user_data.email,
         "full_name": user_data.full_name,
         "role": user_data.role,
-        "needs_verification": True
+        "onboarding_completed": False,
+        "tutorial_completed": False,
+        "email_verified": False,
+        "session_token": session_token
     }
 
 
@@ -239,9 +247,9 @@ async def login(login_data: UserLogin, request: Request, response: Response):
     if not verify_password(login_data.password, user_doc["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # Check if email is verified
-    if not user_doc.get("email_verified", False):
-        raise HTTPException(status_code=403, detail="EMAIL_NOT_VERIFIED")
+    # NOTE: no email_verified gate here — unverified users can log in and use the
+    # app (Jeff decision 2026-09-16). Marketplace listing is where verification
+    # is enforced, not login.
     
     # Create session
     session_token = await create_session(user_doc["user_id"], response)
@@ -254,7 +262,7 @@ async def login(login_data: UserLogin, request: Request, response: Response):
         "picture": user_doc.get("picture"),
         "onboarding_completed": user_doc.get("onboarding_completed", False),
         "tutorial_completed": user_doc.get("tutorial_completed", False),
-        "email_verified": True,
+        "email_verified": user_doc.get("email_verified", False),
         "session_token": session_token
     }
 
@@ -577,7 +585,8 @@ async def verify_email(data: VerifyEmailRequest, response: Response, request: Re
     # Mark code as used and clean up
     await db.email_verifications.delete_many({"email": data.email})
     
-    # Get user and create session
+    # Get user; if they already have a session (registered before this verify),
+    # just return updated state. If no active session exists, create one.
     user_doc = await db.users.find_one({"email": data.email}, {"_id": 0})
     session_token = await create_session(user_doc["user_id"], response)
     

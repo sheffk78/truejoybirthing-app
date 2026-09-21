@@ -13,20 +13,16 @@ import {
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
+import { SprigOne, SAGE } from '../../src/components/OrganicIcons';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
-import Card from '../../src/components/Card';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
-const SERVICES = [
-  { value: 'Birth Doula', icon: 'heart-outline' },
-  { value: 'Postpartum Doula', icon: 'home-outline' },
-  { value: 'Virtual Doula', icon: 'videocam-outline' },
-];
+const SERVICES = ['Birth Doula', 'Postpartum Doula', 'Virtual Doula'];
 
 export default function DoulaOnboardingScreen() {
   const colors = useColors();
@@ -170,26 +166,27 @@ export default function DoulaOnboardingScreen() {
             <View style={styles.progressBar}>
               <View style={[styles.progressFill, { width: '100%' }]} />
             </View>
-            <Text style={styles.title}>Welcome, {user?.full_name?.split(' ')[0]}!</Text>
+            <Text style={styles.overline}>Setup · 1 of 2</Text>
+            <Text style={styles.title}>Introduce your practice</Text>
             <Text style={styles.subtitle}>
-              Let's set up your doula profile.
+              This is how moms will see you. You can change any of it later.
             </Text>
           </View>
           
           {/* Practice Name */}
           <Input
-            label="Practice Name"
+            label="Practice name"
             placeholder="Enter your practice name"
             value={practiceName}
             onChangeText={setPracticeName}
-            leftIcon="briefcase-outline"
+            leftIcon="organic:sprigOne"
             error={errors.practiceName}
           />
           
           {/* Location with Zip Code Lookup */}
           <View style={styles.locationSection}>
             <Text style={styles.sectionLabel}>Location</Text>
-            <Text style={styles.helperText}>Enter your zip code and we'll find your city</Text>
+            <Text style={styles.helperText}>We'll match you with nearby families</Text>
             
             <View style={styles.zipCodeRow}>
               <Input
@@ -197,7 +194,7 @@ export default function DoulaOnboardingScreen() {
                 value={zipCode}
                 onChangeText={handleZipCodeChange}
                 containerStyle={styles.zipInput}
-                leftIcon="location"
+                leftIcon="organic:sprigOne"
                 keyboardType="number-pad"
                 maxLength={5}
               />
@@ -208,9 +205,8 @@ export default function DoulaOnboardingScreen() {
             
             {locationCity && locationState && (
               <View style={styles.locationResult}>
-                <Icon name="checkmark-circle" size={20} color={colors.success} />
                 <Text style={styles.locationResultText}>
-                  {locationCity}, {locationState}
+                  {locationCity}, {locationState} — we'll match you with nearby families
                 </Text>
               </View>
             )}
@@ -221,43 +217,31 @@ export default function DoulaOnboardingScreen() {
           
           {/* Services */}
           <View style={styles.servicesSection}>
-            <Text style={styles.sectionLabel}>Services Offered</Text>
+            <Text style={styles.sectionLabel}>Services offered</Text>
             {errors.services && <Text style={styles.errorText}>{errors.services}</Text>}
             
-            {SERVICES.map((service) => (
-              <TouchableOpacity
-                key={service.value}
-                onPress={() => toggleService(service.value)}
-                activeOpacity={0.8}
-                data-testid={`service-${service.value.toLowerCase().replace(/\s/g, '-')}`}
-              >
-                <Card
-                  style={[
-                    styles.serviceCard,
-                    servicesOffered.includes(service.value) && styles.serviceCardSelected,
-                  ]}
-                >
-                  <Icon
-                    name={service.icon as any}
-                    size={24}
-                    color={servicesOffered.includes(service.value) ? colors.primary : colors.textSecondary}
-                  />
-                  <Text
-                    style={[
-                      styles.serviceLabel,
-                      servicesOffered.includes(service.value) && styles.serviceLabelSelected,
-                    ]}
+            <View style={styles.chipRow}>
+              {SERVICES.map((service) => {
+                const on = servicesOffered.includes(service);
+                return (
+                  <TouchableOpacity
+                    key={service}
+                    onPress={() => toggleService(service)}
+                    activeOpacity={0.8}
+                    data-testid={`service-${service.toLowerCase().replace(/\s/g, '-')}`}
                   >
-                    {service.value}
-                  </Text>
-                  <View style={[styles.checkbox, servicesOffered.includes(service.value) && styles.checkboxSelected]}>
-                    {servicesOffered.includes(service.value) && (
-                      <Icon name="checkmark" size={16} color={colors.white} />
-                    )}
-                  </View>
-                </Card>
-              </TouchableOpacity>
-            ))}
+                    <View
+                      style={[
+                        styles.chip,
+                        on && styles.chipOn,
+                      ]}
+                    >
+                      <Text style={[styles.chipText, on && styles.chipTextOn]}>{service}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
           
           {/* Years in Practice */}
@@ -267,31 +251,49 @@ export default function DoulaOnboardingScreen() {
             value={yearsInPractice}
             onChangeText={setYearsInPractice}
             keyboardType="number-pad"
-            leftIcon="time-outline"
+            leftIcon="organic:sprigOne"
           />
           
-          {/* Accepting New Clients */}
-          <TouchableOpacity
-            onPress={() => setAcceptingNewClients(!acceptingNewClients)}
-            style={styles.toggleRow}
-            activeOpacity={0.8}
-            data-testid="toggle-accepting-clients"
-          >
-            <Text style={styles.toggleLabel}>Accepting new clients</Text>
-            <View style={[styles.toggle, acceptingNewClients && styles.toggleActive]}>
-              <View style={[styles.toggleKnob, acceptingNewClients && styles.toggleKnobActive]} />
-            </View>
-          </TouchableOpacity>
+          {/* Client status — approved two-card row (accepting / waitlist) */}
+          <View style={styles.statusRow}>
+            <TouchableOpacity
+              onPress={() => setAcceptingNewClients(true)}
+              style={[styles.statusCard, acceptingNewClients && styles.statusCardOn]}
+              activeOpacity={0.8}
+              data-testid="toggle-accepting-clients"
+            >
+              <View style={[styles.statusMark, acceptingNewClients && styles.statusMarkOn]}>
+                <Icon name="checkmark" size={14} color={acceptingNewClients ? colors.white : colors.textLight} />
+              </View>
+              <Text style={[styles.statusLabel, acceptingNewClients && styles.statusLabelOn]}>
+                Accepting new clients
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setAcceptingNewClients(false)}
+              style={[styles.statusCard, !acceptingNewClients && styles.statusCardOn]}
+              activeOpacity={0.8}
+              data-testid="toggle-waitlist"
+            >
+              <View style={[styles.statusMark, !acceptingNewClients && styles.statusMarkOn]}>
+                <Icon name="remove" size={14} color={!acceptingNewClients ? colors.white : colors.textLight} />
+              </View>
+              <Text style={[styles.statusLabel, !acceptingNewClients && styles.statusLabelOn]}>
+                Waitlist only
+              </Text>
+            </TouchableOpacity>
+          </View>
           
           {/* Continue Button */}
           <Button
-            title="Continue"
+            title="Create my profile"
             onPress={handleContinue}
             loading={isLoading}
             fullWidth
             style={styles.continueButton}
             data-testid="doula-onboarding-continue-btn"
           />
+          <Text style={styles.footNote}>Free to join — Pro tools come later, after setup.</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -329,6 +331,69 @@ const getStyles = createThemedStyles((colors) => ({
     height: '100%',
     backgroundColor: colors.roleDoula,
     borderRadius: 2,
+  },
+  overline: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+    letterSpacing: 2,
+    color: colors.roleDoula,
+    textTransform: 'uppercase',
+    marginBottom: SIZES.xs,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    gap: SIZES.sm,
+    marginBottom: SIZES.lg,
+  },
+  statusCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: SIZES.radiusMd,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.sm,
+    gap: 8,
+  },
+  statusCardOn: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '10',
+  },
+  statusMark: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusMarkOn: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  statusLabel: {
+    flex: 1,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+  },
+  statusLabelOn: {
+    color: colors.primary,
+    fontFamily: FONTS.bodyBold,
+  },
+  footNote: {
+    textAlign: 'center',
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.bodyBold,
+    color: colors.success,
+    backgroundColor: colors.success + '12',
+    borderRadius: SIZES.radiusMd,
+    marginTop: SIZES.md,
+    padding: SIZES.sm,
+    overflow: 'hidden',
   },
   title: {
     fontSize: SIZES.fontTitle,
@@ -385,70 +450,43 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.success,
     marginLeft: SIZES.xs,
   },
-  servicesSection: {
-    marginBottom: SIZES.md,
-  },
-  serviceCard: {
+  chipRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SIZES.sm,
+    flexWrap: 'wrap',
+    gap: SIZES.sm,
+    marginBottom: SIZES.xs,
   },
-  serviceCardSelected: {
-    borderWidth: 2,
+  chip: {
+    borderRadius: 999,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.lg,
+  },
+  chipOn: {
     borderColor: colors.primary,
+    backgroundColor: colors.primary + '14',
   },
-  serviceLabel: {
-    flex: 1,
-    marginLeft: SIZES.md,
+  chipText: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
     color: colors.textSecondary,
   },
-  serviceLabelSelected: {
+  chipTextOn: {
     color: colors.primary,
     fontFamily: FONTS.bodyBold,
   },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: SIZES.md,
-    marginBottom: SIZES.lg,
+  servicesSection: {
+    marginBottom: SIZES.md,
   },
   toggleLabel: {
     fontSize: SIZES.fontMd,
     fontFamily: FONTS.body,
     color: colors.text,
   },
-  toggle: {
-    width: 52,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.border,
-    padding: 2,
-  },
   toggleActive: {
     backgroundColor: colors.primary,
-  },
-  toggleKnob: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.surface,
   },
   toggleKnobActive: {
     transform: [{ translateX: 20 }],

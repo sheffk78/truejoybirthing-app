@@ -76,10 +76,10 @@ export default function ProviderFeedCard({ article, primaryColor }: ProviderFeed
   return (
     <TouchableOpacity onPress={handleTap} activeOpacity={0.8} data-testid="feed-card">
       <Card style={styles.card}>
-        {/* Header: Source + Date */}
+        {/* Header: Source + Date (no icon — section header already carries the book icon;
+            Jeff 09-15: redundant icons close together read as a mistake) */}
         <View style={styles.header}>
           <View style={styles.sourceRow}>
-            <Icon name="book-outline" size={14} color={primaryColor} />
             <Text style={[styles.sourceName, { color: primaryColor }]}>
               {article.source_name}
             </Text>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import * as LucideIcons from 'lucide-react-native';
+import { ORGANIC_ICONS } from './OrganicIcons';
 
 // Map Ionicons names to Lucide icons
 const iconMap: { [key: string]: keyof typeof LucideIcons } = {
@@ -378,6 +379,11 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   'briefcase': 'Briefcase',
   'briefcase-outline': 'Briefcase',
 
+  // Onboarding walkthrough (v2 — circle-family names had no Lucide match)
+  'people-circle': 'UsersRound',
+  'heart-circle': 'HeartHandshake',
+  'heart-half': 'HeartPulse',
+
   // Cloud
   'cloud-offline': 'CloudOff',
   'cloud-offline-outline': 'CloudOff',
@@ -416,6 +422,13 @@ interface IconProps {
 }
 
 export const Icon: React.FC<IconProps> = ({ name, size = 24, color = '#000', style }) => {
+  // Organic vocabulary first (DESIGN-RULES §4.0): 'organic:*' routes to the hand-drawn SVG set
+  if (name.startsWith('organic:')) {
+    const OrganicIcon = ORGANIC_ICONS[name.slice('organic:'.length)];
+    if (OrganicIcon) {
+      return <OrganicIcon size={size} color={color} />;
+    }
+  }
   // Get mapped icon name or default to Circle
   const lucideIconName = iconMap[name] || 'Circle';
   const LucideIcon = LucideIcons[lucideIconName as keyof typeof LucideIcons] as React.ComponentType<any>;

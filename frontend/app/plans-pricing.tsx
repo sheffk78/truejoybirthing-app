@@ -329,10 +329,10 @@ export default function PlansPricingScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Icon name="briefcase" size={24} color={colors.primary} />
-            <Text style={styles.sectionTitle}>For Doulas & Midwives</Text>
+            <Text style={styles.sectionTitle}>Tools for your practice</Text>
           </View>
           <Text style={styles.proSubtitle}>
-            Professional tools to manage your practice and serve your clients better.
+            Start with a 14-day free trial. Cancel anytime.
           </Text>
 
           {/* Plan Selection */}
@@ -347,15 +347,15 @@ export default function PlansPricingScreen() {
                 onPress={() => setSelectedPlan(plan.id)}
               >
                 {plan.id === 'annual' && (
-                  <View style={[styles.savingsBadge, { backgroundColor: colors.success }]}>
-                    <Text style={styles.savingsText}>Save ${plan.savings}</Text>
+                  <View style={[styles.savingsBadge, { backgroundColor: colors.primary }]}>
+                    <Text style={styles.savingsText}>RECOMMENDED · Save ${plan.savings}</Text>
                   </View>
                 )}
                 <Text style={[
                   styles.planName,
                   selectedPlan === plan.id && { color: colors.primary }
                 ]}>
-                  {plan.period === 'month' ? 'Monthly' : 'Annual'}
+                  {plan.period === 'month' ? 'Pro — Monthly' : 'Pro — Annual'}
                 </Text>
                 <Text style={[
                   styles.planPrice,
@@ -433,7 +433,7 @@ export default function PlansPricingScreen() {
                     </View>
                   ) : (
                     <TouchableOpacity
-                      style={[styles.trialButton, { backgroundColor: colors.primary }]}
+                      style={[styles.trialButton, { backgroundColor: colors.secondary }]}
                       onPress={iapAvailable ? handleIAPPurchase : handleStartTrial}
                       disabled={processingAction || isPurchasing}
                     >
@@ -441,10 +441,9 @@ export default function PlansPricingScreen() {
                         <ActivityIndicator color={colors.white} />
                       ) : (
                         <>
-                          <Icon name="gift" size={20} color={colors.white} />
                           <Text style={styles.trialButtonText}>
-                            Start 14-Day Free Trial
-                          </Text>
+                Start 14-day free trial →
+              </Text>
                         </>
                       )}
                     </TouchableOpacity>
@@ -523,7 +522,7 @@ export default function PlansPricingScreen() {
                   ? 'Payment is charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless auto-renew is turned off at least 24 hours before the end of the current period. Subscriptions may be managed and auto-renewal may be turned off in Account Settings after purchase.'
                   : Platform.OS === 'android'
                     ? `${SUBSCRIPTION_CONFIG.trialDays}-day free trial. Payment is charged through Google Play. Cancel anytime in Google Play settings.`
-                    : `No credit card required for trial. Cancel anytime.`
+                    : `14 days free, then your plan price · cancel anytime.`
                 }
               </Text>
               <View style={styles.legalLinksRow}>
@@ -590,7 +589,7 @@ export default function PlansPricingScreen() {
             <View style={styles.momNote}>
               <Icon name="information-circle" size={20} color={colors.textSecondary} />
               <Text style={styles.momNoteText}>
-                This plan is for doulas and midwives. As a mom, you have free access to all features designed for you!
+                This plan is for doulas, midwives and other birthing professionals. As a mom, you have free access to all features designed for you!
               </Text>
             </View>
           )}

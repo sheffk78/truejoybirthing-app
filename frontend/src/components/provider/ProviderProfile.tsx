@@ -489,6 +489,23 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
         />
       )}
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Unverified email banner — subtle reminder, never a gate (Jeff 2026-09-16).
+            Unverified pros simply don't appear in the marketplace. */}
+        {user && !user.email_verified && (
+          <TouchableOpacity
+            style={styles.unverifiedBanner}
+            onPress={() => router.push({ pathname: '/(auth)/verify-email', params: { email: user.email } } as any)}
+          >
+            <Icon name="mail-outline" size={18} color={colors.primary} />
+            <View style={{ flex: 1, marginLeft: SIZES.sm }}>
+              <Text style={styles.unverifiedTitle}>Verify your email</Text>
+              <Text style={styles.unverifiedBody}>
+                Verify to appear in the marketplace — moms can't find you until you do.
+              </Text>
+            </View>
+            <Icon name="chevron-forward" size={18} color={colors.textSecondary} />
+          </TouchableOpacity>
+        )}
         {/* Header with Profile Photo */}
         <View style={styles.header}>
           <TouchableOpacity 
@@ -940,6 +957,28 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
 const getStyles = createThemedStyles((colors) => ({
   container: { flex: 1, backgroundColor: colors.background },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
+
+  // Unverified-email banner (sage soft-note per DESIGN-RULES.md — subtle, not alarming)
+  unverifiedBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: SIZES.md,
+    borderRadius: 14,
+    backgroundColor: 'rgba(163,178,152,0.14)',
+    marginBottom: SIZES.md,
+  },
+  unverifiedTitle: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
+    color: colors.text,
+    marginBottom: 2,
+  },
+  unverifiedBody: {
+    fontSize: SIZES.fontXs,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    lineHeight: 17,
+  },
   
   // Header styles
   header: { alignItems: 'center', marginBottom: SIZES.lg },

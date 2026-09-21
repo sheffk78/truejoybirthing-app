@@ -26,14 +26,18 @@ export default function VerifyEmailScreen() {
   const { width } = useWindowDimensions();
   const isWideScreen = width > 768;
 
-  const params = useLocalSearchParams<{ email?: string }>();
-  const { verifyEmail, resendVerification, isLoading } = useAuthStore();
+  const params = useLocalSearchParams<{ email?: string; lastStep?: string }>();
+  const { verifyEmail, resendVerification, isLoading, user } = useAuthStore();
 
-  const [email, setEmail] = useState(params.email || '');
+  const [email, setEmail] = useState(params.email || user?.email || '');
   const [code, setCode] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isResending, setIsResending] = useState(false);
   const [resendMessage, setResendMessage] = useState('');
+
+  // When entered as the LAST onboarding step (from tutorial), Skip continues
+  // onboarding instead of going back to login. Jeff decision 2026-09-16.
+  const isLastStep = params.lastStep === '1';
 
   const showError = (message: string) => {
     if (Platform.OS === 'web') {
@@ -60,11 +64,29 @@ export default function VerifyEmailScreen() {
 
     try {
       await verifyEmail(email.trim().toLowerCase(), code.trim());
-      // Success — the auth store sets isAuthenticated, the root layout will
-      // route to onboarding or dashboard automatically.
+      // Success — auth store is updated; route explicitly to the dashboard so the
+      // last-step context doesn't leave them stranded in the (auth) group.
+      router.replace(dashboardRoute() as any);
     } catch (error: any) {
       showError(error.message || 'Verification failed. Please try again.');
     }
+  };
+
+  // Last-step context: dashboard route per role (Skip and success both use it)
+  const dashboardRoute = () => {
+    switch (user?.role) {
+      case 'DOULA': return '/(doula)/dashboard';
+      case 'MIDWIFE': return '/(midwife)/dashboard';
+      case 'LACTATION': return '/(lactation)/dashboard';
+      case 'MOM': return '/(mom)/home';
+      default: return '/(mom)/home';
+    }
+  };
+
+  const handleSkip = () => {
+    // Skip for now — they just won't appear in the marketplace until verified.
+    // The unverified state is surfaced later as a banner on their profile.
+    router.replace(dashboardRoute() as any);
   };
 
   const handleResend = async () => {
@@ -86,7 +108,13 @@ export default function VerifyEmailScreen() {
   };
 
   const handleBack = () => {
-    router.replace('/(auth)/login');
+    // Last-step context: back goes to the dashboard (onboarding already done),
+    // not to login — they're already authenticated.
+    if (isLastStep) {
+      router.replace(dashboardRoute() as any);
+    } else {
+      router.replace('/(auth)/login');
+    }
   };
 
   const formContent = (
@@ -98,20 +126,22 @@ export default function VerifyEmailScreen() {
         onClick={Platform.OS === 'web' ? handleBack : undefined}
       >
         <Icon name="arrow-back" size={20} color={colors.text} />
-        <Text style={styles.backButtonText}>Back to Login</Text>
+        <Text style={styles.backButtonText}>{isLastStep ? 'Back' : 'Back to Login'}</Text>
       </Pressable>
 
       <View style={styles.iconCircle}>
         <Icon name="mail-outline" size={32} color={colors.primary} />
       </View>
 
-      <Text style={styles.title}>Verify Your Email</Text>
+      <Text style={styles.title}>{isLastStep ? 'One Last Step' : 'Verify Your Email'}</Text>
       <Text style={styles.subtitle}>
         We've sent a 6-digit verification code to{' '}
         <Text style={{ fontFamily: FONTS.bodyBold, color: colors.text }}>
           {email || 'your email'}
         </Text>
-        . Enter it below to activate your account.
+        .{isLastStep
+          ? ' Verified pros appear in the marketplace — moms trust the checkmark.'
+          : ' Enter it below to activate your account.'}
       </Text>
 
       <View style={styles.inputsSection}>
@@ -139,12 +169,24 @@ export default function VerifyEmailScreen() {
           error={errors.code}
         />
         <Button
-          title="Verify Email"
+          title={isLastStep ? 'Verify & Finish Setup' : 'Verify Email'}
           onPress={handleVerify}
           loading={isLoading}
           fullWidth
           style={styles.actionButton}
         />
+        {isLastStep && (
+          <Pressable
+            onPress={handleSkip}
+            // @ts-ignore
+            onClick={Platform.OS === 'web' ? handleSkip : undefined}
+            style={styles.skipLink}
+          >
+            <Text style={styles.skipText}>
+              Not ready? <Text style={{ fontFamily: FONTS.bodyBold, color: colors.text }}>Skip for now</Text> — you won't appear in the marketplace until you verify.
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       {resendMessage ? (
@@ -317,6 +359,22 @@ const getStyles = createThemedStyles((colors) => ({
   // Action button
   actionButton: {
     marginTop: SIZES.sm,
+  },
+
+  // Last-step skip note (sage soft-note per DESIGN-RULES.md)
+  skipLink: {
+    marginTop: SIZES.md,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.md,
+    borderRadius: 12,
+    backgroundColor: 'rgba(163,178,152,0.14)',
+  },
+  skipText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 19,
   },
 
   // Resend

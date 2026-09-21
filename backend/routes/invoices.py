@@ -734,17 +734,48 @@ async def send_midwife_invoice(invoice_id: str, user: User = Depends(check_role(
 
 @router.post("/midwife/invoices/{invoice_id}/mark-paid")
 async def mark_midwife_invoice_paid(invoice_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
-    """Mark invoice as paid"""
+    """Mark invoice as paid and remove from Mom's notifications"""
     now = get_now()
-    
+
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"_id": 0}
+    )
+
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
     result = await db.invoices.update_one(
         {"invoice_id": invoice_id, "provider_id": user.user_id},
         {"$set": {"status": "Paid", "paid_at": now, "updated_at": now}}
     )
-    
+
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Invoice not found")
-    
+
+    client = await db.clients.find_one({"client_id": invoice["client_id"]}, {"_id": 0})
+    if client and client.get("linked_mom_id"):
+        await db.notifications.update_many(
+            {
+                "user_id": client["linked_mom_id"],
+                "type": {"$in": ["invoice_received", "invoice_reminder"]},
+                "data.invoice_id": invoice_id
+            },
+            {"$set": {"read": True, "resolved": True, "resolved_at": now}}
+        )
+
+        paid_notification = {
+            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+            "user_id": client["linked_mom_id"],
+            "type": "invoice_paid",
+            "title": "Payment Received",
+            "message": f"Your payment of ${invoice['amount']:.2f} has been confirmed. Thank you!",
+            "data": {"invoice_id": invoice_id},
+            "read": False,
+            "created_at": now
+        }
+        await db.notifications.insert_one(paid_notification)
+
     return {"message": "Invoice marked as paid"}
 
 
