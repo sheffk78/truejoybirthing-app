@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="icons.css">
+<link rel="stylesheet" href="../type-system.css">
+<style>
+/* Doula surfaces D1-D3: Dashboard Â· Clients Â· Client Detail hub */
+/* Same construction as approved s7s8s9 + s13s14s15 */
+.doula-tabbar .tb.on { color: #8E8CB5; }
+.doula-tabbar .tb svg { stroke: #9C9DA0; }
+.doula-tabbar .tb.on svg { stroke: #8E8CB5; }
+.doula-stat .n { font-family: 'Cormorant', serif; font-weight: 700; font-size: 22px; color: #8E8CB5; }
+.doula-stat .l { font-size: 8.5px; font-weight: 700; letter-spacing: .8px; color: #8A8B8D; text-transform: uppercase; margin-top: 1px; }
+.doula-card { background: #fff; border: 1px solid #EFE0EB; border-radius: 18px; padding: 12px 14px; margin-top: 10px; }
+.doula-card .k { font-size: 10px; letter-spacing: 2.2px; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+.doula-card p { font-size: 13px; line-height: 1.55; color: #4B4B4B; font-weight: 500; }
+.doula-chip { font-size: 9.5px; letter-spacing: .6px; font-weight: 700; text-transform: uppercase; border-radius: 999px; padding: 2px 8px; }
+.doula-chip.active { color: #8E8CB5; background: #F1F1FB; }
+.doula-chip.prenatal { color: #6E6C99; background: #EDEAF6; }
+.doula-chip.signed { color: #5F7154; background: #E8EDE5; }
+.doula-chip.pending { color: #A25C86; background: #EFE0EB; }
+.doula-chip.completed { color: #5F7154; background: #E8EDE5; }
+.doula-chip.leads { color: #6E6C99; background: #EDEAF6; }
+.doula-chip.draft { color: #8A8B8D; background: #F3F1EE; }
+.doula-chip.sent { color: #A25C86; background: #EFE0EB; }
+.doula-chip.paid { color: #5F7154; background: #E8EDE5; }
+.doula-chip.overdue { color: #A25C86; background: #EFE0EB; }
+.doula-chip.today { color: #6E6C99; background: #EDEAF6; }
+.doula-chip.upcoming { color: #8A8B8D; background: #F3F1EE; }
+.doula-chip.confirmed { color: #5F7154; background: #E8EDE5; }
+.doula-chip.respond { color: #A25C86; background: #EFE0EB; }
+.doula-chip.msg { color: #6E6C99; background: #EDEAF6; }
+.doula-chip.new { color: #B87AA0; background: #F0E9EE; }
+.doula-avatar { width: 40px; height: 40px; border-radius: 50%; background: #EDEAF6; color: #6E6C99; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.doula-avatar.rose { background: #EFE0EB; color: #A25C86; }
+.doula-avatar.sage { background: #E8EDE5; color: #5F7154; }
+.doula-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #F0E9EE; }
+.doula-row:last-child { border-bottom: none; }
+.doula-row .mid { flex: 1; min-width: 0; }
+.doula-row .chev { color: #B9AFB8; font-size: 14px; flex-shrink: 0; }
+.doula-row .meta { font-size: 11px; color: #6A6B6C; font-weight: 500; margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.doula-h2 { font-family: 'Cormorant', serif; font-weight: 700; font-size: 21px; color: #2A2A2A; margin-bottom: 2px; }
+.doula-sub { font-size: 11.5px; color: #6A6B6C; font-weight: 500; margin-bottom: 8px; }
+.doula-overline { font-size: 10px; letter-spacing: 2.4px; text-transform: uppercase; font-weight: 700; color: #A25C86; margin-bottom: 4px; }
+.doula-h1 { font-family: 'Cormorant', serif; font-weight: 700; font-size: 26px; line-height: 1.12; color: #2A2A2A; }
+.doula-h1 em { font-style: normal; color: #B085A5; }
+.doula-msub { font-size: 12.5px; color: #6A6B6C; margin-top: 3px; font-weight: 500; }
+.doula-search { margin: 10px 0 0; background: #fff; border: 1px solid #EFE0EB; border-radius: 999px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; color: #9C9DA0; font-size: 12px; font-weight: 500; font-family: 'Quicksand', sans-serif; }
+.doula-btn { background: #6E6C99; color: #fff; text-align: center; font-size: 13px; font-weight: 600; border-radius: 999px; padding: 11px 18px; font-family: 'Quicksand', sans-serif; }
+.doula-btn.ghost { background: transparent; color: #6E6C99; border: 1.3px solid #8E8CB5; }
+.doula-btn-row { display: flex; gap: 8px; margin-top: 8px; }
+.doula-rbtn { flex: 1; text-align: center; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 7px 10px; font-family: 'Quicksand', sans-serif; }
+.doula-rbtn.yes { background: #8E8CB5; color: #fff; }
+.doula-rbtn.no { border: 1.3px solid #D5D3E8; color: #6E6C99; background: #FDFCFA; }
+.doula-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.doula-stat-card { background: #fff; border: 1px solid #EFE0EB; border-radius: 14px; padding: 10px 8px; text-align: center; }
+.doula-stat-card .n { font-family: 'Cormorant', serif; font-weight: 700; font-size: 22px; color: #8E8CB5; }
+.doula-stat-card .l { font-size: 8.5px; font-weight: 700; letter-spacing: .8px; color: #8A8B8D; text-transform: uppercase; margin-top: 1px; }
+.doula-hband { margin: 0 0 0; height: 140px; position: relative; flex: none; overflow: hidden; border-radius: 45px 45px 0 0; }
+.doula-hband img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.doula-hband .veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(42,42,42,.04) 0%, rgba(250,248,245,0) 40%, rgba(250,248,245,.7) 90%, #FAF8F5 100%); }
+.doula-tabbar { display: flex; justify-content: space-around; align-items: center; padding: 6px 10px 10px; background: #fff; border-top: 1px solid #F0E9EE; flex-shrink: 0; border-radius: 0 0 45px 45px; }
+.doula-tabbar .tb { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 9px; font-weight: 600; letter-spacing: .3px; color: #9C9DA0; font-family: 'Quicksand', sans-serif; }
+.doula-tabbar .tb.on { color: #8E8CB5; }
+.doula-tabbar .tb svg { width: 22px; height: 22px; stroke: #9C9DA0; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.doula-tabbar .tb.on svg { stroke: #8E8CB5; }
+.doula-note { margin-top: 12px; font-size: 11px; color: #6A6B6C; background: #FAF8F5; border: 1px solid #EFE0EB; border-radius: 10px; padding: 8px 12px; }
+.doula-note b { color: #2A2A2A; }
+.doula-foot { margin-top: 10px; padding-top: 8px; border-top: 1px solid #F0E9EE; font-size: 9.5px; color: #8A8B8D; }
+.doula-legend { display: flex; gap: 12px; margin-top: 8px; font-size: 10px; color: #6A6B6C; align-items: center; }
+.doula-legend span { display: flex; align-items: center; gap: 4px; }
+.doula-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; border: 1px solid rgba(42,42,42,.08); }
+.doula-page { padding: 36px 44px; page-break-after: always; }
+.doula-page:last-child { page-break-after: auto; }
+.doula-page h2 { font-family: 'Cormorant', serif; font-weight: 700; font-size: 31px; margin-bottom: 3px; }
+.doula-page h2 .no { color: #A25C86; font-style: italic; margin-right: 8px; }
+.doula-page .lede { color: #6A6B6C; font-size: 13.5px; margin-bottom: 20px; max-width: 720px; }
+.doula-grid3 { display: flex; gap: 20px; }
+.doula-grid3 .phone { width: 262px; flex-shrink: 0; display: flex; flex-direction: column; }
+.doula-pframe { background: #fff; border: 1.5px solid #D5D3E8; border-radius: 24px; padding: 8px 8px 6px; box-shadow: 0 8px 22px rgba(42,42,42,.06); flex: 1; display: flex; flex-direction: column; }
+.doula-ptop { display: flex; justify-content: space-between; align-items: center; padding: 2px 6px 6px; }
+.doula-ptop .pt { font-weight: 700; font-size: 11.5px; }
+.doula-pill-s { border-radius: 999px; padding: 2px 8px; font-size: 9.5px; font-weight: 700; letter-spacing: .4px; }
+.doula-pill-a { background: #F0E9EE; color: #A25C86; border: 1px solid #B085A5; }
+.doula-pbody { flex: 1; background: #FAF8F5; border-radius: 14px; padding: 12px 10px 8px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.doula-mhead { padding: 1px 3px 0; }
+.doula-mhead .ov { font-size: 8.5px; font-weight: 700; letter-spacing: 1.4px; color: #A25C86; text-transform: uppercase; margin-bottom: 2px; }
+.doula-mhead .tt { font-family: 'Cormorant', serif; font-weight: 700; font-size: 20px; line-height: 1.05; }
+.doula-mhead .tt em { font-style: italic; color: #B085A5; }
+.doula-mhead .ms { font-size: 11.5px; color: #6A6B6C; margin-top: 2px; font-weight: 500; }
+.doula-section { margin: 12px 0 0; }
+.doula-section .a-h2 { font-family: 'Cormorant', serif; font-weight: 700; font-size: 18px; color: #2A2A2A; margin-bottom: 1px; }
+.doula-section .sub { font-size: 10.5px; color: #6A6B6C; font-weight: 500; margin-bottom: 6px; }
+.doula-srow { background: #fff; border: 1px solid #EFE0EB; border-radius: 14px; padding: 10px 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+.doula-srow .ico { width: 30px; height: 30px; border-radius: 10px; background: #F1F1FB; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.doula-srow .ico.sage { background: #E8EDE5; }
+.doula-srow .mid { flex: 1; min-width: 0; }
+.doula-srow .a-h3 { font-family: 'Cormorant', serif; font-weight: 600; font-size: 15px; color: #2A2A2A; }
+.doula-srow .meta { font-size: 10.5px; color: #6A6B6C; font-weight: 500; margin-top: 1px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.doula-srow .chev { color: #B9AFB8; font-size: 14px; flex-shrink: 0; }
+.doula-muted { color: #8A8B8D; }
+.doula-dl { margin: 12px 0 0; }
+.doula-dl .abtn { background: #6E6C99; color: #fff; text-align: center; font-size: 12.5px; font-weight: 600; border-radius: 999px; padding: 10px 16px; font-family: 'Quicksand', sans-serif; }
+.doula-dl .hint { text-align: center; font-size: 10.5px; color: #6A6B6C; margin-top: 5px; font-weight: 500; }
+.doula-hint { text-align: center; font-size: 10px; color: #8A8B8D; margin-top: 6px; font-weight: 500; }
+.doula-tag { font-size: 10px; letter-spacing: 1.2px; font-weight: 700; color: #8E8CB5; text-transform: uppercase; }
+.doula-divider { height: 1px; background: #EFE0EB; margin: 10px 0; }
+.doula-toast { background: #F0E9EE; border: 1px solid #D5D3E8; border-radius: 12px; padding: 8px 12px; font-size: 11px; color: #4B4B4B; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.doula-toast .dot { width: 6px; height: 6px; border-radius: 50%; background: #B87AA0; flex-shrink: 0; }
+.doula-toast .check { color: #5F7154; font-weight: 700; }
+.doula-empty { text-align: center; padding: 24px 12px; color: #8A8B8D; font-size: 12px; font-weight: 500; }
+.doula-empty .icon { font-size: 28px; margin-bottom: 6px; opacity: .5; }
+.doula-modal { border: 1.5px dashed #B085A5; background: #FDFCFA; border-radius: 12px; padding: 9px 11px; margin-top: 8px; }
+.doula-modal .mt { font-weight: 700; font-size: 10.5px; color: #A25C86; letter-spacing: .3px; }
+.doula-modal .mc { font-size: 10.5px; color: #6A6B6C; margin-top: 3px; }
+.doula-badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 3px 9px; font-size: 9.5px; font-weight: 700; letter-spacing: .3px; }
+.doula-badge.rose { background: #F0E9EE; color: #A25C86; }
+.doula-badge.lav { background: #EDEAF6; color: #6E6C99; }
+.doula-badge.sage { background: #E8EDE5; color: #5F7154; }
+.doula-badge.track { background: #F3F1EE; color: #8A8B8D; }
+.doula-progress { height: 4px; background: #EDEAF6; border-radius: 999px; margin-top: 4px; overflow: hidden; }
+.doula-progress .fill { height: 100%; border-radius: 999px; background: #8E8CB5; }
+.doula-progress .fill.rose { background: #B085A5; }
+.doula-progress .fill.sage { background: #5F7154; }
+.doula-progress .fill.lav { background: #6E6C99; }
+.doula-flex-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.doula-flex-col { display: flex; flex-direction: column; gap: 6px; }
+.doula-mt-8 { margin-top: 8px; }
+.doula-mb-8 { margin-bottom: 8px; }
+.doula-text-sm { font-size: 11.5px; }
+.doula-text-xs { font-size: 10px; }
+.doula-font-bold { font-weight: 700; }
+.doula-font-semibold { font-weight: 600; }
+.doula-font-medium { font-weight: 500; }
+.doula-color-rose { color: #A25C86; }
+.doula-color-lav { color: #6E6C99; }
+.doula-color-sage { color: #5F7154; }
+.doula-color-muted { color: #8A8B8D; }
+.doula-color-body { color: #4B4B4B; }
+.doula-color-ink { color: #2A2A2A; }
+.doula-w-full { width: 100%; }
+.doula-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+</style>
+</head>
+<body class="canvas">
+
+<div class="canvas-head">
+  <div class="eyebrow">D1âD3 Â· Doula App Â· Mockup for Approval</div>
+  <h1>Doula Surfaces <em>Dashboard Â· Clients Â· Client Detail</em></h1>
+  <div class="sub">Same construction as s7s8s9 + s13s14s15 Â· Cormorant + Quicksand Â· cream/lavender/rose palette Â· 2Ã2 stat grid</div>
+</div>
+
+<div class="pair"><div class="col">
+
+<!-- ============ D1 DOULA DASHBOARD ============ -->
+<div class="phone"><div class="screen tall" style="background:#FAF8F5;">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>âââ</span><span>â®</span><div class="sb-batt"></div></div></div>
+
+  <div class="mhead">
+    <div class="a-overline">Welcome back</div>
+    <div class="a-h1">Good <em>morning</em>, Sarah</div>
+    <div class="m-sub">Doula Dashboard â your pipeline at a glance</div>
+  </div>
+
+  <!-- 2Ã2 stat grid (never 4-across, per S14 fix) -->
+  <div class="doula-stat-grid">
+    <div class="doula-stat-card"><div class="n">12</div><div class="l">Active Clients</div></div>
+    <div class="doula-stat-card"><div class="n">5</div><div class="l">Upcoming Appts</div></div>
+    <div class="doula-stat-card"><div class="n">3</div><div class="l">Pending Contracts</div></div>
+    <div class="doula-stat-card"><div class="n">2</div><div class="l">Pending Invoices</div></div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="doula-section">
+    <div class="a-h2">Quick Actions</div>
+    <div class="doula-flex-row" style="gap:6px;">
+      <div class="doula-card" style="flex:1;text-align:center;padding:10px 8px;">
+        <div style="font-size:18px;margin-bottom:3px;">&#9783;</div>
+        <div class="doula-text-sm doula-font-semibold doula-color-ink">Clients</div>
+      </div>
+      <div class="doula-card" style="flex:1;text-align:center;padding:10px 8px;">
+        <div style="font-size:18px;margin-bottom:3px;">&#9744;</div>
+        <div class="doula-text-sm doula-font-semibold doula-color-ink">Appointments</div>
+      </div>
+      <div class="doula-card" style="flex:1;text-align:center;padding:10px 8px;">
+        <div style="font-size:18px;margin-bottom:3px;">&#9993;</div>
+        <div class="doula-text-sm doula-font-semibold doula-color-ink">Messages</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Birth Plan Progress -->
+  <div class="doula-section">
+    <div class="a-h2">Birth Plan Progress</div>
+    <div class="doula-sub">Across your active clients</div>
+    <div class="doula-srow">
+      <div class="doula-avatar sage">AM</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Amara Mitchell</div><div class="meta"><span>38 weeks</span><span class="doula-badge sage">Birth plan 80%</span></div></div>
+      <div class="doula-progress" style="width:60px;"><div class="fill sage" style="width:80%;"></div></div>
+    </div>
+    <div class="doula-srow">
+      <div class="doula-avatar">JR</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Jess Rivera</div><div class="meta"><span>32 weeks</span><span class="doula-badge lav">Birth plan 45%</span></div></div>
+      <div class="doula-progress" style="width:60px;"><div class="fill lav" style="width:45%;"></div></div>
+    </div>
+    <div class="doula-srow">
+      <div class="doula-avatar rose">KP</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Kim Park</div><div class="meta"><span>28 weeks</span><span class="doula-badge track">Birth plan 20%</span></div></div>
+      <div class="doula-progress" style="width:60px;"><div class="fill" style="width:20%;"></div></div>
+    </div>
+  </div>
+
+  <!-- Recent Notes -->
+  <div class="doula-section">
+    <div class="a-h2">Recent Notes</div>
+    <div class="doula-sub">Latest updates from your team</div>
+    <div class="doula-srow">
+      <div class="ico sage"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4Z"/></svg></div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Amara â birth plan updated</div><div class="meta"><span>2h ago</span><span class="doula-badge sage">Prenatal</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+    <div class="doula-srow">
+      <div class="ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">New message from Kim P.</div><div class="meta"><span>5h ago</span><span class="doula-badge msg">Message</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+    <div class="doula-srow">
+      <div class="ico sage"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Contract sent to Jess R.</div><div class="meta"><span>1d ago</span><span class="doula-badge sent">Sent</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+  </div>
+
+  <!-- Tip card -->
+  <div class="doula-note"><b>Doula Tip:</b> Go to Clients to manage contracts, invoices, notes and appointments for each client. The client-first workflow keeps everything organized.</div>
+
+  <div style="margin-top:auto;"></div>
+  <div class="doula-tabbar doula-tabbar">
+    <div class="tb on"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8CB5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><div class="tbl">Home</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><div class="tbl">Clients</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div class="tbl">Messages</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><div class="tbl">Profile</div></div>
+  </div>
+</div></div>
+
+<!-- ============ D2 CLIENTS LIST ============ -->
+<div class="phone"><div class="screen tall" style="background:#FAF8F5;">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>âââ</span><span>â®</span><div class="sb-batt"></div></div></div>
+
+  <div class="mhead">
+    <div class="a-overline">Your Clients</div>
+    <div class="a-h1"><em>My</em> Clients</div>
+    <div class="m-sub">Manage your client relationships</div>
+  </div>
+
+  <!-- Filter toggle -->
+  <div style="display:flex;gap:6px;margin:10px 0 0;">
+    <div class="doula-rbtn yes" style="flex:1;">Active</div>
+    <div class="doula-rbtn no" style="flex:1;">Inactive</div>
+  </div>
+
+  <!-- Pending Requests -->
+  <div class="doula-section">
+    <div class="a-h2">Pending Requests <span class="doula-badge rose">2</span></div>
+    <div class="doula-srow">
+      <div class="doula-avatar">ML</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Maya Lin</div><div class="meta"><span>Wants to share birth plan</span><span>Due: Oct 12</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+    <div class="doula-srow">
+      <div class="doula-avatar rose">SO</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Sara Okafor</div><div class="meta"><span>Wants to share birth plan</span><span>Due: Nov 3</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+  </div>
+
+  <!-- Active Clients -->
+  <div class="doula-section">
+    <div class="a-h2">Active Clients <span class="doula-badge sage">8</span></div>
+    <div class="doula-srow">
+      <div class="doula-avatar sage">AM</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Amara Mitchell</div><div class="meta"><span>Due: Jan 14, 2027</span><span class="doula-badge active">Active</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+    <div class="doula-srow">
+      <div class="doula-avatar">JR</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Jess Rivera</div><div class="meta"><span>Due: Feb 28, 2027</span><span class="doula-badge prenatal">Prenatal</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+    <div class="doula-srow">
+      <div class="doula-avatar rose">KP</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Kim Park</div><div class="meta"><span>Due: Mar 22, 2027</span><span class="doula-badge signed">Contract Signed</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+    <div class="doula-srow">
+      <div class="doula-avatar sage">TN</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Tara Nguyen</div><div class="meta"><span>Due: Apr 5, 2027</span><span class="doula-badge active">Active</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+    <div class="doula-srow">
+      <div class="doula-avatar">RB</div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Rosa Bravo</div><div class="meta"><span>Due: May 30, 2027</span><span class="doula-badge prenatal">Prenatal</span></div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+  </div>
+
+  <div class="doula-dl"><div class="abtn">See All Clients</div><div class="hint">View full client list and manage connections</div></div>
+
+  <div class="doula-tabbar doula-tabbar">
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><div class="tbl">Home</div></div>
+    <div class="tb on"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8CB5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><div class="tbl">Clients</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div class="tbl">Messages</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><div class="tbl">Profile</div></div>
+  </div>
+</div></div>
+
+<!-- ============ D3 CLIENT DETAIL HUB ============ -->
+<div class="phone"><div class="screen tall" style="background:#FAF8F5;">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>âââ</span><span>â®</span><div class="sb-batt"></div></div></div>
+
+  <div class="mhead">
+    <div class="a-overline">Client Hub</div>
+    <div class="a-h1">Amara <em>Mitchell</em></div>
+    <div class="m-sub">Due Jan 14, 2027 Â· 38 weeks Â· Active</div>
+  </div>
+
+  <!-- Tabs -->
+  <div style="display:flex;gap:4px;margin:10px 0 0;overflow-x:hidden;">
+    <div class="doula-rbtn yes" style="flex:1;font-size:10px;">Timeline</div>
+    <div class="doula-rbtn no" style="flex:1;font-size:10px;">Appointments</div>
+    <div class="doula-rbtn no" style="flex:1;font-size:10px;">Notes</div>
+    <div class="doula-rbtn no" style="flex:1;font-size:10px;">Messages</div>
+    <div class="doula-rbtn no" style="flex:1;font-size:10px;">Contracts</div>
+    <div class="doula-rbtn no" style="flex:1;font-size:10px;">Invoices</div>
+    <div class="doula-rbtn no" style="flex:1;font-size:10px;">Birth Plan</div>
+  </div>
+
+  <!-- Timeline Tab Content -->
+  <div class="doula-section">
+    <div class="a-h2">Timeline</div>
+    <div class="doula-sub">Key milestones for this client</div>
+
+    <div class="doula-srow">
+      <div class="ico sage"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Contract Signed</div><div class="meta"><span>Sep 1 Â· $2,400 retainer</span></div></div>
+      <span class="doula-chip signed">Signed</span>
+    </div>
+
+    <div class="doula-srow">
+      <div class="ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Birth Plan Shared</div><div class="meta"><span>Sep 8 Â· 80% complete</span></div></div>
+      <span class="doula-chip active">In Progress</span>
+    </div>
+
+    <div class="doula-srow">
+      <div class="ico sage"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg></div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Prenatal Visit #3</div><div class="meta"><span>Sep 15 Â· Completed</span></div></div>
+      <span class="doula-chip completed">Done</span>
+    </div>
+
+    <div class="doula-srow">
+      <div class="ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6M9 13h4"/></svg></div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Invoice INV-0389 sent</div><div class="meta"><span>Sep 20 Â· $600</span></div></div>
+      <span class="doula-chip pending">Pending</span>
+    </div>
+
+    <div class="doula-srow">
+      <div class="ico sage"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+      <div class="mid"><div class="doula-text-sm doula-font-semibold">Message from client</div><div class="meta"><span>Sep 22 Â· "Thanks for the check-in!"</span></div></div>
+      <span class="doula-chip msg">New</span>
+    </div>
+  </div>
+
+  <!-- Quick note -->
+  <div class="doula-note"><b>Client note:</b> Amara prefers home birth setting. Birth plan due Oct 1. Partner: David Mitchell.</div>
+
+  <div style="margin-top:auto;"></div>
+  <div class="doula-tabbar doula-tabbar">
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><div class="tbl">Home</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><div class="tbl">Clients</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div class="tbl">Messages</div></div>
+    <div class="tb on"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8CB5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><div class="tbl">Profile</div></div>
+  </div>
+</div></div>
+
+</div></div>
+
+<div class="legend">
+  <span><span class="sw" style="background:#FAF8F5;"></span>cream canvas</span>
+  <span><span class="sw" style="background:#8E8CB5;"></span>lavender primary</span>
+  <span><span class="sw" style="background:#B085A5;"></span>rose accent</span>
+  <span><span class="sw" style="background:#EFE0EB;"></span>rose soft</span>
+  <span><span class="sw" style="background:#EDEAF6;"></span>lavender light</span>
+</div>
+
+<div class="doula-note"><b>Function inventory â Dashboard:</b> greeting with first name Â· 2Ã2 stat grid (active clients, upcoming appts, pending contracts, pending invoices) Â· quick action cards (Clients, Appointments) Â· birth plan progress bars per client Â· recent notes feed Â· tip card Â· tab bar (Home/Clients/Messages/Profile). <b>Not in mockup on purpose:</b> share requests panel (appears only when pending requests exist â shown as conditional), lead insights card (appears only when leads data exists â deferred to D10 profile area), refresh control, error/retry state, loading skeleton.</div>
+<div class="doula-foot">D1âD3 Â· Doula Dashboard Â· Clients Â· Client Detail Â· mockup for approval Â· fonts & palette = approved design law Â· tab bar identical to live app (Home tab active on D1, Clients on D2, Profile on D3)</div>
+</div>
+
+</body>
+</html>

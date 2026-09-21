@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="icons.css">
+<link rel="stylesheet" href="../type-system.css">
+<style>
+/* Doula surface D10: Profile / Settings */
+.doula-tabbar .tb.on { color: #8E8CB5; }
+.doula-tabbar .tb svg { stroke: #9C9DA0; }
+.doula-tabbar .tb.on svg { stroke: #8E8CB5; }
+.doulab-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #F0E9EE; }
+.doula-row:last-child { border-bottom: none; }
+.doula-row .mid { flex: 1; min-width: 0; }
+.doula-row .chev { color: #B9AFB8; font-size: 14px; flex-shrink: 0; }
+.doula-row .meta { font-size: 11px; color: #6A6B6C; font-weight: 500; margin-top: 2px; }
+.doula-h2 { font-family: 'Cormorant', serif; font-weight: 700; font-size: 21px; color: #2A2A2A; margin-bottom: 2px; }
+.doula-sub { font-size: 11.5px; color: #6A6B6C; font-weight: 500; margin-bottom: 8px; }
+.doula-overline { font-size: 10px; letter-spacing: 2.4px; text-transform: uppercase; font-weight: 700; color: #A25C86; margin-bottom: 4px; }
+.doula-h1 { font-family: 'Cormorant', serif; font-weight: 700; font-size: 26px; line-height: 1.12; color: #2A2A2A; }
+.doula-h1 em { font-style: normal; color: #B085A5; }
+.doula-msub { font-size: 12.5px; color: #6A6B6C; margin-top: 3px; font-weight: 500; }
+.doula-card { background: #fff; border: 1px solid #EFE0EB; border-radius: 18px; padding: 12px 14px; margin-top: 10px; }
+.doula-chip { font-size: 9.5px; letter-spacing: .6px; font-weight: 700; text-transform: uppercase; border-radius: 999px; padding: 2px 8px; }
+.doula-chip.active { color: #8E8CB5; background: #F1F1FB; }
+.doula-chip.paid { color: #5F7154; background: #E8EDE5; }
+.doula-chip.premium { color: #A25C86; background: #EFE0EB; }
+.doula-avatar { width: 48px; height: 48px; border-radius: 50%; background: #EDEAF6; color: #6E6C99; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.doula-avatar.rose { background: #EFE0EB; color: #A25C86; }
+.doula-avatar.sage { background: #E8EDE5; color: #5F7154; }
+.doula-stat-card { background: #fff; border: 1px solid #EFE0EB; border-radius: 14px; padding: 10px 8px; text-align: center; }
+.doula-stat-card .n { font-family: 'Cormorant', serif; font-weight: 700; font-size: 22px; color: #8E8CB5; }
+.doula-stat-card .l { font-size: 8.5px; font-weight: 700; letter-spacing: .8px; color: #8A8B8D; text-transform: uppercase; margin-top: 1px; }
+.doula-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.doula-tabbar { display: flex; justify-content: space-around; align-items: center; padding: 6px 10px 10px; background: #fff; border-top: 1px solid #F0E9EE; flex-shrink: 0; border-radius: 0 0 45px 45px; }
+.doula-tabbar .tb { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 9px; font-weight: 600; letter-spacing: .3px; color: #9C9DA0; font-family: 'Quicksand', sans-serif; }
+.doula-tabbar .tb.on { color: #8E8CB5; }
+.doula-tabbar .tb svg { width: 22px; height: 22px; stroke: #9C9DA0; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.doula-tabbar .tb.on svg { stroke: #8E8CB5; }
+.doula-note { margin-top: 12px; font-size: 11px; color: #6A6B6C; background: #FAF8F5; border: 1px solid #EFE0EB; border-radius: 10px; padding: 8px 12px; }
+.doula-note b { color: #2A2A2A; }
+.doula-foot { margin-top: 10px; padding-top: 8px; border-top: 1px solid #F0E9EE; font-size: 9.5px; color: #8A8B8D; }
+.doula-legend { display: flex; gap: 12px; margin-top: 8px; font-size: 10px; color: #6A6B6C; align-items: center; }
+.doula-legend span { display: flex; align-items: center; gap: 4px; }
+.doula-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; vertical-align: -1px; border: 1px solid rgba(42,42,42,.08); }
+.doula-page { padding: 36px 44px; page-break-after: always; }
+.doula-page:last-child { page-break-after: auto; }
+.doula-page h2 { font-family: 'Cormorant', serif; font-weight: 700; font-size: 31px; margin-bottom: 3px; }
+.doula-page h2 .no { color: #A25C86; font-style: italic; margin-right: 8px; }
+.doula-page .lede { color: #6A6B6C; font-size: 13.5px; margin-bottom: 20px; max-width: 720px; }
+.doula-grid3 { display: flex; gap: 20px; }
+.doula-grid3 .phone { width: 262px; flex-shrink: 0; display: flex; flex-direction: column; }
+.doula-pframe { background: #fff; border: 1.5px solid #D5D3E8; border-radius: 24px; padding: 8px 8px 6px; box-shadow: 0 8px 22px rgba(42,42,42,.06); flex: 1; display: flex; flex-direction: column; }
+.doula-ptop { display: flex; justify-content: space-between; align-items: center; padding: 2px 6px 6px; }
+.doula-ptop .pt { font-weight: 700; font-size: 11.5px; }
+.doula-pill-s { border-radius: 999px; padding: 2px 8px; font-size: 9.5px; font-weight: 700; letter-spacing: .4px; }
+.doula-pill-a { background: #F0E9EE; color: #A25C86; border: 1px solid #B085A5; }
+.doula-pbody { flex: 1; background: #FAF8F5; border-radius: 14px; padding: 12px 10px 8px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.doula-mhead { padding: 1px 3px 0; }
+.doula-mhead .ov { font-size: 8.5px; font-weight: 700; letter-spacing: 1.4px; color: #A25C86; text-transform: uppercase; margin-bottom: 2px; }
+.doula-mhead .tt { font-family: 'Cormorant', serif; font-weight: 700; font-size: 20px; line-height: 1.05; }
+.doula-mhead .tt em { font-style: italic; color: #B085A5; }
+.doula-mhead .ms { font-size: 11.5px; color: #6A6B6C; margin-top: 2px; font-weight: 500; }
+.doula-section { margin: 12px 0 0; }
+.doula-section .a-h2 { font-family: 'Cormorant', serif; font-weight: 700; font-size: 18px; color: #2A2A2A; margin-bottom: 1px; }
+.doula-section .sub { font-size: 10.5px; color: #6A6B6C; font-weight: 500; margin-bottom: 6px; }
+.doula-srow { background: #fff; border: 1px solid #EFE0EB; border-radius: 14px; padding: 10px 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+.doula-srow .ico { width: 30px; height: 30px; border-radius: 10px; background: #F1F1FB; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.doula-srow .ico.sage { background: #E8EDE5; }
+.doula-srow .mid { flex: 1; min-width: 0; }
+.doula-srow .a-h3 { font-family: 'Cormorant', serif; font-weight: 600; font-size: 15px; color: #2A2A2A; }
+.doula-srow .meta { font-size: 10.5px; color: #6A6B6C; font-weight: 500; margin-top: 1px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.doula-srow .chev { color: #B9AFB8; font-size: 14px; flex-shrink: 0; }
+.doula-muted { color: #8A8B8D; }
+.doula-dl { margin: 12px 0 0; }
+.doula-dl .abtn { background: #6E6C99; color: #fff; text-align: center; font-size: 12.5px; font-weight: 600; border-radius: 999px; padding: 10px 16px; font-family: 'Quicksand', sans-serif; }
+.doula-dl .hint { text-align: center; font-size: 10.5px; color: #6A6B6C; margin-top: 5px; font-weight: 500; }
+.doula-hint { text-align: center; font-size: 10px; color: #8A8B8D; margin-top: 6px; font-weight: 500; }
+.doula-tag { font-size: 10px; letter-spacing: 1.2px; font-weight: 700; color: #8E8CB5; text-transform: uppercase; }
+.doula-divider { height: 1px; background: #EFE0EB; margin: 10px 0; }
+.doula-toast { background: #F0E9EE; border: 1px solid #D5D3E8; border-radius: 12px; padding: 8px 12px; font-size: 11px; color: #4B4B4B; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.doula-toast .dot { width: 6px; height: 6px; border-radius: 50%; background: #B87AA0; flex-shrink: 0; }
+.doula-toast .check { color: #5F7154; font-weight: 700; }
+.doula-empty { text-align: center; padding: 24px 12px; color: #8A8B8D; font-size: 12px; font-weight: 500; }
+.doula-empty .icon { font-size: 28px; margin-bottom: 6px; opacity: .5; }
+.doula-modal { border: 1.5px dashed #B085A5; background: #FDFCFA; border-radius: 12px; padding: 9px 11px; margin-top: 8px; }
+.doula-modal .mt { font-weight: 700; font-size: 10.5px; color: #A25C86; letter-spacing: .3px; }
+.doula-modal .mc { font-size: 10.5px; color: #6A6B6C; margin-top: 3px; }
+.doula-badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 3px 9px; font-size: 9.5px; font-weight: 700; letter-spacing: .3px; }
+.doula-badge.rose { background: #F0E9EE; color: #A25C86; }
+.doula-badge.lav { background: #EDEAF6; color: #6E6C99; }
+.doula-badge.sage { background: #E8EDE5; color: #5F7154; }
+.doula-badge.track { background: #F3F1EE; color: #8A8B8D; }
+.doula-progress { height: 4px; background: #EDEAF6; border-radius: 999px; margin-top: 4px; overflow: hidden; }
+.doula-progress .fill { height: 100%; border-radius: 999px; background: #8E8CB5; }
+.doula-progress .fill.rose { background: #B085A5; }
+.doula-progress .fill.sage { background: #5F7154; }
+.doula-progress .fill.lav { background: #6E6C99; }
+.doula-flex-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.doula-flex-col { display: flex; flex-direction: column; gap: 6px; }
+.doula-mt-8 { margin-top: 8px; }
+.doula-mb-8 { margin-bottom: 8px; }
+.doula-text-sm { font-size: 11.5px; }
+.doula-text-xs { font-size: 10px; }
+.doula-font-bold { font-weight: 700; }
+.doula-font-semibold { font-weight: 600; }
+.doula-font-medium { font-weight: 500; }
+.doula-color-rose { color: #A25C86; }
+.doula-color-lav { color: #6E6C99; }
+.doula-color-sage { color: #5F7154; }
+.doula-color-muted { color: #8A8B8D; }
+.doula-color-body { color: #4B4B4B; }
+.doula-color-ink { color: #2A2A2A; }
+.doula-w-full { width: 100%; }
+.doula-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Profile specific */
+.profile-header { text-align: center; padding: 16px 0 8px; }
+.profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: #EDEAF6; color: #6E6C99; font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 22px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; border: 3px solid #8E8CB5; }
+.profile-name { font-family: 'Cormorant', serif; font-weight: 700; font-size: 20px; color: #2A2A2A; }
+.profile-role { font-size: 11px; color: #6E6C99; font-weight: 600; letter-spacing: .3px; margin-top: 2px; }
+.profile-bio { font-size: 12px; color: #6A6B6C; font-weight: 500; margin-top: 4px; line-height: 1.4; }
+.profile-specialties { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+.profile-spec { font-size: 9px; font-weight: 700; letter-spacing: .3px; border-radius: 999px; padding: 2px 8px; background: #EDEAF6; color: #6E6C99; }
+.profile-stat { text-align: center; }
+.profile-stat .n { font-family: 'Cormorant', serif; font-weight: 700; font-size: 20px; color: #8E8CB5; }
+.profile-stat .l { font-size: 8px; font-weight: 700; letter-spacing: .8px; color: #8A8B8D; text-transform: uppercase; }
+
+/* Settings rows */
+.setting-row { background: #fff; border: 1px solid #EFE0EB; border-radius: 14px; padding: 10px 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+.setting-row .s-icon { width: 30px; height: 30px; border-radius: 10px; background: #F1F1FB; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.setting-row .s-icon.sage { background: #E8EDE5; }
+.setting-row .s-mid { flex: 1; min-width: 0; }
+.setting-row .s-title { font-size: 13px; font-weight: 600; color: #2A2A2A; font-family: 'Quicksand', sans-serif; }
+.setting-row .s-desc { font-size: 10.5px; color: #6A6B6C; font-weight: 500; margin-top: 1px; }
+.setting-row .s-val { font-size: 11px; color: #8A8B8D; font-weight: 500; text-align: right; flex-shrink: 0; }
+.setting-row .chev { color: #B9AFB8; font-size: 14px; flex-shrink: 0; }
+
+/* Subscription card */
+.sub-card { background: #FDFCFA; border: 1px solid #EFE0EB; border-radius: 14px; padding: 10px 12px; margin-top: 8px; }
+.sub-card .sub-tier { font-family: 'Cormorant', serif; font-weight: 700; font-size: 16px; color: #A25C86; }
+.sub-card .sub-detail { font-size: 11px; color: #6A6B6C; font-weight: 500; margin-top: 2px; }
+.sub-card .sub-badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .3px; border-radius: 999px; padding: 2px 7px; background: #F0E9EE; color: #A25C86; margin-top: 4px; }
+
+/* Toggle switch */
+.toggle { width: 38px; height: 20px; border-radius: 999px; background: #D5D3E8; position: relative; flex-shrink: 0; cursor: pointer; }
+.toggle.on { background: #8E8CB5; }
+.toggle .knob { width: 16px; height: 16px; border-radius: 50%; background: #fff; position: absolute; top: 2px; left: 2px; box-shadow: 0 1px 3px rgba(0,0,0,.15); transition: left .2s; }
+.toggle.on .knob { left: 20px; }
+</style>
+</head>
+<body class="canvas">
+
+<div class="canvas-head">
+  <div class="eyebrow">D10 ÃÂÃÂ· Doula App ÃÂÃÂ· Mockup for Approval</div>
+  <h1>Doula Surface <em>Profile / Settings</em></h1>
+  <div class="sub">Same construction as approved s7s8s9 + s13s14s15 ÃÂÃÂ· Cormorant + Quicksand ÃÂÃÂ· cream/lavender/rose palette</div>
+</div>
+
+<div class="pair"><div class="col">
+
+<!-- ============ D10 PROFILE / SETTINGS ============ -->
+<div class="phone"><div class="screen tall" style="background:#FAF8F5;">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ</span><span>Ã¢ÂÂ®</span><div class="sb-batt"></div></div></div>
+
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="profile-avatar">SR</div>
+    <div class="profile-name">Sarah Rivera</div>
+    <div class="profile-role">Birth Doula Ã¢ÂÂ Certified (DONA)</div>
+    <div class="profile-bio">Supporting families through pregnancy, birth, and the postpartum period. Serving the greater metro area.</div>
+    <div class="profile-specialties">
+      <span class="profile-spec">Birth Doula</span>
+      <span class="profile-spec">Postpartum</span>
+      <span class="profile-spec">Birth Plan</span>
+      <span class="profile-spec">Lactation Ref</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="doula-stat-grid" style="margin-top:12px;">
+    <div class="doula-stat-card"><div class="n">12</div><div class="l">Active Clients</div></div>
+    <div class="doula-stat-card"><div class="n">48</div><div class="l">Births Attended</div></div>
+    <div class="doula-stat-card"><div class="n">4.9</div><div class="l">Rating</div></div>
+    <div class="doula-stat-card"><div class="n">3</div><div class="l">Years Active</div></div>
+  </div>
+
+  <!-- Settings -->
+  <div class="doula-section">
+    <div class="a-h2">Settings</div>
+    <div class="sub">Manage your account and preferences</div>
+
+    <div class="setting-row">
+      <div class="s-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div class="s-mid"><div class="s-title">Profile</div><div class="s-desc">Name, specialties, bio, photo</div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+
+    <div class="setting-row">
+      <div class="s-icon sage"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+      <div class="s-mid"><div class="s-title">Availability</div><div class="s-desc">On-call schedule, active clients</div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+
+    <div class="setting-row">
+      <div class="s-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="s-mid"><div class="s-title">Notifications</div><div class="s-desc">Push, email, and in-app alerts</div></div>
+      <div class="toggle on"><div class="knob"></div></div>
+    </div>
+
+    <div class="setting-row">
+      <div class="s-icon sage"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="s-mid"><div class="s-title">Privacy</div><div class="s-desc">Data sharing, client visibility</div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+
+    <div class="setting-row">
+      <div class="s-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+      <div class="s-mid"><div class="s-title">Account</div><div class="s-desc">Sign out, delete account, help</div></div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#B9AFB8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+  </div>
+
+  <!-- Subscription -->
+  <div class="doula-section">
+    <div class="a-h2">Subscription</div>
+    <div class="sub">Your plan and billing</div>
+
+    <div class="sub-card">
+      <div class="sub-tier">Professional Plan</div>
+      <div class="sub-detail">Active since Sep 2026 ÃÂ¢ÃÂÃÂ· Next billing: Oct 1, 2026</div>
+      <div class="sub-badge">Unlimited clients &middot; 24/7 on-call</div>
+    </div>
+  </div>
+
+  <!-- Lead insights (appears for doula role) -->
+  <div class="doula-section">
+    <div class="a-h2">Lead Insights</div>
+    <div class="sub">New client inquiries this month</div>
+    <div class="doula-stat-grid">
+      <div class="doula-stat-card"><div class="n">5</div><div class="l">New Leads</div></div>
+      <div class="doula-stat-card"><div class="n">2</div><div class="l">Converted</div></div>
+    </div>
+  </div>
+
+  <div class="doula-note"><b>Note:</b> Lead insights appear on the Profile screen for doula role. The real app shows this on a dedicated Leads screen; mockup consolidates it here for the profile hub.</div>
+
+  <div style="margin-top:auto;"></div>
+  <div class="doula-tabbar doula-tabbar">
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><div class="tbl">Home</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><div class="tbl">Clients</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div class="tbl">Messages</div></div>
+    <div class="tb on"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8CB5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><div class="tbl">Profile</div></div>
+  </div>
+</div></div>
+
+</div></div>
+
+<div class="legend">
+  <span><span class="sw" style="background:#FAF8F5;"></span>cream canvas</span>
+  <span><span class="sw" style="background:#8E8CB5;"></span>lavender primary</span>
+  <span><span class="sw" style="background:#B085A5;"></span>rose accent</span>
+  <span><span class="sw" style="background:#EFE0EB;"></span>rose soft</span>
+  <span><span class="sw" style="background:#EDEAF6;"></span>lavender light</span>
+</div>
+
+<div class="doula-note"><b>Function inventory ÃÂ¢ÃÂÃÂ Profile/Settings:</b> profile header with initials avatar (SR), name, role, bio, specialties ÃÂ¢ÃÂÃÂ· 2ÃÂ¢ÃÂ2 stat grid (active clients, births attended, rating, years active) ÃÂ¢ÃÂÃÂ· settings list (Profile, Availability, Notifications, Privacy, Account) with toggle for notifications ÃÂ¢ÃÂÃÂ· subscription card (Professional Plan, billing date, features) ÃÂ¢ÃÂÃÂ· lead insights section (new leads, converted) ÃÂ¢ÃÂÃÂ· tab bar. <b>Not in mockup on purpose:</b> profile photo upload (protected zone), account deletion flow, subscription upgrade/downgrade, notification preferences detail, privacy settings detail, help/support screen, onboarding flow, bio editing modal. <b>Reorganizes:</b> real app has separate Profile and Settings tabs; mockup consolidates into one screen per the s13s14s15 pattern. Lead insights appear on a dedicated Leads screen in the real app but are shown here as part of the Profile hub for the doula role.</div>
+<div class="doula-foot">D10 ÃÂ¢ÃÂÃÂ· Doula Profile / Settings ÃÂ¢ÃÂÃÂ· mockup for approval ÃÂ¢ÃÂÃÂ· fonts & palette = approved design law</div>
+</div>
+
+</body>
+</html>
