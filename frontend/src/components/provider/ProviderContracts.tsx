@@ -28,6 +28,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ContractsConfig, ContractSection } from './config/contractsConfig';
+import { F } from '../../constants/designRefresh';
+
 
 interface Contract {
   contract_id: string;
@@ -1012,12 +1014,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   headerTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   headerSubtitle: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   addButton: {
@@ -1037,20 +1039,20 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginTop: SIZES.lg,
     marginBottom: SIZES.sm,
   },
   emptyText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
   },
   contractCard: {
     backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     padding: SIZES.lg,
     marginBottom: SIZES.md,
     shadowColor: '#000',
@@ -1067,12 +1069,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   clientName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
   },
   contractDate: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 2,
   },
@@ -1083,19 +1085,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   statusText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   cardDetails: {
     marginBottom: SIZES.sm,
   },
   feeText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
   },
   signedDate: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.success,
     marginTop: 2,
   },
@@ -1123,12 +1125,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   actionButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
   },
   actionButtonTextSmall: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginLeft: SIZES.xs,
   },
   modalOverlay: {
@@ -1153,7 +1155,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   progressContainer: {
@@ -1177,7 +1179,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   progressNumber: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.textSecondary,
   },
   progressNumberActive: {
@@ -1197,18 +1199,18 @@ const getStyles = createThemedStyles((colors) => ({
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginBottom: SIZES.sm,
   },
   input: {
     backgroundColor: colors.background,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: colors.border,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   textArea: {
@@ -1232,7 +1234,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   templateOptionText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   defaultLabel: {
@@ -1242,7 +1244,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   defaultLabelText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
   clientGrid: {
@@ -1250,25 +1252,25 @@ const getStyles = createThemedStyles((colors) => ({
   },
   clientOption: {
     padding: SIZES.md,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
   },
   clientOptionText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
   },
   clientDueDate: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 2,
   },
   noClientsText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     padding: SIZES.lg,
@@ -1284,7 +1286,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   balanceContainer: {
@@ -1293,17 +1295,17 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     backgroundColor: colors.background,
     padding: SIZES.md,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     marginTop: SIZES.md,
   },
   balanceLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
   },
   balanceValue: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.success,
   },
   modalFooter: {
@@ -1327,7 +1329,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   navButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
   },
   navButtonTextDisabled: {
@@ -1339,14 +1341,14 @@ const getStyles = createThemedStyles((colors) => ({
     gap: SIZES.xs,
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.sm,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
   },
   submitButtonDisabled: {
     opacity: 0.7,
   },
   submitButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
   previewSection: {
@@ -1354,13 +1356,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   previewLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: 2,
   },
   previewValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
   },
   quickEditInput: {
@@ -1370,7 +1372,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderColor: colors.border,
     padding: SIZES.sm,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   datePickerButton: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radiusSm, paddingHorizontal: SIZES.md, paddingVertical: 14, backgroundColor: colors.surface, gap: SIZES.sm },
   datePickerText: { fontSize: SIZES.fontMd },
@@ -1384,7 +1386,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   dateModalContent: {
     backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusLg,
+    borderRadius: 18,
     padding: SIZES.lg,
     width: '100%',
     maxWidth: 400,
@@ -1397,7 +1399,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   dateModalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
   },
 }));

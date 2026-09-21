@@ -26,6 +26,8 @@ import { apiRequest } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
+import { F } from '../../constants/designRefresh';
+
 
 const NOTE_TYPES = ['Prenatal', 'Birth', 'Postpartum', 'General'];
 
@@ -477,58 +479,58 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.xs, 
     marginRight: SIZES.sm,
   },
-  title: { fontSize: SIZES.fontXxl, fontFamily: FONTS.heading },
-  subtitle: { fontSize: SIZES.fontSm, fontFamily: FONTS.body },
+  title: { fontSize: SIZES.fontXxl, fontFamily: F.serif },
+  subtitle: { fontSize: SIZES.fontSm, fontFamily: F.ui },
   addButton: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center' },
   
   filterContainer: { marginBottom: SIZES.md },
-  filterChip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusMd, marginRight: SIZES.sm, borderWidth: 1 },
-  filterChipText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body },
+  filterChip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: 18, marginRight: SIZES.sm, borderWidth: 1 },
+  filterChipText: { fontSize: SIZES.fontSm, fontFamily: F.ui },
   
   emptyCard: { alignItems: 'center', padding: SIZES.xl },
-  emptyText: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, marginTop: SIZES.md },
-  emptySubtext: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, textAlign: 'center' },
+  emptyText: { fontSize: SIZES.fontMd, fontFamily: F.uiBold, marginTop: SIZES.md },
+  emptySubtext: { fontSize: SIZES.fontSm, fontFamily: F.ui, textAlign: 'center' },
   
   noteCard: { marginBottom: SIZES.sm },
   noteHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.xs },
   typeBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 2, borderRadius: SIZES.radiusSm },
-  typeText: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyBold },
-  noteTitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, marginBottom: SIZES.xs },
-  noteContent: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, marginBottom: SIZES.sm },
+  typeText: { fontSize: SIZES.fontXs, fontFamily: F.uiBold },
+  noteTitle: { fontSize: SIZES.fontMd, fontFamily: F.uiBold, marginBottom: SIZES.xs },
+  noteContent: { fontSize: SIZES.fontSm, fontFamily: F.ui, marginBottom: SIZES.sm },
   noteMeta: { flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 1, paddingTop: SIZES.sm },
-  noteClient: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyBold },
-  noteDate: { fontSize: SIZES.fontXs, fontFamily: FONTS.body },
+  noteClient: { fontSize: SIZES.fontSm, fontFamily: F.uiBold },
+  noteDate: { fontSize: SIZES.fontXs, fontFamily: F.ui },
   
   modalContainer: { flex: 1 },
   modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.md, borderBottomWidth: 1 },
-  modalTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading },
+  modalTitle: { fontSize: SIZES.fontLg, fontFamily: F.serif },
   modalContent: { flex: 1, padding: SIZES.md },
   modalFooter: { padding: SIZES.md, borderTopWidth: 1 },
   
-  fieldLabel: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, marginBottom: SIZES.sm, marginTop: SIZES.md },
+  fieldLabel: { fontSize: SIZES.fontMd, fontFamily: F.uiBold, marginBottom: SIZES.sm, marginTop: SIZES.md },
   clientSelector: { flexDirection: 'row' },
-  clientOption: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusMd, marginRight: SIZES.sm, borderWidth: 1 },
-  clientOptionText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body },
+  clientOption: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: 18, marginRight: SIZES.sm, borderWidth: 1 },
+  clientOptionText: { fontSize: SIZES.fontSm, fontFamily: F.ui },
   
   typeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.sm },
-  typeOption: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusMd, borderWidth: 1 },
-  typeOptionText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body },
+  typeOption: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: 18, borderWidth: 1 },
+  typeOptionText: { fontSize: SIZES.fontSm, fontFamily: F.ui },
   
-  textInput: { borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, fontFamily: FONTS.body, borderWidth: 1 },
+  textInput: { borderRadius: 18, padding: SIZES.md, fontSize: SIZES.fontMd, fontFamily: F.ui, borderWidth: 1 },
   textArea: { minHeight: 120, textAlignVertical: 'top' },
   
   selectButton: { 
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'space-between',
-    borderRadius: SIZES.radiusMd, 
+    borderRadius: 18, 
     padding: SIZES.md, 
     borderWidth: 1, 
   },
-  selectText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body },
-  selectPlaceholder: { fontSize: SIZES.fontMd, fontFamily: FONTS.body },
+  selectText: { fontSize: SIZES.fontMd, fontFamily: F.ui },
+  selectPlaceholder: { fontSize: SIZES.fontMd, fontFamily: F.ui },
   pickerContainer: { 
-    borderRadius: SIZES.radiusMd, 
+    borderRadius: 18, 
     borderWidth: 1, 
     marginTop: SIZES.xs,
     maxHeight: 200,
@@ -540,5 +542,5 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md, 
     borderBottomWidth: 1, 
   },
-  pickerItemText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body },
+  pickerItemText: { fontSize: SIZES.fontMd, fontFamily: F.ui },
 }));

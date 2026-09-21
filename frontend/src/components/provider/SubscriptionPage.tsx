@@ -22,6 +22,8 @@ import { SUBSCRIPTION_PRODUCTS } from '../../services/billing/subscriptionConfig
 import { useIAP } from '../../services/billing/useIAP';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
+import { F } from '../../constants/designRefresh';
+
 
 // Check if running in Expo Go
 const IS_EXPO_GO = Constants.appOwnership === 'expo';
@@ -974,7 +976,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   loadingText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   header: {
@@ -992,7 +994,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   headerTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   scrollContent: {
@@ -1013,7 +1015,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   statusTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: SIZES.xs,
   },
@@ -1025,7 +1027,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   statusBadgeText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   statusDetails: {
     paddingTop: SIZES.sm,
@@ -1040,7 +1042,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   statusText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   manageButton: {
@@ -1054,7 +1056,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   manageButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginRight: SIZES.xs,
   },
   section: {
@@ -1062,7 +1064,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginBottom: SIZES.sm,
   },
@@ -1085,7 +1087,7 @@ const getStyles = createThemedStyles((colors) => ({
   featureText: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   planCard: {
@@ -1099,12 +1101,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   planName: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   planPeriod: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   planPriceContainer: {
@@ -1113,12 +1115,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   planPrice: {
     fontSize: SIZES.fontXxl || 28,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   planPricePeriod: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   savingsBadge: {
@@ -1130,11 +1132,11 @@ const getStyles = createThemedStyles((colors) => ({
   },
   savingsText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   trialText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: SIZES.xs,
   },
@@ -1158,7 +1160,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   restoreButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     textDecorationLine: 'underline',
   },
   unavailableContainer: {
@@ -1174,13 +1176,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   unavailableText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     textAlign: 'center',
   },
   unavailableHint: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
   },
@@ -1196,11 +1198,11 @@ const getStyles = createThemedStyles((colors) => ({
   },
   retryButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   termsText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
     marginTop: SIZES.md,
@@ -1214,14 +1216,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   disclosureHeading: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: SIZES.xs,
   },
   disclosureLine: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 18,
@@ -1235,7 +1237,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   legalLink: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     textDecorationLine: 'underline',
   },
   legalLinkSeparator: {
@@ -1248,7 +1250,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   supportTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: SIZES.sm,
   },
@@ -1259,7 +1261,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   supportButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   // Progress Bar styles
   progressSection: {
@@ -1276,12 +1278,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   progressLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   progressDays: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   progressBarBg: {
     height: 8,
@@ -1295,7 +1297,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   progressSubtext: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginTop: SIZES.xs,
     textAlign: 'right',
@@ -1313,12 +1315,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   feedbackTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   feedbackDescription: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: SIZES.md,
     lineHeight: 20,
@@ -1333,7 +1335,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   feedbackButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
   },
   // Management Panel styles
@@ -1353,7 +1355,7 @@ const getStyles = createThemedStyles((colors) => ({
   managementTitle: {
     flex: 1,
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginLeft: SIZES.sm,
   },
@@ -1386,13 +1388,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   managementOptionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
     marginBottom: 2,
   },
   managementOptionDesc: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   // Upgrade Card styles
@@ -1415,18 +1417,18 @@ const getStyles = createThemedStyles((colors) => ({
   },
   upgradeBadgeText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
   },
   upgradeTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: SIZES.xs,
   },
   upgradeDescription: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: SIZES.md,
     lineHeight: 20,
@@ -1446,19 +1448,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   upgradeComparisonLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: 4,
   },
   upgradeComparisonOld: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     textDecorationLine: 'line-through',
   },
   upgradeComparisonNew: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
   },
   // Trial upgrade styles
   trialUpgradePlans: {
@@ -1469,7 +1471,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     borderWidth: 1,
     backgroundColor: colors.surface,
   },
@@ -1487,7 +1489,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   recommendedBadgeText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
   },
   trialUpgradePlanInfo: {
@@ -1495,7 +1497,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   trialUpgradePlanName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
     marginBottom: 2,
   },
@@ -1506,11 +1508,11 @@ const getStyles = createThemedStyles((colors) => ({
   },
   trialUpgradePlanPrice: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
   },
   trialUpgradeSavings: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.success,
     backgroundColor: colors.success + '20',
     paddingHorizontal: SIZES.xs,
@@ -1526,7 +1528,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   processingText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
 }));

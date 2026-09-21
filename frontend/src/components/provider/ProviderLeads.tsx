@@ -29,6 +29,8 @@ import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { useSubscriptionGate } from '../../utils/subscriptionGate';
+import { C, F } from '../../constants/designRefresh';
+
 
 interface Lead {
   lead_id: string;
@@ -65,14 +67,14 @@ interface LeadStats {
   converted_to_client: number;
 }
 
-// Dynamic status config that uses theme colors
-const getLeadStatusConfig = (colors: ThemeColors): Record<string, { label: string; color: string; icon: string }> => ({
-  'consultation_requested': { label: 'Consultation Requested', color: colors.warning, icon: 'time-outline' },
-  'consultation_scheduled': { label: 'Consultation Scheduled', color: colors.info || colors.primary, icon: 'calendar-outline' },
-  'consultation_completed': { label: 'Consultation Completed', color: colors.success, icon: 'checkmark-circle-outline' },
-  'converted_to_client': { label: 'Converted to Client', color: colors.primary, icon: 'person-add-outline' },
-  'declined': { label: 'Declined', color: colors.textLight, icon: 'close-circle-outline' },
-  'not_a_fit': { label: 'Not a Fit', color: colors.textLight, icon: 'remove-circle-outline' },
+// Dynamic status config that uses design tokens
+const getLeadStatusConfig = (): Record<string, { label: string; color: string; icon: string }> => ({
+  'consultation_requested': { label: 'Consultation Requested', color: C.rose, icon: 'time-outline' },
+  'consultation_scheduled': { label: 'Consultation Scheduled', color: C.lavender, icon: 'calendar-outline' },
+  'consultation_completed': { label: 'Consultation Completed', color: C.sage, icon: 'checkmark-circle-outline' },
+  'converted_to_client': { label: 'Converted to Client', color: C.lavender, icon: 'person-add-outline' },
+  'declined': { label: 'Declined', color: C.gray, icon: 'close-circle-outline' },
+  'not_a_fit': { label: 'Not a Fit', color: C.gray, icon: 'remove-circle-outline' },
 });
 
 interface ProviderLeadsProps {
@@ -83,7 +85,7 @@ export default function ProviderLeads({ config }: ProviderLeadsProps) {
   const router = useRouter();
   const colors = useColors();
   const styles = getStyles(colors);
-  const LEAD_STATUS_CONFIG = getLeadStatusConfig(colors);
+  const LEAD_STATUS_CONFIG = getLeadStatusConfig();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [stats, setStats] = useState<LeadStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -634,9 +636,9 @@ const getStyles = createThemedStyles((colors) => ({
     borderBottomColor: colors.border,
     backgroundColor: colors.background,
   },
-  title: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading, color: colors.text },
+  title: { fontSize: SIZES.fontXl, fontFamily: F.serif, color: colors.text },
   statsBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusFull },
-  statsText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium },
+  statsText: { fontSize: SIZES.fontSm, fontFamily: F.ui },
   filterTabs: { 
     flexDirection: 'row', 
     paddingHorizontal: SIZES.md, 
@@ -650,7 +652,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
     backgroundColor: colors.cardBackground,
   },
-  filterTabText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: colors.textSecondary },
+  filterTabText: { fontSize: SIZES.fontSm, fontFamily: F.ui, color: colors.textSecondary },
   scrollView: { flex: 1, backgroundColor: colors.background },
   scrollContent: { padding: SIZES.md },
   leadCard: { marginBottom: SIZES.md, padding: SIZES.md },
@@ -661,32 +663,32 @@ const getStyles = createThemedStyles((colors) => ({
     width: 48, height: 48, borderRadius: 24, marginRight: SIZES.sm,
     alignItems: 'center', justifyContent: 'center',
   },
-  momAvatarText: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: colors.white },
+  momAvatarText: { fontSize: SIZES.fontLg, fontFamily: F.serif, color: colors.white },
   momDetails: { flex: 1 },
-  momName: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, color: colors.text },
-  momEdd: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, marginTop: 2, color: colors.textSecondary },
+  momName: { fontSize: SIZES.fontMd, fontFamily: F.uiBold, color: colors.text },
+  momEdd: { fontSize: SIZES.fontSm, fontFamily: F.ui, marginTop: 2, color: colors.textSecondary },
   statusBadge: { 
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusFull,
   },
-  statusText: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyMedium },
+  statusText: { fontSize: SIZES.fontXs, fontFamily: F.ui },
   messageBox: { 
     padding: SIZES.sm, 
     borderRadius: SIZES.radiusSm,
     marginBottom: SIZES.sm,
     backgroundColor: colors.inputBackground,
   },
-  messageLabel: { fontSize: SIZES.fontXs, fontFamily: FONTS.bodyMedium, marginBottom: 4, color: colors.textSecondary },
-  messageText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, fontStyle: 'italic', color: colors.text },
+  messageLabel: { fontSize: SIZES.fontXs, fontFamily: F.ui, marginBottom: 4, color: colors.textSecondary },
+  messageText: { fontSize: SIZES.fontSm, fontFamily: F.ui, fontStyle: 'italic', color: colors.text },
   consultationInfo: { 
     flexDirection: 'row', alignItems: 'center', gap: SIZES.xs,
     marginBottom: SIZES.sm, 
   },
-  consultationText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: colors.text },
+  consultationText: { fontSize: SIZES.fontSm, fontFamily: F.ui, color: colors.text },
   infoRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SIZES.sm },
   infoChip: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  infoChipText: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: colors.textSecondary },
-  dateText: { fontSize: SIZES.fontXs, fontFamily: FONTS.body, color: colors.textLight },
+  infoChipText: { fontSize: SIZES.fontXs, fontFamily: F.ui, color: colors.textSecondary },
+  dateText: { fontSize: SIZES.fontXs, fontFamily: F.ui, color: colors.textLight },
   processingContainer: { paddingVertical: SIZES.md, alignItems: 'center' },
   actionsRow: { flexDirection: 'row', gap: SIZES.xs, flexWrap: 'wrap' },
   actionButton: { 
@@ -703,10 +705,10 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: 'transparent',
     paddingHorizontal: SIZES.sm,
   },
-  actionButtonText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium, color: colors.white },
+  actionButtonText: { fontSize: SIZES.fontSm, fontFamily: F.ui, color: colors.white },
   emptyState: { alignItems: 'center', justifyContent: 'center', paddingVertical: SIZES.xxl },
-  emptyTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, marginTop: SIZES.md, color: colors.text },
-  emptySubtitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, textAlign: 'center', marginTop: SIZES.xs, color: colors.textSecondary },
+  emptyTitle: { fontSize: SIZES.fontLg, fontFamily: F.serif, marginTop: SIZES.md, color: colors.text },
+  emptySubtitle: { fontSize: SIZES.fontMd, fontFamily: F.ui, textAlign: 'center', marginTop: SIZES.xs, color: colors.textSecondary },
   keyDetailsSection: {
     borderRadius: SIZES.radiusSm,
     padding: SIZES.sm,
@@ -717,7 +719,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   keyDetailsTitle: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: SIZES.xs,
@@ -747,19 +749,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   keyDetailValueBlock: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginLeft: 18,
     marginTop: 2,
     color: colors.text,
   },
   keyDetailLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   keyDetailValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     flex: 1,
     color: colors.text,
   },
@@ -771,13 +773,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   previousExperienceLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginBottom: 4,
     color: colors.textSecondary,
   },
   previousExperienceText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     fontStyle: 'italic',
     color: colors.text,
   },
@@ -792,7 +794,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   planCompletionLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   planCompletionBadge: {
@@ -802,6 +804,6 @@ const getStyles = createThemedStyles((colors) => ({
   },
   planCompletionText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
 }));

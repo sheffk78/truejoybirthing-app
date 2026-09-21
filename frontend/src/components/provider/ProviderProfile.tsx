@@ -34,6 +34,8 @@ import { apiRequest, uploadImage } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
+import { F } from '../../constants/designRefresh';
+
 
 const MAX_BIO_LENGTH = 800;
 
@@ -953,26 +955,26 @@ const getStyles = createThemedStyles((colors) => ({
     borderWidth: 2, borderColor: colors.white 
   },
   photoHint: { fontSize: SIZES.fontXs, marginTop: SIZES.xs, color: colors.textSecondary },
-  userName: { fontSize: SIZES.fontXl, fontFamily: FONTS.heading, marginTop: SIZES.sm, color: colors.text },
+  userName: { fontSize: SIZES.fontXl, fontFamily: F.serif, marginTop: SIZES.sm, color: colors.text },
   userEmail: { fontSize: SIZES.fontSm, color: colors.textSecondary },
   roleBadge: { 
     flexDirection: 'row', alignItems: 'center', 
     paddingHorizontal: SIZES.md, paddingVertical: SIZES.xs, 
     borderRadius: SIZES.radiusFull, marginTop: SIZES.sm 
   },
-  roleText: { fontSize: SIZES.fontSm, fontFamily: FONTS.bodyMedium, color: colors.white, marginLeft: 4 },
+  roleText: { fontSize: SIZES.fontSm, fontFamily: F.ui, color: colors.white, marginLeft: 4 },
   
   // Card styles
   profileCard: { marginBottom: SIZES.md },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.md },
-  cardTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.subheading, color: colors.text },
-  editButton: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium },
+  cardTitle: { fontSize: SIZES.fontLg, fontFamily: F.serifSemi, color: colors.text },
+  editButton: { fontSize: SIZES.fontMd, fontFamily: F.ui },
   
   // Info display styles
   infoRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: SIZES.sm },
   infoText: { marginLeft: SIZES.md, flex: 1 },
   infoLabel: { fontSize: SIZES.fontXs, color: colors.textSecondary },
-  infoValue: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text },
+  infoValue: { fontSize: SIZES.fontMd, fontFamily: F.ui, color: colors.text },
   
   // Form styles
   locationRow: { flexDirection: 'row', gap: SIZES.sm },
@@ -983,7 +985,7 @@ const getStyles = createThemedStyles((colors) => ({
   
   // Toggle styles
   toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: SIZES.md },
-  toggleLabel: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, color: colors.text },
+  toggleLabel: { fontSize: SIZES.fontMd, fontFamily: F.ui, color: colors.text },
   toggle: { 
     width: 50, height: 28, borderRadius: 14, 
     justifyContent: 'center', padding: 2,
@@ -1006,7 +1008,7 @@ backgroundColor: colors.surface
   },
   videoInputError: { borderColor: colors.error },
   errorText: { fontSize: SIZES.fontSm, marginTop: SIZES.xs, color: colors.error },
-  videoPreview: { borderRadius: SIZES.radiusMd, overflow: 'hidden', position: 'relative' },
+  videoPreview: { borderRadius: 18, overflow: 'hidden', position: 'relative' },
   videoThumbnail: { width: '100%', height: 180 },
   playIconOverlay: { 
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, 
@@ -1025,12 +1027,12 @@ backgroundColor: colors.surface
     backgroundColor: colors.inputBackground,
   },
   charCount: { fontSize: SIZES.fontXs, textAlign: 'right', marginTop: SIZES.xs, color: colors.textSecondary },
-  bioText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, lineHeight: 22, color: colors.text },
+  bioText: { fontSize: SIZES.fontMd, fontFamily: F.ui, lineHeight: 22, color: colors.text },
   noBioText: { fontSize: SIZES.fontMd, fontStyle: 'italic', color: colors.textSecondary },
   
   // Subscription styles
   subscriptionInfo: { flexDirection: 'row', alignItems: 'center' },
-  subscriptionText: { fontSize: SIZES.fontMd, fontFamily: FONTS.body, marginLeft: SIZES.sm, color: colors.text },
+  subscriptionText: { fontSize: SIZES.fontMd, fontFamily: F.ui, marginLeft: SIZES.sm, color: colors.text },
   subscriptionDetails: { marginTop: SIZES.sm, marginLeft: 36 },
   daysRemainingBadge: { 
     flexDirection: 'row', 
@@ -1042,7 +1044,7 @@ backgroundColor: colors.surface
   },
   daysRemainingText: { 
     fontSize: SIZES.fontSm, 
-    fontFamily: FONTS.bodyMedium, 
+    fontFamily: F.ui, 
     marginLeft: SIZES.xs 
   },
   autoRenewRow: { 
@@ -1052,7 +1054,7 @@ backgroundColor: colors.surface
   },
   autoRenewText: { 
     fontSize: SIZES.fontXs, 
-    fontFamily: FONTS.body, 
+    fontFamily: F.ui, 
     marginLeft: SIZES.xs,
     color: colors.textSecondary 
   },
@@ -1066,7 +1068,7 @@ backgroundColor: colors.surface
   },
   feedbackDescription: { 
     fontSize: SIZES.fontSm, 
-    fontFamily: FONTS.body, 
+    fontFamily: F.ui, 
     marginBottom: SIZES.sm,
     marginLeft: 30,
     color: colors.textSecondary,
@@ -1081,7 +1083,7 @@ backgroundColor: colors.surface
   },
   feedbackButtonText: { 
     fontSize: SIZES.fontSm, 
-    fontFamily: FONTS.bodyMedium, 
+    fontFamily: F.ui, 
     color: colors.white 
   },
   
@@ -1106,14 +1108,14 @@ backgroundColor: colors.surface
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', 
     paddingVertical: SIZES.md, marginTop: SIZES.md 
   },
-  logoutText: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyMedium, marginLeft: SIZES.sm, color: colors.error },
+  logoutText: { fontSize: SIZES.fontMd, fontFamily: F.ui, marginLeft: SIZES.sm, color: colors.error },
   
   // Delete Account styles
   deleteAccountButton: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     paddingVertical: SIZES.sm, marginTop: SIZES.xs,
   },
-  deleteAccountText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, marginLeft: SIZES.xs, color: colors.error, opacity: 0.7 },
+  deleteAccountText: { fontSize: SIZES.fontSm, fontFamily: F.ui, marginLeft: SIZES.xs, color: colors.error, opacity: 0.7 },
   
   // Legal Links styles
   legalSection: {
@@ -1135,7 +1137,7 @@ backgroundColor: colors.surface
   },
   legalLinkText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   legalSeparator: {

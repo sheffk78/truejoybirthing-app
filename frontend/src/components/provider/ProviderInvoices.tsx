@@ -27,13 +27,15 @@ import { API_ENDPOINTS } from '../../constants/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
+import { C, F } from '../../constants/designRefresh';
+
 
 const STATUS_COLORS: Record<string, string> = {
-  'Draft': '#9E9E9E',
-  'Sent': '#FF9800',
-  'Payment Claimed': '#3F51B5',
-  'Paid': '#4CAF50',
-  'Cancelled': '#f44336',
+  'Draft': C.gray,
+  'Sent': C.rose,
+  'Payment Claimed': C.lavender,
+  'Paid': C.sage,
+  'Cancelled': C.rose,
 };
 
 const STATUS_FILTERS = ['All', 'Draft', 'Sent', 'Payment Claimed', 'Paid', 'Cancelled'];
@@ -1040,8 +1042,8 @@ const getStyles = createThemedStyles((colors) => ({
     borderBottomColor: colors.border 
   },
   backButton: { padding: SIZES.xs, marginRight: SIZES.sm },
-  mainTitle: { fontSize: SIZES.fontLg, fontFamily: FONTS.heading, color: colors.text },
-  mainSubtitle: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, color: colors.textSecondary },
+  mainTitle: { fontSize: SIZES.fontLg, fontFamily: F.serif, color: colors.text },
+  mainSubtitle: { fontSize: SIZES.fontSm, fontFamily: F.ui, color: colors.textSecondary },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.md },
   title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: colors.text },
   headerButtons: { flexDirection: 'row', alignItems: 'center', gap: SIZES.sm },

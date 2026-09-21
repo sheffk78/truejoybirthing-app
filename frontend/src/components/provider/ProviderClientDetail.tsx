@@ -25,6 +25,8 @@ import { useColors, createThemedStyles } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { LaborSection, BirthRecordSection, PrenatalVisitSection, NewbornExamSection } from '../midwife';
 import { LatchSection, WeightTrackerSection, FeedingLogSection, OralExamSection, SoapNoteSection } from '../lactation';
+import { F } from '../../constants/designRefresh';
+
 
 // ============== TYPES ==============
 interface Client {
@@ -581,7 +583,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   breadcrumbLink: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   breadcrumbSeparator: {
     marginHorizontal: SIZES.xs,
@@ -590,7 +592,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   breadcrumbCurrent: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
   },
   scrollContent: {
@@ -621,7 +623,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   avatarText: {
     fontSize: SIZES.fontXl,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.white,
   },
   profileInfo: {
@@ -629,7 +631,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   profileName: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: SIZES.xs,
   },
@@ -646,16 +648,16 @@ const getStyles = createThemedStyles((colors) => ({
   },
   statusText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   eddText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   daysUntilText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     fontStyle: 'italic',
     marginTop: SIZES.xs,
   },
@@ -672,7 +674,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginLeft: SIZES.sm,
   },
@@ -681,7 +683,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-around',
     backgroundColor: colors.surface,
     padding: SIZES.md,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     marginBottom: SIZES.sm,
     borderWidth: 1,
     borderColor: colors.border,
@@ -701,7 +703,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   actionLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
 }));

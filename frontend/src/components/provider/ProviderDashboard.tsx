@@ -22,6 +22,8 @@ import { SIZES, FONTS } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import ProviderFeedSection from './ProviderFeedSection';
+import { C, F } from '../../constants/designRefresh';
+
 
 interface ShareRequest {
   request_id: string;
@@ -133,13 +135,9 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   
   const firstName = user?.full_name?.split(' ')[0] || 'there';
   
-  const getStatColor = (colorKey?: string) => {
-    switch (colorKey) {
-      case 'accent': return colors.accent;
-      case 'warning': return colors.warning;
-      case 'success': return colors.success;
-      default: return primaryColor;
-    }
+  const getStatColor = (_colorKey?: string) => {
+    // Design law: stat numerals in lavender (serif), per approved mockup
+    return C.lavender;
   };
   
   return (
@@ -315,7 +313,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: SIZES.md,
+    paddingHorizontal: 16,
     paddingBottom: SIZES.xxl,
   },
   header: {
@@ -324,28 +322,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SIZES.lg,
   },
-  greeting: {
-    fontSize: SIZES.fontXxl,
-    fontFamily: FONTS.heading,
-  },
-  subtitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    marginTop: 2,
-  },
-  avatarContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  avatarImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-  },
+  // 2x2 stat grid (never 4-across per S14 fix)
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -357,20 +334,47 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     padding: SIZES.md,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 18,
   },
   statNumber: {
     fontSize: SIZES.fontHero,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
+    color: C.lavender,
   },
   statLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     marginTop: SIZES.xs,
     textAlign: 'center',
+    color: C.grayLight,
+  },
+  greeting: {
+    fontSize: SIZES.fontXxl,
+    fontFamily: F.serif,
+  },
+  subtitle: {
+    fontSize: SIZES.fontMd,
+    fontFamily: F.ui,
+    marginTop: 2,
+  },
+  avatarContainer: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarImage: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     marginBottom: SIZES.md,
   },
   actionsContainer: {
@@ -382,9 +386,12 @@ const styles = StyleSheet.create({
   actionCard: {
     flexBasis: '47%',
     flexGrow: 1,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     padding: SIZES.md,
     alignItems: 'center',
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
   },
   actionIcon: {
     width: 48,
@@ -396,7 +403,7 @@ const styles = StyleSheet.create({
   },
   actionTitle: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     textAlign: 'center',
   },
   tipCard: {},
@@ -407,18 +414,22 @@ const styles = StyleSheet.create({
   },
   tipTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     marginLeft: SIZES.sm,
   },
   tipText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     lineHeight: 20,
   },
   // Share Request Styles
   requestCard: {
     marginBottom: SIZES.md,
     padding: SIZES.md,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 18,
   },
   requestHeader: {
     flexDirection: 'row',
@@ -438,17 +449,18 @@ const styles = StyleSheet.create({
   },
   requestName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   requestSubtext: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     marginTop: 2,
   },
   requestDate: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     marginTop: 4,
+    color: C.grayLight,
   },
   requestActions: {
     flexDirection: 'row',
@@ -460,10 +472,11 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
+    borderColor: C.border,
   },
   declineButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   acceptButton: {
     flexDirection: 'row',
@@ -472,16 +485,21 @@ const styles = StyleSheet.create({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusSm,
     gap: 4,
+    backgroundColor: C.lavender,
   },
   acceptButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
+    color: C.white,
   },
   // Lead Insights Card Styles
   leadInsightsCard: {
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     padding: SIZES.md,
     marginBottom: SIZES.md,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
   },
   leadInsightsHeader: {
     flexDirection: 'row',
@@ -499,7 +517,7 @@ const styles = StyleSheet.create({
   leadInsightsTitle: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   leadInsightsStats: {
     flexDirection: 'row',
@@ -507,6 +525,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
+    borderTopColor: C.border,
   },
   leadInsightsStat: {
     alignItems: 'center',
@@ -514,15 +533,16 @@ const styles = StyleSheet.create({
   },
   leadInsightsValue: {
     fontSize: SIZES.fontXl,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
   },
   leadInsightsLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     marginTop: 2,
   },
   leadInsightsDivider: {
     width: 1,
     height: 30,
+    backgroundColor: C.border,
   },
 });

@@ -29,6 +29,8 @@ import { apiRequest } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
+import { C, F } from '../../constants/designRefresh';
+
 
 const DateTimePicker = Platform.OS === 'web' ? null : require('@react-native-community/datetimepicker').default;
 
@@ -650,7 +652,7 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
                     />
                     <Text style={[
                       styles.typeLabel,
-                      appointmentType === type.value && { color: primaryColor, fontFamily: FONTS.bodyBold },
+                      appointmentType === type.value && { color: primaryColor, fontFamily: F.uiBold },
                     ]}>
                       {type.label}
                     </Text>
@@ -875,7 +877,7 @@ const getStyles = createThemedStyles((colors) => ({
   webDatePickerContainer: {
     marginVertical: SIZES.sm,
     backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     overflow: 'visible',
     zIndex: 1000,
   },
@@ -889,7 +891,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   dateModalContent: {
     backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusLg,
+    borderRadius: 18,
     padding: SIZES.lg,
     width: '100%',
     maxWidth: 400,
@@ -902,7 +904,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   dateModalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
   },
   // Breadcrumb styles
@@ -952,7 +954,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   headerTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   addButton: {
@@ -976,12 +978,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   tabText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   tabTextActive: {
     color: colors.white,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   scrollContent: {
     padding: SIZES.lg,
@@ -998,7 +1000,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginTop: SIZES.lg,
     marginBottom: SIZES.sm,
@@ -1006,7 +1008,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptySubtitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: SIZES.xl,
@@ -1016,7 +1018,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginBottom: SIZES.md,
   },
@@ -1051,16 +1053,16 @@ const getStyles = createThemedStyles((colors) => ({
   clientAvatarText: {
     color: colors.white,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   clientName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
   },
   appointmentType: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   statusBadge: {
@@ -1070,7 +1072,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   statusText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   appointmentDetails: {
     marginBottom: SIZES.sm,
@@ -1082,7 +1084,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginLeft: SIZES.xs,
   },
@@ -1094,13 +1096,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   notesLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.textSecondary,
     marginBottom: SIZES.xs,
   },
   notesText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   cancelButton: {
@@ -1114,7 +1116,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   cancelText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: SIZES.xs,
   },
@@ -1149,7 +1151,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   modalContent: {
@@ -1158,7 +1160,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   inputLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
@@ -1168,26 +1170,26 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.background,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: colors.border,
     padding: SIZES.md,
   },
   selectText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     flex: 1,
     marginLeft: SIZES.sm,
   },
   selectPlaceholder: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
   },
   pickerContainer: {
     backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: colors.border,
     marginTop: SIZES.xs,
@@ -1202,7 +1204,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   pickerItemText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   typeGrid: {
@@ -1214,7 +1216,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: '48%',
     margin: '1%',
     backgroundColor: colors.background,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: colors.border,
     padding: SIZES.md,
@@ -1222,7 +1224,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   typeLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: SIZES.sm,
     textAlign: 'center',
@@ -1240,7 +1242,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   toggleLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     marginLeft: SIZES.sm,
   },
@@ -1262,12 +1264,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   textInput: {
     backgroundColor: colors.background,
-    borderRadius: SIZES.radiusMd,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: colors.border,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   textArea: {
