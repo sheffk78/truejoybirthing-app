@@ -20,6 +20,8 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+import { C, F, kickerStyle, srowBase } from '../../src/constants/designRefresh';
+const DF = F;
 
 const MOODS = [
   { value: 1, emoji: '😢', label: 'Very Low' },
@@ -154,25 +156,29 @@ export default function WellnessScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.rose} />
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <Text style={styles.title}>Wellness Journal</Text>
-        <Text style={styles.subtitle}>Track your mood, energy, and how you're feeling</Text>
+        {/* Header - S14 mockup: kicker + serif title */}
+        <View style={styles.header}>
+          <Text style={styles.headerKicker}>Wellness Journal</Text>
+          <Text style={styles.headerTitle}>How are you feeling{' '}
+            <Text style={styles.headerName}>today?</Text>
+          </Text>
+        </View>
 
-        {/* Check-in Button */}
+        {/* Daily Check-in Button */}
         <TouchableOpacity style={styles.checkinButton} onPress={() => setModalVisible(true)} data-testid="new-checkin-btn">
-          <Icon name="add-circle" size={24} color={colors.white} />
-          <Text style={styles.checkinButtonText}>New Check-in</Text>
+          <Icon name="add-circle" size={24} color={C.white} />
+          <Text style={styles.checkinButtonText}>Daily Check-in</Text>
         </TouchableOpacity>
 
-        {/* Weekly Stats */}
+        {/* Weekly Stats - 2x2 grid (Jeff approved 2026-09-21) */}
         {stats && stats.entries_count > 0 && (
           <Card style={styles.statsCard}>
-            <Text style={styles.statsTitle}>Your Week</Text>
-            <View style={styles.statsRow}>
+            <Text style={styles.statsKicker}>YOUR WEEK</Text>
+            <View style={styles.statsGrid}>
               <View style={styles.statItem}>
                 <Text style={styles.statValue}>{stats.avg_mood?.toFixed(1) || '-'}</Text>
                 <Text style={styles.statLabel}>Avg Mood</Text>
@@ -198,7 +204,7 @@ export default function WellnessScreen() {
           <Text style={styles.sectionTitle}>Recent Entries</Text>
           {entries.length === 0 ? (
             <Card style={styles.emptyCard}>
-              <Icon name="heart" size={40} color={colors.textLight} />
+              <Icon name="heart" size={40} color={C.grayLight} />
               <Text style={styles.emptyText}>No wellness entries yet</Text>
               <Text style={styles.emptySubtext}>Start tracking how you're feeling!</Text>
             </Card>
@@ -247,7 +253,7 @@ export default function WellnessScreen() {
           >
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setModalVisible(false)} data-testid="close-checkin-modal-btn">
-                <Icon name="close" size={24} color={colors.text} />
+                <Icon name="close" size={24} color={C.ink} />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Daily Check-in</Text>
               <View style={{ width: 24 }} />
@@ -308,7 +314,7 @@ export default function WellnessScreen() {
                 value={journalNotes}
                 onChangeText={setJournalNotes}
                 placeholder="How was your day? Any thoughts or feelings to capture..."
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 multiline
                 numberOfLines={5}
                 textAlignVertical="top"
@@ -334,61 +340,65 @@ export default function WellnessScreen() {
 }
 
 const getStyles = createThemedStyles((colors) => ({
-  container: { flex: 1, backgroundColor: colors.background },
+  container: { flex: 1, backgroundColor: C.cream },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
-  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: colors.text },
-  subtitle: { fontSize: SIZES.fontMd, color: colors.textSecondary, marginBottom: SIZES.lg },
-  checkinButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, padding: SIZES.md, borderRadius: SIZES.radiusMd, marginBottom: SIZES.lg, gap: SIZES.xs },
-  checkinButtonText: { color: colors.white, fontWeight: '600', fontSize: SIZES.fontMd },
+  header: { alignItems: 'center', marginBottom: SIZES.lg },
+  headerKicker: { ...kickerStyle(C.rose), marginBottom: 6 },
+  headerTitle: { fontFamily: DF.serif, fontSize: 26, color: C.ink, marginBottom: 14, textAlign: 'center' },
+  headerName: { color: C.rose },
+  checkinButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: C.rose, padding: SIZES.md, borderRadius: SIZES.radiusMd, marginBottom: SIZES.lg, gap: SIZES.xs },
+  checkinButtonText: { color: C.white, fontWeight: '600', fontSize: SIZES.fontMd },
   statsCard: { marginBottom: SIZES.lg },
-  statsTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text, marginBottom: SIZES.md },
-  statsRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  statItem: { alignItems: 'center', flex: 1 },
-  statValue: { fontSize: SIZES.fontXxl, fontWeight: '700', color: colors.primary },
-  statLabel: { fontSize: SIZES.fontXs, color: colors.textLight },
+  statsKicker: { fontSize: SIZES.fontSm, fontFamily: DF.ui, color: C.gray, marginBottom: SIZES.md, letterSpacing: 1 },
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.sm },
+  statItem: { width: '48%', backgroundColor: C.cardBg, borderRadius: SIZES.radiusMd, padding: SIZES.md, alignItems: 'center', borderWidth: 1, borderColor: C.border },
+  statValue: { fontSize: SIZES.fontXxl, fontWeight: '700', color: C.lavender },
+  statLabel: { fontSize: SIZES.fontXs, color: C.grayLight, marginTop: SIZES.xs },
   section: { marginBottom: SIZES.lg },
-  sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text, marginBottom: SIZES.md },
-  emptyCard: { alignItems: 'center', padding: SIZES.xl },
-  emptyText: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text, marginTop: SIZES.md },
-  emptySubtext: { fontSize: SIZES.fontSm, color: colors.textSecondary },
-  entryCard: { marginBottom: SIZES.sm },
+  sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: C.ink, marginBottom: SIZES.md },
+  emptyCard: { alignItems: 'center', padding: SIZES.xl, backgroundColor: C.white, borderRadius: SIZES.radiusLg, borderWidth: 1, borderColor: C.border },
+  emptyText: { fontSize: SIZES.fontMd, fontWeight: '600', color: C.ink, marginTop: SIZES.md },
+  emptySubtext: { fontSize: SIZES.fontSm, color: C.gray },
+  // Rowline entry card (S14 mockup style)
+  entryCard: { backgroundColor: C.white, borderRadius: SIZES.radiusLg, borderWidth: 1, borderColor: C.border, padding: SIZES.md, marginBottom: SIZES.sm },
   entryHeader: { flexDirection: 'row', alignItems: 'center' },
   entryEmoji: { fontSize: 32, marginRight: SIZES.md },
   entryMeta: { flex: 1 },
-  entryDate: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text },
-  entryScores: { flexDirection: 'row', gap: SIZES.md },
-  entryScore: { fontSize: SIZES.fontSm, color: colors.textSecondary },
+  entryDate: { fontSize: SIZES.fontMd, fontWeight: '600', color: C.ink },
+  entryScores: { flexDirection: 'row', gap: SIZES.md, marginTop: SIZES.xs },
+  entryScore: { fontSize: SIZES.fontSm, color: C.gray },
   symptomsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.xs, marginTop: SIZES.sm },
-  symptomTag: { backgroundColor: colors.warning + '20', paddingHorizontal: SIZES.sm, paddingVertical: 2, borderRadius: SIZES.radiusSm },
-  symptomTagText: { fontSize: SIZES.fontXs, color: colors.warning },
-  journalText: { fontSize: SIZES.fontSm, color: colors.textSecondary, marginTop: SIZES.sm, fontStyle: 'italic' },
-  modalContainer: { flex: 1, backgroundColor: colors.background },
+  symptomTag: { backgroundColor: C.sage + '20', paddingHorizontal: SIZES.sm, paddingVertical: 2, borderRadius: SIZES.radiusSm },
+  symptomTagText: { fontSize: SIZES.fontXs, color: C.sage },
+  journalText: { fontSize: SIZES.fontSm, color: C.gray, marginTop: SIZES.sm, fontStyle: 'italic' },
+  // Modal styles
+  modalContainer: { flex: 1, backgroundColor: C.cream },
   keyboardAvoidingContainer: { flex: 1 },
-  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.md, borderBottomWidth: 1, borderBottomColor: colors.border },
-  modalTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: colors.text },
+  modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: SIZES.md, borderBottomWidth: 1, borderBottomColor: C.border },
+  modalTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: C.ink },
   modalScroll: { flex: 1, padding: SIZES.md },
   moodSection: { marginBottom: SIZES.lg },
-  moodLabel: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text, marginBottom: SIZES.md, textAlign: 'center' },
+  moodLabel: { fontSize: SIZES.fontMd, fontWeight: '600', color: C.ink, marginBottom: SIZES.md, textAlign: 'center' },
   moodButtons: { flexDirection: 'row', justifyContent: 'space-between' },
-  moodButton: { alignItems: 'center', padding: SIZES.sm, borderRadius: SIZES.radiusMd, backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.border, flex: 1, marginHorizontal: 2 },
-  moodButtonActive: { borderColor: colors.primary, backgroundColor: colors.primary + '10' },
+  moodButton: { alignItems: 'center', padding: SIZES.sm, borderRadius: SIZES.radiusMd, backgroundColor: C.cardBg, borderWidth: 2, borderColor: C.border, flex: 1, marginHorizontal: 2 },
+  moodButtonActive: { borderColor: C.rose, backgroundColor: C.roseBg },
   moodEmoji: { fontSize: 24 },
-  moodText: { fontSize: SIZES.fontXs, color: colors.textSecondary, marginTop: 2 },
-  moodTextActive: { color: colors.primary, fontWeight: '600' },
+  moodText: { fontSize: SIZES.fontXs, color: C.gray, marginTop: 2 },
+  moodTextActive: { color: C.rose, fontWeight: '600' },
   scaleContainer: { marginBottom: SIZES.lg },
-  scaleLabel: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text, marginBottom: SIZES.sm },
+  scaleLabel: { fontSize: SIZES.fontMd, fontWeight: '600', color: C.ink, marginBottom: SIZES.sm },
   scaleButtons: { flexDirection: 'row', gap: SIZES.xs },
-  scaleButton: { flex: 1, alignItems: 'center', padding: SIZES.sm, borderRadius: SIZES.radiusMd, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  scaleButtonActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  scaleButtonText: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.textSecondary },
-  scaleButtonTextActive: { color: colors.white },
+  scaleButton: { flex: 1, alignItems: 'center', padding: SIZES.sm, borderRadius: SIZES.radiusMd, backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border },
+  scaleButtonActive: { backgroundColor: C.rose, borderColor: C.rose },
+  scaleButtonText: { fontSize: SIZES.fontMd, fontWeight: '600', color: C.gray },
+  scaleButtonTextActive: { color: C.white },
   symptomsSection: { marginBottom: SIZES.lg },
   symptomChips: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.xs },
-  symptomChip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  symptomChipActive: { backgroundColor: colors.warning, borderColor: colors.warning },
-  symptomChipText: { fontSize: SIZES.fontSm, color: colors.textSecondary },
-  symptomChipTextActive: { color: colors.white },
+  symptomChip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: C.cardBg, borderWidth: 1, borderColor: C.border },
+  symptomChipActive: { backgroundColor: C.rose, borderColor: C.rose },
+  symptomChipText: { fontSize: SIZES.fontSm, color: C.gray },
+  symptomChipTextActive: { color: C.white },
   journalSection: { marginBottom: SIZES.lg },
-  journalInput: { backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, color: colors.text, minHeight: 120, borderWidth: 1, borderColor: colors.border },
-  modalFooter: { padding: SIZES.md, borderTopWidth: 1, borderTopColor: colors.border },
+  journalInput: { backgroundColor: C.cardBg, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, color: C.ink, minHeight: 120, borderWidth: 1, borderColor: C.border },
+  modalFooter: { padding: SIZES.md, borderTopWidth: 1, borderTopColor: C.border },
 }));
