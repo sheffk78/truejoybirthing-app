@@ -232,7 +232,8 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
           </View>
         </Card>
         
-        {/* Quick Actions - Same for both roles */}
+        {/* Quick Actions - one shared card (one-of-many selector, per Jeff 9/21) */}
+        <View style={styles.actionsCard}>
         <View style={styles.actionsRow}>
           <TouchableOpacity 
             style={styles.actionButton}
@@ -465,6 +466,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             </TouchableOpacity>
           </View>
         )}
+        </View>
         
         {/* Prenatal Visits Section - Midwife Only */}
         {isMidwife && (
@@ -678,20 +680,25 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.textSecondary,
     marginLeft: SIZES.sm,
   },
-  actionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  actionsCard: {
     backgroundColor: colors.surface,
-    padding: SIZES.md,
     borderRadius: 18,
-    marginBottom: SIZES.sm,
     borderWidth: 1,
     borderColor: colors.border,
+    paddingVertical: SIZES.sm,
+    paddingHorizontal: SIZES.sm,
+    marginBottom: SIZES.sm,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
   },
   actionButton: {
+    flex: 1,
     alignItems: 'center',
-    paddingHorizontal: SIZES.sm,
-    minWidth: 70,
+    paddingHorizontal: SIZES.xs,
+    paddingVertical: SIZES.sm,
+    minWidth: 0,
   },
   actionIcon: {
     width: 44,
