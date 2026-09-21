@@ -70,3 +70,8 @@ All phone frames use `overflow: hidden` on the screen container and `flex-shrink
 - Combined PDF built from all 4 pages
 - All screens verified zero content overflow
 - Palette audit passed (all hex â approved corpus)
+
+
+## JEFF APPROVAL — 2026-09-21 (msg 1551711543958179932)
+
+All 10 doula screens (D1-D10) APPROVED with one global note: side breathing room. Applied: pframe 8→14px, pbody 10→16px, mhead 3→12px, tabbar widened. Commit cfff5645. Standing design rule: minimum ~16px horizontal inset for all phone content (applies to future screens too).
