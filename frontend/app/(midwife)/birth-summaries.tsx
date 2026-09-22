@@ -21,6 +21,7 @@ import Input from '../../src/components/Input';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
+import { C, F } from '../../src/constants/designRefresh';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const BIRTH_PLACES = ['Home', 'Birth Center', 'Transfer to Hospital'];
@@ -144,12 +145,13 @@ export default function MidwifeBirthSummariesScreen() {
     }
   };
   
+  // Design law: place badges from approved tokens only (Home=sage, Birth Center=lavender, Transfer=rose)
   const getPlaceColor = (place: string) => {
     switch (place) {
-      case 'Home': return colors.success;
-      case 'Birth Center': return colors.roleMidwife;
-      case 'Transfer to Hospital': return colors.warning;
-      default: return colors.textLight;
+      case 'Home': return C.sage;
+      case 'Birth Center': return C.lavender;
+      case 'Transfer to Hospital': return C.rose;
+      default: return C.gray;
     }
   };
   
@@ -158,7 +160,7 @@ export default function MidwifeBirthSummariesScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.roleMidwife} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.sage} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -170,7 +172,7 @@ export default function MidwifeBirthSummariesScreen() {
             onPress={() => setModalVisible(true)}
             data-testid="add-summary-btn"
           >
-            <Icon name="add" size={24} color={colors.white} />
+            <Icon name="add" size={24} color={C.white} />
           </TouchableOpacity>
         </View>
         
@@ -178,7 +180,7 @@ export default function MidwifeBirthSummariesScreen() {
         {summaries.length === 0 ? (
           <Card data-testid="empty-summaries-card">
             <View style={styles.emptyContent}>
-              <Icon name="heart" size={48} color={colors.roleMidwife + '40'} />
+              <Icon name="heart" size={48} color={C.roseSoft} />
               <Text style={styles.emptyText}>
                 No birth summaries yet.
               </Text>
@@ -220,12 +222,12 @@ export default function MidwifeBirthSummariesScreen() {
                 
                 <View style={styles.summaryDetails}>
                   <View style={styles.detailItem}>
-                    <Icon name="fitness-outline" size={16} color={colors.textSecondary} />
+                    <Icon name="fitness-outline" size={16} color={C.gray} />
                     <Text style={styles.detailText}>{summary.mode_of_birth}</Text>
                   </View>
                   {summary.newborn_details && (
                     <View style={styles.detailItem}>
-                      <Icon name="happy-outline" size={16} color={colors.textSecondary} />
+                      <Icon name="happy-outline" size={16} color={C.gray} />
                       <Text style={styles.detailText} numberOfLines={1}>
                         {summary.newborn_details}
                       </Text>
@@ -235,7 +237,7 @@ export default function MidwifeBirthSummariesScreen() {
                 
                 <View style={styles.viewMore}>
                   <Text style={styles.viewMoreText}>Tap to view details</Text>
-                  <Icon name="chevron-forward" size={16} color={colors.textLight} />
+                  <Icon name="chevron-forward" size={16} color={C.chev} />
                 </View>
               </Card>
             </TouchableOpacity>
@@ -253,7 +255,7 @@ export default function MidwifeBirthSummariesScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)} data-testid="close-modal-btn">
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>New Birth Summary</Text>
             <View style={{ width: 24 }} />
@@ -293,13 +295,13 @@ export default function MidwifeBirthSummariesScreen() {
               activeOpacity={0.7}
               data-testid="birth-date-picker-btn"
             >
-              <Icon name="calendar" size={20} color={colors.roleMidwife} />
+              <Icon name="calendar" size={20} color={C.sage} />
               <Text style={[styles.datePickerText, !birthDate && styles.datePickerPlaceholder]}>
                 {birthDate 
                   ? birthDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
                   : 'Select birth date'}
               </Text>
-              <Icon name="chevron-down" size={18} color={colors.textSecondary} />
+              <Icon name="chevron-down" size={18} color={C.gray} />
             </TouchableOpacity>
             {showBirthDatePicker && Platform.OS === 'android' && (
               <DateTimePicker
@@ -327,10 +329,10 @@ export default function MidwifeBirthSummariesScreen() {
                       width: '100%',
                       padding: 12,
                       fontSize: 16,
-                      border: `1px solid ${colors.border}`,
+                      border: `1px solid ${C.lavenderBorder}`,
                       borderRadius: 8,
-                      backgroundColor: colors.surface,
-                      color: colors.text,
+                      backgroundColor: C.white,
+                      color: C.ink,
                     }}
                   />
                   <Button title="Done" onPress={() => setShowBirthDatePicker(false)} fullWidth style={{ marginTop: 8 }} />
@@ -347,7 +349,7 @@ export default function MidwifeBirthSummariesScreen() {
                       <View style={styles.dateModalHeader}>
                         <Text style={styles.dateModalTitle}>Select Birth Date</Text>
                         <TouchableOpacity onPress={() => setShowBirthDatePicker(false)}>
-                          <Icon name="close" size={24} color={colors.text} />
+                          <Icon name="close" size={24} color={C.ink} />
                         </TouchableOpacity>
                       </View>
                       <DateTimePicker
@@ -372,11 +374,11 @@ export default function MidwifeBirthSummariesScreen() {
               activeOpacity={0.7}
               data-testid="birth-time-picker-btn"
             >
-              <Icon name="time" size={20} color={colors.roleMidwife} />
+              <Icon name="time" size={20} color={C.sage} />
               <Text style={styles.datePickerText}>
                 {birthTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
               </Text>
-              <Icon name="chevron-down" size={18} color={colors.textSecondary} />
+              <Icon name="chevron-down" size={18} color={C.gray} />
             </TouchableOpacity>
             {showBirthTimePicker && Platform.OS === 'android' && (
               <DateTimePicker
@@ -407,10 +409,10 @@ export default function MidwifeBirthSummariesScreen() {
                       width: '100%',
                       padding: 12,
                       fontSize: 16,
-                      border: `1px solid ${colors.border}`,
+                      border: `1px solid ${C.lavenderBorder}`,
                       borderRadius: 8,
-                      backgroundColor: colors.surface,
-                      color: colors.text,
+                      backgroundColor: C.white,
+                      color: C.ink,
                     }}
                   />
                   <Button title="Done" onPress={() => setShowBirthTimePicker(false)} fullWidth style={{ marginTop: 8 }} />
@@ -427,7 +429,7 @@ export default function MidwifeBirthSummariesScreen() {
                       <View style={styles.dateModalHeader}>
                         <Text style={styles.dateModalTitle}>Select Birth Time</Text>
                         <TouchableOpacity onPress={() => setShowBirthTimePicker(false)}>
-                          <Icon name="close" size={24} color={colors.text} />
+                          <Icon name="close" size={24} color={C.ink} />
                         </TouchableOpacity>
                       </View>
                       <DateTimePicker
@@ -500,7 +502,7 @@ export default function MidwifeBirthSummariesScreen() {
               value={newbornDetails}
               onChangeText={setNewbornDetails}
               placeholder="e.g., 7 lbs 8 oz, APGARs 9/9, Female"
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               data-testid="newborn-details-input"
             />
             
@@ -510,7 +512,7 @@ export default function MidwifeBirthSummariesScreen() {
               value={complications}
               onChangeText={setComplications}
               placeholder="Document any complications during birth..."
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
@@ -523,7 +525,7 @@ export default function MidwifeBirthSummariesScreen() {
               value={summaryNote}
               onChangeText={setSummaryNote}
               placeholder="Additional notes about the birth..."
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               multiline
               numberOfLines={5}
               textAlignVertical="top"
@@ -553,7 +555,7 @@ export default function MidwifeBirthSummariesScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setViewingSummary(null)} data-testid="close-view-modal">
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Birth Summary</Text>
             <View style={{ width: 24 }} />
@@ -625,10 +627,11 @@ export default function MidwifeBirthSummariesScreen() {
 const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   scrollContent: {
-    padding: SIZES.md,
+    // 16px horizontal inset — Jeff standing rule 9/21
+    paddingHorizontal: 16,
     paddingBottom: SIZES.xxl,
   },
   header: {
@@ -639,14 +642,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontWeight: '700',
-    color: colors.text,
+    fontFamily: F.serif,
+    color: C.ink,
   },
   addButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.roleMidwife,
+    backgroundColor: C.rose,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -656,17 +659,23 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyText: {
     fontSize: SIZES.fontMd,
-    color: colors.text,
+    color: C.ink,
     fontWeight: '600',
+    fontFamily: F.uiSemi,
     marginTop: SIZES.md,
   },
   emptySubtext: {
     fontSize: SIZES.fontSm,
-    color: colors.textSecondary,
+    color: C.gray,
+    fontFamily: F.ui,
     marginTop: SIZES.xs,
   },
   summaryCard: {
     marginBottom: SIZES.sm,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 18,
   },
   summaryHeader: {
     flexDirection: 'row',
@@ -680,12 +689,14 @@ const getStyles = createThemedStyles((colors) => ({
   clientName: {
     fontSize: SIZES.fontMd,
     fontWeight: '600',
-    color: colors.text,
+    fontFamily: F.uiSemi,
+    color: C.ink,
     marginBottom: 2,
   },
   birthDate: {
     fontSize: SIZES.fontSm,
-    color: colors.textSecondary,
+    color: C.gray,
+    fontFamily: F.ui,
   },
   placeBadge: {
     paddingHorizontal: SIZES.sm,
@@ -695,11 +706,12 @@ const getStyles = createThemedStyles((colors) => ({
   placeText: {
     fontSize: SIZES.fontXs,
     fontWeight: '600',
+    fontFamily: F.uiSemi,
   },
   summaryDetails: {
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   detailItem: {
     flexDirection: 'row',
@@ -708,7 +720,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailText: {
     fontSize: SIZES.fontSm,
-    color: colors.textSecondary,
+    color: C.gray,
+    fontFamily: F.ui,
     marginLeft: SIZES.sm,
     flex: 1,
   },
@@ -720,12 +733,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   viewMoreText: {
     fontSize: SIZES.fontSm,
-    color: colors.textLight,
+    color: C.grayLight,
+    fontFamily: F.ui,
     marginRight: SIZES.xs,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -733,13 +747,13 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.surface,
+    borderBottomColor: C.hairline,
+    backgroundColor: C.white,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -747,8 +761,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontWeight: '600',
-    color: colors.text,
+    fontFamily: F.uiBold,
+    color: C.ink,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
   },
@@ -759,22 +773,23 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     marginRight: SIZES.sm,
   },
   clientOptionSelected: {
-    backgroundColor: colors.roleMidwife,
-    borderColor: colors.roleMidwife,
+    backgroundColor: C.sage,
+    borderColor: C.sage,
   },
   clientOptionText: {
     fontSize: SIZES.fontSm,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   clientOptionTextSelected: {
-    color: colors.white,
-    fontWeight: '600',
+    color: C.white,
+    fontFamily: F.uiSemi,
   },
   optionGrid: {
     flexDirection: 'row',
@@ -785,32 +800,34 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusMd,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     marginRight: SIZES.sm,
     marginBottom: SIZES.sm,
   },
   optionButtonSelected: {
-    backgroundColor: colors.roleMidwife,
-    borderColor: colors.roleMidwife,
+    backgroundColor: C.sage,
+    borderColor: C.sage,
   },
   optionButtonText: {
     fontSize: SIZES.fontSm,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   optionButtonTextSelected: {
-    color: colors.white,
-    fontWeight: '600',
+    color: C.white,
+    fontFamily: F.uiSemi,
   },
   textInput: {
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     marginBottom: SIZES.md,
   },
   textArea: {
@@ -824,21 +841,22 @@ const getStyles = createThemedStyles((colors) => ({
   modalFooter: {
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.surface,
+    borderTopColor: C.hairline,
+    backgroundColor: C.white,
   },
   viewSection: {
     marginBottom: SIZES.lg,
   },
   viewLabel: {
     fontSize: SIZES.fontSm,
-    color: colors.textSecondary,
+    color: C.grayLight,
+    fontFamily: F.ui,
     marginBottom: SIZES.xs,
   },
   viewValue: {
     fontSize: SIZES.fontMd,
-    color: colors.text,
-    fontWeight: '500',
+    color: C.ink,
+    fontFamily: F.uiSemi,
   },
   viewRow: {
     flexDirection: 'row',
@@ -852,21 +870,23 @@ const getStyles = createThemedStyles((colors) => ({
   viewBadgeText: {
     fontSize: SIZES.fontSm,
     fontWeight: '600',
+    fontFamily: F.uiSemi,
   },
   complicationCard: {
-    backgroundColor: colors.warning + '15',
+    backgroundColor: C.roseBg,
   },
   complicationText: {
     fontSize: SIZES.fontMd,
-    color: colors.text,
+    color: C.ink,
+    fontFamily: F.ui,
   },
   // Date/Time Picker styles
   datePickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusMd,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.md,
@@ -876,15 +896,16 @@ const getStyles = createThemedStyles((colors) => ({
   datePickerText: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   datePickerPlaceholder: {
-    color: colors.textLight,
+    color: C.grayLight,
   },
   webDatePickerContainer: {
     marginVertical: SIZES.sm,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderRadius: SIZES.radiusMd,
     overflow: 'visible',
   },
@@ -896,8 +917,8 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.lg,
   },
   dateModalContent: {
-    backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusLg,
+    backgroundColor: C.white,
+    borderRadius: 18,
     padding: SIZES.lg,
     width: '100%',
     maxWidth: 400,
@@ -910,7 +931,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   dateModalTitle: {
     fontSize: SIZES.fontLg,
-    fontWeight: '600',
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
 }));

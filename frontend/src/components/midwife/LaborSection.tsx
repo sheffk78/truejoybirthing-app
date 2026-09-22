@@ -19,7 +19,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
+import { C, F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles } from '../../hooks/useThemedStyles';
 
 // ============== TYPES ==============
@@ -387,7 +388,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
           key={opt.value}
           style={[
             styles.optionButton,
-            selectedValue === opt.value && [styles.optionButtonSelected, { backgroundColor: primaryColor, borderColor: primaryColor }],
+            selectedValue === opt.value && [styles.optionButtonSelected, { backgroundColor: C.sage, borderColor: C.sage }],
           ]}
           onPress={() => onSelect(selectedValue === opt.value ? '' : opt.value)}
         >
@@ -406,7 +407,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
           key={num}
           style={[
             styles.painScaleButton,
-            painCopingLevel === num && [styles.painScaleButtonSelected, { backgroundColor: primaryColor }],
+            painCopingLevel === num && [styles.painScaleButtonSelected, { backgroundColor: C.sage }],
           ]}
           onPress={() => setPainCopingLevel(painCopingLevel === num ? null : num)}
         >
@@ -423,24 +424,24 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="pulse-outline" size={22} color={primaryColor} />
+          <Icon name="pulse-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Labor Records</Text>
           <Text style={styles.recordCount}>({laborRecords.length})</Text>
         </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: primaryColor }]}
+          style={[styles.addButton, { backgroundColor: C.sage }]}
           onPress={openAddModal}
           data-testid="add-labor-record-btn"
         >
-          <Icon name="add" size={22} color={colors.white} />
+          <Icon name="add" size={22} color={C.white} />
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
+        <ActivityIndicator size="small" color={C.sage} style={{ marginVertical: 20 }} />
       ) : laborRecords.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="pulse-outline" size={40} color={colors.textLight} />
+          <Icon name="pulse-outline" size={40} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No labor records yet</Text>
           <Text style={styles.emptyText}>
             Tap the + button above to start tracking labor progress.
@@ -455,18 +456,18 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
           >
             <Card style={styles.recordCard}>
               <View style={styles.recordHeader}>
-                <View style={[styles.timeBadge, { backgroundColor: primaryColor + '15' }]}>
-                  <Icon name="time-outline" size={14} color={primaryColor} />
-                  <Text style={[styles.timeText, { color: primaryColor }]}>
+                <View style={[styles.timeBadge, { backgroundColor: C.sageBg }]}>
+                  <Icon name="time-outline" size={14} color={C.sage} />
+                  <Text style={[styles.timeText, { color: C.sage }]}>
                     {formatDateTime(record.entry_datetime)}
                   </Text>
                 </View>
-                <Icon name="chevron-forward" size={18} color={colors.textLight} />
+                <Icon name="chevron-forward" size={18} color={C.grayLight} />
               </View>
               
               {record.labor_stage && (
-                <View style={[styles.stageBadge, { backgroundColor: primaryColor + '20' }]}>
-                  <Text style={[styles.stageText, { color: primaryColor }]}>
+                <View style={[styles.stageBadge, { backgroundColor: C.sageBg }]}>
+                  <Text style={[styles.stageText, { color: C.sage }]}>
                     {LABOR_STAGES.find(s => s.value === record.labor_stage)?.label || record.labor_stage}
                   </Text>
                 </View>
@@ -519,7 +520,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowModal(false)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {editingRecord ? 'Edit Labor Entry' : 'Add Labor Entry'}
@@ -535,7 +536,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={[styles.input, styles.textArea, { marginTop: SIZES.sm }]}
                 placeholder="Stage notes (optional)..."
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={stageNotes}
                 onChangeText={setStageNotes}
                 multiline
@@ -551,7 +552,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="0-10"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={dilationCm}
                 onChangeText={setDilationCm}
                 keyboardType="decimal-pad"
@@ -561,7 +562,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="0-100"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={effacementPercent}
                 onChangeText={setEffacementPercent}
                 keyboardType="number-pad"
@@ -574,7 +575,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
                     key={opt}
                     style={[
                       styles.optionButton,
-                      station === opt && [styles.optionButtonSelected, { backgroundColor: primaryColor, borderColor: primaryColor }],
+                      station === opt && [styles.optionButtonSelected, { backgroundColor: C.sage, borderColor: C.sage }],
                     ]}
                     onPress={() => setStation(station === opt ? '' : opt)}
                   >
@@ -594,7 +595,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 4"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={contractionsPerMin}
                 onChangeText={setContractionsPerMin}
                 keyboardType="number-pad"
@@ -604,7 +605,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 60"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={contractionDuration}
                 onChangeText={setContractionDuration}
                 keyboardType="number-pad"
@@ -627,7 +628,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
                   <TextInput
                     style={styles.input}
                     placeholder="e.g., 14:30"
-                    placeholderTextColor={colors.textLight}
+                    placeholderTextColor={C.grayLight}
                     value={ruptureTime}
                     onChangeText={setRuptureTime}
                   />
@@ -649,7 +650,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 120/80"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={maternalBp}
                 onChangeText={setMaternalBp}
               />
@@ -658,7 +659,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 88"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={maternalPulse}
                 onChangeText={setMaternalPulse}
                 keyboardType="number-pad"
@@ -668,7 +669,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 98.6"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={maternalTemp}
                 onChangeText={setMaternalTemp}
                 keyboardType="decimal-pad"
@@ -678,7 +679,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 16"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={maternalRespirations}
                 onChangeText={setMaternalRespirations}
                 keyboardType="number-pad"
@@ -688,7 +689,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="e.g., Left lateral, hands and knees"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={maternalPosition}
                 onChangeText={setMaternalPosition}
               />
@@ -700,7 +701,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="e.g., Breathing, water, partner support"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={copingMethods}
                 onChangeText={setCopingMethods}
               />
@@ -709,7 +710,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="How is mom feeling emotionally?"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={emotionalStatus}
                 onChangeText={setEmotionalStatus}
                 multiline
@@ -725,7 +726,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 145"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={fetalHeartRate}
                 onChangeText={setFetalHeartRate}
                 keyboardType="number-pad"
@@ -744,7 +745,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Any concerns about fetal wellbeing?"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={fetalConcerns}
                 onChangeText={setFetalConcerns}
                 multiline
@@ -760,7 +761,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Position changes, fluids, etc."
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={interventions}
                 onChangeText={setInterventions}
                 multiline
@@ -771,7 +772,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={styles.input}
                 placeholder="Any medications administered"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={medicationsGiven}
                 onChangeText={setMedicationsGiven}
               />
@@ -780,7 +781,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Consultations, transfer decisions, etc."
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={communicationNotes}
                 onChangeText={setCommunicationNotes}
                 multiline
@@ -791,7 +792,7 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Additional observations..."
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={generalNotes}
                 onChangeText={setGeneralNotes}
                 multiline
@@ -823,26 +824,26 @@ export default function LaborSection({ clientId, primaryColor, onRefresh }: Labo
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowDetailModal(null)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Labor Entry</Text>
             <TouchableOpacity onPress={() => showDetailModal && openEditModal(showDetailModal)}>
-              <Icon name="create-outline" size={24} color={primaryColor} />
+              <Icon name="create-outline" size={24} color={C.sage} />
             </TouchableOpacity>
           </View>
 
           {showDetailModal && (
             <ScrollView style={styles.modalContent}>
               <View style={styles.detailDateHeader}>
-                <Icon name="time" size={20} color={primaryColor} />
-                <Text style={[styles.detailDate, { color: primaryColor }]}>
+                <Icon name="time" size={20} color={C.sage} />
+                <Text style={[styles.detailDate, { color: C.sage }]}>
                   {formatDateTime(showDetailModal.entry_datetime)}
                 </Text>
               </View>
 
               {showDetailModal.labor_stage && (
-                <View style={[styles.stageBadgeDetail, { backgroundColor: primaryColor + '20' }]}>
-                  <Text style={[styles.stageBadgeDetailText, { color: primaryColor }]}>
+                <View style={[styles.stageBadgeDetail, { backgroundColor: C.sageBg }]}>
+                  <Text style={[styles.stageBadgeDetailText, { color: C.sage }]}>
                     {LABOR_STAGES.find(s => s.value === showDetailModal.labor_stage)?.label}
                   </Text>
                 </View>
@@ -1103,14 +1104,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   recordCount: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     marginLeft: SIZES.xs,
   },
   addButton: {
@@ -1126,14 +1127,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -1156,7 +1157,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   timeText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginLeft: 4,
   },
   stageBadge: {
@@ -1168,7 +1169,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   stageText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   vitalsPreview: {
     flexDirection: 'row',
@@ -1177,47 +1178,47 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   vitalChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
     paddingHorizontal: SIZES.sm,
     paddingVertical: 4,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
   },
   vitalLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     marginRight: 4,
   },
   vitalValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -1225,9 +1226,9 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   // Form styles
   formSection: {
@@ -1235,26 +1236,26 @@ const getStyles = createThemedStyles((colors) => ({
   },
   formSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginBottom: SIZES.xs,
     marginTop: SIZES.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   textArea: {
     minHeight: 80,
@@ -1270,20 +1271,20 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.white,
   },
   optionButtonSelected: {
-    borderColor: colors.primary,
+    borderColor: C.lavenderSoft,
   },
   optionButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   optionButtonTextSelected: {
     color: colors.white,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   painScaleRow: {
     flexDirection: 'row',
@@ -1297,16 +1298,16 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'center',
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.white,
   },
   painScaleButtonSelected: {
     borderColor: 'transparent',
   },
   painScaleText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   painScaleTextSelected: {
     color: colors.white,
@@ -1321,7 +1322,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailDate: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     marginLeft: SIZES.sm,
   },
   stageBadgeDetail: {
@@ -1333,19 +1334,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   stageBadgeDetailText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
   },
   detailCard: {
     marginBottom: SIZES.md,
   },
   detailCardTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   detailInfoRow: {
     flexDirection: 'row',
@@ -1354,34 +1355,34 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   detailValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   noteRow: {
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   noteLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginBottom: 4,
   },
   noteText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   noDataText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     fontStyle: 'italic',
     textAlign: 'center',
     paddingVertical: SIZES.md,
@@ -1395,7 +1396,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   deleteButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: SIZES.xs,
   },

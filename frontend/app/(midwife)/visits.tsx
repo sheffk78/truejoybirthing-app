@@ -20,12 +20,12 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { apiRequest } from '../../src/utils/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
+import { C, F } from '../../src/constants/designRefresh';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function MidwifeVisitsScreen() {
-  const colors = useColors();
-  const styles = getStyles(colors);
+  const styles = getStyles(useColors());
   const params = useLocalSearchParams<{ clientId?: string; clientName?: string }>();
   const [visits, setVisits] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
@@ -130,7 +130,7 @@ export default function MidwifeVisitsScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.roleMidwife} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.sage} />
         }
         showsVerticalScrollIndicator={false}
       >
@@ -140,7 +140,7 @@ export default function MidwifeVisitsScreen() {
             style={styles.addButton}
             onPress={() => setModalVisible(true)}
           >
-            <Icon name="add" size={24} color={colors.white} />
+            <Icon name="add" size={24} color={C.white} />
           </TouchableOpacity>
         </View>
         
@@ -184,13 +184,13 @@ export default function MidwifeVisitsScreen() {
                 <View
                   style={[
                     styles.typeBadge,
-                    { backgroundColor: visit.visit_type === 'Prenatal' ? colors.roleMidwife + '20' : colors.accent + '20' },
+                    { backgroundColor: visit.visit_type === 'Prenatal' ? C.sageBg : C.lavenderBg },
                   ]}
                 >
                   <Text
                     style={[
                       styles.typeText,
-                      { color: visit.visit_type === 'Prenatal' ? colors.roleMidwife : colors.accent },
+                      { color: visit.visit_type === 'Prenatal' ? C.sage : C.lavender },
                     ]}
                   >
                     {visit.visit_type}
@@ -244,7 +244,7 @@ export default function MidwifeVisitsScreen() {
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Record Visit</Text>
             <View style={{ width: 24 }} />
@@ -305,13 +305,13 @@ export default function MidwifeVisitsScreen() {
               activeOpacity={0.7}
               data-testid="visit-date-picker-btn"
             >
-              <Icon name="calendar" size={20} color={colors.roleMidwife} />
+              <Icon name="calendar" size={20} color={C.sage} />
               <Text style={[styles.datePickerText, !visitDateObj && styles.datePickerPlaceholder]}>
                 {visitDateObj 
                   ? visitDateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
                   : 'Select visit date'}
               </Text>
-              <Icon name="chevron-down" size={18} color={colors.textSecondary} />
+              <Icon name="chevron-down" size={18} color={C.gray} />
             </TouchableOpacity>
             {showVisitDatePicker && Platform.OS === 'android' && (
               <DateTimePicker
@@ -339,10 +339,10 @@ export default function MidwifeVisitsScreen() {
                       width: '100%',
                       padding: 12,
                       fontSize: 16,
-                      border: `1px solid ${colors.border}`,
+                      border: `1px solid ${C.lavenderBorder}`,
                       borderRadius: 8,
-                      backgroundColor: colors.surface,
-                      color: colors.text,
+                      backgroundColor: C.cardBg,
+                      color: C.ink,
                     }}
                   />
                   <Button title="Done" onPress={() => setShowVisitDatePicker(false)} fullWidth style={{ marginTop: 8 }} />
@@ -359,7 +359,7 @@ export default function MidwifeVisitsScreen() {
                       <View style={styles.dateModalHeader}>
                         <Text style={styles.dateModalTitle}>Select Visit Date</Text>
                         <TouchableOpacity onPress={() => setShowVisitDatePicker(false)}>
-                          <Icon name="close" size={24} color={colors.text} />
+                          <Icon name="close" size={24} color={C.ink} />
                         </TouchableOpacity>
                       </View>
                       <DateTimePicker
@@ -435,10 +435,12 @@ export default function MidwifeVisitsScreen() {
 const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   scrollContent: {
-    padding: SIZES.md,
+    // 16px horizontal inset — Jeff standing rule 9/21
+    paddingHorizontal: 16,
+    paddingTop: SIZES.md,
     paddingBottom: SIZES.xxl,
   },
   header: {
@@ -449,25 +451,29 @@ const getStyles = createThemedStyles((colors) => ({
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontFamily: FONTS.heading,
-    color: colors.text,
+    fontFamily: F.serif,
+    color: C.ink,
   },
   addButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.roleMidwife,
+    backgroundColor: C.rose,
     alignItems: 'center',
     justifyContent: 'center',
   },
   emptyText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     textAlign: 'center',
   },
   visitCard: {
     marginBottom: SIZES.sm,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 18,
   },
   visitHeader: {
     flexDirection: 'row',
@@ -480,23 +486,23 @@ const getStyles = createThemedStyles((colors) => ({
   },
   clientName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
+    fontFamily: F.uiBold,
+    color: C.ink,
     marginBottom: 2,
   },
   visitDate: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   typeBadge: {
     paddingHorizontal: SIZES.sm,
     paddingVertical: SIZES.xs,
-    borderRadius: SIZES.radiusSm,
+    borderRadius: SIZES.radiusFull,
   },
   typeText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   vitalsRow: {
     flexDirection: 'row',
@@ -504,7 +510,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   vitalItem: {
     marginRight: SIZES.lg,
@@ -512,24 +518,24 @@ const getStyles = createThemedStyles((colors) => ({
   },
   vitalLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
   },
   vitalValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.uiSemi,
+    color: C.ink,
   },
   noteText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginTop: SIZES.sm,
     fontStyle: 'italic',
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -537,13 +543,13 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     padding: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.surface,
+    borderBottomColor: C.hairline,
+    backgroundColor: C.white,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -551,8 +557,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
+    fontFamily: F.uiBold,
+    color: C.ink,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
   },
@@ -563,23 +569,23 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
-    backgroundColor: colors.surface,
+    backgroundColor: C.cardBg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     marginRight: SIZES.sm,
   },
   clientOptionSelected: {
-    backgroundColor: colors.roleMidwife,
-    borderColor: colors.roleMidwife,
+    backgroundColor: C.sage,
+    borderColor: C.sage,
   },
   clientOptionText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   clientOptionTextSelected: {
-    color: colors.white,
-    fontFamily: FONTS.bodyBold,
+    color: C.white,
+    fontFamily: F.uiBold,
   },
   typeSelector: {
     flexDirection: 'row',
@@ -589,24 +595,24 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
     paddingVertical: SIZES.sm,
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: C.cardBg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     marginRight: SIZES.sm,
     borderRadius: SIZES.radiusMd,
   },
   typeOptionSelected: {
-    backgroundColor: colors.roleMidwife,
-    borderColor: colors.roleMidwife,
+    backgroundColor: C.sage,
+    borderColor: C.sage,
   },
   typeOptionText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   typeOptionTextSelected: {
-    color: colors.white,
-    fontFamily: FONTS.bodyBold,
+    color: C.white,
+    fontFamily: F.uiBold,
   },
   vitalsGrid: {
     flexDirection: 'row',
@@ -616,14 +622,14 @@ const getStyles = createThemedStyles((colors) => ({
     marginRight: SIZES.sm,
   },
   textInput: {
-    backgroundColor: colors.surface,
+    backgroundColor: C.cardBg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   textArea: {
     minHeight: 100,
@@ -632,8 +638,8 @@ const getStyles = createThemedStyles((colors) => ({
   modalFooter: {
     padding: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.surface,
+    borderTopColor: C.hairline,
+    backgroundColor: C.white,
   },
   filterContainer: {
     marginBottom: SIZES.md,
@@ -641,32 +647,32 @@ const getStyles = createThemedStyles((colors) => ({
   filterChip: {
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
-    backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusMd,
+    backgroundColor: C.cardBg,
+    borderRadius: SIZES.radiusFull,
     marginRight: SIZES.sm,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
   },
   filterChipActive: {
-    backgroundColor: colors.roleMidwife,
-    borderColor: colors.roleMidwife,
+    backgroundColor: C.sage,
+    borderColor: C.sage,
   },
   filterChipText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   filterChipTextActive: {
-    color: colors.white,
-    fontFamily: FONTS.bodyBold,
+    color: C.white,
+    fontFamily: F.uiBold,
   },
   // Date Picker styles
   datePickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: C.cardBg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusMd,
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.md,
@@ -676,29 +682,29 @@ const getStyles = createThemedStyles((colors) => ({
   datePickerText: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   datePickerPlaceholder: {
-    color: colors.textLight,
+    color: C.grayLight,
   },
   webDatePickerContainer: {
     marginVertical: SIZES.sm,
-    backgroundColor: colors.surface,
+    backgroundColor: C.cardBg,
     borderRadius: SIZES.radiusMd,
     overflow: 'visible',
   },
   dateModalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(42, 42, 42, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: SIZES.lg,
   },
   dateModalContent: {
-    backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusLg,
+    backgroundColor: C.white,
+    borderRadius: 18,
     padding: SIZES.lg,
     width: '100%',
     maxWidth: 400,
@@ -711,7 +717,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   dateModalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
 }));

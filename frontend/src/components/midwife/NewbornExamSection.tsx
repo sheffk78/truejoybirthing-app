@@ -20,7 +20,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
+import { C, F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 
 // ============== TYPES ==============
@@ -189,7 +190,7 @@ const BREATHING_OPTIONS = [
 const getExamStatusOptions = (colors: ThemeColors) => [
   { value: 'normal', label: 'Normal', color: colors.success },
   { value: 'abnormal', label: 'Abnormal', color: colors.error },
-  { value: 'not_assessed', label: 'N/A', color: colors.textLight },
+  { value: 'not_assessed', label: 'N/A', color: C.grayLight },
 ];
 
 const SYSTEM_EXAMS = [
@@ -518,13 +519,13 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
         data-testid={`section-${sectionKey}`}
       >
         <View style={styles.collapsibleTitleRow}>
-          <Icon name={icon as any} size={20} color={primaryColor} />
+          <Icon name={icon as any} size={20} color={C.sage} />
           <Text style={styles.collapsibleTitle}>{title}</Text>
         </View>
         <Icon
           name={expandedSections[sectionKey] ? 'chevron-up' : 'chevron-down'}
           size={20}
-          color={colors.textSecondary}
+          color={C.gray}
         />
       </TouchableOpacity>
       {expandedSections[sectionKey] && (
@@ -548,7 +549,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
             small && styles.optionButtonSmall,
             selectedValue === opt.value && [
               styles.optionButtonSelected,
-              { backgroundColor: opt.color || primaryColor, borderColor: opt.color || primaryColor },
+              { backgroundColor: C.sage, borderColor: C.sage },
             ],
           ]}
           onPress={() => onSelect(selectedValue === opt.value ? '' : opt.value)}
@@ -583,7 +584,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
               styles.optionButtonSmall,
               isSelected && [
                 styles.optionButtonSelected,
-                { backgroundColor: primaryColor, borderColor: primaryColor },
+                { backgroundColor: C.sage, borderColor: C.sage },
               ],
             ]}
             onPress={() => onToggle(opt.value)}
@@ -609,7 +610,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
       <View key={systemKey} style={styles.systemExamRow}>
         <View style={styles.systemExamHeader}>
           <View style={styles.systemExamLabel}>
-            <Icon name={icon as any} size={16} color={colors.textSecondary} />
+            <Icon name={icon as any} size={16} color={C.gray} />
             <Text style={styles.systemExamLabelText}>{label}</Text>
           </View>
           <View style={styles.systemExamStatusButtons}>
@@ -643,7 +644,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
           <TextInput
             style={[styles.input, styles.inputSmall]}
             placeholder="Describe findings..."
-            placeholderTextColor={colors.textLight}
+            placeholderTextColor={C.grayLight}
             value={exam.notes || ''}
             onChangeText={(text) =>
               setSystemExams(prev => ({
@@ -663,7 +664,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
       <View style={styles.examCardHeader}>
         <View style={styles.examCardInfo}>
           <View style={styles.examCardTitleRow}>
-            <Icon name="person" size={18} color={primaryColor} />
+            <Icon name="person" size={18} color={C.sage} />
             <Text style={styles.examCardName}>{exam.baby_name || 'Baby'}</Text>
           </View>
           <Text style={styles.examCardDate}>{formatDateTime(exam.exam_datetime)}</Text>
@@ -705,7 +706,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
       <View style={styles.examCardDetails}>
         {exam.current_weight && (
           <View style={styles.examCardDetail}>
-            <Icon name="scale-outline" size={14} color={colors.textSecondary} />
+            <Icon name="scale-outline" size={14} color={C.gray} />
             <Text style={styles.examCardDetailText}>
               {exam.current_weight} {exam.current_weight_unit || 'lbs'}
             </Text>
@@ -713,7 +714,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
         )}
         {exam.temperature && (
           <View style={styles.examCardDetail}>
-            <Icon name="thermometer-outline" size={14} color={colors.textSecondary} />
+            <Icon name="thermometer-outline" size={14} color={C.gray} />
             <Text style={styles.examCardDetailText}>
               {exam.temperature}°{exam.temperature_unit || 'F'}
             </Text>
@@ -721,7 +722,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
         )}
         {exam.heart_rate && (
           <View style={styles.examCardDetail}>
-            <Icon name="heart-outline" size={14} color={colors.textSecondary} />
+            <Icon name="heart-outline" size={14} color={C.gray} />
             <Text style={styles.examCardDetailText}>{exam.heart_rate} bpm</Text>
           </View>
         )}
@@ -729,11 +730,11 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
 
       <View style={styles.examCardFooter}>
         <TouchableOpacity
-          style={[styles.examActionButton, { borderColor: primaryColor }]}
+          style={[styles.examActionButton, { borderColor: C.sage }]}
           onPress={() => openEditModal(exam)}
         >
-          <Icon name="create-outline" size={16} color={primaryColor} />
-          <Text style={[styles.examActionButtonText, { color: primaryColor }]}>Edit</Text>
+          <Icon name="create-outline" size={16} color={C.sage} />
+          <Text style={[styles.examActionButtonText, { color: C.sage }]}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.examActionButton, { borderColor: colors.error }]}
@@ -751,24 +752,24 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="clipboard-outline" size={22} color={primaryColor} />
+          <Icon name="clipboard-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Newborn Exams</Text>
         </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: primaryColor }]}
+          style={[styles.addButton, { backgroundColor: C.sage }]}
           onPress={openCreateModal}
           data-testid="add-newborn-exam-btn"
         >
-          <Icon name="add" size={18} color={colors.white} />
+          <Icon name="add" size={18} color={C.white} />
           <Text style={styles.addButtonText}>New Exam</Text>
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
+        <ActivityIndicator size="small" color={C.sage} style={{ marginVertical: 20 }} />
       ) : exams.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="clipboard-outline" size={48} color={colors.textLight} />
+          <Icon name="clipboard-outline" size={48} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No Newborn Exams</Text>
           <Text style={styles.emptyText}>
             Add a comprehensive newborn physical exam for this client's baby.
@@ -793,7 +794,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowModal(false)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {editingExam ? 'Edit Newborn Exam' : 'New Newborn Exam'}
@@ -809,7 +810,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={styles.input}
                   placeholder="Enter baby's name"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.baby_name || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, baby_name: text }))}
                 />
@@ -818,7 +819,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={styles.input}
                   placeholder="Parent(s) name(s)"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.parent_names || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, parent_names: text }))}
                 />
@@ -829,7 +830,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="YYYY-MM-DD"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.date_of_birth || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, date_of_birth: text }))}
                     />
@@ -839,7 +840,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="e.g., 24"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.baby_age_hours?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, baby_age_hours: text ? parseFloat(text) : undefined }))}
                       keyboardType="decimal-pad"
@@ -854,7 +855,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={styles.input}
                   placeholder="Where is this exam taking place?"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.exam_location || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, exam_location: text }))}
                 />
@@ -863,7 +864,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={styles.input}
                   placeholder="Your name"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.examiner_name || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, examiner_name: text }))}
                 />
@@ -872,7 +873,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={styles.input}
                   placeholder="e.g., CPM, CNM, LM"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.examiner_credentials || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, examiner_credentials: text }))}
                 />
@@ -888,7 +889,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="Weeks"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.gestational_age_weeks?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, gestational_age_weeks: text ? parseInt(text) : undefined }))}
                       keyboardType="number-pad"
@@ -898,7 +899,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="Days"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.gestational_age_days?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, gestational_age_days: text ? parseInt(text) : undefined }))}
                       keyboardType="number-pad"
@@ -924,7 +925,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={[styles.input, styles.textArea]}
                       placeholder="Describe other risk factors..."
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.risk_flags_notes || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, risk_flags_notes: text }))}
                       multiline
@@ -944,7 +945,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="e.g., 98.6"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.temperature?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, temperature: text ? parseFloat(text) : undefined }))}
                       keyboardType="decimal-pad"
@@ -967,7 +968,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="bpm"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.heart_rate?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, heart_rate: text ? parseInt(text) : undefined }))}
                       keyboardType="number-pad"
@@ -978,7 +979,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="/min"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.respiratory_rate?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, respiratory_rate: text ? parseInt(text) : undefined }))}
                       keyboardType="number-pad"
@@ -989,7 +990,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="%"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.oxygen_saturation?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, oxygen_saturation: text ? parseInt(text) : undefined }))}
                       keyboardType="number-pad"
@@ -1004,7 +1005,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={[styles.input, styles.inputSmall]}
                     placeholder="Notes on delayed perfusion..."
-                    placeholderTextColor={colors.textLight}
+                    placeholderTextColor={C.grayLight}
                     value={formData.perfusion_notes || ''}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, perfusion_notes: text }))}
                   />
@@ -1021,7 +1022,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="Weight"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.current_weight?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, current_weight: text ? parseFloat(text) : undefined }))}
                       keyboardType="decimal-pad"
@@ -1044,7 +1045,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="Birth weight"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.birth_weight?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, birth_weight: text ? parseFloat(text) : undefined }))}
                       keyboardType="decimal-pad"
@@ -1067,7 +1068,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="Length"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.length?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, length: text ? parseFloat(text) : undefined }))}
                       keyboardType="decimal-pad"
@@ -1090,7 +1091,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="Head circ"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.head_circumference?.toString() || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, head_circumference: text ? parseFloat(text) : undefined }))}
                       keyboardType="decimal-pad"
@@ -1112,8 +1113,8 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                   <Switch
                     value={formData.growth_plotted || false}
                     onValueChange={(val) => setFormData(prev => ({ ...prev, growth_plotted: val }))}
-                    trackColor={{ false: colors.border, true: primaryColor + '50' }}
-                    thumbColor={formData.growth_plotted ? primaryColor : colors.textLight}
+                    trackColor={{ false: colors.border, true: C.sageBg }}
+                    thumbColor={formData.growth_plotted ? C.sage : colors.textLight}
                   />
                 </View>
 
@@ -1121,7 +1122,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={[styles.input, styles.textArea]}
                   placeholder="Notes on growth percentiles, concerns..."
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.growth_notes || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, growth_notes: text }))}
                   multiline
@@ -1139,7 +1140,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={[styles.input, styles.inputSmall]}
                     placeholder="Color notes..."
-                    placeholderTextColor={colors.textLight}
+                    placeholderTextColor={C.grayLight}
                     value={formData.color_notes || ''}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, color_notes: text }))}
                   />
@@ -1151,7 +1152,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={[styles.input, styles.inputSmall]}
                     placeholder="Tone notes..."
-                    placeholderTextColor={colors.textLight}
+                    placeholderTextColor={C.grayLight}
                     value={formData.tone_notes || ''}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, tone_notes: text }))}
                   />
@@ -1163,7 +1164,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={[styles.input, styles.inputSmall]}
                     placeholder="Activity notes..."
-                    placeholderTextColor={colors.textLight}
+                    placeholderTextColor={C.grayLight}
                     value={formData.activity_notes || ''}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, activity_notes: text }))}
                   />
@@ -1175,7 +1176,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={[styles.input, styles.inputSmall]}
                     placeholder="Breathing notes..."
-                    placeholderTextColor={colors.textLight}
+                    placeholderTextColor={C.grayLight}
                     value={formData.breathing_notes || ''}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, breathing_notes: text }))}
                   />
@@ -1206,7 +1207,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={[styles.input, styles.textArea]}
                     placeholder="Feeding concerns/notes..."
-                    placeholderTextColor={colors.textLight}
+                    placeholderTextColor={C.grayLight}
                     value={formData.feeding_notes || ''}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, feeding_notes: text }))}
                     multiline
@@ -1220,7 +1221,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="# voids"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.voids_24h || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, voids_24h: text }))}
                     />
@@ -1230,7 +1231,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={styles.input}
                       placeholder="# stools"
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.stools_24h || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, stools_24h: text }))}
                     />
@@ -1241,7 +1242,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={[styles.input, styles.textArea]}
                   placeholder="Any concerns from parents?"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.parent_concerns || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, parent_concerns: text }))}
                   multiline
@@ -1262,7 +1263,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                     <TextInput
                       style={[styles.input, styles.textArea]}
                       placeholder="Document any red flags..."
-                      placeholderTextColor={colors.textLight}
+                      placeholderTextColor={C.grayLight}
                       value={formData.red_flag_findings || ''}
                       onChangeText={(text) => setFormData(prev => ({ ...prev, red_flag_findings: text }))}
                       multiline
@@ -1275,7 +1276,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={[styles.input, styles.textArea]}
                   placeholder="Questions from parents..."
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.parent_questions || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, parent_questions: text }))}
                   multiline
@@ -1295,7 +1296,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                   <TextInput
                     style={[styles.input, styles.inputSmall]}
                     placeholder="Other education topics..."
-                    placeholderTextColor={colors.textLight}
+                    placeholderTextColor={C.grayLight}
                     value={formData.education_notes || ''}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, education_notes: text }))}
                   />
@@ -1305,7 +1306,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={[styles.input, styles.textAreaLarge]}
                   placeholder="Document the plan and any follow-up needed..."
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.plan_notes || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, plan_notes: text }))}
                   multiline
@@ -1317,7 +1318,7 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
                 <TextInput
                   style={styles.input}
                   placeholder="e.g., 2024-03-20 10:00 AM"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.next_visit_datetime || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, next_visit_datetime: text }))}
                 />
@@ -1366,8 +1367,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   addButton: {
@@ -1379,7 +1380,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   addButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
     marginLeft: 4,
   },
@@ -1389,14 +1390,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -1423,13 +1424,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   examCardName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   examCardDate: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginTop: 2,
   },
   examCardActions: {
@@ -1443,7 +1444,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   draftBadgeText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   assessmentBadge: {
     paddingHorizontal: SIZES.sm,
@@ -1452,7 +1453,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   assessmentBadgeText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   examCardDetails: {
     flexDirection: 'row',
@@ -1467,8 +1468,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   examCardDetailText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   examCardFooter: {
     flexDirection: 'row',
@@ -1476,7 +1477,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   examActionButton: {
     flexDirection: 'row',
@@ -1489,26 +1490,26 @@ const getStyles = createThemedStyles((colors) => ({
   },
   examActionButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -1517,13 +1518,13 @@ const getStyles = createThemedStyles((colors) => ({
   modalFooter: {
     flexDirection: 'row',
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   // Collapsible sections
   collapsibleSection: {
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.sm,
     overflow: 'hidden',
@@ -1533,7 +1534,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   collapsibleTitleRow: {
     flexDirection: 'row',
@@ -1542,8 +1543,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   collapsibleTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   collapsibleContent: {
     padding: SIZES.md,
@@ -1552,20 +1553,20 @@ const getStyles = createThemedStyles((colors) => ({
   // Form styles
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginBottom: SIZES.xs,
     marginTop: SIZES.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   inputSmall: {
     marginTop: SIZES.xs,
@@ -1606,8 +1607,8 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.white,
     marginBottom: SIZES.xs,
   },
   optionButtonSmall: {
@@ -1615,19 +1616,19 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: 4,
   },
   optionButtonSelected: {
-    borderColor: colors.primary,
+    borderColor: C.lavenderSoft,
   },
   optionButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   optionButtonTextSmall: {
     fontSize: SIZES.fontXs,
   },
   optionButtonTextSelected: {
     color: colors.white,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   toggleRow: {
     flexDirection: 'row',
@@ -1638,14 +1639,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   toggleLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   // System exam styles
   systemExamNote: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     fontStyle: 'italic',
     marginBottom: SIZES.md,
   },
@@ -1653,7 +1654,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.md,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   systemExamHeader: {
     flexDirection: 'row',
@@ -1668,8 +1669,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   systemExamLabelText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   systemExamStatusButtons: {
     flexDirection: 'row',
@@ -1680,16 +1681,16 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: 4,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.white,
   },
   statusButtonText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   statusButtonTextSelected: {
     color: colors.white,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
 }));

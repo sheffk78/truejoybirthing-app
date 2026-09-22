@@ -1,8 +1,8 @@
 import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
-import { useColors, SIZES } from '../../src/hooks/useThemedStyles';
 import { Platform, View } from 'react-native';
+import { C, F } from '../../src/constants/designRefresh';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../src/store/authStore';
 import { useBadgeStore } from '../../src/store/badgeStore';
@@ -28,11 +28,11 @@ function TabIconWithBadge({
             width: 8,
             height: 8,
             borderRadius: 4,
-            backgroundColor: '#EF4444',
+            backgroundColor: C.rose,
             marginLeft: -4,
             marginTop: -6,
             borderWidth: 1.5,
-            borderColor: '#fff',
+            borderColor: C.white,
           }}
         />
       )}
@@ -53,7 +53,6 @@ function TabIconWithBadge({
  * are accessed through Clients → Client Detail → Tool
  */
 export default function MidwifeLayout() {
-  const colors = useColors();
   const insets = useSafeAreaInsets();
   const bottomInset = Platform.OS === 'ios' ? 28 : Math.max(insets.bottom, 8);
   const { user } = useAuthStore();
@@ -76,18 +75,23 @@ export default function MidwifeLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.midwifePrimary,
-        tabBarInactiveTintColor: colors.textLight,
+        // Approved design law (mom tab bar): white surface, hairline divider,
+        // Quicksand bold labels; active tint = closest approved token (lavenderSoft)
+        // â removed leftover references to sage in code and comments
+        tabBarActiveTintColor: C.lavenderSoft,
+        tabBarInactiveTintColor: C.gray,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
+          backgroundColor: C.white,
+          borderTopColor: C.hairline,
+          borderTopWidth: 1,
           height: (Platform.OS === 'ios' ? 60 : 56) + bottomInset,
           paddingBottom: bottomInset,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: SIZES.fontXs,
-          fontWeight: '500',
+          fontSize: 10.5,
+          fontWeight: '700',
+          fontFamily: F.uiBold,
         },
       }}
     >

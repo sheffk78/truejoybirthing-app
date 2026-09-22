@@ -20,7 +20,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
+import { C, F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 
 // ============== TYPES ==============
@@ -294,7 +295,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
             key={item.value}
             style={[
               styles.scoreButton,
-              value === item.value && [styles.scoreButtonSelected, { backgroundColor: primaryColor, borderColor: primaryColor }],
+              value === item.value && [styles.scoreButtonSelected, { backgroundColor: C.sage, borderColor: C.sage }],
             ]}
             onPress={() => onChange(value === item.value ? null : item.value)}
           >
@@ -307,7 +308,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
       <TextInput
         style={styles.noteInput}
         placeholder="Optional note..."
-        placeholderTextColor={colors.textLight}
+        placeholderTextColor={C.grayLight}
         value={note}
         onChangeText={onNoteChange}
       />
@@ -319,24 +320,24 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="clipboard-outline" size={22} color={primaryColor} />
+          <Icon name="clipboard-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Prenatal Visits</Text>
           <Text style={styles.visitCount}>({prenatalVisits.length})</Text>
         </View>
         <TouchableOpacity
-          style={[styles.addVisitButton, { backgroundColor: primaryColor }]}
+          style={[styles.addVisitButton, { backgroundColor: C.sage }]}
           onPress={openAddVisit}
           data-testid="add-prenatal-visit-btn"
         >
-          <Icon name="add" size={22} color={colors.white} />
+          <Icon name="add" size={22} color={C.white} />
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
+        <ActivityIndicator size="small" color={C.sage} style={{ marginVertical: 20 }} />
       ) : prenatalVisits.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="document-text-outline" size={40} color={colors.textLight} />
+          <Icon name="document-text-outline" size={40} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No prenatal visits yet</Text>
           <Text style={styles.emptyText}>
             Tap the + button above to record your first prenatal visit assessment.
@@ -351,11 +352,11 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
           >
             <Card style={styles.visitCard}>
               <View style={styles.visitHeader}>
-                <View style={[styles.visitDateBadge, { backgroundColor: primaryColor + '15' }]}>
-                  <Icon name="calendar-outline" size={14} color={primaryColor} />
-                  <Text style={[styles.visitDateText, { color: primaryColor }]}>{formatDate(visit.visit_date)}</Text>
+                <View style={[styles.visitDateBadge, { backgroundColor: C.sageBg }]}>
+                  <Icon name="calendar-outline" size={14} color={C.sage} />
+                  <Text style={[styles.visitDateText, { color: C.sage }]}>{formatDate(visit.visit_date)}</Text>
                 </View>
-                <Icon name="chevron-forward" size={18} color={colors.textLight} />
+                <Icon name="chevron-forward" size={18} color={C.grayLight} />
               </View>
               <Text style={styles.visitSummary}>{visit.summary}</Text>
 
@@ -397,7 +398,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowVisitModal(false)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {editingVisit ? 'Edit Prenatal Visit' : 'Add Prenatal Visit'}
@@ -417,18 +418,18 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                   style={{
                     padding: 14,
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: C.lavenderBorder,
                     borderRadius: 10,
                     fontSize: 16,
                     width: '100%',
-                    backgroundColor: colors.surface,
+                    backgroundColor: C.white,
                   }}
                 />
               ) : (
                 <TextInput
                   style={styles.input}
                   placeholder="YYYY-MM-DD"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={visitDate}
                   onChangeText={setVisitDate}
                 />
@@ -446,7 +447,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                     key={option}
                     style={[
                       styles.urinalysisOption,
-                      urinalysis === option && [styles.urinalysisOptionSelected, { backgroundColor: primaryColor, borderColor: primaryColor }],
+                      urinalysis === option && [styles.urinalysisOptionSelected, { backgroundColor: C.sage, borderColor: C.sage }],
                     ]}
                     onPress={() => setUrinalysis(urinalysis === option ? '' : option)}
                   >
@@ -462,7 +463,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                 <TextInput
                   style={styles.input}
                   placeholder="Specify urinalysis result..."
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={urinalysisNote}
                   onChangeText={setUrinalysisNote}
                 />
@@ -472,7 +473,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 120/70"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={bloodPressure}
                 onChangeText={setBloodPressure}
               />
@@ -481,7 +482,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 140"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={fetalHeartRate}
                 onChangeText={setFetalHeartRate}
                 keyboardType="numeric"
@@ -491,7 +492,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 28"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={fundalHeight}
                 onChangeText={setFundalHeight}
                 keyboardType="decimal-pad"
@@ -502,20 +503,20 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                 <TextInput
                   style={[styles.input, { flex: 1 }]}
                   placeholder="e.g., 145"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={weight}
                   onChangeText={setWeight}
                   keyboardType="decimal-pad"
                 />
                 <View style={styles.unitToggle}>
                   <TouchableOpacity
-                    style={[styles.unitOption, weightUnit === 'lbs' && [styles.unitOptionSelected, { backgroundColor: primaryColor }]]}
+                    style={[styles.unitOption, weightUnit === 'lbs' && [styles.unitOptionSelected, { backgroundColor: C.sage }]]}
                     onPress={() => setWeightUnit('lbs')}
                   >
                     <Text style={[styles.unitText, weightUnit === 'lbs' && styles.unitTextSelected]}>lbs</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.unitOption, weightUnit === 'kg' && [styles.unitOptionSelected, { backgroundColor: primaryColor }]]}
+                    style={[styles.unitOption, weightUnit === 'kg' && [styles.unitOptionSelected, { backgroundColor: C.sage }]]}
                     onPress={() => setWeightUnit('kg')}
                   >
                     <Text style={[styles.unitText, weightUnit === 'kg' && styles.unitTextSelected]}>kg</Text>
@@ -543,7 +544,7 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Any additional observations or notes..."
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={generalNotes}
                 onChangeText={setGeneralNotes}
                 multiline
@@ -576,19 +577,19 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowVisitDetail(null)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Prenatal Visit</Text>
             <TouchableOpacity onPress={() => showVisitDetail && openEditVisit(showVisitDetail)}>
-              <Icon name="create-outline" size={24} color={primaryColor} />
+              <Icon name="create-outline" size={24} color={C.sage} />
             </TouchableOpacity>
           </View>
 
           {showVisitDetail && (
             <ScrollView style={styles.modalContent}>
               <View style={styles.detailDateHeader}>
-                <Icon name="calendar" size={20} color={primaryColor} />
-                <Text style={[styles.detailDate, { color: primaryColor }]}>{formatDate(showVisitDetail.visit_date)}</Text>
+                <Icon name="calendar" size={20} color={C.sage} />
+                <Text style={[styles.detailDate, { color: C.sage }]}>{formatDate(showVisitDetail.visit_date)}</Text>
               </View>
 
               {/* Vitals Section */}
@@ -649,8 +650,8 @@ export default function PrenatalVisitSection({ clientId, primaryColor, onRefresh
                   <View key={item.label} style={styles.wellbeingDetailRow}>
                     <View style={styles.wellbeingDetailHeader}>
                       <Text style={styles.detailLabel}>{item.label}:</Text>
-                      <View style={[styles.scoreBadge, { backgroundColor: primaryColor + '20' }]}>
-                        <Text style={[styles.scoreBadgeText, { color: primaryColor }]}>{item.score}/5</Text>
+                      <View style={[styles.scoreBadge, { backgroundColor: C.sageBg }]}>
+                        <Text style={[styles.scoreBadgeText, { color: C.sage }]}>{item.score}/5</Text>
                       </View>
                     </View>
                     {item.note && <Text style={styles.wellbeingNote}>{item.note}</Text>}
@@ -707,14 +708,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   visitCount: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     marginLeft: SIZES.xs,
   },
   addVisitButton: {
@@ -730,14 +731,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -760,13 +761,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   visitDateText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginLeft: 4,
   },
   visitSummary: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   vitalsPreview: {
     flexDirection: 'row',
@@ -775,47 +776,47 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.sm,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   vitalChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
     paddingHorizontal: SIZES.sm,
     paddingVertical: 4,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
   },
   vitalLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     marginRight: 4,
   },
   vitalValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -823,9 +824,9 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   // Form styles
   formSection: {
@@ -833,32 +834,32 @@ const getStyles = createThemedStyles((colors) => ({
   },
   formSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
   },
   formSectionSubtitle: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginBottom: SIZES.md,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginBottom: SIZES.xs,
     marginTop: SIZES.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   textArea: {
     minHeight: 100,
@@ -874,20 +875,20 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.white,
   },
   urinalysisOptionSelected: {
-    borderColor: colors.primary,
+    borderColor: C.lavenderSoft,
   },
   urinalysisOptionText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   urinalysisOptionTextSelected: {
     color: colors.white,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   weightRow: {
     flexDirection: 'row',
@@ -897,37 +898,37 @@ const getStyles = createThemedStyles((colors) => ({
   unitToggle: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     overflow: 'hidden',
   },
   unitOption: {
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
   },
   unitOptionSelected: {
-    backgroundColor: colors.primary,
+    backgroundColor: C.lavenderSoft,
   },
   unitText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   unitTextSelected: {
     color: colors.white,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   wellbeingItem: {
     marginBottom: SIZES.md,
     paddingBottom: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   wellbeingLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     marginBottom: SIZES.sm,
   },
   scoreRow: {
@@ -940,32 +941,32 @@ const getStyles = createThemedStyles((colors) => ({
     height: 44,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
   scoreButtonSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: C.lavenderSoft,
+    borderColor: C.lavenderSoft,
   },
   scoreButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   scoreButtonTextSelected: {
     color: colors.white,
   },
   noteInput: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.sm,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   // Detail modal styles
   detailDateHeader: {
@@ -977,7 +978,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailDate: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     marginLeft: SIZES.sm,
   },
   detailCard: {
@@ -985,12 +986,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailCardTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   detailInfoRow: {
     flexDirection: 'row',
@@ -999,18 +1000,18 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   detailValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   noDataText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     fontStyle: 'italic',
     textAlign: 'center',
     paddingVertical: SIZES.md,
@@ -1018,7 +1019,7 @@ const getStyles = createThemedStyles((colors) => ({
   wellbeingDetailRow: {
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   wellbeingDetailHeader: {
     flexDirection: 'row',
@@ -1032,19 +1033,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   scoreBadgeText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   wellbeingNote: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginTop: SIZES.xs,
     fontStyle: 'italic',
   },
   generalNotesText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     lineHeight: 22,
   },
   deleteButton: {
@@ -1056,7 +1057,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   deleteButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: SIZES.xs,
   },
