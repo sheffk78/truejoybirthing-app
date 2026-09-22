@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="icons.css">
+<link rel="stylesheet" href="../type-system.css">
+<style>
+/* Phase A: mom tools — timeline, postpartum, getting-started, invite-provider, share-birth-plan, birth-plan-preview
+   Construction = approved s10s11s12 vocabulary (Jeff-approved 9/17–9/22). 16px inset standing rule. */
+
+body { background:#3A3A3A; font-family:'Quicksand','Source Sans 3',sans-serif; padding:26px; margin:0; }
+.pair { display:flex; gap:64px; justify-content:center; align-items:flex-start; margin-bottom:64px; }
+
+/* phone frame (844 tall like approved mom packets) */
+.phone { height:auto; min-height:844px; display:flex; flex-direction:column; overflow:hidden; border-radius:40px; }
+.screen.tall { height:auto; min-height:844px; }
+.screen { display:flex; flex-direction:column; }
+
+/* approved header vocabulary */
+.m-head { padding:10px 20px 6px; }
+.a-overline { font-size:10px; letter-spacing:2.4px; text-transform:uppercase; font-weight:700; color:#A25C86; margin-bottom:5px; }
+.a-h1 { font-family:'Cormorant',serif; font-weight:700; font-size:26px; line-height:1.12; color:#2A2A2A; }
+.a-h1 em { font-style:normal; color:#B085A5; }
+.m-sub { font-size:12.5px; color:#6A6B6C; margin-top:4px; font-weight:500; }
+
+/* sections + rows (approved) */
+.sect { margin:16px 20px 0; }
+.sect .a-h2 { font-family:'Cormorant',serif; font-weight:700; font-size:21px; color:#2A2A2A; margin-bottom:2px; }
+.sect .sub { font-size:11.5px; color:#6A6B6C; font-weight:500; margin-bottom:10px; }
+.srow { background:#fff; border:1px solid #EFE0EB; border-radius:18px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+.sico { width:34px; height:34px; border-radius:12px; background:#F1F1FB; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.sico.sage { background:#E8EDE5; }
+.sico.rose { background:#EFE0EB; }
+.a-h3 { font-family:'Cormorant',serif; font-weight:600; font-size:17px; color:#2A2A2A; }
+.srow .mid { flex:1; min-width:0; }
+.smeta { display:flex; align-items:center; gap:6px; margin-top:2px; flex-wrap:wrap; }
+.mmeta { font-size:11px; color:#6A6B6C; font-weight:500; }
+.schip { font-size:9.5px; letter-spacing:.6px; font-weight:700; text-transform:uppercase; border-radius:999px; padding:2px 8px; }
+.schip.done { color:#5F7154; background:#E8EDE5; }
+.schip.wip { color:#6E6C99; background:#F1F1FB; }
+.schip.warn { color:#A25C86; background:#EFE0EB; }
+.chev { color:#B9AFB8; font-size:16px; flex-shrink:0; }
+.muted { color:#8A8B8D; }
+.card { background:#fff; border:1px solid #EFE0EB; border-radius:20px; padding:15px 17px; margin-top:12px; }
+.card .k { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:7px; }
+.k-rose { color:#A25C86; } .k-sage { color:#5F7154; } .k-lav { color:#6E6C99; }
+.btn { background:#6E6C99; color:#fff; font-size:12.5px; font-weight:600; border-radius:999px; padding:10px 18px; display:inline-block; text-align:center; }
+.btn.ghost { background:transparent; color:#6E6C99; border:1.4px solid #8E8CB5; }
+.btn.big { display:block; width:calc(100% - 40px); margin:14px 20px 0; padding:13px 18px; font-size:13.5px; }
+
+/* sub-screen back row (D6 breadcrumb law) */
+.backrow { display:flex; align-items:center; gap:8px; padding:12px 20px 2px; font-size:12px; font-weight:700; color:#6E6C99; }
+.backrow .bk { width:28px; height:28px; border-radius:10px; background:#fff; border:1px solid #EFE0EB; display:flex; align-items:center; justify-content:center; }
+
+/* band (approved hband/veil) */
+.hband { margin:4px 0 0; height:168px; position:relative; flex:none; overflow:hidden; }
+.hband img { width:100%; height:100%; object-fit:cover; }
+.veil { position:absolute; inset:0; background:linear-gradient(180deg, rgba(250,248,245,.05) 0%, rgba(250,248,245,0) 45%, rgba(250,248,245,.75) 88%, #FAF8F5 100%); }
+
+/* inputs (form screens) */
+.field { background:#fff; border:1px solid #EFE0EB; border-radius:14px; padding:11px 13px; margin-bottom:9px; }
+.field .flab { font-size:9.5px; letter-spacing:1.6px; text-transform:uppercase; font-weight:700; color:#8A8B8D; margin-bottom:3px; }
+.field .fval { font-size:13px; font-weight:600; color:#2A2A2A; }
+.field .fph { font-size:13px; font-weight:500; color:#B9AFB8; }
+.typepills { display:flex; gap:9px; }
+.typepill { flex:1; text-align:center; font-size:13px; font-weight:700; border-radius:999px; padding:12px 10px; border:1.3px solid #D5D3E8; color:#6E6C99; background:#FDFCFA; }
+.typepill.on { background:#6E6C99; border-color:#6E6C99; color:#fff; }
+
+/* timeline milestones (stem + dots) */
+.mile { position:relative; padding:0 0 14px 30px; }
+.mile::before { content:''; position:absolute; left:7px; top:16px; bottom:-2px; width:1.6px; background:#EFE0EB; }
+.mile:last-child::before { display:none; }
+.mile .dot { position:absolute; left:0; top:3px; width:15px; height:15px; border-radius:50%; background:#fff; border:2px solid #D5D3E8; }
+.mile.past .dot { background:#5F7154; border-color:#5F7154; }
+.mile.cur .dot { background:#A25C86; border-color:#B87AA0; box-shadow:0 0 0 4px #EFE0EB; }
+.mile.cur .mrow { border-color:#B87AA0; background:#FBF5F9; }
+.mrow { background:#fff; border:1px solid #EFE0EB; border-radius:16px; padding:10px 12px; }
+.mrow .wk { font-size:9.5px; letter-spacing:1.6px; text-transform:uppercase; font-weight:700; color:#A25C86; }
+.mile.past .wk { color:#5F7154; }
+.mrow .a-h3 { font-size:15.5px; margin-top:1px; }
+.mrow .mdesc { font-size:11.5px; color:#6A6B6C; font-weight:500; line-height:1.45; margin-top:2px; }
+.mrow .mdate { font-size:10px; color:#8A8B8D; font-weight:600; margin-top:4px; }
+
+/* warn chip grid (postpartum) */
+.warnchips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.warnchips .schip { font-size:10px; padding:5px 10px; letter-spacing:.4px; }
+
+/* steps (getting started) */
+.step { background:#fff; border:1px solid #EFE0EB; border-radius:18px; padding:13px 14px; margin-bottom:9px; display:flex; gap:12px; align-items:flex-start; }
+.num { width:30px; height:30px; border-radius:50%; background:#F1F1FB; color:#6E6C99; font-family:'Cormorant',serif; font-weight:700; font-size:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.step .go { margin-top:7px; font-size:11.5px; font-weight:700; color:#6E6C99; letter-spacing:.4px; }
+
+/* doc preview (birth plan) */
+.doc { background:#fff; border:1px solid #EFE0EB; border-radius:18px; padding:18px 16px 14px; }
+.doc .dtitle { font-family:'Cormorant',serif; font-weight:700; font-size:22px; color:#2A2A2A; text-align:center; }
+.doc .dbrand { text-align:center; font-size:9.5px; letter-spacing:2.6px; text-transform:uppercase; font-weight:700; color:#B085A5; margin-top:3px; }
+.doc .daddr { text-align:center; font-size:10px; letter-spacing:1.8px; text-transform:uppercase; font-weight:700; color:#8A8B8D; margin:10px 0 4px; }
+.dsec { display:flex; align-items:center; gap:10px; border-top:1px solid #F0E9EE; padding:9px 2px; }
+.dsec .a-h3 { font-size:14.5px; flex:1; }
+
+/* provider result row */
+.pr { display:flex; align-items:center; gap:11px; background:#FAF8F5; border:1px solid #EFE0EB; border-radius:14px; padding:10px 12px; margin-top:9px; }
+.avat { width:38px; height:38px; border-radius:50%; background:#EDEAF6; color:#6E6C99; font-family:'Quicksand'; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.legend { max-width:560px; }
+</style>
+</head>
+<body class="canvas">
+
+<div class="canvas-head">
+  <div class="eyebrow">Phase A · Mobile App · Mom Tools</div>
+  <h1>App <em>Timeline · Postpartum · Start · Team · Sharing</em></h1>
+  <div class="sub">Approved s10–s15 construction · type law H1 26 / H2 21 / H3 17 · 16px inset standing rule · real app content</div>
+</div>
+
+<!-- ROW 1 -->
+<div class="pair"><div class="col">
+
+<!-- ============ A1 PREGNANCY TIMELINE ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+  <div class="hband"><img src="assets/week28.webp"><div class="veil"></div></div>
+  <div class="m-head">
+    <div class="a-overline">Week 28 · Day 3</div>
+    <div class="a-h1">Pregnancy <em>Timeline</em></div>
+    <div class="m-sub">Your journey, event by event</div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="a-h2">Your Events &amp; Appointments</div>
+    <div class="sub">Added by you or your care team</div>
+    <div class="srow">
+      <div class="sico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round"><rect x="4.5" y="5.5" width="15" height="14" rx="3"/><path d="M4.5 10 L19.5 10"/><path d="M9 3.5 L9 7"/><path d="M15 3.5 L15 7"/></svg></div>
+      <div class="mid">
+        <div class="a-h3">Anatomy Scan — Seton NW</div>
+        <div class="smeta"><span class="mmeta">Mar 14 · 10:30 AM</span><span class="schip wip">Upcoming</span></div>
+      </div>
+      <span class="chev">›</span>
+    </div>
+    <div class="srow">
+      <div class="sico sage"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#5F7154" stroke-width="1.7" stroke-linecap="round"><rect x="4.5" y="5.5" width="15" height="14" rx="3"/><path d="M4.5 10 L19.5 10"/><path d="M9 3.5 L9 7"/><path d="M15 3.5 L15 7"/><path d="M9 14.5 L11 16.5 L15.5 12.5"/></svg></div>
+      <div class="mid">
+        <div class="a-h3">Group B Strep Test</div>
+        <div class="smeta"><span class="mmeta">Feb 27 · 9:00 AM</span><span class="schip done">Done</span></div>
+      </div>
+      <span class="chev">›</span>
+    </div>
+    <div class="btn ghost" style="width:100%; box-sizing:border-box;">+ Schedule with Provider</div>
+  </div>
+
+  <div class="sect" style="margin-top:14px;">
+    <div class="a-h2">Pregnancy Milestones</div>
+    <div class="sub">What's ahead, week by week</div>
+    <div class="mile past">
+      <div class="dot"></div>
+      <div class="mrow"><div class="wk">Week 24 · Past</div><div class="a-h3">Viability Milestone</div><div class="mdesc">Baby has a chance of survival if born now. Size: ear of corn.</div><div class="mdate">Dec 18</div></div>
+    </div>
+    <div class="mile cur">
+      <div class="dot"></div>
+      <div class="mrow"><div class="wk">Week 28 · Current</div><div class="a-h3">Third Trimester Begins</div><div class="mdesc">Final stretch! Baby is the size of an eggplant.</div><div class="mdate">Jan 15</div></div>
+    </div>
+    <div class="mile">
+      <div class="dot"></div>
+      <div class="mrow"><div class="wk">Week 32 · Ahead</div><div class="a-h3">Baby Practices Breathing</div><div class="mdesc">Lungs are developing. Baby is the size of a squash.</div><div class="mdate">Feb 12</div></div>
+    </div>
+    <div class="mile">
+      <div class="dot"></div>
+      <div class="mrow"><div class="wk">Week 40 · Ahead</div><div class="a-h3">Due Date</div><div class="mdesc">Your estimated due date has arrived!</div><div class="mdate">Mar 18</div></div>
+    </div>
+  </div>
+  <div style="height:12px"></div>
+</div></div>
+
+<!-- ============ A2 POSTPARTUM PLAN ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+  <div class="backrow"><div class="bk"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#6E6C99" stroke-width="1.8" stroke-linecap="round"><path d="M14.5 5.5 L8 12 L14.5 18.5"/></svg></div>My Team</div>
+  <div class="m-head" style="padding-top:4px;">
+    <div class="a-overline">Fourth Trimester</div>
+    <div class="a-h1">Postpartum <em>Plan</em></div>
+    <div class="m-sub">Prepare for your fourth trimester</div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="card" style="margin-top:0;">
+      <div class="k k-lav">Support Network</div>
+      <div class="field" style="margin-bottom:6px;"><div class="fval">Dana (partner) · Maria (sister)</div></div>
+      <div class="field" style="margin-bottom:0;"><div class="flab">Meal Prep Plans</div><div class="fph">Freezer meals, meal train, delivery services…</div></div>
+    </div>
+    <div class="card">
+      <div class="k k-lav">Baby Feeding Plan</div>
+      <div class="field" style="margin-bottom:0;"><div class="fval">Breastfeeding, with pumped bottles for night feeds</div></div>
+    </div>
+    <div class="card">
+      <div class="k k-lav">Recovery Goals &amp; Visitor Policy</div>
+      <div class="field" style="margin-bottom:6px;"><div class="fval">Rest, healing, taking it slow</div></div>
+      <div class="field" style="margin-bottom:0;"><div class="flab">Visitors</div><div class="fval">First two weeks — family only, call first</div></div>
+    </div>
+    <div class="card">
+      <div class="k k-rose">Warning Signs to Watch</div>
+      <div class="warnchips">
+        <span class="schip warn">Heavy bleeding</span><span class="schip warn">High fever</span><span class="schip warn">Severe headache</span><span class="schip warn">Chest pain</span><span class="schip warn">Difficulty breathing</span><span class="schip warn">Extreme sadness</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="k k-sage">Emergency Contacts</div>
+      <div class="srow" style="border:none; background:#FAF8F5; padding:9px 11px; margin-bottom:6px;"><div class="mid"><div class="fval" style="font-size:12.5px;">Dana K.</div></div><div class="mmeta">(512) 555-0142</div></div>
+      <div class="srow" style="border:none; background:#FAF8F5; padding:9px 11px; margin-bottom:0;"><div class="mid"><div class="fval" style="font-size:12.5px;">Dr. Reyes (OB)</div></div><div class="mmeta">(512) 555-0188</div></div>
+    </div>
+  </div>
+  <div class="btn big">Save Plan</div>
+  <div style="height:12px"></div>
+</div></div>
+
+<!-- ============ A3 GETTING STARTED ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+  <div class="hband"><img src="assets/band-home-couch.webp"><div class="veil"></div></div>
+  <div class="m-head" style="padding-top:6px;">
+    <div class="a-overline">Welcome</div>
+    <div class="a-h1">Getting <em>Started</em></div>
+    <div class="m-sub">Three steps to your joyful birth</div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="step">
+      <div class="num">1</div>
+      <div style="flex:1;">
+        <div class="a-h3">Create Your Birth Plan</div>
+        <div class="mmeta" style="margin-top:3px; line-height:1.45;">Build a personalized plan that captures your wishes for labor, birth, and beyond.</div>
+        <div class="go">Start My Plan →</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <div style="flex:1;">
+        <div class="a-h3">Find Your Birth Team</div>
+        <div class="mmeta" style="margin-top:3px; line-height:1.45;">Search for experienced doulas, midwives, and lactation consultants near you.</div>
+        <div class="go">Browse Providers →</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <div style="flex:1;">
+        <div class="a-h3">Share Your Plan</div>
+        <div class="mmeta" style="margin-top:3px; line-height:1.45;">Once your birth plan is ready, share it with your care team in one tap.</div>
+        <div class="go">Share Plan →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:14px;">
+    <div class="a-h2">Pro Tips</div>
+    <div class="tipcard" style="background:#fff; border:1px solid #EFE0EB; border-radius:18px; padding:13px 15px; margin-bottom:8px;">
+      <div class="k k-rose">Watch the Video Guides</div>
+      <p style="font-size:13px; line-height:1.55; color:#4B4B4B; font-weight:500; margin:0;">Each birth plan section has a helpful video explaining your options.</p>
+    </div>
+    <div class="tipcard" style="background:#fff; border:1px solid #EFE0EB; border-radius:18px; padding:13px 15px; margin-bottom:8px;">
+      <div class="k k-lav">Message Your Team</div>
+      <p style="font-size:13px; line-height:1.55; color:#4B4B4B; font-weight:500; margin:0;">Once connected with a provider, use in-app messaging to ask questions anytime.</p>
+    </div>
+    <div class="card">
+      <div class="k k-sage">Contact Support</div>
+      <p style="font-size:12.5px; line-height:1.5; color:#4B4B4B; font-weight:500; margin:0;">We're here to help with any questions.</p>
+    </div>
+  </div>
+  <div style="height:12px"></div>
+</div></div>
+</div></div>
+
+<!-- ROW 2 -->
+<div class="pair"><div class="col">
+
+<!-- ============ A4 INVITE PROVIDER ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+  <div class="backrow"><div class="bk"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#6E6C99" stroke-width="1.8" stroke-linecap="round"><path d="M14.5 5.5 L8 12 L14.5 18.5"/></svg></div>My Team</div>
+  <div class="m-head" style="padding-top:4px;">
+    <div class="a-overline">My Team</div>
+    <div class="a-h1">Invite Your <em>Provider</em></div>
+    <div class="m-sub">Grow your circle of care</div>
+  </div>
+
+  <div class="sect" style="margin-top:14px;">
+    <div class="card" style="margin-top:0;">
+      <div class="k k-lav">Provider Type</div>
+      <div class="typepills" style="margin-top:4px;">
+        <div class="typepill on">Doula</div>
+        <div class="typepill">Midwife</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="k k-lav">Their Email</div>
+      <div class="field" style="margin-bottom:0;"><div class="fval">amara@doulacare.com</div></div>
+    </div>
+    <div class="card">
+      <div class="k k-lav">Personal Message <span class="muted" style="letter-spacing:0; text-transform:none; font-weight:500;">(optional)</span></div>
+      <div class="field" style="margin-bottom:0;"><div class="fph">Add a personal note to your provider…</div></div>
+    </div>
+    <div class="card">
+      <div class="k k-sage">How it works</div>
+      <p style="font-size:12.5px; line-height:1.55; color:#4B4B4B; font-weight:500; margin:0;">We'll send an email invitation with a link for your provider to sign up. Once they join and connect, they'll have access to your birth plan and can help coordinate your care.</p>
+    </div>
+  </div>
+  <div class="btn big">Send Invite</div>
+  <div style="height:12px"></div>
+</div></div>
+
+<!-- ============ A5 SHARE BIRTH PLAN ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+  <div class="backrow"><div class="bk"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#6E6C99" stroke-width="1.8" stroke-linecap="round"><path d="M14.5 5.5 L8 12 L14.5 18.5"/></svg></div>Birth Plan</div>
+  <div class="m-head" style="padding-top:4px;">
+    <div class="a-overline">Birth Plan</div>
+    <div class="a-h1">Share Birth <em>Plan</em></div>
+    <div class="m-sub">Bring your team into the plan</div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="card" style="margin-top:0;">
+      <div class="k k-lav">Find Provider</div>
+      <div class="warnchips" style="margin-top:2px;">
+        <span class="schip wip">Doula</span><span class="schip" style="color:#6A6B6C; background:#F3F1EE;">Midwife</span><span class="schip" style="color:#6A6B6C; background:#F3F1EE;">Lactation</span>
+      </div>
+      <div class="field" style="margin-top:9px; margin-bottom:0;"><div class="fph">Search by name or email…</div></div>
+      <div class="pr">
+        <div class="avat">MG</div>
+        <div style="flex:1;">
+          <div class="a-h3" style="font-size:15px;">Maria Gonzales</div>
+          <div class="mmeta">Doula (DONA) · ★ 4.9 · Austin</div>
+        </div>
+        <div class="btn" style="padding:8px 14px; font-size:11.5px;">Share</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="k k-lav">Active Shares</div>
+      <div class="mmeta" style="margin-bottom:8px;">These providers can view your birth plan and add notes</div>
+      <div class="srow" style="border:none; background:#FAF8F5; padding:10px 12px; margin-bottom:7px;">
+        <div class="avat" style="width:32px; height:32px; font-size:12px;">MG</div>
+        <div class="mid"><div class="fval" style="font-size:12.5px;">Maria Gonzales</div><div class="smeta"><span class="schip done">Shared</span></div></div>
+        <div class="btn ghost" style="padding:6px 12px; font-size:10.5px; border-color:#B87AA0; color:#A25C86;">Revoke</div>
+      </div>
+      <div class="srow" style="border:none; background:#FAF8F5; padding:10px 12px; margin-bottom:0;">
+        <div class="avat" style="width:32px; height:32px; font-size:12px;">AR</div>
+        <div class="mid"><div class="fval" style="font-size:12.5px;">Amara Rose</div><div class="smeta"><span class="schip wip">Pending</span></div></div>
+        <div class="btn ghost" style="padding:6px 12px; font-size:10.5px;">Cancel</div>
+      </div>
+    </div>
+  </div>
+  <div style="height:12px"></div>
+</div></div>
+
+<!-- ============ A6 BIRTH PLAN PREVIEW ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+  <div class="backrow"><div class="bk"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#6E6C99" stroke-width="1.8" stroke-linecap="round"><path d="M14.5 5.5 L8 12 L14.5 18.5"/></svg></div>Birth Plan</div>
+  <div class="m-head" style="padding-top:4px;">
+    <div class="a-overline">Joyful Birth Plan</div>
+    <div class="a-h1">Birth Plan <em>Preview</em></div>
+    <div class="m-sub">The document your care team receives</div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="doc" style="margin-top:0;">
+      <div class="dtitle">My Joyful Birth Plan</div>
+      <div class="dbrand">True Joy Birthing</div>
+      <div class="daddr">To my healthcare provider(s)</div>
+      <div class="dsec"><div class="a-h3">About Me &amp; My Preferences</div><span class="schip done">Complete</span></div>
+      <div class="dsec"><div class="a-h3">Labor &amp; Delivery Preferences</div><span class="schip done">Complete</span></div>
+      <div class="dsec"><div class="a-h3">Pain Management</div><span class="schip done">Complete</span></div>
+      <div class="dsec"><div class="a-h3">Monitoring &amp; IV</div><span class="schip done">Complete</span></div>
+      <div class="dsec"><div class="a-h3">Induction &amp; Interventions</div><span class="schip wip">In Progress</span></div>
+      <div class="dsec"><div class="a-h3">Cesarean Preferences</div><span class="schip wip">In Progress</span></div>
+      <div class="dsec"><div class="a-h3">Newborn Care</div><span class="schip done">Complete</span></div>
+      <div class="dsec"><div class="a-h3">Feeding Preferences</div><span class="schip done">Complete</span></div>
+    </div>
+  </div>
+  <div class="btn big">Print Birth Plan</div>
+  <div class="btn big ghost">Download PDF</div>
+  <div style="height:12px"></div>
+</div></div>
+
+<div class="col">
+<div class="legend">
+  <div class="h">Phase A — construction notes</div>
+  <ul>
+    <li><b>Approved vocabulary only:</b> s10–s15 tokens — cream #FAF8F5, lavender #6E6C99/#8E8CB5, rose #A25C86/#B87AA0, sage #5F7154; Cormorant serif display + Quicksand UI.</li>
+    <li><b>Timeline:</b> week-28 watercolor hband + stem/dot milestone spine (past=sage, current=rose halo, ahead=hollow) — matches PREGNANCY_MILESTONES real data.</li>
+    <li><b>Postpartum:</b> section cards mirror the live form fields; warning signs as rose chips (real red-flag list).</li>
+    <li><b>Forms:</b> field pills + type pills reuse the S12 tabs2 pill construction; back rows follow the D6 breadcrumb law.</li>
+    <li><b>Preview:</b> document-style sheet with per-section Complete/In Progress chips (real section list, real states).</li>
+    <li><b>16px inset standing rule</b> applied to every screen (20px section gutters).</li>
+  </ul>
+</div>
+</div>
+</div></div>
+
+</body>
+</html>

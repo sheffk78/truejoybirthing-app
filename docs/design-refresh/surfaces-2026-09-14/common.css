@@ -1,106 +1,134 @@
-/* common.css â TJB Design Refresh shared styles */
-@font-face {
-  font-family: 'Cormorant Garamond';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('./fonts/CormorantGaramond_700Bold.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Cormorant Garamond';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('./fonts/CormorantGaramond_600SemiBold.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Quicksand';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('./fonts/Quicksand_400Regular.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Quicksand';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('./fonts/Quicksand_500Medium.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Quicksand';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('./fonts/Quicksand_600SemiBold.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Quicksand';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('./fonts/Quicksand_700Bold.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Source Sans 3';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('./fonts/SourceSans3_400Regular.ttf') format('truetype');
-}
+/* TJB surfaces-2026-09-14 — shared design language (v5-derived, growth-motif system) */
+/* Palette = app themeTokens + VISUAL-TOKENS v2.0 unified: cream #FAF8F5, lavender #8E8CB5/#6E6C99/#D5D3E8/#EDEAF6,
+   rose #B87AA0/#D8A0C4/#A25C86, sage #7C8F6F/#E8EDE5/#A8B5A0, charcoal #2A2A2A, gray #6A6B6C. Bright-violet website accent hex is banned here — never use. */
 
-:root {
-  --lavender-500: #8E8CB5;
-  --lavender-600: #6E6C99;
-  --lavender-300: #D5D3E8;
-  --surface: #EDEAF6;
-  --rose-500: #B87AA0;
-  --cream: #FAF8F5;
-  --charcoal: #2A2A2A;
-  --white: #FFFFFF;
-  --radius-18: 18px;
-  --inset: 16px;
-}
+@font-face { font-family:'Cormorant'; src:url('fonts/CormorantGaramond_700Bold.ttf'); font-weight:700; }
+@font-face { font-family:'Cormorant'; src:url('fonts/CormorantGaramond_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Cormorant'; src:url('fonts/CormorantGaramond_500Medium_Italic.ttf'); font-weight:500; font-style:italic; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_400Regular.ttf'); font-weight:400; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_500Medium.ttf'); font-weight:500; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_700Bold.ttf'); font-weight:700; }
+@font-face { font-family:'SourceSans'; src:url('fonts/SourceSans3_400Regular.ttf'); font-weight:400; }
+@font-face { font-family:'SourceSans'; src:url('fonts/SourceSans3_600SemiBold.ttf'); font-weight:600; }
 
-.pbody {
-  margin: 0;
-  padding: 0;
-  font-family: 'Quicksand', sans-serif;
-  background: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-}
+* { margin:0; padding:0; box-sizing:border-box; }
 
-.phone-frame {
-  width: 390px;
-  min-height: 844px;
-  background: var(--cream);
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
-}
+/* ---- phone canvas (app mockups) ---- */
+body.canvas { background:#F1ECE6; font-family:'Quicksand',sans-serif; color:#2A2A2A; padding:46px 40px 40px; }
+.canvas-head { text-align:center; margin-bottom:34px; }
+.canvas-head .eyebrow { font-size:11px; letter-spacing:3.5px; font-weight:700; color:#B085A5; text-transform:uppercase; margin-bottom:10px; }
+.canvas-head h1 { font-family:'Cormorant',serif; font-weight:700; font-size:34px; color:#2A2A2A; }
+.canvas-head h1 em { font-style:normal; color:#B085A5; }
+.canvas-head .sub { font-size:13.5px; color:#7A746E; margin-top:8px; }
 
-.a-h1 {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 700;
-}
+.pair { display:flex; gap:64px; justify-content:center; align-items:flex-start; }
+.col { display:flex; flex-direction:column; align-items:center; gap:16px; }
+.tag { font-size:11px; letter-spacing:3px; text-transform:uppercase; font-weight:700; }
+.tag.now { color:#74716A; } .tag.new { color:#8E8CB5; }
 
-.a-overline {
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 11px;
-}
+.phone { width:390px; background:#2D2D2D; border-radius:54px; padding:9px; box-shadow:0 18px 50px rgba(45,45,45,.18); }
+.phone.fixed { height:844px; }
+.screen { width:100%; height:100%; border-radius:45px; overflow:hidden; background:#FAF8F5; position:relative; display:flex; flex-direction:column; }
+.screen::after { content:''; position:absolute; inset:0; pointer-events:none; z-index:40; opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.27 0 0 0 0 0.18 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px 160px; mix-blend-mode:multiply; }
+.screen.tall { height:auto; min-height:826px; }
+.screen img.cur { width:100%; height:100%; object-fit:cover; border-radius:45px; }
 
-.mhead {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 700;
-}
+/* ---- shared app components (from approved v5) ---- */
+.statusbar { height:40px; display:flex; justify-content:space-between; align-items:center; padding:0 26px; font-weight:600; font-size:14px; color:#2A2A2A; flex-shrink:0; }
+.statusbar .right { display:flex; gap:5px; align-items:center; }
+.sb-batt { width:22px; height:11px; border:1.4px solid #2A2A2A; border-radius:3px; position:relative; }
+.sb-batt::after { content:''; position:absolute; left:1.5px; top:1.5px; bottom:1.5px; width:70%; background:#2A2A2A; border-radius:1px; }
+.content { flex:1; overflow:hidden; padding:0 18px; }
+.content.scroll { overflow:visible; padding-bottom:16px; }
 
-.m-sub {
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 500;
-}
+.card { background:#fff; border:1px solid #EFE0EB; border-radius:20px; padding:15px 17px; margin-top:12px; }
+.card .k { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:7px; }
+.k-rose { color:#A25C86; } .k-sage { color:#5F7154; } .k-lav { color:#6E6C99; }
+.card p { font-size:13.5px; line-height:1.55; color:#4B4B4B; font-weight:500; }
+.card p.more { color:#6E6C99; font-size:12.5px; font-weight:600; margin-top:7px; }
+.btn { background:#6E6C99; color:#fff; font-size:12.5px; font-weight:600; border-radius:999px; padding:10px 18px; display:inline-block; }
+.btn.ghost { background:transparent; color:#6E6C99; border:1.4px solid #8E8CB5; }
+
+.tabbar { height:62px; background:#fff; border-top:1px solid #F0E9EE; display:flex; justify-content:space-around; align-items:center; padding:0 10px 8px; flex-shrink:0; border-radius:0 0 45px 45px; }
+.tb { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10.5px; font-weight:600; color:#6A6B6C; }
+.tb.on { color:#8E8CB5; }
+
+/* ---- growth motif: stem divider ---- */
+.stemline { display:block; margin:14px auto; }
+
+/* ---- legend box ---- */
+.legend { max-width:920px; margin:34px auto 0; background:#fff; border:1px solid #EADFE8; border-radius:16px; padding:20px 26px; }
+.legend .h { font-family:'Cormorant',serif; font-weight:700; font-size:19px; margin-bottom:10px; }
+.legend ul { list-style:none; }
+.legend li { font-size:12.5px; color:#55595F; margin-bottom:7px; padding-left:16px; position:relative; }
+.legend li::before { content:'✦'; position:absolute; left:0; color:#D8A0C4; font-size:10px; top:2px; }
+.legend li b { color:#3E3650; }
+
+/* ---- web canvas ---- */
+body.web { background:#EDE8E2; font-family:'SourceSans',sans-serif; color:#2A2A2A; padding:34px 0 44px; }
+.webpage { width:1280px; margin:0 auto; background:#FAF8F5; border-radius:18px; overflow:hidden; box-shadow:0 18px 50px rgba(45,45,45,.16); }
+.weblabel { text-align:center; font-size:11px; letter-spacing:3px; text-transform:uppercase; font-weight:700; color:#8E8CB5; margin:0 0 18px; }
+
+/* web nav */
+.wnav { display:flex; align-items:center; justify-content:space-between; padding:16px 44px; background:#FAF8F5; border-bottom:1px solid #EBE7E1; }
+.wnav .logo { height:40px; }
+.wnav .links { display:flex; gap:26px; font-size:14.5px; font-weight:600; color:#4B4B4B; align-items:center; }
+.wnav .links .cta { background:#8E8CB5; color:#fff; border-radius:999px; padding:9px 20px; font-weight:600; }
+
+/* web hero */
+.whero { display:grid; grid-template-columns: 55% 45%; align-items:center; background:#FAF8F5; }
+.whero .txt { padding:56px 48px 56px 56px; }
+.eyebrow-web { font-size:12px; letter-spacing:3.2px; text-transform:uppercase; font-weight:700; color:#A25C86; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+.whero h1 { font-family:'Cormorant',serif; font-weight:700; font-size:52px; line-height:1.08; color:#2A2A2A; }
+.whero h1 em { font-style:normal; color:#B085A5; }
+.whero .lede { font-size:17px; line-height:1.6; color:#55595F; margin-top:16px; max-width:520px; }
+.whero .ctarow { display:flex; gap:14px; margin-top:26px; align-items:center; }
+.btn-web { background:#8E8CB5; color:#fff; font-size:15px; font-weight:600; border-radius:999px; padding:13px 28px; }
+.btn-web:hover { background:#6E6C99; }
+.btn-web.ghost { background:transparent; color:#6E6C99; border:1.5px solid #8E8CB5; }
+.whero .imgwrap { height:100%; min-height:430px; padding:26px 26px 26px 0; }
+.whero .imgwrap img { width:100%; height:100%; object-fit:cover; border-radius:20px; box-shadow:0 14px 40px rgba(45,45,45,.12); }
+
+/* web sections */
+.wsec { padding:52px 56px; background:#FAF8F5; }
+.wsec.alt { background:#fff; }
+.wsec.sage { background:#E8EDE5; }
+.wsec .kicker { font-size:11.5px; letter-spacing:2.8px; text-transform:uppercase; font-weight:700; color:#A25C86; margin-bottom:10px; display:flex; align-items:center; gap:9px; }
+.wsec h2 { font-family:'Cormorant',serif; font-weight:700; font-size:34px; color:#2A2A2A; margin-bottom:10px; }
+.wsec h2 em { font-style:normal; color:#B085A5; }
+.wsec .intro { font-size:15.5px; line-height:1.6; color:#55595F; max-width:640px; }
+
+/* doula cards */
+.cards3 { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:24px; }
+.dcard { background:#fff; border:1px solid #EBE7E1; border-radius:18px; overflow:hidden; box-shadow:0 6px 20px rgba(45,45,45,.06); }
+.dcard img { width:100%; height:170px; object-fit:cover; display:block; }
+.dcard .in { padding:16px 18px 18px; }
+.dcard .nm { font-size:16.5px; font-weight:600; color:#2A2A2A; display:flex; align-items:center; gap:8px; justify-content:space-between; }
+.vbadge { font-size:9.5px; letter-spacing:1.2px; font-weight:700; color:#5F7154; background:#E8EDE5; border:1px solid #A8B5A0; border-radius:999px; padding:3px 9px; text-transform:uppercase; flex-shrink:0; }
+.dcard .cr { font-size:12px; color:#6A6B6C; margin-top:3px; }
+.dcard .ds { font-size:12.5px; line-height:1.5; color:#55595F; margin-top:8px; }
+.dcard .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.chip { font-size:10.5px; font-weight:600; color:#6E6C99; background:#F1F1FB; border-radius:999px; padding:4px 10px; }
+.dcard .cost { font-size:12px; color:#A25C86; font-weight:600; margin-top:10px; }
+
+/* hospital cards */
+.hosp2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:24px; }
+.hcard { background:#fff; border:1px solid #EBE7E1; border-radius:18px; overflow:hidden; display:grid; grid-template-columns: 200px 1fr; }
+.hcard img { width:100%; height:100%; object-fit:cover; }
+.hcard .in { padding:16px 18px; }
+.hcard .nm { font-size:15.5px; font-weight:600; }
+.hcard .meta { font-size:11.5px; color:#6A6B6C; margin-top:5px; line-height:1.5; }
+.hcard .ds { font-size:12px; line-height:1.55; color:#55595F; margin-top:8px; }
+
+/* CTA card */
+.ctacard { display:grid; grid-template-columns: 1fr 300px; gap:30px; align-items:center; background:#F1F1FB; border:1px solid #D5D3E8; border-radius:22px; padding:34px 38px; }
+.ctacard h3 { font-family:'Cormorant',serif; font-weight:700; font-size:28px; color:#2A2A2A; }
+.ctacard p { font-size:14.5px; color:#55595F; margin-top:8px; line-height:1.55; }
+.ctacard img { width:100%; border-radius:14px; box-shadow:0 10px 30px rgba(45,45,45,.14); }
+
+/* footer */
+.wfoot { background:#2A2A2A; color:#D5D3E8; padding:26px 56px; display:flex; justify-content:space-between; align-items:center; font-size:12.5px; }
+.wfoot img { height:26px; opacity:.85; }
