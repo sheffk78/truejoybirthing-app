@@ -239,14 +239,25 @@ export default function AnalyticsPage() {
   const acquisition = (acquisitionQuery.data as Array<any>) || [];
   const locationPagesData = (locationPagesQuery.data as any) || { location_pages: [], total_location_pageviews: 0, count: 0 };
 
-  const chartData = traffic.map((d: any) => ({
-    date: new Date(d.date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    }),
-    Pageviews: d.pageviews ?? 0,
-    Users: d.users ?? 0,
-  }));
+  /**
+   * Timezone-safe label: format the YYYY-MM-DD string directly.
+   * `new Date('2026-09-18')` parses as UTC midnight, which renders as the
+   * PREVIOUS day in Mountain Time — that mislabeling moved the Sept 18
+   * traffic spike onto "Sep 17" and made the axis look inconsistent.
+   */
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const chartData = traffic.map((d: any) => {
+    const parts = String(d.date || '').split('-');
+    const y = Number(parts[0]);
+    const m = Number(parts[1]);
+    const day = Number(parts[2]);
+    const label = y && m && day ? `${MONTHS[m - 1]} ${day}` : String(d.date || '');
+    return {
+      date: label,
+      Pageviews: d.pageviews ?? 0,
+      Users: d.users ?? 0,
+    };
+  });
 
   /* ---- render ---- */
 
@@ -344,6 +355,7 @@ export default function AnalyticsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                   <XAxis
                     dataKey="date"
+                    interval={Math.max(0, Math.ceil(chartData.length / 10) - 1)}
                     tick={{ fontSize: 12, fill: '#6B7280' }}
                     tickLine={false}
                     axisLine={{ stroke: '#E5E7EB' }}

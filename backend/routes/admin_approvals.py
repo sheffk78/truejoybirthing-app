@@ -79,6 +79,10 @@ class ApprovalDecision(BaseModel):
     decided_by: Optional[str] = None         # display name override; defaults to admin user
 
 
+class ApprovalRespond(BaseModel):
+    message: str                             # Jeff's reply, relayed to Kit via Discord
+
+
 # ------------------------------------------------------------------
 # Helpers
 # ------------------------------------------------------------------
@@ -98,6 +102,22 @@ def _serialize(doc: dict) -> dict:
 
 def _now() -> datetime:
     return datetime.now(timezone.utc)
+
+
+DISCORD_WEBHOOK_URL = os.environ.get("TJB_DISCORD_WEBHOOK_URL", "")
+
+
+async def _post_discord(message: str):
+    """Post a plain message to the TJB Discord channel via webhook (best-effort)."""
+    url = DISCORD_WEBHOOK_URL
+    if not url or not url.startswith("http"):
+        return False
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.post(url, json={"content": message[:1900]})
+            return resp.status_code in (200, 204)
+    except Exception:
+        return False
 
 
 async def _fire_webhook(payload: dict):
@@ -290,6 +310,55 @@ async def decide_item(
     await _fire_webhook(_serialize(updated))
 
     return updated
+
+
+@router.post("/items/{item_id}/respond")
+async def respond_item(
+    item_id: str,
+    body: ApprovalRespond,
+    request: Request,
+    user: User = Depends(check_role(["ADMIN"])),
+):
+    """Admin free-text response on an approval item, relayed to Kit in Discord.
+
+    Jeff types a reply on the Approvals page; it is stored on the item and
+    posted to the TJB Discord channel (#truejoybirthing-main) via webhook so
+    Kit picks it up without Jeff ever opening Discord.
+    """
+    await check_rate_limit(request, "approval-respond", 20, 60)
+    text = (body.message or "").strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="message is required")
+    if len(text) > 1800:
+        raise HTTPException(status_code=400, detail="message too long (max 1800 chars)")
+
+    doc = await db[COLLECTION].find_one({"item_id": item_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Approval item not found")
+    if doc.get("state") not in ("pending", "decided"):
+        raise HTTPException(status_code=409, detail=f"Item is {doc.get('state')}; cannot respond")
+
+    now = _now()
+    respondent = (user.full_name or user.email or "admin").strip()
+    entry = {"from": respondent, "message": text, "at": now.isoformat()}
+    await db[COLLECTION].update_one(
+        {"item_id": item_id},
+        {
+            "$set": {"updated_at": now},
+            "$push": {"responses": entry},
+        },
+    )
+
+    discord_ok = await _post_discord(
+        f"📣 **Admin response — approval item**\n"
+        f"**{doc.get('title')}** (`{item_id}`)\n"
+        f"From: {respondent}\n"
+        f"> {text}\n"
+        f"_Kit: pick this up; process one item at a time._"
+    )
+
+    updated = await db[COLLECTION].find_one({"item_id": item_id}, {"_id": 0})
+    return {**_serialize(updated), "discord_delivered": discord_ok}
 
 
 @router.post("/items/{item_id}/cancel")

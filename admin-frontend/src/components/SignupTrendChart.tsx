@@ -38,14 +38,24 @@ export function SignupTrendChart() {
     );
   }
 
-  const chartData = (trendData || []).map((d) => ({
-    date: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    Total: d.total,
-    MOM: d.MOM,
-    DOULA: d.DOULA,
-    MIDWIFE: d.MIDWIFE,
-    ADMIN: d.ADMIN,
-  }));
+  // Timezone-safe labels: format YYYY-MM-DD directly (new Date() treats it as
+  // UTC midnight and shifts the day in non-UTC timezones).
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const chartData = (trendData || []).map((d) => {
+    const parts = String(d.date || '').split('-');
+    const y = Number(parts[0]);
+    const m = Number(parts[1]);
+    const day = Number(parts[2]);
+    const label = y && m && day ? `${MONTHS[m - 1]} ${day}` : String(d.date || '');
+    return {
+      date: label,
+      Total: d.total,
+      MOM: d.MOM,
+      DOULA: d.DOULA,
+      MIDWIFE: d.MIDWIFE,
+      ADMIN: d.ADMIN,
+    };
+  });
 
   return (
     <Card className="shadow-sm border-border/60">
@@ -64,6 +74,7 @@ export function SignupTrendChart() {
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
               <XAxis
                 dataKey="date"
+                interval={Math.max(0, Math.ceil(chartData.length / 10) - 1)}
                 tick={{ fontSize: 12, fill: '#6B7280' }}
                 tickLine={false}
                 axisLine={{ stroke: '#E5E7EB' }}

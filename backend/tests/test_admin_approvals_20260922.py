@@ -30,7 +30,7 @@ if not BASE_URL:
 # TJB admin API is same-origin under /admin/api/* (Cloudflare -> Railway backend)
 API = f"{BASE_URL}/admin/api"
 
-ADMIN_EMAIL = "admin@truejoybirthing.com"
+ADMIN_EMAIL = "shelbi@truejoybirthing.com"
 ADMIN_PASSWORD = "TJBAdmin2024!"
 
 

@@ -82,6 +82,28 @@ function TypeBadge({ leadType }: { leadType: string }) {
   );
 }
 
+const consultStatusLabels: Record<string, string> = {
+  consultation_requested: 'Requested',
+  converted_to_client: 'Client',
+  declined: 'Declined',
+};
+
+const consultStatusColors: Record<string, string> = {
+  consultation_requested: 'bg-amber-50 text-amber-700 border-amber-200',
+  converted_to_client: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  declined: 'bg-rose-50 text-rose-700 border-rose-200',
+};
+
+function ConsultStatusBadge({ status }: { status: string }) {
+  const label = consultStatusLabels[status] || status || '—';
+  const colorClass = consultStatusColors[status] || 'bg-muted text-muted-foreground border';
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${colorClass}`}>
+      {label}
+    </span>
+  );
+}
+
 function StatusSelect({ status, leadId }: { status: string; leadId: string }) {
   return (
     <select
@@ -117,13 +139,16 @@ export default function ShelbiLeadsPage() {
   const [noteAuthor, setNoteAuthor] = useState('admin');
 
   // Stats query
-  const { data: statsData, isLoading: statsLoading } = useQuery({
+  const { data: statsData } = useQuery({
     queryKey: ['shelbi-leads-stats'],
     queryFn: () => api.getShelbiLeadsStats(),
   });
 
-  // List query
-  const { data, isLoading, error } = useQuery({
+  // Which data source: consultation requests (leads collection) or email replies (shelbi_leads)
+  const [sourceTab, setSourceTab] = useState<'consultations' | 'email'>('consultations');
+
+  // Email-tab list query (only fetched on the Email tab)
+  const { data: emailData, isLoading: emailLoading, error: emailError } = useQuery({
     queryKey: ['shelbi-leads', statusFilter, leadTypeFilter, search, page],
     queryFn: () =>
       api.getShelbiLeads({
@@ -133,16 +158,66 @@ export default function ShelbiLeadsPage() {
         page,
         limit,
       }),
+    enabled: sourceTab === 'email',
   });
 
-  // Detail query — only when a detail sheet is opened
+  // Consultation-tab list query (only fetched on the Consultations tab)
+  const { data: consultData, isLoading: consultLoading, error: consultError } = useQuery({
+    queryKey: ['shelbi-consultations', statusFilter, search, page],
+    queryFn: () =>
+      api.getShelbiConsultations({
+        status: statusFilter || undefined,
+        search: search || undefined,
+        page,
+        limit,
+      }),
+    enabled: sourceTab === 'consultations',
+  });
+
+  const isLoading = sourceTab === 'email' ? emailLoading : consultLoading;
+  const error = sourceTab === 'email' ? emailError : consultError;
+
+  // Detail query — only when a detail sheet is opened. Rows carry `key`
+  // (email-tab rows = lead id; consultation rows = lead_id) so the fetch
+  // never hits /shelbi-leads/undefined.
+  const detailId = detailLead ? String(detailLead.key) : '';
   const { data: detailData, isLoading: detailLoading } = useQuery({
-    queryKey: ['shelbi-lead-detail', detailLead?.id],
-    queryFn: () => api.getShelbiLead(detailLead.id),
-    enabled: !!detailLead,
+    queryKey: ['shelbi-lead-detail', detailId],
+    queryFn: () => api.getShelbiLead(detailId),
+    enabled: !!detailId && detailLead?.source === 'email',
   });
 
-  const leads = data?.leads || [];
+  const consultsRaw = consultData?.consultations || [];
+  const emailLeads = emailData?.leads || [];
+  const activeData = sourceTab === 'email' ? emailData : consultData;
+
+  // Unified row shape for the table (both tabs render the same columns)
+  const leads = (sourceTab === 'consultations'
+    ? consultsRaw.map((c: any) => ({
+        key: c.lead_id,
+        name: c.mom_name,
+        type: 'mom',
+        email: c.mom_email,
+        phone: c.phone,
+        topic: c.requested_topic,
+        status: c.status,
+        created_at: c.created_at,
+        is_demo: c.is_demo,
+        raw: c,
+      }))
+    : emailLeads.map((l: any) => ({
+        key: l.id,
+        name: l.name,
+        type: l.lead_type,
+        email: l.email,
+        phone: l.phone,
+        topic: l.topic || l.email_quote || l.message || '',
+        status: l.status,
+        created_at: l.created_at,
+        is_demo: 'demo.' in (l.email || '').toLowerCase(),
+        raw: l,
+      }))
+  ).filter((r: any) => r.key);
 
   // Mutations
   const statusMutation = useMutation({
@@ -175,7 +250,7 @@ export default function ShelbiLeadsPage() {
   }, [statusMutation]);
 
   function openDetail(lead: any) {
-    setDetailLead(lead);
+    setDetailLead({ ...lead, source: sourceTab });
   }
 
   function handleSearchSubmit(e: React.FormEvent) {
@@ -187,7 +262,7 @@ export default function ShelbiLeadsPage() {
   function handleAddNote() {
     if (!detailLead || !noteText.trim()) return;
     noteMutation.mutate({
-      leadId: detailLead.id,
+      leadId: detailLead.key,
       text: noteText.trim(),
       author: noteAuthor.trim() || 'admin',
     });
@@ -195,7 +270,7 @@ export default function ShelbiLeadsPage() {
 
   function handleDetailStatusChange(newStatus: string) {
     if (!detailLead) return;
-    statusMutation.mutate({ leadId: detailLead.id, status: newStatus });
+    statusMutation.mutate({ leadId: detailLead.key, status: newStatus });
   }
 
   // Format date helper
@@ -223,40 +298,40 @@ export default function ShelbiLeadsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-tjb-charcoal">Shelbi Leads</h1>
-        <p className="text-sm sm:text-base text-muted-foreground mt-1">CRM for leads from the Shelbi chatbot — moms and providers</p>
+        <p className="text-sm sm:text-base text-muted-foreground mt-1">Consultation requests for Shelbi — moms who asked to talk with her — plus email replies handled by the assistant</p>
       </div>
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <StatsCard
-          title="Total"
-          value={statsLoading ? '—' : (statsData?.total ?? 0)}
+          title="Consultations"
+          value={consultLoading ? '—' : (consultData?.total ?? 0)}
           icon={Users}
-          subtitle="All leads"
+          subtitle="Moms who asked to talk with Shelbi"
         />
         <StatsCard
-          title="New"
-          value={statsLoading ? '—' : (statsData?.new ?? 0)}
+          title="Awaiting contact"
+          value={consultLoading ? '—' : consultsRaw.filter((c: any) => c.status === 'consultation_requested').length}
           icon={UserPlus}
-          subtitle="Awaiting contact"
+          subtitle="Consultations not yet handled"
         />
         <StatsCard
-          title="Contacted"
-          value={statsLoading ? '—' : (statsData?.contacted ?? 0)}
-          icon={MessageSquare}
-          subtitle="Reached out"
-        />
-        <StatsCard
-          title="Scheduled"
-          value={statsLoading ? '—' : (statsData?.scheduled ?? 0)}
-          icon={Calendar}
-          subtitle="Appointment set"
-        />
-        <StatsCard
-          title="Completed"
-          value={statsLoading ? '—' : (statsData?.completed ?? 0)}
+          title="Converted"
+          value={consultLoading ? '—' : consultsRaw.filter((c: any) => c.status === 'converted_to_client').length}
           icon={CheckCircle}
-          subtitle="Done"
+          subtitle="Now working with Shelbi"
+        />
+        <StatsCard
+          title="Declined"
+          value={consultLoading ? '—' : consultsRaw.filter((c: any) => c.status === 'declined').length}
+          icon={Calendar}
+          subtitle="Consultations declined"
+        />
+        <StatsCard
+          title="Email replies"
+          value={emailLoading ? '—' : (emailData?.total ?? 0)}
+          icon={MessageSquare}
+          subtitle="Assistant-handled email leads"
         />
       </div>
 
@@ -289,6 +364,14 @@ export default function ShelbiLeadsPage() {
           </Card>
         </div>
       )}
+
+      {/* Source tabs */}
+      <Tabs value={sourceTab} onValueChange={(v) => { setSourceTab(v as 'consultations' | 'email'); setPage(1); }}>
+        <TabsList className="h-10">
+          <TabsTrigger value="consultations" className="text-sm">Consultations</TabsTrigger>
+          <TabsTrigger value="email" className="text-sm">Email replies</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       {/* Filters */}
       <div className="flex flex-col gap-3">
@@ -375,21 +458,26 @@ export default function ShelbiLeadsPage() {
                   {leads.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                        No leads found
+                        {sourceTab === 'consultations'
+                          ? 'No consultation requests yet'
+                          : 'No email leads found'}
                       </TableCell>
                     </TableRow>
                   ) : (
                     leads.map((lead: any) => (
                       <TableRow
-                        key={lead.id}
+                        key={lead.key}
                         className="cursor-pointer hover:bg-muted/30 transition-colors"
                         onClick={() => openDetail(lead)}
                       >
                         <TableCell className="font-medium text-tjb-charcoal">
                           {lead.name || '—'}
+                          {lead.is_demo && (
+                            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground border">demo</span>
+                          )}
                         </TableCell>
                         <TableCell>
-                          <TypeBadge leadType={lead.lead_type} />
+                          <TypeBadge leadType={lead.type} />
                         </TableCell>
                         <TableCell className="text-muted-foreground hidden md:table-cell">
                           {lead.email || '—'}
@@ -398,10 +486,16 @@ export default function ShelbiLeadsPage() {
                           {lead.phone || '—'}
                         </TableCell>
                         <TableCell className="text-muted-foreground hidden md:table-cell">
-                          {lead.topic || '—'}
+                          <span className="block max-w-[280px] truncate" title={lead.topic || ''}>
+                            {lead.topic || '—'}
+                          </span>
                         </TableCell>
                         <TableCell onClick={(e) => e.stopPropagation()}>
-                          <StatusSelect status={lead.status} leadId={lead.id} />
+                          {sourceTab === 'email' ? (
+                            <StatusSelect status={lead.status} leadId={lead.key} />
+                          ) : (
+                            <ConsultStatusBadge status={lead.status} />
+                          )}
                         </TableCell>
                         <TableCell className="text-muted-foreground hidden lg:table-cell">
                           {formatDate(lead.created_at)}
@@ -426,10 +520,10 @@ export default function ShelbiLeadsPage() {
             </div>
 
             {/* Pagination */}
-            {data && data.pages > 1 && (
+            {(activeData?.total ?? 0) > limit && (
               <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/10">
                 <p className="text-sm text-muted-foreground">
-                  Showing {(page - 1) * limit + 1}–{Math.min(page * limit, data.total)} of {data.total}
+                  Showing {(page - 1) * limit + 1}–{Math.min(page * limit, (activeData?.total ?? 0))} of {activeData?.total ?? 0}
                 </p>
                 <div className="flex items-center gap-2">
                   <Button
@@ -442,12 +536,12 @@ export default function ShelbiLeadsPage() {
                     Prev
                   </Button>
                   <span className="text-sm text-muted-foreground">
-                    Page {page} of {data.pages}
+                    Page {page} of {Math.max(1, Math.ceil((activeData?.total ?? 0) / limit))}
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={page >= data.pages}
+                    disabled={page >= Math.max(1, Math.ceil((activeData?.total ?? 0) / limit))}
                     onClick={() => setPage((p) => p + 1)}
                   >
                     Next

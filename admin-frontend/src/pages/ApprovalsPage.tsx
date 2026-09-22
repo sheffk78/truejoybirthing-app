@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/sheet';
 import { StatsCard } from '@/components/StatsCard';
 import {
+  MessageSquare,
   ClipboardCheck,
   AlertTriangle,
   CheckCircle,
@@ -143,10 +144,30 @@ export default function ApprovalsPage() {
     onSuccess: invalidateAll,
   });
 
+  // Relay Jeff's typed message to Kit via Discord (#truejoybirthing-main)
+  const respondMutation = useMutation({
+    mutationFn: ({ itemId, message }: { itemId: string; message: string }) =>
+      api.respondApproval(itemId, message),
+    onSuccess: () => {
+      invalidateAll();
+      setRespondText('');
+      setRespondSentFor(detailItem?.item_id ?? null);
+    },
+  });
+
+  const [respondText, setRespondText] = useState('');
+  const [respondSentFor, setRespondSentFor] = useState<string | null>(null);
+
   const handleDecide = (item: ApprovalItem, decision: 'approved' | 'declined') => {
     decideMutation.mutate({ itemId: item.item_id, decision, note: noteText || undefined });
     setNoteText('');
     setDetailItem(null);
+  };
+
+  const handleRespond = (item: ApprovalItem) => {
+    const msg = respondText.trim();
+    if (!msg) return;
+    respondMutation.mutate({ itemId: item.item_id, message: msg });
   };
 
   // Sort pending by urgency rank then newest
@@ -379,6 +400,29 @@ export default function ApprovalsPage() {
 
                 {detailItem.state === 'pending' && (
                   <div className="space-y-3 border-t border-border pt-4">
+                    {/* Respond to Kit — relays Jeff's typed message to #truejoybirthing-main in Discord */}
+                    <div className="space-y-2 rounded-lg bg-tjb-lavender-50 border border-tjb-lavender-200 p-3">
+                      <p className="text-xs font-medium text-tjb-lavender-600">Respond to Kit</p>
+                      <textarea
+                        className="flex min-h-[80px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        placeholder="Type instructions for Kit — e.g. “Do it, but skip the TikTok post.” Kit will pick this up in Discord and act on it."
+                        value={respondSentFor === detailItem.item_id ? '' : respondText}
+                        onChange={(e) => setRespondText(e.target.value)}
+                        rows={3}
+                      />
+                      <Button
+                        size="sm"
+                        disabled={respondMutation.isPending || !respondText.trim() || respondSentFor === detailItem.item_id}
+                        onClick={() => handleRespond(detailItem)}
+                      >
+                        <MessageSquare className="w-4 h-4 mr-1" />
+                        {respondMutation.isPending ? 'Sending…' : 'Send to Kit in Discord'}
+                      </Button>
+                      {respondSentFor === detailItem.item_id && (
+                        <p className="text-xs text-emerald-700">Sent — Kit will pick it up in #truejoybirthing-main.</p>
+                      )}
+                    </div>
+
                     <textarea
                       className="flex min-h-[80px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                       placeholder="Optional note recorded with your decision (e.g. why declined, conditions on approval)…"

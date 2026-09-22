@@ -442,6 +442,89 @@ async def list_shelbi_leads(
     }
 
 
+# ------------------------------------------------------------------
+# Consultation requests (the real CRM Jeff expected on this page).
+# Mom -> provider consult requests live in the `leads` collection;
+# the `shelbi_leads` collection only holds email-reply records.
+# ------------------------------------------------------------------
+
+_PHONE_RE = None
+
+def _extract_phone(text):
+    """Pull a US-style phone number out of free text, or None."""
+    global _PHONE_RE
+    if _PHONE_RE is None:
+        import re
+        _PHONE_RE = re.compile(
+            r"(?:\+?1[\s.\-]?)?(\(?\d{3}\)?[\s.\-]\d{3}[\s.\-]\d{4})"
+            r"|(\(?\d{3}\)?\d{3}\d{4})"
+        )
+    if not text:
+        return None
+    m = _PHONE_RE.search(text)
+    if not m:
+        return None
+    digits = "".join(ch for ch in m.group(0) if ch.isdigit())
+    if len(digits) == 10:
+        return f"({digits[0:3]}) {digits[3:6]}-{digits[6:10]}"
+    if len(digits) == 11 and digits.startswith("1"):
+        return f"+1 ({digits[1:4]}) {digits[4:7]}-{digits[7:11]}"
+    return None
+
+
+@admin_router.get("/consultations")
+async def list_consultation_leads(
+    status: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=100),
+    user: User = Depends(check_role(["ADMIN"])),
+):
+    """Consultation requests aimed at Shelbi (Shelbi as the named provider).
+
+    Backs the 'Consultations' tab on the admin Shelbi Leads page. Reads the
+    `leads` collection (mom -> provider consult requests), resolves phone from
+    message text where a mom typed one (the app request flow does not collect
+    phone), and flags demo accounts.
+    """
+    query: dict = {"provider_name": {"$regex": "^Shelbi Kohler$", "$options": "i"}}
+    if status:
+        if status not in ["consultation_requested", "converted_to_client", "declined"]:
+            raise HTTPException(
+                status_code=400,
+                detail="status must be one of: consultation_requested, converted_to_client, declined",
+            )
+        query["status"] = status
+
+    total = await db["leads"].count_documents(query)
+    skip = (page - 1) * limit
+    docs = await db["leads"].find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+
+    out = []
+    for d in docs:
+        msg = d.get("message") or ""
+        phone = d.get("phone") or _extract_phone(msg)
+        out.append({
+            "lead_id": d.get("lead_id"),
+            "mom_name": (d.get("mom_name") or "").strip() or "-",
+            "mom_email": d.get("mom_email"),
+            "phone": phone or "(not collected)",
+            "has_phone": bool(phone),
+            "requested_topic": (msg[:140] + "...") if len(msg) > 140 else msg,
+            "status": d.get("status"),
+            "provider_role": d.get("provider_role"),
+            "is_demo": "demo." in (d.get("mom_email") or "").lower(),
+            "created_at": d.get("created_at"),
+        })
+    return {
+        "consultations": out,
+        "total": total,
+        "page": page,
+        "limit": limit,
+    }
+
+
 @admin_router.get("/stats")
 async def shelbi_leads_stats(user: User = Depends(check_role(["ADMIN"]))):
     """Get Shelbi lead counts by status and lead_type (admin only)."""

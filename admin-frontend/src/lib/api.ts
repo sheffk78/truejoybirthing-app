@@ -166,6 +166,15 @@ export const api = {
     }),
 
   // Shelbi Leads
+  getShelbiConsultations: (params: { status?: string; search?: string; page?: number; limit?: number } = {}) => {
+    const qs = new URLSearchParams(
+      Object.entries(params).filter(([_, v]) => v !== undefined && v !== '') as [string, string][]
+    ).toString();
+    return request<{ consultations: any[]; total: number; page: number; limit: number; total_pages: number }>(
+      `/admin/api/shelbi-leads/consultations${qs ? `?${qs}` : ''}`
+    );
+  },
+
   getShelbiLeads: (params: { status?: string; lead_type?: string; search?: string; page?: number; limit?: number } = {}) => {
     const searchParams = new URLSearchParams();
     if (params.status) searchParams.set('status', params.status);
@@ -218,6 +227,12 @@ export const api = {
     request<ApprovalItem>(`/admin/api/approvals/items/${itemId}/decide`, {
       method: 'POST',
       body: JSON.stringify({ decision, note }),
+    }),
+
+  respondApproval: (itemId: string, message: string) =>
+    request<ApprovalItem>(`/admin/api/approvals/items/${itemId}/respond`, {
+      method: 'POST',
+      body: JSON.stringify({ message }),
     }),
 
   cancelApproval: (itemId: string) =>
