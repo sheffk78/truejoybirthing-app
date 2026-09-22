@@ -1,25 +1,19 @@
 """
-TJB Branded PDF generation helpers for birth plan exports.
+TJB Branded PDF generation — birth plan exports (refreshed design law, 2026-09-22).
 
-Uses ReportLab with:
-- DM Serif Display for headings (brand font)
-- DM Sans for body text (brand font)
-- TJB logo as page header
-- Lavender (#7C3AED) section heading text
-- Rose (#D8A0C4) accent bars
-- White background (print-friendly, minimal ink)
-- Footer with brand name, URL, and page numbers
+Design language = approved 2026-09-14 refresh + Phase-A packet (Jeff approved 2026-09-22):
+- Cormorant Garamond 700 for display headings, Quicksand 600 for kickers/labels,
+  Source Sans 3 for body
+- Muted palette: cream #FAF8F5, lavender #6E6C99, rose #A25C86, sage #5F7154,
+  ink #2F2A33, gray #6B6470, hairline #EFE0EB  (banned: bright violet #7C3AED)
+- Approved watercolor spot illustrations (transparent cutouts) decorate the title
+  band and section headings — small, ink-light, print friendly
+- Structure: cream title wash → meta row → labeled preference blocks per section
 
-All colors are ink-efficient: no filled backgrounds, just text and thin accent lines.
-
-Layout (all measurements in inches from top of page):
-  0.35  ── logo top
-  1.06  ── logo bottom (0.35 + 0.709 logo height)
-  1.12  ── rose accent bar (0.06 gap below logo)
-  1.35  ── content frame top (0.23 gap below bar)
-  10.50 ── content frame bottom
-  10.65 ── footer line
-  10.80 ── footer text
+create_branded_pdf_buffer() keeps its exact signature — the mom export endpoint,
+the provider export, and all callers stay unchanged. Data in = sections[{section_id,
+data{field: str|list}}]; unknown fields render with auto-titled labels so future
+sections keep working without edits here.
 """
 
 import os
@@ -28,219 +22,238 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib import colors
-from reportlab.lib.enums import TA_LEFT
+from reportlab.lib.enums import TA_LEFT, TA_CENTER
 from reportlab.platypus import (
-    Paragraph, Spacer, Table, TableStyle,
-    Flowable, BaseDocTemplate, PageTemplate, Frame
+    Paragraph, Spacer, Table, TableStyle, KeepTogether,
+    Flowable, BaseDocTemplate, PageTemplate, Frame, Image as RLImage
 )
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-# ── TJB Color Tokens ──────────────────────────────────────────────
-TJB_LAVENDER = colors.HexColor('#7C3AED')
-TJB_LAVENDER_LIGHT = colors.HexColor('#EDE5FF')
-TJB_ROSE = colors.HexColor('#D8A0C4')
-TJB_CHARCOAL = colors.HexColor('#2D2D2D')
-TJB_GRAY = colors.HexColor('#6B7280')
+# ── TJB Color Tokens (2026 design refresh) ────────────────────────
+CREAM        = colors.HexColor('#FAF8F5')
+CREAM_WASH   = colors.HexColor('#F3EEE9')
+LAVENDER     = colors.HexColor('#6E6C99')
+LAVENDER_SOFT= colors.HexColor('#E7E4F2')
+ROSE         = colors.HexColor('#A25C86')
+ROSE_PALE    = colors.HexColor('#F1E4EC')
+SAGE         = colors.HexColor('#5F7154')
+INK          = colors.HexColor('#2F2A33')
+GRAY         = colors.HexColor('#6B6470')
+HAIRLINE     = colors.HexColor('#EFE0EB')
 
 # ── Asset Paths ───────────────────────────────────────────────────
-_ASSET_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'assets')
-_FONT_DIR = os.path.join(_ASSET_DIR, 'fonts')
-_IMAGE_DIR = os.path.join(_ASSET_DIR, 'images')
-_LOGO_PATH = os.path.join(_IMAGE_DIR, 'tjb-logo-wordmark.png')
+_ASSET_DIR   = os.environ.get('TJB_ASSET_DIR',
+                 os.path.join(os.path.dirname(os.path.dirname(__file__)), 'assets'))
+_FONT_DIR    = os.path.join(_ASSET_DIR, 'fonts')
+_IMAGE_DIR   = os.path.join(_ASSET_DIR, 'images')
+_SPOT_DIR    = os.environ.get('TJB_SPOT_DIR', os.path.join(_ASSET_DIR, 'spots'))
+_LOGO_PATH   = os.path.join(_IMAGE_DIR, 'tjb-logo-wordmark.png')
 
-# ── Font Registration (lazy, once) ────────────────────────────────
+# ── Fonts (lazy, once) ────────────────────────────────────────────
 _fonts_registered = False
 
 def _register_fonts():
     global _fonts_registered
     if _fonts_registered:
         return
-    pdfmetrics.registerFont(TTFont('DMSans', os.path.join(_FONT_DIR, 'DMSans-Regular.ttf')))
-    pdfmetrics.registerFont(TTFont('DMSans-Bold', os.path.join(_FONT_DIR, 'DMSans-Bold.ttf')))
-    pdfmetrics.registerFont(TTFont('DMSerifDisplay', os.path.join(_FONT_DIR, 'DMSerifDisplay-Regular.ttf')))
+    reg = pdfmetrics.registerFont
+    T = TTFont
+    reg(T('Cormorant700', os.path.join(_FONT_DIR, 'CormorantGaramond_700Bold.ttf')))
+    reg(T('Cormorant600', os.path.join(_FONT_DIR, 'CormorantGaramond_600SemiBold.ttf')))
+    reg(T('Cormorant500i', os.path.join(_FONT_DIR, 'CormorantGaramond_500Medium_Italic.ttf')))
+    reg(T('Quicksand400', os.path.join(_FONT_DIR, 'Quicksand_400Regular.ttf')))
+    reg(T('Quicksand600', os.path.join(_FONT_DIR, 'Quicksand_600SemiBold.ttf')))
+    reg(T('Quicksand700', os.path.join(_FONT_DIR, 'Quicksand_700Bold.ttf')))
+    reg(T('SourceSans', os.path.join(_FONT_DIR, 'SourceSans3_400Regular.ttf')))
+    reg(T('SourceSans600', os.path.join(_FONT_DIR, 'SourceSans3_600SemiBold.ttf')))
     _fonts_registered = True
 
+# ── Layout constants ──────────────────────────────────────────────
+BAND_TOP    = 0.62 * inch      # cream band top, from page top
+BAND_BOTTOM = 2.28 * inch      # band bottom, from page top
+CONTENT_TOP_MARGIN    = BAND_BOTTOM + 0.30 * inch
+CONTENT_BOTTOM_MARGIN = 0.85 * inch
+CONTENT_LEFT  = 0.85 * inch
+CONTENT_RIGHT = 0.85 * inch
 
-# ── Layout Constants ──────────────────────────────────────────────
-# Logo
-LOGO_WIDTH = 1.5 * inch
-_LOGO_HEIGHT = None  # computed lazily
-
-# Header positions (from top of page, in inches)
-LOGO_TOP = 0.35 * inch
-
-# Footer positions (from bottom of page, in inches)
-FOOTER_LINE_Y = 0.75 * inch
+FOOTER_LINE_Y = 0.72 * inch
 FOOTER_TEXT_Y = 0.55 * inch
 
-# Content frame
-CONTENT_LEFT = 0.75 * inch
-CONTENT_RIGHT = 0.75 * inch
-CONTENT_TOP_MARGIN = 1.35 * inch   # below logo + rose bar + gap
-CONTENT_BOTTOM_MARGIN = 0.85 * inch  # above footer
+# Spot art per section (cycled in order)
+_SPOTS = ['hands', 'teacup', 'chamomile', 'booties', 'bassinet', 'lavender']
+
+def _spot_path(name):
+    return os.path.join(_SPOT_DIR, f'spot-{name}-t.png')
 
 
-def _get_logo_height():
-    global _LOGO_HEIGHT
-    if _LOGO_HEIGHT is None:
-        try:
-            from PIL import Image as PILImage
-            img = PILImage.open(_LOGO_PATH)
-            aspect = img.height / img.width
-            _LOGO_HEIGHT = LOGO_WIDTH * aspect
-        except Exception:
-            _LOGO_HEIGHT = 0.66 * inch  # fallback
-    return _LOGO_HEIGHT
+def _get_spot(name, height=0.52 * inch):
+    """Return an RLImage flowable for a spot illustration, or None if missing."""
+    p = _spot_path(name)
+    if not os.path.exists(p):
+        return None
+    try:
+        from PIL import Image as PILImage
+        w, h = PILImage.open(p).size
+        return RLImage(p, width=height * (w / h), height=height, mask='auto')
+    except Exception:
+        return None
 
 
 # ── Custom Flowables ──────────────────────────────────────────────
 
-class AccentBar(Flowable):
-    """A thin colored accent bar. Used for decorative rose lines under headings."""
-    def __init__(self, width=2.0 * inch, height=2.0, color=None):
-        Flowable.__init__(self)
-        self.width = width
-        self.height = height
-        self.color = color or TJB_ROSE
-
+class RoseRule(Flowable):
+    """Thin rose rule with a tiny dot at the left end — the approved section-head accent."""
+    def __init__(self, width=1.05 * inch, height=1.6):
+        super().__init__()
+        self.width, self.height = width, height
     def draw(self):
-        self.canv.setFillColor(self.color)
-        self.canv.rect(0, 0, self.width, self.height, fill=1, stroke=0)
-
+        c = self.canv
+        c.setFillColor(ROSE)
+        c.circle(4, self.height / 2, 2.6, fill=1, stroke=0)
+        c.setFillColor(HAIRLINE)
+        c.rect(10, self.height / 2 - 0.4, self.width - 10, 0.8, fill=1, stroke=0)
     def wrap(self, aW, aH):
         return (self.width, self.height)
 
 
-class SectionDivider(Flowable):
-    """A thin lavender divider line between sections."""
-    def __init__(self, width=7.0 * inch):
-        Flowable.__init__(self)
-        self.width = width
-        self.height = 0.5
-
-    def draw(self):
-        self.canv.setStrokeColor(TJB_LAVENDER_LIGHT)
-        self.canv.setLineWidth(0.5)
-        self.canv.line(0, 0, self.width, 0)
-
-    def wrap(self, aW, aH):
-        return (self.width, self.height + 6)
+class BandWash(Flowable):
+    """Soft cream wash band used behind the title block (drawn in onPage, not flow)."""
+    pass
 
 
 # ── Paragraph Styles ──────────────────────────────────────────────
 
 def _build_styles():
     return {
-        'title': ParagraphStyle(
-            'TJBTitle',
-            fontName='DMSerifDisplay',
-            fontSize=22,
-            leading=28,
-            textColor=TJB_CHARCOAL,
-            spaceAfter=4,
-            alignment=TA_LEFT,
-        ),
-        'subtitle': ParagraphStyle(
-            'TJBSubtitle',
-            fontName='DMSans',
-            fontSize=10,
-            leading=13,
-            textColor=TJB_GRAY,
-            spaceAfter=16,
-            alignment=TA_LEFT,
-        ),
-        'section_heading': ParagraphStyle(
-            'TJBSectionHeading',
-            fontName='DMSerifDisplay',
-            fontSize=14,
-            leading=18,
-            textColor=TJB_CHARCOAL,
-            spaceBefore=22,
-            spaceAfter=3,
-            alignment=TA_LEFT,
-        ),
-        'body': ParagraphStyle(
-            'TJBBody',
-            fontName='DMSans',
-            fontSize=10,
-            leading=15,
-            textColor=TJB_CHARCOAL,
-            spaceAfter=5,
-            alignment=TA_LEFT,
-        ),
-        'info_label': ParagraphStyle(
-            'TJBInfoLabel',
-            fontName='DMSans-Bold',
-            fontSize=9,
-            leading=12,
-            textColor=TJB_GRAY,
-            spaceAfter=1,
-        ),
-        'info_value': ParagraphStyle(
-            'TJBInfoValue',
-            fontName='DMSans',
-            fontSize=10,
-            leading=13,
-            textColor=TJB_CHARCOAL,
-            spaceAfter=6,
-        ),
+        'kicker': ParagraphStyle('Kicker', fontName='Quicksand600', fontSize=8.5,
+            leading=11, textColor=ROSE, spaceAfter=6),
+        'title': ParagraphStyle('Title', fontName='Cormorant700', fontSize=27,
+            leading=31, textColor=INK, spaceAfter=3),
+        'subtitle': ParagraphStyle('Subtitle', fontName='Cormorant500i', fontSize=13.5,
+            leading=17, textColor=LAVENDER, spaceAfter=0),
+        'meta_label': ParagraphStyle('MetaLabel', fontName='Quicksand600', fontSize=7.5,
+            leading=10, textColor=GRAY, spaceAfter=2),
+        'meta_value': ParagraphStyle('MetaValue', fontName='SourceSans', fontSize=10,
+            leading=13, textColor=INK),
+        'section_head': ParagraphStyle('SectionHead', fontName='Cormorant700', fontSize=15.5,
+            leading=19, textColor=INK, spaceBefore=0, spaceAfter=4),
+        'label': ParagraphStyle('Label', fontName='Quicksand600', fontSize=8,
+            leading=11, textColor=LAVENDER, spaceBefore=7, spaceAfter=1),
+        'body': ParagraphStyle('Body', fontName='SourceSans', fontSize=10,
+            leading=14.5, textColor=INK),
+        'note': ParagraphStyle('Note', fontName='Cormorant500i', fontSize=11.5,
+            leading=15, textColor=GRAY),
     }
 
 
-# ── Header / Footer ────────────────────────────────────────────────
+# ── Header / Footer canvas art ────────────────────────────────────
 
-def _header_footer(canvas, doc):
-    """Draw logo header and branded footer on each page.
-
-    ReportLab origin is BOTTOM-LEFT. All Y coordinates are from bottom.
-    Page height = 11 inches. To place something at N inches from TOP:
-      y = height - N*inch
-    """
+def _title_band(canvas, doc):
+    """Page-1 cream wash band: title, kicker, rose rule, spot art. Later pages: slim echo."""
+    from reportlab.lib.units import inch as IN
     width, height = letter
     canvas.saveState()
 
-    # ── Header: Logo top-left ──
-    lh = _get_logo_height()
-    # Logo bottom-left corner in ReportLab coords:
-    #   x = left margin (0.75 inch)
-    #   y = height - LOGO_TOP - lh  (so logo TOP is at LOGO_TOP from page top)
-    logo_y = height - LOGO_TOP - lh
-    canvas.drawImage(
-        _LOGO_PATH,
-        0.75 * inch,
-        logo_y,
-        width=LOGO_WIDTH,
-        height=lh,
-        mask='auto',
-    )
+    page = canvas.getPageNumber()
+    if page == 1:
+        # cream wash, full width
+        canvas.setFillColor(CREAM_WASH)
+        canvas.rect(0, height - BAND_BOTTOM, width, BAND_BOTTOM, fill=1, stroke=0)
+        # faint cream base tint behind everything (ink-light)
+        canvas.setFillColor(CREAM)
+        canvas.rect(0, 0, width, height, fill=1, stroke=0)
 
-    # Rose accent bar BELOW the logo (not overlapping)
-    # Bar top = LOGO_TOP + lh + 0.06 inch gap (from page top)
-    bar_top_from_top = LOGO_TOP + lh + 0.06 * inch
-    bar_y = height - bar_top_from_top - 2  # 2px bar height
-    canvas.setFillColor(TJB_ROSE)
-    canvas.rect(0.75 * inch, bar_y, 1.2 * inch, 2, fill=1, stroke=0)
+        # kicker
+        canvas.setFont('Quicksand700', 8)
+        canvas.setFillColor(ROSE)
+        canvas.drawString(CONTENT_LEFT, height - 0.58 * inch, "T R U E   J O Y   B I R T H I N G")
 
-    # ── Footer ──
-    canvas.setFont('DMSans', 8)
-    canvas.setFillColor(TJB_GRAY)
+        # spot art top-right (lavender sprig)
+        sprig = _get_spot('lavender', height=0.95 * inch)
+        if sprig:
+            canvas.drawImage(_spot_path('lavender'), width - CONTENT_RIGHT - 0.75 * inch,
+                             height - 1.62 * inch, width=sprig._restrictSize.__self__.drawWidth
+                             if False else 0.95 * inch * (sprig.imageWidth / sprig.imageHeight),
+                             height=0.95 * inch, mask='auto')
 
-    # Thin lavender footer line
-    canvas.setStrokeColor(TJB_LAVENDER_LIGHT)
-    canvas.setLineWidth(0.5)
-    canvas.line(0.75 * inch, FOOTER_LINE_Y, width - 0.75 * inch, FOOTER_LINE_Y)
+        # title + subtitle drawn by flowables in the frame (keeps text selectable)
+    else:
+        # slim continuation header: tiny rose dash + brand
+        canvas.setFillColor(CREAM)
+        canvas.rect(0, 0, width, height, fill=1, stroke=0)
+        canvas.setFillColor(ROSE)
+        canvas.rect(CONTENT_LEFT, height - 0.62 * inch, 0.55 * inch, 1.6, fill=1, stroke=0)
+        canvas.setFont('Quicksand600', 7.5)
+        canvas.setFillColor(GRAY)
+        canvas.drawString(CONTENT_LEFT + 0.12 * inch, height - 0.90 * inch,
+                          "MY JOYFUL BIRTH PLAN · CONTINUED")
 
-    # Left: brand name
-    canvas.drawString(0.75 * inch, FOOTER_TEXT_Y, "True Joy Birthing")
-    # Right: page number
-    page_num = canvas.getPageNumber()
-    canvas.drawRightString(width - 0.75 * inch, FOOTER_TEXT_Y, f"Page {page_num}")
-
+    # ── Footer (every page) ──
+    canvas.setStrokeColor(HAIRLINE)
+    canvas.setLineWidth(0.6)
+    canvas.line(CONTENT_LEFT, FOOTER_LINE_Y, width - CONTENT_LEFT, FOOTER_LINE_Y)
+    canvas.setFont('SourceSans', 7.5)
+    canvas.setFillColor(GRAY)
+    canvas.drawString(CONTENT_LEFT, FOOTER_TEXT_Y,
+                      "True Joy Birthing  ·  Prepared with love for my care team")
+    # Page number drawn by NumberedCanvas in save() (knows the true total)
     canvas.restoreState()
 
 
-# ── Public API ───────────────────────────────────────────────────
+def _footer_total_fix(canvas, doc):
+    """Second pass placeholder — total pages filled via canvasmaker in build()."""
+    pass
+
+
+class NumberedCanvas(BaseDocTemplate.__mro__[1]):  # canvas.Canvas
+    """Two-pass canvas: draws page numbers as 'Page N of M'."""
+    def __init__(self, *args, **kwargs):
+        from reportlab.pdfgen import canvas as rl_canvas
+        self._rl = rl_canvas
+        super().__init__(*args, **kwargs) if False else None
+        raise RuntimeError("placeholder")
+
+
+def _make_numbered_canvas():
+    from reportlab.pdfgen.canvas import Canvas
+
+    class TJBNumberedCanvas(Canvas):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._saved_page_states = []
+
+        def showPage(self):
+            self._saved_page_states.append(dict(self.__dict__))
+            self._startPage()
+
+        def save(self):
+            num_pages = len(self._saved_page_states)
+            for state in self._saved_page_states:
+                self.__dict__.update(state)
+                self.draw_page_number(num_pages)
+                Canvas.showPage(self)
+            Canvas.save(self)
+
+        def draw_page_number(self, total):
+            width, height = letter
+            self.setFont('SourceSans', 7.5)
+            self.setFillColor(GRAY)
+            self.drawRightString(width - CONTENT_LEFT, FOOTER_TEXT_Y,
+                                 f"Page {self._pageNumber} of {total}")
+
+    return TJBNumberedCanvas
+
+
+# ── Value formatting ──────────────────────────────────────────────
+
+def _format_value(value):
+    if isinstance(value, list):
+        return " · ".join(str(v) for v in value if v)
+    return str(value)
+
+
+# ── Public API ────────────────────────────────────────────────────
 
 def create_branded_pdf_buffer(
     user_name: str,
@@ -250,24 +263,14 @@ def create_branded_pdf_buffer(
     pdf_field_labels: dict,
 ) -> BytesIO:
     """
-    Build a TJB-branded birth plan PDF and return it as a BytesIO buffer.
-
-    Args:
-        user_name: Full name of the mom (e.g. "Shelbi Kohler")
-        mom_profile: Dict with optional keys: due_date, planned_birth_setting, provider_name
-        sections: List of section dicts with 'section_id' and 'data' keys
-        pdf_section_names: Mapping of section_id -> display name
-        pdf_field_labels: Mapping of field key -> human-readable label
-
-    Returns:
-        BytesIO positioned at 0, ready for StreamingResponse.
+    Build a TJB-branded birth plan PDF (2026 refreshed design) and return a BytesIO
+    positioned at 0. Signature unchanged from the legacy generator.
     """
-
     _register_fonts()
     styles = _build_styles()
+    NumberedCanvas = _make_numbered_canvas()
 
     buffer = BytesIO()
-
     doc = BaseDocTemplate(
         buffer,
         pagesize=letter,
@@ -276,110 +279,94 @@ def create_branded_pdf_buffer(
         leftMargin=CONTENT_LEFT,
         rightMargin=CONTENT_RIGHT,
     )
-
     frame = Frame(
-        CONTENT_LEFT,
-        CONTENT_BOTTOM_MARGIN,
+        CONTENT_LEFT, CONTENT_BOTTOM_MARGIN,
         letter[0] - CONTENT_LEFT - CONTENT_RIGHT,
         letter[1] - CONTENT_TOP_MARGIN - CONTENT_BOTTOM_MARGIN,
-        id='normal',
-        leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0,
+        id='normal', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0,
     )
-    template = PageTemplate(id='tjb', frames=[frame], onPage=_header_footer)
-    doc.addPageTemplates([template])
+    doc.addPageTemplates([PageTemplate(id='tjb', frames=[frame], onPage=_title_band)])
 
-    elements = []
+    story = []
 
-    # ── Title ──
-    display_name = user_name or "My"
-    if display_name and not display_name.endswith("'s"):
-        title_text = f"{display_name}'s Birth Plan"
-    else:
-        title_text = f"{display_name} Birth Plan"
-    elements.append(Paragraph(title_text, styles['title']))
-    elements.append(Paragraph("Personalized birth preferences for a joyful delivery", styles['subtitle']))
+    # ── Title block (inside page-1 cream band) ──
+    display = (user_name or "My").strip()
+    story.append(Spacer(1, 2))
+    story.append(Paragraph("My Joyful Birth Plan", styles['title']))
+    story.append(Paragraph(f"Prepared by {display} for my birth team", styles['subtitle']))
+    story.append(Spacer(1, 10))
 
-    # Rose accent bar under title
-    elements.append(AccentBar(width=1.8 * inch, height=2.5))
-    elements.append(Spacer(1, 18))
-
-    # ── Info Block ──
-    info_data = []
-    if mom_profile:
-        if mom_profile.get("due_date"):
-            info_data.append([
-                Paragraph("Expected Due Date", styles['info_label']),
-                Paragraph(str(mom_profile["due_date"]), styles['info_value']),
-            ])
-        if mom_profile.get("planned_birth_setting"):
-            info_data.append([
-                Paragraph("Planned Birth Setting", styles['info_label']),
-                Paragraph(str(mom_profile["planned_birth_setting"]), styles['info_value']),
-            ])
-        if mom_profile.get("provider_name"):
-            info_data.append([
-                Paragraph("Provider", styles['info_label']),
-                Paragraph(str(mom_profile["provider_name"]), styles['info_value']),
-            ])
-
-    if info_data:
-        # Arrange in two columns of label/value pairs
-        pairs = []
-        for i in range(0, len(info_data), 2):
-            left = info_data[i]
-            right = info_data[i + 1] if i + 1 < len(info_data) else [
-                Paragraph("", styles['info_label']),
-                Paragraph("", styles['info_value']),
-            ]
-            pairs.append([
-                left[0], left[1],
-                right[0], right[1],
-            ])
-
-        info_table = Table(pairs, colWidths=[1.4 * inch, 2.0 * inch, 1.4 * inch, 1.7 * inch])
-        info_table.setStyle(TableStyle([
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 0),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-            ('TOPPADDING', (0, 0), (-1, -1), 3),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-        ]))
-        elements.append(info_table)
-        elements.append(Spacer(1, 20))
+    # ── Meta row ──
+    _mp = mom_profile or {}
+    _loc = " ".join(str(x) for x in [_mp.get("location_city", ""), _mp.get("location_state", "")] if x) or None
+    meta_pairs = [("EXPECTED DUE DATE", _mp.get("due_date")),
+                  ("BIRTH SETTING", _mp.get("planned_birth_setting")),
+                  ("LOCATION", _loc)]
+    meta_cells = []
+    for pair in meta_pairs:
+        label, val = pair
+        meta_cells.append([
+            Paragraph(label, styles['meta_label']),
+            Paragraph(str(val) if val else "—", styles['meta_value']),
+        ])
+    meta = Table([meta_cells], colWidths=[2.1 * inch, 2.0 * inch, 2.7 * inch])
+    meta.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('LINEBELOW', (0, 0), (-1, -1), 0.6, HAIRLINE),
+        ('LINEABOVE', (0, 0), (-1, -1), 0.6, HAIRLINE),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 7),
+        ('LEFTPADDING', (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+    ]))
+    story.append(meta)
+    story.append(Spacer(1, 6))
 
     # ── Sections ──
-    for section in sections:
-        section_id = section.get("section_id", "")
-        section_name = pdf_section_names.get(
-            section_id,
-            section_id.replace("_", " ").title(),
-        )
-        data = section.get("data", {})
-
+    filled = 0
+    for idx, section in enumerate(sections or []):
+        sid = section.get("section_id", "")
+        data = section.get("data") or {}
+        data = {k: v for k, v in data.items() if v not in (None, "", [])}
         if not data:
             continue
+        filled += 1
 
-        elements.append(Paragraph(section_name, styles['section_heading']))
-        elements.append(AccentBar(width=1.0 * inch, height=2.0))
-        elements.append(Spacer(1, 8))
+        head_name = pdf_section_names.get(sid, sid.replace("_", " ").title())
+        spot = _get_spot(_SPOTS[idx % len(_SPOTS)], height=0.46 * inch)
 
+        head_table = Table(
+            [[Paragraph(head_name, styles['section_head']),
+              spot if spot else ""]],
+            colWidths=[5.9 * inch, 1.0 * inch],
+        )
+        head_table.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ('TOPPADDING', (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+        ]))
+
+        block = [head_table, RoseRule(), Spacer(1, 5)]
+        field_paras = []
         for key, value in data.items():
-            if not value:
-                continue
-            label = pdf_field_labels.get(
-                key,
-                key.replace("_", " ").title(),
-            )
+            label = pdf_field_labels.get(key, key.replace("_", " ").title())
+            field_paras.append(Paragraph(label.upper(), styles['label']))
+            field_paras.append(Paragraph(_format_value(value), styles['body']))
 
-            if isinstance(value, list):
-                value_str = ", ".join(str(v) for v in value)
-            else:
-                value_str = str(value)
+        # keep head + rule + first field-label together
+        story.append(KeepTogether(block + field_paras[:2]))
+        story.extend(field_paras[2:])
+        story.append(Spacer(1, 14))
 
-            elements.append(Paragraph(f"<b>{label}:</b> {value_str}", styles['body']))
+    if filled == 0:
+        story.append(Paragraph(
+            "This birth plan is still growing. Once preferences are added in the "
+            "True Joy Birthing app, they will appear here as a beautiful, printable plan.",
+            styles['note']))
 
-        elements.append(SectionDivider())
-
-    doc.build(elements)
+    doc.build(story, canvasmaker=NumberedCanvas)
     buffer.seek(0)
     return buffer
