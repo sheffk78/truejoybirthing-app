@@ -381,11 +381,13 @@ export default function MarketplaceScreen() {
             <Text style={styles.title}>Find Your Team</Text>
             <Text style={styles.subtitle}>Doulas, midwives, and lactation consultants near you</Text>
           </View>
-          <Image
-            source={getPregnancyIllustration(20)}
-            style={styles.headerArt}
-            resizeMode="contain"
-          />
+          <View style={styles.headerArtWrap} pointerEvents="none">
+            <Image
+              source={getPregnancyIllustration(20)}
+              style={styles.headerArt}
+              resizeMode="contain"
+            />
+          </View>
         </View>
         
         {/* Search Section */}
@@ -832,6 +834,14 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'space-between',
     marginBottom: SIZES.lg,
     paddingRight: 2,
+    overflow: 'hidden',
+  },
+  headerArtWrap: {
+    position: 'absolute',
+    top: -6,
+    right: -18,
+    width: 112,
+    height: 112,
   },
   headerTextCol: {
     flex: 1,
@@ -846,10 +856,9 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 6,
   },
   headerArt: {
-    width: 96,
-    height: 96,
+    width: 112,
+    height: 112,
     opacity: 0.55,
-    tintColor: C.roseSoft,
   },
   title: {
     fontSize: 30,
@@ -904,15 +913,15 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
   },
   typeChip: {
-    flex: 1,
     height: 32,
+    paddingHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: C.white,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
     borderRadius: 16,
-    marginRight: SIZES.sm,
+    marginRight: 8,
   },
   typeChipActive: {
     backgroundColor: C.lavenderSoft,
