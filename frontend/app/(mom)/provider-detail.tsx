@@ -17,6 +17,7 @@ import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+import { C, F } from '../../src/constants/designRefresh';
 
 interface ProviderProfile {
   user_id: string;
@@ -86,7 +87,7 @@ export default function ProviderDetailScreen() {
   };
 
   const getRoleColor = (role: string) => {
-    return role === 'DOULA' ? colors.roleDoula : role === 'MIDWIFE' ? colors.roleMidwife : role === 'LACTATION' ? colors.roleLactation : colors.primary;
+    return role === 'DOULA' ? C.lavender : role === 'MIDWIFE' ? C.lavender : role === 'LACTATION' ? C.rose : C.lavender;
   };
 
   const getRoleIcon = (role: string) => {
@@ -173,12 +174,12 @@ export default function ProviderDetailScreen() {
 
         {/* Quick Actions */}
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.actionButton} onPress={handleMessage}>
-            <Icon name="chatbubble-outline" size={24} color={colors.primary} />
-            <Text style={styles.actionText}>Message</Text>
+          <TouchableOpacity style={[styles.actionButton, styles.actionPrimary]} onPress={handleMessage}>
+            <Icon name="chatbubble-outline" size={22} color={C.white} />
+            <Text style={[styles.actionText, styles.actionTextPrimary]}>Message</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton} onPress={handleSchedule}>
-            <Icon name="calendar-outline" size={24} color={colors.primary} />
+            <Icon name="calendar-outline" size={22} color={C.lavender} />
             <Text style={styles.actionText}>Schedule</Text>
           </TouchableOpacity>
         </View>
@@ -252,7 +253,7 @@ export default function ProviderDetailScreen() {
             <Text style={styles.sectionTitle}>Services Offered</Text>
             <View style={styles.tagsContainer}>
               {profile.services_offered.map((service: string) => (
-                <View key={service} style={[styles.tag, { backgroundColor: roleColor + '15' }]}>
+                <View key={service} style={[styles.tag, { backgroundColor: roleColor === C.rose ? C.roseBg : C.lavenderBorder }]}>
                   <Text style={[styles.tagText, { color: roleColor }]}>{service}</Text>
                 </View>
               ))}
@@ -266,7 +267,7 @@ export default function ProviderDetailScreen() {
             <Text style={styles.sectionTitle}>Birth Settings</Text>
             <View style={styles.tagsContainer}>
               {profile.birth_settings_served.map((setting: string) => (
-                <View key={setting} style={[styles.tag, { backgroundColor: roleColor + '15' }]}>
+                <View key={setting} style={[styles.tag, { backgroundColor: roleColor === C.rose ? C.roseBg : C.lavenderBorder }]}>
                   <Text style={[styles.tagText, { color: roleColor }]}>{setting}</Text>
                 </View>
               ))}
@@ -339,6 +340,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SIZES.md,
+    backgroundColor: C.lavenderBorder,
   },
   avatar: {
     width: 100,
@@ -346,21 +348,24 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 50,
   },
   providerName: {
-    fontSize: SIZES.xl,
-    fontWeight: '700',
-    color: colors.text,
+    fontSize: 30,
+    lineHeight: 34,
+    fontFamily: F.serif,
+    color: C.ink,
     marginBottom: SIZES.xs,
   },
   roleBadge: {
     paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.xs,
-    borderRadius: SIZES.sm,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: C.lavenderBorder,
   },
   roleText: {
-    color: colors.white,
-    fontSize: SIZES.sm,
-    fontWeight: '600',
+    color: C.lavender,
+    fontSize: SIZES.xs,
+    fontFamily: F.uiBold,
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   actionsRow: {
     flexDirection: 'row',
@@ -370,21 +375,26 @@ const getStyles = createThemedStyles((colors) => ({
   },
   actionButton: {
     alignItems: 'center',
-    padding: SIZES.md,
-    backgroundColor: colors.surface,
-    borderRadius: SIZES.md,
-    minWidth: 100,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    paddingVertical: SIZES.md,
+    paddingHorizontal: SIZES.lg,
+    backgroundColor: C.white,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: C.lavenderBorder,
+    minWidth: 120,
+  },
+  actionPrimary: {
+    backgroundColor: C.lavenderSoft,
+    borderColor: C.lavenderSoft,
   },
   actionText: {
     marginTop: SIZES.xs,
     fontSize: SIZES.sm,
-    color: colors.primary,
-    fontWeight: '500',
+    fontFamily: F.uiSemi,
+    color: C.lavender,
+  },
+  actionTextPrimary: {
+    color: C.white,
   },
   detailsCard: {
     marginBottom: SIZES.md,
@@ -402,24 +412,28 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
   },
   detailLabel: {
-    fontSize: SIZES.sm,
-    color: colors.textSecondary,
+    fontSize: 11,
+    fontFamily: F.uiBold,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: C.gray,
     marginBottom: 2,
   },
   detailValue: {
     fontSize: SIZES.md,
-    color: colors.text,
-    fontWeight: '500',
+    fontFamily: F.ui,
+    color: C.ink,
   },
   sectionTitle: {
-    fontSize: SIZES.md,
-    fontWeight: '600',
-    color: colors.text,
+    fontSize: SIZES.lg,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
   },
   bioText: {
     fontSize: SIZES.md,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.body,
     lineHeight: 22,
   },
   tagsContainer: {

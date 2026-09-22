@@ -21,7 +21,9 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { VideoPlayerModal, getYouTubeVideoId, getYouTubeThumbnail } from '../../src/components/YouTubePlayer';
 import { apiRequest } from '../../src/utils/api';
-import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { SIZES, FONTS } from '../../src/constants/theme';
+import { C, F } from '../../src/constants/designRefresh';
+import { getPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../src/constants/api';
 
@@ -352,11 +354,8 @@ export default function MarketplaceScreen() {
     return status === 'accepted' || status === 'pending';
   };
   
-  const getRoleColor = (role: string) => {
-    if (role === 'DOULA') return colors.roleDoula;
-    if (role === 'MIDWIFE') return colors.roleMidwife;
-    if (role === 'LACTATION') return colors.roleLactation;
-    return colors.primary;
+    const getRoleColor = (role: string) => {
+    return role === 'DOULA' ? C.lavender : role === 'MIDWIFE' ? C.lavender : role === 'LACTATION' ? C.rose : C.lavender;
   };
   
   const getRoleIcon = (role: string) => {
@@ -375,13 +374,18 @@ export default function MarketplaceScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Header — Variant B: illustration-led (Jeff-approved 2026-09-22) */}
         <View style={styles.header}>
-          <Image source={BRAND.logoIconPng} style={styles.headerLogo} resizeMode="contain" />
-          <View>
+          <View style={styles.headerTextCol}>
+            <Text style={styles.kicker}>Your Support Circle</Text>
             <Text style={styles.title}>Find Your Team</Text>
-            <Text style={styles.subtitle}>Connect with doulas, midwives, and lactation consultants in your area</Text>
+            <Text style={styles.subtitle}>Doulas, midwives, and lactation consultants near you</Text>
           </View>
+          <Image
+            source={getPregnancyIllustration(20)}
+            style={styles.headerArt}
+            resizeMode="contain"
+          />
         </View>
         
         {/* Search Section */}
@@ -457,7 +461,7 @@ export default function MarketplaceScreen() {
             >
               <Card style={styles.providerCard}>
                 <View style={styles.providerHeader}>
-                  <View style={[styles.providerAvatar, { backgroundColor: getRoleColor(provider.role) + '20' }]}>
+                  <View style={[styles.providerAvatar, { backgroundColor: provider.role === 'LACTATION' ? C.roseBg : C.lavenderBorder }]}>
                     {provider.picture ? (
                       <Image source={{ uri: provider.picture }} style={styles.avatarImage} />
                     ) : (
@@ -475,9 +479,9 @@ export default function MarketplaceScreen() {
                       </Text>
                     </View>
                   </View>
-                  <View style={[styles.roleBadge, { backgroundColor: getRoleColor(provider.role) + '20' }]}>
-                    <Text style={[styles.roleText, { color: getRoleColor(provider.role) }]}>
-                      {provider.role}
+                  <View style={[styles.roleBadge, { backgroundColor: provider.role === 'LACTATION' ? C.roseBg : C.lavenderBorder }]}>
+                    <Text style={[styles.roleText, { color: provider.role === 'LACTATION' ? C.rose : C.lavender }]}>
+                      {provider.role === 'DOULA' ? 'Doula' : provider.role === 'MIDWIFE' ? 'Midwife' : provider.role === 'LACTATION' ? 'Lactation' : provider.role}
                     </Text>
                   </View>
                 </View>
@@ -608,7 +612,7 @@ export default function MarketplaceScreen() {
             <ScrollView style={styles.modalContent}>
               {/* Provider Header */}
               <View style={styles.profileHeader}>
-                <View style={[styles.profileAvatar, { backgroundColor: getRoleColor(selectedProvider.role) + '20' }]}>
+                <View style={[styles.profileAvatar, { backgroundColor: getRoleColor(selectedProvider.role) === C.rose ? C.roseBg : C.lavenderBorder }]}>
                   {selectedProvider.picture ? (
                     <Image source={{ uri: selectedProvider.picture }} style={styles.profileAvatarImage} />
                   ) : (
@@ -616,8 +620,8 @@ export default function MarketplaceScreen() {
                   )}
                 </View>
                 <Text style={styles.profileName}>{selectedProvider.full_name}</Text>
-                <View style={[styles.profileRoleBadge, { backgroundColor: getRoleColor(selectedProvider.role) }]}>
-                  <Text style={styles.profileRoleText}>{selectedProvider.role}</Text>
+                <View style={[styles.profileRoleBadge, { backgroundColor: getRoleColor(selectedProvider.role) === C.rose ? C.roseBg : C.lavenderBorder }]}>
+                  <Text style={[styles.profileRoleText, { color: getRoleColor(selectedProvider.role) }]}>{selectedProvider.role}</Text>
                 </View>
               </View>
               
@@ -661,7 +665,7 @@ export default function MarketplaceScreen() {
                   <Text style={styles.sectionTitle}>Services Offered</Text>
                   <View style={styles.profileTags}>
                     {selectedProvider.profile.services_offered.map((service: string) => (
-                      <View key={service} style={[styles.profileTag, { backgroundColor: getRoleColor(selectedProvider.role) + '20' }]}>
+                      <View key={service} style={[styles.profileTag, { backgroundColor: getRoleColor(selectedProvider.role) === C.rose ? C.roseBg : C.lavenderBorder }]}>
                         <Text style={[styles.profileTagText, { color: getRoleColor(selectedProvider.role) }]}>{service}</Text>
                       </View>
                     ))}
@@ -675,7 +679,7 @@ export default function MarketplaceScreen() {
                   <Text style={styles.sectionTitle}>Birth Settings</Text>
                   <View style={styles.profileTags}>
                     {selectedProvider.profile.birth_settings_served.map((setting: string) => (
-                      <View key={setting} style={[styles.profileTag, { backgroundColor: getRoleColor(selectedProvider.role) + '20' }]}>
+                      <View key={setting} style={[styles.profileTag, { backgroundColor: getRoleColor(selectedProvider.role) === C.rose ? C.roseBg : C.lavenderBorder }]}>
                         <Text style={[styles.profileTagText, { color: getRoleColor(selectedProvider.role) }]}>{setting}</Text>
                       </View>
                     ))}
@@ -822,29 +826,49 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     paddingBottom: SIZES.xxl,
   },
-  headerLogo: {
-    width: 28,
-    height: 28,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SIZES.sm,
+    justifyContent: 'space-between',
     marginBottom: SIZES.lg,
+    paddingRight: 2,
+  },
+  headerTextCol: {
+    flex: 1,
+    marginRight: SIZES.sm,
+  },
+  kicker: {
+    fontSize: 10,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase',
+    fontFamily: F.uiBold,
+    color: C.rose,
+    marginBottom: 6,
+  },
+  headerArt: {
+    width: 96,
+    height: 96,
+    opacity: 0.55,
+    tintColor: C.roseSoft,
   },
   title: {
-    fontSize: SIZES.fontXxl,
-    fontFamily: FONTS.heading,
-    color: colors.text,
+    fontSize: 30,
+    lineHeight: 34,
+    fontFamily: F.serif,
+    color: C.ink,
   },
   subtitle: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontSize: 13,
+    fontFamily: F.ui,
+    color: C.gray,
     marginTop: 4,
   },
   searchCard: {
     marginBottom: SIZES.lg,
+    backgroundColor: C.white,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(184,122,160,0.25)',
   },
   searchRow: {
     flexDirection: 'row',
@@ -855,8 +879,8 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
-    borderRadius: SIZES.radiusMd,
+    backgroundColor: C.halo,
+    borderRadius: 24,
     paddingHorizontal: SIZES.md,
     marginRight: SIZES.sm,
   },
@@ -865,13 +889,14 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: SIZES.sm,
     paddingHorizontal: SIZES.sm,
     fontSize: SIZES.fontMd,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   searchButton: {
     width: 44,
     height: 44,
-    borderRadius: SIZES.radiusMd,
-    backgroundColor: colors.primary,
+    borderRadius: 12,
+    backgroundColor: C.lavenderSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -880,30 +905,35 @@ const getStyles = createThemedStyles((colors) => ({
   },
   typeChip: {
     flex: 1,
-    paddingVertical: SIZES.sm,
+    height: 32,
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
-    borderRadius: SIZES.radiusMd,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.lavenderBorder,
+    borderRadius: 16,
     marginRight: SIZES.sm,
   },
   typeChipActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: C.lavenderSoft,
+    borderColor: C.lavenderSoft,
   },
   typeChipText: {
     fontSize: SIZES.fontSm,
-    color: colors.text,
+    fontFamily: F.uiSemi,
+    color: C.lavender,
   },
   typeChipTextActive: {
-    color: colors.white,
-    fontFamily: FONTS.bodyBold,
+    color: C.white,
+    fontFamily: F.uiBold,
   },
   resultsHeader: {
     marginBottom: SIZES.md,
   },
   resultsTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.uiSemi,
+    color: C.gray,
   },
   emptyCard: {
     alignItems: 'center',
@@ -924,6 +954,10 @@ const getStyles = createThemedStyles((colors) => ({
   },
   providerCard: {
     marginBottom: SIZES.md,
+    backgroundColor: C.white,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(184,122,160,0.22)',
   },
   providerHeader: {
     flexDirection: 'row',
@@ -948,9 +982,9 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
   },
   providerName: {
-    fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
-    color: colors.text,
+    fontSize: 14.5,
+    fontFamily: F.uiBold,
+    color: C.ink,
     marginBottom: 2,
   },
   locationRow: {
@@ -959,17 +993,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   locationText: {
     fontSize: SIZES.fontSm,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginLeft: 4,
   },
   roleBadge: {
     paddingHorizontal: SIZES.sm,
-    paddingVertical: SIZES.xs,
-    borderRadius: SIZES.radiusSm,
+    paddingVertical: 3,
+    borderRadius: 10,
   },
   roleText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
+    letterSpacing: 0.3,
   },
   practiceName: {
     fontSize: SIZES.fontSm,
@@ -1023,22 +1059,22 @@ const getStyles = createThemedStyles((colors) => ({
     gap: 4,
   },
   cardContactBtn: {
-    backgroundColor: colors.primary,
+    backgroundColor: C.lavenderSoft,
   },
   cardAddBtn: {
     backgroundColor: colors.success,
   },
   cardConsultBtn: {
-    backgroundColor: colors.accent,
+    backgroundColor: C.roseSoft,
   },
   cardDisabledBtn: {
     backgroundColor: colors.textLight,
     opacity: 0.7,
   },
   cardActionBtnText: {
-    color: colors.white,
+    color: C.white,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.uiSemi,
   },
   viewProfile: {
     flexDirection: 'row',
@@ -1050,8 +1086,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   viewProfileText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.primary,
+    fontFamily: F.uiSemi,
+    color: C.lavender,
     marginRight: 4,
   },
   modalContainer: {
@@ -1069,8 +1105,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -1096,8 +1132,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   profileName: {
     fontSize: SIZES.fontXl,
-    fontFamily: FONTS.heading,
-    color: colors.text,
+    fontFamily: F.serif,
+    color: C.ink,
     marginBottom: SIZES.sm,
   },
   profileRoleBadge: {
@@ -1114,10 +1150,12 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.lg,
   },
   sectionTitle: {
-    fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
-    color: colors.textSecondary,
-    marginBottom: SIZES.xs,
+    fontSize: 11,
+    fontFamily: F.uiBold,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: C.gray,
+    marginBottom: 6,
   },
   sectionValue: {
     fontSize: SIZES.fontMd,
@@ -1141,8 +1179,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   bioText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.body,
     lineHeight: 22,
   },
   videoThumbnailContainer: {
@@ -1213,22 +1251,22 @@ const getStyles = createThemedStyles((colors) => ({
     gap: SIZES.xs,
   },
   contactButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: C.lavenderSoft,
   },
   addButton: {
     backgroundColor: colors.success,
   },
   consultButton: {
-    backgroundColor: colors.accent,
+    backgroundColor: C.roseSoft,
   },
   disabledButton: {
     backgroundColor: colors.textLight,
     opacity: 0.7,
   },
   footerButtonText: {
-    color: colors.white,
+    color: C.white,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   messageModalOverlay: {
     flex: 1,
