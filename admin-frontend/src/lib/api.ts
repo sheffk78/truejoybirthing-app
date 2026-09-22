@@ -196,4 +196,61 @@ export const api = {
 
   getShelbiLeadsStats: () =>
     request<any>(`/admin/api/shelbi-leads/stats`),
+
+  // Approvals (human approve/decline queue)
+  getApprovals: (params: { state?: string; kind?: string; include_expired?: boolean; page?: number; limit?: number } = {}) => {
+    const searchParams = new URLSearchParams();
+    if (params.state) searchParams.set('state', params.state);
+    if (params.kind) searchParams.set('kind', params.kind);
+    if (params.include_expired) searchParams.set('include_expired', 'true');
+    if (params.page) searchParams.set('page', String(params.page));
+    if (params.limit) searchParams.set('limit', String(params.limit));
+    const qs = searchParams.toString();
+    return request<{ items: ApprovalItem[]; total: number; page: number; limit: number }>(
+      `/admin/api/approvals/items${qs ? `?${qs}` : ''}`
+    );
+  },
+
+  getApproval: (itemId: string) =>
+    request<ApprovalItem>(`/admin/api/approvals/items/${itemId}`),
+
+  decideApproval: (itemId: string, decision: 'approved' | 'declined', note?: string) =>
+    request<ApprovalItem>(`/admin/api/approvals/items/${itemId}/decide`, {
+      method: 'POST',
+      body: JSON.stringify({ decision, note }),
+    }),
+
+  cancelApproval: (itemId: string) =>
+    request<ApprovalItem>(`/admin/api/approvals/items/${itemId}/cancel`, {
+      method: 'POST',
+    }),
+
+  getApprovalStats: () =>
+    request<{
+      pending: number;
+      by_urgency: Record<string, number>;
+      decided_total: number;
+      resolved_total: number;
+    }>('/admin/api/approvals/stats'),
 };
+
+export interface ApprovalItem {
+  item_id: string;
+  title: string;
+  description?: string | null;
+  source?: string | null;
+  source_ref?: string | null;
+  kind?: string | null;
+  brand?: string | null;
+  payload?: Record<string, any>;
+  urgency: 'low' | 'normal' | 'high' | 'critical';
+  audience: string[];
+  state: 'pending' | 'decided' | 'resolved' | 'cancelled';
+  decision?: 'approved' | 'declined' | null;
+  decided_by?: string | null;
+  decided_at?: string | null;
+  decision_note?: string | null;
+  resolved_at?: string | null;
+  expires_at?: string | null;
+  created_at?: string | null;
+}

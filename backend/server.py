@@ -1508,6 +1508,7 @@ from routes import contractions as contractions_routes
 from routes import admin_dashboard as admin_dashboard_routes
 from routes import admin_analytics as admin_analytics_routes
 from routes import admin_ambassador as admin_ambassador_routes
+from routes import admin_approvals as admin_approvals_routes
 from routes import feed as feed_routes
 from routes import invites as invites_routes
 from routes import shelbi_leads as shelbi_leads_routes
@@ -1944,6 +1945,7 @@ app.include_router(api_router)
 app.include_router(admin_dashboard_routes.router)
 app.include_router(admin_analytics_routes.router)
 app.include_router(admin_ambassador_routes.router)
+app.include_router(admin_approvals_routes.router)
 # Admin Shelbi lead management endpoints
 app.include_router(shelbi_leads_routes.admin_router)
 # Admin trial email sequence endpoints
