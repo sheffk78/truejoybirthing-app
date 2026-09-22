@@ -27,6 +27,9 @@ BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
     pytest.skip("REACT_APP_BACKEND_URL not configured", allow_module_level=True)
 
+# TJB admin API is same-origin under /admin/api/* (Cloudflare -> Railway backend)
+API = f"{BASE_URL}/admin/api"
+
 ADMIN_EMAIL = "admin@truejoybirthing.com"
 ADMIN_PASSWORD = "TJBAdmin2024!"
 
@@ -34,7 +37,7 @@ ADMIN_PASSWORD = "TJBAdmin2024!"
 @pytest.fixture(scope="module")
 def admin_headers():
     r = requests.post(
-        f"{BASE_URL}/admin/api/dashboard/auth/login",
+        f"{API}/dashboard/auth/login",
         json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD},
         timeout=30,
     )
@@ -54,7 +57,7 @@ def _create(headers, **overrides):
     }
     payload.update(overrides)
     return requests.post(
-        f"{BASE_URL}/admin/api/approvals/items", json=payload, headers=headers, timeout=30
+        f"{API}/approvals/items", json=payload, headers=headers, timeout=30
     )
 
 
@@ -79,7 +82,7 @@ class TestApprovalsLifecycle:
         item_id = r.json()["item_id"]
 
         rd = requests.post(
-            f"{BASE_URL}/admin/api/approvals/items/{item_id}/decide",
+            f"{API}/approvals/items/{item_id}/decide",
             json={"decision": "approved", "note": "test approval"},
             headers=admin_headers,
             timeout=30,
@@ -92,7 +95,7 @@ class TestApprovalsLifecycle:
 
         # Second decision must 409
         rd2 = requests.post(
-            f"{BASE_URL}/admin/api/approvals/items/{item_id}/decide",
+            f"{API}/approvals/items/{item_id}/decide",
             json={"decision": "declined"},
             headers=admin_headers,
             timeout=30,
@@ -101,7 +104,7 @@ class TestApprovalsLifecycle:
 
         # Resolve
         rr = requests.post(
-            f"{BASE_URL}/admin/api/approvals/items/{item_id}/resolve",
+            f"{API}/approvals/items/{item_id}/resolve",
             timeout=30,
         )
         # Without ingest token this is 503; the admin-side state check is what matters.
@@ -109,13 +112,13 @@ class TestApprovalsLifecycle:
 
     def test_list_and_stats(self, admin_headers):
         r = requests.get(
-            f"{BASE_URL}/admin/api/approvals/items?state=pending", headers=admin_headers, timeout=30
+            f"{API}/approvals/items?state=pending", headers=admin_headers, timeout=30
         )
         assert r.status_code == 200
         body = r.json()
         assert body["total"] >= 0 and isinstance(body["items"], list)
 
-        rs = requests.get(f"{BASE_URL}/admin/api/approvals/stats", headers=admin_headers, timeout=30)
+        rs = requests.get(f"{API}/approvals/stats", headers=admin_headers, timeout=30)
         assert rs.status_code == 200
         assert "pending" in rs.json()
 
@@ -123,7 +126,7 @@ class TestApprovalsLifecycle:
         r = _create(admin_headers, source_ref=f"bad-{uuid.uuid4().hex[:12]}")
         item_id = r.json()["item_id"]
         rd = requests.post(
-            f"{BASE_URL}/admin/api/approvals/items/{item_id}/decide",
+            f"{API}/approvals/items/{item_id}/decide",
             json={"decision": "maybe"},
             headers=admin_headers,
             timeout=30,
@@ -131,5 +134,5 @@ class TestApprovalsLifecycle:
         assert rd.status_code == 400
 
     def test_auth_required(self):
-        r = requests.get(f"{BASE_URL}/admin/api/approvals/items", timeout=30)
+        r = requests.get(f"{API}/approvals/items", timeout=30)
         assert r.status_code == 401
