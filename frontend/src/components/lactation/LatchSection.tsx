@@ -21,7 +21,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
+import { C, F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../constants/api';
 
@@ -230,7 +231,7 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
               key={opt}
               style={[
                 styles.scoreButton,
-                value === opt && [styles.scoreButtonSelected, { backgroundColor: primaryColor, borderColor: primaryColor }],
+                value === opt && [styles.scoreButtonSelected, { backgroundColor: C.sage, borderColor: C.sage }],
               ]}
               onPress={() =>
                 setFormData(prev => ({
@@ -249,7 +250,7 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
       <TextInput
         style={styles.noteInput}
         placeholder="Optional note..."
-        placeholderTextColor={colors.textLight}
+        placeholderTextColor={C.grayLight}
         value={note || ''}
         onChangeText={(text) => setFormData(prev => ({ ...prev, [item.notesKey]: text }))}
       />
@@ -262,8 +263,8 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
       <View style={styles.subscoreRow}>
         <View style={styles.subscoreHeader}>
           <Text style={styles.detailLabel}>{label}:</Text>
-          <View style={[styles.scoreBadge, { backgroundColor: primaryColor + '20' }]}>
-            <Text style={[styles.scoreBadgeText, { color: primaryColor }]}>{score}/2</Text>
+          <View style={[styles.scoreBadge, { backgroundColor: C.sageBg }]}>
+            <Text style={[styles.scoreBadgeText, { color: C.sage }]}>{score}/2</Text>
           </View>
         </View>
         {note && <Text style={styles.subscoreNote}>{note}</Text>}
@@ -276,27 +277,27 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="water-outline" size={22} color={primaryColor} />
+          <Icon name="water-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Latch Assessment</Text>
         </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: primaryColor }]}
+          style={[styles.addButton, { backgroundColor: C.sage }]}
           onPress={() => {
             resetForm();
             setShowAddModal(true);
           }}
           data-testid="add-latch-score-btn"
         >
-          <Icon name="add-circle" size={18} color={colors.white} />
+          <Icon name="add-circle" size={18} color={C.white} />
           <Text style={styles.addButtonText}>Add</Text>
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
+        <ActivityIndicator size="small" color={C.sage} style={{ marginVertical: 20 }} />
       ) : scores.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="water-outline" size={40} color={colors.textLight} />
+          <Icon name="water-outline" size={40} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No Latch Assessments</Text>
           <Text style={styles.emptyText}>No records yet. Tap + to add one.</Text>
         </Card>
@@ -314,7 +315,7 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
                 <Card style={styles.card}>
                   <View style={styles.cardHeader}>
                     <View style={styles.cardTitleRow}>
-                      <Icon name="calendar-outline" size={16} color={primaryColor} />
+                      <Icon name="calendar-outline" size={16} color={C.sage} />
                       <Text style={styles.cardDate}>{formatDate(record.assessment_date)}</Text>
                     </View>
                     <View style={[styles.totalScoreBadge, { backgroundColor: scoreColor + '20' }]}>
@@ -346,7 +347,7 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowAddModal(false)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {formData.score_id ? 'Edit Latch Assessment' : 'New Latch Assessment'}
@@ -366,18 +367,18 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
                   style={{
                     padding: 14,
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: C.lavenderBorder,
                     borderRadius: 8,
                     fontSize: 16,
                     width: '100%',
-                    backgroundColor: colors.surface,
+                    backgroundColor: C.white,
                   }}
                 />
               ) : (
                 <TextInput
                   style={styles.input}
                   placeholder="YYYY-MM-DD"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.assessment_date || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, assessment_date: text }))}
                 />
@@ -413,7 +414,7 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Any additional observations or notes..."
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={formData.general_notes || ''}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, general_notes: text }))}
                 multiline
@@ -446,7 +447,7 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowDetail(null)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Latch Assessment</Text>
             <TouchableOpacity
@@ -458,15 +459,15 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
                 }
               }}
             >
-              <Icon name="create-outline" size={24} color={primaryColor} />
+              <Icon name="create-outline" size={24} color={C.sage} />
             </TouchableOpacity>
           </View>
 
           {showDetail && (
             <ScrollView style={styles.modalContent}>
               <View style={styles.detailDateHeader}>
-                <Icon name="calendar" size={20} color={primaryColor} />
-                <Text style={[styles.detailDate, { color: primaryColor }]}>
+                <Icon name="calendar" size={20} color={C.sage} />
+                <Text style={[styles.detailDate, { color: C.sage }]}>
                   {formatDate(showDetail.assessment_date)}
                 </Text>
               </View>
@@ -549,8 +550,8 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   addButton: {
@@ -562,7 +563,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   addButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
     marginLeft: 4,
   },
@@ -572,14 +573,14 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -603,8 +604,8 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   cardDate: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   totalScoreBadge: {
     paddingHorizontal: SIZES.sm,
@@ -613,32 +614,32 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   totalScoreText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   cardNotes: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginTop: SIZES.xs,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -646,9 +647,9 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   // Form styles
   formSection: {
@@ -656,25 +657,25 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   formSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
   },
   formSectionSubtitle: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginBottom: SIZES.md,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   textArea: {
     minHeight: 100,
@@ -685,7 +686,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     marginBottom: SIZES.md,
     paddingBottom: SIZES.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   scoreItemHeader: {
     flexDirection: 'row',
@@ -695,8 +696,8 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   scoreItemLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     flex: 1,
   },
   scoreRow: {
@@ -708,8 +709,8 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     height: 44,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -718,21 +719,21 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   scoreButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   scoreButtonTextSelected: {
     color: colors.white,
   },
   noteInput: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.sm,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   // Total display in form
   totalDisplay: {
@@ -741,20 +742,20 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     alignItems: 'center',
     paddingVertical: SIZES.md,
     paddingHorizontal: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     marginTop: SIZES.sm,
   },
   totalDisplayLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   totalDisplayValue: {
     fontSize: SIZES.fontXl,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   // Detail modal styles
   detailDateHeader: {
@@ -766,7 +767,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   detailDate: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     marginLeft: SIZES.sm,
   },
   detailTotalContainer: {
@@ -776,15 +777,15 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     marginBottom: SIZES.md,
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
   },
   detailTotalLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   detailTotalBadge: {
     paddingHorizontal: SIZES.lg,
@@ -793,24 +794,24 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   detailTotalValue: {
     fontSize: SIZES.fontXl,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   detailCard: {
     marginBottom: SIZES.md,
   },
   detailCardTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   subscoreRow: {
     paddingVertical: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   subscoreHeader: {
     flexDirection: 'row',
@@ -819,8 +820,8 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   detailLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   scoreBadge: {
     paddingHorizontal: SIZES.sm,
@@ -829,27 +830,27 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   scoreBadgeText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   subscoreNote: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginTop: SIZES.xs,
     fontStyle: 'italic',
   },
   noDataText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     fontStyle: 'italic',
     textAlign: 'center',
     paddingVertical: SIZES.md,
   },
   generalNotesText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     lineHeight: 22,
   },
   deleteButton: {
@@ -861,7 +862,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   deleteButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: SIZES.xs,
   },

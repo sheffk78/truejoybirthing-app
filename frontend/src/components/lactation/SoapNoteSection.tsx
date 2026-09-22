@@ -20,7 +20,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS, COLORS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
+import { C, F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../constants/api';
 
@@ -45,12 +46,12 @@ interface SoapNoteSectionProps {
 }
 
 // ============== SECTION COLORS ==============
-// S: blue, O: green, A: orange, P: purple
+// Approved palette tokens (design law): no blue/orange/purple in the approved corpus
 const SOAP_SECTION_COLORS = {
-  S: '#4A90D9', // blue
-  O: '#5BA85B', // green
-  A: '#E89B4A', // orange
-  P: '#9B6BD0', // purple
+  S: C.lavender,
+  O: C.sage,
+  A: C.rose,
+  P: C.roseSoft,
 };
 
 // ============== MAIN COMPONENT ==============
@@ -209,18 +210,18 @@ export default function SoapNoteSection({ clientId, primaryColor, onRefresh }: S
           style={{
             padding: 14,
             borderWidth: 1,
-            borderColor: colors.border,
+            borderColor: C.lavenderBorder,
             borderRadius: 8,
             fontSize: 16,
             width: '100%',
-            backgroundColor: colors.surface,
+            backgroundColor: C.white,
           }}
         />
       ) : (
         <TextInput
           style={styles.input}
           placeholder="YYYY-MM-DD"
-          placeholderTextColor={colors.textLight}
+          placeholderTextColor={C.grayLight}
           value={value || ''}
           onChangeText={onChange}
         />
@@ -240,7 +241,7 @@ export default function SoapNoteSection({ clientId, primaryColor, onRefresh }: S
       <TextInput
         style={[styles.input, styles.textArea, { minHeight }]}
         placeholder={placeholder}
-        placeholderTextColor={colors.textLight}
+        placeholderTextColor={C.grayLight}
         value={value || ''}
         onChangeText={onChange}
         multiline
@@ -279,9 +280,9 @@ export default function SoapNoteSection({ clientId, primaryColor, onRefresh }: S
     >
       <Card style={styles.noteCard}>
         <View style={styles.noteCardHeader}>
-          <View style={[styles.noteDateBadge, { backgroundColor: primaryColor + '15' }]}>
-            <Icon name="calendar-outline" size={14} color={primaryColor} />
-            <Text style={[styles.noteDateText, { color: primaryColor }]}>{formatDate(note.note_date)}</Text>
+          <View style={[styles.noteDateBadge, { backgroundColor: C.sageBg }]}>
+            <Icon name="calendar-outline" size={14} color={C.sage} />
+            <Text style={[styles.noteDateText, { color: C.sage }]}>{formatDate(note.note_date)}</Text>
           </View>
           <View style={styles.noteCardActions}>
             {note.follow_up_date && (
@@ -292,7 +293,7 @@ export default function SoapNoteSection({ clientId, primaryColor, onRefresh }: S
                 </Text>
               </View>
             )}
-            <Icon name="chevron-forward" size={18} color={colors.textLight} />
+            <Icon name="chevron-forward" size={18} color={C.grayLight} />
           </View>
         </View>
 
@@ -333,27 +334,27 @@ export default function SoapNoteSection({ clientId, primaryColor, onRefresh }: S
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="document-text-outline" size={22} color={primaryColor} />
+          <Icon name="document-text-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>SOAP Notes</Text>
         </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: primaryColor }]}
+          style={[styles.addButton, { backgroundColor: C.sage }]}
           onPress={() => {
             resetForm();
             setShowAddModal(true);
           }}
           data-testid="add-soap-note-btn"
         >
-          <Icon name="add-circle" size={18} color={colors.white} />
+          <Icon name="add-circle" size={18} color={C.white} />
           <Text style={styles.addButtonText}>Add</Text>
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
+        <ActivityIndicator size="small" color={C.sage} style={{ marginVertical: 20 }} />
       ) : notes.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="document-text-outline" size={40} color={colors.textLight} />
+          <Icon name="document-text-outline" size={40} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No SOAP Notes</Text>
           <Text style={styles.emptyText}>No records yet. Tap + to add one.</Text>
         </Card>
@@ -371,7 +372,7 @@ export default function SoapNoteSection({ clientId, primaryColor, onRefresh }: S
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowAddModal(false)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {formData.soap_id ? 'Edit SOAP Note' : 'New SOAP Note'}
@@ -488,7 +489,7 @@ export default function SoapNoteSection({ clientId, primaryColor, onRefresh }: S
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowDetail(null)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>SOAP Note</Text>
             <TouchableOpacity
@@ -500,15 +501,15 @@ export default function SoapNoteSection({ clientId, primaryColor, onRefresh }: S
                 }
               }}
             >
-              <Icon name="create-outline" size={24} color={primaryColor} />
+              <Icon name="create-outline" size={24} color={C.sage} />
             </TouchableOpacity>
           </View>
 
           {showDetail && (
             <ScrollView style={styles.modalContent}>
               <View style={styles.detailDateHeader}>
-                <Icon name="calendar" size={20} color={primaryColor} />
-                <Text style={[styles.detailDate, { color: primaryColor }]}>
+                <Icon name="calendar" size={20} color={C.sage} />
+                <Text style={[styles.detailDate, { color: C.sage }]}>
                   {formatDate(showDetail.note_date)}
                 </Text>
               </View>
@@ -574,8 +575,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   addButton: {
@@ -587,7 +588,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   addButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
     marginLeft: 4,
   },
@@ -597,14 +598,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -631,7 +632,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   noteDateText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginLeft: 4,
   },
   noteCardActions: {
@@ -649,12 +650,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   followUpBadgeText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   noteAssessmentPreview: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginTop: SIZES.xs,
     marginBottom: SIZES.sm,
     lineHeight: 20,
@@ -664,7 +665,7 @@ const getStyles = createThemedStyles((colors) => ({
     gap: SIZES.xs,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   soapMiniBadge: {
     width: 24,
@@ -675,26 +676,26 @@ const getStyles = createThemedStyles((colors) => ({
   },
   soapMiniText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -702,9 +703,9 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   // Form styles
   formSection: {
@@ -727,35 +728,35 @@ const getStyles = createThemedStyles((colors) => ({
   },
   formLetterText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
   formSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
   },
   followUpSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginBottom: SIZES.xs,
     marginTop: SIZES.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   textArea: {
     minHeight: 120,
@@ -771,7 +772,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailDate: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     marginLeft: SIZES.sm,
   },
   detailCard: {
@@ -794,17 +795,17 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailLetterText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
   detailSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
   },
   detailContentText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     lineHeight: 22,
   },
   detailInfoRow: {
@@ -815,13 +816,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   detailValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   deleteButton: {
     flexDirection: 'row',
@@ -832,7 +833,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   deleteButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: SIZES.xs,
   },

@@ -20,7 +20,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
+import { C, F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../constants/api';
 
@@ -215,27 +216,27 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="scale-outline" size={22} color={primaryColor} />
+          <Icon name="scale-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Weight Tracker</Text>
         </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: primaryColor }]}
+          style={[styles.addButton, { backgroundColor: C.sage }]}
           onPress={() => {
             resetForm();
             setShowAddModal(true);
           }}
           data-testid="add-weight-btn"
         >
-          <Icon name="add-circle" size={18} color={colors.white} />
+          <Icon name="add-circle" size={18} color={C.white} />
           <Text style={styles.addButtonText}>Add</Text>
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
+        <ActivityIndicator size="small" color={C.sage} style={{ marginVertical: 20 }} />
       ) : weights.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="scale-outline" size={40} color={colors.textLight} />
+          <Icon name="scale-outline" size={40} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No Weight Records</Text>
           <Text style={styles.emptyText}>No records yet. Tap + to add one.</Text>
         </Card>
@@ -252,10 +253,10 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                 <Card style={styles.card}>
                   <View style={styles.cardHeader}>
                     <View style={styles.cardTitleRow}>
-                      <Icon name="calendar-outline" size={16} color={primaryColor} />
+                      <Icon name="calendar-outline" size={16} color={C.sage} />
                       <Text style={styles.cardDate}>{formatDate(record.weight_date)}</Text>
                     </View>
-                    <Icon name="chevron-forward" size={18} color={colors.textLight} />
+                    <Icon name="chevron-forward" size={18} color={C.grayLight} />
                   </View>
 
                   <View style={styles.cardDetails}>
@@ -285,8 +286,8 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
 
                     {/* Birth weight badge */}
                     {record.is_birth_weight && (
-                      <View style={[styles.detailChip, { backgroundColor: primaryColor + '15' }]}>
-                        <Text style={[styles.detailChipValue, { color: primaryColor }]}>Birth Weight</Text>
+                      <View style={[styles.detailChip, { backgroundColor: C.sageBg }]}>
+                        <Text style={[styles.detailChipValue, { color: C.sage }]}>Birth Weight</Text>
                       </View>
                     )}
                   </View>
@@ -317,7 +318,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowAddModal(false)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {formData.weight_id ? 'Edit Weight Record' : 'New Weight Record'}
@@ -337,18 +338,18 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                   style={{
                     padding: 14,
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: C.lavenderBorder,
                     borderRadius: 8,
                     fontSize: 16,
                     width: '100%',
-                    backgroundColor: colors.surface,
+                    backgroundColor: C.white,
                   }}
                 />
               ) : (
                 <TextInput
                   style={styles.input}
                   placeholder="YYYY-MM-DD"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.weight_date || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, weight_date: text }))}
                 />
@@ -364,7 +365,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                 <TextInput
                   style={[styles.input, { flex: 1 }]}
                   placeholder="e.g., 3200"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.weight?.toString() || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, weight: text ? parseFloat(text) : undefined }))}
                   keyboardType="decimal-pad"
@@ -375,7 +376,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                       key={unit}
                       style={[
                         styles.unitOption,
-                        (formData.weight_unit || 'g') === unit && [styles.unitOptionSelected, { backgroundColor: primaryColor }],
+                        (formData.weight_unit || 'g') === unit && [styles.unitOptionSelected, { backgroundColor: C.sage }],
                       ]}
                       onPress={() => setFormData(prev => ({ ...prev, weight_unit: unit }))}
                     >
@@ -400,7 +401,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 7"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={formData.baby_age_days?.toString() || ''}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, baby_age_days: text ? parseInt(text) : undefined }))}
                 keyboardType="numeric"
@@ -414,7 +415,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                 <TouchableOpacity
                   style={[
                     styles.unitOption,
-                    !formData.is_birth_weight && [styles.unitOptionSelected, { backgroundColor: primaryColor }],
+                    !formData.is_birth_weight && [styles.unitOptionSelected, { backgroundColor: C.sage }],
                   ]}
                   onPress={() => setFormData(prev => ({ ...prev, is_birth_weight: false }))}
                 >
@@ -423,7 +424,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                 <TouchableOpacity
                   style={[
                     styles.unitOption,
-                    formData.is_birth_weight && [styles.unitOptionSelected, { backgroundColor: primaryColor }],
+                    formData.is_birth_weight && [styles.unitOptionSelected, { backgroundColor: C.sage }],
                   ]}
                   onPress={() => setFormData(prev => ({ ...prev, is_birth_weight: true }))}
                 >
@@ -438,7 +439,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Any additional observations or notes..."
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={formData.notes || ''}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, notes: text }))}
                 multiline
@@ -471,7 +472,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowDetail(null)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Weight Record</Text>
             <TouchableOpacity
@@ -483,15 +484,15 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                 }
               }}
             >
-              <Icon name="create-outline" size={24} color={primaryColor} />
+              <Icon name="create-outline" size={24} color={C.sage} />
             </TouchableOpacity>
           </View>
 
           {showDetail && (
             <ScrollView style={styles.modalContent}>
               <View style={styles.detailDateHeader}>
-                <Icon name="calendar" size={20} color={primaryColor} />
-                <Text style={[styles.detailDate, { color: primaryColor }]}>
+                <Icon name="calendar" size={20} color={C.sage} />
+                <Text style={[styles.detailDate, { color: C.sage }]}>
                   {formatDate(showDetail.weight_date)}
                 </Text>
               </View>
@@ -577,8 +578,8 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   addButton: {
@@ -590,7 +591,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   addButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
     marginLeft: 4,
   },
@@ -600,14 +601,14 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -632,8 +633,8 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   cardDate: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   cardDetails: {
     flexDirection: 'row',
@@ -644,23 +645,23 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   detailChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
     paddingHorizontal: SIZES.sm,
     paddingVertical: SIZES.xs,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
   },
   detailChipLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     marginRight: 4,
   },
   detailChipValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   percentChangeRow: {
     flexDirection: 'row',
@@ -668,36 +669,36 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     alignItems: 'center',
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
     marginTop: SIZES.xs,
   },
   percentChangeLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   percentChangeValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -705,9 +706,9 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   // Form styles
   formSection: {
@@ -715,26 +716,26 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   formSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginBottom: SIZES.xs,
     marginTop: SIZES.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   textArea: {
     minHeight: 100,
@@ -748,26 +749,26 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   unitToggle: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     overflow: 'hidden',
   },
   unitOption: {
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
   },
   unitOptionSelected: {
     // backgroundColor set inline
   },
   unitText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   unitTextSelected: {
     color: colors.white,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   // Detail modal styles
   detailDateHeader: {
@@ -779,7 +780,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   detailDate: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     marginLeft: SIZES.sm,
   },
   detailCard: {
@@ -787,12 +788,12 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   detailCardTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   detailInfoRow: {
     flexDirection: 'row',
@@ -801,28 +802,28 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   detailLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   detailValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     flex: 1,
     textAlign: 'right',
   },
   noDataText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     fontStyle: 'italic',
     textAlign: 'center',
     paddingVertical: SIZES.md,
   },
   generalNotesText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     lineHeight: 22,
   },
   deleteButton: {
@@ -834,7 +835,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   deleteButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: SIZES.xs,
   },

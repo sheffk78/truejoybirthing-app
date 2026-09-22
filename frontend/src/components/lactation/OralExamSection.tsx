@@ -20,7 +20,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
+import { C, F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../constants/api';
 
@@ -313,13 +314,13 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
         onPress={() => toggleSection(sectionKey)}
       >
         <View style={styles.collapsibleTitleRow}>
-          <Icon name={icon as any} size={20} color={primaryColor} />
+          <Icon name={icon as any} size={20} color={C.sage} />
           <Text style={styles.collapsibleTitle}>{title}</Text>
         </View>
         <Icon
           name={expandedSections[sectionKey] ? 'chevron-up' : 'chevron-down'}
           size={20}
-          color={colors.textSecondary}
+          color={C.gray}
         />
       </TouchableOpacity>
       {expandedSections[sectionKey] && (
@@ -341,7 +342,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
             styles.chip,
             selectedValue === opt.value && [
               styles.chipSelected,
-              { backgroundColor: primaryColor, borderColor: primaryColor },
+              { backgroundColor: C.sage, borderColor: C.sage },
             ],
           ]}
           onPress={() => onSelect(selectedValue === opt.value ? '' : opt.value)}
@@ -370,11 +371,11 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
         <View style={styles.examCardHeader}>
           <View style={styles.examCardInfo}>
             <View style={styles.examCardTitleRow}>
-              <Icon name="calendar-outline" size={16} color={primaryColor} />
+              <Icon name="calendar-outline" size={16} color={C.sage} />
               <Text style={styles.examCardDate}>{formatDate(exam.exam_date)}</Text>
             </View>
           </View>
-          <Icon name="chevron-forward" size={18} color={colors.textLight} />
+          <Icon name="chevron-forward" size={18} color={C.grayLight} />
         </View>
 
         <View style={styles.examCardDetails}>
@@ -399,10 +400,10 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
           <View
             style={[
               styles.recommendationBadge,
-              { backgroundColor: primaryColor + '20' },
+              { backgroundColor: C.sageBg },
             ]}
           >
-            <Text style={[styles.recommendationText, { color: primaryColor }]}>
+            <Text style={[styles.recommendationText, { color: C.sage }]}>
               {getLabel(RECOMMENDATION_OPTIONS, exam.recommendation)}
             </Text>
           </View>
@@ -422,7 +423,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
     return (
       <Card style={styles.detailCard}>
         <Text style={styles.detailCardTitle}>
-          <Icon name={icon as any} size={16} color={primaryColor} /> {title}
+          <Icon name={icon as any} size={16} color={C.sage} /> {title}
         </Text>
         {rows.map((row, idx) => (
           row.value ? (
@@ -441,27 +442,27 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="medical-outline" size={22} color={primaryColor} />
+          <Icon name="medical-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Oral Exams</Text>
         </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: primaryColor }]}
+          style={[styles.addButton, { backgroundColor: C.sage }]}
           onPress={() => {
             resetForm();
             setShowAddModal(true);
           }}
           data-testid="add-oral-exam-btn"
         >
-          <Icon name="add-circle" size={18} color={colors.white} />
+          <Icon name="add-circle" size={18} color={C.white} />
           <Text style={styles.addButtonText}>Add</Text>
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
+        <ActivityIndicator size="small" color={C.sage} style={{ marginVertical: 20 }} />
       ) : exams.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="medical-outline" size={40} color={colors.textLight} />
+          <Icon name="medical-outline" size={40} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No Oral Exams</Text>
           <Text style={styles.emptyText}>No records yet. Tap + to add one.</Text>
         </Card>
@@ -479,7 +480,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowAddModal(false)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {formData.exam_id ? 'Edit Oral Exam' : 'New Oral Exam'}
@@ -500,18 +501,18 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
                     style={{
                       padding: 14,
                       borderWidth: 1,
-                      borderColor: colors.border,
+                      borderColor: C.lavenderBorder,
                       borderRadius: 8,
                       fontSize: 16,
                       width: '100%',
-                      backgroundColor: colors.surface,
+                      backgroundColor: C.white,
                     }}
                   />
                 ) : (
                   <TextInput
                     style={styles.input}
                     placeholder="YYYY-MM-DD"
-                    placeholderTextColor={colors.textLight}
+                    placeholderTextColor={C.grayLight}
                     value={formData.exam_date || ''}
                     onChangeText={(text) => setFormData(prev => ({ ...prev, exam_date: text }))}
                   />
@@ -564,7 +565,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
                 <TextInput
                   style={[styles.input, styles.textArea]}
                   placeholder="Additional palate observations..."
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.palate_notes || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, palate_notes: text }))}
                   multiline
@@ -603,7 +604,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
                 <TextInput
                   style={[styles.input, styles.textArea]}
                   placeholder="Referral details..."
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.referral_notes || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, referral_notes: text }))}
                   multiline
@@ -615,7 +616,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
                 <TextInput
                   style={[styles.input, styles.textArea]}
                   placeholder="Additional notes..."
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.general_notes || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, general_notes: text }))}
                   multiline
@@ -649,7 +650,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowDetail(null)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Oral Exam</Text>
             <TouchableOpacity
@@ -670,15 +671,15 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
                 }
               }}
             >
-              <Icon name="create-outline" size={24} color={primaryColor} />
+              <Icon name="create-outline" size={24} color={C.sage} />
             </TouchableOpacity>
           </View>
 
           {showDetail && (
             <ScrollView style={styles.modalContent}>
               <View style={styles.detailDateHeader}>
-                <Icon name="calendar" size={20} color={primaryColor} />
-                <Text style={[styles.detailDate, { color: primaryColor }]}>
+                <Icon name="calendar" size={20} color={C.sage} />
+                <Text style={[styles.detailDate, { color: C.sage }]}>
                   {formatDate(showDetail.exam_date)}
                 </Text>
               </View>
@@ -713,7 +714,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
               {(showDetail.recommendation || showDetail.referral_notes || showDetail.general_notes) && (
                 <Card style={styles.detailCard}>
                   <Text style={styles.detailCardTitle}>
-                    <Icon name="checkmark-circle-outline" size={16} color={primaryColor} /> Recommendations
+                    <Icon name="checkmark-circle-outline" size={16} color={C.sage} /> Recommendations
                   </Text>
                   {showDetail.recommendation && (
                     <View style={styles.detailInfoRow}>
@@ -771,8 +772,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   addButton: {
@@ -784,7 +785,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   addButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
     marginLeft: 4,
   },
@@ -794,14 +795,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -828,8 +829,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   examCardDate: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   examCardDetails: {
     flexDirection: 'row',
@@ -840,23 +841,23 @@ const getStyles = createThemedStyles((colors) => ({
   detailChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
     paddingHorizontal: SIZES.sm,
     paddingVertical: SIZES.xs,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
   },
   detailChipLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     marginRight: 4,
   },
   detailChipValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   recommendationBadge: {
     paddingHorizontal: SIZES.sm,
@@ -867,26 +868,26 @@ const getStyles = createThemedStyles((colors) => ({
   },
   recommendationText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -894,13 +895,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   // Collapsible sections
   collapsibleSection: {
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.sm,
     overflow: 'hidden',
@@ -910,7 +911,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   collapsibleTitleRow: {
     flexDirection: 'row',
@@ -919,8 +920,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   collapsibleTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   collapsibleContent: {
     padding: SIZES.md,
@@ -929,20 +930,20 @@ const getStyles = createThemedStyles((colors) => ({
   // Form styles
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginBottom: SIZES.xs,
     marginTop: SIZES.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   textArea: {
     minHeight: 70,
@@ -959,8 +960,8 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.white,
     marginBottom: SIZES.xs,
   },
   chipSelected: {
@@ -968,12 +969,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   chipText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   chipTextSelected: {
     color: colors.white,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   // Detail modal styles
   detailDateHeader: {
@@ -985,7 +986,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailDate: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     marginLeft: SIZES.sm,
   },
   detailCard: {
@@ -993,12 +994,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailCardTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   detailInfoRow: {
     flexDirection: 'row',
@@ -1007,13 +1008,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   detailValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     flex: 1,
     textAlign: 'right',
   },
@@ -1026,7 +1027,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   deleteButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: SIZES.xs,
   },

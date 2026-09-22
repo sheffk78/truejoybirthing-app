@@ -20,7 +20,8 @@ import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
+import { C, F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../constants/api';
 
@@ -272,7 +273,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
             styles.chip,
             selectedValue === opt.value && [
               styles.chipSelected,
-              { backgroundColor: primaryColor, borderColor: primaryColor },
+              { backgroundColor: C.sage, borderColor: C.sage },
             ],
           ]}
           onPress={() => onSelect(selectedValue === opt.value ? '' : opt.value)}
@@ -290,27 +291,27 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="nutrition-outline" size={22} color={primaryColor} />
+          <Icon name="nutrition-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Feeding Log</Text>
         </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: primaryColor }]}
+          style={[styles.addButton, { backgroundColor: C.sage }]}
           onPress={() => {
             resetForm();
             setShowAddModal(true);
           }}
           data-testid="add-feeding-log-btn"
         >
-          <Icon name="add-circle" size={18} color={colors.white} />
+          <Icon name="add-circle" size={18} color={C.white} />
           <Text style={styles.addButtonText}>Add</Text>
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <ActivityIndicator size="small" color={primaryColor} style={{ marginVertical: 20 }} />
+        <ActivityIndicator size="small" color={C.sage} style={{ marginVertical: 20 }} />
       ) : logs.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="nutrition-outline" size={40} color={colors.textLight} />
+          <Icon name="nutrition-outline" size={40} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No Feeding Logs</Text>
           <Text style={styles.emptyText}>No records yet. Tap + to add one.</Text>
         </Card>
@@ -325,13 +326,13 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
               <Card style={styles.card}>
                 <View style={styles.cardHeader}>
                   <View style={styles.cardTitleRow}>
-                    <Icon name={getFeedingTypeIcon(record.feeding_type)} size={16} color={primaryColor} />
+                    <Icon name={getFeedingTypeIcon(record.feeding_type)} size={16} color={C.sage} />
                     <Text style={styles.cardDate}>{formatDate(record.feeding_date)}</Text>
                     {record.feeding_time && (
                       <Text style={styles.cardTime}>{formatTime(record.feeding_time)}</Text>
                     )}
                   </View>
-                  <Icon name="chevron-forward" size={18} color={colors.textLight} />
+                  <Icon name="chevron-forward" size={18} color={C.grayLight} />
                 </View>
 
                 <View style={styles.cardDetails}>
@@ -398,7 +399,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowAddModal(false)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>
               {formData.log_id ? 'Edit Feeding Log' : 'New Feeding Log'}
@@ -418,18 +419,18 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
                   style={{
                     padding: 14,
                     borderWidth: 1,
-                    borderColor: colors.border,
+                    borderColor: C.lavenderBorder,
                     borderRadius: 8,
                     fontSize: 16,
                     width: '100%',
-                    backgroundColor: colors.surface,
+                    backgroundColor: C.white,
                   }}
                 />
               ) : (
                 <TextInput
                   style={styles.input}
                   placeholder="YYYY-MM-DD"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.feeding_date || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, feeding_date: text }))}
                 />
@@ -442,7 +443,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 14:30"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={formData.feeding_time || ''}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, feeding_time: text }))}
               />
@@ -476,7 +477,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 20"
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={formData.duration_minutes?.toString() || ''}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, duration_minutes: text ? parseInt(text) : undefined }))}
                 keyboardType="numeric"
@@ -490,7 +491,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
                 <TextInput
                   style={styles.input}
                   placeholder="e.g., 60"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   value={formData.amount_ml?.toString() || ''}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, amount_ml: text ? parseFloat(text) : undefined }))}
                   keyboardType="decimal-pad"
@@ -526,7 +527,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
               <TextInput
                 style={[styles.input, styles.textArea]}
                 placeholder="Any additional observations or notes..."
-                placeholderTextColor={colors.textLight}
+                placeholderTextColor={C.grayLight}
                 value={formData.notes || ''}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, notes: text }))}
                 multiline
@@ -559,7 +560,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
         <SafeAreaView style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setShowDetail(null)}>
-              <Icon name="close" size={24} color={colors.text} />
+              <Icon name="close" size={24} color={C.ink} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Feeding Log</Text>
             <TouchableOpacity
@@ -571,15 +572,15 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
                 }
               }}
             >
-              <Icon name="create-outline" size={24} color={primaryColor} />
+              <Icon name="create-outline" size={24} color={C.sage} />
             </TouchableOpacity>
           </View>
 
           {showDetail && (
             <ScrollView style={styles.modalContent}>
               <View style={styles.detailDateHeader}>
-                <Icon name={getFeedingTypeIcon(showDetail.feeding_type)} size={20} color={primaryColor} />
-                <Text style={[styles.detailDate, { color: primaryColor }]}>
+                <Icon name={getFeedingTypeIcon(showDetail.feeding_type)} size={20} color={C.sage} />
+                <Text style={[styles.detailDate, { color: C.sage }]}>
                   {formatDate(showDetail.feeding_date)}
                   {showDetail.feeding_time ? ` ${formatTime(showDetail.feeding_time)}` : ''}
                 </Text>
@@ -676,8 +677,8 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginLeft: SIZES.sm,
   },
   addButton: {
@@ -689,7 +690,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   addButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
     marginLeft: 4,
   },
@@ -699,14 +700,14 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.xs,
     paddingHorizontal: SIZES.lg,
@@ -731,13 +732,13 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   cardDate: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   cardTime: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
     marginLeft: 4,
   },
   cardDetails: {
@@ -749,23 +750,23 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   detailChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
     paddingHorizontal: SIZES.sm,
     paddingVertical: SIZES.xs,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
   },
   detailChipLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     marginRight: 4,
   },
   detailChipValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
   },
   latchQualityRow: {
     flexDirection: 'row',
@@ -773,13 +774,13 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     gap: SIZES.xs,
     paddingTop: SIZES.sm,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
     marginTop: SIZES.xs,
   },
   latchQualityLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   latchQualityBadge: {
     paddingHorizontal: SIZES.sm,
@@ -788,26 +789,26 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   latchQualityText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
   },
   modalContent: {
     flex: 1,
@@ -815,9 +816,9 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: colors.surface,
+    backgroundColor: C.white,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   // Form styles
   formSection: {
@@ -825,19 +826,19 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   formSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    fontFamily: F.ui,
+    color: C.ink,
+    backgroundColor: C.white,
   },
   textArea: {
     minHeight: 100,
@@ -854,8 +855,8 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.white,
     marginBottom: SIZES.xs,
   },
   chipSelected: {
@@ -863,12 +864,12 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   chipText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   chipTextSelected: {
     color: colors.white,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   // Detail modal styles
   detailDateHeader: {
@@ -880,7 +881,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   detailDate: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     marginLeft: SIZES.sm,
   },
   detailCard: {
@@ -888,12 +889,12 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   detailCardTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
-    color: colors.text,
+    fontFamily: F.serifSemi,
+    color: C.ink,
     marginBottom: SIZES.sm,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   detailInfoRow: {
     flexDirection: 'row',
@@ -902,28 +903,28 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   detailLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textSecondary,
+    fontFamily: F.ui,
+    color: C.gray,
   },
   detailValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     flex: 1,
     textAlign: 'right',
   },
   noDataText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.textLight,
+    fontFamily: F.ui,
+    color: C.grayLight,
     fontStyle: 'italic',
     textAlign: 'center',
     paddingVertical: SIZES.md,
   },
   generalNotesText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
-    color: colors.text,
+    fontFamily: F.ui,
+    color: C.ink,
     lineHeight: 22,
   },
   deleteButton: {
@@ -935,7 +936,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   deleteButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: SIZES.xs,
   },

@@ -1,0 +1,93 @@
+{
+ "sections": {
+  "titles": [
+   {
+    "text": "Latch Assessment",
+    "font": "CormorantGaramond_600SemiBold",
+    "color": "rgb(42, 42, 42)",
+    "size": "18px"
+   },
+   {
+    "text": "Weight Tracker",
+    "font": "CormorantGaramond_600SemiBold",
+    "color": "rgb(42, 42, 42)",
+    "size": "18px"
+   },
+   {
+    "text": "Feeding Log",
+    "font": "CormorantGaramond_600SemiBold",
+    "color": "rgb(42, 42, 42)",
+    "size": "18px"
+   },
+   {
+    "text": "Oral Exams",
+    "font": "CormorantGaramond_600SemiBold",
+    "color": "rgb(42, 42, 42)",
+    "size": "18px"
+   },
+   {
+    "text": "SOAP Notes",
+    "font": "CormorantGaramond_600SemiBold",
+    "color": "rgb(42, 42, 42)",
+    "size": "18px"
+   }
+  ],
+  "addButton": {
+   "bg": "rgb(95, 113, 84)",
+   "radius": "9999px"
+  },
+  "activeChip": {
+   "bg": "rgba(0, 0, 0, 0)",
+   "color": "rgb(107, 175, 160)"
+  }
+ },
+ "tabbar": {
+  "labels": [
+   {
+    "tab": "Home",
+    "color": "rgb(106, 107, 108)",
+    "font": "Quicksand_700Bold",
+    "weight": "700",
+    "size": "10.5px"
+   },
+   {
+    "tab": "Leads",
+    "color": "rgb(106, 107, 108)",
+    "font": "Quicksand_700Bold",
+    "weight": "700",
+    "size": "10.5px"
+   },
+   {
+    "tab": "Clients",
+    "color": "rgb(106, 107, 108)",
+    "font": "Quicksand_700Bold",
+    "weight": "700",
+    "size": "10.5px"
+   },
+   {
+    "tab": "Messages",
+    "color": "rgb(42, 42, 42)",
+    "font": "CormorantGaramond_700Bold",
+    "weight": "400",
+    "size": "24px"
+   },
+   {
+    "tab": "Profile",
+    "color": "rgb(106, 107, 108)",
+    "font": "Quicksand_700Bold",
+    "weight": "700",
+    "size": "10.5px"
+   }
+  ],
+  "surfaces": [
+   {
+    "bg": "rgb(255, 255, 255)",
+    "border": "rgb(240, 233, 238)"
+   },
+   {
+    "bg": "rgba(0, 0, 0, 0)",
+    "border": "rgb(0, 0, 0)"
+   }
+  ]
+ }
+}

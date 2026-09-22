@@ -25,7 +25,7 @@ import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
 import { SIZES } from '../../constants/theme';
-import { F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/designRefresh';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
@@ -362,7 +362,7 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
   const getRoleColor = (role: string) => {
     if (role === 'MOM') return colors.primary;
     if (role === 'MIDWIFE') return colors.roleMidwife;
-    if (role === 'LACTATION') return colors.roleLactation;
+    if (role === 'LACTATION') return C.lavender; // approved design law: no teal in approved palette
     return colors.roleDoula;
   };
 
