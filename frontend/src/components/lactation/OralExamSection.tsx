@@ -442,7 +442,7 @@ export default function OralExamSection({ clientId, primaryColor, onRefresh }: O
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="medical-outline" size={22} color={C.sage} />
+          <Icon name="smile-plus" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Oral Exams</Text>
         </View>
         <TouchableOpacity

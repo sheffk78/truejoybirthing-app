@@ -345,6 +345,10 @@ const iconMap: { [key: string]: keyof typeof LucideIcons } = {
   // Water/Droplet
   'water': 'Droplet',
   'water-outline': 'Droplet',
+  'droplets': 'Droplets',
+  
+  // Smile/mouth
+  'smile-plus': 'SmilePlus',
   
   // Stop circle
   'stop': 'Square',

@@ -50,8 +50,8 @@ interface FeedingLogSectionProps {
 // ============== CONSTANTS ==============
 const FEEDING_TYPE_OPTIONS = [
   { value: 'breast', label: 'Breast', icon: 'water' },
-  { value: 'bottle', label: 'Bottle', icon: 'nutrition' },
-  { value: 'expressed', label: 'Expressed', icon: 'nutrition-outline' },
+  { value: 'bottle', label: 'Bottle', icon: 'cup-soda' },
+  { value: 'expressed', label: 'Expressed', icon: 'droplets' },
   { value: 'mixed', label: 'Mixed', icon: 'swap-horizontal' },
 ] as const;
 
@@ -133,7 +133,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
 
   const getFeedingTypeIcon = (type?: string): string => {
     const option = FEEDING_TYPE_OPTIONS.find(o => o.value === type);
-    return option?.icon || 'nutrition-outline';
+    return option?.icon || 'droplets';
   };
 
   const getFeedingTypeLabel = (type?: string): string => {
@@ -291,7 +291,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
-          <Icon name="nutrition-outline" size={22} color={C.sage} />
+          <Icon name="droplets" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Feeding Log</Text>
         </View>
         <TouchableOpacity
@@ -311,7 +311,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
         <ActivityIndicator size="small" color={C.sage} style={{ marginVertical: 20 }} />
       ) : logs.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Icon name="nutrition-outline" size={40} color={C.grayLight} />
+          <Icon name="droplets" size={40} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No Feeding Logs</Text>
           <Text style={styles.emptyText}>No records yet. Tap + to add one.</Text>
         </Card>

@@ -434,7 +434,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               data-testid="action-feeding"
             >
               <View style={[styles.actionIcon, { backgroundColor: colors.lactationPrimary + '15' }]}>
-                <Icon name="nutrition-outline" size={20} color={colors.lactationPrimary} />
+                <Icon name="droplets" size={20} color={colors.lactationPrimary} />
               </View>
               <Text style={styles.actionLabel}>Feeding</Text>
             </TouchableOpacity>
@@ -460,7 +460,7 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
               data-testid="action-oral-exam"
             >
               <View style={[styles.actionIcon, { backgroundColor: colors.lactationPrimary + '15' }]}>
-                <Icon name="medkit-outline" size={20} color={colors.lactationPrimary} />
+                <Icon name="smile-plus" size={20} color={colors.lactationPrimary} />
               </View>
               <Text style={styles.actionLabel}>Oral Exam</Text>
             </TouchableOpacity>
