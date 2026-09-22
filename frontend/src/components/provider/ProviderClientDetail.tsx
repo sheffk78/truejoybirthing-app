@@ -712,5 +712,6 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontSm,
     fontFamily: F.ui,
     color: colors.textSecondary,
+    textAlign: 'center',
   },
 }));
