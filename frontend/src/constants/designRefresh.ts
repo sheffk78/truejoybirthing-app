@@ -44,8 +44,8 @@ export const F = {
 } as const;
 
 // ---- Approved header photo bands ----
-export const BAND_HOME = require('../../assets/images/band-home-couch.webp') as ImageSourcePropType;
-export const BAND_TIPS = require('../../assets/images/band-tips-teaching.webp') as ImageSourcePropType;
+export const BAND_HOME = require('../../assets/images/band-home-couch-v2.webp') as ImageSourcePropType;
+export const BAND_TIPS = require('../../assets/images/band-tips-teaching-v2.webp') as ImageSourcePropType;
 export const BAND_APPOINTMENTS = require('../../assets/images/band-appointments.webp') as ImageSourcePropType;
 export const BAND_MY_TEAM = require('../../assets/images/band-myteam-support.webp') as ImageSourcePropType;
 export const BAND_MESSAGES = require('../../assets/images/band-messages-lactation.webp') as ImageSourcePropType;

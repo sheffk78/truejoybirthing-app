@@ -204,7 +204,7 @@ export default function MomHomeScreen() {
         
         {/* Header — approved S10: photo band under the status bar, greeting rows on the veil */}
         <View style={[styles.bandWrap, { marginTop: -insets.top }]}>
-          <HBand source={BAND_HOME} height={190 + insets.top} />
+          <HBand source={BAND_HOME} height={190 + insets.top} focus="50% 0%" />
           <View style={[styles.header, { paddingTop: insets.top + 30 }]}>
             <View style={styles.headerTopRow}>
               <Text style={styles.overline}>
