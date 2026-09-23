@@ -15,7 +15,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { C, F, kickerStyle } from '../../src/constants/designRefresh';
+import { C, F, kickerStyle } from '../../src/constants/corpus';
 
 const DF = F;
 
@@ -431,7 +431,7 @@ export default function PostpartumScreen() {
   );
 }
 
-const getStyles = createThemedStyles(() =>
+const getStyles = createThemedStyles((colors) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: C.cream },
     scrollContent: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: SIZES.xxl },
@@ -469,7 +469,7 @@ const getStyles = createThemedStyles(() =>
     },
     // fieldbox section: white r18 hairline card
     section: {
-      backgroundColor: C.white,
+      backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: C.border,
       borderRadius: 18,

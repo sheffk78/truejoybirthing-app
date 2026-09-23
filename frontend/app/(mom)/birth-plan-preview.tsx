@@ -15,7 +15,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS, API_BASE } from '../../src/constants/api';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
-import { C, F, kickerStyle } from '../../src/constants/designRefresh';
+import { C, F, kickerStyle } from '../../src/constants/corpus';
 
 const DF = F;
 
@@ -356,7 +356,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingBottom: 100,
   },
   printableContent: {
-    backgroundColor: C.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 20,

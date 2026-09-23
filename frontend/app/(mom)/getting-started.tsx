@@ -14,7 +14,8 @@ import { Icon } from '../../src/components/Icon';
 import HBand from '../../src/components/mom/HBand';
 import { useAuthStore } from '../../src/store/authStore';
 import { SIZES } from '../../src/constants/theme';
-import { C, F, kickerStyle } from '../../src/constants/designRefresh';
+import { C, F, kickerStyle } from '../../src/constants/corpus';
+import { useColors } from '../../src/hooks/useThemedStyles';
 
 const DF = F;
 
@@ -89,7 +90,8 @@ const TIPS = [
 ];
 
 export default function GettingStartedScreen() {
-  const styles = getStyles();
+  const colors = useColors();
+  const styles = getStyles(colors);
   const MOM_QUICK_START = getMomQuickStart();
   const router = useRouter();
   const { user } = useAuthStore();
@@ -256,7 +258,7 @@ export default function GettingStartedScreen() {
   );
 }
 
-const getStyles = () =>
+const getStyles = (colors: ReturnType<typeof useColors>) =>
   StyleSheet.create({
     safe: {
       flex: 1,
@@ -267,7 +269,7 @@ const getStyles = () =>
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: C.white,
+      backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: C.border,
       alignItems: 'center',
@@ -282,7 +284,7 @@ const getStyles = () =>
     // heroCard — photo band inside rounded hairline card (batch-1 anchorCard)
     heroCard: {
       marginTop: 14,
-      backgroundColor: C.white,
+      backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: C.border,
       borderRadius: 20,
@@ -319,7 +321,7 @@ const getStyles = () =>
     },
     // srow vocabulary: white r18 hairline card (s7 .srow)
     srow: {
-      backgroundColor: C.white,
+      backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: C.border,
       borderRadius: 18,
@@ -398,7 +400,7 @@ const getStyles = () =>
       color: C.lavender,
     },
     tipsContainer: {
-      backgroundColor: C.white,
+      backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: C.border,
       borderRadius: 18,

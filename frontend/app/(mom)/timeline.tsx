@@ -24,7 +24,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { C, F, kickerStyle, trimesterOf, BAND_HOME } from '../../src/constants/designRefresh';
+import { C, F, kickerStyle, trimesterOf, BAND_HOME } from '../../src/constants/corpus';
 
 const DF = F;
 
@@ -366,7 +366,7 @@ export default function TimelineScreen() {
                       cursor: 'pointer',
                       fontFamily: F.ui,
                       color: C.ink,
-                      backgroundColor: C.white,
+                      backgroundColor: colors.surface,
                     }}
                   />
                 </View>
@@ -402,7 +402,7 @@ const getStyles = createThemedStyles((colors) => ({
   subtitle: { fontSize: 12.5, fontFamily: DF.ui, color: C.gray, marginTop: 4 },
   anchorCard: {
     marginTop: 14,
-    backgroundColor: C.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 20,
@@ -440,7 +440,7 @@ const getStyles = createThemedStyles((colors) => ({
   section: { marginTop: 16 },
   sectionTitle: { fontFamily: DF.serif, fontWeight: '700', fontSize: 21, color: C.ink, marginBottom: 8 },
   eventRowCard: {
-    backgroundColor: C.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,
@@ -465,7 +465,7 @@ const getStyles = createThemedStyles((colors) => ({
   milesRow: { gap: 10, paddingRight: 20 },
   mCard: {
     width: 86,
-    backgroundColor: C.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 16,
@@ -483,11 +483,11 @@ const getStyles = createThemedStyles((colors) => ({
   modalScroll: { maxHeight: 350 },
   modalTitle: { fontFamily: DF.serif, fontWeight: '700', fontSize: 21, color: C.ink, marginBottom: SIZES.lg, textAlign: 'center' },
   inputLabel: { fontSize: 12.5, fontWeight: '600', fontFamily: DF.uiSemi, color: C.gray, marginBottom: SIZES.xs },
-  input: { backgroundColor: C.white, borderRadius: 14, padding: SIZES.md, fontSize: 13.5, fontFamily: DF.ui, color: C.ink, marginBottom: SIZES.md, borderWidth: 1, borderColor: C.border },
+  input: { backgroundColor: colors.surface, borderRadius: 14, padding: SIZES.md, fontSize: 13.5, fontFamily: DF.ui, color: C.ink, marginBottom: SIZES.md, borderWidth: 1, borderColor: C.border },
   datePickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: C.white,
+    backgroundColor: colors.surface,
     borderRadius: 14,
     padding: SIZES.md,
     marginBottom: SIZES.md,

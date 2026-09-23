@@ -20,7 +20,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { C, F, kickerStyle, initialsOf } from '../../src/constants/designRefresh';
+import { C, F, kickerStyle, initialsOf } from '../../src/constants/corpus';
 
 const DF = F;
 
@@ -369,7 +369,7 @@ const getStyles = createThemedStyles((colors) => ({
   title: { fontFamily: DF.serif, fontWeight: '700', fontSize: 26, lineHeight: 30, color: C.ink },
   titleAccent: { color: C.roseSoft },
   subtitle: { fontSize: 12.5, fontFamily: DF.ui, color: C.gray, lineHeight: 19, marginTop: 2, marginBottom: SIZES.lg },
-  searchCard: { marginBottom: SIZES.lg, padding: SIZES.md, backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 18 },
+  searchCard: { marginBottom: SIZES.lg, padding: SIZES.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: C.border, borderRadius: 18 },
   sectionTitle: { fontFamily: DF.serifSemi, fontWeight: '600', fontSize: 17, color: C.ink, marginBottom: SIZES.sm },
   sectionSubtitle: { fontSize: 11.5, fontFamily: DF.ui, color: C.gray, marginBottom: SIZES.md },
   searchContainer: {
@@ -454,7 +454,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontStyle: 'italic',
   },
   section: { marginBottom: SIZES.lg },
-  requestCard: { marginBottom: 8, backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 18, paddingVertical: 12, paddingHorizontal: 14 },
+  requestCard: { marginBottom: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: C.border, borderRadius: 18, paddingVertical: 12, paddingHorizontal: 14 },
   requestRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   requestIcon: {
     width: 44,
@@ -505,7 +505,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: C.white,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: C.border,
     alignItems: 'center',

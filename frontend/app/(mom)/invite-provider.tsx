@@ -17,7 +17,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { C, F, kickerStyle } from '../../src/constants/designRefresh';
+import { C, F, kickerStyle } from '../../src/constants/corpus';
 
 const DF = F;
 
@@ -388,7 +388,7 @@ export default function InviteProviderScreen() {
   );
 }
 
-const getStyles = createThemedStyles(() =>
+const getStyles = createThemedStyles((colors) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: C.cream },
     scrollContent: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: SIZES.xxl },
@@ -401,7 +401,7 @@ const getStyles = createThemedStyles(() =>
       alignItems: 'center',
       justifyContent: 'center',
       alignSelf: 'flex-start',
-      backgroundColor: C.white,
+      backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: C.border,
       marginBottom: 14,
@@ -454,7 +454,7 @@ const getStyles = createThemedStyles(() =>
 
     // Form Card — fieldbox
     formCard: {
-      backgroundColor: C.white,
+      backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: C.border,
       borderRadius: 18,
@@ -554,7 +554,7 @@ const getStyles = createThemedStyles(() =>
     // Success — avatar initials + serif title (m17 header family)
     successCard: {
       alignItems: 'center',
-      backgroundColor: C.white,
+      backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: C.border,
       borderRadius: 18,
