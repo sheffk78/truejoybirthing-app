@@ -139,7 +139,12 @@ def generate_visit_summary(data: Dict[str, Any]) -> str:
         summary_parts.append(f"FH {data['fundal_height']} cm")
     if data.get("weight"):
         unit = data.get("weight_unit", "lbs")
-        summary_parts.append(f"Wt {data['weight']} {unit}")
+        # App sends weight pre-formatted ("141 lb"); don't double the unit.
+        weight_val = str(data["weight"])
+        if unit in weight_val:
+            summary_parts.append(f"Wt {weight_val}")
+        else:
+            summary_parts.append(f"Wt {weight_val} {unit}")
     return ", ".join(summary_parts) if summary_parts else "Visit recorded"
 
 

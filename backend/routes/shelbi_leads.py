@@ -559,8 +559,13 @@ async def shelbi_leads_stats(user: User = Depends(check_role(["ADMIN"]))):
 
 @admin_router.get("/{lead_id}")
 async def get_shelbi_lead(lead_id: str, user: User = Depends(check_role(["ADMIN"]))):
-    """Get a single Shelbi lead by lead_id (admin only)."""
-    lead = await db[COLLECTION].find_one({"lead_id": lead_id}, {"_id": 0})
+    """Get a single Shelbi lead by lead_id (admin only).
+
+    Mom->provider consultation requests live in `leads`; email/web leads live
+    in `shelbi_leads`. IDs are prefixed (lead_* vs sl_*), so resolve accordingly.
+    """
+    collection = "leads" if lead_id.startswith("lead_") else COLLECTION
+    lead = await db[collection].find_one({"lead_id": lead_id}, {"_id": 0})
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     return serialize_doc(lead)
@@ -578,6 +583,19 @@ async def update_shelbi_lead_status(
             status_code=400,
             detail=f"status must be one of: {VALID_STATUSES}",
         )
+
+    # Mom->provider consultation requests live in `leads` (ids lead_*); the
+    # Consultations tab lists them, so status changes must land there too.
+    if lead_id.startswith("lead_"):
+        lead = await db["leads"].find_one({"lead_id": lead_id})
+        if not lead:
+            raise HTTPException(status_code=404, detail="Lead not found")
+        now = get_now()
+        await db["leads"].update_one(
+            {"lead_id": lead_id},
+            {"$set": {"status": body.status, "updated_at": now}},
+        )
+        return {"message": "Status updated", "lead_id": lead_id, "status": body.status}
 
     lead = await db[COLLECTION].find_one({"lead_id": lead_id})
     if not lead:
@@ -603,6 +621,26 @@ async def add_shelbi_lead_note(
         raise HTTPException(status_code=400, detail="text is required")
     if not body.author.strip():
         raise HTTPException(status_code=400, detail="author is required")
+
+    # Consultation-request leads (lead_*) live in `leads`; keep notes consistent.
+    if lead_id.startswith("lead_"):
+        lead = await db["leads"].find_one({"lead_id": lead_id})
+        if not lead:
+            raise HTTPException(status_code=404, detail="Lead not found")
+        now = get_now()
+        note = {
+            "text": body.text.strip(),
+            "author": body.author.strip(),
+            "created_at": now,
+        }
+        await db["leads"].update_one(
+            {"lead_id": lead_id},
+            {
+                "$push": {"admin_notes": note},
+                "$set": {"updated_at": now},
+            },
+        )
+        return {"message": "Note added", "lead_id": lead_id, "note": serialize_doc(note)}
 
     lead = await db[COLLECTION].find_one({"lead_id": lead_id})
     if not lead:

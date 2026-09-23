@@ -240,7 +240,15 @@ async def update_lead_status(
     
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
-    
+
+    # Guard: a converted lead is a client relationship, not a lead anymore.
+    # Reverting/declining it would leave an Active client with a dead lead.
+    if lead.get("status") == "converted_to_client":
+        raise HTTPException(
+            status_code=409,
+            detail="Lead already converted to client — convert the client record (deactivate) instead of changing lead status.",
+        )
+
     now = get_now()
     
     update = {
