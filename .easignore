@@ -6,7 +6,7 @@
 /store
 /tests
 /scripts
-*.md
+/*.md
 /backend_test.py
 /simple_test.py
 /build-ios.sh
