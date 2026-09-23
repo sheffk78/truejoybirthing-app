@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Appearance } from 'react-native';
+import { DARK_CORPUS_SHIPPED } from '../constants/corpusGate';
 
 export type ThemePreference = 'SYSTEM' | 'LIGHT' | 'DARK';
 export type ThemeName = 'LIGHT' | 'DARK';
@@ -9,7 +10,7 @@ interface ThemeState {
   themePreference: ThemePreference;
   effectiveTheme: ThemeName;
   isHydrated: boolean;
-  
+
   // Actions
   setThemePreference: (preference: ThemePreference) => Promise<void>;
   initializeTheme: () => Promise<void>;
@@ -24,6 +25,18 @@ const getSystemTheme = (): ThemeName => {
   return colorScheme === 'dark' ? 'DARK' : 'LIGHT';
 };
 
+// Phase 2 (RESKIN-COMPLETION-PLAN-2026-09-22): until the dark designRefresh
+// corpus exists (DARK_CORPUS_SHIPPED, Jeff's Option B gate), a DARK preference
+// can never take effect — the 18 refreshed screens are light-only and a dark
+// shell around them ships broken-looking screens. The STORED preference is
+// kept intact, so flipping corpusGate.DARK_CORPUS_SHIPPED to true restores
+// every user's chosen preference instantly.
+const resolveEffective = (preference: ThemePreference): ThemeName => {
+  if (preference === 'SYSTEM') return getSystemTheme();
+  if (preference === 'DARK' && !DARK_CORPUS_SHIPPED) return 'LIGHT';
+  return preference;
+};
+
 export const useThemeStore = create<ThemeState>((set, get) => ({
   themePreference: 'SYSTEM',
   effectiveTheme: getSystemTheme(),
@@ -32,17 +45,12 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
   setThemePreference: async (preference) => {
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, preference);
-      
-      let effective: ThemeName;
-      if (preference === 'SYSTEM') {
-        effective = getSystemTheme();
-      } else {
-        effective = preference;
-      }
-      
-      set({ 
-        themePreference: preference, 
-        effectiveTheme: effective 
+
+      const effective = resolveEffective(preference);
+
+      set({
+        themePreference: preference,
+        effectiveTheme: effective
       });
     } catch (error) {
       console.error('Error saving theme preference:', error);
@@ -53,18 +61,13 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
     try {
       const stored = await AsyncStorage.getItem(THEME_STORAGE_KEY);
       const preference = (stored as ThemePreference) || 'SYSTEM';
-      
-      let effective: ThemeName;
-      if (preference === 'SYSTEM') {
-        effective = getSystemTheme();
-      } else {
-        effective = preference;
-      }
-      
-      set({ 
-        themePreference: preference, 
+
+      const effective = resolveEffective(preference);
+
+      set({
+        themePreference: preference,
         effectiveTheme: effective,
-        isHydrated: true 
+        isHydrated: true
       });
     } catch (error) {
       console.error('Error loading theme preference:', error);
@@ -75,7 +78,7 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
   updateEffectiveTheme: () => {
     const { themePreference } = get();
     if (themePreference === 'SYSTEM') {
-      set({ effectiveTheme: getSystemTheme() });
+      set({ effectiveTheme: resolveEffective('SYSTEM') });
     }
   },
 }));

@@ -10,6 +10,7 @@ import {
 import { Icon } from './Icon';
 import { useTheme } from '../contexts/ThemeContext';
 import { ThemePreference } from '../store/themeStore';
+import { DARK_CORPUS_SHIPPED } from '../constants/corpusGate';
 
 interface AppearanceSettingsProps {
   showLabel?: boolean;
@@ -21,7 +22,7 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
   const { theme, themePreference, setThemePreference, isDark } = useTheme();
   const { colors, sizes } = theme;
   
-  const options: { value: ThemePreference; label: string; icon: string; description: string }[] = [
+  const options: { value: ThemePreference; label: string; icon: string; description: string; disabled?: boolean }[] = [
     { 
       value: 'SYSTEM', 
       label: 'Use device setting', 
@@ -38,7 +39,8 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
       value: 'DARK', 
       label: 'Dark', 
       icon: 'moon-outline',
-      description: 'Always dark mode'
+      description: DARK_CORPUS_SHIPPED ? 'Always dark mode' : 'Coming in v2',
+      disabled: !DARK_CORPUS_SHIPPED,
     },
   ];
   
@@ -137,6 +139,7 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
               onPress={() => handleSelect(option.value)}
               activeOpacity={0.7}
               data-testid={`theme-option-${option.value.toLowerCase()}`}
+              disabled={option.disabled}
             >
               <View style={styles.iconContainer}>
                 <Icon 
@@ -172,7 +175,7 @@ export const AppearanceToggle: React.FC = () => {
   const getNextTheme = (): ThemePreference => {
     switch (themePreference) {
       case 'SYSTEM': return 'LIGHT';
-      case 'LIGHT': return 'DARK';
+      case 'LIGHT': return DARK_CORPUS_SHIPPED ? 'DARK' : 'SYSTEM';
       case 'DARK': return 'SYSTEM';
       default: return 'SYSTEM';
     }
