@@ -50,7 +50,7 @@ _IMAGE_DIR = os.path.join(_ASSET_DIR, 'images')
 _SPOT_DIR = os.path.join(_ASSET_DIR, 'spots')
 
 # ── Palette (refresh + site booklet) ─────────────────────────────
-LAVENDER = HexColor('#B9A5D1')        # section band (site booklet's muted lavender)
+LAVENDER = HexColor('#EBEAF5')        # full-width fills — site booklet's print-safe washted lavender)
 LAVENDER_SOFT = HexColor('#E7E0F0')   # checkbox fill / soft washes
 LAVENDER_XSOFT = HexColor('#F4F1F8')  # free-text wells / meta row wash
 INK = HexColor('#3F3A45')             # primary text
@@ -135,14 +135,17 @@ class NumberedCanvas(pdfcanvas.Canvas):
 
 # ── Page furniture ────────────────────────────────────────────────
 def _draw_top_band(canvas: pdfcanvas.Canvas, doc) -> None:
-    """Slim lavender brand band at the very top of every content page."""
+    """Printer-friendly header on every content page: letterspaced brand line +
+    thin lavender hairline. No ink fill (full-bleed bands waste toner and band
+    the header on home printers)."""
     band_h = 0.30 * inch
     canvas.saveState()
-    canvas.setFillColor(LAVENDER)
-    canvas.rect(0, PAGE_H - band_h, PAGE_W, band_h, stroke=0, fill=1)
-    canvas.setFillColor(PAPER)
+    canvas.setFillColor(INK)
     canvas.setFont(_f('Quicksand', 'SemiBold'), 8)
     canvas.drawCentredString(PAGE_W / 2, PAGE_H - band_h + 0.095 * inch, 'T R U E   J O Y   B I R T H I N G')
+    canvas.setStrokeColor(LAVENDER)
+    canvas.setLineWidth(0.75)
+    canvas.line(MARGIN, PAGE_H - band_h, PAGE_W - MARGIN, PAGE_H - band_h)
     canvas.restoreState()
 
 
@@ -165,7 +168,7 @@ class SectionBand(Flowable):
         c.saveState()
         c.setFillColor(LAVENDER)
         c.rect(0, 0, self.width, self.height, stroke=0, fill=1)
-        c.setFillColor(PAPER)
+        c.setFillColor(INK)
         c.setFont(_f('Quicksand', 'SemiBold'), 10.5)
         label = self.text.upper()
         if self.number is not None:
