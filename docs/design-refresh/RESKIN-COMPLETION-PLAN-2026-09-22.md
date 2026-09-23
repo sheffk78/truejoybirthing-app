@@ -32,9 +32,9 @@ Approved sources of truth (already approved 9/17, commit 397c372a):
 | 1.1 | Timeline | app/(mom)/timeline.tsx | s6-app-timeline.html | done 2ba75f86 |
 | 1.2 | Share Birth Plan | app/(mom)/share-birth-plan.tsx | s5-app-birth-plan.html | done 2ba75f86 |
 | 1.3 | Birth Plan Preview | app/(mom)/birth-plan-preview.tsx | s5-app-birth-plan.html | done 2ba75f86 |
-| 1.4 | Getting Started | app/(mom)/getting-started.tsx | s7s8s9 core pattern | 433 lines |
-| 1.5 | Postpartum | app/(mom)/postpartum.tsx | s13/s14 pattern (journal-style) | 443 lines |
-| 1.6 | Invite Provider | app/(mom)/invite-provider.tsx | m16/m17 family (search + card) | 599 lines |
+| 1.4 | Getting Started | app/(mom)/getting-started.tsx | s7s8s9 core pattern | done (rev2) |
+| 1.5 | Postpartum | app/(mom)/postpartum.tsx | s13/s14 pattern (journal-style) | done (rev2) |
+| 1.6 | Invite Provider | app/(mom)/invite-provider.tsx | m16/m17 family (search + card) | done (rev2) |
 
 Rules (standing, from DESIGN-RULES + approved passes):
 - Skin-only: structure/data/logic untouched; tokens from src/constants/designRefresh.ts (C, F); no hardcoded hexes; Cormorant headings / Quicksand body; 16px min horizontal inset; avatar = photo with initials fallback; no brand-mark changes (hard block).
