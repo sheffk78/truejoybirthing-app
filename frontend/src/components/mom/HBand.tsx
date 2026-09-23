@@ -63,7 +63,7 @@ export default function HBand({ source, height = 168, focus = '50% 18%' }: HBand
     <View style={{ height, position: 'relative', overflow: 'hidden' }}>
       {/* expo-image: contentFit cover + contentPosition honor the approved focus anchor
           ('50% 18%' etc.) natively — RN Image's absoluteFill+cover mis-scaled to an extreme
-          center-face crop (diag hband-diag A vs B, 2026-09-23). */}
+          center-face crop on iOS (isolated by 3-construction diagnostic, 2026-09-23). */}
       <ExpoImage
         source={source}
         contentFit="cover"
