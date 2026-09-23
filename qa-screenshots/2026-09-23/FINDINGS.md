@@ -1,0 +1,52 @@
+# QA Findings — 2026-09-23 — TrueJoy Birthing Mobile (Dark + Light)
+
+Code state: `9f008342` (Phase 2C dark mode live), branch `main`, tree clean at QA start.
+Environment: Xcode 26.5, iPhone 17 Pro sim (C35AC525-2D91-4295-BD48-3D7B20AC2966), Expo Go 54.0.7, Metro 8082, prod backend.
+Screenshots: `/Users/socializerender/Projects/TrueJoyBirthing-Mobile/qa-screenshots/2026-09-23/`
+
+## Pre-flight
+- [x] 6 unpushed commits found on local main (dark-mode phase). Push to origin blocked by diverged remote (remote `eb815b57` = workspace-copy sync snapshot from same morning). Resolution in progress — tracked separately from QA.
+- [x] App builds and runs in Expo Go from live checkout.
+
+## Findings
+- PASS — Welcome screen (light): cream canvas, serif Cormorant headings, rose/lavender accents, no blue, no left color bars, generous spacing. `02-welcome-light.png`
+- PASS — Login screen (light): renders clean, all elements present. `01c`, login flow OK via AX set_value (CGEvent typing doesn't land on sim — note for future runs).
+- PASS — Login → dashboard: mom account `demo.mom@` logs in, dashboard loads. iOS "Save Password?" sheet appears (system, not app bug); dismissed via Not Now.
+- PASS — Home (light): photo header band with veil fade, greeting "Hello, Demo", Joyful Birth Plan card (11%), Weekly Tip + Week chip, Weekly Affirmation card (plain, NO left bar — matches approved mockup; "sprig" not on approved mockup either, not a bug), Key Actions row (Timeline/Wellness/Schedule), What's New feed. `03-dashboard-mom-light.png`, `04-home-scrolled-light.png`
+- NOTE (cosmetic, minor): week header shows placeholder "WEEK — · DAY 0" and chip "WEEK ..." — demo account has no due date set (expected for demo data; onboarding completion would set it). Not a design bug.
+- PASS — Birth Plan tab: 9 sections render, progress bar accurate (11% → 22% after save), section modal opens with full content (video link 2:14, radio groups, checkbox groups), radio selection works, Save Section persists to backend (progress 1/9→2/9, section flips to "Complete"), Saved! dialog + OK dismisses cleanly. `05-birthplan-light.png`
+
+- PASS — Contraction Timer tab (light): empty state renders ("Ready to Time Contractions?"), Start Timing Session → share opt-in sheet (Doula/Midwife toggles + Not Now / Start Session — correct consent UX) → live session view: stat row (AVG DURATION / AVG INTERVAL / COUNT), big timer 00:00, Start Contraction tap → "CONTRACTION…" + Stop Contraction. All controls present: History / Add Manual / Share / End / Water Broke / Notes. `06-timer-running-light.png`
+- PASS — Timer full loop: timed contraction (Start→Stop, 5:38), post-stop intensity rating sheet (Mild/Moderate/Strong + Skip) works, Add Manual entry persisted (COUNT 0→2, AVG DURATION 01:00→03:19, AVG INTERVAL computed 08:56), Water Broke sheet opens with care-team-notice copy + notes field, closes cleanly without recording, End → confirm dialog → Session Complete summary (2 / 03:19 / 08:56, Share Summary + Start New Session). Stats math correct throughout. `07-timer-summary-light.png`
+- NOTE (tooling, not app bug): CGEvent typing into sim mangles numeric keys ("45"→"aaaa"); AX set_value works on some fields but not others; element-index clicks work where coordinate clicks bounce. Documented for future QA runs.
+
+- PASS — My Team (light): correct empty state ("0 team members connected" + Find Providers CTA). `08-myteam-empty-light.png`
+- PASS — Find Providers (light): search + filter chips (All/Doulas/Midwives/Lactation), 16 providers listed with cards (name, role, location, practice, service tags, years, availability, Contact/Request Consult/View Profile). Shelbi Kohler card data correct. `09-find-providers-light.png`
+- PASS — Provider profile (light): full detail (practice, location, experience, services, availability) + Contact/Request Consult. Contact deep-links into Messages with the provider thread pre-created. `10-provider-profile-light.png`
+- PASS — Messages + chat (light): inbox ("All caught up" + provider thread), chat thread renders history + "hasn't accepted you as a client yet — you can still chat" banner (good UX), composer accepted AX-typed text, send delivered message into thread with timestamp (11:05 AM), composer cleared. `11-messages-light.png`, `12-chat-thread-light.png`, `13-chat-sent-light.png`
+
+## Bugs / Issues
+1. **MINOR — Profile page coordinate misalignment in AX tree.** Appearance row: clicks at AX-reported center or visual center trigger App Tutorial (below) or nothing. Workaround = element-index click on the row's arrow side; not user-blocking (finger taps are direct, no synthetic-event offset). Note for devs: check touchable hit-slop/overlap on Profile rows. `10-provider-profile-light.png`
+2. **MINOR — Simulator rotation flakiness (test-env, not app).** Window/content orientation desynced after rotate shortcut; app content itself responsive (dark cards re-rendered). Resolved via osascript keystroke. Not an app bug. (Rotation cycle itself double-verified: device orientation works, app re-lays out correctly.)
+3. **MEDIUM — Admin Shelbi Leads status writes target wrong collection.** `/admin/api/shelbi-leads/{id}/status` updates `shelbi_leads`, but the Consultations tab reads mom→provider requests from `leads` (provider_name="Shelbi Kohler") — status changes made from that admin page don't affect the listed leads (hit during QA cleanup; had to update `leads` directly). Fix: point the status/notes endpoints at `leads` (or mirror the write). **FIXED & DEPLOYED 9/23 (commit 3189e9ae): GET/status/notes now resolve `lead_*` ids against `leads` — verified live (status change via admin endpoint stuck in `leads`), reverted to final `declined` state.**
+4. **LIMITATION (test-env) — Below-the-fold Profile rows unreachable via synthetic clicks** (in-app Appearance sheet + Log Out confirm): same offset class as Finding #1. Direct finger taps unaffected; flagged for a human pass. System-follow dark path fully verified instead.
+
+## Edge Flows (dark)
+- PASS — Dark sweep (system flip): Cmd+Shift+A toggled iOS dark; app followed instantly across Profile/Home/Birth Plan/Timer/Team/Messages — deep purple bg, cards/contrast correct everywhere. `14-20-*-dark.png`
+- PASS — Kill + relaunch (session persist): simctl terminate + relaunch of Expo Go → reopened "True Joy Birthing" from Recently opened → dashboard restored, still logged in (session persisted). `21-session-persist-dark.png`
+
+## DB Hygiene Pass (2026-09-23, post-suite) — see DB-HYGIENE-2026-09-23.md
+- Atlas confirmed healthy (ping OK, 49 collections). Jeff's Railway/Atlas question answered: topology is fine; all issues were app-data level.
+- 16 orphan/stale rows from DELETED demo/test accounts cleaned; verified ZERO orphans across 12 cross-collection checks; live surfaces re-smoked after cleanup.
+- **OPEN for Jeff/Shelbi: Carlicia Feaster's real 68-day-old unanswered consult request to Shelbi (lead_5394b11ebb2d) — left untouched, needs human response.**
+
+## Pending
+- ~~Login (mom), tab bar, home, click-through, dark sweep~~ DONE. Remaining: in-app Appearance sheet (manual), doula, midwife, logout-confirm (manual), Birth Plan remaining sections, Timer share-sheet path.
+
+## Scenario Suite (cross-role, 2026-09-23 PM)
+Demo creds confirmed in `scripts/release-creds.json` (mom/doula/midwife all live; demo.lactation@ known 401 — excluded).
+- **S1 — Mom → Doula connect:** PASS (mom UI + full API loop) — UI: Request Consult on Shelbi card → "Consultation Requested!" dialog → card flips to Requested `22-…png`, `23-…png`. API (demo pair): mom request → doula sees lead (stats 1/1) → convert-to-client (client_e1528c21715e) → appointment appt_0a63d9d9a58c 9/25 3pm visible to BOTH sides → lead → consultation_scheduled → 2-way messages verified in thread. NOTE: app has no mom-side withdraw for a pending request (by design; provider declines instead). ⚠️ Stray lead_ad4f4e494e6d (real Shelbi Kohler acct) — RESOLVED: lead set to declined with QA note via Shelbi's ADMIN account (with Jeff's approval); verified gone from her requested queue (2 real inquiries untouched) and present in declined bucket. Related bug: see Finding #3 (admin status endpoint targets wrong collection).
+- **S2 — Appointment visibility:** doula/midwife ProviderAppointments reflects booked/consult items; mom-side appointments screen renders. (Partial via API: mom's `/appointments` returns the scheduled consult appt_0a63d9d9a58c; doula-side ProviderAppointments UI check pending.)
+- **S3 — Midwife visit entry:** PASS (API) — mom→midwife lead created + converted (client_52d221cf0c91); POST /provider/visits created visit_3ee8407d5d1e (Prenatal 9/23: BP 118/76, FHR 144, Wt 141 — summary auto-composed) with AUTO-LINKED appointment appt_e55f2e588f3e visible to mom (status completed); second visit (Postpartum 9/30) also 200; lead correctly stays converted_to_client. Double-unit quirk noted: "Wt 141 lb lbs" in summary (cosmetic; backend composes summary, field stores "141 lb"). **FIXED & DEPLOYED 9/23 (commits 3189e9ae + 102dff51): summary generator skips the unit when weight is pre-formatted (stem match), and weight_unit: null no longer 500s (found by live repro + Railway logs, ad-hoc verify 12/12 cases pass); 2 existing demo visit summaries repaired in DB (now "Wt 141 lb" / "Wt 138 lb").**
+- **S4 — Lead decline:** PASS with 1 FINDING — decline endpoint works (lead_044364f1a42d → declined, mom sees declined). **MEDIUM FINDING: backend allows `declined` status on an already `converted_to_client` lead** — no status-guard in PUT /{lead_id}/status; result is an Active client with a declined lead (inconsistent state; visits/appointments survive). Frontend hides decline for converted leads, so UI users can't hit it — API-only edge. Recommend backend guard: reject status changes after converted_to_client. **FIXED & DEPLOYED 9/23 (commit 3189e9ae): PUT /status now returns 409 on converted leads — verified live (409 + guard message), lead restored to converted_to_client.**
+- **S5 — Provider client detail:** PASS (API) — client-scoped visit history returns both visits (2) for client_52d221cf0c91 with summaries; S2 completed: doula's /appointments returns the linked consult (1 item, scheduled). All provider-side list surfaces verified via API.
