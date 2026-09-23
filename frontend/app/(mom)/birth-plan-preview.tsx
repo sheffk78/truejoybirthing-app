@@ -74,33 +74,71 @@ export default function BirthPlanPreviewScreen() {
   };
 
   const handleDownloadPDF = async () => {
-    if (Platform.OS === 'web') {
-      try {
-        const token = sessionToken;
-        const pdfUrl = `${API_BASE}${API_ENDPOINTS.BIRTH_PLAN_EXPORT}/pdf`;
-        
+    try {
+      const pdfUrl = `${API_BASE}${API_ENDPOINTS.BIRTH_PLAN_EXPORT}/pdf`;
+      const token = sessionToken;
+
+      if (Platform.OS === 'web') {
         const response = await fetch(pdfUrl, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` },
         });
-        
-        if (!response.ok) {
-          throw new Error('Failed to generate PDF');
-        }
-        
+        if (!response.ok) throw new Error('Failed to generate PDF');
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'Birth_Plan.pdf';
+        link.download = 'My_Birth_Plan.pdf';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error('Download error:', error);
+        Alert.alert('Success', 'Your birth plan PDF has been downloaded!');
+      } else {
+        // Native: fetch PDF, write to cache, open the system share sheet (save to Files, print, AirDrop…)
+        const FileSystem = require('expo-file-system/legacy');
+        const Sharing = require('expo-sharing');
+
+        const response = await fetch(pdfUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/pdf',
+          },
+        });
+        if (!response.ok) throw new Error('Failed to download PDF');
+        const blob = await response.blob();
+        if (blob.size === 0) throw new Error('Downloaded PDF is empty');
+
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve(result.split(',')[1]);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+
+        const fileUri = FileSystem.cacheDirectory + 'My_Birth_Plan.pdf';
+        await FileSystem.writeAsStringAsync(fileUri, base64, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        const isAvailable = await Sharing.isAvailableAsync();
+        if (isAvailable) {
+          await Sharing.shareAsync(fileUri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Save or Share Your Birth Plan',
+          });
+        } else {
+          Alert.alert('Success', 'Your birth plan PDF has been saved to the app cache.');
+        }
       }
+    } catch (error: any) {
+      console.error('PDF download error:', error);
+      Alert.alert('Error', error.message || 'Failed to download PDF. Please try again.');
+    } finally {
+      setPrinting(false);
     }
   };
 
