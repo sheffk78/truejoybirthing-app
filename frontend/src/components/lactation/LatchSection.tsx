@@ -22,7 +22,7 @@ import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { SIZES } from '../../constants/theme';
-import { C, F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/corpus';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../constants/api';
 
@@ -371,7 +371,7 @@ export default function LatchSection({ clientId, primaryColor, onRefresh }: Latc
                     borderRadius: 8,
                     fontSize: 16,
                     width: '100%',
-                    backgroundColor: C.white,
+                    backgroundColor: C.surface,
                   }}
                 />
               ) : (
@@ -632,7 +632,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderBottomWidth: 1,
     borderBottomColor: C.hairline,
   },
@@ -647,7 +647,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderTopWidth: 1,
     borderTopColor: C.hairline,
   },
@@ -675,7 +675,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: F.ui,
     color: C.ink,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   textArea: {
     minHeight: 100,
@@ -710,7 +710,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     borderRadius: 22,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -733,7 +733,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     fontSize: SIZES.fontSm,
     fontFamily: F.ui,
     color: C.ink,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   // Total display in form
   totalDisplay: {
@@ -742,7 +742,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     alignItems: 'center',
     paddingVertical: SIZES.md,
     paddingHorizontal: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
@@ -777,7 +777,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     marginBottom: SIZES.md,
     paddingHorizontal: SIZES.lg,
     paddingVertical: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
     borderColor: C.lavenderBorder,

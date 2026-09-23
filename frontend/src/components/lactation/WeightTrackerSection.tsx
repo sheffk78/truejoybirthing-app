@@ -21,7 +21,7 @@ import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { SIZES } from '../../constants/theme';
-import { C, F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/corpus';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../constants/api';
 
@@ -342,7 +342,7 @@ export default function WeightTrackerSection({ clientId, primaryColor, onRefresh
                     borderRadius: 8,
                     fontSize: 16,
                     width: '100%',
-                    backgroundColor: C.white,
+                    backgroundColor: C.surface,
                   }}
                 />
               ) : (
@@ -691,7 +691,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderBottomWidth: 1,
     borderBottomColor: C.hairline,
   },
@@ -706,7 +706,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderTopWidth: 1,
     borderTopColor: C.hairline,
   },
@@ -735,7 +735,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: F.ui,
     color: C.ink,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   textArea: {
     minHeight: 100,
@@ -756,7 +756,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   unitOption: {
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   unitOptionSelected: {
     // backgroundColor set inline

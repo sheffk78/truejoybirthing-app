@@ -17,7 +17,7 @@ import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { C, F } from '../../src/constants/designRefresh';
+import { C, F } from '../../src/constants/corpus';
 
 interface ProviderProfile {
   user_id: string;
@@ -377,7 +377,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     paddingVertical: SIZES.md,
     paddingHorizontal: SIZES.lg,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: C.lavenderBorder,

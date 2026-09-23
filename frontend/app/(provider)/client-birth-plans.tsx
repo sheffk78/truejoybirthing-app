@@ -19,7 +19,7 @@ import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
-import { F } from '../../src/constants/designRefresh';
+import { F } from '../../src/constants/corpus';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 interface ShareRequest {

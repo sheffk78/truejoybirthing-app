@@ -10,4 +10,4 @@
 // Stored DARK preferences are kept, so flipping this to true restores each
 // user's chosen preference instantly — the Option B flip is one flag.
 
-export const DARK_CORPUS_SHIPPED = false;
+export const DARK_CORPUS_SHIPPED = true;

@@ -23,7 +23,7 @@ import SectionVideoGuide from '../../src/components/SectionVideoGuide';
 import { apiRequest, getApiBaseUrl } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
-import { C } from '../../src/constants/designRefresh';
+import { C } from '../../src/constants/corpus';
 import { useColors, createThemedStyles, ThemeColors } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 
@@ -447,7 +447,7 @@ export default function BirthPlanScreen() {
                 onPress={() => setModalVisible(false)}
                 style={styles.modalCloseButton}
               >
-                <Text style={{ fontSize: 24, lineHeight: 28, color: '#2A2A2A', fontWeight: '300' }}>×</Text>
+                <Text style={{ fontSize: 24, lineHeight: 28, color: C.ink, fontWeight: '300' }}>×</Text>
               </TouchableOpacity>
               <Text style={styles.modalTitle} numberOfLines={1}>
                 {selectedSection?.title}

@@ -27,7 +27,7 @@ import { API_ENDPOINTS } from '../../constants/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
-import { C, F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/corpus';
 
 
 const STATUS_COLORS: Record<string, string> = {

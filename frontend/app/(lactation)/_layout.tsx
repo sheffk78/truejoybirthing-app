@@ -2,7 +2,7 @@ import React from 'react';
 import { Tabs, Redirect } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import { Platform, View } from 'react-native';
-import { C, F } from '../../src/constants/designRefresh';
+import { C, F } from '../../src/constants/corpus';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../src/store/authStore';
 import { useBadgeStore } from '../../src/store/badgeStore';
@@ -80,7 +80,7 @@ export default function LactationLayout() {
         tabBarActiveTintColor: C.lavenderSoft,
         tabBarInactiveTintColor: C.gray,
         tabBarStyle: {
-          backgroundColor: C.white,
+          backgroundColor: C.cream,
           borderTopColor: C.hairline,
           borderTopWidth: 1,
           height: (Platform.OS === 'ios' ? 60 : 56) + bottomInset,

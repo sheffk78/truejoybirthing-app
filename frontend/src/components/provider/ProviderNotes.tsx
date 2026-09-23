@@ -26,7 +26,7 @@ import { apiRequest } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
-import { F } from '../../constants/designRefresh';
+import { F } from '../../constants/corpus';
 
 
 const NOTE_TYPES = ['Prenatal', 'Birth', 'Postpartum', 'General'];

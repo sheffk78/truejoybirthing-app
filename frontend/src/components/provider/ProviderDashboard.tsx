@@ -22,7 +22,7 @@ import { SIZES, FONTS } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import ProviderFeedSection from './ProviderFeedSection';
-import { C, F } from '../../constants/designRefresh';
+import { C, F , type Corpus, type LiveCorpus } from '../../constants/corpus';
 
 
 interface ShareRequest {
@@ -41,6 +41,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   const router = useRouter();
   const { user } = useAuthStore();
   const colors = useColors();
+  const styles = getDashStyles(C);
   
   const [stats, setStats] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -308,7 +309,7 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const getDashStyles = (c: LiveCorpus) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -334,7 +335,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,
@@ -389,7 +390,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: SIZES.md,
     alignItems: 'center',
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
   },
@@ -426,7 +427,7 @@ const styles = StyleSheet.create({
   requestCard: {
     marginBottom: SIZES.md,
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,
@@ -497,7 +498,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: SIZES.md,
     marginBottom: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
   },

@@ -17,7 +17,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { C, F, kickerStyle, srowBase } from '../../src/constants/designRefresh';
+import { C, F, kickerStyle, srowBase } from '../../src/constants/corpus';
 const DF = F;
 
 // Maps invoice status to theme color tokens at render time
@@ -388,7 +388,7 @@ const getStyles = createThemedStyles((colors) => ({
     lineHeight: 18,
   },
   emptyCard: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.xl,
     alignItems: 'center',
@@ -408,7 +408,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.sm,
   },
   invoiceCard: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.md,
     marginBottom: SIZES.sm,
@@ -450,7 +450,7 @@ const getStyles = createThemedStyles((colors) => ({
   viewButton: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   viewButtonText: { fontSize: 14, color: C.lavender, fontWeight: '500' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: C.white, borderTopLeftRadius: SIZES.radiusLg, borderTopRightRadius: SIZES.radiusLg, maxHeight: '90%' },
+  modalContent: { backgroundColor: C.surface, borderTopLeftRadius: SIZES.radiusLg, borderTopRightRadius: SIZES.radiusLg, maxHeight: '90%' },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -554,7 +554,7 @@ const getStyles = createThemedStyles((colors) => ({
   paymentMethodRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusMd,
     borderWidth: 1,
     borderColor: C.border,

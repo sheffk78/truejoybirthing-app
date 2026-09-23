@@ -21,7 +21,7 @@ import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { SIZES } from '../../constants/theme';
-import { C, F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/corpus';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 
 // ============== TYPES ==============
@@ -1502,7 +1502,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderBottomWidth: 1,
     borderBottomColor: C.hairline,
   },
@@ -1518,13 +1518,13 @@ const getStyles = createThemedStyles((colors) => ({
   modalFooter: {
     flexDirection: 'row',
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderTopWidth: 1,
     borderTopColor: C.hairline,
   },
   // Collapsible sections
   collapsibleSection: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusMd,
     marginBottom: SIZES.sm,
     overflow: 'hidden',
@@ -1566,7 +1566,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: F.ui,
     color: C.ink,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   inputSmall: {
     marginTop: SIZES.xs,
@@ -1608,7 +1608,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     marginBottom: SIZES.xs,
   },
   optionButtonSmall: {
@@ -1682,7 +1682,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   statusButtonText: {
     fontSize: SIZES.fontXs,

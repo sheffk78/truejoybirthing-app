@@ -21,7 +21,7 @@ import Card from '../Card';
 import Button from '../Button';
 import { apiRequest, getApiBaseUrl } from '../../utils/api';
 import { SIZES } from '../../constants/theme';
-import { C, F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/corpus';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { useAuthStore } from '../../store/authStore';
 
@@ -1282,7 +1282,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderBottomWidth: 1,
     borderBottomColor: C.hairline,
   },
@@ -1297,7 +1297,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderTopWidth: 1,
     borderTopColor: C.hairline,
   },
@@ -1326,7 +1326,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: F.ui,
     color: C.ink,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   textArea: {
     minHeight: 70,
@@ -1354,7 +1354,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     marginBottom: SIZES.xs,
   },
   optionButtonSelected: {
@@ -1399,7 +1399,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
   },
   previewContainer: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusLg,
     width: '100%',
     maxWidth: 420,

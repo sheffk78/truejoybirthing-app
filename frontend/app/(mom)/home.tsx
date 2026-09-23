@@ -23,7 +23,7 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 import HBand from '../../src/components/mom/HBand';
-import { BAND_HOME, C, F } from '../../src/constants/designRefresh';
+import { BAND_HOME, C, F } from '../../src/constants/corpus';
 
 interface PendingContract {
   contract_id: string;
@@ -675,7 +675,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   actionCard: {
     flex: 1,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: 18,
     borderWidth: 1,
     borderColor: C.border,
@@ -740,10 +740,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     gap: 2,
   },
-  affirmationCard: {
-    borderLeftWidth: 3,
-    borderLeftColor: C.roseBorder,
-  },
+  affirmationCard: {},
   affirmationContent: {
     fontSize: 16.5,
     lineHeight: 23,

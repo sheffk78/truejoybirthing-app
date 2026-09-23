@@ -22,7 +22,7 @@ import { SUBSCRIPTION_PRODUCTS } from '../../services/billing/subscriptionConfig
 import { useIAP } from '../../services/billing/useIAP';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
-import { F } from '../../constants/designRefresh';
+import { F } from '../../constants/corpus';
 
 
 // Check if running in Expo Go

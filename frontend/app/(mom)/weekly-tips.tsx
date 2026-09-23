@@ -21,7 +21,7 @@ import { getBabyDevData, type BabyDevEntry } from '../../src/constants/babyDevel
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HBand from '../../src/components/mom/HBand';
-import { C, F, BAND_TIPS, trimesterOf } from '../../src/constants/designRefresh';
+import { C, F, BAND_TIPS, trimesterOf } from '../../src/constants/corpus';
 
 interface WeekContent {
   week: number;
@@ -371,7 +371,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 34,
     height: 34,
     borderRadius: 12,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -435,7 +435,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   // —— Approved tip cards (.tipcard) ——
   tipCard: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,
@@ -500,7 +500,7 @@ const getStyles = createThemedStyles((colors) => ({
   // —— Approved baby dev row (.srow with thumbnail) ——
   babyDevRow: {
     flexDirection: 'row',
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,

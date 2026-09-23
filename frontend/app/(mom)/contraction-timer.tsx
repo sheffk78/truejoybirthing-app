@@ -25,7 +25,7 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-chart-kit';
 import Svg, { Circle } from 'react-native-svg';
-import { C, F } from '../../src/constants/designRefresh';
+import { C, F } from '../../src/constants/corpus';
 
 // Types
 interface Contraction {
@@ -1425,7 +1425,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 34,
     height: 34,
     borderRadius: 12,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     alignItems: 'center',
@@ -1433,7 +1433,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   statsStrip: {
     flexDirection: 'row',
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: C.hairline,
@@ -1479,7 +1479,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 186,
     height: 186,
     borderRadius: 93,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     justifyContent: 'center',
@@ -1530,7 +1530,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingBottom: 7,
     borderTopWidth: 1,
     borderTopColor: C.hairline,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   actionBtn: {
     flex: 1,

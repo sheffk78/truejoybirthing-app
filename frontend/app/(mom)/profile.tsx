@@ -32,7 +32,7 @@ import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
-import { C, F as DF, initialsOf, kickerStyle, srowBase } from '../../src/constants/designRefresh';
+import { C, F as DF, initialsOf, kickerStyle, srowBase } from '../../src/constants/corpus';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
@@ -1044,7 +1044,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.lg,
   },
   dateModalContent: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.lg,
     width: '100%',
@@ -1139,7 +1139,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   profileCard: {
     marginBottom: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusLg,
     padding: SIZES.md,
     borderWidth: 1,
@@ -1147,14 +1147,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   menuCard: {
     marginBottom: SIZES.sm,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusLg,
     borderWidth: 1,
     borderColor: C.border,
   },
   legalCard: {
     marginBottom: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusLg,
     borderWidth: 1,
     borderColor: C.border,
@@ -1238,7 +1238,7 @@ const getStyles = createThemedStyles((colors) => ({
     gap: SIZES.sm,
     padding: SIZES.lg,
     marginBottom: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusLg,
     borderWidth: 1,
     borderColor: C.border,

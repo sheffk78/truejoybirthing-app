@@ -25,7 +25,7 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TIcon from '../../src/components/TIcon';
 import HBand from '../../src/components/mom/HBand';
-import { C, F, BAND_APPOINTMENTS } from '../../src/constants/designRefresh';
+import { C, F, BAND_APPOINTMENTS } from '../../src/constants/corpus';
 
 interface Appointment {
   appointment_id: string;
@@ -835,7 +835,7 @@ const getStyles = createThemedStyles(() => ({
 
   // —— Approved schedule row (.srow) ——
   srow: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,
@@ -886,7 +886,7 @@ const getStyles = createThemedStyles(() => ({
   fieldLabel: { fontSize: 12, fontFamily: F.uiBold, fontWeight: '700', color: C.gray, marginBottom: 8, marginTop: 16, letterSpacing: 0.3 },
 
   providersList: { gap: 8 },
-  providerOption: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.white, borderRadius: 18, borderWidth: 2, borderColor: 'transparent' },
+  providerOption: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.surface, borderRadius: 18, borderWidth: 2, borderColor: 'transparent' },
   providerOptionSelected: { borderColor: C.lavender, backgroundColor: C.lavenderBg },
   providerOptionAvatar: { width: 44, height: 44, borderRadius: 22, marginRight: 12 },
   providerOptionInfo: { flex: 1 },
@@ -896,24 +896,24 @@ const getStyles = createThemedStyles(() => ({
   noProvidersText: { fontSize: 13, fontFamily: F.ui, color: C.gray, marginVertical: 16 },
 
   dateTimeRow: { flexDirection: 'row', gap: 10 },
-  dateTimeButton: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.white, borderRadius: 18, borderWidth: 1, borderColor: C.border, gap: 10 },
+  dateTimeButton: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.surface, borderRadius: 18, borderWidth: 1, borderColor: C.border, gap: 10 },
   dateTimeText: { fontSize: 13.5, fontFamily: F.ui, fontWeight: '600', color: C.ink },
 
   dateModalOverlay: { flex: 1, backgroundColor: 'rgba(42,42,42,0.4)', justifyContent: 'center', alignItems: 'center', padding: 28 },
-  dateModalContent: { backgroundColor: C.white, borderRadius: 22, padding: 24, width: '100%', maxWidth: 400 },
+  dateModalContent: { backgroundColor: C.surface, borderRadius: 22, padding: 24, width: '100%', maxWidth: 400 },
   dateModalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   dateModalTitle: { fontSize: 21, fontFamily: F.serif, fontWeight: '700', color: C.ink },
   webCalendarWrapper: { marginVertical: 12 },
   nativeTimePickerWrapper: { alignItems: 'center', justifyContent: 'center', marginVertical: 12 },
 
   typeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  typeOption: { paddingHorizontal: 14, paddingVertical: 8, backgroundColor: C.white, borderRadius: 999, borderWidth: 1.3, borderColor: C.lavenderBorder },
+  typeOption: { paddingHorizontal: 14, paddingVertical: 8, backgroundColor: C.surface, borderRadius: 999, borderWidth: 1.3, borderColor: C.lavenderBorder },
   typeOptionSelected: { backgroundColor: C.lavender, borderColor: C.lavender },
   typeOptionText: { fontSize: 12, fontFamily: F.ui, fontWeight: '600', color: C.gray },
   typeOptionTextSelected: { color: C.white, fontFamily: F.uiBold, fontWeight: '700' },
 
-  virtualToggle: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.white, borderRadius: 18, borderWidth: 1, borderColor: C.border, marginTop: 16 },
+  virtualToggle: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.surface, borderRadius: 18, borderWidth: 1, borderColor: C.border, marginTop: 16 },
   virtualToggleText: { flex: 1, fontSize: 13.5, fontFamily: F.ui, color: C.ink, marginLeft: 10 },
 
-  notesInput: { backgroundColor: C.white, borderRadius: 18, borderWidth: 1, borderColor: C.border, padding: 14, fontSize: 13.5, fontFamily: F.ui, color: C.ink, minHeight: 96, textAlignVertical: 'top' },
+  notesInput: { backgroundColor: C.surface, borderRadius: 18, borderWidth: 1, borderColor: C.border, padding: 14, fontSize: 13.5, fontFamily: F.ui, color: C.ink, minHeight: 96, textAlignVertical: 'top' },
 }));

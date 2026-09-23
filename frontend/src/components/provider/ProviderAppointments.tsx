@@ -29,7 +29,7 @@ import { apiRequest } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
-import { C, F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/corpus';
 
 
 const DateTimePicker = Platform.OS === 'web' ? null : require('@react-native-community/datetimepicker').default;

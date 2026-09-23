@@ -20,7 +20,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { C, F, kickerStyle, srowBase } from '../../src/constants/designRefresh';
+import { C, F, kickerStyle, srowBase } from '../../src/constants/corpus';
 const DF = F;
 
 const MOODS = [
@@ -364,11 +364,11 @@ const getStyles = createThemedStyles((colors) => ({
   statLabel: { fontSize: SIZES.fontXs, color: C.grayLight, marginTop: SIZES.xs },
   section: { marginBottom: SIZES.lg },
   sectionTitle: { fontSize: SIZES.fontLg, fontWeight: '600', color: C.ink, marginBottom: SIZES.md },
-  emptyCard: { alignItems: 'center', padding: SIZES.xl, backgroundColor: C.white, borderRadius: SIZES.radiusLg, borderWidth: 1, borderColor: C.border },
+  emptyCard: { alignItems: 'center', padding: SIZES.xl, backgroundColor: C.surface, borderRadius: SIZES.radiusLg, borderWidth: 1, borderColor: C.border },
   emptyText: { fontSize: SIZES.fontMd, fontWeight: '600', color: C.ink, marginTop: SIZES.md },
   emptySubtext: { fontSize: SIZES.fontSm, color: C.gray },
   // Rowline entry card (S14 mockup style)
-  entryCard: { backgroundColor: C.white, borderRadius: SIZES.radiusLg, borderWidth: 1, borderColor: C.border, padding: SIZES.md, marginBottom: SIZES.sm },
+  entryCard: { backgroundColor: C.surface, borderRadius: SIZES.radiusLg, borderWidth: 1, borderColor: C.border, padding: SIZES.md, marginBottom: SIZES.sm },
   entryHeader: { flexDirection: 'row', alignItems: 'center' },
   entryTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   moodChip: { backgroundColor: C.roseBg, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },

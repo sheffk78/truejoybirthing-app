@@ -29,7 +29,7 @@ import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { useSubscriptionGate } from '../../utils/subscriptionGate';
-import { C, F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/corpus';
 
 
 interface Lead {

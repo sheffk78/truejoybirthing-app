@@ -20,7 +20,7 @@ import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { SIZES } from '../../constants/theme';
-import { C, F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/corpus';
 import { useColors, createThemedStyles } from '../../hooks/useThemedStyles';
 
 // ============== TYPES ==============
@@ -1211,7 +1211,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderBottomWidth: 1,
     borderBottomColor: C.hairline,
   },
@@ -1226,7 +1226,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderTopWidth: 1,
     borderTopColor: C.hairline,
   },
@@ -1255,7 +1255,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: F.ui,
     color: C.ink,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   textArea: {
     minHeight: 80,
@@ -1272,7 +1272,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   optionButtonSelected: {
     borderColor: C.lavenderSoft,
@@ -1299,7 +1299,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   painScaleButtonSelected: {
     borderColor: 'transparent',

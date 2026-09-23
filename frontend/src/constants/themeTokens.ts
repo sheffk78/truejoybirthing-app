@@ -165,70 +165,73 @@ export const LIGHT_COLORS: ColorTokens = {
 // ============================================
 
 export const DARK_COLORS: ColorTokens = {
+  // Phase 2C: reconciled to the APPROVED dark corpus (designRefreshDark.ts,
+  // Jeff-approved 2026-09-23). Every hex below comes verbatim from that corpus
+  // (or is the same hue family resolved for the shared token shape).
   background: {
-    primary: '#1A1520',      // Deep purple-black (not pure black)
-    secondary: '#241E2A',    // Slightly lighter
-    surface: '#2A2330',      // Card backgrounds
-    elevated: '#332B3A',     // Elevated surfaces (modals, dropdowns)
-    subtle: '#1F1925',       // Very subtle background
+    primary: '#1A1520',      // canvas — approved dark cream reversal
+    secondary: '#221B20',    // gbandMid — approved dark alternate surface
+    surface: '#2A2330',      // cardBg — approved dark raised surface
+    elevated: '#2F2C3A',     // halo — approved dark elevated surface
+    subtle: '#222235',       // lavenderBg — approved dark subtle chip bg
   },
-  
+
   text: {
-    primary: '#F5F0F7',      // Off-white with lavender tint
-    secondary: '#B8B0BC',    // Muted text
-    muted: '#8A7E8E',        // Very muted
-    onAccent: '#FFFFFF',     // White on accent backgrounds
-    inverse: '#1A1520',      // For light backgrounds in dark mode
+    primary: '#F5F3F6',      // ink — approved dark headings (16.2:1 on canvas)
+    secondary: '#B6B1B9',    // body — approved dark tip body (8.51:1)
+    muted: '#9E97A4',        // gray — approved dark meta/secondary (5.34:1)
+    onAccent: '#FFFFFF',     // on-accent text stays white (4.92:1 on kept midtones)
+    inverse: '#1A1520',      // canvas (for light-on-dark inversions)
   },
-  
+
   accent: {
-    primary: '#B899CC',      // Lighter lavender for dark mode
-    primaryLight: '#D4C1E3', // Even lighter
-    primaryDark: '#8B6BA3',  // Slightly darker
-    secondary: '#E0B8B8',    // Lighter dusty rose
-    secondaryLight: '#ECD0D0',
-    secondaryDark: '#C49A9A',
-    tertiary: '#A3C9A3',     // Lighter sage green
+    primary: '#8E8CB5',      // lavenderSoft — kept midtone (pill bg, white text 4.92:1)
+    primaryLight: '#9796B9', // lavenderText — approved dark text-on-canvas
+    primaryDark: '#6E6C99',  // lavender — kept midtone both modes
+    secondary: '#AE7698',    // rose — approved dark kickers (5.0:1)
+    secondaryLight: '#C09BB6', // roseSoft — approved dark H1 accent/chips
+    secondaryDark: '#BD7FA5',  // roseBorder — approved dark border/dot hue
+    tertiary: '#728F60',     // sage — approved dark sage kicker (4.96:1)
   },
-  
+
   border: {
-    subtle: '#3A3240',       // Very subtle
-    default: '#4A4252',      // Default border
-    strong: '#5A5062',       // Strong border
+    subtle: '#3C3540',       // hairline — approved dark strip/tab hairline
+    default: '#473943',      // border — approved dark card border
+    strong: '#434059',       // lavenderBorder — approved dark ghost pill border
   },
-  
+
   status: {
-    success: '#A3C9A3',      // Lighter sage
-    successBg: '#1F2A1F',    // Dark green background
-    warning: '#EDD99E',      // Lighter warm yellow
-    warningBg: '#2A2618',    // Dark yellow background
-    error: '#E5A3A3',        // Lighter soft red
-    errorBg: '#2A1F1F',      // Dark red background
-    info: '#A3BFC6',         // Lighter teal
-    infoBg: '#1F2527',       // Dark teal background
+    success: '#728F60',      // sage (dark)
+    successBg: '#293522',    // sageBg — approved dark chip bg
+    warning: '#C09BB6',      // roseSoft (warn accent in dark corpus family)
+    warningBg: '#372031',    // roseBg — approved dark warn chip bg
+    error: '#AE7698',        // rose (dark)
+    errorBg: '#372031',      // roseBg
+    info: '#9796B9',         // lavenderText (dark)
+    infoBg: '#222235',       // lavenderBg
   },
-  
+
   role: {
-    mom: '#E0B8B8',          // Lighter rose
-    doula: '#B899CC',        // Lighter lavender
-    midwife: '#A3C9A3',      // Lighter sage
-    lactation: '#7BC9B8',    // Lighter teal-green
-    admin: '#A89EA8',        // Lighter gray
+    mom: '#AE7698',          // rose (dark)
+    doula: '#8E8CB5',        // lavenderSoft (kept midtone)
+    midwife: '#728F60',      // sage (dark)
+    lactation: '#7BC9B8',    // teal-green (unchanged family)
+    admin: '#9E97A4',        // gray (dark)
   },
-  
+
   mood: {
-    veryLow: '#E5A3A3',
-    low: '#EDD99E',
-    neutral: '#A89EA8',
-    good: '#A3C9A3',
-    great: '#A3BFC6',
+    veryLow: '#AE7698',
+    low: '#C09BB6',
+    neutral: '#9E97A4',
+    good: '#728F60',
+    great: '#9796B9',
   },
-  
+
   overlay: {
     backdrop: 'rgba(0, 0, 0, 0.7)',  // Darker overlay for dark mode
     light: 'rgba(26, 21, 32, 0.9)',
   },
-  
+
   white: '#FFFFFF',
   black: '#000000',
   transparent: 'transparent',

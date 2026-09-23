@@ -15,7 +15,7 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import HBand from '../../src/components/mom/HBand';
 import TIcon from '../../src/components/TIcon';
-import { C, F, BAND_MY_TEAM } from '../../src/constants/designRefresh';
+import { C, F, BAND_MY_TEAM , type Corpus, type LiveCorpus } from '../../src/constants/corpus';
 
 // S8 My Team — approved hband mockup (s7s8s9-mom-core-hbands.html).
 // Overline "Your Circle" / Cormorant H1 "Your Care Team" / sub. Sections:
@@ -91,6 +91,7 @@ const avatarTint = (i: number) => {
 export default function MyTeamScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const styles = getMyTeamStyles(C);
   const [teamMembers, setTeamMembers] = useState<TeamMemberResponse[]>([]);
   const [shareRequests, setShareRequests] = useState<ShareRequest[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -368,8 +369,8 @@ export default function MyTeamScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: C.cream },
+const getMyTeamStyles = (c: LiveCorpus) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.cream },
   scrollContent: { paddingBottom: 48 },
 
   // —— m-head (common.css) ——
@@ -393,7 +394,7 @@ const styles = StyleSheet.create({
 
   // —— srow ——
   srow: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderColor: C.border,
     borderWidth: 1,
     borderRadius: 18,

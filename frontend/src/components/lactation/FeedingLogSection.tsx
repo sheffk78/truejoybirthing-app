@@ -21,7 +21,7 @@ import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { SIZES } from '../../constants/theme';
-import { C, F } from '../../constants/designRefresh';
+import { C, F } from '../../constants/corpus';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../constants/api';
 
@@ -423,7 +423,7 @@ export default function FeedingLogSection({ clientId, primaryColor, onRefresh }:
                     borderRadius: 8,
                     fontSize: 16,
                     width: '100%',
-                    backgroundColor: C.white,
+                    backgroundColor: C.surface,
                   }}
                 />
               ) : (
@@ -801,7 +801,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderBottomWidth: 1,
     borderBottomColor: C.hairline,
   },
@@ -816,7 +816,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
   },
   modalFooter: {
     padding: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderTopWidth: 1,
     borderTopColor: C.hairline,
   },
@@ -838,7 +838,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: F.ui,
     color: C.ink,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   textArea: {
     minHeight: 100,
@@ -856,7 +856,7 @@ const getStyles = createThemedStyles((colors: ThemeColors) => ({
     borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     marginBottom: SIZES.xs,
   },
   chipSelected: {

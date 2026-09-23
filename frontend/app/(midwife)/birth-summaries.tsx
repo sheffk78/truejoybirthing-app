@@ -21,7 +21,7 @@ import Input from '../../src/components/Input';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
-import { C, F } from '../../src/constants/designRefresh';
+import { C, F } from '../../src/constants/corpus';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const BIRTH_PLACES = ['Home', 'Birth Center', 'Transfer to Hospital'];
@@ -331,7 +331,7 @@ export default function MidwifeBirthSummariesScreen() {
                       fontSize: 16,
                       border: `1px solid ${C.lavenderBorder}`,
                       borderRadius: 8,
-                      backgroundColor: C.white,
+                      backgroundColor: C.surface,
                       color: C.ink,
                     }}
                   />
@@ -411,7 +411,7 @@ export default function MidwifeBirthSummariesScreen() {
                       fontSize: 16,
                       border: `1px solid ${C.lavenderBorder}`,
                       borderRadius: 8,
-                      backgroundColor: C.white,
+                      backgroundColor: C.surface,
                       color: C.ink,
                     }}
                   />
@@ -672,7 +672,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   summaryCard: {
     marginBottom: SIZES.sm,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,
@@ -748,7 +748,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: C.hairline,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
@@ -773,7 +773,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusFull,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
     marginRight: SIZES.sm,
@@ -800,7 +800,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     borderRadius: SIZES.radiusMd,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
     marginRight: SIZES.sm,
@@ -820,7 +820,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontFamily: F.uiSemi,
   },
   textInput: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusMd,
@@ -842,7 +842,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderTopWidth: 1,
     borderTopColor: C.hairline,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   viewSection: {
     marginBottom: SIZES.lg,
@@ -884,7 +884,7 @@ const getStyles = createThemedStyles((colors) => ({
   datePickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
     borderRadius: SIZES.radiusMd,
@@ -905,7 +905,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   webDatePickerContainer: {
     marginVertical: SIZES.sm,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: SIZES.radiusMd,
     overflow: 'visible',
   },
@@ -917,7 +917,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.lg,
   },
   dateModalContent: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: 18,
     padding: SIZES.lg,
     width: '100%',

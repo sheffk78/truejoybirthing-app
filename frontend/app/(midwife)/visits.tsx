@@ -21,7 +21,7 @@ import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { apiRequest } from '../../src/utils/api';
 import { SIZES } from '../../src/constants/theme';
-import { C, F } from '../../src/constants/designRefresh';
+import { C, F } from '../../src/constants/corpus';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function MidwifeVisitsScreen() {
@@ -470,7 +470,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   visitCard: {
     marginBottom: SIZES.sm,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,
@@ -544,7 +544,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: C.hairline,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
@@ -639,7 +639,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderTopWidth: 1,
     borderTopColor: C.hairline,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
   },
   filterContainer: {
     marginBottom: SIZES.md,
@@ -703,7 +703,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.lg,
   },
   dateModalContent: {
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: 18,
     padding: SIZES.lg,
     width: '100%',

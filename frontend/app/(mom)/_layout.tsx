@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../src/store/authStore';
 import { useBadgeStore } from '../../src/store/badgeStore';
 import { useNotificationBadges } from '../../src/hooks/useNotificationBadges';
-import { C, F } from '../../src/constants/designRefresh';
+import { C, F } from '../../src/constants/corpus';
 
 function TabIconWithBadge({
   name,
@@ -33,7 +33,7 @@ function TabIconWithBadge({
             marginLeft: -4,
             marginTop: -6,
             borderWidth: 1.5,
-            borderColor: '#fff',
+            borderColor: C.cream,
           }}
         />
       )}
@@ -66,9 +66,9 @@ export default function MomLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: C.lavenderSoft,
-        tabBarInactiveTintColor: '#9C9DA0',
+        tabBarInactiveTintColor: C.gray,
         tabBarStyle: {
-          backgroundColor: C.white,
+          backgroundColor: C.cream,
           borderTopColor: C.hairline,
           borderTopWidth: 1,
           height: (Platform.OS === 'ios' ? 60 : 56) + bottomInset,

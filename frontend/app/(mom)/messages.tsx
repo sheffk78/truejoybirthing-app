@@ -30,7 +30,7 @@ import { useAuthStore } from '../../src/store/authStore';
 import wsClient from '../../src/utils/websocket';
 import HBand from '../../src/components/mom/HBand';
 import TIcon from '../../src/components/TIcon';
-import { C, F, BAND_MESSAGES, initialsOf } from '../../src/constants/designRefresh';
+import { C, F, BAND_MESSAGES, initialsOf , type Corpus, type LiveCorpus } from '../../src/constants/corpus';
 
 interface Conversation {
   other_user_id: string;
@@ -71,6 +71,7 @@ interface TeamMember {
 export default function MessagesScreen() {
   const colors = useColors();
   const styles = getStyles(colors);
+  const s9 = getS9(C);
   const router = useRouter();
   const tabBarHeight = useBottomTabBarHeight();
   const insets = useSafeAreaInsets();
@@ -926,25 +927,25 @@ const avatarTintS9 = (i: number) => {
 };
 
 // s9 — approved S9 mockup styles (s7s8s9-mom-core-hbands.html, verbatim hexes from C)
-const s9 = StyleSheet.create({
+const getS9 = (c: LiveCorpus) => StyleSheet.create({
   mhead: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 6 },
   overline: {
     fontSize: 10,
     letterSpacing: 2.4,
     textTransform: 'uppercase',
     fontWeight: '700',
-    color: C.rose,
+    color: c.rose,
     marginBottom: 5,
   },
-  h1: { fontFamily: F.serif, fontWeight: '700', fontSize: 26, lineHeight: 30, color: C.ink },
-  h1em: { fontFamily: F.serif, fontWeight: '700', color: C.roseSoft },
-  msub: { fontSize: 12.5, color: C.gray, marginTop: 4, fontWeight: '500' },
+  h1: { fontFamily: F.serif, fontWeight: '700', fontSize: 26, lineHeight: 30, color: c.ink },
+  h1em: { fontFamily: F.serif, fontWeight: '700', color: c.roseSoft },
+  msub: { fontSize: 12.5, color: c.gray, marginTop: 4, fontWeight: '500' },
 
   search: {
     marginHorizontal: 20,
     marginTop: 12,
-    backgroundColor: C.white,
-    borderColor: C.roseBg,
+    backgroundColor: c.white,
+    borderColor: c.roseBg,
     borderWidth: 1,
     borderRadius: 999,
     paddingVertical: 9,
@@ -953,15 +954,15 @@ const s9 = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  searchTxt: { fontSize: 12, color: C.grayLight, fontWeight: '500' },
+  searchTxt: { fontSize: 12, color: c.grayLight, fontWeight: '500' },
 
   sect: { paddingHorizontal: 20, marginTop: 14 },
-  h2: { fontFamily: F.serif, fontWeight: '700', fontSize: 21, color: C.ink, marginBottom: 2 },
-  sub: { fontSize: 11.5, color: C.gray, marginBottom: 8, fontWeight: '500' },
+  h2: { fontFamily: F.serif, fontWeight: '700', fontSize: 21, color: c.ink, marginBottom: 2 },
+  sub: { fontSize: 11.5, color: c.gray, marginBottom: 8, fontWeight: '500' },
 
   srow: {
-    backgroundColor: C.white,
-    borderColor: C.border,
+    backgroundColor: c.white,
+    borderColor: c.border,
     borderWidth: 1,
     borderRadius: 18,
     paddingVertical: 12,
@@ -982,10 +983,10 @@ const s9 = StyleSheet.create({
   avatImg: { width: 38, height: 38, borderRadius: 19, flexShrink: 0 },
   avatTxt: { fontSize: 14, fontWeight: '700' },
   smid: { flex: 1, minWidth: 0 },
-  h3: { fontFamily: F.serifSemi, fontWeight: '600', fontSize: 17, color: C.ink },
+  h3: { fontFamily: F.serifSemi, fontWeight: '600', fontSize: 17, color: c.ink },
   smetaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 3, flexWrap: 'wrap' },
-  mmeta: { fontSize: 11, color: C.gray, fontWeight: '500', flexShrink: 1 },
-  lastMsg: { fontSize: 11.5, color: C.gray, marginTop: 2, fontWeight: '500' },
+  mmeta: { fontSize: 11, color: c.gray, fontWeight: '500', flexShrink: 1 },
+  lastMsg: { fontSize: 11.5, color: c.gray, marginTop: 2, fontWeight: '500' },
 
   schip: {
     borderRadius: 999,
@@ -995,22 +996,22 @@ const s9 = StyleSheet.create({
     flexShrink: 0,
   },
   schipTxt: { fontSize: 9.5, letterSpacing: 0.6, fontWeight: '700', textTransform: 'uppercase' },
-  schipWip: { backgroundColor: C.lavenderBg },
-  schipTxtWip: { color: C.lavender },
+  schipWip: { backgroundColor: c.lavenderBg },
+  schipTxtWip: { color: c.lavender },
 
   sico: {
     width: 34,
     height: 34,
     borderRadius: 12,
-    backgroundColor: C.lavenderBg,
+    backgroundColor: c.lavenderBg,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
   },
 
   metaCol: { alignItems: 'flex-end', gap: 5, flexShrink: 0 },
-  time: { fontSize: 10, color: C.grayLight, fontWeight: '600' },
-  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: C.roseBorder },
+  time: { fontSize: 10, color: c.grayLight, fontWeight: '600' },
+  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: c.roseBorder },
 });
 
 const getStyles = createThemedStyles((colors) => ({

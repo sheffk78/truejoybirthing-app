@@ -22,7 +22,7 @@ import Button from '../../src/components/Button';
 import { VideoPlayerModal, getYouTubeVideoId, getYouTubeThumbnail } from '../../src/components/YouTubePlayer';
 import { apiRequest } from '../../src/utils/api';
 import { SIZES, FONTS } from '../../src/constants/theme';
-import { C, F } from '../../src/constants/designRefresh';
+import { C, F } from '../../src/constants/corpus';
 import { getPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { API_ENDPOINTS } from '../../src/constants/api';
@@ -874,7 +874,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   searchCard: {
     marginBottom: SIZES.lg,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: 18,
     borderWidth: 1,
     borderColor: 'rgba(184,122,160,0.25)',
@@ -917,7 +917,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
     borderRadius: 16,
@@ -963,7 +963,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   providerCard: {
     marginBottom: SIZES.md,
-    backgroundColor: C.white,
+    backgroundColor: C.surface,
     borderRadius: 18,
     borderWidth: 1,
     borderColor: 'rgba(184,122,160,0.22)',

@@ -25,7 +25,7 @@ import { useColors, createThemedStyles } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { LaborSection, BirthRecordSection, PrenatalVisitSection, NewbornExamSection } from '../midwife';
 import { LatchSection, WeightTrackerSection, FeedingLogSection, OralExamSection, SoapNoteSection } from '../lactation';
-import { F } from '../../constants/designRefresh';
+import { F } from '../../constants/corpus';
 
 
 // ============== TYPES ==============

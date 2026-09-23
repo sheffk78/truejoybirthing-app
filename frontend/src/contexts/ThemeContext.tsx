@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, ReactNode } from 'react';
 import { Platform } from 'react-native';
 import { useThemeStore, ThemePreference, ThemeName } from '../store/themeStore';
 import { Theme, getTheme } from '../constants/themeTokens';
+import { setCorpus } from '../constants/corpus';
 
 // ============================================
 // THEME CONTEXT TYPE
@@ -33,7 +34,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Use individual selectors to ensure re-renders on state changes
   const themePreference = useThemeStore((state) => state.themePreference);
   const effectiveTheme = useThemeStore((state) => state.effectiveTheme);
-  const isHydrated = useThemeStore((state) => state.isHydrated);
   const initializeTheme = useThemeStore((state) => state.initializeTheme);
   const setThemePreference = useThemeStore((state) => state.setThemePreference);
 
@@ -41,6 +41,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   useEffect(() => {
     initializeTheme();
   }, [initializeTheme]);
+
+  // Phase 2C: sync the designRefresh corpus to the effective theme BEFORE
+  // children paint. Runs during render (not an effect) so the very first
+  // frame after a flip already resolves C.* to the right corpus — no flash
+  // of light-mode colors inside dark screens.
+  setCorpus(effectiveTheme);
 
   // Get the full theme object based on effective theme
   const theme = getTheme(effectiveTheme);
