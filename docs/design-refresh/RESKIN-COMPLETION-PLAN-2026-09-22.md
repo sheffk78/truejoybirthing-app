@@ -42,7 +42,7 @@ Rules (standing, from DESIGN-RULES + approved passes):
 - Package as one review packet (PDF, like S13/S14/S15) for Jeff approval before marking phase done.
 
 ## Phase 2 — Dark mode decision + token architecture (design work, needs Jeff pick)
-Current reality (audited):
+**Status 2026-09-23 (Kit): token architecture SHIPPED — commits 8db1a38c + 8398b391 (local, unpushed per no-deploy directive); app is now light-locked via corpusGate.DARK_CORPUS_SHIPPED=false until Jeff picks A or B. Decision brief: PHASE2-DECISION-BRIEF-2026-09-23.md. Audit finding: mom-profile Appearance row is decorative (no handler); real AppearanceSettings only mounts on provider Profile — plan text above was wrong on that point.**
 - Machinery EXISTS and works: themeStore (SYSTEM/LIGHT/DARK, persisted), ThemeContext (isDark), AppearanceSettings reachable from mom Profile → Appearance. DARK_COLORS palette defined in themeTokens.ts.
 - The 50 useColors screens (auth, doula/midwife/lactation shells, mom sub-screens) RESPOND to dark mode today — colors swap automatically.
 - The 18 designRefresh screens (approved mockup skins) are LIGHT-ONLY: designRefresh.C is a hardcoded light corpus. In dark mode these stay light — inconsistent but readable.
