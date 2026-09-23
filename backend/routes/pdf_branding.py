@@ -503,17 +503,32 @@ def _section_block(section_name: str, plan: dict, width: float, number: int | No
 def build_birth_plan_story(user_name: str, birth_plan: dict, pdf_sections: list[dict],
                            section_names: dict, mom_profile: dict | None) -> list:
     story: list = []
-    story.extend(_cover_flow(user_name, birth_plan, mom_profile, CONTENT_W))
     seen = 0
+    plan = dict(birth_plan or {})
+    # normalize prod shape {sections:[{section_id,data}]} into plan BEFORE the cover renders
+    for sec in (pdf_sections or []):
+        if isinstance(sec, dict) and isinstance(sec.get('data'), dict) and sec.get('data'):
+            sid = sec.get('section_id') or ''
+            plan.setdefault(sid, {}).update(sec['data'])
+    story.extend(_cover_flow(user_name, plan, mom_profile, CONTENT_W))
     for sec in pdf_sections:
-        name = sec.get('section_id') if isinstance(sec, dict) else str(sec)
-        title = (section_names.get(name) if isinstance(section_names, dict) else None) or name.replace('_', ' ').title()
+        if isinstance(sec, dict):
+            name = sec.get('section_id') or sec.get('name') or sec.get('title') or ''
+            # prod shape: {section_id, data:{...}} — merge into the plan view
+            if isinstance(sec.get('data'), dict) and sec.get('data'):
+                plan.setdefault(name, {}).update(sec['data'])
+            if isinstance(sec.get('fields'), dict) and sec.get('fields'):
+                plan.setdefault(name, {}).update(sec['fields'])
+            title = (section_names.get(name) if isinstance(section_names, dict) else None) \
+                    or sec.get('title') or name.replace('_', ' ').title()
+        else:
+            name = str(sec)
+            title = (section_names.get(name) if isinstance(section_names, dict) else None) or name.replace('_', ' ').title()
         seen += 1
-        blk = _section_block(title, birth_plan or {}, CONTENT_W, seen, band_title=title)
+        blk = _section_block(title, plan, CONTENT_W, seen, band_title=title)
         if not blk:
-            # title-keyed lookup found nothing; retry with the raw section_id,
-            # labeling the band with the friendly title when we have one
-            blk = _section_block(name, birth_plan or {}, CONTENT_W, seen, band_title=title)
+            # title-keyed lookup found nothing; retry with the raw section_id
+            blk = _section_block(name, plan, CONTENT_W, seen, band_title=title)
         if blk:
             story.extend(blk)
             story.append(Spacer(1, 8))
@@ -521,9 +536,20 @@ def build_birth_plan_story(user_name: str, birth_plan: dict, pdf_sections: list[
 
 
 # ── Entry point (signature-compatible) ────────────────────────────
-def create_branded_pdf_buffer(user_name: str, birth_plan: dict, pdf_sections: list,
-                              section_names: dict, field_labels: dict | None = None,
-                              mom_profile: dict | None = None, filename: str | None = None):
+def create_branded_pdf_buffer(user_name: str = 'Mom', birth_plan: dict | None = None,
+                              pdf_sections: list | None = None,
+                              section_names: dict | None = None,
+                              field_labels: dict | None = None,
+                              mom_profile: dict | None = None, filename: str | None = None,
+                              sections: list | None = None, pdf_section_names: dict | None = None,
+                              pdf_field_labels: dict | None = None, **_compat):
+    # care_plans.py legacy kwargs -> canonical names
+    if sections is not None and not pdf_sections:
+        pdf_sections = sections
+    if pdf_section_names is not None and not section_names:
+        section_names = pdf_section_names
+    field_labels = pdf_field_labels or field_labels
+    birth_plan = birth_plan if birth_plan is not None else {}
     import io
     buffer = io.BytesIO()
     doc = BaseDocTemplate(
