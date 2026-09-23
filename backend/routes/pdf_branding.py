@@ -1,372 +1,541 @@
 """
-TJB Branded PDF generation — birth plan exports (refreshed design law, 2026-09-22).
+TJB Branded PDF generation — birth plan exports (site-matched design law, 2026-09-22).
 
-Design language = approved 2026-09-14 refresh + Phase-A packet (Jeff approved 2026-09-22):
-- Cormorant Garamond 700 for display headings, Quicksand 600 for kickers/labels,
-  Source Sans 3 for body
-- Muted palette: cream #FAF8F5, lavender #6E6C99, rose #A25C86, sage #5F7154,
-  ink #2F2A33, gray #6B6470, hairline #EFE0EB  (banned: bright violet #7C3AED)
-- Approved watercolor spot illustrations (transparent cutouts) decorate the title
-  band and section headings — small, ink-light, print friendly
-- Structure: cream title wash → meta row → labeled preference blocks per section
+Design language = The Joyful Birth Plan (truejoybirthing.com/true-joy-birth-plan.pdf),
+the site standard Jeff pointed to — NOT the earlier spot-illustration style:
+- ALL-SANS typography (Quicksand headings/labels + Source Sans body), no serif
+- Full-width muted-lavender section bands (uppercase, letterspaced, white text)
+- Checkbox rows for every choice field: real checkboxes with lavender solid fill
+  for SELECTED options (matches the filled-in affordance), hollow squares otherwise
+- Free-text fields: label + answer in a light ruled well (like the site's write-in lines)
+- Hairline dividers between rows, generous vertical rhythm, single column
+- Header: lavender band w/ TRUE JOY BIRTHING; page 1 adds "The Joyful Birth Plan"
+  masthead + mom's name/date; footer: doc title left, Page N of M right (2-pass)
+- One tasteful watercolor accent ONLY on the cover masthead (lavender sprig);
+  content pages stay pure form like the site's booklet
+- Unknown fields/sections future-proof: render gracefully, never crash
 
-create_branded_pdf_buffer() keeps its exact signature — the mom export endpoint,
-the provider export, and all callers stay unchanged. Data in = sections[{section_id,
-data{field: str|list}}]; unknown fields render with auto-titled labels so future
-sections keep working without edits here.
+create_branded_pdf_buffer(user_name, birth_plan, pdf_sections, section_names,
+                          field_labels, mom_profile=None, filename=None)
+  keeps its exact signature — the mom export endpoint, provider client PDF,
+  and lead PDF all keep working unchanged.
 """
+from __future__ import annotations
 
+import json
 import os
-from io import BytesIO
+from datetime import datetime
+
+from reportlab.lib import colors as rl_colors
+from reportlab.lib.colors import HexColor
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_LEFT, TA_CENTER
-from reportlab.platypus import (
-    Paragraph, Spacer, Table, TableStyle, KeepTogether,
-    Flowable, BaseDocTemplate, PageTemplate, Frame, Image as RLImage
-)
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-
-# ── TJB Color Tokens (2026 design refresh) ────────────────────────
-CREAM        = colors.HexColor('#FAF8F5')
-CREAM_WASH   = colors.HexColor('#F3EEE9')
-LAVENDER     = colors.HexColor('#6E6C99')
-LAVENDER_SOFT= colors.HexColor('#E7E4F2')
-ROSE         = colors.HexColor('#A25C86')
-ROSE_PALE    = colors.HexColor('#F1E4EC')
-SAGE         = colors.HexColor('#5F7154')
-INK          = colors.HexColor('#2F2A33')
-GRAY         = colors.HexColor('#6B6470')
-HAIRLINE     = colors.HexColor('#EFE0EB')
+from reportlab.pdfgen import canvas as pdfcanvas
+from reportlab.platypus import (
+    BaseDocTemplate, Flowable, Frame, KeepTogether, PageBreak, PageTemplate,
+    Paragraph, Spacer, Table, TableStyle,
+)
 
 # ── Asset Paths ───────────────────────────────────────────────────
-_ASSET_DIR   = os.environ.get('TJB_ASSET_DIR',
-                 os.path.join(os.path.dirname(os.path.dirname(__file__)), 'assets'))
-_FONT_DIR    = os.path.join(_ASSET_DIR, 'fonts')
-_IMAGE_DIR   = os.path.join(_ASSET_DIR, 'images')
-_SPOT_DIR    = os.environ.get('TJB_SPOT_DIR', os.path.join(_ASSET_DIR, 'spots'))
-_LOGO_PATH   = os.path.join(_IMAGE_DIR, 'tjb-logo-wordmark.png')
+_ASSET_DIR = os.environ.get(
+    'TJB_ASSET_DIR',
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'assets'),
+)
+_FONT_DIR = os.path.join(_ASSET_DIR, 'fonts')
+_IMAGE_DIR = os.path.join(_ASSET_DIR, 'images')
+_SPOT_DIR = os.path.join(_ASSET_DIR, 'spots')
 
-# ── Fonts (lazy, once) ────────────────────────────────────────────
-_fonts_registered = False
+# ── Palette (refresh + site booklet) ─────────────────────────────
+LAVENDER = HexColor('#B9A5D1')        # section band (site booklet's muted lavender)
+LAVENDER_SOFT = HexColor('#E7E0F0')   # checkbox fill / soft washes
+LAVENDER_XSOFT = HexColor('#F4F1F8')  # free-text wells / meta row wash
+INK = HexColor('#3F3A45')             # primary text
+INK_SOFT = HexColor('#6E6678')        # secondary text
+HAIRLINE = HexColor('#DDD5E4')        # row dividers
+PAPER = HexColor('#FFFFFF')
+COVER_WASH = HexColor('#F7F4FA')      # cover band wash
 
-def _register_fonts():
-    global _fonts_registered
-    if _fonts_registered:
+ACCENT_ROSE = HexColor('#C98CA7')     # brand accents (footer heart, checkbox stroke alt)
+
+# ── Fonts (all-sans, refresh law) ─────────────────────────────────
+_FONT_FILES = {
+    ('Quicksand', 'Regular'): 'Quicksand-Regular.ttf',
+    ('Quicksand', 'Medium'): 'Quicksand-Medium.ttf',
+    ('Quicksand', 'SemiBold'): 'Quicksand-SemiBold.ttf',
+    ('Quicksand', 'Bold'): 'Quicksand-Bold.ttf',
+    ('SourceSans', 'Regular'): 'SourceSans3-Regular.ttf',
+    ('SourceSans', 'Semibold'): 'SourceSans3-Semibold.ttf',
+    ('SourceSans', 'Italic'): 'SourceSans3-It.ttf',
+}
+_FONT_READY = False
+
+
+def _ensure_fonts() -> None:
+    global _FONT_READY
+    if _FONT_READY:
         return
-    reg = pdfmetrics.registerFont
-    T = TTFont
-    reg(T('Cormorant700', os.path.join(_FONT_DIR, 'CormorantGaramond_700Bold.ttf')))
-    reg(T('Cormorant600', os.path.join(_FONT_DIR, 'CormorantGaramond_600SemiBold.ttf')))
-    reg(T('Cormorant500i', os.path.join(_FONT_DIR, 'CormorantGaramond_500Medium_Italic.ttf')))
-    reg(T('Quicksand400', os.path.join(_FONT_DIR, 'Quicksand_400Regular.ttf')))
-    reg(T('Quicksand600', os.path.join(_FONT_DIR, 'Quicksand_600SemiBold.ttf')))
-    reg(T('Quicksand700', os.path.join(_FONT_DIR, 'Quicksand_700Bold.ttf')))
-    reg(T('SourceSans', os.path.join(_FONT_DIR, 'SourceSans3_400Regular.ttf')))
-    reg(T('SourceSans600', os.path.join(_FONT_DIR, 'SourceSans3_600SemiBold.ttf')))
-    _fonts_registered = True
-
-# ── Layout constants ──────────────────────────────────────────────
-BAND_TOP    = 0.62 * inch      # cream band top, from page top
-BAND_BOTTOM = 2.28 * inch      # band bottom, from page top
-CONTENT_TOP_MARGIN    = BAND_BOTTOM + 0.30 * inch
-CONTENT_BOTTOM_MARGIN = 0.85 * inch
-CONTENT_LEFT  = 0.85 * inch
-CONTENT_RIGHT = 0.85 * inch
-
-FOOTER_LINE_Y = 0.72 * inch
-FOOTER_TEXT_Y = 0.55 * inch
-
-# Spot art per section (cycled in order)
-_SPOTS = ['hands', 'teacup', 'chamomile', 'booties', 'bassinet', 'lavender']
-
-def _spot_path(name):
-    return os.path.join(_SPOT_DIR, f'spot-{name}-t.png')
+    for (fam, variant), fname in _FONT_FILES.items():
+        path = os.path.join(_FONT_DIR, fname)
+        if os.path.exists(path):
+            pdfmetrics.registerFont(TTFont(f'{fam}-{variant}', path))
+    _FONT_READY = True
 
 
-def _get_spot(name, height=0.52 * inch):
-    """Return an RLImage flowable for a spot illustration, or None if missing."""
-    p = _spot_path(name)
-    if not os.path.exists(p):
-        return None
+def _f(fam: str, variant: str) -> str:
+    _ensure_fonts()
+    name = f'{fam}-{variant}'
     try:
-        from PIL import Image as PILImage
-        w, h = PILImage.open(p).size
-        return RLImage(p, width=height * (w / h), height=height, mask='auto')
+        pdfmetrics.getFont(name)
+        return name
     except Exception:
-        return None
+        return 'Helvetica'
 
 
-# ── Custom Flowables ──────────────────────────────────────────────
+# ── Geometry ──────────────────────────────────────────────────────
+PAGE_W, PAGE_H = letter
+MARGIN = 0.85 * inch
+CONTENT_W = PAGE_W - 2 * MARGIN
 
-class RoseRule(Flowable):
-    """Thin rose rule with a tiny dot at the left end — the approved section-head accent."""
-    def __init__(self, width=1.05 * inch, height=1.6):
-        super().__init__()
-        self.width, self.height = width, height
-    def draw(self):
-        c = self.canv
-        c.setFillColor(ROSE)
-        c.circle(4, self.height / 2, 2.6, fill=1, stroke=0)
-        c.setFillColor(HAIRLINE)
-        c.rect(10, self.height / 2 - 0.4, self.width - 10, 0.8, fill=1, stroke=0)
-    def wrap(self, aW, aH):
-        return (self.width, self.height)
+FOOTER_TEXT_Y = 0.52 * inch
+FOOTER_RULE_Y = 0.68 * inch
 
 
-class BandWash(Flowable):
-    """Soft cream wash band used behind the title block (drawn in onPage, not flow)."""
-    pass
+# ── 2-pass canvas: true "Page N of M" on every page ───────────────
+class NumberedCanvas(pdfcanvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self):
+        self._saved_page_states.append(dict(self.__dict__))
+        self._startPage()
+
+    def save(self):
+        total = len(self._saved_page_states)
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self._draw_footer(total)
+            super().showPage()
+        super().save()
+
+    def _draw_footer(self, total: int) -> None:
+        self.setFillColor(HAIRLINE)
+        self.setStrokeColor(HAIRLINE)
+        self.setLineWidth(0.6)
+        self.line(MARGIN, FOOTER_RULE_Y, PAGE_W - MARGIN, FOOTER_RULE_Y)
+        self.setFont(_f('Quicksand', 'Medium'), 7.5)
+        self.setFillColor(INK_SOFT)
+        self.drawString(MARGIN, FOOTER_TEXT_Y, 'The Joyful Birth Plan  ·  True Joy Birthing')
+        self.drawRightString(PAGE_W - MARGIN, FOOTER_TEXT_Y, f'Page {self._pageNumber} of {total}')
 
 
-# ── Paragraph Styles ──────────────────────────────────────────────
-
-def _build_styles():
-    return {
-        'kicker': ParagraphStyle('Kicker', fontName='Quicksand600', fontSize=8.5,
-            leading=11, textColor=ROSE, spaceAfter=6),
-        'title': ParagraphStyle('Title', fontName='Cormorant700', fontSize=27,
-            leading=31, textColor=INK, spaceAfter=3),
-        'subtitle': ParagraphStyle('Subtitle', fontName='Cormorant500i', fontSize=13.5,
-            leading=17, textColor=LAVENDER, spaceAfter=0),
-        'meta_label': ParagraphStyle('MetaLabel', fontName='Quicksand600', fontSize=7.5,
-            leading=10, textColor=GRAY, spaceAfter=2),
-        'meta_value': ParagraphStyle('MetaValue', fontName='SourceSans', fontSize=10,
-            leading=13, textColor=INK),
-        'section_head': ParagraphStyle('SectionHead', fontName='Cormorant700', fontSize=15.5,
-            leading=19, textColor=INK, spaceBefore=0, spaceAfter=4),
-        'label': ParagraphStyle('Label', fontName='Quicksand600', fontSize=8,
-            leading=11, textColor=LAVENDER, spaceBefore=7, spaceAfter=1),
-        'body': ParagraphStyle('Body', fontName='SourceSans', fontSize=10,
-            leading=14.5, textColor=INK),
-        'note': ParagraphStyle('Note', fontName='Cormorant500i', fontSize=11.5,
-            leading=15, textColor=GRAY),
-    }
-
-
-# ── Header / Footer canvas art ────────────────────────────────────
-
-def _title_band(canvas, doc):
-    """Page-1 cream wash band: title, kicker, rose rule, spot art. Later pages: slim echo."""
-    from reportlab.lib.units import inch as IN
-    width, height = letter
+# ── Page furniture ────────────────────────────────────────────────
+def _draw_top_band(canvas: pdfcanvas.Canvas, doc) -> None:
+    """Slim lavender brand band at the very top of every content page."""
+    band_h = 0.30 * inch
     canvas.saveState()
-
-    page = canvas.getPageNumber()
-    if page == 1:
-        # cream wash, full width
-        canvas.setFillColor(CREAM_WASH)
-        canvas.rect(0, height - BAND_BOTTOM, width, BAND_BOTTOM, fill=1, stroke=0)
-        # faint cream base tint behind everything (ink-light)
-        canvas.setFillColor(CREAM)
-        canvas.rect(0, 0, width, height, fill=1, stroke=0)
-
-        # kicker
-        canvas.setFont('Quicksand700', 8)
-        canvas.setFillColor(ROSE)
-        canvas.drawString(CONTENT_LEFT, height - 0.58 * inch, "T R U E   J O Y   B I R T H I N G")
-
-        # spot art top-right (lavender sprig)
-        sprig = _get_spot('lavender', height=0.95 * inch)
-        if sprig:
-            canvas.drawImage(_spot_path('lavender'), width - CONTENT_RIGHT - 0.75 * inch,
-                             height - 1.62 * inch, width=sprig._restrictSize.__self__.drawWidth
-                             if False else 0.95 * inch * (sprig.imageWidth / sprig.imageHeight),
-                             height=0.95 * inch, mask='auto')
-
-        # title + subtitle drawn by flowables in the frame (keeps text selectable)
-    else:
-        # slim continuation header: tiny rose dash + brand
-        canvas.setFillColor(CREAM)
-        canvas.rect(0, 0, width, height, fill=1, stroke=0)
-        canvas.setFillColor(ROSE)
-        canvas.rect(CONTENT_LEFT, height - 0.62 * inch, 0.55 * inch, 1.6, fill=1, stroke=0)
-        canvas.setFont('Quicksand600', 7.5)
-        canvas.setFillColor(GRAY)
-        canvas.drawString(CONTENT_LEFT + 0.12 * inch, height - 0.90 * inch,
-                          "MY JOYFUL BIRTH PLAN · CONTINUED")
-
-    # ── Footer (every page) ──
-    canvas.setStrokeColor(HAIRLINE)
-    canvas.setLineWidth(0.6)
-    canvas.line(CONTENT_LEFT, FOOTER_LINE_Y, width - CONTENT_LEFT, FOOTER_LINE_Y)
-    canvas.setFont('SourceSans', 7.5)
-    canvas.setFillColor(GRAY)
-    canvas.drawString(CONTENT_LEFT, FOOTER_TEXT_Y,
-                      "True Joy Birthing  ·  Prepared with love for my care team")
-    # Page number drawn by NumberedCanvas in save() (knows the true total)
+    canvas.setFillColor(LAVENDER)
+    canvas.rect(0, PAGE_H - band_h, PAGE_W, band_h, stroke=0, fill=1)
+    canvas.setFillColor(PAPER)
+    canvas.setFont(_f('Quicksand', 'SemiBold'), 8)
+    canvas.drawCentredString(PAGE_W / 2, PAGE_H - band_h + 0.095 * inch, 'T R U E   J O Y   B I R T H I N G')
     canvas.restoreState()
 
 
-def _footer_total_fix(canvas, doc):
-    """Second pass placeholder — total pages filled via canvasmaker in build()."""
-    pass
+# ── Flowables ─────────────────────────────────────────────────────
+class SectionBand(Flowable):
+    """Full-width muted-lavender band with uppercase letterspaced white title."""
+
+    def __init__(self, text: str, width: float, number: int | None = None):
+        super().__init__()
+        self.text = text
+        self.width = width
+        self.number = number
+        self.height = 0.34 * inch
+
+    def wrap(self, aw, ah):
+        return self.width, self.height
+
+    def draw(self):
+        c = self.canv
+        c.saveState()
+        c.setFillColor(LAVENDER)
+        c.rect(0, 0, self.width, self.height, stroke=0, fill=1)
+        c.setFillColor(PAPER)
+        c.setFont(_f('Quicksand', 'SemiBold'), 10.5)
+        label = self.text.upper()
+        if self.number is not None:
+            label = f'SECTION {self.number}  ·  {label}'
+        # manual letterspacing
+        x = MARGIN * 0.35
+        y = (self.height - 10.5) / 2 + 2.2
+        for ch in label:
+            c.drawString(x, y, ch)
+            x += c.stringWidth(ch, _f('Quicksand', 'SemiBold'), 10.5) + 0.9
+        c.restoreState()
 
 
-class NumberedCanvas(BaseDocTemplate.__mro__[1]):  # canvas.Canvas
-    """Two-pass canvas: draws page numbers as 'Page N of M'."""
-    def __init__(self, *args, **kwargs):
-        from reportlab.pdfgen import canvas as rl_canvas
-        self._rl = rl_canvas
-        super().__init__(*args, **kwargs) if False else None
-        raise RuntimeError("placeholder")
+class CheckboxRow(Flowable):
+    """One checkbox option: 10pt square + label. Filled => soft lavender fill + ink check."""
+
+    ROW_H = 0.235 * inch
+
+    def __init__(self, label: str, checked: bool, width: float):
+        super().__init__()
+        self.label = label
+        self.checked = checked
+        self.width = width
+
+    def wrap(self, aw, ah):
+        return self.width, self.ROW_H
+
+    def draw(self):
+        c = self.canv
+        box = 0.115 * inch
+        y = (self.ROW_H - box) / 2
+        c.saveState()
+        if self.checked:
+            c.setFillColor(LAVENDER_SOFT)
+            c.roundRect(0, y, box, box, 2, stroke=0, fill=1)
+            c.setStrokeColor(INK)
+            c.setLineWidth(1.25)
+            c.setLineCap(1)
+            c.setLineJoin(1)
+            # check mark (single polyline, slightly deep V)
+            # check geometry tuned for 8.3pt box: visible short arm + long arm
+            x1, x2, x3 = 1.7, 3.3, 6.9
+            y1, y2, y3 = y + 4.6, y + 2.6, y + 6.4
+            p = c.beginPath()
+            p.moveTo(x1, y1)
+            p.lineTo(x2, y2)
+            p.lineTo(x3, y3)
+            c.drawPath(p, stroke=1, fill=0)
+        else:
+            c.setStrokeColor(HAIRLINE)
+            c.setLineWidth(0.9)
+            c.roundRect(0, y, box, box, 2, stroke=1, fill=0)
+        c.setFillColor(INK if self.checked else INK_SOFT)
+        c.setFont(_f('SourceSans', 'Semibold' if self.checked else 'Regular'), 9.5)
+        c.drawString(box + 8, y + 0.5, self.label)
+        c.restoreState()
 
 
-def _make_numbered_canvas():
-    from reportlab.pdfgen.canvas import Canvas
+class FreeTextAnswer(Flowable):
+    """Label + wrapped answer inside a soft lavender wash (site's write-in line analog)."""
 
-    class TJBNumberedCanvas(Canvas):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self._saved_page_states = []
+    PAD_X = 10
+    PAD_TOP = 7
+    PAD_BOTTOM = 8
 
-        def showPage(self):
-            self._saved_page_states.append(dict(self.__dict__))
-            self._startPage()
+    def __init__(self, label: str, value: str, width: float):
+        super().__init__()
+        self.label = label
+        self.value = value
+        self.width = width
+        self._val_style = ParagraphStyle(
+            'fta', fontName=_f('SourceSans', 'Regular'), fontSize=9.5, leading=13.5, textColor=INK)
+        self._val_para = Paragraph(value, self._val_style)
+        inner_w = width - 2 * self.PAD_X
+        _, self._val_h = self._val_para.wrap(inner_w, 10000)
+        self.height = self.PAD_TOP + 12 + self._val_h + self.PAD_BOTTOM
 
-        def save(self):
-            num_pages = len(self._saved_page_states)
-            for state in self._saved_page_states:
-                self.__dict__.update(state)
-                self.draw_page_number(num_pages)
-                Canvas.showPage(self)
-            Canvas.save(self)
+    def wrap(self, aw, ah):
+        return self.width, self.height
 
-        def draw_page_number(self, total):
-            width, height = letter
-            self.setFont('SourceSans', 7.5)
-            self.setFillColor(GRAY)
-            self.drawRightString(width - CONTENT_LEFT, FOOTER_TEXT_Y,
-                                 f"Page {self._pageNumber} of {total}")
-
-    return TJBNumberedCanvas
-
-
-# ── Value formatting ──────────────────────────────────────────────
-
-def _format_value(value):
-    if isinstance(value, list):
-        return " · ".join(str(v) for v in value if v)
-    return str(value)
+    def draw(self):
+        c = self.canv
+        c.saveState()
+        c.setFillColor(LAVENDER_XSOFT)
+        c.roundRect(0, 0, self.width, self.height, 4, stroke=0, fill=1)
+        c.setFillColor(INK_SOFT)
+        c.setFont(_f('Quicksand', 'SemiBold'), 7.4)
+        c.drawString(self.PAD_X, self.height - self.PAD_TOP - 5, self.label.upper())
+        self._val_para.drawOn(c, self.PAD_X, self.PAD_BOTTOM + 2)
+        c.restoreState()
 
 
-# ── Public API ────────────────────────────────────────────────────
+class FieldNote(Flowable):
+    """Small helper line under a section band (site: 'Check all that apply...')."""
 
-def create_branded_pdf_buffer(
-    user_name: str,
-    mom_profile: dict,
-    sections: list,
-    pdf_section_names: dict,
-    pdf_field_labels: dict,
-) -> BytesIO:
-    """
-    Build a TJB-branded birth plan PDF (2026 refreshed design) and return a BytesIO
-    positioned at 0. Signature unchanged from the legacy generator.
-    """
-    _register_fonts()
-    styles = _build_styles()
-    NumberedCanvas = _make_numbered_canvas()
+    def __init__(self, text: str, width: float):
+        super().__init__()
+        self.text = text
+        self.width = width
+        self.height = 13
 
-    buffer = BytesIO()
-    doc = BaseDocTemplate(
-        buffer,
-        pagesize=letter,
-        topMargin=CONTENT_TOP_MARGIN,
-        bottomMargin=CONTENT_BOTTOM_MARGIN,
-        leftMargin=CONTENT_LEFT,
-        rightMargin=CONTENT_RIGHT,
-    )
-    frame = Frame(
-        CONTENT_LEFT, CONTENT_BOTTOM_MARGIN,
-        letter[0] - CONTENT_LEFT - CONTENT_RIGHT,
-        letter[1] - CONTENT_TOP_MARGIN - CONTENT_BOTTOM_MARGIN,
-        id='normal', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0,
-    )
-    doc.addPageTemplates([PageTemplate(id='tjb', frames=[frame], onPage=_title_band)])
+    def wrap(self, aw, ah):
+        return self.width, self.height
 
-    story = []
+    def draw(self):
+        c = self.canv
+        c.setFont(_f('SourceSans', 'Italic'), 8.6)
+        c.setFillColor(INK_SOFT)
+        c.drawString(0, 2, self.text)
 
-    # ── Title block (inside page-1 cream band) ──
-    display = (user_name or "My").strip()
-    story.append(Spacer(1, 2))
-    story.append(Paragraph("My Joyful Birth Plan", styles['title']))
-    story.append(Paragraph(f"Prepared by {display} for my birth team", styles['subtitle']))
-    story.append(Spacer(1, 10))
 
-    # ── Meta row ──
-    _mp = mom_profile or {}
-    _loc = " ".join(str(x) for x in [_mp.get("location_city", ""), _mp.get("location_state", "")] if x) or None
-    meta_pairs = [("EXPECTED DUE DATE", _mp.get("due_date")),
-                  ("BIRTH SETTING", _mp.get("planned_birth_setting")),
-                  ("LOCATION", _loc)]
-    meta_cells = []
-    for pair in meta_pairs:
-        label, val = pair
-        meta_cells.append([
-            Paragraph(label, styles['meta_label']),
-            Paragraph(str(val) if val else "—", styles['meta_value']),
-        ])
-    meta = Table([meta_cells], colWidths=[2.1 * inch, 2.0 * inch, 2.7 * inch])
-    meta.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+def _hairline(width: float) -> Table:
+    t = Table([['']], colWidths=[width], rowHeights=[0.4])
+    t.setStyle(TableStyle([
         ('LINEBELOW', (0, 0), (-1, -1), 0.6, HAIRLINE),
-        ('LINEABOVE', (0, 0), (-1, -1), 0.6, HAIRLINE),
-        ('TOPPADDING', (0, 0), (-1, -1), 6),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 7),
-        ('LEFTPADDING', (0, 0), (-1, -1), 0),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 0),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
     ]))
-    story.append(meta)
-    story.append(Spacer(1, 6))
+    return t
 
-    # ── Sections ──
-    filled = 0
-    for idx, section in enumerate(sections or []):
-        sid = section.get("section_id", "")
-        data = section.get("data") or {}
-        data = {k: v for k, v in data.items() if v not in (None, "", [])}
+
+# ── Schema (app-native field/option lists; staged asset) ──────────
+def _load_schema() -> dict:
+    path = os.path.join(_ASSET_DIR, 'birth_plan_form_schema.json')
+    try:
+        with open(path, 'r', encoding='utf-8') as fh:
+            return json.load(fh)
+    except Exception:
+        return {}
+
+
+SCHEMA = _load_schema()
+
+# Section title -> schema section_id mapping (backend section_names may differ slightly)
+_TITLE_ALIASES = {
+    'about me': 'about_me', 'about me & my preferences': 'about_me',
+    'labor & delivery': 'labor_delivery', 'labor & delivery preferences': 'labor_delivery',
+    'labor support': 'labor_support',
+    'pain management': 'pain_management',
+    'labor environment': 'monitoring_iv', 'labor environment & comfort': 'monitoring_iv',
+    'monitoring': 'monitoring_iv', 'monitoring & iv': 'monitoring_iv',
+    'induction': 'induction_interventions', 'induction & birth interventions': 'induction_interventions',
+    'pushing': 'pushing_safe_word', 'pushing, delivery & safe word': 'pushing_safe_word',
+    'post-delivery': 'post_delivery', 'post delivery': 'post_delivery', 'post-delivery preferences': 'post_delivery',
+    'newborn care': 'newborn_care', 'newborn care preferences': 'newborn_care',
+    'other considerations': 'other_considerations', 'other important considerations': 'other_considerations',
+}
+
+
+def _schema_for_section(section_name: str):
+    sid = _TITLE_ALIASES.get(str(section_name).strip().lower())
+    if not sid:
+        return []
+    return [(k, v) for k, v in SCHEMA.items() if v.get('section') == sid]
+
+
+def _norm(v) -> str:
+    return str(v).strip().lower()
+
+
+# ── Answer formatting ─────────────────────────────────────────────
+def _format_value(value) -> tuple[str, list[str] | None, list[bool] | None, list[str] | None]:
+    """Returns (joined_text, option_labels, checked_flags, free_text_lines)."""
+    if value is None:
+        return '', None, None, None
+    if isinstance(value, list):
+        vals = [str(v) for v in value if str(v).strip()]
+        if not vals:
+            return '', None, None, None
+        return '  ·  '.join(vals), None, None, None
+    s = str(value).strip()
+    if not s:
+        return '', None, None, None
+    return s, None, None, None
+
+
+# ── Story assembly ────────────────────────────────────────────────
+def _cover_flow(user_name: str, birth_plan: dict, mom_profile: dict | None, width: float) -> list:
+    flow: list = []
+    flow.append(Spacer(1, 0.28 * inch))
+    # Masthead
+    mast = Table(
+        [[Paragraph('THE JOYFUL BIRTH PLAN', ParagraphStyle(
+            'mast', fontName=_f('Quicksand', 'SemiBold'), fontSize=25, leading=30,
+            textColor=INK, alignment=TA_CENTER))]],
+        colWidths=[CONTENT_W], rowHeights=[0.62 * inch])
+    mast.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), COVER_WASH),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+    ]))
+    flow.append(mast)
+    # sprig accent, centered
+    sprig = os.path.join(_SPOT_DIR, 'spot-lavender-t.png')
+    if os.path.exists(sprig):
+        from reportlab.platypus import Image as RLImage
+        try:
+            img = RLImage(sprig, width=0.62 * inch, height=0.62 * inch)
+            img.hAlign = 'CENTER'
+            flow.append(Spacer(1, 6))
+            flow.append(img)
+        except Exception:
+            pass
+    flow.append(Spacer(1, 10))
+    name = (user_name or '').strip() or '—'
+    flow.append(Paragraph(
+        f'Prepared by <font name="{_f("Quicksand", "SemiBold")}">{name}</font>',
+        ParagraphStyle('byname', fontName=_f('SourceSans', 'Regular'), fontSize=11.5,
+                       leading=15, textColor=INK_SOFT, alignment=TA_CENTER)))
+    # meta row: due date / birth setting / location
+    mp = mom_profile or {}
+    # prefer the mom's own plan answers; profile values are the fallback
+    _about = (birth_plan or {}).get('about_me') if isinstance((birth_plan or {}).get('about_me'), dict) else {}
+    due = _about.get('dueDate') or mp.get('due_date')
+    _setting_answer = _about.get('plannedBirthSetting') or _about.get('birthLocation') or _about.get('birthSetting')
+    if isinstance(_setting_answer, list):
+        _setting_answer = ', '.join(str(x) for x in _setting_answer) if _setting_answer else None
+    setting = _setting_answer or mp.get('planned_birth_setting')
+    loc = ' '.join(str(x) for x in [mp.get('location_city', ''), mp.get('location_state', '')] if x) or None
+    cells, labels = [], []
+    for label, val in (('EXPECTED DUE DATE', due), ('BIRTH SETTING', setting), ('LOCATION', loc)):
+        labels.append(Paragraph(label, ParagraphStyle(
+            'ml', fontName=_f('Quicksand', 'SemiBold'), fontSize=7.2, leading=9,
+            textColor=LAVENDER, alignment=TA_CENTER)))
+        cells.append(Paragraph(str(val) if val else '—', ParagraphStyle(
+            'mv', fontName=_f('SourceSans', 'Regular'), fontSize=9.5, leading=12,
+            textColor=INK, alignment=TA_CENTER)))
+    meta = Table([labels, cells], colWidths=[CONTENT_W / 3.0] * 3)
+    meta.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('BACKGROUND', (0, 0), (-1, -1), LAVENDER_XSOFT),
+        ('LINEBEFORE', (1, 0), (2, -1), 0.6, PAPER),
+        ('TOPPADDING', (0, 0), (-1, 0), 7),
+        ('BOTTOMPADDING', (0, 1), (-1, 1), 7),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    flow.append(Spacer(1, 12))
+    flow.append(meta)
+    flow.append(Spacer(1, 14))
+    flow.append(Paragraph(
+        'A letter to my healthcare team — my preferences, my voice, my plan.',
+        ParagraphStyle('tag', fontName=_f('SourceSans', 'Italic'), fontSize=9.5, leading=13,
+                       textColor=INK_SOFT, alignment=TA_CENTER)))
+    flow.append(Spacer(1, 6))
+    return flow
+
+
+def _field_rows(field_key: str, field_meta: dict, value, width: float) -> list:
+    rows: list = []
+    ftype = field_meta.get('type', 'text')
+    label = field_meta.get('label') or field_key
+
+    if ftype in ('singleselect', 'multiselect'):
+        options = field_meta.get('options') or []
+        if options:
+            vals = value if isinstance(value, list) else ([str(value)] if value else [])
+            vals_norm = {_norm(v) for v in vals}
+            head = Paragraph(label.upper(), ParagraphStyle(
+                'fl', fontName=_f('Quicksand', 'SemiBold'), fontSize=7.4, leading=9.5,
+                textColor=INK_SOFT))
+            group = [head, Spacer(1, 4)]
+            for opt in options:
+                group.append(CheckboxRow(opt, _norm(opt) in vals_norm, width))
+                group.append(_hairline(width))
+            group.append(Spacer(1, 5))
+            return group
+        # no options: fall through to text rendering
+
+    # text / textarea / date / unlisted choice fields
+    text, *_ = _format_value(value)
+    return [FreeTextAnswer(label, text if text else '—', width), Spacer(1, 6)]
+
+
+def _section_block(section_name: str, plan: dict, width: float, number: int | None,
+                   band_title: str | None = None) -> list:
+    flow: list = []
+    # plan may be keyed by section_id ("labor_delivery") or by title — try both
+    sid = _TITLE_ALIASES.get(str(section_name).strip().lower())
+    data = None
+    for key in (sid, section_name):
+        v = plan.get(key) if key else None
+        if isinstance(v, dict):
+            data = v
+            break
+        if v:  # flat dict {section_id: {field: val}} vs {field: val}
+            data = {section_name: v}
+            break
+    data = data if isinstance(data, dict) else {}
+    fields = _schema_for_section(section_name)
+    if not fields:
+        # title missed the alias table; retry using any plan key that matches a schema section
+        for plan_key, plan_val in plan.items():
+            cand = _schema_for_section(plan_key)
+            if cand and isinstance(plan_val, dict):
+                fields = cand
+                data = plan_val
+                section_name = plan_key
+                break
+    if not fields:
+        # unknown section: generic render of whatever data exists
         if not data:
-            continue
-        filled += 1
+            return []
+        flow.append(SectionBand(str(band_title or section_name).upper(), width, number))
+        flow.append(Spacer(1, 8))
+        for k, v in data.items():
+            pretty = k.replace('_', ' ').title()
+            text, *_ = _format_value(v)
+            flow.append(FreeTextAnswer(pretty, text if text else '—', width))
+            flow.append(Spacer(1, 6))
+        return flow
+    # skip section if EVERY field empty
+    def _filled(v):
+        if isinstance(v, list):
+            return bool([x for x in v if str(x).strip()])
+        return bool(str(v or '').strip())
+    if not any(_filled(data.get(k)) for k, _ in fields):
+        return []
+    flow.append(SectionBand(str(band_title or section_name), width, number))
+    flow.append(Spacer(1, 9))
+    multi_hint = False
+    for k, meta in fields:
+        v = data.get(k)
+        ftype = meta.get('type', 'text')
+        rows = _field_rows(k, meta, v, width)
+        if len(rows) > 1:
+            flow.append(KeepTogether(rows))
+        else:
+            flow.extend(rows)
+    flow.append(Spacer(1, 6))
+    return flow
 
-        head_name = pdf_section_names.get(sid, sid.replace("_", " ").title())
-        spot = _get_spot(_SPOTS[idx % len(_SPOTS)], height=0.46 * inch)
 
-        head_table = Table(
-            [[Paragraph(head_name, styles['section_head']),
-              spot if spot else ""]],
-            colWidths=[5.9 * inch, 1.0 * inch],
-        )
-        head_table.setStyle(TableStyle([
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 0),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
-            ('TOPPADDING', (0, 0), (-1, -1), 0),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
-        ]))
+def build_birth_plan_story(user_name: str, birth_plan: dict, pdf_sections: list[dict],
+                           section_names: dict, mom_profile: dict | None) -> list:
+    story: list = []
+    story.extend(_cover_flow(user_name, birth_plan, mom_profile, CONTENT_W))
+    seen = 0
+    for sec in pdf_sections:
+        name = sec.get('section_id') if isinstance(sec, dict) else str(sec)
+        title = (section_names.get(name) if isinstance(section_names, dict) else None) or name.replace('_', ' ').title()
+        seen += 1
+        blk = _section_block(title, birth_plan or {}, CONTENT_W, seen, band_title=title)
+        if not blk:
+            # title-keyed lookup found nothing; retry with the raw section_id,
+            # labeling the band with the friendly title when we have one
+            blk = _section_block(name, birth_plan or {}, CONTENT_W, seen, band_title=title)
+        if blk:
+            story.extend(blk)
+            story.append(Spacer(1, 8))
+    return story
 
-        block = [head_table, RoseRule(), Spacer(1, 5)]
-        field_paras = []
-        for key, value in data.items():
-            label = pdf_field_labels.get(key, key.replace("_", " ").title())
-            field_paras.append(Paragraph(label.upper(), styles['label']))
-            field_paras.append(Paragraph(_format_value(value), styles['body']))
 
-        # keep head + rule + first field-label together
-        story.append(KeepTogether(block + field_paras[:2]))
-        story.extend(field_paras[2:])
-        story.append(Spacer(1, 14))
-
-    if filled == 0:
-        story.append(Paragraph(
-            "This birth plan is still growing. Once preferences are added in the "
-            "True Joy Birthing app, they will appear here as a beautiful, printable plan.",
-            styles['note']))
-
+# ── Entry point (signature-compatible) ────────────────────────────
+def create_branded_pdf_buffer(user_name: str, birth_plan: dict, pdf_sections: list,
+                              section_names: dict, field_labels: dict | None = None,
+                              mom_profile: dict | None = None, filename: str | None = None):
+    import io
+    buffer = io.BytesIO()
+    doc = BaseDocTemplate(
+        buffer if filename is None else filename, pagesize=letter,
+        leftMargin=MARGIN, rightMargin=MARGIN, topMargin=0.55 * inch, bottomMargin=0.85 * inch,
+        title='The Joyful Birth Plan', author='True Joy Birthing')
+    frame = Frame(MARGIN, 0.85 * inch, CONTENT_W, PAGE_H - 0.55 * inch - 0.85 * inch, id='normal')
+    doc.addPageTemplates([PageTemplate(id='main', frames=[frame], onPage=_draw_top_band)])
+    story = build_birth_plan_story(user_name, birth_plan or {}, pdf_sections or [],
+                                   section_names or {}, mom_profile)
     doc.build(story, canvasmaker=NumberedCanvas)
+    if filename is not None:
+        return None
     buffer.seek(0)
     return buffer
