@@ -27,7 +27,7 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
       value: 'SYSTEM', 
       label: 'Use device setting', 
       icon: 'phone-portrait-outline',
-      description: 'Follows your device theme'
+      description: DARK_CORPUS_SHIPPED ? 'Follows your device theme' : 'Light until dark ships in v2'
     },
     { 
       value: 'LIGHT', 

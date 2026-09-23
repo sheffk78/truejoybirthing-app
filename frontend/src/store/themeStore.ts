@@ -26,20 +26,21 @@ const getSystemTheme = (): ThemeName => {
 };
 
 // Phase 2 (RESKIN-COMPLETION-PLAN-2026-09-22): until the dark designRefresh
-// corpus exists (DARK_CORPUS_SHIPPED, Jeff's Option B gate), a DARK preference
-// can never take effect — the 18 refreshed screens are light-only and a dark
-// shell around them ships broken-looking screens. The STORED preference is
-// kept intact, so flipping corpusGate.DARK_CORPUS_SHIPPED to true restores
-// every user's chosen preference instantly.
+// corpus exists (DARK_CORPUS_SHIPPED, Jeff's Option B gate), NOTHING resolves
+// to DARK — not even SYSTEM on a dark-mode device — because the 18 refreshed
+// screens are light-only and a dark shell around them ships broken-looking
+// screens. The STORED preference is kept intact, so flipping
+// corpusGate.DARK_CORPUS_SHIPPED to true restores every user's chosen
+// preference instantly.
 const resolveEffective = (preference: ThemePreference): ThemeName => {
+  if (!DARK_CORPUS_SHIPPED) return 'LIGHT';
   if (preference === 'SYSTEM') return getSystemTheme();
-  if (preference === 'DARK' && !DARK_CORPUS_SHIPPED) return 'LIGHT';
   return preference;
 };
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
   themePreference: 'SYSTEM',
-  effectiveTheme: getSystemTheme(),
+  effectiveTheme: resolveEffective('SYSTEM'),
   isHydrated: false,
   
   setThemePreference: async (preference) => {
