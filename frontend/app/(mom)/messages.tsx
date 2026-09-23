@@ -944,7 +944,7 @@ const getS9 = (c: LiveCorpus) => StyleSheet.create({
   search: {
     marginHorizontal: 20,
     marginTop: 12,
-    backgroundColor: c.white,
+    backgroundColor: c.surface,
     borderColor: c.roseBg,
     borderWidth: 1,
     borderRadius: 999,
@@ -961,7 +961,7 @@ const getS9 = (c: LiveCorpus) => StyleSheet.create({
   sub: { fontSize: 11.5, color: c.gray, marginBottom: 8, fontWeight: '500' },
 
   srow: {
-    backgroundColor: c.white,
+    backgroundColor: c.surface,
     borderColor: c.border,
     borderWidth: 1,
     borderRadius: 18,

@@ -5,7 +5,8 @@
 // SVG gradient (react-native-svg) — no new dependency.
 
 import React from 'react';
-import { View, Image, StyleSheet, Platform, type ImageSourcePropType } from 'react-native';
+import { View, StyleSheet, Platform, type ImageSourcePropType } from 'react-native';
+import { Image as ExpoImage, type ImageContentPosition } from 'expo-image';
 import Svg, { Defs, LinearGradient as SvgGradient, Rect, Stop } from 'react-native-svg';
 import { veilStopsFor, veilStopsAsCss, rgbaToHex as rgbaToHexSafe, parseRgbaAlpha as parseRgbaAlphaSafe } from '../../constants/corpus';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -60,7 +61,16 @@ export default function HBand({ source, height = 168, focus = '50% 18%' }: HBand
   }
   return (
     <View style={{ height, position: 'relative', overflow: 'hidden' }}>
-      <Image source={source} resizeMode="cover" style={StyleSheet.absoluteFill} />
+      {/* expo-image: contentFit cover + contentPosition honor the approved focus anchor
+          ('50% 18%' etc.) natively — RN Image's absoluteFill+cover mis-scaled to an extreme
+          center-face crop (diag hband-diag A vs B, 2026-09-23). */}
+      <ExpoImage
+        source={source}
+        contentFit="cover"
+        contentPosition={{ top: focus.split(' ')[1] } as ImageContentPosition}
+        style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
+        transition={0}
+      />
       <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
         <Defs>
           <SvgGradient id="hbandVeil" x1="0" y1="0" x2="0" y2="1">

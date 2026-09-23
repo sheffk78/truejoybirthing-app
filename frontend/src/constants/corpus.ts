@@ -21,6 +21,22 @@
 // useCorpus()/corpusFor() in Phase 2C.
 
 import { C as LIGHT_C, F, VEIL_STOPS as LIGHT_VEIL_STOPS, srowBase as srowLight } from './designRefresh';
+
+// ---- srowBase: theme-reactive settings-row base (fixes white cards in dark) ----
+// Plain style object consumed as `style={srowBase}`; reads resolve per render,
+// so a Proxy dispatching to the live corpus works like C does. In DARK the
+// approved card surface is cardBg (#2A2330), not white.
+export const srowBase = new Proxy(
+  { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F0EAE4', borderRadius: 18, paddingVertical: 12, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center' } as { backgroundColor: string; borderWidth: number; borderColor: string; borderRadius: number; paddingVertical: number; paddingHorizontal: number; flexDirection: 'row'; alignItems: 'center' },
+  {
+    get(t, prop) {
+      const dark = _live === (DARK_CORPUS as unknown as LiveCorpus);
+      if (prop === 'backgroundColor') return dark ? DARK_C.cardBg : LIGHT_C.white;
+      if (prop === 'borderColor') return dark ? DARK_C.border : LIGHT_C.border;
+      return Reflect.get(t, prop);
+    },
+  },
+) as typeof srowLight;
 import { C as DARK_C, srowBaseDark, VEIL_STOPS as DARK_VEIL_STOPS } from './designRefreshDark';
 import type { ThemeName } from '../store/themeStore';
 import { useTheme } from '../contexts/ThemeContext';
@@ -138,7 +154,7 @@ export {
   F,
   BAND_HOME, BAND_TIPS, BAND_APPOINTMENTS, BAND_MY_TEAM, BAND_MESSAGES,
   HALO_RADII, HALO_STROKES,
-  initialsOf, firstNameOf, trimesterOf, kickerStyle, srowBase,
+  initialsOf, firstNameOf, trimesterOf, kickerStyle,
 } from './designRefresh';
 
 // ---- Hooks: render-time corpus access for dark-aware consumers ----
