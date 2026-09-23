@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face { font-family:'Cormorant'; src:url('fonts/CormorantGaramond_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Cormorant'; src:url('fonts/CormorantGaramond_700Bold.ttf'); font-weight:700; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_400Regular.ttf'); font-weight:400; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_500Medium.ttf'); font-weight:500; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_700Bold.ttf'); font-weight:700; }
+:root{
+  --cream:#1A1520; --ink:#F5F3F6; --body:#B6B1B9; --gray:#9E97A4; --faint:#7F7388; --chev:#756273;
+  --rose:#AE7698; --roseBorder:#C09BB6; --roseSoft: #372031; --roseBg:#3C3540; --roseChip:#221B20; --gbandMid:#221B20;
+  --lav: #6E6C99; --lavSoft:#2F2C3A; --lavMid:#434059; --lavBg:#222235;
+  --sage:#728F60; --sageBg:#293522; --track:#3C3541; --border: #372031; --white: #2A2330;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Quicksand',sans-serif;color:var(--ink);background: #2A2330;font-size:13.5px;line-height:1.5;}
+.cover{background:linear-gradient(160deg,#1A1520 0%,#3C3540 55%,#2F2C3A 100%);padding:70px 60px;page-break-after:always;}
+.cover h1{font-family:'Cormorant',serif;font-weight:700;font-size:50px;line-height:1.12;margin-bottom:14px;}
+.cover h1 em{font-style:italic;color:var(--rose);}
+.cover .sub{font-size:18px;color:var(--gray);max-width:640px;margin-bottom:30px;}
+.pill{display:inline-block;background: #2A2330;border:1px solid var(--chev);border-radius:999px;padding:8px 18px;font-weight:600;font-size:13px;color:var(--body);margin-right:10px;}
+.page{padding:46px 54px;page-break-after:always;}
+.page:last-child{page-break-after:auto;}
+h2{font-family:'Cormorant',serif;font-weight:700;font-size:31px;margin-bottom:3px;}
+h2 .no{color:var(--rose);font-style:italic;margin-right:8px;}
+.lede{color:var(--gray);font-size:13.5px;margin-bottom:22px;max-width:720px;}
+.grid3{display:flex;gap:22px;}
+.phone{width:262px;flex-shrink:0;display:flex;flex-direction:column;}
+.pframe{background:var(--white);border:1.5px solid var(--lavMid);border-radius:26px;padding:10px 10px 8px;box-shadow:0 10px 26px rgba(0,0,0,.25);flex:1;display:flex;flex-direction:column;}
+.ptop{display:flex;justify-content:space-between;align-items:center;padding:2px 8px 8px;}
+.ptop .pt{font-weight:700;font-size:12px;}
+.pill-s{border-radius:999px;padding:2px 9px;font-size:10px;font-weight:700;letter-spacing:.4px;}
+.pill-b{background:var(--track);color:var(--gray);border:1px solid var(--chev);}
+.pill-a{background:var(--roseBg);color:var(--rose);border:1px solid var(--roseBorder);}
+.pbody{flex:1;background:var(--cream);border-radius:16px;padding:14px 12px 10px;display:flex;flex-direction:column;gap:10px;min-height:0;}
+.mhead{padding:2px 4px 0;}
+.mhead .ov{font-size:8.5px;font-weight:700;letter-spacing:1.4px;color:var(--rose);text-transform:uppercase;margin-bottom:2px;}
+.mhead .tt{font-family:'Cormorant',serif;font-weight:700;font-size:21px;line-height:1.05;}
+.mhead .tt em{font-style:italic;color:var(--rose);}
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:10px 12px;}
+.card .cl{font-weight:600;font-size:12px;}
+.card .cs{font-size:10px;color:var(--faint);margin-top:1px;}
+.rowline{display:flex;justify-content:space-between;align-items:center;padding:7px 2px;}
+.rowline+.rowline{border-top:1px solid var(--track);}
+.rowline .rl{font-weight:600;font-size:11.5px;}
+.arrow{color:var(--chev);font-weight:300;font-size:16px;line-height:1;}
+.arrow.rose{color:var(--rose);}
+.btn{border-radius:999px;text-align:center;font-weight:700;font-size:12px;padding:9px 0;}
+.btn-primary{background:var(--lav);color: #FFFFFF;}
+.btn-rose{background:var(--roseBg);color:var(--rose);border:1px solid var(--roseBorder);}
+.btn-ghost{background:var(--track);color:var(--body);border:1px solid var(--chev);}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--roseSoft);display:flex;align-items:center;justify-content:center;font-family:'Cormorant',serif;font-weight:700;font-size:20px;color:var(--rose);}
+.stat{flex:1;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:8px 6px;text-align:center;}
+.stat .n{font-family:'Cormorant',serif;font-weight:700;font-size:18px;color:var(--rose);}
+.stat .l{font-size:8.5px;font-weight:700;letter-spacing:.8px;color:var(--faint);text-transform:uppercase;margin-top:1px;}
+.wkrow{display:flex;gap:6px;}
+.wk{flex:1;height:30px;border-radius:10px;background: #2A2330;border:1px solid var(--roseSoft);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:var(--gray);}
+.wk.cur{border:1.5px solid var(--roseBorder);background:var(--roseChip);color:var(--rose);}
+.pillchip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 11px;font-size:10px;font-weight:700;letter-spacing:.4px;}
+.chip-done{background:var(--sageBg);color:var(--sage);}
+.chip-todo{background:var(--track);color:var(--faint);}
+.chip-wip{background:var(--lavSoft);color:var(--lav);}
+.chip-paid{background:var(--sageBg);color:var(--sage);}
+.chip-due{background:var(--roseBg);color:var(--rose);}
+.mood{flex:1;border-radius:12px;border:1px solid var(--border);background: #2A2330;padding:8px 4px;text-align:center;font-size:16px;}
+.mood.on{border:1.5px solid var(--roseBorder);background:var(--roseChip);}
+.trow{display:flex;gap:8px;align-items:center;}
+.trow .tl{flex:1;}
+.fieldbox{background: #2A2330;border:1px solid var(--border);border-radius:12px;padding:9px 12px;}
+.fieldbox .fl{font-size:8.5px;font-weight:700;letter-spacing:1px;color:var(--faint);text-transform:uppercase;}
+.fieldbox .fv{font-weight:600;font-size:12px;margin-top:2px;display:flex;justify-content:space-between;align-items:center;}
+.modal{border:1.5px dashed var(--roseBorder);background:var(--roseChip);border-radius:14px;padding:10px 12px;}
+.modal .mt{font-weight:700;font-size:11px;color:var(--rose);letter-spacing:.3px;}
+.note{margin-top:14px;font-size:11.5px;color:var(--gray);background:var(--cream);border:1px solid var(--roseSoft);border-radius:12px;padding:10px 14px;}
+.note b{color:var(--ink);}
+.tfoot{margin-top:14px;padding-top:9px;border-top:1px solid var(--track);font-size:9.5px;color:var(--faint);}
+.legend{display:flex;gap:16px;margin-top:10px;font-size:10.5px;color:var(--gray);align-items:center;}
+.sw{display:inline-block;width:11px;height:11px;border-radius:4px;vertical-align:-1px;margin-right:5px;border:1px solid rgba(0,0,0,.28);}
+.footer{margin-top:18px;padding-top:10px;border-top:1px solid var(--track);font-size:10px;color:var(--faint);}
+</style><style id="dark-canvas-paint">.phone,.screen,.phone-frame{background:#1A1520 !important;}.statusbar{background:#1A1520 !important;}body{background:#101014 !important;}</style></head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <h1>Batch 1 — Your Account,<br><em>designed</em></h1>
+  <div class="sub">Profile · Wellness Journal · Invoices — the three screens you'll live in most. Same design language you approved, now applied to your personal account pages.</div>
+  <div>
+    <span class="pill">TrueJoy Birthing · Mom app</span>
+    <span class="pill">Surfaces S13 · S14 · S15</span>
+    <span class="pill">For approval — 2026-09-19</span>
+  </div>
+</div>
+
+<!-- S13 PROFILE -->
+<div class="page">
+  <h2><span class="no">S13.</span>Profile — your info, settings, and the serious stuff, in calm sections</h2>
+  <div class="lede">Everything on the current screen is represented — nothing dropped. Photo, due date, children, location up top; preferences and help in the middle; legal and account actions at the bottom, where serious items belong.</div>
+  <div class="grid3">
+    <div class="phone">
+      <div class="pframe">
+        <div class="ptop"><span class="pt">Profile</span><span class="pill-s pill-a">MOCKUP</span></div>
+        <div class="pbody">
+          <div class="mhead"><div class="ov">Your Account</div><div class="tt">Good morning, <em>Sarah</em></div></div>
+          <div class="card">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <div class="avatar">S</div>
+              <div><div class="cl">Sarah Mitchell</div><div class="cs">Tap photo to update</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="fieldbox" style="border:none;padding:0;background:transparent;"><div class="fl">Due Date</div><div class="fv">March 14, 2027 <span class="arrow">▾</span></div></div>
+            <div class="rowline"><div class="rl">Number of Children</div><div class="arrow rose" style="font-weight:600;font-size:12px;">2 ▾</div></div>
+            <div class="rowline"><div class="rl">Location</div><div style="font-size:11px;color:var(--faint);">Provo, UT</div></div>
+          </div>
+          <div class="card">
+            <div class="rowline"><div class="rl">Appearance</div><div class="arrow">›</div></div>
+            <div class="rowline"><div class="rl">App Tutorial</div><div class="arrow">›</div></div>
+            <div class="rowline"><div class="rl">Rate App</div><div class="arrow">›</div></div>
+            <div class="rowline"><div class="rl">Share App</div><div class="arrow">›</div></div>
+          </div>
+          <div class="card">
+            <div class="rowline"><div class="rl">Privacy Policy</div><div class="arrow">›</div></div>
+            <div class="rowline"><div class="rl">Terms of Service</div><div class="arrow">›</div></div>
+            <div class="rowline"><div class="rl">Disclaimer</div><div class="arrow">›</div></div>
+            <div class="rowline"><div class="rl">App Version</div><div style="font-size:11px;color:var(--faint);">v2.4.1</div></div>
+          </div>
+          <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:8px;">
+            <div class="btn btn-ghost" style="border:1px solid var(--roseSoft);color:var(--rose);">Log Out</div>
+            <div style="text-align:center;font-size:10px;color:var(--faint);">Delete Account</div>
+          </div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:8px;"><span><span class="sw" style="background: #2A2330;"></span>cards on cream</span><span><span class="sw" style="background:#3C3540;"></span>rose accents</span></div>
+    </div>
+    <div class="phone">
+      <div class="pframe">
+        <div class="ptop"><span class="pt">Profile</span><span class="pill-s pill-a">MOCKUP</span></div>
+        <div class="pbody">
+          <div class="mhead"><div class="ov">Preferences</div><div class="tt">Tune it <em>your way</em></div></div>
+          <div class="card">
+            <div class="cs" style="font-size:10.5px;color:var(--gray);margin-bottom:8px;">Large text, reduced motion, and contrast — comfort settings for tired days.</div>
+            <div class="rowline"><div class="rl">Text Size</div><div class="pillchip chip-todo">Default ▾</div></div>
+            <div class="rowline"><div class="rl">Reduce Motion</div><div class="pillchip chip-todo">Off</div></div>
+          </div>
+          <div class="card">
+            <div class="fl" style="font-size:8.5px;font-weight:700;letter-spacing:1px;color:var(--faint);">GETTING STARTED</div>
+            <div class="rowline"><div class="rl">Watch the App Tour</div><div class="arrow">›</div></div>
+            <div class="rowline"><div class="rl">Quick Start Checklist</div><div class="arrow">›</div></div>
+          </div>
+          <div class="modal">
+            <div class="mt">BEFORE YOU DELETE</div>
+            <div class="cs" style="font-size:10.5px;color:var(--body);margin-top:4px;">Delete Account is at the very bottom, requires typed confirmation, and removes your data per App Store rules. Nothing here deletes with one tap.</div>
+          </div>
+          <div style="margin-top:auto;">
+            <div class="btn btn-primary">Save Changes</div>
+          </div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:8px;"><span>states: saved ✓</span><span>locating…</span><span>error retry</span></div>
+    </div>
+    <div class="phone">
+      <div class="pframe">
+        <div class="ptop"><span class="pt">Profile</span><span class="pill-s pill-a">MOCKUP</span></div>
+        <div class="pbody">
+          <div class="mhead"><div class="ov">Appearance</div><div class="tt">Make it <em>readable</em></div></div>
+          <div class="card">
+            <div class="rowline"><div class="rl">Text Size</div><div class="pillchip chip-wip">Large</div></div>
+            <div class="rowline"><div class="rl">Reduce Motion</div><div class="pillchip chip-done">On</div></div>
+            <div class="rowline"><div class="rl">High Contrast</div><div class="pillchip chip-todo">Off</div></div>
+          </div>
+          <div class="modal">
+            <div class="mt">PREVIEW</div>
+            <div style="font-family:'Cormorant',serif;font-weight:700;font-size:17px;margin-top:4px;">Your weekly tips await</div>
+            <div class="cs" style="font-size:11px;">This is how headings will look.</div>
+          </div>
+          <div class="note" style="margin-top:auto;"><b>Design note:</b> "Done/On" chips keep the soft green from the approved status chips — the only place green appears. Everything else stays rose/lavender.</div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:8px;"><span>appearance sheet — modal style</span></div>
+    </div>
+  </div>
+  <div class="note"><b>Function inventory — Profile:</b> photo update (tap) · due date (calendar picker) · children count · location (auto-lookup) · appearance (text size / reduce motion / contrast) · app tutorial · rate · share · app version · legal (Privacy, ToS, Disclaimer — in-app webview) · log out · delete account (typed confirmation, App Store 5.1.1(v)) · error + retry state. <b>Not in mockup on purpose:</b> none.</div>
+  <div class="tfoot">S13 · Profile · mockup for approval · fonts &amp; palette = approved design law · tab bar identical to live app (Profile tab active)</div>
+</div>
+
+<!-- S14 WELLNESS -->
+<div class="page">
+  <h2><span class="no">S14.</span>Wellness Journal — a gentle daily check-in, not a medical chart</h2>
+  <div class="lede">Every existing feature is here: one-tap daily check-in, your week at a glance (mood, energy, sleep, check-ins), recent entries, and the four-step check-in flow (mood → energy &amp; sleep → symptoms → journal). Empty state included.</div>
+  <div class="grid3">
+    <div class="phone">
+      <div class="pframe">
+        <div class="ptop"><span class="pt">Wellness</span><span class="pill-s pill-a">MOCKUP</span></div>
+        <div class="pbody">
+          <div class="mhead"><div class="ov">Wellness Journal</div><div class="tt">How are you <em>feeling</em> today?</div></div>
+          <div class="btn btn-primary" style="background:var(--rose);">Daily Check-in</div>
+          <div class="fl" style="font-size:8.5px;font-weight:700;letter-spacing:1px;color:var(--faint);">YOUR WEEK</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div class="stat"><div class="n">7</div><div class="l">Check-ins</div></div>
+            <div class="stat"><div class="n">Good</div><div class="l">Avg Mood</div></div>
+            <div class="stat"><div class="n">Energetic</div><div class="l">Avg Energy</div></div>
+            <div class="stat"><div class="n">7½h</div><div class="l">Avg Sleep</div></div>
+          </div>
+          <div class="fl" style="font-size:8.5px;font-weight:700;letter-spacing:1px;color:var(--faint);">RECENT ENTRIES</div>
+          <div class="card"><div class="rowline" style="border:none;padding:0;"><div><div class="rl" style="font-size:11.5px;">Tuesday</div><div class="cs">Good · Rested · 8h sleep</div></div><div class="arrow">›</div></div></div>
+          <div class="card"><div class="rowline" style="border:none;padding:0;"><div><div class="rl" style="font-size:11.5px;">Monday</div><div class="cs">Okay · Low energy · 7h</div></div><div class="arrow">›</div></div></div>
+          <div class="card" style="opacity:.75;"><div class="rowline" style="border:none;padding:0;"><div><div class="rl" style="font-size:11.5px;">Sunday</div><div class="cs">Good · Energetic · 8h</div></div><div class="arrow">›</div></div></div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:8px;"><span>filled state — week 27</span></div>
+    </div>
+    <div class="phone">
+      <div class="pframe">
+        <div class="ptop"><span class="pt">Wellness</span><span class="pill-s pill-a">MOCKUP</span></div>
+        <div class="pbody">
+          <div class="mhead"><div class="ov">New Check-in</div><div class="tt">Step 1 of 4 — <em>mood</em></div></div>
+          <div class="cs" style="font-size:10.5px;color:var(--gray);">There are no wrong answers here.</div>
+          <div style="display:flex;gap:7px;">
+            <div class="mood">😞</div><div class="mood">😕</div><div class="mood on">🙂</div><div class="mood">😄</div>
+          </div>
+          <div class="fieldbox"><div class="fl">ENERGY TODAY</div>
+            <div style="display:flex;gap:5px;margin-top:5px;">
+              <div class="mood" style="font-size:10px;padding:6px 0;">Low</div><div class="mood on" style="font-size:10px;padding:6px 0;">Okay</div><div class="mood" style="font-size:10px;padding:6px 0;">Good</div>
+            </div>
+          </div>
+          <div class="fieldbox"><div class="fl">SLEEP LAST NIGHT</div>
+            <div style="display:flex;gap:7px;align-items:center;margin-top:4px;">
+              <div style="flex:1;height:6px;border-radius:3px;background:var(--track);"><div style="width:62%;height:6px;border-radius:3px;background:var(--roseBorder);"></div></div>
+              <div style="font-weight:700;font-size:11px;">7.5h</div>
+            </div>
+          </div>
+          <div class="btn btn-primary" style="margin-top:auto;">Continue — Symptoms</div>
+          <div style="text-align:center;font-size:10px;color:var(--faint);">Step 2 of 4 next: energy &amp; sleep · then symptoms · journal</div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:8px;"><span>check-in modal — step 1 shown</span></div>
+    </div>
+    <div class="phone">
+      <div class="pframe">
+        <div class="ptop"><span class="pt">Wellness</span><span class="pill-s pill-a">MOCKUP</span></div>
+        <div class="pbody">
+          <div class="mhead"><div class="ov">Wellness Journal</div><div class="tt">Your space, <em>anytime</em></div></div>
+          <div class="btn btn-primary" style="background:var(--rose);">Daily Check-in</div>
+          <div class="card" style="border-style:dashed;opacity:.85;text-align:center;padding:22px 12px;">
+            <div style="font-family:'Cormorant',serif;font-weight:700;font-size:15px;">No wellness entries yet</div>
+            <div class="cs" style="margin-top:3px;">Start tracking how you're feeling — one small check-in a day.</div>
+          </div>
+          <div class="fieldbox"><div class="fl">ANY SYMPTOMS?</div>
+            <div class="chiprow" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+              <span class="pillchip chip-todo">Nausea</span><span class="pillchip chip-wip">Back pain</span><span class="pillchip chip-todo">Swelling</span><span class="pillchip chip-todo">Heartburn</span>
+            </div>
+          </div>
+          <div class="note" style="margin-top:auto;"><b>Design note:</b> the empty state keeps the same warm serif welcome as the rest of the app — never clinical, never scolding.</div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:8px;"><span>empty state + symptoms step</span></div>
+    </div>
+  </div>
+  <div class="note"><b>Function inventory — Wellness:</b> daily check-in button · weekly stats (check-ins / mood / energy / sleep) · recent entries (tap to reopen) · check-in modal: mood → energy &amp; sleep → symptoms (multi-select chips) → journal notes → save · empty state. <b>Not in mockup on purpose:</b> none.</div>
+  <div class="tfoot">S14 · Wellness Journal · mockup for approval</div>
+</div>
+
+<!-- S15 INVOICES -->
+<div class="page">
+  <h2><span class="no">S15.</span>Invoices — what's due, what's paid, and paying stays between you and your provider</h2>
+  <div class="lede">The app shows your provider's invoices and payment instructions; it never processes money. The app keeps the disclaimer honest and the "I've Paid" notification one tap away.</div>
+  <div class="grid3">
+    <div class="phone">
+      <div class="pframe">
+        <div class="ptop"><span class="pt">Invoices</span><span class="pill-s pill-a">MOCKUP</span></div>
+        <div class="pbody">
+          <div class="mhead"><div class="ov">Billing</div><div class="tt">Invoices from <em>your team</em></div></div>
+          <div class="card" style="background:var(--lavBg);border-color:var(--lavMid);">
+            <div class="cs" style="font-size:10px;color:var(--gray);">Invoices come directly from your providers. TrueJoy never holds your payment — you pay your provider their way.</div>
+          </div>
+          <div class="card"><div class="rowline" style="border:none;padding:0;">
+            <div><div class="rl" style="font-size:11.5px;">INV-0412 · Prenatal visit package</div><div class="cs">From: Doula Rose · Due Sep 30</div></div>
+            <div style="text-align:right;"><div style="font-family:'Cormorant',serif;font-weight:700;font-size:15px;color:var(--rose);">$450</div><span class="pillchip chip-due" style="margin-top:2px;">Due</span></div>
+          </div></div>
+          <div class="card"><div class="rowline" style="border:none;padding:0;">
+            <div><div class="rl" style="font-size:11.5px;">INV-0398 · Home visit — week 26</div><div class="cs">From: Doula Rose · Paid Sep 12</div></div>
+            <div style="text-align:right;"><div style="font-family:'Cormorant',serif;font-weight:700;font-size:15px;">$180</div><span class="pillchip chip-paid" style="margin-top:2px;">Paid</span></div>
+          </div></div>
+          <div class="card"><div class="rowline" style="border:none;padding:0;">
+            <div><div class="rl" style="font-size:11.5px;">INV-0377 · Birth-plan review</div><div class="cs">From: Midwife Center · Paid Aug 28</div></div>
+            <div style="text-align:right;"><div style="font-family:'Cormorant',serif;font-weight:700;font-size:15px;">$120</div><span class="pillchip chip-paid" style="margin-top:2px;">Paid</span></div>
+          </div></div>
+          <div style="margin-top:auto;text-align:center;font-size:10px;color:var(--faint);">Pull down to refresh</div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:8px;"><span><span class="sw" style="background:#3C3540;"></span>due = rose</span><span><span class="sw" style="background:#293522;"></span>paid = sage chip</span></div>
+    </div>
+    <div class="phone">
+      <div class="pframe">
+        <div class="ptop"><span class="pt">Invoices</span><span class="pill-s pill-a">MOCKUP</span></div>
+        <div class="pbody">
+          <div class="mhead"><div class="ov">Invoice Details</div><div class="tt">INV-0412 <em>· $450</em></div></div>
+          <div class="card">
+            <div class="rowline" style="border:none;padding:0 0 6px;"><div><div class="rl" style="font-size:11.5px;">From</div><div class="cs">Doula Rose · Rose &amp; Vine Birth Services</div></div><div class="arrow">›</div></div>
+            <div class="rowline"><div class="rl">Issue Date</div><div style="font-size:11px;">Sep 15</div></div>
+            <div class="rowline"><div class="rl">Due Date</div><div style="font-size:11px;">Sep 30</div></div>
+            <div class="rowline" style="border:none;"><div class="rl">Amount Due</div><div style="font-family:'Cormorant',serif;font-weight:700;font-size:16px;color:var(--rose);">$450.00</div></div>
+          </div>
+          <div class="fieldbox"><div class="fl">PAYMENT INSTRUCTIONS</div>
+            <div class="rowline" style="border:none;padding:6px 0 0;"><div class="rl" style="font-weight:600;font-size:11px;">Venmo · @rose-vine</div><span class="pillchip chip-todo">Copy</span></div>
+            <div class="rowline" style="border:none;padding:6px 0 0;"><div class="rl" style="font-weight:600;font-size:11px;">Zelle · (801) ·····2314</div><span class="pillchip chip-todo">Copy</span></div>
+          </div>
+          <div class="btn btn-primary" style="margin-top:auto;">I've Paid — Notify My Provider</div>
+          <div style="text-align:center;font-size:9.5px;color:var(--faint);">Sends a note to your provider. Payment happens in your payment app.</div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:8px;"><span>detail sheet (modal)</span></div>
+    </div>
+    <div class="phone">
+      <div class="pframe">
+        <div class="ptop"><span class="pt">Invoices</span><span class="pill-s pill-a">MOCKUP</span></div>
+        <div class="pbody">
+          <div class="mhead"><div class="ov">Billing</div><div class="tt">All settled, <em>for now</em></div></div>
+          <div class="card" style="border-style:dashed;opacity:.85;text-align:center;padding:24px 12px;">
+            <div style="font-family:'Cormorant',serif;font-weight:700;font-size:15px;">No Invoices Yet</div>
+            <div class="cs" style="margin-top:3px;">When a provider on your team sends an invoice, it will appear here.</div>
+          </div>
+          <div class="fieldbox"><div class="fl">NOTES FROM YOUR PROVIDER</div>
+            <div class="cs" style="font-size:11px;margin-top:4px;">"Package covers 4 prenatal visits and on-call labor support. Questions anytime — Rose."</div>
+          </div>
+          <div class="note" style="margin-top:auto;"><b>Design note:</b> money details are provider-branded, not app-branded — the disclaimer (lavender card, top-left frame) sets the expectation that TrueJoy is the messenger, never the cashier.</div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:8px;"><span>empty state + notes</span></div>
+    </div>
+  </div>
+  <div class="note"><b>Function inventory — Invoices:</b> invoice list (status chips: due / paid) · disclaimer card · detail modal: provider info, issue/due dates, amount, description, payment instructions per provider method (copy-to-clipboard), "I've Paid — Notify My Provider" (awaiting-payment state), notes field · empty state. <b>Not in mockup on purpose:</b> none.</div>
+  <div class="tfoot">S15 · Invoices · mockup for approval · money never flows through the app — copy-to-clipboard + notify only (Q3 scope)</div>
+</div>
+
+</body></html>

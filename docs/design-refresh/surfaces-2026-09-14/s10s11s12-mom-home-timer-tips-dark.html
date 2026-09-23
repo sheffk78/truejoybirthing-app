@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="common-dark.css">
+<link rel="stylesheet" href="icons.css">
+<link rel="stylesheet" href="../type-system.css">
+<style>
+/* S10/S11/S12: mom home + timer + weekly tips — same construction as approved s7s8s9 hbands */
+.phone { height:844px; display:flex; flex-direction:column; overflow:hidden; border-radius:40px; }
+.screen.tall { height:844px; min-height:0; }
+.screen { display:flex; flex-direction:column; }
+.sheet { flex:1 1 auto; overflow-y:hidden; }
+.tabbar { flex:0 0 auto; display:flex; justify-content:space-around; align-items:center; padding:8px 10px 12px; }
+.tabbar { position:absolute; left:0; right:0; bottom:0; z-index:4; border-radius:0 0 45px 45px; }
+.tb { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:9px; font-weight:700; letter-spacing:.4px; color:#8A7F90; }
+.tb.on { color: #9796B9; }
+.tbl { font-size:9px; }
+
+/* header pattern (approved) */
+.m-head { padding:10px 20px 6px; }
+.a-overline { font-size:10px; letter-spacing:2.4px; text-transform:uppercase; font-weight:700; color:#AE7698; margin-bottom:5px; }
+.a-h1 { font-family:'Cormorant',serif; font-weight:700; font-size:26px; line-height:1.12; color:#F5F3F6; }
+.a-h1 em { font-style:normal; color:#C09BB6; }
+.m-sub { font-size:12.5px; color:#9E97A4; margin-top:4px; font-weight:500; }
+
+/* section + rows (s5 vocabulary) */
+.sect { margin:16px 20px 0; }
+.sect .a-h2 { font-family:'Cormorant',serif; font-weight:700; font-size:21px; color:#F5F3F6; margin-bottom:2px; }
+.sect .sub { font-size:11.5px; color:#9E97A4; font-weight:500; margin-bottom:10px; }
+.srow { background: #2A2330; border: 1px solid #473943; border-radius:18px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+.sico { width:34px; height:34px; border-radius:12px; background:#222235; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.sico.sage { background:#293522; }
+.sico.rose { background: #372031; }
+.a-h3 { font-family:'Cormorant',serif; font-weight:600; font-size:17px; color:#F5F3F6; }
+.srow .mid { flex:1; min-width:0; }
+.smeta { display:flex; align-items:center; gap:6px; margin-top:2px; flex-wrap:wrap; }
+.mmeta { font-size:11px; color:#9E97A4; font-weight:500; }
+.schip { font-size:9.5px; letter-spacing:.6px; font-weight:700; text-transform:uppercase; border-radius:999px; padding:2px 8px; }
+.schip.done { color:#728F60; background:#293522; }
+.schip.wip { color: #9796B9; background:#222235; }
+.schip.warn { color:#AE7698; background: #372031; }
+.chev { color:#756273; font-size:16px; flex-shrink:0; }
+.muted { color:#7F7388; }
+
+/* progress (home birth plan) */
+.prog { height:7px; background:#3C3541; border-radius:999px; overflow:hidden; margin-top:9px; }
+.prog .fill { height:100%; width:64%; background: #8E8CB5; border-radius:999px; }
+
+/* avatar (home header, profile photo first per DESIGN-RULES §6) */
+.avat { width:38px; height:38px; border-radius:50%; background:#2F2C3A; color: #9796B9; font-family:'Quicksand'; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; }
+
+/* baby-dev watercolor card (real series art, week 32) */
+.devart { width:100%; height:150px; object-fit:cover; border-radius:14px; }
+
+/* affirmation (rose left-border card, from approved card vocabulary) */
+.affirm { border-left:3px solid #BD7FA5; }
+
+/* action-required rows reuse .srow; paid uses sage chip */
+.paid { background:#1A1520; border-color:#293522; }
+
+/* key-actions grid (home) */
+.acts { display:flex; gap:10px; margin-top:2px; }
+.act { flex:1; background: #2A2330; border: 1px solid #473943; border-radius:18px; padding:12px 12px 11px; }
+.act .a-h3 { font-size:15px; }
+.act .mmeta { margin-top:2px; display:block; }
+
+/* reads row (Birth & Baby Reads) */
+.reads { background: #2A2330; border: 1px solid #473943; border-radius:18px; padding:12px 14px; display:flex; gap:12px; align-items:center; }
+.reads .rt { font-size:12px; font-weight:600; color:#F5F3F6; line-height:1.35; }
+.reads .src { font-size:10px; color:#7F7388; font-weight:600; margin-top:3px; }
+
+/* stem divider (growth motif) */
+.stemline { margin:16px 20px 2px; }
+
+/* buttons */
+.abtn { background: #6E6C99; color: #FFFFFF; text-align:center; font-size:13px; font-weight:600; border-radius:999px; padding:13px 18px; }
+.btnrow { display:flex; gap:8px; margin-top:9px; }
+.rbtn { flex:1; text-align:center; font-size:11.5px; font-weight:700; border-radius:999px; padding:8px 10px; }
+.rbtn.yes { background: #8E8CB5; color: #FFFFFF; }
+.rbtn.no { border:1.3px solid #434059; color: #9796B9; background:#2A2330; }
+
+/* tabs + week strip (S12) */
+.tabs2 { display:flex; gap:8px; margin:14px 20px 0; }
+.tabs2 .t2 { flex:1; text-align:center; font-size:12px; font-weight:700; border-radius:999px; padding:9px 10px; border:1.3px solid #434059; color: #9796B9; background:#2A2330; }
+.tabs2 .t2.on { background: #6E6C99; border-color: #6E6C99; color: #FFFFFF; }
+.wstrip { display:flex; gap:7px; margin:10px 20px 0; overflow:hidden; }
+.wk { width:34px; height:34px; border-radius:12px; background: #2A2330; border: 1px solid #473943; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#9E97A4; flex-shrink:0; }
+.wstrip .cur { border-color:#C09BB6; background:#221B20; color:#AE7698; }
+
+/* tip cards (S12) */
+.tipcard { background: #2A2330; border: 1px solid #473943; border-radius:18px; padding:13px 15px; margin-bottom:8px; }
+.tipcard .k { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:7px; }
+.k-sage { color:#728F60; } .k-lav { color: #9796B9; } .k-rose { color:#AE7698; }
+.tipcard p { font-size:13px; line-height:1.55; color:#B6B1B9; font-weight:500; }
+.tipcard p.q { font-family:'Cormorant',serif; font-style:italic; font-weight:600; font-size:16.5px; color:#F5F3F6; line-height:1.4; }
+
+/* timer (S11) — mirrors live app structure: header row, stats strip, circle timer, main button, action rows */
+.tr-head { display:flex; justify-content:space-between; align-items:center; padding:10px 20px 8px; }
+.tr-head .a-h1 { font-size:22px; }
+.gear { width:34px; height:34px; border-radius:12px; background: #2A2330; border: 1px solid #473943; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.strip { display:flex; background: #2A2330; border-top:1px solid #3C3540; border-bottom:1px solid #3C3540; padding:10px 8px; }
+.strip .st { flex:1; text-align:center; }
+.strip .st b { display:block; font-family:'Cormorant',serif; font-weight:700; font-size:19px; color: #9796B9; line-height:1.1; }
+.strip .st span { font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; font-weight:700; color:#7F7388; }
+.strip .sdiv { width:1px; background:#3C3540; margin:2px 0; }
+.thero { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 20px 0; }
+.twrap { position:relative; display:flex; align-items:center; justify-content:center; }
+.twrap svg.halo { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+.tcirc { position:relative; z-index:2; width:186px; height:186px; border-radius:50%; background: #2A2330; border: 1px solid #473943; box-shadow:0 14px 34px rgba(142,140,181,.16); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.tcirc .clock { font-family:'Cormorant',serif; font-weight:700; font-size:52px; color:#F5F3F6; line-height:1; letter-spacing:1px; }
+.tcirc .lab { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; color:#AE7698; margin-top:7px; }
+.tmbtn { width:100%; max-width:290px; text-align:center; background: #6E6C99; color: #FFFFFF; font-size:14px; font-weight:700; border-radius:999px; padding:14px 18px; margin-top:16px; position:relative; z-index:2; }
+.trow { display:flex; background: #2A2330; border-top:1px solid #3C3540; padding:8px 10px 7px; }
+.trow .ta { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:9px; font-weight:700; letter-spacing:.4px; color: #9796B9; }
+.trow .ta.warn { color:#AE7698; }
+.tpills { display:flex; gap:8px; justify-content:center; padding:9px 20px 2px; }
+.tpills .rbtn { flex:none; padding:7px 13px; }
+.tchip { margin:6px 20px 0; text-align:center; font-size:10.5px; font-weight:700; color: #9796B9; border:1px solid #293522; background:#1A1520; border-radius:999px; padding:7px 12px; }
+
+/* week anchor (S12, s6 vocabulary) */
+.anchor { margin:14px 20px 0; background: #2A2330; border: 1px solid #473943; border-radius:20px; overflow:hidden; }
+.anchor .art { width:100%; height:150px; object-fit:cover; display:block; }
+.anchor .in { padding:13px 16px 15px; }
+.anchor .row { display:flex; justify-content:space-between; align-items:baseline; }
+.anchor .wk { font-size:12px; font-weight:700; color: #9796B9; }
+.anchor .desc { font-size:12px; line-height:1.5; color:#E3DFE6; margin-top:5px; font-weight:500; }
+.anchor .next { font-size:11.5px; color: #9796B9; font-weight:600; margin-top:8px; }
+
+.hband { margin:4px 0 0; height:168px; position:relative; flex:none; overflow:hidden; }
+.hband img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 18%; }
+.hband .veil { position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.18) 0%, rgba(26,21,32,0) 45%, rgba(26,21,32,.78) 92%, #1A1520 100%); }
+.legend { max-width:560px; }
+</style><style id="dark-canvas-paint">.phone,.screen,.phone-frame{background:#1A1520 !important;}.statusbar{background:#1A1520 !important;}body{background:#101014 !important;}</style>
+</head>
+<body class="canvas">
+
+<div class="canvas-head">
+  <div class="eyebrow">S10–S12 · Mobile App · Mom Home + Tools</div>
+  <h1>App <em>Home · Timer · Weekly Tips</em> — mom logged-in surfaces</h1>
+  <div class="sub">Approved s7s8s9 construction · distinct band scenes per screen · type system H1 26 · H2 21 · H3 17</div>
+</div>
+
+<div class="pair"><div class="col">
+
+<!-- ============ S10 HOME (TOP) ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div><div class="hband"><img src="assets/band-home-couch.webp"><div class="veil"></div></div>
+
+  <div class="m-head" style="display:flex; align-items:flex-start; gap:12px;">
+    <div style="flex:1;">
+      <div class="a-overline">Week 28 · Day 3</div>
+      <div class="a-h1">Hello, <em>Elena</em></div>
+      <div class="m-sub">Third trimester begins — let's keep it steady</div>
+    </div>
+    <div class="avat">EV</div>
+  </div>
+
+  <div class="sect" style="margin-top:10px;">
+    <div class="srow" style="align-items:flex-start; flex-direction:column; gap:0;">
+      <div style="display:flex; align-items:center; gap:12px; width:100%;">
+        <div class="sico rose"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#AE7698" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/></svg></div>
+        <div class="mid" style="flex:1;">
+          <div class="a-h3">Joyful Birth Plan</div>
+          <div class="smeta"><span class="mmeta">Next: Comfort &amp; Support preferences</span></div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Cormorant',serif; font-weight:700; font-size:19px; color: #9796B9;">64%</div>
+        </div>
+      </div>
+      <div class="prog"><div class="fill"></div></div>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="srow" style="gap:0;">
+      <img class="devart" src="assets/week34.webp" style="height:104px; border-radius:12px; flex:none; width:104px; object-fit:cover; margin-right:12px;">
+      <div class="mid">
+        <div class="k-rose" style="font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Baby Development</div>
+        <div class="a-h3" style="font-size:15.5px;">Week 32 · practicing breaths</div>
+        <div class="smeta" style="margin-top:4px;"><span class="mmeta" style="line-height:1.45;">Baby is practicing breathing movements and building body fat — every practice breath readies the lungs for life outside.</span></div>
+        <div class="smeta" style="margin-top:6px;"><span class="mmeta" style="color: #9796B9; font-weight:700; font-size:11px;">Learn more</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="srow">
+      <div class="sico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4 C12.9 6 14.6 7.2 16.2 8.2 C17.8 9.2 18.6 10.8 18.2 12.8 C17.8 14.9 16.6 16.4 14.4 16.9"/><path d="M12 3.4 C11.1 6 9.4 7.2 7.5 8.2 C5.9 9 5 10.8 5.4 12.8 C5.9 15.4 7.7 17.2 8.9 18.3"/><path d="M9.4 20.4 C11.2 20.7 13.6 20.6 15.3 20.2"/></svg></div>
+      <div class="mid">
+        <div class="a-h3">Weekly Tip</div>
+        <div class="smeta"><span class="mmeta" style="line-height:1.45;">Count kicks — 10 movements in 2 hours. Same time each day builds the habit.</span></div>
+        <div class="smeta" style="margin-top:4px;"><span class="mmeta" style="color: #9796B9; font-weight:600; font-size:11px;">Read more</span><span class="mmeta">Week 28</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="srow affirm">
+      <div class="mid">
+        <div class="k-rose" style="font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; margin-bottom:5px;">Weekly Affirmation</div>
+        <div class="a-h3" style="font-style:italic; font-size:16px; line-height:1.4;">"I know my baby's normal patterns, and I trust myself to speak up if something doesn't feel right."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="a-h2">Action required</div>
+    <div class="sub">One signature and one invoice</div>
+    <div class="srow">
+      <div class="sico rose"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#AE7698" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/></svg></div>
+      <div class="mid"><div class="a-h3">Contract to sign</div><div class="smeta"><span class="mmeta">From Amara · Midwife</span></div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="srow">
+      <div class="sico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.8 4.4 C9.8 4.1 13.4 4.2 16.6 4.4 C17.4 4.4 17.9 5 17.9 5.7 L17.9 18.9 C17.9 19.6 17.4 20.1 16.7 20.2 C13.5 20.5 9.9 20.5 6.7 20.2 C6 20.1 5.5 19.6 5.5 18.9 L5.5 5.7 C5.5 5 6 4.4 6.8 4.4 Z"/><path d="M8.6 8.4 C11 8.1 13.3 8.1 15.6 8.4"/><path d="M8.6 11.6 C10.2 11.4 11.6 11.4 13.2 11.6"/><path d="M8.6 15 C10 14.8 11.2 14.8 12.6 15"/></svg></div>
+      <div class="mid"><div class="a-h3">Invoice — $450</div><div class="smeta"><span class="mmeta">From Amara · Midwife</span><span class="schip warn">Due Sep 30</span></div></div>
+      <span class="chev">›</span>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="a-h2">Key actions</div>
+    <div class="acts">
+      <div class="act"><div class="sico sage" style="margin-bottom:7px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#728F60" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/></svg></div><div class="a-h3">Timeline</div><div class="mmeta" style="margin-top:2px;">32 weeks · 3 days</div></div>
+      <div class="act"><div class="sico" style="margin-bottom:7px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2"/><path d="M12 9.6 L12 13.4 L14.6 15.2"/><path d="M9.8 3.6 L14.2 3.6"/><path d="M12 3.6 L12 6.2"/></svg></div><div class="a-h3">Timer</div><div class="mmeta" style="margin-top:2px;">Ready when you are</div></div>
+      <div class="act"><div class="sico rose" style="margin-bottom:7px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#AE7698" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6 C10 6.8 9 9 9 11.4 C9 14.4 10.3 16.4 12 16.4 C13.7 16.4 15 14.4 15 11.4 C15 9 14 6.8 12 4.6 Z"/><path d="M12 16.4 L12 19.4"/><path d="M9.6 18 C11.2 18.6 12.8 18.6 14.4 18"/></svg></div><div class="a-h3">Schedule</div><div class="mmeta" style="margin-top:2px;">With your provider</div></div>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:12px; padding-bottom:14px;">
+    <div class="a-h2">Birth &amp; Baby Reads</div>
+    <div class="sub">Chosen for your week</div>
+    <div class="reads">
+      <div class="sico sage"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#728F60" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/></svg></div>
+      <div class="mid"><div class="reads .rt" style="font-size:12px; font-weight:600; color:#F5F3F6; line-height:1.35;">What third-trimester appointments actually look like</div><div class="src">TJB Journal · 6 min read</div></div>
+      <span class="chev">›</span>
+    </div>
+  </div>
+
+  <div style="height:10px"></div>
+  <div class="tabbar"><div class="tb on"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/><path d="M10.2 19.4 L10.2 15.6 C10.2 14.9 10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4"/><path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9"/></svg><div class="tbl">Home</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/><path d="M8.8 15.6 C10 15.5 11 15.5 12 15.6"/><path d="M14.6 15.2 C15.4 14.4 16.2 14.3 16.6 14.9 C16.9 15.4 16.5 16 15.7 16.6"/></svg><div class="tbl">Birth Plan</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2"/><path d="M12 9.6 L12 13.4 L14.6 15.2"/><path d="M9.8 3.6 L14.2 3.6"/><path d="M12 3.6 L12 6.2"/></svg><div class="tbl">Timer</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z"/><path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3"/><path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4"/><path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3"/></svg><div class="tbl">My Team</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z"/><path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4"/><path d="M8.4 12.2 C9.4 12 10.4 12 11.4 12.2"/></svg><div class="tbl">Messages</div></div></div></div></div>
+
+<!-- ============ S10 HOME (SCROLLED) ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+
+  <div class="m-head" style="display:flex; align-items:flex-start; gap:12px;">
+    <div style="flex:1;">
+      <div class="a-overline">Week 28 · Day 3</div>
+      <div class="a-h1">Hello, <em>Elena</em></div>
+      <div class="m-sub">Recently paid — with a receipt trail you can trust</div>
+    </div>
+    <div class="avat">EV</div>
+  </div>
+
+  <div class="sect" style="margin-top:10px;">
+    <div class="a-h2">Recently paid ✓</div>
+    <div class="sub">Closes itself out in 5 days</div>
+    <div class="srow" style="background:#1A1520; border-color:#293522;">
+      <div class="sico sage"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#728F60" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/><path d="M8.8 12.2 C9.4 12.9 10 13.6 10.4 14.3 C11.6 12.4 13.2 10.6 14.8 9.2"/></svg></div>
+      <div class="mid"><div class="a-h3">Invoice paid — $450</div><div class="smeta"><span class="mmeta">Amara · Midwife</span><span class="mmeta">Sep 16</span></div></div>
+      <span class="chev">✕</span>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="a-h2">Your team is close</div>
+    <div class="sub">Two unread messages this morning</div>
+    <div class="srow">
+      <div class="avat rose">AH</div>
+      <div class="mid"><div class="a-h3">Amara · Midwife</div><div class="smeta"><span class="mmeta">"Bring your birth plan questions Tuesday —…"</span></div></div>
+      <div class="unread" style="width:8px; height:8px; border-radius:50%; background:#BD7FA5; flex-shrink:0;"></div>
+    </div>
+    <div class="srow">
+      <div class="avat sage">JR</div>
+      <div class="mid"><div class="a-h3">Jordan · Doula</div><div class="smeta"><span class="mmeta">"Loved the breathing pattern you tried…"</span></div></div>
+      <div class="unread" style="width:8px; height:8px; border-radius:50%; background:#BD7FA5; flex-shrink:0;"></div>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="a-h2">This week with your team</div>
+    <div class="sub">Everything confirmed and pending, in one glance</div>
+    <div class="srow">
+      <div class="sico sage"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#728F60" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6 C10 6.8 9 9 9 11.4 C9 14.4 10.3 16.4 12 16.4 C13.7 16.4 15 14.4 15 11.4 C15 9 14 6.8 12 4.6 Z"/><path d="M12 16.4 L12 19.4"/><path d="M9.6 18 C11.2 18.6 12.8 18.6 14.4 18"/></svg></div>
+      <div class="mid"><div class="a-h3">Prenatal visit</div><div class="smeta"><span class="mmeta">Amara · Midwife</span><span class="mmeta">Tue, Sep 22 · 10:00 AM</span><span class="schip done">Confirmed</span></div></div>
+    </div>
+    <div class="srow">
+      <div class="sico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6 C10 6.8 9 9 9 11.4 C9 14.4 10.3 16.4 12 16.4 C13.7 16.4 15 14.4 15 11.4 C15 9 14 6.8 12 4.6 Z"/><path d="M12 16.4 L12 19.4"/><path d="M9.6 18 C11.2 18.6 12.8 18.6 14.4 18"/></svg></div>
+      <div class="mid"><div class="a-h3">Birth-plan review</div><div class="smeta"><span class="mmeta">Jordan · Doula</span><span class="mmeta">Thu, Sep 24</span><span class="schip wip">Pending</span></div></div>
+    </div>
+    <div style="margin:10px 0 0;"><div class="abtn" style="display:block;">Open appointments</div></div>
+  </div>
+
+  <div class="sect" style="margin-top:12px; padding-bottom:14px;">
+    <div class="srow" style="justify-content:space-between;">
+      <div class="mid"><div class="a-h3">Wellness check-in</div><div class="smeta"><span class="mmeta">How are you feeling today?</span></div></div>
+      <span class="chev">›</span>
+    </div>
+    <div class="stemline"><svg width="46" height="14" viewBox="0 0 46 14"><path d="M2 12 Q14 10 22 7 Q32 3.5 44 2" fill="none" stroke="#D8A0C4" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+    <div class="reads">
+      <div class="sico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.4"/><path d="M15.8 15.8 C17 17 18 18 18.8 18.8"/></svg></div>
+      <div class="mid"><div style="font-size:12px; font-weight:600; color:#F5F3F6; line-height:1.35;">Search your library — weeks, wellness, and reads</div></div>
+    </div>
+  </div>
+
+  <div style="height:10px"></div>
+  <div class="tabbar"><div class="tb on"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/><path d="M10.2 19.4 L10.2 15.6 C10.2 14.9 10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4"/><path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9"/></svg><div class="tbl">Home</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/><path d="M8.8 15.6 C10 15.5 11 15.5 12 15.6"/><path d="M14.6 15.2 C15.4 14.4 16.2 14.3 16.6 14.9 C16.9 15.4 16.5 16 15.7 16.6"/></svg><div class="tbl">Birth Plan</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2"/><path d="M12 9.6 L12 13.4 L14.6 15.2"/><path d="M9.8 3.6 L14.2 3.6"/><path d="M12 3.6 L12 6.2"/></svg><div class="tbl">Timer</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z"/><path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3"/><path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4"/><path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3"/></svg><div class="tbl">My Team</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z"/><path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4"/><path d="M8.4 12.2 C9.4 12 10.4 12 11.4 12.2"/></svg><div class="tbl">Messages</div></div></div></div></div>
+
+</div><div class="col">
+
+<!-- ============ S11 CONTRACTION TIMER ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div><!-- S11 header: graphical ripple band (no photo per Jeff 2026-09-17) -->
+  <!-- S11 body mirrors live contraction-timer.tsx: header row → stats strip → circle timer w/ ripple halo → main button → History/AddManual/Share/End row → Water Broke/Notes/Charts pills → pattern chip. Graphical header (no photo per Jeff 2026-09-17). -->
+  <div class="tr-head">
+    <div class="a-h1">Surges <em>Timer</em></div>
+    <div class="gear"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.6 L12 5 M12 19 L12 21.4 M4 12 L6.4 12 M17.6 12 L20 12 M6.3 6.3 L8 8 M16 16 L17.7 17.7 M17.7 6.3 L16 8 M8 16 L6.3 17.7"/></svg></div>
+  </div>
+  <div class="strip">
+    <div class="st"><b>00:47</b><span>Avg Duration</span></div>
+    <div class="sdiv"></div>
+    <div class="st"><b>6:12</b><span>Avg Interval</span></div>
+    <div class="sdiv"></div>
+    <div class="st"><b>9</b><span>Count</span></div>
+  </div>
+  <div class="thero">
+    <div class="twrap">
+      <svg class="halo" width="420" height="420" viewBox="0 0 420 420" fill="none">
+        <circle cx="210" cy="210" r="98" stroke="#2F2C3A" stroke-width="1.4"/>
+        <circle cx="210" cy="210" r="132" stroke="#2F2C3A" stroke-width="1.2"/>
+        <circle cx="210" cy="210" r="168" stroke="#2F2C3A" stroke-width="1.1"/>
+        <circle cx="210" cy="210" r="204" stroke="#2F2C3A" stroke-width="1"/>
+      </svg>
+      <div class="tcirc"><div class="clock">02:47</div><div class="lab">Surging…</div></div>
+    </div>
+    <div class="tmbtn">Stop Surge</div>
+  </div>
+  <div class="trow">
+    <div class="ta"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="4.5" x2="7" y2="19.5"/><line x1="17" y1="4.5" x2="17" y2="19.5"/><line x1="4.5" y1="8" x2="19.5" y2="8"/><line x1="4.5" y1="16" x2="19.5" y2="16"/></svg>History</div>
+    <div class="ta"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Manual</div>
+    <div class="ta"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5.5 C8.5 5.5 5.8 8.2 5.8 11.7 C5.8 15.2 8.5 17.9 12 17.9 C15.5 17.9 18.2 15.2 18.2 11.7" opacity="0"/><path d="M14.5 9.5 L20 4 M15.5 4 L20 4 L20 8.5"/><path d="M20 13.2 C20 17 17 20 13.2 20 L10.8 20 C7 20 4 17 4 13.2 L4 10.8 C4 7 7 4 10.8 4"/></svg>Share</div>
+    <div class="ta warn">End</div>
+  </div>
+  <div class="tpills">
+    <div class="rbtn no">Water Broke</div><div class="rbtn no">Notes</div><div class="rbtn no">Charts</div>
+  </div>
+  <div class="tchip">5-1-1 pattern not reached yet — we'll tell you the moment it is</div>
+  <div style="height:10px"></div>
+  <div class="tabbar"><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/><path d="M10.2 19.4 L10.2 15.6 C10.2 14.9 10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4"/><path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9"/></svg><div class="tbl">Home</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/><path d="M8.8 15.6 C10 15.5 11 15.5 12 15.6"/><path d="M14.6 15.2 C15.4 14.4 16.2 14.3 16.6 14.9 C16.9 15.4 16.5 16 15.7 16.6"/></svg><div class="tbl">Birth Plan</div></div><div class="tb on"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2"/><path d="M12 9.6 L12 13.4 L14.6 15.2"/><path d="M9.8 3.6 L14.2 3.6"/><path d="M12 3.6 L12 6.2"/></svg><div class="tbl">Timer</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z"/><path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3"/><path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4"/><path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3"/></svg><div class="tbl">My Team</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z"/><path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4"/><path d="M8.4 12.2 C9.4 12 10.4 12 11.4 12.2"/></svg><div class="tbl">Messages</div></div></div></div></div>
+
+
+<!-- ============ S12 WEEKLY TIPS ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div><div class="hband"><img src="assets/band-tips-teaching.webp"><div class="veil"></div></div>
+
+  <div class="m-head">
+    <div class="a-overline">Your Week</div>
+    <div class="a-h1">Weekly Tips &amp; <em>Affirmations</em></div>
+    <div class="m-sub">One steady rhythm of learning, all 42 weeks</div>
+  </div>
+
+  <div class="tabs2">
+    <div class="t2 on">Pregnancy · 1–42</div>
+    <div class="t2">Postpartum · 1–6</div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div class="sub" style="margin-bottom:7px;">Select week</div>
+    <div class="wstrip">
+      <div class="wk" style="opacity:.55;">26</div>
+      <div class="wk cur" style="border-color:#C09BB6; background:#221B20; color:#AE7698;">27</div>
+      <div class="wk" style="border-color:#C09BB6; background:#221B20; color:#AE7698;">28</div>
+      <div class="wk" style="opacity:.55;">29</div>
+      <div class="wk" style="opacity:.55;">30</div>
+      <div class="wk" style="opacity:.55;">31</div>
+      <div class="wk" style="opacity:.55;">32</div>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:12px;">
+    <div style="display:flex; align-items:baseline; gap:10px;">
+      <div class="a-h2" style="margin-bottom:0;">Week 28</div>
+      <span class="schip wip" style="flex-shrink:0;">Your current week</span>
+    </div>
+    <div class="sub" style="margin-top:2px;">Third trimester · day 3</div>
+  </div>
+
+  <div class="sect" style="margin-top:2px;">
+    <div class="tipcard">
+      <div class="k k-lav"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4 C12.9 6 14.6 7.2 16.2 8.2 C17.8 9 18.6 10.8 18.2 12.8 C17.7 14.9 16.4 16.4 14.4 16.9"/><path d="M12 3.4 C11.1 6 9.4 7.2 7.5 8.2 C5.9 9 5 10.8 5.4 12.8 C5.9 14.9 7.2 16.4 9.2 16.9"/><path d="M9.4 20.2 C11.2 20.5 13.4 20.6 15.2 20.2"/></svg>Weekly tip</div>
+      <p style="line-height:1.5;">Notice your baby's movement pattern daily and learn what "normal for your baby" feels like — changes in movement are one of the first signs your midwife wants you to call about, not something to wait on.</p>
+    </div>
+    <div class="tipcard affirm">
+      <div class="k k-rose"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#AE7698" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6 C10 6.8 9 9 9 11.4 C9 14.4 10.3 16.4 12 16.4 C13.7 16.4 15 14.4 15 11.4 C15 9 14 6.8 12 4.6 Z"/><path d="M12 16.4 L12 19.4"/><path d="M9.6 18 C11.2 18.6 12.8 18.6 14.4 18"/></svg>Affirmation</div>
+      <p class="q">"I know my baby's normal patterns, and I trust myself to speak up if something doesn't feel right."</p>
+    </div>
+    <div class="tipcard">
+      <div class="k k-sage"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#728F60" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/></svg>From your team</div>
+      <p style="line-height:1.5;">Jordan shared a slow-breathing pattern for practice this week — four counts in, six counts out. Amara's note: bring three birth-plan questions to Tuesday's visit.</p>
+    </div>
+  </div>
+
+  <div class="sect" style="margin-top:4px; padding-bottom:14px;">
+    <div class="srow" style="gap:0;">
+      <img class="devart" src="assets/week28.webp" style="height:88px; border-radius:12px; flex:none; width:88px; object-fit:cover; margin-right:12px;">
+      <div class="mid">
+        <div class="k-sage" style="font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; margin-bottom:4px;">Baby at week 28</div>
+        <div class="a-h3" style="font-size:15.5px;">Dreaming begins</div>
+        <div class="smeta" style="margin-top:4px;"><span class="mmeta" style="line-height:1.45;">Rapid brain growth this week — sleep cycles with REM appear, and baby practices blinking.</span></div>
+        <div class="smeta" style="margin-top:6px;"><span class="mmeta" style="color: #9796B9; font-weight:600; font-size:11px;">Open this week's full guide</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:10px"></div>
+  <div class="tabbar"><div class="tb on"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/><path d="M10.2 19.4 L10.2 15.6 C10.2 14.9 10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4"/><path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9"/></svg><div class="tbl">Home</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/><path d="M8.8 15.6 C10 15.5 11 15.5 12 15.6"/><path d="M14.6 15.2 C15.4 14.4 16.2 14.3 16.6 14.9 C16.9 15.4 16.5 16 15.7 16.6"/></svg><div class="tbl">Birth Plan</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2"/><path d="M12 9.6 L12 13.4 L14.6 15.2"/><path d="M9.8 3.6 L14.2 3.6"/><path d="M12 3.6 L12 6.2"/></svg><div class="tbl">Timer</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z"/><path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3"/><path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4"/><path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3"/></svg><div class="tbl">My Team</div></div><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z"/><path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4"/><path d="M8.4 12.2 C9.4 12 10.4 12 11.4 12.2"/></svg><div class="tbl">Messages</div></div></div></div></div>
+
+</div></div>
+
+<div class="legend">
+  <div class="h">S10–S12 — what's in this packet</div>
+  <ul>
+    <li><b>S10 Home (two frames):</b> top of scroll (birth-plan progress, baby-dev watercolor, tip, affirmation, action required, key actions, reads) + scrolled (recently paid, unread team messages, this week's visits, wellness check-in). Every element from the real home.tsx inventory is represented.</li>
+    <li><b>S11 Contraction Timer:</b> big serif clock, start/stop + manual log, session list with duration/interval/intensity chips, 5-1-1 pattern status card, share-with-team, birth-word + alert-threshold preferences (real settings from the screen, trimmed to the primary loop).</li>
+    <li><b>S12 Weekly Tips:</b> pregnancy/postpartum tabs, week strip with current-week mark, real week-28 tip + affirmation copy from the backend, "from your team" card, week-28 watercolor guide card.</li>
+    <li><b>Header photo bands (§7):</b> couch consult (home), doppler check (timer), teaching class (weekly tips) — three distinct city-page secondary scenes, none used by S7/S8/S9, no skyline heroes, no captions on the band.</li>
+    <li><b>All construction from the approved source:</b> same chrome, type system, chips, tab bar, icon set, stem dividers — zero new colors.</li>
+  </ul>
+</div>
+</body>
+</html>

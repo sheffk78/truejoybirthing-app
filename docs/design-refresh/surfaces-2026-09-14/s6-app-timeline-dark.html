@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="common-dark.css">
+<link rel="stylesheet" href="icons.css">
+<link rel="stylesheet" href="../type-system.css">
+<style>
+/* S6: app Timeline screen — type-system app scale + week watercolor as milestone anchor */
+.phone { height: auto; }
+.tl-head { padding: 10px 20px 6px; }
+.a-overline { font-size:10px; letter-spacing:2.4px; text-transform:uppercase; font-weight:700; color:#AE7698; margin-bottom:5px; }
+.a-h1 { font-family:'Cormorant',serif; font-weight:700; font-size:26px; line-height:1.12; color:#F5F3F6; }
+.a-h1 em { font-style:normal; color:#C09BB6; }
+.tl-sub { font-size:12.5px; color:#9E97A4; margin-top:4px; font-weight:500; }
+
+/* current week anchor */
+.anchor { margin:14px 20px 0; background: #2A2330; border: 1px solid #473943; border-radius:20px; overflow:hidden; }
+.anchor .art { width:100%; height:150px; object-fit:cover; display:block; }
+.anchor .in { padding:13px 16px 15px; }
+.anchor .row { display:flex; justify-content:space-between; align-items:baseline; }
+.a-h2 { font-family:'Cormorant',serif; font-weight:700; font-size:21px; color:#F5F3F6; }
+.anchor .wk { font-size:12px; font-weight:700; color: #9796B9; }
+.anchor .desc { font-size:12px; line-height:1.5; color:#E3DFE6; margin-top:5px; font-weight:500; }
+.anchor .next { font-size:11.5px; color: #9796B9; font-weight:600; margin-top:8px; }
+.nextrow { display:flex; align-items:center; gap:10px; margin-top:9px; }
+.nextart { width:40px; height:40px; border-radius:12px; object-fit:cover; flex-shrink:0; border: 1px solid #473943; }
+
+/* events */
+.evl { margin:16px 20px 0; }
+.a-h2 { margin-bottom:8px; }
+.evr { background: #2A2330; border: 1px solid #473943; border-radius:18px; padding:12px 14px; margin-bottom:8px; display:flex; gap:12px; align-items:center; }
+.edate { width:44px; text-align:center; flex-shrink:0; }
+.edate .m { font-size:9.5px; letter-spacing:1.4px; font-weight:700; color:#AE7698; text-transform:uppercase; }
+.edate .d { font-family:'Cormorant',serif; font-weight:700; font-size:22px; color:#F5F3F6; line-height:1; }
+.evr .mid { flex:1; min-width:0; }
+.a-h3 { font-family:'Cormorant',serif; font-weight:600; font-size:17px; color:#F5F3F6; }
+.evr .who { font-size:11.5px; color:#9E97A4; margin-top:2px; font-weight:500; }
+.etype { font-size:9.5px; letter-spacing:.6px; font-weight:700; text-transform:uppercase; border-radius:999px; padding:2px 8px; }
+.etype.appt { color: #9796B9; background:#222235; }
+.etype.class { color:#AE7698; background:#3A2530; }
+.addbtn { margin:4px 20px 0; }
+.abtn-ghost { border: 1.4px solid #8E8CB5; color: #9796B9; text-align:center; font-size:12.5px; font-weight:600; border-radius:999px; padding:10px 18px; }
+
+/* milestones strip */
+.miles { margin:16px 20px 0; }
+.mrow { display:flex; gap:10px; overflow:hidden; }
+.mcard { flex:1; background: #2A2330; border: 1px solid #473943; border-radius:16px; padding:11px 12px; position:relative; }
+.mcard.cur { border-color:#C09BB6; background:#221B20; }
+.mcard .wk { font-size:9.5px; letter-spacing:1.2px; font-weight:700; color: #A9A7C8; text-transform:uppercase; }
+.mcard.cur .wk { color:#AE7698; }
+.mcard .t { font-family:'Cormorant',serif; font-weight:600; font-size:15px; color:#F5F3F6; margin-top:3px; line-height:1.2; }
+.mcard .d { font-size:10.5px; color:#9E97A4; margin-top:3px; line-height:1.4; font-weight:500; }
+.mcard .leaf { position:absolute; top:9px; right:9px; opacity:.9; }
+.mcard.past { opacity:.72; }
+
+.legend { max-width:560px; }
+</style><style id="dark-canvas-paint">.phone,.screen,.phone-frame{background:#1A1520 !important;}.statusbar{background:#1A1520 !important;}body{background:#101014 !important;}</style>
+</head>
+<body class="canvas">
+<div class="canvas-head">
+  <div class="eyebrow">S6 · Mobile App · Timeline</div>
+  <h1>App <em>Timeline</em> — watercolor anchor + type system</h1>
+  <div class="sub">H1 26 · H2 21 · H3 17 (Cormorant) · week-28 art anchors "your week" · reached from Home</div>
+</div>
+
+<div class="pair"><div class="col">
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+
+  <div class="tl-head">
+    <div class="a-overline">Your Journey</div>
+    <div class="a-h1">Pregnancy <em>Timeline</em></div>
+    <div class="tl-sub">Appointments, classes, and what's coming — in one line</div>
+  </div>
+
+  <div class="anchor">
+    <img class="art" src="assets/week28.webp">
+    <div class="in">
+      <div class="row"><div class="a-h2">Where you are</div><div class="wk">WEEK 28 · SEP 20</div></div>
+      <div class="desc">Baby's lungs are practicing breathing movements. Third trimester begins — appointments move to every two weeks.</div>
+      <div class="nextrow">
+        <img class="nextart" src="assets/breathing-slow-v2.png">
+        <div class="next">Next: try the slow-breathing pattern when contractions start · bring your birth plan questions</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="evl">
+    <div class="a-h2">Your events &amp; appointments</div>
+    <div class="evr"><div class="edate"><div class="m">SEP</div><div class="d">20</div></div><div class="mid"><div class="a-h3">Prenatal checkup</div><div class="who">Dr. Rivera · St. David's North</div></div><span class="etype appt">Appt</span></div>
+    <div class="evr"><div class="edate"><div class="m">OCT</div><div class="d">02</div></div><div class="mid"><div class="a-h3">Hospital tour</div><div class="who">Birth center · with Marcus</div></div><span class="etype class">Class</span></div>
+    <div class="evr"><div class="edate"><div class="m">OCT</div><div class="d">14</div></div><div class="mid"><div class="a-h3">Glucose screening</div><div class="who">Lab visit · fasting not required</div></div><span class="etype appt">Appt</span></div>
+  </div>
+  <div class="addbtn"><div class="abtn-ghost">+ Add appointment</div></div>
+
+  <div class="miles">
+    <div class="a-h2">Pregnancy milestones</div>
+    <div class="mrow">
+      <div class="mcard past"><div class="wk">WK 24</div><div class="t">Viability milestone</div><div class="d">Done · Sep 2</div></div>
+      <div class="mcard cur"><svg class="leaf" width="14" height="10" viewBox="0 0 14 10"><path d="M1 9 Q6 6 9 4.5 Q11 3.5 13 1.5" fill="none" stroke="#AE7698" stroke-width="1.4" stroke-linecap="round"/></svg><div class="wk">WK 28</div><div class="t">Third trimester</div><div class="d">You're here · Sep 20</div></div>
+      <div class="mcard"><div class="wk">WK 32</div><div class="t">Growth scan</div><div class="d">Oct 18</div></div>
+      <div class="mcard"><div class="wk">WK 37</div><div class="t">Early term</div><div class="d">Nov 15</div></div>
+    </div>
+  </div>
+
+  <div style="height:10px"></div>
+  <div class="tabbar"><div class="tb on"><svg class="" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2" />
+<path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4" />
+<path d="M10.2 19.4 L10.2 15.6 C10.2 14.9 10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4" />
+<path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9" /></svg><div class="tbl">Home</div></div><div class="tb"><svg class="" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z" />
+<path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2" />
+<path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4" />
+<path d="M8.8 15.6 C10 15.5 11 15.5 12 15.6" />
+<path d="M14.6 15.2 C15.4 14.4 16.2 14.3 16.6 14.9 C16.9 15.4 16.5 16 15.7 16.6" /></svg><div class="tbl">Birth Plan</div></div><div class="tb"><svg class="" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2" />
+<path d="M12 9.6 L12 13.4 L14.6 15.2" />
+<path d="M9.8 3.6 L14.2 3.6" />
+<path d="M12 3.6 L12 6.2" /></svg><div class="tbl">Timer</div></div><div class="tb"><svg class="" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z" />
+<path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3" />
+<path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4" />
+<path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3" /></svg><div class="tbl">My Team</div></div><div class="tb"><svg class="" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z" />
+<path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4" />
+<path d="M8.4 12.2 C9.4 12 10.4 12 11.4 12.2" /></svg><div class="tbl">Messages</div></div></div></div></div>
+</div></div>
+
+<div class="legend">
+  <div class="h">Timeline v-new — what changed</div>
+  <ul>
+    <li><b>Type system:</b> H1 26 "Pregnancy Timeline" (rose accent) · H2 21 "Where you are" / "Your events" / "Pregnancy milestones" · H3 17 event names.</li>
+    <li><b>Week-28 watercolor anchors the screen:</b> the "where you are" card is the page's hero — art + plain-language week summary + what's next. No stage jargon.</li>
+    <li><b>Events as rows</b> with serif date stamps (Cormorant numerals), type chips (Appt/Class), and a quiet ghost "add" button.</li>
+    <li><b>Custom icon tab bar (new):</b> hand-drawn glyph set at 30px — same set the Birth Plan screen uses, so nav feels like one system.</li>
+    <li><b>Reached from Home</b> per real navigation — tab bar shows the five visible tabs; Timeline is hidden by design.</li>
+  </ul>
+</div>
+</body>
+</html>

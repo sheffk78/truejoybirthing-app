@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TJB Provider Detail — M17 Mockup</title>
+<link rel="stylesheet" href="common-dark.css">
+<style>
+  /* @font-face (mandatory per 9/21 lesson — do not rely on external css for fonts) */
+  @font-face { font-family:'Cormorant Garamond'; src:url('fonts/CormorantGaramond_700Bold.ttf'); font-weight:700; }
+  @font-face { font-family:'Cormorant Garamond'; src:url('fonts/CormorantGaramond_600SemiBold.ttf'); font-weight:600; }
+  @font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_400Regular.ttf'); font-weight:400; }
+  @font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_500Medium.ttf'); font-weight:500; }
+  @font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_600SemiBold.ttf'); font-weight:600; }
+  @font-face { font-family:'Quicksand'; src:url('fonts/Quicksand_700Bold.ttf'); font-weight:700; }
+
+  /* ── Provider Detail Screen (M17) ── */
+  .pd-screen {
+    width: 390px;
+    min-height: 844px;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--charcoal);
+    box-sizing: border-box;
+  }
+
+  /* ── Cream header zone ── */
+  .pd-header {
+    background: var(--cream);
+    padding: 0 var(--inset);
+    padding-top: 48px;
+    padding-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+
+  .pd-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Back chevron */
+  .pd-back {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+
+  .pd-back svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* Avatar circle — lavender tint bg, charcoal initials */
+  .pd-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--lavender-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .pd-avatar-initials {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--charcoal);
+    line-height: 1;
+  }
+
+  /* Name + role column */
+  .pd-name-col {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pd-provider-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1.2;
+    color: var(--charcoal);
+    margin: 0;
+  }
+
+  /* Role tag chip */
+  .pd-role-chip {
+    display: inline-block;
+    background: var(--lavender-300);
+    color: var(--lavender-600);
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Location line */
+  .pd-location {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--charcoal);
+    opacity: 0.7;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .pd-location svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  /* ── Action buttons ── */
+  .pd-actions {
+    display: flex;
+    gap: 10px;
+    padding: 16px var(--inset);
+  }
+
+  .pd-btn {
+    flex: 1;
+    height: 44px;
+    border-radius: 22px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s;
+  }
+
+  .pd-btn:active {
+    opacity: 0.85;
+  }
+
+  /* Message — lavender filled */
+  .pd-btn-message {
+    background: var(--lavender-500);
+    color: var(--white);
+  }
+
+  /* Schedule — white, hairline border */
+  .pd-btn-schedule {
+    background: var(--white);
+    color: var(--lavender-600);
+    border: 1px solid var(--lavender-300);
+  }
+
+  .pd-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ── Cards ── */
+  .pd-card {
+    background: var(--white);
+    border-radius: var(--radius-18);
+    padding: 16px var(--inset);
+    margin: 0 var(--inset) 12px;
+    box-shadow: 0 1px 4px rgba(42,42,42,0.06);
+  }
+
+  .pd-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--charcoal);
+    margin: 0 0 10px;
+  }
+
+  /* About bio */
+  .pd-bio {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--charcoal);
+    opacity: 0.85;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Services rows */
+  .pd-service-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--surface);
+  }
+
+  .pd-service-row:last-child {
+    border-bottom: none;
+  }
+
+  .pd-service-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--charcoal);
+  }
+
+  .pd-service-price {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--lavender-600);
+  }
+
+  .pd-service-check {
+    width: 18px;
+    height: 18px;
+    color: var(--lavender-500);
+    flex-shrink: 0;
+  }
+
+  /* Availability rows */
+  .pd-avail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--surface);
+  }
+
+  .pd-avail-row:last-child {
+    border-bottom: none;
+  }
+
+  .pd-avail-date {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--charcoal);
+  }
+
+  .pd-avail-time {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--charcoal);
+    opacity: 0.7;
+  }
+
+  .pd-avail-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--lavender-500);
+    flex-shrink: 0;
+  }
+
+  /* Bottom safe padding */
+  .pd-bottom-pad {
+    height: 34px;
+  }
+
+  /* ── Overflow guard ── */
+  .pd-screen {
+    max-width: 390px;
+    overflow-x: hidden;
+  }
+</style><style id="dark-canvas-paint">.phone,.screen,.phone-frame{background:#1A1520 !important;}.statusbar{background:#1A1520 !important;}body{background:#101014 !important;}</style>
+</head>
+<body>
+<div class="pd-screen">
+
+  <!-- ═══ Header zone ═══ -->
+  <div class="pd-header">
+
+    <div class="pd-header-content">
+      <!-- Back chevron -->
+      <button class="pd-back" aria-label="Back">
+        <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1L2 5L8 9" stroke="#F5F3F6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <!-- Avatar circle -->
+      <div class="pd-avatar">
+        <span class="pd-avatar-initials">EV</span>
+      </div>
+
+      <!-- Name + role -->
+      <div class="pd-name-col">
+        <h1 class="pd-provider-name">Elena Vasquez</h1>
+        <span class="pd-role-chip">Birth Doula</span>
+        <div class="pd-location">
+          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 1C3.24 1 1 3.24 1 6C1 9.5 6 11 6 11C6 11 11 9.5 11 6C11 3.24 8.76 1 6 1Z" stroke="#6E6C99" stroke-width="1" fill="none"/>
+            <circle cx="6" cy="6" r="1.5" fill="#6E6C99"/>
+          </svg>
+          <span>Austin, TX · 4.8 (23 reviews)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Action buttons ═══ -->
+  <div class="pd-actions">
+    <button class="pd-btn pd-btn-message">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 3C2 2.44772 2.44772 2 3 2H13C13.5523 2 14 2.44772 14 3V10C14 10.5523 13.5523 11 13 11H5L3 14V11C2.44772 11 2 10.5523 2 10V3Z" stroke="white" stroke-width="1.2" fill="none"/>
+        <path d="M5 6H11" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M5 8.5H9" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      Message
+    </button>
+    <button class="pd-btn pd-btn-schedule">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="3" width="12" height="11" rx="2" stroke="#6E6C99" stroke-width="1.2" fill="none"/>
+        <path d="M2 6H14" stroke="#6E6C99" stroke-width="1.2"/>
+        <circle cx="5.5" cy="11" r="1" fill="#6E6C99"/>
+        <circle cx="8" cy="11" r="1" fill="#6E6C99"/>
+        <circle cx="10.5" cy="11" r="1" fill="#6E6C99"/>
+      </svg>
+      Schedule
+    </button>
+  </div>
+
+  <!-- ═══ About card ═══ -->
+  <div class="pd-card">
+    <h2 class="pd-card-title">About</h2>
+    <p class="pd-bio">Certified birth doula with 8 years of experience supporting families through pregnancy, birth, and the early postpartum period. Passionate about evidence-informed, personalized care.</p>
+  </div>
+
+  <!-- ═══ Services card ═══ -->
+  <div class="pd-card">
+    <h2 class="pd-card-title">Services</h2>
+    <div class="pd-service-row">
+      <span class="pd-service-label">Prenatal Visit</span>
+      <span class="pd-service-price">$120</span>
+    </div>
+    <div class="pd-service-row">
+      <span class="pd-service-label">Birth Support</span>
+      <span class="pd-service-price">$900</span>
+    </div>
+    <div class="pd-service-row">
+      <span class="pd-service-label">Postpartum Check-in</span>
+      <svg class="pd-service-check" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="9" cy="9" r="8" stroke="#8E8CB5" stroke-width="1.2" fill="none"/>
+        <path d="M5.5 9L8 11.5L12.5 6.5" stroke="#8E8CB5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ═══ Upcoming Availability card ═══ -->
+  <div class="pd-card">
+    <h2 class="pd-card-title">Upcoming Availability</h2>
+    <div class="pd-avail-row">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="pd-avail-dot"></span>
+        <span class="pd-avail-date">Tue, Sep 23</span>
+      </div>
+      <span class="pd-avail-time">10:00 AM — 2:00 PM</span>
+    </div>
+    <div class="pd-avail-row">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="pd-avail-dot"></span>
+        <span class="pd-avail-date">Thu, Sep 25</span>
+      </div>
+      <span class="pd-avail-time">1:00 PM — 5:00 PM</span>
+    </div>
+  </div>
+
+  <!-- Bottom safe padding -->
+  <div class="pd-bottom-pad"></div>
+
+</div>
+</body>
+</html>

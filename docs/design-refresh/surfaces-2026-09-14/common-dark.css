@@ -1,0 +1,106 @@
+/* common.css â TJB Design Refresh shared styles */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/CormorantGaramond_700Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/CormorantGaramond_600SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/Quicksand_400Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./fonts/Quicksand_500Medium.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./fonts/Quicksand_600SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./fonts/Quicksand_700Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/SourceSans3_400Regular.ttf') format('truetype');
+}
+
+:root {
+  --lavender-500: #8E8CB5;
+  --lavender-600: #6E6C99;
+  --lavender-300: #434059;
+  --surface: #2F2C3A;
+  --rose-500: #BD7FA5;
+  --cream: #1A1520;
+  --charcoal: #F5F3F6;
+  --white: #2A2330;
+  --radius-18: 18px;
+  --inset: 16px;
+}
+
+.pbody {
+  margin: 0;
+  padding: 0;
+  font-family: 'Quicksand', sans-serif;
+  background: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.phone-frame {
+  width: 390px;
+  min-height: 844px;
+  background: var(--cream);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+}
+
+.a-h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+}
+
+.a-overline {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+
+.mhead {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+}
+
+.m-sub {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 500;
+}

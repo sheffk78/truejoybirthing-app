@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="common-dark.css">
+<link rel="stylesheet" href="icons.css">
+<link rel="stylesheet" href="../type-system.css">
+<style>
+/* S7/S8/S9: mom logged-in core screens — same construction as approved s5/s6 */
+.phone { height:844px; display:flex; flex-direction:column; overflow:hidden; border-radius:40px; }
+.screen.tall { height:844px; min-height:0; }
+.screen { display:flex; flex-direction:column; }
+.sheet { flex:1 1 auto; overflow-y:hidden; }
+.tabbar { flex:0 0 auto; }
+.tabbar { display:flex; justify-content:space-around; align-items:center; padding:8px 10px 12px; }
+.tb { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:9px; font-weight:700; letter-spacing:.4px; color:#8A7F90; }
+.tb.on { color: #9796B9; }
+.composer { display:flex; align-items:center; gap:10px; padding:10px 16px 6px; }
+.composer .field { flex:1; background:#2A2330; border:1px solid #201B1F; border-radius:999px; padding:11px 16px; font-family:'Quicksand'; font-weight:500; font-size:12.5px; color:#7F7388; }
+.composer .send { width:42px; height:42px; border-radius:50%; background: #8E8CB5; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.tbl { font-size:9px; }
+
+/* header pattern (from approved s5) */
+.m-head { padding:10px 20px 6px; }
+.a-overline { font-size:10px; letter-spacing:2.4px; text-transform:uppercase; font-weight:700; color:#AE7698; margin-bottom:5px; }
+.a-h1 { font-family:'Cormorant',serif; font-weight:700; font-size:26px; line-height:1.12; color:#F5F3F6; }
+.a-h1 em { font-style:normal; color:#C09BB6; }
+.m-sub { font-size:12.5px; color:#9E97A4; margin-top:4px; font-weight:500; }
+
+/* section + rows (s5 vocabulary) */
+.sect { margin:16px 20px 0; }
+.sect .a-h2 { font-family:'Cormorant',serif; font-weight:700; font-size:21px; color:#F5F3F6; margin-bottom:2px; }
+.sect .sub { font-size:11.5px; color:#9E97A4; font-weight:500; margin-bottom:10px; }
+.srow { background: #2A2330; border: 1px solid #473943; border-radius:18px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+.sico { width:34px; height:34px; border-radius:12px; background:#222235; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.sico.sage { background:#293522; }
+.a-h3 { font-family:'Cormorant',serif; font-weight:600; font-size:17px; color:#F5F3F6; }
+.srow .mid { flex:1; min-width:0; }
+.smeta { display:flex; align-items:center; gap:6px; margin-top:2px; flex-wrap:wrap; }
+.mmeta { font-size:11px; color:#9E97A4; font-weight:500; }
+.schip { font-size:9.5px; letter-spacing:.6px; font-weight:700; text-transform:uppercase; border-radius:999px; padding:2px 8px; }
+.schip.done { color:#728F60; background:#293522; }
+.schip.wip { color: #9796B9; background:#222235; }
+.schip.warn { color:#AE7698; background: #372031; }
+.schip.todo { color:#7F7388; background:#3C3541; }
+.chev { color:#756273; font-size:16px; flex-shrink:0; }
+.muted { color:#7F7388; }
+
+/* buttons (approved) */
+.abtn { background: #6E6C99; color: #FFFFFF; text-align:center; font-size:13px; font-weight:600; border-radius:999px; padding:13px 18px; }
+.btnrow { display:flex; gap:8px; margin-top:9px; }
+.rbtn { flex:1; text-align:center; font-size:11.5px; font-weight:700; border-radius:999px; padding:8px 10px; }
+.rbtn.yes { background: #8E8CB5; color: #FFFFFF; }
+.rbtn.no { border:1.3px solid #434059; color: #9796B9; background:#2A2330; }
+.dl { margin:16px 20px 0; }
+.dl .hint { text-align:center; font-size:11px; color:#9E97A4; margin-top:7px; font-weight:500; }
+
+/* avatar (my-team + messages) */
+.avat { width:38px; height:38px; border-radius:50%; background:#2F2C3A; color: #9796B9; font-family:'Quicksand'; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.avat.rose { background: #372031; color:#AE7698; }
+.avat.sage { background:#293522; color:#728F60; }
+
+/* search */
+.search { margin:12px 20px 0; background: #2A2330; border: 1px solid #473943; border-radius:999px; padding:9px 14px; display:flex; align-items:center; gap:8px; color:#8A7F90; font-size:12px; font-weight:500; }
+
+/* unread dot + time */
+.unread { width:8px; height:8px; border-radius:50%; background:#BD7FA5; flex-shrink:0; }
+.time { font-size:10px; color:#8A7F90; font-weight:600; flex-shrink:0; }
+
+/* divider stem (growth motif, design-wide rule) */
+.stemline { margin:18px 20px 4px; }
+.legend { max-width:560px; }
+</style><style id="dark-canvas-paint">.phone,.screen,.phone-frame{background:#1A1520 !important;}.statusbar{background:#1A1520 !important;}body{background:#101014 !important;}</style>
+</head>
+<body class="canvas">
+
+<div class="canvas-head">
+  <div class="eyebrow">S7–S9 · Mobile App · Mom Core</div>
+  <h1>App <em>Appointments · My Team · Messages</em> — mom logged-in core</h1>
+  <div class="sub">Type system (H1 26 · H2 21 · H3 17) · custom icon set · approved s5/s6 construction</div>
+</div>
+
+<div class="pair"><div class="col">
+
+<!-- ============ S7 APPOINTMENTS ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+
+  <div class="m-head">
+    <div class="a-overline">Your Care</div>
+    <div class="a-h1"><em>Your</em> Appointments</div>
+    <div class="m-sub">Visits with your team — respond, reschedule, breathe</div>
+  </div>
+
+  <div class="sect">
+    <div class="a-h2">Upcoming</div>
+    <div class="sub">2 visits on the calendar</div>
+
+    <div class="srow">
+      <div class="sico sage"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#728F60" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6 C10 6.8 9 9 9 11.4 C9 14.4 10.3 16.4 12 16.4 C13.7 16.4 15 14.4 15 11.4 C15 9 14 6.8 12 4.6 Z"/><path d="M12 16.4 L12 19.4"/><path d="M9.6 18 C11.2 18.6 12.8 18.6 14.4 18"/></svg></div>
+      <div class="mid"><div class="a-h3">Prenatal Visit</div>
+        <div class="smeta"><span class="mmeta">Amara · Midwife</span></div>
+        <div class="smeta"><span class="mmeta">Tue, Sep 22 · 10:00 AM</span><span class="schip done">Confirmed</span></div>
+      </div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#756273" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/><path d="M9.6 12.2 L11.4 14 L14.4 10.4"/></svg></div>
+    </div>
+
+    <div class="srow">
+      <div class="sico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.6" y="6.4" width="14.8" height="10.2" rx="2.4"/><path d="M9.4 11 L11 12.4 L14.6 9.2"/><path d="M9.6 19.4 L14.4 19.4"/></svg></div>
+      <div class="mid"><div class="a-h3">Virtual Meeting</div>
+        <div class="smeta"><span class="mmeta">Doula Renée</span></div>
+        <div class="smeta"><span class="mmeta">Thu, Sep 24 · 2:30 PM</span><span class="schip warn">Respond</span></div>
+      </div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#756273" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+    <div class="srow" style="border-style:dashed; background:#2A2330;">
+      <div class="mid" style="display:flex; gap:8px;">
+        <div class="rbtn yes">Accept</div>
+        <div class="rbtn no">Decline</div>
+      </div>
+    </div>
+
+    <div class="srow">
+      <div class="sico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5.4 11.4 L5.4 18.6 C5.4 19.2 5.9 19.8 6.6 19.8 L10.2 19.8 L10.2 15.4 L13.8 15.4 L13.8 19.8 L17.4 19.8 C18.1 19.8 18.6 19.2 18.6 18.6 L18.6 11.4"/><path d="M4.4 11.8 C7 8.8 9.6 6.8 12 6.8 C14.4 6.8 17 8.8 19.6 11.8"/><path d="M12 6.8 C12 5.8 12.5 4.9 13.4 4.4"/></svg></div>
+      <div class="mid"><div class="a-h3">Home Visit</div>
+        <div class="smeta"><span class="mmeta">Lactation · Priya</span></div>
+        <div class="smeta"><span class="mmeta">Fri, Sep 26 · 9:00 AM</span><span class="schip wip">Pending</span></div>
+      </div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#756273" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/></svg></div>
+    </div>
+  </div>
+
+  <div class="sect">
+    <div class="a-h2">Past</div>
+    <div class="sub">Your visit history</div>
+    <div class="srow">
+      <div class="sico sage"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#728F60" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20 C8.4 16.4 5.6 13.2 5.6 9.8 C5.6 6.9 7.8 4.8 10.4 4.8 C11 4.8 11.6 5 12 5.3 C12.4 5 13 4.8 13.6 4.8 C16.2 4.8 18.4 6.9 18.4 9.8 C18.4 13.2 15.6 16.4 12 20 Z"/><path d="M12 5.3 L12 9.4"/></svg></div>
+      <div class="mid"><div class="a-h3">Birth Planning Session</div>
+        <div class="smeta"><span class="mmeta">Sep 10 · Completed</span></div>
+      </div>
+      <span class="schip done">Visited</span>
+    </div>
+  </div>
+
+  <div class="dl">
+    <div class="abtn">Schedule a Visit</div>
+    <div class="hint">Your provider's openings, ready when you are</div>
+  </div>
+
+  <div style="height:10px"></div>
+  <div style="height:18px"></div><div class="tabbar"><div class="tb on"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/><path d="M10.2 19.4 L10.2 15.6 C10.2 14.9 10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4"/><path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9"/></svg><div class="tbl">Home</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/></svg><div class="tbl">Birth Plan</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2"/><path d="M12 9.6 L12 13.4 L14.6 15.2"/><path d="M9.8 3.6 L14.2 3.6"/></svg><div class="tbl">Timer</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z"/><path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3"/><path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4"/><path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3"/></svg><div class="tbl">My Team</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z"/><path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4"/></svg><div class="tbl">Messages</div></div></div>
+</div></div>
+
+<!-- ============ S8 MY TEAM ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+
+  <div class="m-head">
+    <div class="a-overline">Your Circle</div>
+    <div class="a-h1"><em>Your</em> Care Team</div>
+    <div class="m-sub">The people walking this chapter with you</div>
+  </div>
+
+  <div class="sect">
+    <div class="a-h2">Your people</div>
+    <div class="sub">3 team members connected</div>
+
+    <div class="srow">
+      <div class="avat">AM</div>
+      <div class="mid"><div class="a-h3">Amara Wells</div>
+        <div class="smeta"><span class="schip wip">Midwife</span><span class="mmeta">Connected since Aug</span></div>
+      </div>
+      <span class="schip done">Active</span>
+    </div>
+
+    <div class="srow">
+      <div class="avat rose">DR</div>
+      <div class="mid"><div class="a-h3">Doula Renée</div>
+        <div class="smeta"><span class="schip wip">Doula</span><span class="mmeta">Birth plan shared</span></div>
+      </div>
+      <span class="schip done">Active</span>
+    </div>
+
+    <div class="srow">
+      <div class="avat sage">PK</div>
+      <div class="mid"><div class="a-h3">Priya Kaur</div>
+        <div class="smeta"><span class="schip wip">Lactation</span><span class="mmeta">Awaiting your invite</span></div>
+      </div>
+      <span class="schip todo">Pending</span>
+    </div>
+  </div>
+
+  <div class="sect">
+    <div class="a-h2">Shared with your team</div>
+    <div class="sub">They see updates the moment you finish a section</div>
+    <div class="srow">
+      <div class="sico sage"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#728F60" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M12 9.2 C12 6.9 13.4 5.4 15.6 5.2"/><path d="M14.4 5.4 L15.6 5.2 L15.9 6.6"/></svg></div>
+      <div class="mid"><div class="a-h3">Birth plan</div>
+        <div class="smeta"><span class="mmeta">8 of 12 sections · visible to Amara + Renée</span></div>
+      </div>
+      <span class="schip done">Sharing</span>
+    </div>
+  </div>
+
+  <div class="dl" style="margin-top:auto">
+    <div class="abtn">Find Providers</div>
+    <div class="hint">Doulas, midwives, and other birthing professionals near you</div>
+  </div>
+
+  <div style="height:10px"></div>
+  <div class="tabbar"><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/><path d="M10.2 19.4 L10.2 15.6 C10.2 14.9 10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4"/><path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9"/></svg><div class="tbl">Home</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/></svg><div class="tbl">Birth Plan</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2"/><path d="M12 9.6 L12 13.4 L14.6 15.2"/><path d="M9.8 3.6 L14.2 3.6"/></svg><div class="tbl">Timer</div></div>
+  <div class="tb on"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z"/><path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3"/><path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4"/><path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3"/></svg><div class="tbl">My Team</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z"/><path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4"/></svg><div class="tbl">Messages</div></div></div>
+</div></div>
+
+<!-- ============ S9 MESSAGES ============ -->
+<div class="phone"><div class="screen tall">
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+
+  <div class="m-head">
+    <div class="a-overline">Conversations</div>
+    <div class="a-h1"><em>Your</em> Messages</div>
+    <div class="m-sub">Quiet questions, quick answers — with your team</div>
+  </div>
+
+  <div class="search"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6 C16.6 16.4 17.6 17.4 18.4 18.4"/></svg>Search by name or role…</div>
+
+  <div class="sect">
+    <div class="a-h2">Recent</div>
+    <div class="sub">2 unread</div>
+
+    <div class="srow">
+      <div class="avat">AM</div>
+      <div class="mid"><div class="a-h3">Amara Wells</div>
+        <div class="smeta"><span class="mmeta">Perfect — see you Tuesday, bring y…</span></div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;"><span class="time">9:12</span><div class="unread"></div></div>
+    </div>
+
+    <div class="srow">
+      <div class="avat rose">RN</div>
+      <div class="mid"><div class="a-h3">Doula Renée</div>
+        <div class="smeta"><span class="schip warn">Invoice</span><span class="mmeta">Awaiting payment · $450</span></div>
+      </div>
+      <span class="time">Yest</span>
+    </div>
+
+    <div class="srow">
+      <div class="avat sage">PK</div>
+      <div class="mid"><div class="a-h3">Priya Kaur</div>
+        <div class="smeta"><span class="mmeta">Happy to help with feeding — when…</span></div>
+      </div>
+      <span class="time">Tue</span>
+    </div>
+  </div>
+
+  <div class="sect">
+    <div class="a-h2">Start a conversation</div>
+    <div class="sub">Reach anyone on your team — no forms, no phone tag</div>
+    <div class="srow">
+      <div class="sico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z"/><path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4"/><path d="M12 9.2 C12 6.9 13.4 5.4 15.6 5.2"/></svg></div>
+      <div class="mid"><div class="a-h3">Message your team</div>
+        <div class="smeta"><span class="mmeta">Amara, Renée, and Priya are a tap away</span></div>
+      </div>
+      <div class="chev"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#756273" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6"/><path d="M10.4 8.8 L13.6 12 L10.4 15.2"/></svg></div>
+    </div>
+  </div>
+
+  <div style="height:10px"></div>
+  <div class="composer" style="margin-top:auto"><div class="field">Type a message...</div><div class="send"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.8 11.6 C9.2 9.8 14.6 7.4 19.2 5.4"/><path d="M19.2 5.4 C17.4 10.2 15.2 14.6 13.6 19.0"/><path d="M19.2 5.4 L9.8 13.8 C9.4 14.1 9.3 14.5 9.5 15.0 L10.8 18.2"/></svg></div></div><div class="tabbar"><div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/><path d="M10.2 19.4 L10.2 15.6 C10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4"/><path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9"/></svg><div class="tbl">Home</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/></svg><div class="tbl">Birth Plan</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2"/><path d="M12 9.6 L12 13.4 L14.6 15.2"/><path d="M9.8 3.6 L14.2 3.6"/></svg><div class="tbl">Timer</div></div>
+  <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8A7F90" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4 C6.9 11.4 5.2 9.7 5.2 7.7 C5.2 5.8 6.9 4.3 9.2 4.3 C11.4 4.3 13.1 5.8 13.1 7.7 C13.1 9.7 11.4 11.4 9.2 11.4 Z"/><path d="M3.6 19.3 C3.9 15.9 6.1 13.9 9.2 13.9 C12.2 13.9 14.4 15.9 14.8 19.3"/><path d="M15.4 11 C17.2 10.7 18.7 9.5 18.7 7.9 C18.7 6.8 18 5.9 17 5.4"/><path d="M16.6 14.2 C18.6 14.6 19.9 16.4 20.2 19.3"/></svg><div class="tbl">My Team</div></div>
+  <div class="tb on"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 8.2 C4.4 6.3 5.9 4.8 7.8 4.8 L16.2 4.8 C18.1 4.8 19.6 6.3 19.6 8.2 L19.6 13.4 C19.6 15.3 18.1 16.8 16.2 16.8 L10.6 16.8 L6.6 19.8 L6.9 16.7 C5.4 16.3 4.4 15 4.4 13.4 Z"/><path d="M8.4 9.4 C9.8 9.1 11.2 9.1 12.6 9.4"/></svg><div class="tbl">Messages</div></div></div>
+</div></div>
+
+</div></div>
+
+<div class="legend">
+  <div class="h">S7–S9 mom core — what's here</div>
+  <ul>
+    <li><b>Same construction as approved s5/s6:</b> header (overline → H1 with rose accent → sub), H2 sections, white srow cards with 34px icon tiles, status chips (Complete/In progress vocabulary extended: Confirmed · Respond · Pending · Visited · Active · Sharing).</li>
+    <li><b>S7 Appointments:</b> upcoming visits with provider + date, inline Accept/Decline for pending (the live flow's respond action), past-visit history, Schedule CTA.</li>
+    <li><b>S8 My Team:</b> member cards with role chips + initials avatars, birth-plan shared status (sprig-document mark), Find Providers CTA — audience copy stays wide ("and other birthing professionals").</li>
+    <li><b>S9 Messages:</b> search field, conversation rows with unread dots + invoice chip (Awaiting payment), message-your-team row. Real navigation: Home · Birth Plan · Timer · My Team · Messages.</li>
+    <li><b>Icons:</b> same hand-drawn organic stroke family — belly, video-call, home-visit, sprig-document, chat bubble, magnifier. No stock glyphs.</li>
+  </ul>
+</div>
+</body>
+</html>
