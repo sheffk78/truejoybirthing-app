@@ -9,6 +9,7 @@ import {
   Alert,
   TextInput,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -19,6 +20,9 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+import { C, F, kickerStyle, initialsOf } from '../../src/constants/designRefresh';
+
+const DF = F;
 
 interface Provider {
   user_id: string;
@@ -39,6 +43,7 @@ interface ShareRequest {
   status: string;
   created_at: string;
   responded_at?: string;
+  picture?: string;
 }
 
 export default function ShareBirthPlanScreen() {
@@ -142,10 +147,10 @@ export default function ShareBirthPlanScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'accepted': return colors.success;
-      case 'pending': return colors.warning;
-      case 'rejected': return colors.error;
-      default: return colors.textLight;
+      case 'accepted': return C.sage;
+      case 'pending': return C.rose;
+      case 'rejected': return C.rose;
+      default: return C.grayLight;
     }
   };
 
@@ -166,7 +171,7 @@ export default function ShareBirthPlanScreen() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.lavender} />
         }
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -174,9 +179,13 @@ export default function ShareBirthPlanScreen() {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton}>
-            <Icon name="arrow-back" size={24} color={colors.text} />
+            <Icon name="arrow-back" size={24} color={C.ink} />
           </TouchableOpacity>
-          <Text style={styles.title}>Share Birth Plan</Text>
+          <View style={styles.headerText}>
+            <Text style={styles.overline}>Your Plan</Text>
+            <Text style={styles.title}>Share <Text style={styles.titleAccent}>Birth Plan</Text></Text>
+          </View>
+          <View style={styles.headerSpacer} />
         </View>
 
         <Text style={styles.subtitle}>
@@ -185,20 +194,20 @@ export default function ShareBirthPlanScreen() {
 
         {/* Search Section */}
         <Card style={styles.searchCard}>
-          <Text style={styles.sectionTitle}>Find Provider</Text>
+          <Text style={styles.sectionTitle}>Find provider</Text>
           <View style={styles.searchContainer}>
-            <Icon name="search" size={20} color={colors.textLight} />
+            <Icon name="search" size={20} color={C.grayLight} />
             <TextInput
               style={styles.searchInput}
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholder="Search by name or email..."
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               autoCapitalize="none"
               autoCorrect={false}
               data-testid="search-provider-input"
             />
-            {searching && <ActivityIndicator size="small" color={colors.primary} />}
+            {searching && <ActivityIndicator size="small" color={C.lavender} />}
           </View>
 
           {/* Search Results */}
@@ -206,13 +215,13 @@ export default function ShareBirthPlanScreen() {
             <View style={styles.resultsContainer}>
               {searchResults.map((provider) => (
                 <View key={provider.user_id} style={styles.providerRow}>
-                  <View style={styles.providerAvatar}>
-                    <Icon
-                      name={provider.role === 'DOULA' ? 'people' : provider.role === 'LACTATION' ? 'water' : 'medkit'}
-                      size={20}
-                      color={colors.white}
-                    />
-                  </View>
+                  {provider.picture ? (
+                    <Image source={{ uri: provider.picture }} style={styles.providerAvatarImg} />
+                  ) : (
+                    <View style={styles.providerAvatar}>
+                      <Text style={styles.providerAvatarText}>{initialsOf(provider.full_name, '?')}</Text>
+                    </View>
+                  )}
                   <View style={styles.providerInfo}>
                     <Text style={styles.providerName}>{provider.full_name}</Text>
                     <Text style={styles.providerRole}>{provider.role}</Text>
@@ -232,10 +241,10 @@ export default function ShareBirthPlanScreen() {
                       data-testid={`share-btn-${provider.user_id}`}
                     >
                       {sending === provider.user_id ? (
-                        <ActivityIndicator size="small" color={colors.white} />
+                        <ActivityIndicator size="small" color={C.white} />
                       ) : (
                         <>
-                          <Icon name="share-social" size={16} color={colors.white} />
+                          <Icon name="share" size={16} color={C.white} />
                           <Text style={styles.shareButtonText}>Share</Text>
                         </>
                       )}
@@ -254,27 +263,27 @@ export default function ShareBirthPlanScreen() {
         {/* Active Shares */}
         {acceptedRequests.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Active Shares</Text>
+            <Text style={styles.sectionTitle}>Active shares</Text>
             <Text style={styles.sectionSubtitle}>
               These providers can view your birth plan and add notes
             </Text>
             {acceptedRequests.map((request) => (
               <Card key={request.request_id} style={styles.requestCard}>
                 <View style={styles.requestRow}>
-                  <View style={styles.requestIcon}>
-                    <Icon
-                      name={request.provider_role === 'DOULA' ? 'people' : request.provider_role === 'LACTATION' ? 'water' : 'medkit'}
-                      size={20}
-                      color={colors.primary}
-                    />
-                  </View>
+                  {request.picture ? (
+                    <Image source={{ uri: request.picture }} style={styles.requestAvatarImg} />
+                  ) : (
+                    <View style={styles.requestIcon}>
+                      <Text style={styles.requestIconText}>{initialsOf(request.provider_name, '?')}</Text>
+                    </View>
+                  )}
                   <View style={styles.requestInfo}>
                     <Text style={styles.requestName}>{request.provider_name}</Text>
                     <View style={styles.statusRow}>
-                      <Icon 
-                        name={getStatusIcon(request.status)} 
-                        size={14} 
-                        color={getStatusColor(request.status)} 
+                      <Icon
+                        name={getStatusIcon(request.status)}
+                        size={14}
+                        color={getStatusColor(request.status)}
                       />
                       <Text style={[styles.statusText, { color: getStatusColor(request.status) }]}>
                         {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
@@ -297,34 +306,34 @@ export default function ShareBirthPlanScreen() {
         {/* Pending Requests */}
         {pendingRequests.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Pending Requests</Text>
+            <Text style={styles.sectionTitle}>Pending requests</Text>
             <Text style={styles.sectionSubtitle}>
               Waiting for provider to accept
             </Text>
             {pendingRequests.map((request) => (
               <Card key={request.request_id} style={styles.requestCard}>
                 <View style={styles.requestRow}>
-                  <View style={[styles.requestIcon, { backgroundColor: colors.warning + '20' }]}>
-                    <Icon
-                      name={request.provider_role === 'DOULA' ? 'people' : request.provider_role === 'LACTATION' ? 'water' : 'medkit'}
-                      size={20}
-                      color={colors.warning}
-                    />
-                  </View>
+                  {request.picture ? (
+                    <Image source={{ uri: request.picture }} style={styles.requestAvatarImg} />
+                  ) : (
+                    <View style={styles.requestIconPending}>
+                      <Text style={styles.requestIconTextPending}>{initialsOf(request.provider_name, '?')}</Text>
+                    </View>
+                  )}
                   <View style={styles.requestInfo}>
                     <Text style={styles.requestName}>{request.provider_name}</Text>
                     <View style={styles.statusRow}>
-                      <Icon name="time" size={14} color={colors.warning} />
-                      <Text style={[styles.statusText, { color: colors.warning }]}>
+                      <Icon name="time" size={14} color={C.rose} />
+                      <Text style={[styles.statusText, { color: C.rose }]}>
                         Pending
                       </Text>
                     </View>
                   </View>
                   <TouchableOpacity
-                    style={[styles.revokeButton, { backgroundColor: colors.textLight + '20' }]}
+                    style={styles.cancelShareButton}
                     onPress={() => revokeShare(request.request_id, request.provider_name)}
                   >
-                    <Text style={[styles.revokeButtonText, { color: colors.textSecondary }]}>Cancel</Text>
+                    <Text style={styles.cancelShareButtonText}>Cancel</Text>
                   </TouchableOpacity>
                 </View>
               </Card>
@@ -335,8 +344,10 @@ export default function ShareBirthPlanScreen() {
         {/* Empty State */}
         {shareRequests.length === 0 && (
           <View style={styles.emptyState}>
-            <Icon name="share-social" size={48} color={colors.textLight} />
-            <Text style={styles.emptyTitle}>No Active Shares</Text>
+            <View style={styles.emptyChip}>
+              <Icon name="share" size={44} color={C.grayLight} />
+            </View>
+            <Text style={styles.emptyTitle}>No active shares</Text>
             <Text style={styles.emptyText}>
               Search for your doula, midwife, or lactation consultant above to share your birth plan with them.
             </Text>
@@ -348,197 +359,166 @@ export default function ShareBirthPlanScreen() {
 }
 
 const getStyles = createThemedStyles((colors) => ({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    padding: SIZES.md,
-    paddingBottom: SIZES.xxl,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SIZES.sm,
-  },
-  backButton: {
-    marginRight: SIZES.md,
-    padding: SIZES.xs,
-  },
-  title: {
-    fontSize: SIZES.fontXxl,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: SIZES.fontMd,
-    color: colors.textSecondary,
-    marginBottom: SIZES.lg,
-    lineHeight: 22,
-  },
-  searchCard: {
-    marginBottom: SIZES.lg,
-    padding: SIZES.md,
-  },
-  sectionTitle: {
-    fontSize: SIZES.fontLg,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: SIZES.sm,
-  },
-  sectionSubtitle: {
-    fontSize: SIZES.fontSm,
-    color: colors.textSecondary,
-    marginBottom: SIZES.md,
-  },
+  container: { flex: 1, backgroundColor: C.cream },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: SIZES.xxl },
+  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  backButton: { padding: SIZES.xs, marginRight: 8 },
+  headerText: { flex: 1 },
+  headerSpacer: { width: 40 },
+  overline: { ...kickerStyle(C.rose), marginBottom: 3 },
+  title: { fontFamily: DF.serif, fontWeight: '700', fontSize: 26, lineHeight: 30, color: C.ink },
+  titleAccent: { color: C.roseSoft },
+  subtitle: { fontSize: 12.5, fontFamily: DF.ui, color: C.gray, lineHeight: 19, marginTop: 2, marginBottom: SIZES.lg },
+  searchCard: { marginBottom: SIZES.lg, padding: SIZES.md, backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 18 },
+  sectionTitle: { fontFamily: DF.serifSemi, fontWeight: '600', fontSize: 17, color: C.ink, marginBottom: SIZES.sm },
+  sectionSubtitle: { fontSize: 11.5, fontFamily: DF.ui, color: C.gray, marginBottom: SIZES.md },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
-    borderRadius: SIZES.radiusMd,
+    backgroundColor: C.cardBg,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 14,
     padding: SIZES.sm,
     paddingHorizontal: SIZES.md,
   },
   searchInput: {
     flex: 1,
     marginLeft: SIZES.sm,
-    fontSize: SIZES.fontMd,
-    color: colors.text,
+    fontSize: 13.5,
+    fontFamily: DF.ui,
+    color: C.ink,
     paddingVertical: SIZES.xs,
   },
   resultsContainer: {
     marginTop: SIZES.md,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
     paddingTop: SIZES.md,
   },
   providerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SIZES.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    gap: 12,
   },
   providerAvatar: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.primary,
+    backgroundColor: C.lavender,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  providerAvatarImg: { width: 44, height: 44, borderRadius: 22 },
+  providerAvatarText: { color: C.white, fontWeight: '700', fontFamily: DF.uiBold, fontSize: 15 },
   providerInfo: {
     flex: 1,
-    marginLeft: SIZES.md,
+    minWidth: 0,
+    marginRight: 8,
   },
-  providerName: {
-    fontSize: SIZES.fontMd,
-    fontWeight: '600',
-    color: colors.text,
-  },
+  providerName: { fontSize: 13.5, fontFamily: DF.uiSemi, fontWeight: '600', color: C.ink },
   providerRole: {
-    fontSize: SIZES.fontSm,
-    color: colors.primary,
-    fontWeight: '500',
+    fontSize: 9.5,
+    letterSpacing: 0.6,
+    fontWeight: '700',
+    fontFamily: DF.uiBold,
+    color: C.lavender,
+    textTransform: 'uppercase',
+    marginTop: 2,
   },
-  providerEmail: {
-    fontSize: SIZES.fontSm,
-    color: colors.textLight,
-  },
+  providerEmail: { fontSize: 11.5, fontFamily: DF.ui, color: C.grayLight, marginTop: 1 },
   shareButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.primary,
-    paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.sm,
-    borderRadius: SIZES.radiusMd,
+    backgroundColor: C.lavender,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
     gap: 4,
   },
-  shareButtonText: {
-    color: colors.white,
-    fontWeight: '600',
-    fontSize: SIZES.fontSm,
-  },
+  shareButtonText: { color: C.white, fontWeight: '600', fontFamily: DF.uiSemi, fontSize: 12.5 },
   sharedBadge: {
-    backgroundColor: colors.success + '20',
-    paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.xs,
-    borderRadius: SIZES.radiusMd,
+    backgroundColor: C.sageBg,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
   },
-  sharedBadgeText: {
-    color: colors.success,
-    fontWeight: '600',
-    fontSize: SIZES.fontSm,
-  },
+  sharedBadgeText: { color: C.sage, fontWeight: '700', fontFamily: DF.uiBold, fontSize: 9.5, letterSpacing: 0.6, textTransform: 'uppercase' },
   noResults: {
     textAlign: 'center',
-    color: colors.textLight,
+    color: C.grayLight,
+    fontFamily: DF.ui,
+    fontSize: 13,
     marginTop: SIZES.md,
     fontStyle: 'italic',
   },
-  section: {
-    marginBottom: SIZES.lg,
-  },
-  requestCard: {
-    marginBottom: SIZES.sm,
-  },
-  requestRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  section: { marginBottom: SIZES.lg },
+  requestCard: { marginBottom: 8, backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 18, paddingVertical: 12, paddingHorizontal: 14 },
+  requestRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   requestIcon: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.primaryLight + '30',
+    backgroundColor: C.lavenderBg,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  requestIconPending: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: C.roseBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  requestAvatarImg: { width: 44, height: 44, borderRadius: 22 },
+  requestIconText: { color: C.lavender, fontWeight: '700', fontFamily: DF.uiBold, fontSize: 15 },
+  requestIconTextPending: { color: C.rose, fontWeight: '700', fontFamily: DF.uiBold, fontSize: 15 },
   requestInfo: {
     flex: 1,
-    marginLeft: SIZES.md,
+    minWidth: 0,
   },
-  requestName: {
-    fontSize: SIZES.fontMd,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statusText: {
-    fontSize: SIZES.fontSm,
-    marginLeft: 4,
-  },
+  requestName: { fontSize: 13.5, fontFamily: DF.uiSemi, fontWeight: '600', color: C.ink, marginBottom: 2 },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  statusText: { fontSize: 11.5, fontFamily: DF.ui, fontWeight: '600' },
   revokeButton: {
-    backgroundColor: colors.error + '15',
-    paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.sm,
-    borderRadius: SIZES.radiusMd,
+    backgroundColor: C.roseBg,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
   },
-  revokeButtonText: {
-    color: colors.error,
-    fontWeight: '600',
-    fontSize: SIZES.fontSm,
+  revokeButtonText: { color: C.rose, fontWeight: '700', fontFamily: DF.uiBold, fontSize: 9.5, letterSpacing: 0.6, textTransform: 'uppercase' },
+  cancelShareButton: {
+    backgroundColor: C.track,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
   },
+  cancelShareButtonText: { color: C.gray, fontWeight: '700', fontFamily: DF.uiBold, fontSize: 9.5, letterSpacing: 0.6, textTransform: 'uppercase' },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: SIZES.xxl,
   },
-  emptyTitle: {
-    fontSize: SIZES.fontLg,
-    fontWeight: '600',
-    color: colors.text,
-    marginTop: SIZES.md,
+  emptyChip: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  emptyTitle: { fontFamily: DF.serif, fontWeight: '700', fontSize: 21, color: C.ink, marginTop: SIZES.md },
   emptyText: {
-    fontSize: SIZES.fontMd,
-    color: colors.textSecondary,
+    fontSize: 12.5,
+    fontFamily: DF.ui,
+    color: C.gray,
     textAlign: 'center',
     marginTop: SIZES.sm,
-    paddingHorizontal: SIZES.xl,
+    lineHeight: 19,
+    paddingHorizontal: 8,
   },
 }));

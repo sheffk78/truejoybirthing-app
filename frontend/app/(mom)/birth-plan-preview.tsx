@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Platform,
@@ -14,9 +13,11 @@ import { useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS, API_BASE } from '../../src/constants/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
+import { C, F, kickerStyle } from '../../src/constants/designRefresh';
+
+const DF = F;
 
 const SECTION_LABELS: Record<string, string> = {
   about_me: 'About Me & My Preferences',
@@ -74,33 +75,71 @@ export default function BirthPlanPreviewScreen() {
   };
 
   const handleDownloadPDF = async () => {
-    if (Platform.OS === 'web') {
-      try {
-        const token = sessionToken;
-        const pdfUrl = `${API_BASE}${API_ENDPOINTS.BIRTH_PLAN_EXPORT}/pdf`;
-        
+    try {
+      const pdfUrl = `${API_BASE}${API_ENDPOINTS.BIRTH_PLAN_EXPORT}/pdf`;
+      const token = sessionToken;
+
+      if (Platform.OS === 'web') {
         const response = await fetch(pdfUrl, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` },
         });
-        
-        if (!response.ok) {
-          throw new Error('Failed to generate PDF');
-        }
-        
+        if (!response.ok) throw new Error('Failed to generate PDF');
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'Birth_Plan.pdf';
+        link.download = 'My_Birth_Plan.pdf';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error('Download error:', error);
+        Alert.alert('Success', 'Your birth plan PDF has been downloaded!');
+      } else {
+        // Native: fetch PDF, write to cache, open the system share sheet (save to Files, print, AirDrop…)
+        const FileSystem = require('expo-file-system/legacy');
+        const Sharing = require('expo-sharing');
+
+        const response = await fetch(pdfUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/pdf',
+          },
+        });
+        if (!response.ok) throw new Error('Failed to download PDF');
+        const blob = await response.blob();
+        if (blob.size === 0) throw new Error('Downloaded PDF is empty');
+
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve(result.split(',')[1]);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+
+        const fileUri = FileSystem.cacheDirectory + 'My_Birth_Plan.pdf';
+        await FileSystem.writeAsStringAsync(fileUri, base64, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        const isAvailable = await Sharing.isAvailableAsync();
+        if (isAvailable) {
+          await Sharing.shareAsync(fileUri, {
+            mimeType: 'application/pdf',
+            dialogTitle: 'Save or Share Your Birth Plan',
+          });
+        } else {
+          Alert.alert('Success', 'Your birth plan PDF has been saved to the app cache.');
+        }
       }
+    } catch (error: any) {
+      console.error('PDF download error:', error);
+      Alert.alert('Error', error.message || 'Failed to download PDF. Please try again.');
+    } finally {
+      setPrinting(false);
     }
   };
 
@@ -122,7 +161,7 @@ export default function BirthPlanPreviewScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <ActivityIndicator size="large" color={C.lavender} />
           <Text style={styles.loadingText}>Loading your birth plan...</Text>
         </View>
       </SafeAreaView>
@@ -134,20 +173,20 @@ export default function BirthPlanPreviewScreen() {
       {/* Header - Hidden on print */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} style={styles.backButton}>
-          <Icon name="arrow-back" size={24} color={colors.text} />
+          <Icon name="arrow-back" size={24} color={C.ink} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Birth Plan Preview</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={handlePrint} style={styles.actionButton}>
-            <Icon name="print-outline" size={22} color={colors.primary} />
+            <Icon name="print-outline" size={22} color={C.lavender} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDownloadPDF} style={styles.actionButton}>
-            <Icon name="download-outline" size={22} color={colors.primary} />
+            <Icon name="download-outline" size={22} color={C.lavender} />
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -156,13 +195,13 @@ export default function BirthPlanPreviewScreen() {
         <View style={styles.printableContent} id="birth-plan-content">
           {/* Title */}
           <View style={styles.titleSection}>
-            <Text style={styles.documentTitle}>My Joyful Birth Plan</Text>
             <Text style={styles.documentSubtitle}>True Joy Birthing</Text>
+            <Text style={styles.documentTitle}>My Joyful Birth Plan</Text>
             <Text style={styles.documentDate}>
-              Created: {new Date().toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              Created: {new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
               })}
             </Text>
           </View>
@@ -187,7 +226,11 @@ export default function BirthPlanPreviewScreen() {
                   section.status === 'Complete' && styles.statusComplete,
                   section.status === 'In Progress' && styles.statusProgress,
                 ]}>
-                  <Text style={styles.statusText}>{section.status}</Text>
+                  <Text style={[
+                    styles.statusText,
+                    section.status === 'Complete' && styles.statusTextComplete,
+                    section.status === 'In Progress' && styles.statusTextProgress,
+                  ]}>{section.status}</Text>
                 </View>
               </View>
 
@@ -204,7 +247,7 @@ export default function BirthPlanPreviewScreen() {
                       </View>
                     );
                   })}
-                  
+
                   {/* Notes to Provider */}
                   {section.data.notes_to_provider && (
                     <View style={styles.notesContainer}>
@@ -237,7 +280,7 @@ export default function BirthPlanPreviewScreen() {
       {/* Action Bar - Hidden on print */}
       <View style={styles.actionBar}>
         <TouchableOpacity style={styles.printButton} onPress={handlePrint}>
-          <Icon name="print" size={20} color={colors.white} />
+          <Icon name="print" size={20} color={C.white} />
           <Text style={styles.printButtonText}>Print Birth Plan</Text>
         </TouchableOpacity>
       </View>
@@ -266,7 +309,7 @@ export default function BirthPlanPreviewScreen() {
 const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: C.cream,
   },
   loadingContainer: {
     flex: 1,
@@ -274,222 +317,240 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: SIZES.md,
-    fontSize: SIZES.fontMd,
-    color: colors.textSecondary,
+    marginTop: 16,
+    fontSize: 13.5,
+    fontFamily: DF.ui,
+    color: C.gray,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.sm,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.surface,
+    borderBottomColor: C.hairline,
+    backgroundColor: C.cream,
   },
   backButton: {
-    padding: SIZES.xs,
+    padding: 4,
   },
   headerTitle: {
-    fontSize: SIZES.fontLg,
+    fontFamily: DF.serifSemi,
     fontWeight: '600',
-    color: colors.text,
+    fontSize: 17,
+    color: C.ink,
   },
   headerActions: {
     flexDirection: 'row',
-    gap: SIZES.sm,
+    gap: 8,
   },
   actionButton: {
-    padding: SIZES.xs,
+    padding: 4,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    padding: SIZES.md,
+    padding: 16,
     paddingBottom: 100,
   },
   printableContent: {
-    backgroundColor: colors.surface,
-    borderRadius: SIZES.radiusMd,
-    padding: SIZES.lg,
-    shadowColor: '#000',
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: C.ink,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2,
   },
   titleSection: {
     alignItems: 'center',
-    marginBottom: SIZES.xl,
-    paddingBottom: SIZES.lg,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
+    marginBottom: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: C.hairline,
   },
   documentTitle: {
-    fontSize: 28,
+    fontFamily: DF.serif,
     fontWeight: '700',
-    color: colors.primary,
-    marginBottom: SIZES.xs,
+    fontSize: 26,
+    color: C.ink,
+    marginTop: 4,
   },
   documentSubtitle: {
-    fontSize: SIZES.fontMd,
-    color: colors.textSecondary,
-    fontStyle: 'italic',
+    ...kickerStyle(C.rose),
   },
   documentDate: {
-    fontSize: SIZES.fontSm,
-    color: colors.textLight,
-    marginTop: SIZES.sm,
+    fontSize: 11,
+    fontFamily: DF.ui,
+    color: C.gray,
+    marginTop: 6,
   },
   providerMessage: {
-    backgroundColor: colors.subtle,
+    backgroundColor: C.lavenderBg,
     borderWidth: 1,
-    borderColor: colors.primary + '40',
-    borderRadius: SIZES.radiusMd,
-    padding: SIZES.lg,
-    marginBottom: SIZES.xl,
+    borderColor: C.lavenderBorder,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 20,
   },
   providerMessageTitle: {
-    fontSize: SIZES.fontMd,
-    fontWeight: '700',
-    color: colors.text,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: SIZES.md,
+    ...kickerStyle(C.lavender),
+    marginBottom: 10,
     textAlign: 'center',
   },
   providerMessageText: {
-    fontSize: SIZES.fontSm,
-    color: colors.textSecondary,
-    lineHeight: 22,
+    fontSize: 12.5,
+    fontFamily: DF.ui,
+    color: C.body,
+    lineHeight: 20,
     textAlign: 'justify',
   },
   section: {
-    marginBottom: SIZES.lg,
-    paddingBottom: SIZES.md,
+    marginBottom: 16,
+    paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: C.hairline,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SIZES.md,
+    marginBottom: 10,
+    gap: 8,
   },
   sectionTitle: {
-    fontSize: SIZES.fontLg,
+    fontFamily: DF.serifSemi,
     fontWeight: '600',
-    color: colors.text,
+    fontSize: 17,
+    color: C.ink,
     flex: 1,
   },
   statusBadge: {
-    paddingHorizontal: SIZES.sm,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 12,
-    backgroundColor: colors.textLight + '30',
+    borderRadius: 999,
+    backgroundColor: C.lavenderBg,
   },
   statusComplete: {
-    backgroundColor: colors.success + '20',
+    backgroundColor: C.sageBg,
   },
   statusProgress: {
-    backgroundColor: colors.warning + '20',
+    backgroundColor: C.roseBg,
   },
   statusText: {
-    fontSize: SIZES.fontXs,
-    fontWeight: '500',
-    color: colors.textSecondary,
+    fontSize: 10,
+    fontWeight: '600',
+    fontFamily: DF.uiSemi,
+    color: C.lavender,
+  },
+  statusTextComplete: {
+    color: C.sage,
+  },
+  statusTextProgress: {
+    color: C.rose,
   },
   sectionContent: {
-    paddingLeft: SIZES.sm,
+    paddingLeft: 4,
   },
   fieldRow: {
     flexDirection: 'row',
-    marginBottom: SIZES.sm,
+    marginBottom: 8,
     flexWrap: 'wrap',
   },
   fieldLabel: {
-    fontSize: SIZES.fontSm,
+    fontSize: 11,
     fontWeight: '500',
-    color: colors.textSecondary,
-    marginRight: SIZES.xs,
+    fontFamily: DF.ui,
+    color: C.gray,
+    marginRight: 4,
     minWidth: 150,
   },
   fieldValue: {
-    fontSize: SIZES.fontSm,
-    color: colors.text,
+    fontSize: 12.5,
+    fontFamily: DF.ui,
+    color: C.ink,
     flex: 1,
   },
   notesContainer: {
-    marginTop: SIZES.md,
-    padding: SIZES.md,
-    backgroundColor: colors.primary + '10',
-    borderRadius: SIZES.radiusSm,
+    marginTop: 12,
+    padding: 14,
+    backgroundColor: C.gbandMid,
+    borderRadius: 10,
     borderLeftWidth: 3,
-    borderLeftColor: colors.primary,
+    borderLeftColor: C.lavender,
   },
   notesLabel: {
-    fontSize: SIZES.fontSm,
-    fontWeight: '600',
-    color: colors.primary,
-    marginBottom: SIZES.xs,
+    fontSize: 11.5,
+    fontWeight: '700',
+    fontFamily: DF.uiBold,
+    color: C.lavender,
+    marginBottom: 4,
   },
   notesText: {
-    fontSize: SIZES.fontSm,
-    color: colors.text,
+    fontSize: 12.5,
+    fontFamily: DF.ui,
+    color: C.body,
     lineHeight: 20,
   },
   emptySection: {
-    padding: SIZES.md,
-    backgroundColor: colors.background,
-    borderRadius: SIZES.radiusSm,
+    padding: 14,
+    backgroundColor: C.gbandMid,
+    borderRadius: 12,
   },
   emptyText: {
-    fontSize: SIZES.fontSm,
-    color: colors.textLight,
+    fontSize: 12,
+    fontFamily: DF.ui,
+    color: C.grayLight,
     fontStyle: 'italic',
   },
   footer: {
-    marginTop: SIZES.xl,
-    paddingTop: SIZES.lg,
+    marginTop: 20,
+    paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.hairline,
   },
   footerText: {
-    fontSize: SIZES.fontSm,
-    color: colors.textSecondary,
+    fontSize: 11.5,
+    fontFamily: DF.ui,
+    color: C.gray,
     textAlign: 'center',
-    marginBottom: SIZES.lg,
-    lineHeight: 20,
+    marginBottom: 16,
+    lineHeight: 19,
   },
   signatureLine: {
-    fontSize: SIZES.fontSm,
-    color: colors.text,
-    marginTop: SIZES.lg,
+    fontSize: 12,
+    fontFamily: DF.ui,
+    color: C.ink,
+    marginTop: 12,
   },
   actionBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    padding: SIZES.md,
-    backgroundColor: colors.surface,
+    padding: 16,
+    backgroundColor: C.cream,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: C.border,
   },
   printButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary,
-    paddingVertical: SIZES.md,
-    borderRadius: SIZES.radiusMd,
-    gap: SIZES.sm,
+    backgroundColor: C.lavender,
+    paddingVertical: 14,
+    borderRadius: 999,
+    gap: 8,
   },
   printButtonText: {
-    fontSize: SIZES.fontMd,
+    fontSize: 13.5,
     fontWeight: '600',
-    color: colors.white,
+    fontFamily: DF.uiSemi,
+    color: C.white,
   },
 }));

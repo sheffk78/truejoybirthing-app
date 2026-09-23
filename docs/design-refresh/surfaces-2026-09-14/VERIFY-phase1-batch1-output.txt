@@ -1,0 +1,31 @@
+== 1. TypeScript: npx tsc --noEmit (baseline: 0 errors) ==
+PASS: 0 errors
+== 2. Hardcoded hex audit (must be zero) ==
+PASS: zero hexes
+== 3. Token law: designRefresh import present in all three ==
+PASS: timeline.tsx
+PASS: share-birth-plan.tsx
+PASS: birth-plan-preview.tsx
+== 4. PDF flow identity: handleDownloadPDF + handlePrint byte-identical to HEAD ==
+PASS: handleDownloadPDF identical
+PASS: handlePrint identical
+== 5. Testid + route preservation (vs HEAD) ==
+PASS: (mom)/timeline.tsx [data-testid="[^"]*"]
+PASS: (mom)/timeline.tsx [router\.push\('[^']*'\)]
+PASS: (mom)/share-birth-plan.tsx [data-testid="[^"]*"]
+PASS: (mom)/share-birth-plan.tsx [router\.push\('[^']*'\)]
+== 6. 16px min horizontal inset ==
+PASS: timeline.tsx scroll inset 20px
+PASS: share-birth-plan.tsx scroll inset 20px
+PASS: birth-plan-preview.tsx container inset 16px (WebView screen)
+== 7. Avatar initials fallback (share screen) ==
+PASS
+== 8. Render artifacts + packet ==
+PASS: timeline-side-by-side.png
+PASS: share-birth-plan-side-by-side.png
+PASS: birth-plan-preview-side-by-side.png
+PASS: packet 3 pages
+== 9. Git: exactly 3 modified app files ==
+PASS
+== RESULT ==
+ALL CHECKS PASSED (ad-hoc verification)

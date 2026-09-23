@@ -1,0 +1,135 @@
+
+============================================================
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_get_marketplace_providers :: PASS
+============================================================
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /Users/socializerender/.openclaw/workspace/archive/trustofficeapp-divergence-2026-08-10/TrustOfficeApp-ProjectCopy/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+plugins: anyio-4.14.1, postmarker-1.0
+collecting ... collected 1 item
+
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_get_marketplace_providers PASSED [100%]
+
+============================== 1 passed in 0.51s ===============================
+
+
+============================================================
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_contact_provider_send_message :: PASS
+============================================================
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /Users/socializerender/.openclaw/workspace/archive/trustofficeapp-divergence-2026-08-10/TrustOfficeApp-ProjectCopy/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+plugins: anyio-4.14.1, postmarker-1.0
+collecting ... collected 1 item
+
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_contact_provider_send_message PASSED [100%]
+
+============================== 1 passed in 0.51s ===============================
+
+
+============================================================
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_get_conversations :: PASS
+============================================================
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /Users/socializerender/.openclaw/workspace/archive/trustofficeapp-divergence-2026-08-10/TrustOfficeApp-ProjectCopy/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+plugins: anyio-4.14.1, postmarker-1.0
+collecting ... collected 1 item
+
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_get_conversations PASSED [100%]
+
+============================== 1 passed in 0.51s ===============================
+
+
+============================================================
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_add_to_team_share_birth_plan :: PASS
+============================================================
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /Users/socializerender/.openclaw/workspace/archive/trustofficeapp-divergence-2026-08-10/TrustOfficeApp-ProjectCopy/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+plugins: anyio-4.14.1, postmarker-1.0
+collecting ... collected 1 item
+
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_add_to_team_share_birth_plan PASSED [100%]
+
+============================== 1 passed in 0.52s ===============================
+
+
+============================================================
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_get_share_requests_status :: PASS
+============================================================
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /Users/socializerender/.openclaw/workspace/archive/trustofficeapp-divergence-2026-08-10/TrustOfficeApp-ProjectCopy/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+plugins: anyio-4.14.1, postmarker-1.0
+collecting ... collected 1 item
+
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_get_share_requests_status PASSED [100%]
+
+============================== 1 passed in 0.51s ===============================
+
+
+============================================================
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_duplicate_share_request_blocked :: PASS
+============================================================
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /Users/socializerender/.openclaw/workspace/archive/trustofficeapp-divergence-2026-08-10/TrustOfficeApp-ProjectCopy/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+plugins: anyio-4.14.1, postmarker-1.0
+collecting ... collected 1 item
+
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_duplicate_share_request_blocked PASSED [100%]
+
+============================== 1 passed in 0.51s ===============================
+
+
+============================================================
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_provider_accept_share_request :: PASS
+============================================================
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /Users/socializerender/.openclaw/workspace/archive/trustofficeapp-divergence-2026-08-10/TrustOfficeApp-ProjectCopy/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+plugins: anyio-4.14.1, postmarker-1.0
+collecting ... collected 1 item
+
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_provider_accept_share_request PASSED [100%]
+
+============================== 1 passed in 0.56s ===============================
+
+
+============================================================
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_full_flow_add_then_contact :: PASS
+============================================================
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /Users/socializerender/.openclaw/workspace/archive/trustofficeapp-divergence-2026-08-10/TrustOfficeApp-ProjectCopy/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+plugins: anyio-4.14.1, postmarker-1.0
+collecting ... collected 1 item
+
+tests/test_marketplace_contact_add.py::TestMarketplaceContactAndAdd::test_full_flow_add_then_contact PASSED [100%]
+
+============================== 1 passed in 0.54s ===============================
+
+
+============================================================
+tests/test_marketplace_contact_add.py::TestMarketplaceProviders::test_marketplace_returns_providers_with_user_data :: PASS
+============================================================
+============================= test session starts ==============================
+platform darwin -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- /Users/socializerender/.openclaw/workspace/archive/trustofficeapp-divergence-2026-08-10/TrustOfficeApp-ProjectCopy/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+plugins: anyio-4.14.1, postmarker-1.0
+collecting ... collected 1 item
+
+tests/test_marketplace_contact_add.py::TestMarketplaceProviders::test_marketplace_returns_providers_with_user_data PASSED [100%]
+
+============================== 1 passed in 0.26s ===============================
+

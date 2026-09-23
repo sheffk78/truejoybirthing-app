@@ -1,0 +1,681 @@
+{
+ "motherName": {
+  "type": "text",
+  "label": "Mother's Name",
+  "section_hint": "1: ABOUT ME",
+  "section": "about_me"
+ },
+ "partnerName": {
+  "type": "text",
+  "label": "Partner's Name (if applicable)",
+  "section_hint": "1: ABOUT ME",
+  "section": "about_me"
+ },
+ "emailAddress": {
+  "type": "text",
+  "label": "Email Address",
+  "section_hint": "1: ABOUT ME",
+  "section": "about_me"
+ },
+ "phoneNumber": {
+  "type": "text",
+  "label": "Phone Number",
+  "section_hint": "1: ABOUT ME",
+  "section": "about_me"
+ },
+ "dueDate": {
+  "type": "date",
+  "label": "Due Date",
+  "section_hint": "1: ABOUT ME",
+  "section": "about_me"
+ },
+ "birthSupport": {
+  "type": "textarea",
+  "label": "Birth Support (and relationship)",
+  "section_hint": "1: ABOUT ME",
+  "section": "about_me"
+ },
+ "doctorMidwife": {
+  "type": "text",
+  "label": "Doctor/Midwife Name",
+  "section_hint": "1: ABOUT ME",
+  "section": "about_me"
+ },
+ "birthLocation": {
+  "type": "singleselect",
+  "label": "Where do you plan to give birth?",
+  "options": [
+   "Hospital",
+   "Birth Center",
+   "Home Birth",
+   "Not sure yet"
+  ],
+  "section_hint": "1: ABOUT ME",
+  "section": "about_me"
+ },
+ "hospitalName": {
+  "type": "text",
+  "label": "Hospital/Birth Center Name (if applicable)",
+  "section_hint": "1: ABOUT ME",
+  "section": "about_me"
+ },
+ "laborEnvironment": {
+  "type": "multiselect",
+  "label": "Labor Environment Preferences",
+  "options": [
+   "Dim lighting",
+   "Quiet atmosphere",
+   "Music playing",
+   "Aromatherapy",
+   "Limited visitors",
+   "Freedom to move around",
+   "Access to shower/tub",
+   "Birth ball available"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "clothingPreference": {
+  "type": "singleselect",
+  "label": "What would you like to wear during labor?",
+  "options": [
+   "Hospital gown",
+   "My own clothes/gown",
+   "Birthing skirt",
+   "No preference"
+  ],
+  "section_hint": "2: LABOR &",
+  "section": "labor_delivery"
+ },
+ "laborPositions": {
+  "type": "multiselect",
+  "label": "Labor Positions You Want to Try",
+  "options": [
+   "Walking",
+   "Standing",
+   "Squatting",
+   "Hands and knees",
+   "Side lying",
+   "Using birth ball",
+   "In water/tub",
+   "Whatever feels right"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "hydrationFood": {
+  "type": "singleselect",
+  "label": "Food and Drink During Labor",
+  "options": [
+   "Clear liquids only",
+   "Light snacks if allowed",
+   "Ice chips only",
+   "Whatever is permitted"
+  ],
+  "section_hint": "2: LABOR &",
+  "section": "labor_delivery"
+ },
+ "peoplePresent": {
+  "type": "textarea",
+  "label": "Who would you like present during labor?",
+  "section_hint": "2: LABOR &",
+  "section": "labor_delivery"
+ },
+ "photographyPreferences": {
+  "type": "multiselect",
+  "label": "Photography/Video Preferences",
+  "options": [
+   "Photos during labor",
+   "Photos during delivery",
+   "Video during labor",
+   "Video during delivery",
+   "No photos or video",
+   "Photos of baby only after birth"
+  ],
+  "section_hint": "2: LABOR &",
+  "section": "labor_delivery"
+ },
+ "painManagementApproach": {
+  "type": "singleselect",
+  "label": "Overall Approach to Pain Management",
+  "options": [
+   "I prefer to avoid medication if possible",
+   "I am open to medication if needed",
+   "I plan to use an epidural",
+   "I want to decide during labor"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "naturalMethods": {
+  "type": "multiselect",
+  "label": "Non-Medication Pain Relief Methods",
+  "options": [
+   "Breathing techniques",
+   "Massage",
+   "Counter-pressure",
+   "Hydrotherapy (shower/tub)",
+   "TENS unit",
+   "Birthing ball",
+   "Position changes",
+   "Aromatherapy",
+   "Hypnobirthing techniques",
+   "Meditation/visualization",
+   "Hot/cold compresses"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "medicationOptions": {
+  "type": "multiselect",
+  "label": "Medication Options (if needed)",
+  "options": [
+   "IV pain medication",
+   "Epidural",
+   "Spinal block",
+   "Local anesthesia",
+   "Nitrous oxide (laughing gas)",
+   "Please discuss all options with me first"
+  ],
+  "section_hint": "3: PAIN MAN",
+  "section": "pain_management"
+ },
+ "epiduralPreferences": {
+  "type": "singleselect",
+  "label": "If you choose an epidural",
+  "options": [
+   "Light/walking epidural if available",
+   "Full epidural",
+   "I want to wait as long as possible",
+   "Please offer when appropriate",
+   "Do not offer unless I ask"
+  ],
+  "section_hint": "3: PAIN MAN",
+  "section": "pain_management"
+ },
+ "fetalMonitoring": {
+  "type": "singleselect",
+  "label": "Fetal Monitoring Preference",
+  "options": [
+   "Intermittent monitoring (more freedom to move)",
+   "Continuous monitoring",
+   "Wireless/waterproof monitoring if available",
+   "Whatever is medically recommended"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "ivPreference": {
+  "type": "singleselect",
+  "label": "IV/Hep-Lock Preference",
+  "options": [
+   "Hep-lock only (no fluids unless needed)",
+   "IV fluids",
+   "No IV unless medically necessary",
+   "Whatever is recommended"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "vaginalExams": {
+  "type": "singleselect",
+  "label": "Vaginal Exams",
+  "options": [
+   "Only when necessary",
+   "Frequent updates on progress",
+   "Please ask before each exam",
+   "Minimal exams preferred"
+  ],
+  "section_hint": "4: LABOR EN",
+  "section": "monitoring_iv"
+ },
+ "artificialRupture": {
+  "type": "singleselect",
+  "label": "Artificial Rupture of Membranes (Breaking Water)",
+  "options": [
+   "Allow to happen naturally",
+   "Okay to speed up labor",
+   "Please discuss with me first",
+   "Only if medically necessary"
+  ],
+  "section_hint": "4: LABOR EN",
+  "section": "monitoring_iv"
+ },
+ "comfortMeasures": {
+  "type": "multiselect",
+  "label": "Comfort Measures Available",
+  "options": [
+   "Birth ball",
+   "Peanut ball",
+   "Rocking chair",
+   "Birth stool",
+   "Squat bar",
+   "Warm compresses",
+   "Cold compresses",
+   "Fan or cool cloth"
+  ],
+  "section_hint": "4: LABOR EN",
+  "section": "monitoring_iv"
+ },
+ "inductionPreference": {
+  "type": "singleselect",
+  "label": "Induction Preferences",
+  "options": [
+   "I prefer to go into labor naturally",
+   "Open to induction if medically needed",
+   "Planning a scheduled induction",
+   "Discuss options with me before proceeding"
+  ],
+  "section_hint": "5: INDUCTIO",
+  "section": "induction_interventions"
+ },
+ "pitocinAugmentation": {
+  "type": "singleselect",
+  "label": "Pitocin/Augmentation",
+  "options": [
+   "Prefer to avoid unless necessary",
+   "Okay if labor stalls",
+   "Please discuss with me first",
+   "Whatever is medically recommended"
+  ],
+  "section_hint": "5: INDUCTIO",
+  "section": "induction_interventions"
+ },
+ "episiotomy": {
+  "type": "singleselect",
+  "label": "Episiotomy Preferences",
+  "options": [
+   "Prefer to tear naturally",
+   "Okay if necessary to prevent tearing",
+   "Only in emergency",
+   "Please discuss with me"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "assistedDelivery": {
+  "type": "singleselect",
+  "label": "Assisted Delivery (Vacuum/Forceps)",
+  "options": [
+   "Only in emergency",
+   "Okay if recommended by doctor",
+   "Please discuss all options with me",
+   "Prefer cesarean if assisted delivery needed"
+  ],
+  "section_hint": "5: INDUCTIO",
+  "section": "induction_interventions"
+ },
+ "cesareanPreferences": {
+  "type": "multiselect",
+  "label": "If Cesarean Becomes Necessary",
+  "options": [
+   "Partner present in OR",
+   "Clear drape to see baby born",
+   "Immediate skin-to-skin if possible",
+   "Delayed cord clamping if possible",
+   "Music in operating room",
+   "Narrate what is happening",
+   "Lower the drape at birth"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "pushingApproach": {
+  "type": "singleselect",
+  "label": "Pushing Approach",
+  "options": [
+   "Spontaneous pushing (push when I feel the urge)",
+   "Directed/coached pushing",
+   "Laboring down (wait for urge)",
+   "Whatever feels right"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "pushingPositions": {
+  "type": "multiselect",
+  "label": "Pushing Positions to Try",
+  "options": [
+   "Semi-reclined",
+   "Side lying",
+   "Squatting",
+   "Hands and knees",
+   "Using squat bar",
+   "Standing",
+   "In water",
+   "Whatever works best"
+  ],
+  "section_hint": ": BIRTH PREF",
+  "section": "labor_delivery"
+ },
+ "mirrorUse": {
+  "type": "singleselect",
+  "label": "Would you like to use a mirror?",
+  "options": [
+   "Yes, I want to see",
+   "No, I do not want to see",
+   "Maybe, I will decide then"
+  ],
+  "section_hint": "6: PUSHING,",
+  "section": "pushing_safe_word"
+ },
+ "touchBaby": {
+  "type": "singleselect",
+  "label": "Would you like to touch baby\\",
+  "section_hint": "6: PUSHING,",
+  "section": "pushing_safe_word"
+ },
+ "perinealSupport": {
+  "type": "multiselect",
+  "label": "Perineal Support Preferences",
+  "options": [
+   "Warm compresses",
+   "Perineal massage",
+   "Oil/lubricant",
+   "Hands-off approach",
+   "Trust provider\\"
+  ],
+  "section_hint": "6: PUSHING,",
+  "section": "pushing_safe_word"
+ },
+ "safeWord": {
+  "type": "text",
+  "label": "Safe Word (for communication with your team)",
+  "section_hint": "6: PUSHING,",
+  "section": "pushing_safe_word"
+ },
+ "safeWordMeaning": {
+  "type": "textarea",
+  "label": "What should happen when you use your safe word?",
+  "section_hint": "6: PUSHING,",
+  "section": "pushing_safe_word"
+ },
+ "skinToSkin": {
+  "type": "singleselect",
+  "label": "Immediate Skin-to-Skin",
+  "options": [
+   "Yes, immediately after birth",
+   "After baby is briefly assessed",
+   "Partner does skin-to-skin first",
+   "Flexible based on circumstances"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "cordClamping": {
+  "type": "singleselect",
+  "label": "Cord Clamping",
+  "options": [
+   "Delayed cord clamping (wait until cord stops pulsing)",
+   "Delayed 1-3 minutes",
+   "Immediate clamping",
+   "Whatever is recommended"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "cordCutting": {
+  "type": "singleselect",
+  "label": "Who would you like to cut the cord?",
+  "options": [
+   "Partner",
+   "Mother",
+   "Doctor/Midwife",
+   "No preference"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "cordBloodBanking": {
+  "type": "singleselect",
+  "label": "Cord Blood Banking",
+  "options": [
+   "Private cord blood banking",
+   "Public cord blood donation",
+   "Not banking cord blood",
+   "Still deciding"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "placentaPlans": {
+  "type": "multiselect",
+  "label": "Placenta Preferences",
+  "options": [
+   "See the placenta",
+   "Take placenta home",
+   "Placenta encapsulation",
+   "No special requests"
+  ],
+  "section_hint": "7: POST-DEL",
+  "section": "post_delivery"
+ },
+ "goldenHour": {
+  "type": "multiselect",
+  "label": "Golden Hour Preferences",
+  "options": [
+   "Uninterrupted skin-to-skin for at least one hour",
+   "Delay routine procedures",
+   "Breastfeed within first hour",
+   "Dim lights in room",
+   "Quiet environment",
+   "Limit visitors",
+   "Photos welcome"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "announcements": {
+  "type": "singleselect",
+  "label": "Announcing Baby\\",
+  "section_hint": "7: POST-DEL",
+  "section": "post_delivery"
+ },
+ "babyExamLocation": {
+  "type": "singleselect",
+  "label": "Where should baby\\",
+  "section_hint": "8: NEWBORN",
+  "section": "newborn_care"
+ },
+ "delayedBathing": {
+  "type": "singleselect",
+  "label": "Baby's First Bath",
+  "options": [
+   "Delay 24+ hours",
+   "Delay 8-12 hours",
+   "After initial bonding period",
+   "Parent wants to give first bath",
+   "Standard hospital timing"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "vernixCleaning": {
+  "type": "singleselect",
+  "label": "Vernix (White Coating)",
+  "options": [
+   "Leave on - let it absorb naturally",
+   "Gently wipe off",
+   "Standard cleaning"
+  ],
+  "section_hint": "8: NEWBORN",
+  "section": "newborn_care"
+ },
+ "eyeOintment": {
+  "type": "singleselect",
+  "label": "Eye Prophylaxis (Erythromycin)",
+  "options": [
+   "Yes, administer",
+   "Delay 1 hour for bonding",
+   "Decline (discuss with provider)",
+   "Follow hospital protocol"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "vitaminK": {
+  "type": "singleselect",
+  "label": "Vitamin K",
+  "options": [
+   "Yes, injection",
+   "Oral vitamin K",
+   "Decline (discuss with provider)",
+   "Follow hospital protocol"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "hepatitisB": {
+  "type": "singleselect",
+  "label": "Hepatitis B Vaccine",
+  "options": [
+   "Yes, administer before discharge",
+   "Delay until pediatrician visit",
+   "Decline (discuss with provider)",
+   "Still deciding"
+  ],
+  "section_hint": "8: NEWBORN",
+  "section": "newborn_care"
+ },
+ "circumcision": {
+  "type": "singleselect",
+  "label": "Circumcision (if applicable)",
+  "options": [
+   "Yes, during hospital stay",
+   "Yes, with pediatrician later",
+   "No circumcision",
+   "Not applicable"
+  ],
+  "section_hint": "8: NEWBORN",
+  "section": "newborn_care"
+ },
+ "feedingPlan": {
+  "type": "singleselect",
+  "label": "Feeding Plan",
+  "options": [
+   "Exclusive breastfeeding",
+   "Breastfeeding with supplementation if needed",
+   "Formula feeding",
+   "Combination feeding",
+   "Still deciding"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "pacifierUse": {
+  "type": "singleselect",
+  "label": "Pacifier Use",
+  "options": [
+   "No pacifiers",
+   "Okay after breastfeeding established",
+   "Okay from the start",
+   "As needed for procedures"
+  ],
+  "section_hint": "8: NEWBORN",
+  "section": "newborn_care"
+ },
+ "roomingIn": {
+  "type": "singleselect",
+  "label": "Rooming In",
+  "options": [
+   "Baby stays with me 24/7",
+   "Baby goes to nursery at night",
+   "Flexible based on my needs"
+  ],
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "supportPeople": {
+  "type": "textarea",
+  "label": "Who will be present during labor?",
+  "section_hint": ": LABOR SUPP",
+  "section": "labor_support"
+ },
+ "doulaSupport": {
+  "type": "singleselect",
+  "label": "Do you plan to have a doula?",
+  "options": [
+   "Yes, I have a doula",
+   "I am looking for a doula",
+   "I am considering it",
+   "No, I will not have a doula"
+  ],
+  "section_hint": ": LABOR SUPP",
+  "section": "labor_support"
+ },
+ "partnerRole": {
+  "type": "multiselect",
+  "label": "What role would you like your partner/support person to play?",
+  "options": [
+   "Physical support (massage, positioning)",
+   "Emotional support and encouragement",
+   "Advocate and communicate with medical staff",
+   "Take photos or video",
+   "Help with breathing techniques",
+   "Cut the cord",
+   "Stay by my side the entire time"
+  ],
+  "section_hint": ": LABOR SUPP",
+  "section": "labor_support"
+ },
+ "communicationStyle": {
+  "type": "singleselect",
+  "label": "How do you prefer your care team communicate with you during labor?",
+  "options": [
+   "Explain everything before it happens",
+   "Give me options and let me decide",
+   "Quiet, minimal narration",
+   "Check in regularly but give me space"
+  ],
+  "section_hint": ": LABOR SUPP",
+  "section": "labor_support"
+ },
+ "advocacyConcerns": {
+  "type": "textarea",
+  "label": "Is there anything specific you want your support team to advocate for?",
+  "section_hint": ": LABOR SUPP",
+  "section": "labor_support"
+ },
+ "postpartumSupport": {
+  "type": "textarea",
+  "label": "Postpartum Support Plans",
+  "section_hint": ": AFTER BIRT",
+  "section": "post_delivery"
+ },
+ "culturalReligious": {
+  "type": "textarea",
+  "label": "Cultural or Religious Considerations",
+  "section_hint": "9: OTHER IM",
+  "section": "other_considerations"
+ },
+ "previousBirthExperience": {
+  "type": "textarea",
+  "label": "Previous Birth Experiences to Consider",
+  "section_hint": "9: OTHER IM",
+  "section": "other_considerations"
+ },
+ "anxietiesConcerns": {
+  "type": "textarea",
+  "label": "Special Anxieties or Concerns",
+  "section_hint": "9: OTHER IM",
+  "section": "other_considerations"
+ },
+ "medicalConditions": {
+  "type": "textarea",
+  "label": "Medical Conditions or Allergies",
+  "section_hint": "9: OTHER IM",
+  "section": "other_considerations"
+ },
+ "emergencyContact": {
+  "type": "text",
+  "label": "Emergency Contact (besides partner)",
+  "section_hint": "9: OTHER IM",
+  "section": "other_considerations"
+ },
+ "musicPreferences": {
+  "type": "text",
+  "label": "Music Preferences",
+  "section_hint": "9: OTHER IM",
+  "section": "other_considerations"
+ }
+}

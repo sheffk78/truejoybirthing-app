@@ -11,12 +11,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
-import Card from '../../src/components/Card';
-import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
+import { C, F, kickerStyle } from '../../src/constants/designRefresh';
+
+const DF = F;
 
 const SELF_CARE_OPTIONS = [
   'Rest when baby sleeps', 'Short walks', 'Warm baths', 'Reading',
@@ -63,7 +64,7 @@ export default function PostpartumScreen() {
       setSelectedSelfCare(data.self_care_activities || []);
       setSelectedWarningSigns(data.warning_signs_to_watch || []);
       setNotes(data.notes || '');
-      
+
       const contacts = data.emergency_contacts || [];
       if (contacts[0]) setEmergencyContact1(contacts[0]);
       if (contacts[1]) setEmergencyContact2(contacts[1]);
@@ -127,35 +128,42 @@ export default function PostpartumScreen() {
   };
 
   const hasContent = plan.support_people?.length > 0 || plan.meal_prep_plans || plan.recovery_goals;
+  void hasContent;
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.lavender} />
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* Header — overline + serif title + subtitle, edit pill below (batch-1 anatomy) */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>Postpartum Plan</Text>
-            <Text style={styles.subtitle}>Prepare for your fourth trimester</Text>
-          </View>
+          <Text style={styles.overline}>Fourth Trimester</Text>
+          <Text style={styles.title}>
+            Postpartum <Text style={styles.titleAccent}>Plan</Text>
+          </Text>
+          <Text style={styles.subtitle}>Prepare for your fourth trimester</Text>
           <TouchableOpacity
             style={styles.editButton}
             onPress={() => setEditMode(!editMode)}
-            data-testid="edit-postpartum-btn"
+            testID="edit-postpartum-btn"
+            accessibilityRole="button"
+            accessibilityLabel={editMode ? 'Done editing' : 'Edit postpartum plan'}
           >
-            <Icon name={editMode ? 'close' : 'create'} size={20} color={colors.primary} />
+            <Icon name={editMode ? 'close' : 'create'} size={14} color={C.lavender} />
+            <Text style={styles.editButtonText}>{editMode ? 'Done' : 'Edit'}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Support People */}
-        <Card style={styles.section}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="people" size={20} color={colors.primary} />
+            <View style={styles.sico}>
+              <Icon name="people" size={17} color={C.lavender} />
+            </View>
             <Text style={styles.sectionTitle}>Support Network</Text>
           </View>
           {editMode ? (
@@ -164,19 +172,21 @@ export default function PostpartumScreen() {
               value={supportPeople}
               onChangeText={setSupportPeople}
               placeholder="Who will help? (e.g., Partner, Mom, Sister)"
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
             />
           ) : (
             <Text style={styles.fieldValue}>
               {supportPeople || 'Not specified'}
             </Text>
           )}
-        </Card>
+        </View>
 
         {/* Meal Prep */}
-        <Card style={styles.section}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="restaurant" size={20} color={colors.primary} />
+            <View style={styles.sico}>
+              <Icon name="restaurant" size={17} color={C.lavender} />
+            </View>
             <Text style={styles.sectionTitle}>Meal Prep Plans</Text>
           </View>
           {editMode ? (
@@ -185,19 +195,21 @@ export default function PostpartumScreen() {
               value={mealPrepPlans}
               onChangeText={setMealPrepPlans}
               placeholder="Freezer meals, meal train, delivery services..."
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               multiline
               numberOfLines={3}
             />
           ) : (
             <Text style={styles.fieldValue}>{mealPrepPlans || 'Not specified'}</Text>
           )}
-        </Card>
+        </View>
 
         {/* Baby Feeding */}
-        <Card style={styles.section}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="heart" size={20} color={colors.primary} />
+            <View style={styles.sico}>
+              <Icon name="heart" size={17} color={C.lavender} />
+            </View>
             <Text style={styles.sectionTitle}>Baby Feeding Plan</Text>
           </View>
           {editMode ? (
@@ -206,19 +218,21 @@ export default function PostpartumScreen() {
               value={babyFeedingPlan}
               onChangeText={setBabyFeedingPlan}
               placeholder="Breastfeeding, formula, combo feeding plans..."
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               multiline
               numberOfLines={3}
             />
           ) : (
             <Text style={styles.fieldValue}>{babyFeedingPlan || 'Not specified'}</Text>
           )}
-        </Card>
+        </View>
 
         {/* Recovery Goals */}
-        <Card style={styles.section}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="fitness" size={20} color={colors.primary} />
+            <View style={styles.sico}>
+              <Icon name="fitness" size={17} color={C.lavender} />
+            </View>
             <Text style={styles.sectionTitle}>Recovery Goals</Text>
           </View>
           {editMode ? (
@@ -227,19 +241,21 @@ export default function PostpartumScreen() {
               value={recoveryGoals}
               onChangeText={setRecoveryGoals}
               placeholder="Rest, healing, taking it slow..."
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               multiline
               numberOfLines={3}
             />
           ) : (
             <Text style={styles.fieldValue}>{recoveryGoals || 'Not specified'}</Text>
           )}
-        </Card>
+        </View>
 
         {/* Visitor Policy */}
-        <Card style={styles.section}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="home" size={20} color={colors.primary} />
+            <View style={styles.sico}>
+              <Icon name="home" size={17} color={C.lavender} />
+            </View>
             <Text style={styles.sectionTitle}>Visitor Policy</Text>
           </View>
           {editMode ? (
@@ -248,80 +264,78 @@ export default function PostpartumScreen() {
               value={visitorPolicy}
               onChangeText={setVisitorPolicy}
               placeholder="When can visitors come? Any rules?"
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               multiline
               numberOfLines={3}
             />
           ) : (
             <Text style={styles.fieldValue}>{visitorPolicy || 'Not specified'}</Text>
           )}
-        </Card>
+        </View>
 
         {/* Self Care Activities */}
-        <Card style={styles.section}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="sunny" size={20} color={colors.primary} />
+            <View style={styles.sico}>
+              <Icon name="sunny" size={17} color={C.lavender} />
+            </View>
             <Text style={styles.sectionTitle}>Self-Care Activities</Text>
           </View>
           <View style={styles.chipContainer}>
-            {SELF_CARE_OPTIONS.map((activity) => (
-              <TouchableOpacity
-                key={activity}
-                style={[
-                  styles.chip,
-                  selectedSelfCare.includes(activity) && styles.chipActive,
-                  !editMode && styles.chipDisabled
-                ]}
-                onPress={() => editMode && toggleItem(activity, selectedSelfCare, setSelectedSelfCare)}
-                disabled={!editMode}
-              >
-                <Text style={[
-                  styles.chipText,
-                  selectedSelfCare.includes(activity) && styles.chipTextActive
-                ]}>
-                  {activity}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {SELF_CARE_OPTIONS.map((activity) => {
+              const on = selectedSelfCare.includes(activity);
+              return (
+                <TouchableOpacity
+                  key={activity}
+                  style={[styles.chip, on ? styles.chipOn : styles.chipOff, !editMode && styles.chipDisabled]}
+                  onPress={() => editMode && toggleItem(activity, selectedSelfCare, setSelectedSelfCare)}
+                  disabled={!editMode}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: on }}
+                >
+                  <Text style={[styles.chipText, on && styles.chipTextOn]}>{activity}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
-        </Card>
+        </View>
 
-        {/* Warning Signs */}
-        <Card style={[styles.section, { backgroundColor: colors.error + '08' }]}>
+        {/* Warning Signs — rose is the approved warn accent (s7 .warn) */}
+        <View style={[styles.section, styles.sectionWarn]}>
           <View style={styles.sectionHeader}>
-            <Icon name="warning" size={20} color={colors.error} />
-            <Text style={[styles.sectionTitle, { color: colors.error }]}>Warning Signs to Watch</Text>
+            <View style={[styles.sico, styles.sicoWarn]}>
+              <Icon name="warning" size={17} color={C.rose} />
+            </View>
+            <Text style={[styles.sectionTitle, { color: C.rose }]}>Warning Signs to Watch</Text>
           </View>
           <Text style={styles.warningText}>
             Seek medical help immediately if you experience any of these:
           </Text>
           <View style={styles.chipContainer}>
-            {WARNING_SIGNS.map((sign) => (
-              <TouchableOpacity
-                key={sign}
-                style={[
-                  styles.warningChip,
-                  selectedWarningSigns.includes(sign) && styles.warningChipActive,
-                  !editMode && styles.chipDisabled
-                ]}
-                onPress={() => editMode && toggleItem(sign, selectedWarningSigns, setSelectedWarningSigns)}
-                disabled={!editMode}
-              >
-                <Text style={[
-                  styles.warningChipText,
-                  selectedWarningSigns.includes(sign) && styles.warningChipTextActive
-                ]}>
-                  {sign}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {WARNING_SIGNS.map((sign) => {
+              const on = selectedWarningSigns.includes(sign);
+              return (
+                <TouchableOpacity
+                  key={sign}
+                  style={[styles.chip, on ? styles.warnChipOn : styles.chipOff, !editMode && styles.chipDisabled]}
+                  onPress={() => editMode && toggleItem(sign, selectedWarningSigns, setSelectedWarningSigns)}
+                  disabled={!editMode}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: on }}
+                >
+                  <Text style={[styles.chipText, on && styles.warnChipTextOn]}>{sign}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
-        </Card>
+        </View>
 
         {/* Emergency Contacts */}
-        <Card style={styles.section}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="call" size={20} color={colors.primary} />
+            <View style={styles.sico}>
+              <Icon name="call" size={17} color={C.lavender} />
+            </View>
             <Text style={styles.sectionTitle}>Emergency Contacts</Text>
           </View>
           {editMode ? (
@@ -332,14 +346,14 @@ export default function PostpartumScreen() {
                   value={emergencyContact1.name}
                   onChangeText={(text) => setEmergencyContact1({ ...emergencyContact1, name: text })}
                   placeholder="Name"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                 />
                 <TextInput
                   style={[styles.input, styles.contactInput]}
                   value={emergencyContact1.phone}
                   onChangeText={(text) => setEmergencyContact1({ ...emergencyContact1, phone: text })}
                   placeholder="Phone"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   keyboardType="phone-pad"
                 />
               </View>
@@ -349,14 +363,14 @@ export default function PostpartumScreen() {
                   value={emergencyContact2.name}
                   onChangeText={(text) => setEmergencyContact2({ ...emergencyContact2, name: text })}
                   placeholder="Name (optional)"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                 />
                 <TextInput
                   style={[styles.input, styles.contactInput]}
                   value={emergencyContact2.phone}
                   onChangeText={(text) => setEmergencyContact2({ ...emergencyContact2, phone: text })}
                   placeholder="Phone"
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={C.grayLight}
                   keyboardType="phone-pad"
                 />
               </View>
@@ -374,12 +388,14 @@ export default function PostpartumScreen() {
               )}
             </View>
           )}
-        </Card>
+        </View>
 
         {/* Additional Notes */}
-        <Card style={styles.section}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="document-text" size={20} color={colors.primary} />
+            <View style={styles.sico}>
+              <Icon name="document-text" size={17} color={C.lavender} />
+            </View>
             <Text style={styles.sectionTitle}>Additional Notes</Text>
           </View>
           {editMode ? (
@@ -388,56 +404,155 @@ export default function PostpartumScreen() {
               value={notes}
               onChangeText={setNotes}
               placeholder="Any other important information..."
-              placeholderTextColor={colors.textLight}
+              placeholderTextColor={C.grayLight}
               multiline
               numberOfLines={4}
             />
           ) : (
             <Text style={styles.fieldValue}>{notes || 'Not specified'}</Text>
           )}
-        </Card>
+        </View>
 
-        {/* Save Button */}
+        {/* Save Button — abtn: lavender pill */}
         {editMode && (
-          <Button
-            title={saving ? 'Saving...' : 'Save Postpartum Plan'}
+          <TouchableOpacity
+            style={styles.saveButton}
             onPress={savePlan}
             disabled={saving}
-            fullWidth
-            style={styles.saveButton}
-            data-testid="save-postpartum-btn"
-          />
+            testID="save-postpartum-btn"
+            accessibilityRole="button"
+            accessibilityLabel="Save postpartum plan"
+          >
+            <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Postpartum Plan'}</Text>
+          </TouchableOpacity>
         )}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const getStyles = createThemedStyles((colors) => ({
-  container: { flex: 1, backgroundColor: colors.background },
-  scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.lg },
-  title: { fontSize: SIZES.fontXxl, fontWeight: '700', color: colors.text },
-  subtitle: { fontSize: SIZES.fontMd, color: colors.textSecondary },
-  editButton: { padding: SIZES.sm, backgroundColor: colors.primary + '15', borderRadius: SIZES.radiusMd },
-  section: { marginBottom: SIZES.md },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: SIZES.sm, gap: SIZES.sm },
-  sectionTitle: { fontSize: SIZES.fontMd, fontWeight: '600', color: colors.text },
-  input: { backgroundColor: colors.background, borderRadius: SIZES.radiusMd, padding: SIZES.md, fontSize: SIZES.fontMd, color: colors.text, borderWidth: 1, borderColor: colors.border },
-  textArea: { minHeight: 80, textAlignVertical: 'top' },
-  fieldValue: { fontSize: SIZES.fontMd, color: colors.textSecondary },
-  chipContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: SIZES.xs },
-  chip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  chipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  chipDisabled: { opacity: 0.7 },
-  chipText: { fontSize: SIZES.fontSm, color: colors.textSecondary },
-  chipTextActive: { color: colors.white },
-  warningText: { fontSize: SIZES.fontSm, color: colors.error, marginBottom: SIZES.sm },
-  warningChip: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.sm, borderRadius: SIZES.radiusFull, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.error + '50' },
-  warningChipActive: { backgroundColor: colors.error, borderColor: colors.error },
-  warningChipText: { fontSize: SIZES.fontSm, color: colors.error },
-  warningChipTextActive: { color: colors.white },
-  contactRow: { flexDirection: 'row', gap: SIZES.sm, marginBottom: SIZES.sm },
-  contactInput: { flex: 1 },
-  saveButton: { marginTop: SIZES.lg },
-}));
+const getStyles = createThemedStyles(() =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: C.cream },
+    scrollContent: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: SIZES.xxl },
+    header: {
+      marginBottom: 18,
+    },
+    overline: { ...kickerStyle(C.rose), marginBottom: 5 },
+    title: {
+      fontSize: 26,
+      lineHeight: 30,
+      fontFamily: DF.serif,
+      fontWeight: '700',
+      color: C.ink,
+    },
+    titleAccent: { color: C.roseSoft, fontStyle: 'italic' },
+    subtitle: { fontSize: 12.5, fontFamily: DF.ui, color: C.gray, marginTop: 4 },
+    editButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 5,
+      borderWidth: 1.4,
+      borderColor: C.lavenderBorder,
+      backgroundColor: C.cardBg,
+      borderRadius: 999,
+      paddingVertical: 9,
+      paddingHorizontal: 16,
+      marginTop: 10,
+      alignSelf: 'flex-start',
+    },
+    editButtonText: {
+      fontSize: 11.5,
+      fontWeight: '700',
+      fontFamily: DF.uiBold,
+      color: C.lavender,
+    },
+    // fieldbox section: white r18 hairline card
+    section: {
+      backgroundColor: C.white,
+      borderWidth: 1,
+      borderColor: C.border,
+      borderRadius: 18,
+      padding: 14,
+      marginBottom: 10,
+    },
+    sectionWarn: {
+      backgroundColor: C.gbandMid,
+      borderColor: C.roseSoft,
+    },
+    sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 9, gap: 10 },
+    sico: {
+      width: 34,
+      height: 34,
+      borderRadius: 12,
+      backgroundColor: C.lavenderBg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    sicoWarn: { backgroundColor: C.roseBg },
+    sectionTitle: {
+      fontSize: 17,
+      fontFamily: DF.serifSemi,
+      fontWeight: '600',
+      color: C.ink,
+      flex: 1,
+    },
+    input: {
+      backgroundColor: C.cardBg,
+      borderRadius: 12,
+      paddingHorizontal: 13,
+      paddingVertical: 11,
+      fontSize: 13,
+      fontFamily: DF.ui,
+      color: C.ink,
+      borderWidth: 1,
+      borderColor: C.border,
+    },
+    textArea: { minHeight: 80, textAlignVertical: 'top' },
+    fieldValue: { fontSize: 13, fontFamily: DF.ui, color: C.body, lineHeight: 19 },
+    chipContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
+    chip: {
+      paddingHorizontal: 12,
+      paddingVertical: 7,
+      borderRadius: 999,
+    },
+    chipOff: { backgroundColor: C.cardBg },
+    chipOn: {
+      backgroundColor: C.halo,
+      borderWidth: 1,
+      borderColor: C.lavenderSoft,
+    },
+    chipDisabled: { opacity: 0.72 },
+    chipText: { fontSize: 11, fontFamily: DF.uiSemi, fontWeight: '600', color: C.grayLight },
+    chipTextOn: { color: C.lavender, fontFamily: DF.uiBold, fontWeight: '700' },
+    warnChipOn: {
+      backgroundColor: C.roseBg,
+      borderWidth: 1,
+      borderColor: C.roseSoft,
+    },
+    warnChipTextOn: { color: C.rose, fontFamily: DF.uiBold, fontWeight: '700' },
+    warningText: {
+      fontSize: 11,
+      fontFamily: DF.uiSemi,
+      fontWeight: '600',
+      color: C.rose,
+      marginBottom: 9,
+      lineHeight: 15,
+    },
+    contactRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+    contactInput: { flex: 1 },
+    saveButton: {
+      marginTop: 14,
+      backgroundColor: C.lavender,
+      borderRadius: 999,
+      paddingVertical: 13,
+      paddingHorizontal: 18,
+      alignItems: 'center',
+    },
+    saveButtonText: {
+      color: C.white,
+      fontSize: 13,
+      fontWeight: '600',
+      fontFamily: DF.uiSemi,
+    },
+  }));
