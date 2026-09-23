@@ -138,10 +138,12 @@ def generate_visit_summary(data: Dict[str, Any]) -> str:
     if data.get("fundal_height"):
         summary_parts.append(f"FH {data['fundal_height']} cm")
     if data.get("weight"):
-        unit = data.get("weight_unit", "lbs")
+        # weight_unit can be explicitly None (JSON null) — don't let that crash the unit check.
+        unit = data.get("weight_unit") or "lbs"
         # App sends weight pre-formatted ("141 lb"); don't double the unit.
+        # Compare the unit STEM ('lb'/'kg') so 'lbs' matches '141 lb' too.
         weight_val = str(data["weight"])
-        if unit in weight_val:
+        if unit.rstrip("s") in weight_val:
             summary_parts.append(f"Wt {weight_val}")
         else:
             summary_parts.append(f"Wt {weight_val} {unit}")
