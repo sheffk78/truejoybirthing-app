@@ -1,0 +1,12 @@
+# Keep EAS uploads lean — the mobile build only needs frontend/ + backend source
+admin-frontend
+qa-screenshots
+docs
+memory
+store
+tests
+scripts
+*.md
+backend_test.py
+simple_test.py
+build-ios.sh
