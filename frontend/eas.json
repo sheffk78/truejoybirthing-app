@@ -18,6 +18,9 @@
       },
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://truejoybirthing-app-production.up.railway.app"
       }
     },
     "production": {
