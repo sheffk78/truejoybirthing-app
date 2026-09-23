@@ -1,0 +1,164 @@
+{
+  "s5-app-birth-plan": {
+    "light": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s5-app-birth-plan-phone1-light.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s5-app-birth-plan-light.png",
+      "overflow": []
+    },
+    "dark": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s5-app-birth-plan-phone1-dark.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s5-app-birth-plan-dark.png",
+      "overflow": []
+    }
+  },
+  "s6-app-timeline": {
+    "light": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s6-app-timeline-phone1-light.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s6-app-timeline-light.png",
+      "overflow": []
+    },
+    "dark": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s6-app-timeline-phone1-dark.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s6-app-timeline-dark.png",
+      "overflow": []
+    }
+  },
+  "s7s8s9-app-mom-core": {
+    "light": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s7s8s9-app-mom-core-phone1-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s7s8s9-app-mom-core-phone2-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s7s8s9-app-mom-core-phone3-light.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s7s8s9-app-mom-core-light.png",
+      "overflow": []
+    },
+    "dark": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s7s8s9-app-mom-core-phone1-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s7s8s9-app-mom-core-phone2-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s7s8s9-app-mom-core-phone3-dark.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s7s8s9-app-mom-core-dark.png",
+      "overflow": []
+    }
+  },
+  "s10s11s12-mom-home-timer-tips": {
+    "light": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-phone1-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-phone2-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-phone3-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-phone4-light.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-light.png",
+      "overflow": [
+        {
+          "i": 4,
+          "sw": 397,
+          "cw": 374,
+          "of": true
+        },
+        {
+          "i": 5,
+          "sw": 397,
+          "cw": 374,
+          "of": true
+        }
+      ]
+    },
+    "dark": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-phone1-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-phone2-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-phone3-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-phone4-dark.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s10s11s12-mom-home-timer-tips-dark.png",
+      "overflow": [
+        {
+          "i": 4,
+          "sw": 397,
+          "cw": 374,
+          "of": true
+        },
+        {
+          "i": 5,
+          "sw": 397,
+          "cw": 374,
+          "of": true
+        }
+      ]
+    }
+  },
+  "s13s14s15-app-profile-wellness-invoices": {
+    "light": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone1-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone2-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone3-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone4-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone5-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone6-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone7-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone8-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone9-light.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-light.png",
+      "overflow": []
+    },
+    "dark": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone1-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone2-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone3-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone4-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone5-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone6-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone7-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone8-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-phone9-dark.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/s13s14s15-app-profile-wellness-invoices-dark.png",
+      "overflow": []
+    }
+  },
+  "marketplace-m16-mockup": {
+    "light": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/marketplace-m16-mockup-phone1-light.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/marketplace-m16-mockup-phone2-light.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/marketplace-m16-mockup-light.png",
+      "overflow": []
+    },
+    "dark": {
+      "per_phone": [
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/marketplace-m16-mockup-phone1-dark.png",
+        "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/marketplace-m16-mockup-phone2-dark.png"
+      ],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/marketplace-m16-mockup-dark.png",
+      "overflow": []
+    }
+  },
+  "provider-detail-m17-mockup": {
+    "light": {
+      "per_phone": [],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/provider-detail-m17-mockup-light.png",
+      "overflow": []
+    },
+    "dark": {
+      "per_phone": [],
+      "full": "/Users/socializerender/Projects/TrueJoyBirthing-Mobile/docs/design-refresh/surfaces-2026-09-14/renders-dark/provider-detail-m17-mockup-dark.png",
+      "overflow": []
+    }
+  }
+}
