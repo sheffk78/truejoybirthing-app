@@ -1,12 +1,13 @@
-# Keep EAS uploads lean — the mobile build only needs frontend/ + backend source
-admin-frontend
-qa-screenshots
-docs
-memory
-store
-tests
-scripts
+# Keep EAS uploads lean — anchor patterns to repo root so frontend/src/store etc. stay INCLUDED
+/admin-frontend
+/qa-screenshots
+/docs
+/memory
+/store
+/tests
+/scripts
 *.md
-backend_test.py
-simple_test.py
-build-ios.sh
+/backend_test.py
+/simple_test.py
+/build-ios.sh
+/frontend/maestro
