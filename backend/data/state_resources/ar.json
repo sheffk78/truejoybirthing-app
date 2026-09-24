@@ -6,28 +6,28 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot)",
-      "program": "Arkansas Department of Health \u2014 Newborn Screening Program",
+      "program": "Arkansas Department of Health — Newborn Screening Program",
       "program_url": "https://www.arkleg.state.ar.us/Home/FTPDocument?path=%2FAssembly%2FMeeting%2BAttachments%2F830%2FI7727%2FF%2BImmunization%2BReq.PDF",
       "parent_education_url": null,
       "opt_out_form": null,
-      "state_form_note": "Arkansas has NO public downloadable opt-out form. Under Act 192 of 1981 (as amended) and Arkansas Code \u00a7 20-9-1501 et seq., newborn screening is mandatory; refusal on religious grounds requires a signed refusal form provided by the attending facility, which is held in the infant's medical record and forwarded to the ADH Newborn Screening Program. No state-hosted PDF exists. The healthy.arkansas.gov domain is WAF-protected and returns 403 for automated checks; program page is available via the Arkansas Legislature's document repository.",
-      "statute": "Arkansas Code \u00a7 20-9-1501 et seq.; Act 192 of 1981 (PKU); Act 481 of 1981 (CH); Act 573 of 1987 (sickle hemoglobin); Act 113 of 1995 (galactosemia)",
+      "state_form_note": "Arkansas has NO public downloadable opt-out form. Under Act 192 of 1981 (as amended) and Arkansas Code § 20-9-1501 et seq., newborn screening is mandatory; refusal on religious grounds requires a signed refusal form provided by the attending facility, which is held in the infant's medical record and forwarded to the ADH Newborn Screening Program. No state-hosted PDF exists. The healthy.arkansas.gov domain is WAF-protected and returns 403 for automated checks; program page is available via the Arkansas Legislature's document repository.",
+      "statute": "Arkansas Code § 20-9-1501 et seq.; Act 192 of 1981 (PKU); Act 481 of 1981 (CH); Act 573 of 1987 (sickle hemoglobin); Act 113 of 1995 (galactosemia)",
       "provider_signature_required": false,
       "midwife_role": "Collect blood spot per protocol; if parent declines on religious grounds, ensure signed refusal form is in the infant's medical record and forwarded to the ADH Newborn Screening Program. Midwife ordering kits via the ADH supply process."
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening (EHDI)",
-      "program": "Arkansas Department of Health \u2014 Infant Hearing Program (EHDI)",
+      "program": "Arkansas Department of Health — Infant Hearing Program (EHDI)",
       "program_url": "https://www.arkleg.state.ar.us/Home/FTPDocument?path=%2FAssembly%2FMeeting%2BAttachments%2F830%2FI7727%2FF%2BImmunization%2BReq.PDF",
       "parent_education_url": null,
       "opt_out_form": null,
-      "state_form_note": "Same religious exemption as metabolic screening; refusal documented in medical record per Ark. Code \u00a7 20-9-1501. No separate state form for hearing. The healthy.arkansas.gov domain is WAF-protected and returns 403 for automated checks; program page is available via the Arkansas Legislature's document repository.",
+      "state_form_note": "Same religious exemption as metabolic screening; refusal documented in medical record per Ark. Code § 20-9-1501. No separate state form for hearing. The healthy.arkansas.gov domain is WAF-protected and returns 403 for automated checks; program page is available via the Arkansas Legislature's document repository.",
       "provider_signature_required": false,
       "midwife_role": "Perform or arrange newborn hearing screen; if out-of-hospital birth, coordinate with regional audiology for follow-up. Document refusal in medical record if applicable."
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening",
-      "program": "Arkansas Department of Health \u2014 Newborn Screening Program",
+      "program": "Arkansas Department of Health — Newborn Screening Program",
       "program_url": "https://www.arkleg.state.ar.us/Home/FTPDocument?path=%2FAssembly%2FMeeting%2BAttachments%2F830%2FI7727%2FF%2BImmunization%2BReq.PDF",
       "opt_out_form": null,
       "state_form_note": "Same religious exemption as metabolic screening; refusal documented in medical record. No separate state CCHD declination form. The healthy.arkansas.gov domain is WAF-protected and returns 403 for automated checks.",
@@ -36,16 +36,16 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Arkansas law \u2014 not part of the NBS program",
+      "program": "Arkansas law — not part of the NBS program",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
       "provider_signature_required": false,
-      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1\u20132 hours of birth per standard protocol."
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1–2 hours of birth per standard protocol."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice \u2014 no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -59,7 +59,7 @@
     },
     "hepatitis_b_vaccine": {
       "label": "Hepatitis B Vaccine (birth dose)",
-      "program": "Arkansas Department of Health \u2014 Immunization Program",
+      "program": "Arkansas Department of Health — Immunization Program",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": true,
@@ -69,7 +69,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice \u2014 no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -78,7 +78,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal/intrapartum)",
-      "program": "Informed choice \u2014 no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -87,13 +87,13 @@
     }
   },
   "program_contact": {
-    "name": "Arkansas Department of Health \u2014 Newborn Screening Program",
+    "name": "Arkansas Department of Health — Newborn Screening Program",
     "phone": "501-280-4740",
     "email": "adhinfanthearing@arkansas.gov",
     "website": "https://www.arkleg.state.ar.us"
   },
   "key_pages": {
-  "nbs_program": "https://www.arkleg.state.ar.us/Home/FTPDocument?path=%2FAssembly%2FMeeting%2BAttachments%2F830%2FI7727%2FF%2BImmunization%2BReq.PDF",
-  "statutes": "https://www.sos.arkansas.gov/uploads/rulesRegs/Arkansas%20Register/2014/july2014/July2014.pdf"
+    "nbs_program": "https://www.arkleg.state.ar.us/Home/FTPDocument?path=%2FAssembly%2FMeeting%2BAttachments%2F830%2FI7727%2FF%2BImmunization%2BReq.PDF",
+    "statutes": "https://www.sos.arkansas.gov/uploads/rulesRegs/Arkansas%20Register/2014/july2014/July2014.pdf"
   }
 }

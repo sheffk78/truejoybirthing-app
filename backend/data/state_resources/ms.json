@@ -6,12 +6,12 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot)",
-      "program": "Mississippi State Department of Health (MSDH) ÃÂ¢ Genetics Program Ã¢ Newborn Screening Program",
+      "program": "Mississippi State Department of Health (MSDH) — Genetics Program — Newborn Screening Program",
       "program_url": "https://www.msdh.ms.gov/msdhsite/_static/resources/4504.pdf",
       "parent_education_url": null,
       "opt_out_form": null,
-      "state_form_note": "Mississippi has NO public downloadable opt-out form. Under MS Code ÃÂ¢ 41-21-201 and 41-21-203, newborn screening is mandatory; refusal on religious grounds requires a signed refusal form (Appendix B of the MSDH Newborn Screening Guide). The form is obtained from the birthing facility or MSDH Genetics Program. The signed refusal is placed in the infant's medical record and a copy sent to MSDH Newborn Screening Program.",
-      "statute": "Mississippi Code ÃÂ¢ 41-21-201 and 41-21-203 (newborn screening)",
+      "state_form_note": "Mississippi has NO public downloadable opt-out form. Under MS Code — 41-21-201 and 41-21-203, newborn screening is mandatory; refusal on religious grounds requires a signed refusal form (Appendix B of the MSDH Newborn Screening Guide). The form is obtained from the birthing facility or MSDH Genetics Program. The signed refusal is placed in the infant's medical record and a copy sent to MSDH Newborn Screening Program.",
+      "statute": "Mississippi Code — 41-21-201 and 41-21-203 (newborn screening)",
       "provider_signature_required": false,
       "midwife_role": "Collect blood spot per protocol; if parent declines on religious grounds, ensure signed refusal form (Appendix B) is in the infant's medical record and a copy sent to MSDH Genetics Program. Homebirth midwife marks 'Home Birth' on the DBS card and provides midwife contact info."
     },
@@ -35,16 +35,16 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Mississippi law Ã¢ not part of the NBS program",
+      "program": "Mississippi law — not part of the NBS program",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
       "provider_signature_required": false,
-      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1Ã¢2 hours of birth per standard protocol."
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1â2 hours of birth per standard protocol."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice Ã¢ no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -58,7 +58,7 @@
     },
     "hepatitis_b_vaccine": {
       "label": "Hepatitis B Vaccine (birth dose)",
-      "program": "Mississippi State Department of Health Ã¢ Immunization Program",
+      "program": "Mississippi State Department of Health — Immunization Program",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": true,
@@ -68,7 +68,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice Ã¢ no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -77,7 +77,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal/intrapartum)",
-      "program": "Informed choice Ã¢ no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -86,7 +86,7 @@
     }
   },
   "program_contact": {
-    "name": "MSDH Genetics Program Ã¢ Newborn Screening Program",
+    "name": "MSDH Genetics Program — Newborn Screening Program",
     "nbs_phone": "601-576-7619",
     "nbs_fax": "601-576-7498",
     "nbs_email": "NBSProgram@msdh.ms.gov",

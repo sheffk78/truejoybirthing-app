@@ -6,7 +6,7 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot)",
-      "program": "Hawaii Department of Health Ã¢ Genetics Division Ã¢ Newborn Metabolic Screening Program",
+      "program": "Hawaii Department of Health — Genetics Division — Newborn Metabolic Screening Program",
       "program_url": "https://health.hawaii.gov/genetics/programs/nbshome",
       "parent_education_url": null,
       "opt_out_form": "https://health.hawaii.gov/genetics/programs/nbshome",
@@ -18,7 +18,7 @@
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening (EHDI)",
-      "program": "Hawaii Department of Health Ã¢ Children with Special Health Needs Branch Ã¢ Newborn Hearing Screening Program (NHSP)",
+      "program": "Hawaii Department of Health — Children with Special Health Needs Branch — Newborn Hearing Screening Program (NHSP)",
       "program_url": "https://health.hawaii.gov/genetics/programs/nhsp/",
       "opt_out_form": "https://health.hawaii.gov/genetics/programs/nbshome",
       "opt_out_form_label": "Newborn Metabolic Screening Test Refusal Form (covers hearing component)",
@@ -28,7 +28,7 @@
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening",
-      "program": "Hawaii Department of Health Ã¢ Newborn Screening Program",
+      "program": "Hawaii Department of Health — Newborn Screening Program",
       "program_url": "https://health.hawaii.gov/genetics/programs/nbshome",
       "opt_out_form": null,
       "state_form_note": "CCHD screening refusal documented via the same informed dissent process as metabolic screening. No separate CCHD declination form.",
@@ -37,16 +37,16 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Hawaii law Ã¢ not part of the NBS program",
+      "program": "Hawaii law — not part of the NBS program",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
       "provider_signature_required": false,
-      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1Ã¢2 hours of birth per standard protocol."
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1â2 hours of birth per standard protocol."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice Ã¢ no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -60,7 +60,7 @@
     },
     "hepatitis_b_vaccine": {
       "label": "Hepatitis B Vaccine (birth dose)",
-      "program": "Hawaii Department of Health Ã¢ Immunization Program",
+      "program": "Hawaii Department of Health — Immunization Program",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": true,
@@ -70,7 +70,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice Ã¢ no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -79,7 +79,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal/intrapartum)",
-      "program": "Informed choice Ã¢ no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -88,7 +88,7 @@
     }
   },
   "program_contact": {
-    "name": "Hawaii Department of Health Ã¢ Newborn Metabolic Screening Program",
+    "name": "Hawaii Department of Health — Newborn Metabolic Screening Program",
     "nbs_phone": "(808) 733-9069",
     "nbs_fax": "(808) 733-9071",
     "nbs_email": "info@hawaiigenetics.org",
