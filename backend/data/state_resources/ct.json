@@ -1,0 +1,117 @@
+{
+  "state": "CT",
+  "state_name": "Connecticut",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (CT-1 build, all URLs HTTP-200 confirmed)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot / PKU)",
+      "program": "Connecticut Department of Public Health \u00e2\u0080\u0094 Newborn Screening Program",
+      "program_url": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening",
+      "parent_education_url": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening/newborn-screening-forms",
+      "opt_out_form": "https://portal.ct.gov/-/media/Departments-and-Agencies/DPH/family_health/newborn_screening/pdf/Newborn_Screening_Refusal_Waiver_Form.pdf",
+      "state_form_note": "CT has a standalone Newborn Screening Refusal Waiver Form. Religious exemption available. All babies born in CT automatically receive bloodspot screening; parent can say no if it conflicts with religious beliefs. Signed waiver sent to DPH; result entered in NSS; PCP notified.",
+      "kit_ordering_url": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening/newborn-screening-forms",
+      "kit_ordering_note": "NBS collection supplies requested via CT DPH forms page; specimens shipped to CT Public Health Laboratory.",
+      "specimen_tracking_url": null,
+      "specimen_tracking_note": "NBS tracking via NSS (Newborn Screening System); midwives verify specimen receipt.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "online"
+      ],
+      "midwife_role": "Complete TRF 12\u00e2\u0080\u009348h after birth, give refusal waiver to parents if declining, send specimen+TRF to CT lab, enter result in NSS.",
+      "declination_law": "CT General Statutes \u00c2\u00a719a-55 \u00e2\u0080\u0094 religious exemption available; refusal waiver form required.",
+      "billing": {
+        "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
+        "payment_portal_url": null,
+        "insurance_phone": null,
+        "faq_url": null
+      }
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Connecticut Early Hearing Detection and Intervention (EHDI) Program",
+      "program_url": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening",
+      "forms_url": null,
+      "opt_out_form": "https://portal.ct.gov/-/media/Departments-and-Agencies/DPH/family_health/newborn_screening/pdf/Newborn_Screening_Refusal_Waiver_Form.pdf",
+      "state_form_note": "Hearing screening refusal uses the same Newborn Screening Refusal Waiver Form. CT requires hearing screening before discharge; refusal documented on waiver form and sent to DPH.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document refusal on waiver form.",
+      "law": "CT General Statutes \u00c2\u00a719a-55; 19a-79"
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
+      "program": "Connecticut DPH \u00e2\u0080\u0094 CCHD Screening",
+      "program_url": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening",
+      "opt_out_form": "https://portal.ct.gov/-/media/Departments-and-Agencies/DPH/family_health/newborn_screening/pdf/Newborn_Screening_Refusal_Waiver_Form.pdf",
+      "state_form_note": "CCHD screening refusal uses the same Newborn Screening Refusal Waiver Form. Pulse ox performed at bedside; refusal documented on waiver.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse-ox screening; document refusal on waiver form if declined."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Connecticut \u00e2\u0080\u0094 Standard of Care",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00e2\u0080\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "provider_signature_required": false,
+      "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state mandate",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in-app; shot administered by midwife or referred."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Connecticut Immunization Registry (CTIR)",
+      "program_url": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening",
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; administered dose reported to CTIR."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "program_contact": {
+    "nbs_phone": "(860) 509-8081",
+    "nbs_email": "Newborn Screening Program, CT DPH",
+    "nbs_supplies_email": "Newborn Screening Program, CT DPH",
+    "nbs_supplies_phone": "(860) 509-8081",
+    "billing_phone": null,
+    "ost_email": "Newborn Screening Program, CT DPH"
+  },
+  "key_pages": {
+    "midwives_page": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening/newborn-screening-forms",
+    "consent_forms": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening/newborn-screening-forms",
+    "ctir": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening"
+  }
+}

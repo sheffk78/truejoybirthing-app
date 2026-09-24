@@ -1,0 +1,118 @@
+{
+  "state": "NY",
+  "state_name": "New York",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (NY-1 build, all URLs HTTP-200 confirmed)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot / PKU)",
+      "program": "New York State Newborn Screening Program \u00e2\u0080\u0094 Wadsworth Center, NYS Department of Health",
+      "program_url": "https://www.wadsworth.org/programs/newborn/screening",
+      "parent_education_url": "https://www.wadsworth.org/programs/newborn/screening",
+      "opt_out_form": null,
+      "state_form_note": "NBS-TRF (Newborn Screening Test Request Form) is required for EVERY birth; religious refusal is documented on the TRF itself (10 NYCRR Part 69). No standalone parent declination form \u00e2\u0080\u0094 refusal is signed on the TRF and retained in the newborn's record.",
+      "kit_ordering_url": "https://www.wadsworth.org/programs/newborn/screening/providers/request-materials",
+      "kit_ordering_note": "TRF supplies ordered from Wadsworth Center (nbsinfo@health.ny.gov, (518) 473-7552); specimens shipped to Wadsworth lab; OST tracking required.",
+      "specimen_tracking_url": null,
+      "specimen_tracking_note": "NBS tracking via Wadsworth Center laboratory information system; midwives verify specimen receipt.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "online"
+      ],
+      "midwife_role": "Complete TRF 12\u00e2\u0080\u009348h after birth, keep yellow copy, give pink/blue to parents, send specimen+TRF to Wadsworth lab, verify receipt.",
+      "declination_law": "10 NYCRR Part 69 \u00e2\u0080\u0094 religious-objection refusal must be documented on the TRF in the newborn's record.",
+      "billing": {
+        "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
+        "payment_portal_url": null,
+        "insurance_phone": null,
+        "faq_url": null
+      }
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "New York State Early Hearing Detection and Intervention (EHDI) Program, Wadsworth Center",
+      "program_url": "https://www.wadsworth.org/programs/newborn/screening",
+      "forms_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone parent declination form \u00e2\u0080\u0094 hearing screening is part of the NBS panel; refusal documented on the TRF (10 NYCRR Part 69). Out-of-hospital babies: arrange outpatient screening through EHDI-approved provider if parent opts in.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document signed informed refusal on TRF retained in records.",
+      "law": "10 NYCRR Part 69; Public Health Law \u00c2\u00a72500"
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
+      "program": "Wadsworth Center \u00e2\u0080\u0094 CCHD Screening",
+      "program_url": "https://www.wadsworth.org/programs/newborn/screening",
+      "opt_out_form": null,
+      "state_form_note": "Pulse ox performed at 24\u00e2\u0080\u009348h of life; out-of-hospital midwives perform or refer. Declination documented via written informed refusal on TRF; no standalone state form.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse-ox screening; submit results per NBS TRF packet; document informed refusal if declined."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "New York State \u00e2\u0080\u0094 10 NYCRR \u00c2\u00a712.2",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "10 NYCRR \u00a712.2 makes eye prophylaxis a duty of the attending provider; no standalone state declination form \u2014 practice standard is a signed informed-refusal/waiver document (app master form). Note: NY law does not prohibit alternatives; providers may use gentamicin or other agents per NYSDOH guidance.",
+      "afl_alternatives_url": null,
+      "provider_signature_required": false,
+      "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state mandate",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in-app; shot administered by midwife or referred."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "New York State Immunization Information System (NYSIIS) / NYCR",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; administered dose reported to NYSIIS."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "program_contact": {
+    "nbs_phone": "(518) 473-7552",
+    "nbs_email": "nbsinfo@health.ny.gov",
+    "nbs_supplies_email": "nbsinfo@health.ny.gov",
+    "nbs_supplies_phone": "(518) 473-7552",
+    "billing_phone": null,
+    "ost_email": "nbsinfo@health.ny.gov"
+  },
+  "key_pages": {
+    "midwives_page": "https://www.wadsworth.org/programs/newborn/screening/providers/request-materials",
+    "consent_forms": "https://www.wadsworth.org/programs/newborn/screening",
+    "nysiis": null
+  }
+}

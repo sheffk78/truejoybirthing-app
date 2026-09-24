@@ -1,0 +1,117 @@
+{
+  "state": "PA",
+  "state_name": "Pennsylvania",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (PA-1 build, all URLs HTTP-200 confirmed)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot / PKU)",
+      "program": "Pennsylvania Department of Health \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Division of Newborn Screening and Genetics",
+      "program_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+      "parent_education_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+      "opt_out_form": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+      "state_form_note": "PA has a standalone 'Refusal of Newborn Screening Form' (Rev. January 2025). Covers DBS, CCHD, and hearing screening. Religious exemption available. Every baby born in PA is required to have DBS, CCHD, and hearing screening 24-48h after birth; parents can refuse if against religious beliefs or practices.",
+      "kit_ordering_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+      "kit_ordering_note": "NBS supplies ordered through PA DOH; specimens shipped to PA State Laboratory.",
+      "specimen_tracking_url": null,
+      "specimen_tracking_note": "NBS tracking via PA State Laboratory; midwives verify specimen receipt.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "online"
+      ],
+      "midwife_role": "Complete PA NBS TRF 12\u00c3\u00a2\u00c2\u0080\u00c2\u009348h after birth, give refusal form to parents if declining, send specimen+TRF to PA lab.",
+      "declination_law": "PA statute \u00c3\u00a2\u00c2\u0080\u00c2\u0094 religious exemption available; refusal form required for declination.",
+      "billing": {
+        "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
+        "payment_portal_url": null,
+        "insurance_phone": null,
+        "faq_url": null
+      }
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Pennsylvania EHDI Program \u00c3\u00a2\u00c2\u0080\u00c2\u0094 PA DOH",
+      "program_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+      "forms_url": null,
+      "opt_out_form": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+      "state_form_note": "Hearing screening refusal uses the same Refusal of Newborn Screening Form. PA mandates hearing screening; refusal documented on the form.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document refusal on form.",
+      "law": "PA statute; 28 Pa. Code"
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
+      "program": "Pennsylvania CCHD Screening \u00c3\u00a2\u00c2\u0080\u00c2\u0094 PA DOH",
+      "program_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+      "opt_out_form": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+      "state_form_note": "CCHD screening refusal uses the same Refusal of Newborn Screening Form. Pulse ox performed at bedside; refusal documented on the form.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse-ox screening; document refusal on form if declined."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Pennsylvania \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Standard of Care",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00c3\u00a2\u00c2\u0080\u00c2\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "provider_signature_required": false,
+      "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state mandate",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in-app; shot administered by midwife or referred."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Pennsylvania Immunization Information System (PA IIS)",
+      "program_url": "https://www.pa.gov/",
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; administered dose reported to PA IIS."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "program_contact": {
+    "nbs_phone": "717-783-8143",
+    "nbs_email": "PA DOH Division of Newborn Screening and Genetics",
+    "nbs_supplies_email": "PA DOH Division of Newborn Screening and Genetics",
+    "nbs_supplies_phone": "717-783-8143",
+    "billing_phone": null,
+    "ost_email": "PA DOH Division of Newborn Screening and Genetics"
+  },
+  "key_pages": {
+    "midwives_page": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+    "consent_forms": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
+    "paiis": "https://www.pa.gov/"
+  }
+}

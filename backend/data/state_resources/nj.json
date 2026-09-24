@@ -1,0 +1,117 @@
+{
+  "state": "NJ",
+  "state_name": "New Jersey",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (NJ-1 build, all URLs HTTP-200 confirmed)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot / PKU)",
+      "program": "New Jersey Newborn Screening and Genetic Services \u00e2\u0080\u0094 Division of Family Health Services",
+      "program_url": "https://www.nj.gov/health/fhs/nbs/",
+      "parent_education_url": "https://www.nj.gov/health/phel/public-health-lab-testing/newborn-screening-lab/parfaq.shtml",
+      "opt_out_form": null,
+      "state_form_note": "N.J.S.A. 26:2-110 et seq. \u00e2\u0080\u0094 screening is required for all newborns; religious exemption under N.J.A.C. 8:18-1.12 on grounds of religious tenets or practices. No standalone parent declination form \u00e2\u0080\u0094 refusal is documented in the NJ birth certificate system (VERI) and on the NBS-TRF.",
+      "kit_ordering_url": "https://healthapps.nj.gov/forms/subforms.aspx?pro=fhs%2Fnbs",
+      "kit_ordering_note": "TRF supplies ordered through NJ DHSS; specimens shipped to NJ Public Health and Environmental Laboratories; VERI registration required.",
+      "specimen_tracking_url": null,
+      "specimen_tracking_note": "NBS tracking via NJ birth certificate system (VERI); midwives verify specimen receipt through the state lab.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "online"
+      ],
+      "midwife_role": "Complete TRF 12\u00e2\u0080\u009348h after birth, register in VERI, keep copy, give to parents, send specimen to NJ lab.",
+      "declination_law": "N.J.S.A. 26:2-110; N.J.A.C. 8:18-1.12 \u00e2\u0080\u0094 religious exemption documented on TRF and in VERI.",
+      "billing": {
+        "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
+        "payment_portal_url": null,
+        "insurance_phone": null,
+        "faq_url": null
+      }
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "New Jersey Early Hearing Detection and Intervention (EHDI) Program",
+      "program_url": "https://www.nj.gov/health/fhs/nbs/",
+      "forms_url": null,
+      "opt_out_form": null,
+      "state_form_note": "NJ hearing screening law: 'no newborn child shall be screened for hearing loss if the parent of the newborn objects to such screening on the grounds that the screening conflicts with the parents' bona fide religious tenets or practices.' Refusal documented in VERI on the newborn screening tab.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document refusal in VERI.",
+      "law": "N.J.S.A. 26:2-110; NJ Administrative Code 8:18"
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
+      "program": "NJ Division of Family Health Services \u00e2\u0080\u0094 Birth Defects Registry",
+      "program_url": "https://www.nj.gov/health/fhs/nbs/",
+      "opt_out_form": null,
+      "state_form_note": "CCHD screening is part of the NBS panel; refusal documented in VERI and on TRF; no standalone state form.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse-ox screening; submit results per NBS TRF packet; document refusal in VERI if declined."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "New Jersey \u00e2\u0080\u0094 Standard of Care",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00e2\u0080\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "provider_signature_required": false,
+      "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state mandate",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in-app; shot administered by midwife or referred."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "New Jersey Immunization Information System (NJIIS)",
+      "program_url": "https://www.nj.gov/health/fhs/nbs/",
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; administered dose reported to NJIIS."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "program_contact": {
+    "nbs_phone": "609-292-1582",
+    "nbs_email": "Karyn.Dynak@doh.nj.gov",
+    "nbs_supplies_email": "Miriam.schachter@doh.nj.gov",
+    "nbs_supplies_phone": "609-530-8371",
+    "billing_phone": null,
+    "ost_email": "Karyn.Dynak@doh.nj.gov"
+  },
+  "key_pages": {
+    "midwives_page": "https://www.nj.gov/health/fhs/nbs/",
+    "consent_forms": "https://healthapps.nj.gov/forms/subforms.aspx?pro=fhs%2Fnbs",
+    "njiis": "https://www.nj.gov/health/fhs/nbs/"
+  }
+}

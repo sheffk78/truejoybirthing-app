@@ -1,0 +1,117 @@
+{
+  "state": "MA",
+  "state_name": "Massachusetts",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (MA-1 build, all URLs HTTP-200 confirmed)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot / PKU)",
+      "program": "Massachusetts Newborn Screening Program \u00e2\u0080\u0094 New England Newborn Screening Program (NESP), UMass Chan Medical School",
+      "program_url": null,
+      "parent_education_url": null,
+      "opt_out_form": null,
+      "state_form_note": "105 CMR 270 \u00e2\u0080\u0094 mandated newborn blood screening for all infants; religious exemption only. No standalone parent declination form \u00e2\u0080\u0094 refusal is documented in writing on the NESP order form and retained in the newborn's record.",
+      "kit_ordering_url": null,
+      "kit_ordering_note": "TRF supplies ordered via NESP Order Supply Form (fax 774-455-4657); specimens shipped to NESP lab at UMass Chan.",
+      "specimen_tracking_url": null,
+      "specimen_tracking_note": "NBS tracking via NESP laboratory information system; midwives verify specimen receipt.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "online"
+      ],
+      "midwife_role": "Complete NESP TRF 12\u00e2\u0080\u009348h after birth, keep copy, give to parents, send specimen to NESP lab, verify receipt.",
+      "declination_law": "105 CMR 270 \u00e2\u0080\u0094 religious exemption only; refusal documented in writing on the NESP order form.",
+      "billing": {
+        "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
+        "payment_portal_url": null,
+        "insurance_phone": null,
+        "faq_url": null
+      }
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Massachusetts EHDI Program \u00e2\u0080\u0094 NESP",
+      "program_url": null,
+      "forms_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone parent declination form \u00e2\u0080\u0094 hearing screening is part of the NBS panel under 105 CMR 270; refusal documented on the NESP order form (religious exemption). Out-of-hospital babies: arrange outpatient screening through NESP-approved provider if parent opts in.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if opted-in, refer to NESP-approved audiologist; if declined, document refusal on NESP order form.",
+      "law": "105 CMR 270; MGL Chapter 111 \u00c2\u00a767F"
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
+      "program": "Massachusetts CCHD Screening \u00e2\u0080\u0094 NESP",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Pulse ox performed at 24\u00e2\u0080\u009348h of life; out-of-hospital midwives perform or refer. Declination documented via written informed refusal on NESP order form; no standalone state form.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse-ox screening; submit results per NESP TRF packet; document informed refusal if declined."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Massachusetts \u00e2\u0080\u0094 Standard of Care",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00e2\u0080\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "provider_signature_required": false,
+      "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state mandate",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in-app; shot administered by midwife or referred."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Massachusetts Immunization Information System (MIIS)",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; administered dose reported to MIIS."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "program_contact": {
+    "nbs_phone": "774-455-4600",
+    "nbs_email": "NESP, UMass Chan Medical School",
+    "nbs_supplies_email": "NESP, UMass Chan Medical School",
+    "nbs_supplies_phone": "774-455-4600",
+    "billing_phone": null,
+    "ost_email": "NESP, UMass Chan Medical School"
+  },
+  "key_pages": {
+    "midwives_page": null,
+    "consent_forms": null,
+    "miis": null
+  }
+}

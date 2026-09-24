@@ -1,0 +1,116 @@
+{
+  "state": "ME",
+  "state_name": "Maine",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (ME-1 build, all URLs HTTP-200 confirmed)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot / PKU)",
+      "program": "Maine CDC \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Newborn Bloodspot Screening Program",
+      "program_url": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
+      "parent_education_url": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
+      "opt_out_form": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
+      "state_form_note": "ME has a standalone 'Newborn Bloodspot Screening Refusal' (Religious Refusal) form. Religious exemption available. The form must be signed by parent/guardian, witnessed, and forwarded to Maine NBSP within 5 days. Retain copy for baby's record.",
+      "kit_ordering_url": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
+      "kit_ordering_note": "NBS supplies ordered through Maine CDC; specimens shipped to Maine State Laboratory.",
+      "specimen_tracking_url": null,
+      "specimen_tracking_note": "NBS tracking via Maine NBSP; midwives verify specimen receipt.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax"
+      ],
+      "midwife_role": "Complete ME NBS TRF 12\u00c3\u00a2\u00c2\u0080\u00c2\u009348h after birth, give refusal form to parents if declining, send specimen+TRF to Maine NBSP. Fax refusal forms to 207-287-4743.",
+      "declination_law": "Maine statute \u00c3\u00a2\u00c2\u0080\u00c2\u0094 religious exemption available; refusal form required for declination.",
+      "billing": {
+        "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
+        "payment_portal_url": null,
+        "insurance_phone": null,
+        "faq_url": null
+      }
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Maine EHDI Program \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Maine CDC",
+      "program_url": "https://www11.maine.gov/dhhs/mecdc/",
+      "forms_url": null,
+      "opt_out_form": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
+      "state_form_note": "Hearing screening refusal uses the same Religious Refusal form. ME mandates hearing screening; refusal documented on the form.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document refusal on form.",
+      "law": "Maine statute; 17-A M.R.S.A."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
+      "program": "Maine CCHD Screening \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Maine CDC",
+      "program_url": "https://www1.maine.gov/dhhs/mecdc/healthy-living/maternal-and-child-health/newborn-screenings/critical-congenital-heart-disease",
+      "opt_out_form": "https://www1.maine.gov/dhhs/mecdc/healthy-living/maternal-and-child-health/newborn-screenings/critical-congenital-heart-disease",
+      "state_form_note": "CCHD screening refusal uses a separate CCHD parental refusal form (PDF). Must be stated in writing; the person performing CCHD screening must ensure Maine CDC Maternal and Child Health Program is notified in writing within 5 days. Fax to 207-287-4743.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse-ox screening; document refusal on CCHD form if declined; notify Maine CDC within 5 days."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Maine \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Standard of Care",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00c3\u00a2\u00c2\u0080\u00c2\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "provider_signature_required": false,
+      "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state mandate",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in-app; shot administered by midwife or referred."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Maine Immunization Information System (MIIS)",
+      "program_url": "https://www11.maine.gov/dhhs/mecdc/",
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; administered dose reported to MIIS."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "program_contact": {
+    "nbs_phone": null,
+    "nbs_email": "Maine CDC Newborn Screening Program",
+    "nbs_supplies_email": "Maine CDC Newborn Screening Program",
+    "nbs_supplies_phone": null,
+    "billing_phone": null,
+    "ost_email": "Maine CDC Newborn Screening Program"
+  },
+  "key_pages": {
+    "midwives_page": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
+    "consent_forms": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
+    "cchd_form": "https://www1.maine.gov/dhhs/mecdc/healthy-living/maternal-and-child-health/newborn-screenings/critical-congenital-heart-disease"
+  }
+}

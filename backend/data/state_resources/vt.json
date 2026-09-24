@@ -1,0 +1,116 @@
+{
+  "state": "VT",
+  "state_name": "Vermont",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (VT-1 build, all URLs HTTP-200 confirmed)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot / PKU)",
+      "program": "Vermont Department of Health \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Newborn Screening Program",
+      "program_url": "https://www.healthvermont.gov/family/health-care-children-youth/vermont-newborn-screening-program",
+      "parent_education_url": "https://www.healthvermont.gov/sites/default/files/documents/pdf/2%20REFUSAL%20TO%20CONSENT%20Unattended%20Birth%20Form%20043019.pdf",
+      "opt_out_form": "https://www.healthvermont.gov/sites/default/files/documents/pdf/2%20REFUSAL%20TO%20CONSENT%20Unattended%20Birth%20Form%20043019.pdf",
+      "state_form_note": "VT has a standalone 'Refusal to Consent to Newborn Screening' form. Religious exemption available. The form covers bloodspot screening and is used for home/unattended births. Signed refusal retained in the newborn's record.",
+      "kit_ordering_url": "https://www.healthvermont.gov/family/health-care-children-youth/vermont-newborn-screening-program",
+      "kit_ordering_note": "NBS supplies ordered through VT DOH; specimens shipped to Vermont State Laboratory.",
+      "specimen_tracking_url": null,
+      "specimen_tracking_note": "NBS tracking via VT State Laboratory; midwives verify specimen receipt.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax"
+      ],
+      "midwife_role": "Complete VT NBS TRF 12\u00c3\u00a2\u00c2\u0080\u00c2\u009348h after birth, give refusal form to parents if declining, send specimen+TRF to VT lab.",
+      "declination_law": "VT statute \u00c3\u00a2\u00c2\u0080\u00c2\u0094 religious exemption available; refusal form required for declination.",
+      "billing": {
+        "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
+        "payment_portal_url": null,
+        "insurance_phone": null,
+        "faq_url": null
+      }
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Vermont EHDI Program \u00c3\u00a2\u00c2\u0080\u00c2\u0094 VT DOH",
+      "program_url": "https://www.healthvermont.gov/family/health-care-children-youth/vermont-newborn-screening-program",
+      "forms_url": null,
+      "opt_out_form": "https://www.healthvermont.gov/sites/default/files/documents/pdf/2%20REFUSAL%20TO%20CONSENT%20Unattended%20Birth%20Form%20043019.pdf",
+      "state_form_note": "Hearing screening refusal uses the same Refusal to Consent form. VT screening is part of the NBS panel; refusal documented on the form.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document refusal on form.",
+      "law": "VT statute; NBS Rule (effective 5/1/2019)"
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
+      "program": "Vermont CCHD Screening \u00c3\u00a2\u00c2\u0080\u00c2\u0094 VT DOH",
+      "program_url": "https://www.healthvermont.gov/family/health-care-children-youth/vermont-newborn-screening-program",
+      "opt_out_form": "https://www.healthvermont.gov/sites/default/files/documents/pdf/2%20REFUSAL%20TO%20CONSENT%20Unattended%20Birth%20Form%20043019.pdf",
+      "state_form_note": "CCHD screening refusal uses the same Refusal to Consent form. Pulse ox performed at bedside; refusal documented on the form.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse-ox screening; document refusal on form if declined."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Vermont \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Standard of Care",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00c3\u00a2\u00c2\u0080\u00c2\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "provider_signature_required": false,
+      "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state mandate",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in-app; shot administered by midwife or referred."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Vermont Immunization Registry",
+      "program_url": "https://www.healthvermont.gov/",
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; administered dose reported to VT Immunization Registry."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "program_contact": {
+    "nbs_phone": null,
+    "nbs_email": "Vermont Department of Health",
+    "nbs_supplies_email": "Vermont Department of Health",
+    "nbs_supplies_phone": null,
+    "billing_phone": null,
+    "ost_email": "Vermont Department of Health"
+  },
+  "key_pages": {
+    "midwives_page": "https://www.healthvermont.gov/family/health-care-children-youth/vermont-newborn-screening-program",
+    "consent_forms": "https://www.healthvermont.gov/sites/default/files/documents/pdf/2%20REFUSAL%20TO%20CONSENT%20Unattended%20Birth%20Form%20043019.pdf",
+    "vir": "https://www.healthvermont.gov/"
+  }
+}
