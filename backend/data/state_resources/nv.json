@@ -1,0 +1,94 @@
+{
+  "state": "NV",
+  "state_name": "Nevada",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (14-state batch, schema + links verified)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot)",
+      "program": "Nevada Newborn Screening Program",
+      "program_url": "https://www.unr.edu/nevada-state-public-health-laboratory/newborn-screening",
+      "opt_out_form": null,
+      "opt_out_form_label": "Informed Dissent Form (NPHL)",
+      "state_form_note": "Practitioner must counsel parents on consequences before obtaining signed Informed Dissent Form with refusal reason.",
+      "provider_signature_required": true,
+      "midwife_role": "Educate parents on screening benefits and risks; if parent declines, obtain signed refusal/opt-out form per state requirements and file in newborn's record.",
+      "declination_law": "NAC 442.044 â parent may refuse for personal/religious beliefs by completing signed Informed Dissent Form"
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Nevada Newborn Hearing Screening",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Hearing screening opt-out rules vary; in most states hearing screening refusal is documented separately from blood spot refusal. Check state-specific requirements.",
+      "provider_signature_required": false,
+      "midwife_role": "Arrange hearing screening per state protocol; document refusal if parent declines.",
+      "declination_law": "Hearing screening refusal documented in medical record per state practice."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening",
+      "program": "Nevada Newborn Screening Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "CCHD screening is part of the newborn screening panel; refusal documented via the same form as blood spot screening where applicable.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse-ox screening; document refusal if parent declines.",
+      "declination_law": "CCHD screening refusal follows the same process as metabolic screening refusal in states with a unified form."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Nevada Public Health",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Eye prophylaxis refusal documented via informed refusal/waiver in medical record; no standalone state form in most states.",
+      "provider_signature_required": false,
+      "midwife_role": "Administer eye prophylaxis per state law unless parent declines; document signed informed refusal.",
+      "declination_law": "State law requires eye prophylaxis; refusal documented via informed refusal in medical record."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice â no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Vitamin K is an informed choice; no state-specific opt-out form required.",
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in records; shot administered by midwife or referred.",
+      "declination_law": "No state mandate; informed choice per clinical standards."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Nevada Immunization Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Hepatitis B birth dose consent or declination documented in writing; state-specific immunization exemption laws may apply separately.",
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; administered dose reported to state immunization registry.",
+      "declination_law": "State immunization exemption laws apply; declination documented in medical record."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice â no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Prenatal informed choice; midwife refers out for glucose testing when declined.",
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined.",
+      "declination_law": "No state mandate for gestational diabetes screening form; informed choice per clinical standards."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice â no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in.",
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in.",
+      "declination_law": "No state mandate for GBS screening form; informed choice per clinical standards."
+    }
+  }
+}
