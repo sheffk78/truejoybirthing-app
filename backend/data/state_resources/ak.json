@@ -1,0 +1,102 @@
+{
+  "state": "AK",
+  "state_name": "Alaska",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (AK build)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot)",
+      "program": "Alaska Department of Health â Newborn Screening Program",
+      "program_url": "https://health.alaska.gov/en/services/newborn-screening-programs",
+      "parent_education_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Alaska has NO public downloadable opt-out form. Per AS 18.15.200 and 7 AAC 27.530, newborns may be exempted from screening on religious grounds; the exemption is documented by a signed refusal statement held in the infant's medical record and forwarded to the Alaska Newborn Screening Program. No state-hosted PDF exists.",
+      "statute": "AS 18.15.200 (screening for phenylketonuria and other disorders); 7 AAC 27.530 (collection of blood specimen; refusal of collection); AS 18.15.205 (screening for congenital heart disease)",
+      "provider_signature_required": false,
+      "midwife_role": "Collect blood spot per protocol; if parent declines on religious grounds, ensure signed refusal statement is in the infant's medical record and forwarded to the ADOH Newborn Screening Program. Midwife ordering kits via the statewide supply process."
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening (EHDI)",
+      "program": "Alaska Department of Health â Universal Newborn Hearing Screening (EHDI)",
+      "program_url": "https://health.alaska.gov/en/services/newborn-screening-programs",
+      "opt_out_form": null,
+      "state_form_note": "Same religious exemption as metabolic screening; refusal documented in medical record per AS 18.15.200/7 AAC 27.530. No separate state form for hearing.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or arrange newborn hearing screen; if out-of-hospital birth, coordinate with regional audiology for follow-up. Document refusal in medical record if applicable."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening",
+      "program": "Alaska Department of Health â Critical Congenital Heart Defects (CCHD) Screening Program",
+      "program_url": "https://health.alaska.gov/en/services/critical-congenital-heart-defects-cchd-screening",
+      "opt_out_form": null,
+      "state_form_note": "Same religious exemption as metabolic screening; refusal documented in medical record. No separate state CCHD declination form.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse oximetry screening; if out-of-hospital birth, coordinate with receiving facility or regional provider for CCHD screen before discharge."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Alaska law â not part of the NBS program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
+      "provider_signature_required": false,
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1â2 hours of birth per standard protocol.",
+      "statute": "AS 18.15.385 (prevention and control of conditions of public health importance) â prophylactic eye treatment required unless refused on religious grounds"
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice â no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in medical record; midwife administers injection if chosen."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Alaska Immunization Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "birth_dose_registry": "Alaska Immunization Information System (ImmTrac2)",
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; report to the Alaska Immunization Information System (ImmTrac2)."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice â no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal/intrapartum)",
+      "program": "Informed choice â no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; GBS swab in late pregnancy; intrapartum antibiotics arranged via referral or in-office for out-of-hospital births when indicated."
+    }
+  },
+  "program_contact": {
+    "name": "Alaska Department of Health â Newborn Screening Program",
+    "nbs_phone": "907-891-5925",
+    "nbs_email": "doh.newborn.screening@alaska.gov",
+    "website": "https://health.alaska.gov/en/services/newborn-screening-programs"
+  },
+  "key_pages": {
+    "nbs_program": "https://health.alaska.gov/en/services/newborn-screening-programs",
+    "bloodspot": "https://health.alaska.gov/en/services/newborn-bloodspot-screening",
+    "hearing": "https://health.alaska.gov/en/services/newborn-hearing-screening",
+    "cchd": "https://health.alaska.gov/en/services/critical-congenital-heart-defects-cchd-screening",
+    "regulations": "https://health.alaska.gov/en/resources/epidemiology-conditions-reportable-to-public-health-in-alaska-statutes-and-regulations"
+  }
+}

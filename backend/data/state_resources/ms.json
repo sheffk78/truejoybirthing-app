@@ -1,0 +1,100 @@
+{
+  "state": "MS",
+  "state_name": "Mississippi",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (MS build)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot)",
+      "program": "Mississippi State Department of Health (MSDH) ÃÂ¢ Genetics Program Ã¢ Newborn Screening Program",
+      "program_url": "https://www.msdh.ms.gov/msdhsite/_static/resources/4504.pdf",
+      "parent_education_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Mississippi has NO public downloadable opt-out form. Under MS Code ÃÂ¢ 41-21-201 and 41-21-203, newborn screening is mandatory; refusal on religious grounds requires a signed refusal form (Appendix B of the MSDH Newborn Screening Guide). The form is obtained from the birthing facility or MSDH Genetics Program. The signed refusal is placed in the infant's medical record and a copy sent to MSDH Newborn Screening Program.",
+      "statute": "Mississippi Code ÃÂ¢ 41-21-201 and 41-21-203 (newborn screening)",
+      "provider_signature_required": false,
+      "midwife_role": "Collect blood spot per protocol; if parent declines on religious grounds, ensure signed refusal form (Appendix B) is in the infant's medical record and a copy sent to MSDH Genetics Program. Homebirth midwife marks 'Home Birth' on the DBS card and provides midwife contact info."
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening (EHDI)",
+      "program": "Mississippi State Department of Health (MSDH) Genetics Program",
+      "program_url": "https://www.msdh.ms.gov/msdhsite/_static/resources/4504.pdf",
+      "opt_out_form": null,
+      "state_form_note": "Same religious exemption as metabolic screening; refusal documented in medical record per MS Code 41-21-201/41-21-203. No separate state form for hearing.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or arrange newborn hearing screen; if out-of-hospital birth, coordinate with regional audiology for follow-up. Document refusal in medical record if applicable. Hearing screening data entered on the DBS card (Section: Hearing Screening)."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening",
+      "program": "Mississippi State Department of Health (MSDH) Genetics Program",
+      "program_url": "https://www.msdh.ms.gov/msdhsite/_static/resources/4504.pdf",
+      "opt_out_form": null,
+      "state_form_note": "Same religious exemption as metabolic screening; refusal documented in medical record. No separate state CCHD declination form.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse oximetry screening; if out-of-hospital birth, coordinate with receiving facility or regional provider for CCHD screen before discharge. CCHD data entered on the DBS card."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Mississippi law Ã¢ not part of the NBS program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
+      "provider_signature_required": false,
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1Ã¢2 hours of birth per standard protocol."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice Ã¢ no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in medical record; midwife administers injection if chosen."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Mississippi State Department of Health Ã¢ Immunization Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "birth_dose_registry": "Mississippi Immunization Registry (MIR)",
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; report to the Mississippi Immunization Registry (MIR)."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice Ã¢ no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal/intrapartum)",
+      "program": "Informed choice Ã¢ no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; GBS swab in late pregnancy; intrapartum antibiotics arranged via referral or in-office for out-of-hospital births when indicated."
+    }
+  },
+  "program_contact": {
+    "name": "MSDH Genetics Program Ã¢ Newborn Screening Program",
+    "nbs_phone": "601-576-7619",
+    "nbs_fax": "601-576-7498",
+    "nbs_email": "NBSProgram@msdh.ms.gov",
+    "website": "https://www.msdh.ms.gov",
+    "mailing_address": "MSDH Genetics Program, P.O. Box 1700, Jackson, MS 39215-1700"
+  },
+  "key_pages": {
+    "nbs_guide_pdf": "https://www.msdh.ms.gov/msdhsite/_static/resources/4504.pdf",
+    "nbs_program": "https://www.msdh.ms.gov"
+  }
+}
