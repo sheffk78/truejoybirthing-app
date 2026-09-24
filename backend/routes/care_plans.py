@@ -188,6 +188,7 @@ BIRTH_PLAN_SECTIONS = [
     {"section_id": "pushing_safe_word", "title": "Pushing, Delivery & Safe Word"},
     {"section_id": "post_delivery", "title": "Post-Delivery Preferences"},
     {"section_id": "newborn_care", "title": "Newborn Care Preferences"},
+    {"section_id": "newborn_procedures", "title": "Newborn Procedures"},
     {"section_id": "other_considerations", "title": "Other Important Considerations"},
 ]
 
