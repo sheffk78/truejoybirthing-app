@@ -13,7 +13,7 @@
       "state_form_note": "Nebraska law mandates screening for all newborns; no opt-out provision. Law has been challenged in court and upheld.",
       "provider_signature_required": true,
       "midwife_role": "Educate parents on screening benefits and risks; if parent declines, obtain signed refusal/opt-out form per state requirements and file in newborn's record.",
-      "declination_law": "Neb. Rev. Stat. Â§Â§ 71-519 to 71-524 â newborn screening is mandatory; no religious or personal exemption"
+      "declination_law": "Neb. Rev. Stat. §§ 71-519 to 71-524 — newborn screening is mandatory; no religious or personal exemption"
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
@@ -47,7 +47,7 @@
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Vitamin K is an informed choice; no state-specific opt-out form required.",
@@ -72,7 +72,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Prenatal informed choice; midwife refers out for glucose testing when declined.",
@@ -82,7 +82,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in.",

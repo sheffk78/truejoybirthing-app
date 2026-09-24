@@ -5,23 +5,23 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (dried blood spot)",
-      "program": "Virginia Department of Health â Dried Blood Spot Newborn Screening Program",
+      "program": "Virginia Department of Health — Dried Blood Spot Newborn Screening Program",
       "program_url": "https://www.vdh.virginia.gov/dried-blood-spot-newborn-screening/",
       "parent_education_url": "https://www.vdh.virginia.gov/content/uploads/sites/33/2022/03/Virginia-Newborn-Screening-Services-19858-9.pdf",
       "opt_out_form": "https://www.vdh.virginia.gov/content/uploads/sites/33/2016/11/ParentRefusal.pdf",
       "opt_out_form_label": "Notification of Parental Refusal of Dried-Blood-Spot and Critical Congenital Heart Disease Screening",
-      "state_form_system": "VDH form â Notification of Parental Refusal. Parent/guardian must sign and witness; form is sent to VDH Newborn Screening Services (fax 804-864-7807) or mailed to 109 Governor Street, 8th Floor, Richmond, VA 23219. Virginia law requires screening unless parent/guardian objects on religious grounds.",
+      "state_form_system": "VDH form — Notification of Parental Refusal. Parent/guardian must sign and witness; form is sent to VDH Newborn Screening Services (fax 804-864-7807) or mailed to 109 Governor Street, 8th Floor, Richmond, VA 23219. Virginia law requires screening unless parent/guardian objects on religious grounds.",
       "provider_signature_required": true,
       "submission_methods": [
         "mail",
         "fax"
       ],
-      "midwife_role": "Collect dried blood spot 24â48h after birth; if parent objects on religious grounds, ensure signed Notification of Parental Refusal form is completed, signed, witnessed, and sent to VDH. Kits ordered only by hospitals, midwives, and physicians' offices via DGS Form 19049 (hospitals/physicians) or DGS Form 19050 (midwives).",
-      "declination_law": "Code of Virginia â newborn screening mandated; religious exemption recognized; parent/guardian refusal documented via VDH Notification of Parental Refusal form."
+      "midwife_role": "Collect dried blood spot 24–48h after birth; if parent objects on religious grounds, ensure signed Notification of Parental Refusal form is completed, signed, witnessed, and sent to VDH. Kits ordered only by hospitals, midwives, and physicians' offices via DGS Form 19049 (hospitals/physicians) or DGS Form 19050 (midwives).",
+      "declination_law": "Code of Virginia — newborn screening mandated; religious exemption recognized; parent/guardian refusal documented via VDH Notification of Parental Refusal form."
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
-      "program": "Virginia Department of Health â EHDI Program",
+      "program": "Virginia Department of Health — EHDI Program",
       "program_url": "https://www.vdh.virginia.gov/dried-blood-spot-newborn-screening/",
       "opt_out_form": "https://www.vdh.virginia.gov/content/uploads/sites/33/2016/11/ParentRefusal.pdf",
       "opt_out_form_label": "Notification of Parental Refusal (covers hearing screening component)",
@@ -31,7 +31,7 @@
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening",
-      "program": "Virginia Department of Health â Newborn Screening Program",
+      "program": "Virginia Department of Health — Newborn Screening Program",
       "program_url": "https://www.vdh.virginia.gov/dried-blood-spot-newborn-screening/",
       "opt_out_form": "https://www.vdh.virginia.gov/content/uploads/sites/33/2016/11/ParentRefusal.pdf",
       "opt_out_form_label": "Notification of Parental Refusal (covers CCHD component)",
@@ -41,7 +41,7 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Virginia law â not part of the VDH newborn screening program",
+      "program": "Virginia law — not part of the VDH newborn screening program",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
@@ -50,7 +50,7 @@
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -64,7 +64,7 @@
     },
     "hepatitis_b_vaccine": {
       "label": "Hepatitis B Vaccine (birth dose)",
-      "program": "Virginia Department of Health â Immunization Program",
+      "program": "Virginia Department of Health — Immunization Program",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": true,
@@ -73,7 +73,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -82,7 +82,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,

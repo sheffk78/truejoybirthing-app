@@ -5,11 +5,11 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot)",
-      "program": "Wisconsin Department of Health Services â Newborn Screening Program",
+      "program": "Wisconsin Department of Health Services — Newborn Screening Program",
       "program_url": "https://www.dhs.wisconsin.gov/newbornscreening/index.htm",
       "parent_education_url": "https://www.dhs.wisconsin.gov/newbornscreening/index.htm",
       "opt_out_form": null,
-      "state_form_note": "No standalone state declination form â Wisconsin law (253.15(3)) requires screening; parents may refuse based on religious beliefs or personal views. Refusal must be signed and documented in the infant's medical record. No specific form number identified.",
+      "state_form_note": "No standalone state declination form — Wisconsin law (253.15(3)) requires screening; parents may refuse based on religious beliefs or personal views. Refusal must be signed and documented in the infant's medical record. No specific form number identified.",
       "provider_signature_required": true,
       "submission_methods": [
         "mail",
@@ -17,29 +17,29 @@
         "in-person"
       ],
       "midwife_role": "Collect blood spot per protocol; if religious/personal objection, ensure signed refusal is documented in the infant's medical record per WI Stat. 253.15(3).",
-      "declination_law": "WI Stat. 253.15(3) â screening required; religious beliefs or personal views exception; written refusal documented in medical record."
+      "declination_law": "WI Stat. 253.15(3) — screening required; religious beliefs or personal views exception; written refusal documented in medical record."
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
-      "program": "Wisconsin Department of Health Services â EHDI Program",
+      "program": "Wisconsin Department of Health Services — EHDI Program",
       "program_url": "https://www.dhs.wisconsin.gov/newbornscreening/index.htm",
       "opt_out_form": null,
-      "state_form_note": "No standalone hearing screening declination form â refusal documented in medical record per DHS guidance.",
+      "state_form_note": "No standalone hearing screening declination form — refusal documented in medical record per DHS guidance.",
       "provider_signature_required": false,
       "midwife_role": "Educate parents; if objection, document signed refusal in medical record; arrange outpatient follow-up if needed."
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening",
-      "program": "Wisconsin Department of Health Services â Newborn Screening Program",
+      "program": "Wisconsin Department of Health Services — Newborn Screening Program",
       "program_url": "https://www.dhs.wisconsin.gov/newbornscreening/index.htm",
       "opt_out_form": null,
-      "state_form_note": "No standalone CCHD declination form â refusal documented in medical record as part of overall newborn screening refusal.",
+      "state_form_note": "No standalone CCHD declination form — refusal documented in medical record as part of overall newborn screening refusal.",
       "provider_signature_required": false,
       "midwife_role": "Perform or refer for pulse ox screening; document refusal in medical record."
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Wisconsin law â not part of the NBS program",
+      "program": "Wisconsin law — not part of the NBS program",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
@@ -48,7 +48,7 @@
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -62,7 +62,7 @@
     },
     "hepatitis_b_vaccine": {
       "label": "Hepatitis B Vaccine (birth dose)",
-      "program": "Wisconsin Department of Health Services â Immunization Program",
+      "program": "Wisconsin Department of Health Services — Immunization Program",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": true,
@@ -71,7 +71,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -80,7 +80,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,

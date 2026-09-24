@@ -13,7 +13,7 @@
       "state_form_note": "NBS Refusal Form covers blood spot, pulse oximetry, and hearing screening; original to infant's record, copy to parent and provider.",
       "provider_signature_required": true,
       "midwife_role": "Educate parents on screening benefits and risks; if parent declines, obtain signed refusal/opt-out form per state requirements and file in newborn's record.",
-      "declination_law": "63 O.S. Â§Â§ 1-533, 1-534, 1-543 â refusal permitted on grounds of religious tenets and practices"
+      "declination_law": "63 O.S. §§ 1-533, 1-534, 1-543 — refusal permitted on grounds of religious tenets and practices"
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
@@ -47,7 +47,7 @@
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Vitamin K is an informed choice; no state-specific opt-out form required.",
@@ -72,7 +72,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Prenatal informed choice; midwife refers out for glucose testing when declined.",
@@ -82,7 +82,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in.",

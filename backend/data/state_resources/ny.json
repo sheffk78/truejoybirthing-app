@@ -6,11 +6,11 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot / PKU)",
-      "program": "New York State Newborn Screening Program â Wadsworth Center, NYS Department of Health",
+      "program": "New York State Newborn Screening Program — Wadsworth Center, NYS Department of Health",
       "program_url": "https://www.wadsworth.org/programs/newborn/screening",
       "parent_education_url": "https://www.wadsworth.org/programs/newborn/screening",
       "opt_out_form": null,
-      "state_form_note": "NBS-TRF (Newborn Screening Test Request Form) is required for EVERY birth; religious refusal is documented on the TRF itself (10 NYCRR Part 69). No standalone parent declination form â refusal is signed on the TRF and retained in the newborn's record.",
+      "state_form_note": "NBS-TRF (Newborn Screening Test Request Form) is required for EVERY birth; religious refusal is documented on the TRF itself (10 NYCRR Part 69). No standalone parent declination form — refusal is signed on the TRF and retained in the newborn's record.",
       "kit_ordering_url": "https://www.wadsworth.org/programs/newborn/screening/providers/request-materials",
       "kit_ordering_note": "TRF supplies ordered from Wadsworth Center (nbsinfo@health.ny.gov, (518) 473-7552); specimens shipped to Wadsworth lab; OST tracking required.",
       "specimen_tracking_url": null,
@@ -21,8 +21,8 @@
         "fax",
         "online"
       ],
-      "midwife_role": "Complete TRF 12â48h after birth, keep yellow copy, give pink/blue to parents, send specimen+TRF to Wadsworth lab, verify receipt.",
-      "declination_law": "10 NYCRR Part 69 â religious-objection refusal must be documented on the TRF in the newborn's record.",
+      "midwife_role": "Complete TRF 12–48h after birth, keep yellow copy, give pink/blue to parents, send specimen+TRF to Wadsworth lab, verify receipt.",
+      "declination_law": "10 NYCRR Part 69 — religious-objection refusal must be documented on the TRF in the newborn's record.",
       "billing": {
         "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
         "payment_portal_url": null,
@@ -36,23 +36,23 @@
       "program_url": "https://www.wadsworth.org/programs/newborn/screening",
       "forms_url": null,
       "opt_out_form": null,
-      "state_form_note": "No standalone parent declination form â hearing screening is part of the NBS panel; refusal documented on the TRF (10 NYCRR Part 69). Out-of-hospital babies: arrange outpatient screening through EHDI-approved provider if parent opts in.",
+      "state_form_note": "No standalone parent declination form — hearing screening is part of the NBS panel; refusal documented on the TRF (10 NYCRR Part 69). Out-of-hospital babies: arrange outpatient screening through EHDI-approved provider if parent opts in.",
       "provider_signature_required": false,
       "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document signed informed refusal on TRF retained in records.",
-      "law": "10 NYCRR Part 69; Public Health Law Â§2500"
+      "law": "10 NYCRR Part 69; Public Health Law §2500"
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
-      "program": "Wadsworth Center â CCHD Screening",
+      "program": "Wadsworth Center — CCHD Screening",
       "program_url": "https://www.wadsworth.org/programs/newborn/screening",
       "opt_out_form": null,
-      "state_form_note": "Pulse ox performed at 24â48h of life; out-of-hospital midwives perform or refer. Declination documented via written informed refusal on TRF; no standalone state form.",
+      "state_form_note": "Pulse ox performed at 24–48h of life; out-of-hospital midwives perform or refer. Declination documented via written informed refusal on TRF; no standalone state form.",
       "provider_signature_required": false,
       "midwife_role": "Perform or refer for pulse-ox screening; submit results per NBS TRF packet; document informed refusal if declined."
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "New York State â 10 NYCRR Â§12.2",
+      "program": "New York State — 10 NYCRR §12.2",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "10 NYCRR §12.2 makes eye prophylaxis a duty of the attending provider; no standalone state declination form — practice standard is a signed informed-refusal/waiver document (app master form). Note: NY law does not prohibit alternatives; providers may use gentamicin or other agents per NYSDOH guidance.",
@@ -62,7 +62,7 @@
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice â no state mandate",
+      "program": "Informed choice — no state mandate",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -85,7 +85,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -94,7 +94,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,

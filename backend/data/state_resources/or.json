@@ -13,7 +13,7 @@
       "state_form_note": "Religious Objection Form is on the back of the specimen collection card filter paper; also available as standalone PDF.",
       "provider_signature_required": true,
       "midwife_role": "Educate parents on screening benefits and risks; if parent declines, obtain signed refusal/opt-out form per state requirements and file in newborn's record.",
-      "declination_law": "OAR 333-024-1050 â religious exemption; form must be submitted within 30 days of birth"
+      "declination_law": "OAR 333-024-1050 — religious exemption; form must be submitted within 30 days of birth"
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
@@ -47,7 +47,7 @@
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Vitamin K is an informed choice; no state-specific opt-out form required.",
@@ -72,7 +72,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Prenatal informed choice; midwife refers out for glucose testing when declined.",
@@ -82,7 +82,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in.",

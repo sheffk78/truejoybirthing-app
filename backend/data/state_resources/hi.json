@@ -42,7 +42,7 @@
       "opt_out_form": null,
       "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
       "provider_signature_required": false,
-      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1â2 hours of birth per standard protocol."
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1—2 hours of birth per standard protocol."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",

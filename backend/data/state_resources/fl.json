@@ -17,21 +17,21 @@
       },
       "opt_out_form": null,
       "state_form_note": "Florida has NO standalone state opt-out form. Per the program FAQ, while not recommended, parents may refuse newborn screening for any reason; the person responsible for collecting the specimen must obtain a written refusal from the parent and include it in the child's medical record, documenting that the parents were informed of possible adverse outcomes and accept legal responsibility.",
-      "statute": "Florida Statute Â§ 383.04 (eye prophylaxis with written religious objection); newborn screening mandated under Florida Statute Ch. 383 / Ch. 154"
+      "statute": "Florida Statute § 383.04 (eye prophylaxis with written religious objection); newborn screening mandated under Florida Statute Ch. 383 / Ch. 154"
     },
     "hearing_screening": {
       "program_name": "Florida Early Hearing Detection and Intervention (EHDI)",
       "program_page": "https://floridanewbornscreening.com/hearing/",
       "out_of_hospital_path": "For home/birth-center births, the midwife or birth attendant performs or arranges the newborn hearing screen and documents results; refusal is documented in writing in the medical record per the same refusal policy as metabolic screening.",
-      "statute": "Florida Statute Â§ 383.14 (newborn hearing screening)"
+      "statute": "Florida Statute § 383.14 (newborn hearing screening)"
     },
     "cchd_screening": {
       "out_of_hospital_performer": "The attending midwife or birth attendant performs pulse oximetry (CCHD) in the out-of-hospital setting and documents it; refusal documented in writing in the medical record.",
-      "statute": "Florida Statute Â§ 383.303 (critical congenital heart defect screening)"
+      "statute": "Florida Statute § 383.303 (critical congenital heart defect screening)"
     },
     "erythromycin_eye_ointment": {
       "status": "mandatory",
-      "statute": "Florida Statute Â§ 383.04",
+      "statute": "Florida Statute § 383.04",
       "waiver": "Parents may submit a written objection stating the medication is contrary to their religious beliefs; provider documents the objection in the medical record.",
       "note": "Attending professional instills an approved prophylactic into the infant's eyes, generally within one hour of birth."
     },

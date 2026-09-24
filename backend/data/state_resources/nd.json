@@ -13,7 +13,7 @@
       "state_form_note": "Religious exemption permitted per statute; documentation practices vary by facility. No standalone state form URL identified.",
       "provider_signature_required": true,
       "midwife_role": "Educate parents on screening benefits and risks; if parent declines, obtain signed refusal/opt-out form per state requirements and file in newborn's record.",
-      "declination_law": "ND Century Code 23-12-17 â religious exemption available; no specific state form identified"
+      "declination_law": "ND Century Code 23-12-17 — religious exemption available; no specific state form identified"
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
@@ -47,7 +47,7 @@
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Vitamin K is an informed choice; no state-specific opt-out form required.",
@@ -72,7 +72,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Prenatal informed choice; midwife refers out for glucose testing when declined.",
@@ -82,7 +82,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in.",

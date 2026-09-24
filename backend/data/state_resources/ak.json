@@ -6,7 +6,7 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot)",
-      "program": "Alaska Department of Health â Newborn Screening Program",
+      "program": "Alaska Department of Health — Newborn Screening Program",
       "program_url": "https://health.alaska.gov/en/services/newborn-screening-programs",
       "parent_education_url": null,
       "opt_out_form": null,
@@ -17,7 +17,7 @@
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening (EHDI)",
-      "program": "Alaska Department of Health â Universal Newborn Hearing Screening (EHDI)",
+      "program": "Alaska Department of Health — Universal Newborn Hearing Screening (EHDI)",
       "program_url": "https://health.alaska.gov/en/services/newborn-screening-programs",
       "opt_out_form": null,
       "state_form_note": "Same religious exemption as metabolic screening; refusal documented in medical record per AS 18.15.200/7 AAC 27.530. No separate state form for hearing.",
@@ -26,7 +26,7 @@
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening",
-      "program": "Alaska Department of Health â Critical Congenital Heart Defects (CCHD) Screening Program",
+      "program": "Alaska Department of Health — Critical Congenital Heart Defects (CCHD) Screening Program",
       "program_url": "https://health.alaska.gov/en/services/critical-congenital-heart-defects-cchd-screening",
       "opt_out_form": null,
       "state_form_note": "Same religious exemption as metabolic screening; refusal documented in medical record. No separate state CCHD declination form.",
@@ -35,17 +35,17 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Alaska law â not part of the NBS program",
+      "program": "Alaska law — not part of the NBS program",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
       "provider_signature_required": false,
-      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1â2 hours of birth per standard protocol.",
-      "statute": "AS 18.15.385 (prevention and control of conditions of public health importance) â prophylactic eye treatment required unless refused on religious grounds"
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply ophthalmic prophylaxis within 1–2 hours of birth per standard protocol.",
+      "statute": "AS 18.15.385 (prevention and control of conditions of public health importance) — prophylactic eye treatment required unless refused on religious grounds"
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -69,7 +69,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -78,7 +78,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal/intrapartum)",
-      "program": "Informed choice â no state form",
+      "program": "Informed choice — no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -87,7 +87,7 @@
     }
   },
   "program_contact": {
-    "name": "Alaska Department of Health â Newborn Screening Program",
+    "name": "Alaska Department of Health — Newborn Screening Program",
     "nbs_phone": "907-891-5925",
     "nbs_email": "doh.newborn.screening@alaska.gov",
     "website": "https://health.alaska.gov/en/services/newborn-screening-programs"

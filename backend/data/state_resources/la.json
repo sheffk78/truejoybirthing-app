@@ -16,22 +16,22 @@
         "page": "https://www.babysfirsttest.org/newborn-screening/states/louisiana"
       },
       "opt_out_form": null,
-      "state_form_note": "Louisiana has NO public downloadable opt-out form. Under La. Rev. Stat. Ann. Â§ 40:1242.1 and La. Admin. Code Title 51, newborn screening is mandatory and may be refused on religious grounds; the parent signs a written refusal held by the provider, and the screen is not performed. The refusal is documented in the medical record. (The official LDH program URL ldh.la.gov/page/newborn-screening is verified human-reachable but blocks automated requests.)",
-      "statute": "La. Rev. Stat. Ann. Â§ 40:1242.1 (newborn screening); La. Admin. Code Title 51 § II-301 (eye prophylaxis)"
+      "state_form_note": "Louisiana has NO public downloadable opt-out form. Under La. Rev. Stat. Ann. § 40:1242.1 and La. Admin. Code Title 51, newborn screening is mandatory and may be refused on religious grounds; the parent signs a written refusal held by the provider, and the screen is not performed. The refusal is documented in the medical record. (The official LDH program URL ldh.la.gov/page/newborn-screening is verified human-reachable but blocks automated requests.)",
+      "statute": "La. Rev. Stat. Ann. § 40:1242.1 (newborn screening); La. Admin. Code Title 51 § II-301 (eye prophylaxis)"
     },
     "hearing_screening": {
       "program_name": "Louisiana Early Hearing Detection and Intervention (EHDI)",
       "program_page": "https://www.babysfirsttest.org/newborn-screening/states/louisiana",
       "out_of_hospital_path": "For home/birth-center births, the midwife performs or arranges the newborn hearing screen and documents results; refusal is documented in writing in the medical record per La. Rev. Stat. 40:1242.1.",
-      "statute": "La. Rev. Stat. Ann. Â§ 40:1242.1 (includes hearing screening); LA EHDI 1-3-6 benchmarks"
+      "statute": "La. Rev. Stat. Ann. § 40:1242.1 (includes hearing screening); LA EHDI 1-3-6 benchmarks"
     },
     "cchd_screening": {
       "out_of_hospital_performer": "The attending midwife or physician performs pulse oximetry (CCHD) in the out-of-hospital setting and documents it; refusal documented per La. Rev. Stat. 40:1242.1.",
-      "statute": "La. Rev. Stat. Ann. Â§ 40:1242.1 (critical congenital heart defect screening)"
+      "statute": "La. Rev. Stat. Ann. § 40:1242.1 (critical congenital heart defect screening)"
     },
     "erythromycin_eye_ointment": {
       "status": "mandatory",
-      "statute": "La. Admin. Code Title 51 Â§ II-301 (Prevention of Blindness)",
+      "statute": "La. Admin. Code Title 51 § II-301 (Prevention of Blindness)",
       "waiver": "Prophylactic eye treatment (0.5% erythromycin) is required under the Prevention of Blindness rule; a parent may refuse on religious grounds and the refusal is documented in the medical record. Louisiana issues no separate standalone waiver form beyond documented informed refusal.",
       "note": "Approved prophylactic applied to each eye shortly after birth to prevent ophthalmia neonatorum."
     },
