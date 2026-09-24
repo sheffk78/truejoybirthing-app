@@ -6,11 +6,11 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot / PKU)",
-      "program": "New Hampshire Department of Health and Human Services \u00e2\u0080\u0094 Newborn Screening Program",
+      "program": "New Hampshire Department of Health and Human Services â Newborn Screening Program",
       "program_url": null,
       "parent_education_url": null,
       "opt_out_form": null,
-      "state_form_note": "RSA 132:10a \u00e2\u0080\u0094 all infants born in NH are screened at birth for a panel of 37 disorders. Families may refuse this screening. A refusal form is available from the NH DHHS. The refusal form is a standalone document.",
+      "state_form_note": "RSA 132:10a â all infants born in NH are screened at birth for a panel of 37 disorders. Families may refuse this screening. A refusal form is available from the NH DHHS. The refusal form is a standalone document.",
       "kit_ordering_url": null,
       "kit_ordering_note": "NBS supplies ordered through NH DHHS; specimens shipped to NH Public Health Laboratories.",
       "specimen_tracking_url": null,
@@ -21,8 +21,8 @@
         "fax",
         "online"
       ],
-      "midwife_role": "Complete NH NBS TRF 12\u00e2\u0080\u009348h after birth, give refusal form to parents if declining, send specimen+TRF to NH lab.",
-      "declination_law": "RSA 132:10a \u00e2\u0080\u0094 religious exemption available; refusal form required for declination.",
+      "midwife_role": "Complete NH NBS TRF 12â48h after birth, give refusal form to parents if declining, send specimen+TRF to NH lab.",
+      "declination_law": "RSA 132:10a â religious exemption available; refusal form required for declination.",
       "billing": {
         "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
         "payment_portal_url": null,
@@ -43,7 +43,7 @@
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
-      "program": "New Hampshire CCHD Screening \u00e2\u0080\u0094 DHHS",
+      "program": "New Hampshire CCHD Screening â DHHS",
       "program_url": null,
       "opt_out_form": null,
       "state_form_note": "CCHD screening refusal uses the same refusal form from NH DHHS. Pulse ox performed at bedside; refusal documented on the form.",
@@ -52,16 +52,16 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "New Hampshire \u00e2\u0080\u0094 Standard of Care",
+      "program": "New Hampshire â Standard of Care",
       "program_url": null,
       "opt_out_form": null,
-      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00e2\u0080\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form â practice standard is a signed informed-refusal/waiver document (app master form).",
       "provider_signature_required": false,
       "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice \u00e2\u0080\u0094 no state mandate",
+      "program": "Informed choice â no state mandate",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -84,7 +84,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -93,7 +93,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -110,9 +110,9 @@
     "ost_email": "NH DHHS Newborn Screening Program"
   },
   "key_pages": {
-      "midwives_page": null,
-      "consent_forms": null,
-      "nhrsa": null,
-      "nhiis": null
-    }
+    "midwives_page": null,
+    "consent_forms": null,
+    "nhrsa": null,
+    "nhiis": null
+  }
 }

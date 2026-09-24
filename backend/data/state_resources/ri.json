@@ -6,11 +6,11 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot / PKU)",
-      "program": "Rhode Island Department of Health \u00e2\u0080\u0094 Newborn Screening Program",
+      "program": "Rhode Island Department of Health â Newborn Screening Program",
       "program_url": null,
       "parent_education_url": null,
       "opt_out_form": "https://health.ri.gov/sites/g/files/xkgbur1006/files/forms/refusalofconsent/NewbornBloodScreening.pdf",
-      "state_form_note": "RI has a specific 'Refusal of Consent for Newborn Blood Screening' form. Religious exemption available \u00e2\u0080\u0094 screening is mandated unless it conflicts with religious tenets and practices. The form is a standalone PDF from RI DOH.",
+      "state_form_note": "RI has a specific 'Refusal of Consent for Newborn Blood Screening' form. Religious exemption available â screening is mandated unless it conflicts with religious tenets and practices. The form is a standalone PDF from RI DOH.",
       "kit_ordering_url": null,
       "kit_ordering_note": "NBS supplies ordered through RI DOH; specimens shipped to RI State Health Laboratories.",
       "specimen_tracking_url": null,
@@ -21,8 +21,8 @@
         "fax",
         "online"
       ],
-      "midwife_role": "Complete RI NBS TRF 12\u00e2\u0080\u009348h after birth, give refusal form to parents if declining, send specimen+TRF to RI lab.",
-      "declination_law": "RI General Laws \u00e2\u0080\u0094 religious exemption; refusal of consent form required for declination.",
+      "midwife_role": "Complete RI NBS TRF 12â48h after birth, give refusal form to parents if declining, send specimen+TRF to RI lab.",
+      "declination_law": "RI General Laws â religious exemption; refusal of consent form required for declination.",
       "billing": {
         "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
         "payment_portal_url": null,
@@ -32,18 +32,18 @@
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
-      "program": "Rhode Island EHDI Program \u00e2\u0080\u0094 RI DOH",
+      "program": "Rhode Island EHDI Program â RI DOH",
       "program_url": null,
       "forms_url": null,
       "opt_out_form": "https://health.ri.gov/sites/g/files/xkgbur1006/files/forms/refusalofconsent/NewbornBloodScreening.pdf",
       "state_form_note": "Hearing screening refusal uses the same Refusal of Consent form. RI mandates hearing screening; refusal documented on the form.",
       "provider_signature_required": false,
       "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document refusal on consent form.",
-      "law": "RI General Statutes \u00e2\u0080\u0094 hearing screening mandated with religious exemption"
+      "law": "RI General Statutes â hearing screening mandated with religious exemption"
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
-      "program": "Rhode Island CCHD Screening \u00e2\u0080\u0094 RI DOH",
+      "program": "Rhode Island CCHD Screening â RI DOH",
       "program_url": null,
       "opt_out_form": "https://health.ri.gov/sites/g/files/xkgbur1006/files/forms/refusalofconsent/NewbornBloodScreening.pdf",
       "state_form_note": "CCHD screening refusal uses the same Refusal of Consent form. Pulse ox performed at bedside; refusal documented on the form.",
@@ -52,16 +52,16 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Rhode Island \u00e2\u0080\u0094 Standard of Care",
+      "program": "Rhode Island â Standard of Care",
       "program_url": null,
       "opt_out_form": null,
-      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00e2\u0080\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form â practice standard is a signed informed-refusal/waiver document (app master form).",
       "provider_signature_required": false,
       "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice \u00e2\u0080\u0094 no state mandate",
+      "program": "Informed choice â no state mandate",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -84,7 +84,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -93,7 +93,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,

@@ -6,11 +6,11 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot / PKU)",
-      "program": "DC Department of Health \u00c3\u00a2\u00c2\u0080\u00c2\u0094 DC Newborn Screening Program (DC NMS Program)",
+      "program": "DC Department of Health â DC Newborn Screening Program (DC NMS Program)",
       "program_url": "https://dchealth.dc.gov/service/newborn-screening",
       "parent_education_url": "https://dchealth.dc.gov/service/newborn-screening",
       "opt_out_form": null,
-      "state_form_note": "DC mandates newborn screening for all births; no standalone parent declination form identified. Religious exemption is available per DC Code \u00c3\u0082\u00c2\u00a77-858.02. Refusal is documented in writing in the newborn's record. DC screens for 63 conditions (the largest panel among the 12 states).",
+      "state_form_note": "DC mandates newborn screening for all births; no standalone parent declination form identified. Religious exemption is available per DC Code Â§7-858.02. Refusal is documented in writing in the newborn's record. DC screens for 63 conditions (the largest panel among the 12 states).",
       "kit_ordering_url": "https://dchealth.dc.gov/service/newborn-screening",
       "kit_ordering_note": "NBS supplies ordered through DC DOH; specimens shipped to DC Newborn Screening Program lab.",
       "specimen_tracking_url": null,
@@ -21,8 +21,8 @@
         "fax",
         "online"
       ],
-      "midwife_role": "Complete DC NBS TRF 12\u00c3\u00a2\u00c2\u0080\u00c2\u009348h after birth, keep copy, give to parents, send specimen+TRF to DC lab.",
-      "declination_law": "DC Code \u00c3\u0082\u00c2\u00a77-858.02 \u00c3\u00a2\u00c2\u0080\u00c2\u0094 religious exemption available; refusal documented in writing in newborn's record.",
+      "midwife_role": "Complete DC NBS TRF 12â48h after birth, keep copy, give to parents, send specimen+TRF to DC lab.",
+      "declination_law": "DC Code Â§7-858.02 â religious exemption available; refusal documented in writing in newborn's record.",
       "billing": {
         "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
         "payment_portal_url": null,
@@ -32,36 +32,36 @@
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
-      "program": "DC EHDI Program \u00c3\u00a2\u00c2\u0080\u00c2\u0094 DC Department of Health",
+      "program": "DC EHDI Program â DC Department of Health",
       "program_url": "https://dchealth.dc.gov/service/newborn-screening",
       "forms_url": null,
       "opt_out_form": null,
-      "state_form_note": "Hearing screening is part of the DC newborn screening mandate; refusal documented in writing per DC Code \u00c3\u0082\u00c2\u00a77-858.02. No standalone parent declination form.",
+      "state_form_note": "Hearing screening is part of the DC newborn screening mandate; refusal documented in writing per DC Code Â§7-858.02. No standalone parent declination form.",
       "provider_signature_required": false,
       "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document refusal in writing in newborn's record.",
-      "law": "DC Code \u00c3\u0082\u00c2\u00a77-858.02"
+      "law": "DC Code Â§7-858.02"
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
-      "program": "DC CCHD Screening \u00c3\u00a2\u00c2\u0080\u00c2\u0094 DC Department of Health",
+      "program": "DC CCHD Screening â DC Department of Health",
       "program_url": "https://dchealth.dc.gov/service/newborn-screening",
       "opt_out_form": null,
-      "state_form_note": "CCHD screening is part of the DC newborn screening mandate; refusal documented in writing per DC Code \u00c3\u0082\u00c2\u00a77-858.02. No standalone parent declination form.",
+      "state_form_note": "CCHD screening is part of the DC newborn screening mandate; refusal documented in writing per DC Code Â§7-858.02. No standalone parent declination form.",
       "provider_signature_required": false,
       "midwife_role": "Perform or refer for pulse-ox screening; document refusal in writing if declined."
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "District of Columbia \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Standard of Care",
+      "program": "District of Columbia â Standard of Care",
       "program_url": null,
       "opt_out_form": null,
-      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00c3\u00a2\u00c2\u0080\u00c2\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form â practice standard is a signed informed-refusal/waiver document (app master form).",
       "provider_signature_required": false,
       "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state mandate",
+      "program": "Informed choice â no state mandate",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -84,7 +84,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -93,7 +93,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,

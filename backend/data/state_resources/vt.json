@@ -6,7 +6,7 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot / PKU)",
-      "program": "Vermont Department of Health \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Newborn Screening Program",
+      "program": "Vermont Department of Health â Newborn Screening Program",
       "program_url": "https://www.healthvermont.gov/family/health-care-children-youth/vermont-newborn-screening-program",
       "parent_education_url": "https://www.healthvermont.gov/sites/default/files/documents/pdf/2%20REFUSAL%20TO%20CONSENT%20Unattended%20Birth%20Form%20043019.pdf",
       "opt_out_form": "https://www.healthvermont.gov/sites/default/files/documents/pdf/2%20REFUSAL%20TO%20CONSENT%20Unattended%20Birth%20Form%20043019.pdf",
@@ -20,8 +20,8 @@
         "mail",
         "fax"
       ],
-      "midwife_role": "Complete VT NBS TRF 12\u00c3\u00a2\u00c2\u0080\u00c2\u009348h after birth, give refusal form to parents if declining, send specimen+TRF to VT lab.",
-      "declination_law": "VT statute \u00c3\u00a2\u00c2\u0080\u00c2\u0094 religious exemption available; refusal form required for declination.",
+      "midwife_role": "Complete VT NBS TRF 12â48h after birth, give refusal form to parents if declining, send specimen+TRF to VT lab.",
+      "declination_law": "VT statute â religious exemption available; refusal form required for declination.",
       "billing": {
         "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
         "payment_portal_url": null,
@@ -31,7 +31,7 @@
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
-      "program": "Vermont EHDI Program \u00c3\u00a2\u00c2\u0080\u00c2\u0094 VT DOH",
+      "program": "Vermont EHDI Program â VT DOH",
       "program_url": "https://www.healthvermont.gov/family/health-care-children-youth/vermont-newborn-screening-program",
       "forms_url": null,
       "opt_out_form": "https://www.healthvermont.gov/sites/default/files/documents/pdf/2%20REFUSAL%20TO%20CONSENT%20Unattended%20Birth%20Form%20043019.pdf",
@@ -42,7 +42,7 @@
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
-      "program": "Vermont CCHD Screening \u00c3\u00a2\u00c2\u0080\u00c2\u0094 VT DOH",
+      "program": "Vermont CCHD Screening â VT DOH",
       "program_url": "https://www.healthvermont.gov/family/health-care-children-youth/vermont-newborn-screening-program",
       "opt_out_form": "https://www.healthvermont.gov/sites/default/files/documents/pdf/2%20REFUSAL%20TO%20CONSENT%20Unattended%20Birth%20Form%20043019.pdf",
       "state_form_note": "CCHD screening refusal uses the same Refusal to Consent form. Pulse ox performed at bedside; refusal documented on the form.",
@@ -51,16 +51,16 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Vermont \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Standard of Care",
+      "program": "Vermont â Standard of Care",
       "program_url": null,
       "opt_out_form": null,
-      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00c3\u00a2\u00c2\u0080\u00c2\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form â practice standard is a signed informed-refusal/waiver document (app master form).",
       "provider_signature_required": false,
       "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state mandate",
+      "program": "Informed choice â no state mandate",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -83,7 +83,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -92,7 +92,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,

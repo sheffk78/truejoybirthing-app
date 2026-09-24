@@ -17,7 +17,11 @@
       "specimen_tracking_url": "https://www.cdph.ca.gov/Programs/CFH/DGDS/Pages/nbs/ost.aspx",
       "specimen_tracking_note": "SIS 2.0 (SIS 1.0 retired May 18, 2026) — midwives verify specimen receipt within 7 days of birth.",
       "provider_signature_required": true,
-      "submission_methods": ["mail", "fax", "online"],
+      "submission_methods": [
+        "mail",
+        "fax",
+        "online"
+      ],
       "midwife_role": "Complete TRF 12–48h after birth, keep yellow copy, give pink/blue to parents, send specimen+TRF to NAPS lab, verify receipt in SIS 2.0.",
       "declination_law": "HSC §125000(d) + 17 CCR §6501.2 — religious-objection refusal must be written, parent-signed, on a Department-approved form, in the newborn's record.",
       "billing": {
@@ -64,7 +68,11 @@
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
-      "options": ["oral", "shot", "none"],
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
       "provider_signature_required": false,
       "midwife_role": "Three-way informed choice (oral / shot / none) documented in-app; shot administered by midwife or referred."
     },

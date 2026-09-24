@@ -16,18 +16,18 @@
         "page": "https://health.mo.gov/families/healthy-families/missouri-newborn-screening"
       },
       "opt_out_form": null,
-      "state_form_note": "Missouri has NO standalone state opt-out form for download. Under Mo. Rev. Stat. ÃÂÃÂÃÂÃÂ§ 191.330, newborn screening may be refused on religious grounds; the parent signs a written refusal held by the provider, and the screen is not performed. The refusal is documented in the medical record.",
-      "statute": "Mo. Rev. Stat. ÃÂÃÂÃÂÃÂ§ 191.330 (newborn screening; religious objection); 19 CSR 20-26.010 (Prevention of Blindness rule)"
+      "state_form_note": "Missouri has NO standalone state opt-out form for download. Under Mo. Rev. Stat. Â§ 191.330, newborn screening may be refused on religious grounds; the parent signs a written refusal held by the provider, and the screen is not performed. The refusal is documented in the medical record.",
+      "statute": "Mo. Rev. Stat. Â§ 191.330 (newborn screening; religious objection); 19 CSR 20-26.010 (Prevention of Blindness rule)"
     },
     "hearing_screening": {
       "program_name": "Missouri Early Hearing Detection and Intervention (EHDI)",
       "program_page": "https://health.mo.gov/families/healthy-families/missouri-newborn-screening",
       "out_of_hospital_path": "For home/birth-center births, the midwife performs or arranges the newborn hearing screen and documents results; refusal is documented in writing in the medical record per Mo. Rev. Stat. 191.330.",
-      "statute": "Mo. Rev. Stat. ÃÂÃÂÃÂÃÂ§ 191.330 (includes hearing screening); MO EHDI 1-3-6 benchmarks"
+      "statute": "Mo. Rev. Stat. Â§ 191.330 (includes hearing screening); MO EHDI 1-3-6 benchmarks"
     },
     "cchd_screening": {
       "out_of_hospital_performer": "The attending midwife or physician performs pulse oximetry (CCHD) in the out-of-hospital setting and documents it; refusal documented per Mo. Rev. Stat. 191.330.",
-      "statute": "Mo. Rev. Stat. ÃÂÃÂÃÂÃÂ§ 191.330 (critical congenital heart defect screening)"
+      "statute": "Mo. Rev. Stat. Â§ 191.330 (critical congenital heart defect screening)"
     },
     "erythromycin_eye_ointment": {
       "status": "mandatory",
@@ -36,7 +36,11 @@
       "note": "Approved prophylactic (e.g., erythromycin) applied to each eye shortly after birth to prevent ophthalmia neonatorum."
     },
     "vitamin_k": {
-      "options": ["oral", "shot", "none"],
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
       "note": "Missouri does not mandate vitamin K; parental choice of oral, intramuscular shot, or decline, documented in the birth record."
     },
     "hepatitis_b_vaccine": {
@@ -54,7 +58,7 @@
     }
   },
   "program_contact": {
-    "name": "Missouri Department of Health and Senior Services ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Newborn Screening",
+    "name": "Missouri Department of Health and Senior Services â Newborn Screening",
     "phone": "573-751-6400",
     "email": "health@health.mo.gov",
     "website": "https://health.mo.gov/families/healthy-families/missouri-newborn-screening"

@@ -6,7 +6,7 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot / PKU)",
-      "program": "Pennsylvania Department of Health \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Division of Newborn Screening and Genetics",
+      "program": "Pennsylvania Department of Health â Division of Newborn Screening and Genetics",
       "program_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
       "parent_education_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
       "opt_out_form": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
@@ -21,8 +21,8 @@
         "fax",
         "online"
       ],
-      "midwife_role": "Complete PA NBS TRF 12\u00c3\u00a2\u00c2\u0080\u00c2\u009348h after birth, give refusal form to parents if declining, send specimen+TRF to PA lab.",
-      "declination_law": "PA statute \u00c3\u00a2\u00c2\u0080\u00c2\u0094 religious exemption available; refusal form required for declination.",
+      "midwife_role": "Complete PA NBS TRF 12â48h after birth, give refusal form to parents if declining, send specimen+TRF to PA lab.",
+      "declination_law": "PA statute â religious exemption available; refusal form required for declination.",
       "billing": {
         "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
         "payment_portal_url": null,
@@ -32,7 +32,7 @@
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
-      "program": "Pennsylvania EHDI Program \u00c3\u00a2\u00c2\u0080\u00c2\u0094 PA DOH",
+      "program": "Pennsylvania EHDI Program â PA DOH",
       "program_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
       "forms_url": null,
       "opt_out_form": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
@@ -43,7 +43,7 @@
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
-      "program": "Pennsylvania CCHD Screening \u00c3\u00a2\u00c2\u0080\u00c2\u0094 PA DOH",
+      "program": "Pennsylvania CCHD Screening â PA DOH",
       "program_url": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
       "opt_out_form": "https://www.pa.gov/content/dam/copapwp-pagov/en/health/documents/topics/documents/programs/infant-and-children-health/Newborn%20Screening%20Parent%20Refusal.pdf",
       "state_form_note": "CCHD screening refusal uses the same Refusal of Newborn Screening Form. Pulse ox performed at bedside; refusal documented on the form.",
@@ -52,16 +52,16 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Pennsylvania \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Standard of Care",
+      "program": "Pennsylvania â Standard of Care",
       "program_url": null,
       "opt_out_form": null,
-      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00c3\u00a2\u00c2\u0080\u00c2\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form â practice standard is a signed informed-refusal/waiver document (app master form).",
       "provider_signature_required": false,
       "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state mandate",
+      "program": "Informed choice â no state mandate",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -84,7 +84,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -93,7 +93,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,

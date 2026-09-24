@@ -37,7 +37,11 @@
       "note": "0.5% erythromycin ointment applied within two hours of birth by physician, nurse, or midwife."
     },
     "vitamin_k": {
-      "options": ["oral", "shot", "none"],
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
       "note": "Texas does not mandate vitamin K; parental choice of oral, intramuscular shot, or decline. Documented in the birth record."
     },
     "hepatitis_b_vaccine": {

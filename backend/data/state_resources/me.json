@@ -6,7 +6,7 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot / PKU)",
-      "program": "Maine CDC \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Newborn Bloodspot Screening Program",
+      "program": "Maine CDC â Newborn Bloodspot Screening Program",
       "program_url": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
       "parent_education_url": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
       "opt_out_form": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
@@ -20,8 +20,8 @@
         "mail",
         "fax"
       ],
-      "midwife_role": "Complete ME NBS TRF 12\u00c3\u00a2\u00c2\u0080\u00c2\u009348h after birth, give refusal form to parents if declining, send specimen+TRF to Maine NBSP. Fax refusal forms to 207-287-4743.",
-      "declination_law": "Maine statute \u00c3\u00a2\u00c2\u0080\u00c2\u0094 religious exemption available; refusal form required for declination.",
+      "midwife_role": "Complete ME NBS TRF 12â48h after birth, give refusal form to parents if declining, send specimen+TRF to Maine NBSP. Fax refusal forms to 207-287-4743.",
+      "declination_law": "Maine statute â religious exemption available; refusal form required for declination.",
       "billing": {
         "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
         "payment_portal_url": null,
@@ -31,7 +31,7 @@
     },
     "hearing_screening": {
       "label": "Newborn Hearing Screening",
-      "program": "Maine EHDI Program \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Maine CDC",
+      "program": "Maine EHDI Program â Maine CDC",
       "program_url": "https://www11.maine.gov/dhhs/mecdc/",
       "forms_url": null,
       "opt_out_form": "https://www11.maine.gov/dhhs/mecdc/sites/maine.gov.dhhs.mecdc/files/Religious%20Refusal%20Form.pdf",
@@ -42,7 +42,7 @@
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
-      "program": "Maine CCHD Screening \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Maine CDC",
+      "program": "Maine CCHD Screening â Maine CDC",
       "program_url": "https://www1.maine.gov/dhhs/mecdc/healthy-living/maternal-and-child-health/newborn-screenings/critical-congenital-heart-disease",
       "opt_out_form": "https://www1.maine.gov/dhhs/mecdc/healthy-living/maternal-and-child-health/newborn-screenings/critical-congenital-heart-disease",
       "state_form_note": "CCHD screening refusal uses a separate CCHD parental refusal form (PDF). Must be stated in writing; the person performing CCHD screening must ensure Maine CDC Maternal and Child Health Program is notified in writing within 5 days. Fax to 207-287-4743.",
@@ -51,16 +51,16 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Maine \u00c3\u00a2\u00c2\u0080\u00c2\u0094 Standard of Care",
+      "program": "Maine â Standard of Care",
       "program_url": null,
       "opt_out_form": null,
-      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00c3\u00a2\u00c2\u0080\u00c2\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form â practice standard is a signed informed-refusal/waiver document (app master form).",
       "provider_signature_required": false,
       "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state mandate",
+      "program": "Informed choice â no state mandate",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -83,7 +83,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -92,7 +92,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice \u00c3\u00a2\u00c2\u0080\u00c2\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,

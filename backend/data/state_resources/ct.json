@@ -6,7 +6,7 @@
   "procedures": {
     "metabolic_screening": {
       "label": "Newborn Metabolic Screening (blood spot / PKU)",
-      "program": "Connecticut Department of Public Health \u00e2\u0080\u0094 Newborn Screening Program",
+      "program": "Connecticut Department of Public Health â Newborn Screening Program",
       "program_url": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening",
       "parent_education_url": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening/newborn-screening-forms",
       "opt_out_form": "https://portal.ct.gov/-/media/Departments-and-Agencies/DPH/family_health/newborn_screening/pdf/Newborn_Screening_Refusal_Waiver_Form.pdf",
@@ -21,8 +21,8 @@
         "fax",
         "online"
       ],
-      "midwife_role": "Complete TRF 12\u00e2\u0080\u009348h after birth, give refusal waiver to parents if declining, send specimen+TRF to CT lab, enter result in NSS.",
-      "declination_law": "CT General Statutes \u00c2\u00a719a-55 \u00e2\u0080\u0094 religious exemption available; refusal waiver form required.",
+      "midwife_role": "Complete TRF 12â48h after birth, give refusal waiver to parents if declining, send specimen+TRF to CT lab, enter result in NSS.",
+      "declination_law": "CT General Statutes Â§19a-55 â religious exemption available; refusal waiver form required.",
       "billing": {
         "note": "Parents are billed directly; most insurance covers screening; midwife is NOT billed for the screening test itself.",
         "payment_portal_url": null,
@@ -39,11 +39,11 @@
       "state_form_note": "Hearing screening refusal uses the same Newborn Screening Refusal Waiver Form. CT requires hearing screening before discharge; refusal documented on waiver form and sent to DPH.",
       "provider_signature_required": false,
       "midwife_role": "Educate parents; if opted-in, refer to EHDI-approved audiologist; if declined, document refusal on waiver form.",
-      "law": "CT General Statutes \u00c2\u00a719a-55; 19a-79"
+      "law": "CT General Statutes Â§19a-55; 19a-79"
     },
     "cchd_screening": {
       "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
-      "program": "Connecticut DPH \u00e2\u0080\u0094 CCHD Screening",
+      "program": "Connecticut DPH â CCHD Screening",
       "program_url": "https://portal.ct.gov/dph/knowledge-base/articles/newborn-screening",
       "opt_out_form": "https://portal.ct.gov/-/media/Departments-and-Agencies/DPH/family_health/newborn_screening/pdf/Newborn_Screening_Refusal_Waiver_Form.pdf",
       "state_form_note": "CCHD screening refusal uses the same Newborn Screening Refusal Waiver Form. Pulse ox performed at bedside; refusal documented on waiver.",
@@ -52,16 +52,16 @@
     },
     "erythromycin_eye_ointment": {
       "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
-      "program": "Connecticut \u00e2\u0080\u0094 Standard of Care",
+      "program": "Connecticut â Standard of Care",
       "program_url": null,
       "opt_out_form": null,
-      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form \u00e2\u0080\u0094 practice standard is a signed informed-refusal/waiver document (app master form).",
+      "state_form_note": "Eye prophylaxis is a standard of care; no standalone state declination form â practice standard is a signed informed-refusal/waiver document (app master form).",
       "provider_signature_required": false,
       "midwife_role": "If opted-in: administer erythromycin within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
     },
     "vitamin_k": {
       "label": "Vitamin K (oral or injection)",
-      "program": "Informed choice \u00e2\u0080\u0094 no state mandate",
+      "program": "Informed choice â no state mandate",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -84,7 +84,7 @@
     },
     "gestational_diabetes": {
       "label": "Gestational Diabetes Screening (prenatal)",
-      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
@@ -93,7 +93,7 @@
     },
     "group_b_strep": {
       "label": "Group B Strep Screening & Prophylaxis (prenatal)",
-      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program": "Informed choice â no state form",
       "program_url": null,
       "opt_out_form": null,
       "state_specific": false,
