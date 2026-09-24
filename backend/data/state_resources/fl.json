@@ -1,0 +1,63 @@
+{
+  "state": "FL",
+  "state_name": "Florida",
+  "last_verified": "2026-09-24",
+  "verified_by": "TrueJoyBirthing research (official Florida DOH / Florida Newborn Screening sources)",
+  "procedures": {
+    "metabolic_screening": {
+      "program_name": "Florida Newborn Screening Program (Bureau of Public Health Laboratory, Jacksonville)",
+      "program_page": "https://floridanewbornscreening.com/",
+      "parent_education_page": "https://floridanewbornscreening.com/medical-professionals/frequently-asked-questions-2/",
+      "out_of_hospital_midwife": {
+        "published": true,
+        "kit_ordering": "Midwives and other out-of-hospital providers order newborn screening cards and mailing supplies via the Florida Newborn Screening Program 'Order Supplies' portal.",
+        "submission_deadline": "Specimen collected 24+ hours after birth and mailed to the Bureau of Public Health Laboratory in Jacksonville.",
+        "specimen_tracking": "Results released to the baby's provider; parents advised to ask the baby's doctor for results. Tracking via the Florida Newborn Screening Results (FNSR) system.",
+        "page": "https://floridanewbornscreening.com/medical-professionals/how-to-collect-mail/"
+      },
+      "opt_out_form": null,
+      "state_form_note": "Florida has NO standalone state opt-out form. Per the program FAQ, while not recommended, parents may refuse newborn screening for any reason; the person responsible for collecting the specimen must obtain a written refusal from the parent and include it in the child's medical record, documenting that the parents were informed of possible adverse outcomes and accept legal responsibility.",
+      "statute": "Florida Statute ÃÂ§ 383.04 (eye prophylaxis with written religious objection); newborn screening mandated under Florida Statute Ch. 383 / Ch. 154"
+    },
+    "hearing_screening": {
+      "program_name": "Florida Early Hearing Detection and Intervention (EHDI)",
+      "program_page": "https://floridanewbornscreening.com/hearing/",
+      "out_of_hospital_path": "For home/birth-center births, the midwife or birth attendant performs or arranges the newborn hearing screen and documents results; refusal is documented in writing in the medical record per the same refusal policy as metabolic screening.",
+      "statute": "Florida Statute ÃÂ§ 383.14 (newborn hearing screening)"
+    },
+    "cchd_screening": {
+      "out_of_hospital_performer": "The attending midwife or birth attendant performs pulse oximetry (CCHD) in the out-of-hospital setting and documents it; refusal documented in writing in the medical record.",
+      "statute": "Florida Statute ÃÂ§ 383.303 (critical congenital heart defect screening)"
+    },
+    "erythromycin_eye_ointment": {
+      "status": "mandatory",
+      "statute": "Florida Statute ÃÂ§ 383.04",
+      "waiver": "Parents may submit a written objection stating the medication is contrary to their religious beliefs; provider documents the objection in the medical record.",
+      "note": "Attending professional instills an approved prophylactic into the infant's eyes, generally within one hour of birth."
+    },
+    "vitamin_k": {
+      "options": ["oral", "shot", "none"],
+      "note": "Florida does not mandate vitamin K; parental choice of oral, intramuscular shot, or decline, documented in the birth record."
+    },
+    "hepatitis_b_vaccine": {
+      "birth_dose_registry": "Florida SHOTS (State Health Online Tracking System)",
+      "registry_page": "https://flshotsusers.com/",
+      "note": "Birth dose reported to Florida SHOTS by birthing facilities; infants born to HBsAg-positive mothers are reported to the Florida Department of Health for case management."
+    },
+    "gestational_diabetes": {
+      "midwife_role": "Licensed midwives in Florida provide gestational diabetes screening/counseling in prenatal care and refer for diagnostic testing when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    },
+    "group_b_strep": {
+      "midwife_role": "Licensed midwives offer GBS screening in late pregnancy and arrange intrapartum prophylaxis per protocol for out-of-hospital births when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    }
+  },
+  "program_contact": {
+    "name": "Florida Newborn Screening Program",
+    "phone": "850-245-4201",
+    "email": "CMS.NBS@FLHealth.gov",
+    "website": "https://floridanewbornscreening.com/",
+    "address": "4052 Bald Cypress Way, Bin A06, Tallahassee, FL 32399"
+  }
+}

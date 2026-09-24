@@ -1,0 +1,62 @@
+{
+  "state": "AZ",
+  "state_name": "Arizona",
+  "last_verified": "2026-09-24",
+  "verified_by": "TrueJoyBirthing research (official Arizona DHS State Laboratory sources)",
+  "procedures": {
+    "metabolic_screening": {
+      "program_name": "Arizona Newborn Screening Program",
+      "program_page": "https://www.azdhs.gov/preparedness/state-laboratory/newborn-screening/index.php",
+      "parent_education_page": "https://www.azdhs.gov/documents/preparedness/state-laboratory/newborn-screening/providers/AZ-Newborn-Screening-Provider-Guidelines.pdf",
+      "out_of_hospital_midwife": {
+        "published": true,
+        "kit_ordering": "Out-of-hospital providers (midwives) order newborn screening collection cards and tubes through the Arizona State Laboratory (ADHS). Supplies are ordered via the ADHS Newborn Screening supply request process.",
+        "submission_deadline": "Blood specimen collected 24-48 hours of age; repeat screen required if first collected before 24 hours.",
+        "specimen_tracking": "Results released to the ordering provider; parents receive results from their provider. Tracking through the ADHS Newborn Screening portal.",
+        "page": "https://www.azdhs.gov/documents/preparedness/state-laboratory/newborn-screening/providers/AZ-Newborn-Screening-Provider-Guidelines.pdf"
+      },
+      "opt_out_form": null,
+      "state_form_note": "Arizona has NO standalone downloadable state opt-out form. Under A.R.S. ÃÂÃÂÃÂÃÂ§ 36-694, newborn screening is mandatory; the parent's refusal is documented on the specimen collection kit / reporting paperwork by the provider and filed in the medical record. Third-party (advocacy) refusal forms exist but are not official state documents.",
+      "statute": "A.R.S. ÃÂÃÂÃÂÃÂ§ 36-694 (newborn screening); A.R.S. ÃÂÃÂÃÂÃÂ§ 36-695 (administration of prophylactic eye treatment)"
+    },
+    "hearing_screening": {
+      "program_name": "Arizona Early Hearing Detection and Intervention (EHDI)",
+      "program_page": "https://www.azdhs.gov/preparedness/state-laboratory/newborn-screening/index.php",
+      "out_of_hospital_path": "Midwives perform point-of-care (POC) newborn hearing screening in the out-of-hospital setting and submit results; refusal documented on the screening paperwork / medical record.",
+      "statute": "A.R.S. ÃÂÃÂÃÂÃÂ§ 36-694 (includes hearing); Arizona EHDI 1-3-6 benchmarks"
+    },
+    "cchd_screening": {
+      "out_of_hospital_performer": "The attending midwife performs pulse oximetry (CCHD) point-of-care in the out-of-hospital setting and documents it; refusal documented on the screening paperwork / medical record.",
+      "statute": "A.R.S. ÃÂÃÂÃÂÃÂ§ 36-694 (critical congenital heart defect screening)"
+    },
+    "erythromycin_eye_ointment": {
+      "status": "mandatory",
+      "statute": "A.R.S. ÃÂÃÂÃÂÃÂ§ 36-695",
+      "waiver": "A parent may object to prophylactic eye treatment; the attending professional documents the objection on the birth record. Arizona provides no separate waiver form beyond the documented informed refusal.",
+      "note": "Prophylactic eye treatment applied shortly after birth to prevent ophthalmia neonatorum."
+    },
+    "vitamin_k": {
+      "options": ["oral", "shot", "none"],
+      "note": "Arizona does not mandate vitamin K; parental choice of oral, intramuscular shot, or decline, documented in the birth record."
+    },
+    "hepatitis_b_vaccine": {
+      "birth_dose_registry": "Arizona State Immunization Information System (ASIIS)",
+      "registry_page": "https://www.azdhs.gov/preparedness/immunization/data/index.php",
+      "note": "Birth dose reported to ASIIS by birthing facilities; infants born to HBsAg-positive mothers are referred for Hepatitis B case management."
+    },
+    "gestational_diabetes": {
+      "midwife_role": "Licensed midwives in Arizona provide gestational diabetes screening/counseling in prenatal care and refer for diagnostic testing when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    },
+    "group_b_strep": {
+      "midwife_role": "Licensed midwives offer GBS screening in late pregnancy and arrange intrapartum prophylaxis per protocol for out-of-hospital births when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    }
+  },
+  "program_contact": {
+    "name": "Arizona Department of Health Services ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ State Laboratory, Newborn Screening",
+    "phone": "602-364-1409 (Newborn Screening)",
+    "email": "nbs@azdhs.gov",
+    "website": "https://www.azdhs.gov/preparedness/state-laboratory/newborn-screening/index.php"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "state": "TN",
+  "state_name": "Tennessee",
+  "last_verified": "2026-09-24",
+  "verified_by": "TrueJoyBirthing research (official Tennessee DOH sources)",
+  "procedures": {
+    "metabolic_screening": {
+      "program_name": "Tennessee Newborn Screening Program",
+      "program_page": "https://www.tn.gov/health/nbs.html",
+      "parent_education_page": "https://www.tn.gov/health/nbs.html",
+      "out_of_hospital_midwife": {
+        "published": true,
+        "kit_ordering": "Licensed midwives and out-of-hospital providers order newborn screening collection cards through the Tennessee Department of Health. Supplies are requested via the TDH Newborn Screening supply ordering process.",
+        "submission_deadline": "Blood specimen collected 24-48 hours of age; repeat screen required if first collected before 24 hours or if specified by the lab.",
+        "specimen_tracking": "Results returned to the ordering provider; parents receive results from their provider. Tracking via the TDH Newborn Screening portal.",
+        "page": "https://www.tn.gov/health/nbs.html"
+      },
+      "opt_out_form": "https://www.tn.gov/content/dam/tn/health/documents/PH-3686%20Refusal_Form%2007-5-23.pdf",
+      "opt_out_form_number": "Form PH-3686 (Newborn Screening Refusal Form)",
+      "state_form_note": "Tennessee provides an official state refusal form, PH-3686. Under Tenn. Comp. R. & Regs. 1200-15-01-.01, newborn screening is required and may be refused only on religious grounds; the signed PH-3686 is filed with the provider and TDH. A separate 'Newborn Eye Treatment Refusal' form is also issued by TDH for the eye prophylaxis refusal.",
+      "statute": "T.C.A. ÃÂÃÂ§ 68-5-201 et seq. (newborn screening); Tenn. Comp. R. & Regs. 1200-15-01-.01 (religious exemption)"
+    },
+    "hearing_screening": {
+      "program_name": "Tennessee Early Hearing Detection and Intervention (EHDI)",
+      "program_page": "https://www.tn.gov/health/nbs.html",
+      "out_of_hospital_path": "For home/birth-center births, the midwife performs or arranges the newborn hearing screen and documents results; refusal is documented on the screening paperwork / medical record per T.C.A. 68-5-201.",
+      "statute": "T.C.A. ÃÂÃÂ§ 68-5-201 et seq. (includes hearing screening); TN EHDI 1-3-6 benchmarks"
+    },
+    "cchd_screening": {
+      "out_of_hospital_performer": "The attending midwife or physician performs pulse oximetry (CCHD) in the out-of-hospital setting and documents it; refusal documented per T.C.A. 68-5-201.",
+      "statute": "T.C.A. ÃÂÃÂ§ 68-5-201 et seq. (critical congenital heart defect screening)"
+    },
+    "erythromycin_eye_ointment": {
+      "status": "mandatory",
+      "statute": "T.C.A. ÃÂÃÂ§ 68-5-202",
+      "waiver": "Prophylactic eye treatment is mandatory, but TDH policy (Public Chapter 989 / T.C.A. ÃÂÃÂ§ 68-5-502) permits a parent to refuse on religious grounds by filing a written statement with the Department of Health. TDH issues a specific 'Newborn Eye Treatment Refusal' form for this purpose.",
+      "note": "0.5% erythromycin applied to each eye within one hour of birth. Refusal form: https://www.tn.gov/content/dam/tn/health/program-areas/newborn-screening/TDH_policy_announcement_re_newborn_eye_treatment_refusal.pdf"
+    },
+    "vitamin_k": {
+      "options": ["oral", "shot", "none"],
+      "note": "Tennessee does not mandate vitamin K; parental choice of oral, intramuscular shot, or decline, documented in the birth record."
+    },
+    "hepatitis_b_vaccine": {
+      "birth_dose_registry": "Tennessee Immunization Information System (TennIIS)",
+      "registry_page": "https://www.tn.gov/health/nbs.html",
+      "note": "Birth dose reported to TennIIS by birthing facilities; infants born to HBsAg-positive mothers are referred for Hepatitis B case management."
+    },
+    "gestational_diabetes": {
+      "midwife_role": "Licensed midwives in Tennessee provide gestational diabetes screening/counseling in prenatal care and refer for diagnostic testing when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    },
+    "group_b_strep": {
+      "midwife_role": "Licensed midwives offer GBS screening in late pregnancy and arrange intrapartum prophylaxis per protocol for out-of-hospital births when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    }
+  },
+  "program_contact": {
+    "name": "Tennessee Department of Health ÃÂÃÂ Newborn Screening Program",
+    "phone": "615-532-8462",
+    "email": "nbs.health@tn.gov",
+    "website": "https://www.tn.gov/health/nbs.html"
+  }
+}

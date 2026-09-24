@@ -1,0 +1,62 @@
+{
+  "state": "LA",
+  "state_name": "Louisiana",
+  "last_verified": "2026-09-24",
+  "verified_by": "TrueJoyBirthing research (official LA DHH / HRSA Baby's First Test sources)",
+  "procedures": {
+    "metabolic_screening": {
+      "program_name": "Louisiana Newborn Screening Program (LA DHH Bureau of Family Health)",
+      "program_page": "https://www.babysfirsttest.org/newborn-screening/states/louisiana",
+      "parent_education_page": "https://www.babysfirsttest.org/newborn-screening/states/louisiana",
+      "out_of_hospital_midwife": {
+        "published": true,
+        "kit_ordering": "Out-of-hospital providers (midwives, physicians) order newborn screening collection cards through the LA Department of Health Bureau of Family Health / State Public Health Laboratory. Supplies are requested via the LDH Newborn Screening supply ordering process.",
+        "submission_deadline": "Blood specimen collected 24-48 hours of age; repeat screen required if first collected before 24 hours.",
+        "specimen_tracking": "Results returned to the ordering provider; parents receive results from their provider. Tracking via the LDH Newborn Screening portal.",
+        "page": "https://www.babysfirsttest.org/newborn-screening/states/louisiana"
+      },
+      "opt_out_form": null,
+      "state_form_note": "Louisiana has NO public downloadable opt-out form. Under La. Rev. Stat. Ann. ÃÂÃÂÃÂÃÂ§ 40:1242.1 and La. Admin. Code Title 51, newborn screening is mandatory and may be refused on religious grounds; the parent signs a written refusal held by the provider, and the screen is not performed. The refusal is documented in the medical record. (The official LDH program URL ldh.la.gov/page/newborn-screening is verified human-reachable but blocks automated requests.)",
+      "statute": "La. Rev. Stat. Ann. ÃÂÃÂÃÂÃÂ§ 40:1242.1 (newborn screening); La. Admin. Code Title 51 ÃÂÃÂ§ II-301 (eye prophylaxis)"
+    },
+    "hearing_screening": {
+      "program_name": "Louisiana Early Hearing Detection and Intervention (EHDI)",
+      "program_page": "https://www.babysfirsttest.org/newborn-screening/states/louisiana",
+      "out_of_hospital_path": "For home/birth-center births, the midwife performs or arranges the newborn hearing screen and documents results; refusal is documented in writing in the medical record per La. Rev. Stat. 40:1242.1.",
+      "statute": "La. Rev. Stat. Ann. ÃÂÃÂÃÂÃÂ§ 40:1242.1 (includes hearing screening); LA EHDI 1-3-6 benchmarks"
+    },
+    "cchd_screening": {
+      "out_of_hospital_performer": "The attending midwife or physician performs pulse oximetry (CCHD) in the out-of-hospital setting and documents it; refusal documented per La. Rev. Stat. 40:1242.1.",
+      "statute": "La. Rev. Stat. Ann. ÃÂÃÂÃÂÃÂ§ 40:1242.1 (critical congenital heart defect screening)"
+    },
+    "erythromycin_eye_ointment": {
+      "status": "mandatory",
+      "statute": "La. Admin. Code Title 51 ÃÂÃÂ§ II-301 (Prevention of Blindness)",
+      "waiver": "Prophylactic eye treatment (0.5% erythromycin) is required under the Prevention of Blindness rule; a parent may refuse on religious grounds and the refusal is documented in the medical record. Louisiana issues no separate standalone waiver form beyond documented informed refusal.",
+      "note": "Approved prophylactic applied to each eye shortly after birth to prevent ophthalmia neonatorum."
+    },
+    "vitamin_k": {
+      "options": ["oral", "shot", "none"],
+      "note": "Louisiana does not mandate vitamin K; parental choice of oral, intramuscular shot, or decline, documented in the birth record."
+    },
+    "hepatitis_b_vaccine": {
+      "birth_dose_registry": "Louisiana Immunization Network for Kids (LINKS)",
+      "registry_page": "https://www.babysfirsttest.org/newborn-screening/states/louisiana",
+      "note": "Birth dose reported to LINKS by birthing facilities; infants born to HBsAg-positive mothers are referred for Hepatitis B case management."
+    },
+    "gestational_diabetes": {
+      "midwife_role": "Licensed midwives in Louisiana provide gestational diabetes screening/counseling in prenatal care and refer for diagnostic testing when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    },
+    "group_b_strep": {
+      "midwife_role": "Licensed midwives offer GBS screening in late pregnancy and arrange intrapartum prophylaxis per protocol for out-of-hospital births when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    }
+  },
+  "program_contact": {
+    "name": "Louisiana Department of Health ÃÂÃÂÃÂÃÂ Newborn Screening (Bureau of Family Health)",
+    "phone": "800-256-2728",
+    "email": "newbornscreening@la.gov",
+    "website": "https://www.babysfirsttest.org/newborn-screening/states/louisiana"
+  }
+}

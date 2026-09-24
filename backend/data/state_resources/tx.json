@@ -1,0 +1,63 @@
+{
+  "state": "TX",
+  "state_name": "Texas",
+  "last_verified": "2026-09-24",
+  "verified_by": "TrueJoyBirthing research (official Texas DSHS sources)",
+  "procedures": {
+    "metabolic_screening": {
+      "program_name": "Texas Newborn Screening Program",
+      "program_page": "https://www.dshs.texas.gov/newborn-screening-program",
+      "parent_education_page": "https://www.dshs.texas.gov/laboratory-services/programs-laboratories/newborn-screening-laboratory/newborn-screening-community-birth-settings",
+      "out_of_hospital_midwife": {
+        "published": true,
+        "kit_ordering": "Midwives must become approved Texas NSHS submitters; order newborn screening blood spot cards and supplies through the DSHS Newborn Screening Lab (Submitter ID request form required).",
+        "submission_deadline": "First screen ideally 24-48 hours of age; second screen at 7-14 days (minimum 168 hours).",
+        "specimen_tracking": "Submitter tracks results via the DSHS Newborn Screening Lab portal / submitter account.",
+        "page": "https://www.dshs.texas.gov/laboratory-services/programs-laboratories/newborn-screening-laboratory/newborn-screening-community-birth-settings"
+      },
+      "opt_out_form": "https://www.dshs.texas.gov/sites/default/files/lab/NBS/Newborn%20Screen%20Blood%20Test%20Refusal%20Form%20Final_202406English%20Version.pdf",
+      "opt_out_form_number": "Newborn Screen Blood Test Refusal Form (English; Spanish: Newborn Screen Blood Test Refusal Form Final_202406.pdf)",
+      "state_form_note": "Texas provides an official state Blood Test Refusal Form. Texas Health & Safety Code Ch. 33 mandates screening; 25 Tex. Admin. Code Â§ 97.136 requires prophylactic eye treatment but a parent, managing conservator, or guardian may object. A signed refusal is filed with the provider/medical record.",
+      "statute": "Texas Health & Safety Code Â§ 33.001 et seq. (Newborn Screening); 25 Tex. Admin. Code Â§ 97.136 (eye prophylaxis objection)"
+    },
+    "hearing_screening": {
+      "program_name": "Texas Early Hearing Detection and Intervention (TEHDI)",
+      "program_page": "https://www.dshs.texas.gov/newborn-screening-program",
+      "out_of_hospital_path": "In community/home birth, the midwife must provide TEHDI education materials, review all three universal screens (blood spot, hearing, CCHD), and document any hearing-screen refusal in the client's medical chart (state's official Newborn Screen Blood Test Refusal Form may be used).",
+      "statute": "Texas Health & Safety Code Â§ 33.011 (hearing screening); 1-3-6 EHDI benchmarks"
+    },
+    "cchd_screening": {
+      "out_of_hospital_performer": "Attending midwife or physician in the community birth setting performs pulse oximetry (CCHD) and documents it; refusal documented in the medical chart.",
+      "statute": "Texas Health & Safety Code Â§ 33.011 (critical congenital heart defect screening)"
+    },
+    "erythromycin_eye_ointment": {
+      "status": "mandatory",
+      "statute": "25 Tex. Admin. Code Â§ 97.136",
+      "waiver": "Parental/guardian objection allowed; provider commits no offense if administration is refused. Hospital typically requires a signed refusal waiver.",
+      "note": "0.5% erythromycin ointment applied within two hours of birth by physician, nurse, or midwife."
+    },
+    "vitamin_k": {
+      "options": ["oral", "shot", "none"],
+      "note": "Texas does not mandate vitamin K; parental choice of oral, intramuscular shot, or decline. Documented in the birth record."
+    },
+    "hepatitis_b_vaccine": {
+      "birth_dose_registry": "ImmTrac2 (Texas Immunization Registry)",
+      "registry_page": "https://www.dshs.texas.gov/immunizations/",
+      "note": "Birth dose reported to ImmTrac2 by the birthing facility/hospital; infants born to HBsAg-positive mothers receive HBIG + vaccine within 12 hours and are reported for case management."
+    },
+    "gestational_diabetes": {
+      "midwife_role": "Licensed midwives in Texas screen for and counsel on gestational diabetes as part of prenatal care; abnormal glucose screening is referred for diagnostic testing (provider-to-provider referral).",
+      "note": "Prenatal informed-choice item; no state newborn-screening form. Managed in prenatal care, not via the NBS program."
+    },
+    "group_b_strep": {
+      "midwife_role": "Licensed midwives offer GBS screening (culturing) in late pregnancy and administer or arrange intrapartum prophylaxis per protocol for out-of-hospital births when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    }
+  },
+  "program_contact": {
+    "name": "Texas Department of State Health Services â Newborn Screening Laboratory",
+    "phone": "1-800-252-8023 (NBS Lab)",
+    "email": "nbs@dshs.texas.gov",
+    "website": "https://www.dshs.texas.gov/newborn-screening-program"
+  }
+}

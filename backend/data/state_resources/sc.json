@@ -1,0 +1,63 @@
+{
+  "state": "SC",
+  "state_name": "South Carolina",
+  "last_verified": "2026-09-24",
+  "verified_by": "TrueJoyBirthing research (official SC DHEC / DPH sources)",
+  "procedures": {
+    "metabolic_screening": {
+      "program_name": "South Carolina Newborn Screening Program",
+      "program_page": "https://dph.sc.gov/public/newborn-screening",
+      "parent_education_page": "https://dph.sc.gov/public/newborn-screening/newborn-screening-program-forms",
+      "out_of_hospital_midwife": {
+        "published": true,
+        "kit_ordering": "Out-of-hospital providers (midwives, physicians) order newborn screening filter-paper cards and tubes from the SC Public Health Laboratory. Supplies are requested via the DPH Newborn Screening supply ordering process / program forms page.",
+        "submission_deadline": "Blood specimen collected 24-48 hours of age; repeat screen required at 2 weeks of age if first collected before 24 hours.",
+        "specimen_tracking": "Results returned to the ordering provider; parents receive results from their provider. Tracking via the SC DPH Newborn Screening portal.",
+        "page": "https://dph.sc.gov/public/newborn-screening/newborn-screening-program-forms"
+      },
+      "opt_out_form": "https://dph.sc.gov/sites/scdph/files/Library/1804-ENG-DPH.pdf",
+      "opt_out_form_number": "DPH Form 1804 (Newborn Screening Refusal Form)",
+      "state_form_note": "South Carolina provides an official state refusal form, DPH 1804. Under S.C. Code ÃÂÃÂ§ 44-37-30(C), newborn screening may be refused only on religious grounds; the signed DPH 1804 is filed with the provider and the SC Department of Public Health.",
+      "statute": "S.C. Code ÃÂÃÂ§ 44-37-30(C) (newborn screening; religious exemption); S.C. Code ÃÂÃÂ§ 44-37-20 (eye prophylaxis); S.C. Code ÃÂÃÂ§ 44-37-70 (CCHD)"
+    },
+    "hearing_screening": {
+      "program_name": "South Carolina Early Hearing Detection and Intervention (EHDI)",
+      "program_page": "https://dph.sc.gov/public/newborn-screening",
+      "out_of_hospital_path": "For home/birth-center births, the midwife performs or arranges the newborn hearing screen and documents results; refusal is documented on the screening paperwork / medical record per S.C. Code 44-37-30.",
+      "statute": "S.C. Code ÃÂÃÂ§ 44-37-30 (includes hearing screening); SC EHDI 1-3-6 benchmarks"
+    },
+    "cchd_screening": {
+      "out_of_hospital_performer": "The attending midwife or physician performs pulse oximetry (CCHD) in the out-of-hospital setting and documents it; refusal documented per S.C. Code 44-37-30/44-37-70.",
+      "statute": "S.C. Code ÃÂÃÂ§ 44-37-70 (critical congenital heart defect screening)"
+    },
+    "erythromycin_eye_ointment": {
+      "status": "mandatory",
+      "statute": "S.C. Code ÃÂÃÂ§ 44-37-20",
+      "waiver": "Prophylactic eye treatment (0.5% erythromycin) must be instilled into each eye within one hour of birth; a parent may object on religious grounds and the refusal is documented in the medical record. South Carolina issues no separate standalone waiver form beyond the documented refusal.",
+      "note": "Mandatory instillation within one hour of birth to prevent ophthalmia neonatorum."
+    },
+    "vitamin_k": {
+      "options": ["oral", "shot", "none"],
+      "note": "South Carolina does not mandate vitamin K; parental choice of oral, intramuscular shot, or decline, documented in the birth record."
+    },
+    "hepatitis_b_vaccine": {
+      "birth_dose_registry": "SC Immunization Registry (SIMON)",
+      "registry_page": "https://dph.sc.gov/public/newborn-screening",
+      "note": "Birth dose reported to SIMON by birthing facilities; infants born to HBsAg-positive mothers are referred for Hepatitis B case management."
+    },
+    "gestational_diabetes": {
+      "midwife_role": "Licensed midwives in South Carolina provide gestational diabetes screening/counseling in prenatal care and refer for diagnostic testing when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    },
+    "group_b_strep": {
+      "midwife_role": "Licensed midwives offer GBS screening in late pregnancy and arrange intrapartum prophylaxis per protocol for out-of-hospital births when indicated.",
+      "note": "Prenatal informed-choice item; no state newborn-screening form."
+    }
+  },
+  "program_contact": {
+    "name": "SC Department of Public Health ÃÂÃÂ Newborn Screening Program",
+    "phone": "803-898-0583",
+    "email": "NBS@dph.sc.gov",
+    "website": "https://dph.sc.gov/public/newborn-screening"
+  }
+}
