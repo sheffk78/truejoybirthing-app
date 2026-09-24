@@ -1,0 +1,92 @@
+{
+  "state_name": "Illinois",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (IL build)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot)",
+      "program": "Illinois Department of Public Health \u00e2\u0080\u0094 Newborn Screening Program",
+      "program_url": "https://www.idph.state.il.us/HealthWellness/Newborn_Screening_Practitioners_Manual.pdf",
+      "parent_education_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone state declination form \u00e2\u0080\u0094 Illinois law (410 ILCS 240 / Newborn Metabolic Screening Act) mandates screening; the only valid exception is parental refusal based on religious beliefs and practices, which must be a written refusal signed by parents and documented in the infant's medical record. No specific state form number identified.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "in-person"
+      ],
+      "midwife_role": "Collect blood spot on IDPH-supplied filter paper specimen cards; if religious refusal, ensure written refusal signed by parents is documented in the infant's medical record before discharge.",
+      "declination_law": "410 ILCS 240 (Newborn Metabolic Screening Act) \u00e2\u0080\u0094 religious belief and practice exception; written parental refusal required in medical record."
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Illinois Department of Public Health \u00e2\u0080\u0094 EHDI Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone hearing screening declination form \u00e2\u0080\u0094 refusal documented in medical record per IDPH guidance.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if objection, document written refusal in medical record; arrange outpatient follow-up if needed."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening",
+      "program": "Illinois Department of Public Health \u00e2\u0080\u0094 Newborn Screening Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone CCHD declination form \u00e2\u0080\u0094 refusal documented in medical record as part of overall newborn screening refusal.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse ox screening; document refusal in medical record."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Illinois law \u00e2\u0080\u0094 not part of the metabolic screening program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
+      "provider_signature_required": false,
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply within 1h of birth."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in medical record; midwife administers injection if chosen."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Illinois Department of Public Health \u00e2\u0080\u0094 Immunization Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; report to Illinois Immunization Registry (IIR)."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "state": "IL"
+}

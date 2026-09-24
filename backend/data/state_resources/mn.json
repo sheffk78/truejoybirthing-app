@@ -1,0 +1,95 @@
+{
+  "state_name": "Minnesota",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (MN build)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot)",
+      "program": "Minnesota Department of Health \u00e2\u0080\u0094 Newborn Screening Program",
+      "program_url": "https://www.health.state.mn.us/people/newbornscreening/",
+      "parent_education_url": "https://www.health.state.mn.us/people/newbornscreening/materials/nbsfactsheet.pdf",
+      "opt_out_form": "https://www.health.state.mn.us/people/newbornscreening/materials/legalforms/refusaldelay.pdf",
+      "opt_out_form_label": "Parental Refusal or Delay of Newborn Screening",
+      "state_form_system": "MDH form \u00e2\u0080\u0094 Parental Refusal or Delay of Newborn Screening (rev. 01/2025). Parents may refuse or delay any part (blood spot, hearing, pulse oximetry). Signed form must be made part of the infant's medical record and a copy sent to MDH within 7 days (MN Stat. 144.125).",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "email"
+      ],
+      "midwife_role": "Complete the Parental Refusal or Delay form; signed form goes into medical record, copy to MDH NBS (P.O. Box 64899, St. Paul, MN 55164-0899; fax 651-215-6285; email health.newbornscreening@state.mn.us).",
+      "declination_law": "MN Stat. 144.125 \u00e2\u0080\u0094 newborn screening required; parental refusal or delay permitted; signed form required in medical record and submitted to MDH within 7 days."
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Minnesota Department of Health \u00e2\u0080\u0094 EHDI Program",
+      "program_url": "https://www.health.state.mn.us/people/newbornscreening/",
+      "opt_out_form": "https://www.health.state.mn.us/people/newbornscreening/materials/legalforms/refusaldelay.pdf",
+      "opt_out_form_label": "Parental Refusal or Delay of Newborn Screening (covers hearing component)",
+      "state_form_note": "Same Parental Refusal or Delay form covers hearing screening refusal/delay. Parents may select which parts to refuse or delay.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if objection, complete the refusal/delay section for hearing on the Parental Refusal or Delay form."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening",
+      "program": "Minnesota Department of Health \u00e2\u0080\u0094 Newborn Screening Program",
+      "program_url": "https://www.health.state.mn.us/people/newbornscreening/",
+      "opt_out_form": "https://www.health.state.mn.us/people/newbornscreening/materials/legalforms/refusaldelay.pdf",
+      "opt_out_form_label": "Parental Refusal or Delay of Newborn Screening (covers pulse oximetry component)",
+      "state_form_note": "Same Parental Refusal or Delay form covers pulse oximetry refusal/delay. Parents may select which parts to refuse or delay.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse ox; if objection, complete the refusal/delay section for pulse oximetry on the Parental Refusal or Delay form."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Minnesota law \u00e2\u0080\u0094 not part of the NBS program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
+      "provider_signature_required": false,
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply within 1h of birth."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in medical record; midwife administers injection if chosen."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Minnesota Department of Health \u00e2\u0080\u0094 Immunization Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; report to Minnesota Immunization Registry (MIIC)."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "state": "MN"
+}

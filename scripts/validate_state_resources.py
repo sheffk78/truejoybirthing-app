@@ -44,9 +44,13 @@ def check_links(url):
                 return r.status == 200
         except Exception:
             pass
-        # some servers reject HEAD; fall back to GET
+        # some servers reject HEAD; fall back to GET.
+        # NOTE: a plain/non-browser UA ("...link verification") gets hard-404'd by
+        # some WAFs (e.g. ohio.gov Akamai) even when the page is live with a
+        # browser UA, so use a standard browser UA here.
         req = urllib.request.Request(url, method="GET",
-                                     headers={"User-Agent": "Mozilla/5.0 (link verification)"})
+                                     headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                                              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
         with urllib.request.urlopen(req, timeout=25) as r:
             return r.status == 200
     except Exception:

@@ -1,0 +1,96 @@
+{
+  "state_name": "Ohio",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (OH build)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot)",
+      "program": "Ohio Department of Health Newborn Screening Program",
+      "program_url": "https://odh.ohio.gov/know-our-programs/Newborn-Screening",
+      "parent_education_url": "https://odh.ohio.gov/know-our-programs/Newborn-Screening/forms",
+      "opt_out_form": "https://odh.ohio.gov/know-our-programs/newborn-screening/resources/frm-religiousobj",
+      "opt_out_form_label": "Religious Objection to Newborn Screening Form",
+      "state_form_system": "ODH provides the Religious Objection to Screening Form; must be signed by parent/guardian and kept in newborn's medical record. Ohio Revised Code 3701.505 — religious objection is the only valid reason for refusal.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "in-person"
+      ],
+      "midwife_role": "Collect blood spot at -¥24h and <5 days of age; if religious objection, ensure signed objection form is in newborn's record before discharge.",
+      "declination_law": "ORC 3701.505 — religious objection is the only recognized reason for refusing newborn screening."
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Ohio Department of Health Infant Hearing Program",
+      "program_url": "https://odh.ohio.gov/know-our-programs/Newborn-Screening",
+      "opt_out_form": "https://odh.ohio.gov/know-our-programs/newborn-screening/resources/frm-religiousobj",
+      "opt_out_form_label": "Objection to Universal Newborn Hearing Screening (HEA 4633)",
+      "state_form_note": "Separate hearing screening objection form (HEA 4633). Religious objection is the only valid reason per ORC 3701.505.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if objection, ensure signed form is in record; arrange follow-up outpatient hearing screening if needed.",
+      "law": "ORC 3701.505; HEA 4633 for hearing-specific objection form."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening",
+      "program": "Ohio Department of Health — Critical Congenital Heart Disease Screening",
+      "program_url": "https://odh.ohio.gov/know-our-programs/critical-congenital-heart-disease",
+      "opt_out_form": null,
+      "state_form_note": "No standalone CCHD declination form — CCHD screening is part of the overall newborn screening process. Refusal documented via the Religious Objection to Screening Form (covers all screening components).",
+      "provider_signature_required": false,
+      "midwife_role": "Perform pulse ox at 24–48h or refer; document refusal in medical record using the ODH Religious Objection form."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Ohio Revised Code §3701.501",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone state declination form — documented via the Religious Objection to Screening Form (covers all screening components). ORC §3701.501 requires eye prophylaxis; religious objection is the sole exception.",
+      "provider_signature_required": false,
+      "midwife_role": "If declining: ensure signed Religious Objection form in record. If administering: apply within 1h of birth.",
+      "law": "ORC §3701.501 — eye prophylaxis required; religious objection exception per §3701.505."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice — no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in medical record; midwife administers injection if chosen."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Ohio Department of Health — Immunization Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; report to Ohio Immunization Program (OHIP)."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice — no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice — no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "state": "OH"
+}

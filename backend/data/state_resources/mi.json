@@ -1,0 +1,95 @@
+{
+  "state_name": "Michigan",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (MI build)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot)",
+      "program": "Michigan Department of Health and Human Services (MDHHS) \u00e2\u0080\u0094 Newborn Screening Program",
+      "program_url": "https://www.michigan.gov/mdhhs/adult-child-serv/childrenfamilies/hereditary/newborn-screening-general-information",
+      "parent_education_url": "https://www.michigan.gov/mdhhs/-/media/Project/Websites/mdhhs/Adult-and-Childrens-Services/Children-and-Families/Hereditary-Disorders/Newborn-Screening/current-brochures/DHHS-Pub-1232-Expectant-Parents-EN.pdf",
+      "opt_out_form": null,
+      "state_form_note": "No standalone religious exemption form \u00e2\u0080\u0094 Michigan law requires screening; refusal is documented in the medical record per MDHHS guidance. Parents may also request destruction of blood spots via MDHHS-5683 form.",
+      "blood_spot_destruction_form": "MDHHS-5683",
+      "blood_spot_destruction_url": "https://www.michigan.gov/mdhhs/-/media/Project/Websites/mdhhs/Adult-and-Childrens-Services/Children-and-Families/Hereditary-Disorders/Newborn-Screening/Resources-for-Hospitals-and-Health-Professionals/MDHHS-5683_610453_7.pdf",
+      "biotrust_url": "https://www.michigan.gov/mdhhs/adult-child-serv/childrenfamilies/hereditary/biotrust",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "online"
+      ],
+      "midwife_role": "Collect blood spots on MDHHS-supplied filter paper card; if parent objects, document refusal in medical record. If outside hospital, midwife can determine eligibility for free screening (call 517-335-1400).",
+      "declination_law": "Michigan Public Health Code, Act 368 of 1978, MCL 333.5431 \u00e2\u0080\u0094 screening required; religious exemption not statutorily codified as a standalone form but refusal is documented in the medical record."
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Michigan Department of Health and Human Services \u00e2\u0080\u0094 Early Hearing Detection and Intervention (EHDI)",
+      "program_url": "https://www.michigan.gov/mdhhs/adult-child-serv/childrenfamilies/ehdi",
+      "opt_out_form": null,
+      "state_form_note": "No standalone hearing screening declination form \u00e2\u0080\u0094 refusal documented in medical record per MDHHS guidance.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if objection, document refusal in medical record; arrange outpatient follow-up if needed."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening",
+      "program": "Michigan Department of Health and Human Services \u00e2\u0080\u0094 CCHD Screening",
+      "program_url": "https://www.michigan.gov/mdhhs/adult-child-serv/childrenfamilies/hereditary/cchd",
+      "opt_out_form": null,
+      "state_form_note": "No standalone CCHD declination form \u00e2\u0080\u0094 refusal documented in medical record as part of overall newborn screening refusal.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse ox screening; document refusal in medical record."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Michigan Public Health Code",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone state declination form \u00e2\u0080\u0094 documented via medical record refusal per MDHHS guidance.",
+      "provider_signature_required": false,
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply within 1h of birth."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in medical record; midwife administers injection if chosen."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Michigan Department of Health and Human Services \u00e2\u0080\u0094 Immunization Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; report to Michigan Care Improvement Registry (MCIR)."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "state": "MI"
+}

@@ -1,0 +1,95 @@
+{
+  "state_name": "Indiana",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (IN build)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot / heel stick)",
+      "program": "Indiana Department of Health \u00e2\u0080\u0094 Genomics and Newborn Screening (GNBS) Program",
+      "program_url": "https://www.in.gov/health/gnbs/",
+      "parent_education_url": "https://www.in.gov/health/gnbs/information-for-families",
+      "opt_out_form": "https://forms.in.gov/Download.aspx?id=7565",
+      "opt_out_form_label": "State Form 54102 \u00e2\u0080\u0094 Religious Waiver for the Newborn Screening Program",
+      "state_form_system": "Indiana State Form 54102 (R4 / 12-23) \u00e2\u0080\u0094 Religious Waiver. Also available in Burmese (57106), Haitian Creole (57105), Spanish (57102). Parents may refuse one, two, or all three parts of newborn screening (heel stick, CCHD, hearing) due to religious beliefs only.",
+      "state_form_url": "https://forms.in.gov/Download.aspx?id=7565",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "fax",
+        "mail"
+      ],
+      "midwife_role": "Complete State Form 54102 if parent refuses any part of screening; fax completed waiver to 317-925-2888 if hearing screen is the only part refused. Heel stick blood spots sent to state-contracted NBS laboratory for 50+ conditions.",
+      "declination_law": "IC 16-41-1 \u00e2\u0080\u0094 newborn screening required; religious waiver per State Form 54102."
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Indiana Department of Health \u00e2\u0080\u0094 Early Hearing Detection and Intervention (EHDI) Program",
+      "program_url": "https://www.in.gov/health/gnbs/information-for-families",
+      "opt_out_form": "https://forms.in.gov/Download.aspx?id=7565",
+      "opt_out_form_label": "State Form 54102 (covers all screening components including hearing)",
+      "state_form_note": "Same State Form 54102 covers refusal of hearing screening as part of the newborn screening program. Parents may refuse hearing screening alone.",
+      "provider_signature_required": false,
+      "midwife_role": "All babies receive hearing screen (Universal Newborn Hearing Screening \u00e2\u0080\u0094 UNHS). If refused, document signed State Form 54102 in medical record."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening",
+      "program": "Indiana Department of Health \u00e2\u0080\u0094 GNBS Program",
+      "program_url": "https://www.in.gov/health/gnbs/information-for-families",
+      "opt_out_form": "https://forms.in.gov/Download.aspx?id=7565",
+      "opt_out_form_label": "State Form 54102 (covers all screening components including CCHD)",
+      "state_form_note": "Same State Form 54102 covers refusal of CCHD screening. Parents may refuse CCHD alone.",
+      "provider_signature_required": false,
+      "midwife_role": "CCHD screening via pulse oximetry. If refused, document signed State Form 54102 in medical record."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Indiana Code \u00e2\u0080\u0094 not part of the GNBS newborn screening program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "Eye prophylaxis is not part of the Indiana GNBS newborn screening program; no GNBS waiver form applies. Declination documented separately per standard medical practice.",
+      "provider_signature_required": false,
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply within 1h of birth."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in medical record; midwife administers injection if chosen."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Indiana Department of Health \u00e2\u0080\u0094 Immunization Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; report to Indiana Immunization Registry."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice \u00e2\u0080\u0094 no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "state": "IN"
+}
