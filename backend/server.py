@@ -1514,8 +1514,10 @@ from routes import invites as invites_routes
 from routes import shelbi_leads as shelbi_leads_routes
 from routes import trial_emails as trial_emails_routes
 from routes import waiver as waiver_routes
+from routes import state_resources as state_resources_routes
 
 # Include modular routers in the api_router
+api_router.include_router(state_resources_routes.router)
 api_router.include_router(admin_routes.router)
 api_router.include_router(marketplace_routes.router)
 api_router.include_router(notifications_routes.router)

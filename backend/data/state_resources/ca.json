@@ -1,0 +1,113 @@
+{
+  "state": "CA",
+  "state_name": "California",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (CA-1 build, all URLs HTTP-200 confirmed)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot / PKU)",
+      "program": "California Newborn Screening Program — Genetic Disease Screening Program (CDPH)",
+      "program_url": "https://www.cdph.ca.gov/Programs/CFH/DGDS/Pages/nbs/nbsconsentforms.aspx",
+      "parent_education_url": "https://www.cdph.ca.gov/Programs/CFH/DGDS/CDPH%20Document%20Library/NBS%20Documents/Info-for-Parents-About-Newborn-Screening-Test.pdf",
+      "opt_out_form": "https://www.cdph.ca.gov/CDPH%20Document%20Library/ControlledForms/cdph4410.pdf",
+      "opt_out_form_label": "CDPH 4410 — Parent Request to Have Newborn Blood Specimen Card Destroyed",
+      "state_form_system": "NBS-TRF (CDPH 4409) is required for EVERY birth; religious refusal is signed on the TRF itself (17 CCR §6501.2: written, parent-signed, kept in newborn's record). TRF ordered from state: NBSOrders@cdph.ca.gov / (510) 412-1542.",
+      "kit_ordering_url": "https://www.cdph.ca.gov/Programs/CFH/DGDS/Pages/nbs/midwives.aspx",
+      "kit_ordering_note": "TRF supplies ordered from CDPH (NBSOrders@cdph.ca.gov, (510) 412-1542); specimens shipped to NAPS lab next business day; OST/SIS 2.0 tracking required within 7 days (17 CCR §6506).",
+      "specimen_tracking_url": "https://www.cdph.ca.gov/Programs/CFH/DGDS/Pages/nbs/ost.aspx",
+      "specimen_tracking_note": "SIS 2.0 (SIS 1.0 retired May 18, 2026) — midwives verify specimen receipt within 7 days of birth.",
+      "provider_signature_required": true,
+      "submission_methods": ["mail", "fax", "online"],
+      "midwife_role": "Complete TRF 12–48h after birth, keep yellow copy, give pink/blue to parents, send specimen+TRF to NAPS lab, verify receipt in SIS 2.0.",
+      "declination_law": "HSC §125000(d) + 17 CCR §6501.2 — religious-objection refusal must be written, parent-signed, on a Department-approved form, in the newborn's record.",
+      "billing": {
+        "note": "Parents are billed directly (midwife is NOT billed); insurance/Medi-Cal covers ~99%; CDPH bills insurance as courtesy for homebirths.",
+        "payment_portal_url": "https://cdphpaymentportal.sutherlandglobal.com/",
+        "insurance_phone": "1-800-597-0832",
+        "faq_url": "https://www.cdph.ca.gov/Programs/CFH/DGDS/Pages/nbs/NBS-Billing-and-Payment-FAQ.aspx"
+      }
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "California Newborn Hearing Screening Program (NHSP, DHCS)",
+      "program_url": "https://www.dhcs.ca.gov/services/nhsp/Pages/default.aspx",
+      "forms_url": "https://www.dhcs.ca.gov/services/california-newborn-hearing-screening-program/nhsp-forms/",
+      "opt_out_form": null,
+      "state_form_note": "No standalone parent declination form — HSC §124116.5(d): screening 'shall not apply to any newborn whose parent or guardian objects to the test on the grounds that the test is in violation of his or her beliefs.' Document objection in writing in the chart (app master form covers this). Out-of-hospital babies: arrange outpatient screening via NHSP-certified Outpatient Infant Hearing Screening Provider (audiologist/CCS-approved provider) if parent opts in.",
+      "outpatient_provider_standards_url": "https://www.dhcs.ca.gov/services/nhsp/Documents/OPStandards.pdf",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents (IIP trifold in 2nd/3rd trimester); if opted-in, refer to NHSP-certified outpatient provider or audiologist; if declined, document signed informed refusal (in-app master form).",
+      "law": "HSC §124115–124120.5 (Newborn and Infant Hearing Screening, Tracking and Intervention Act); §124116.5(d) belief objection exception."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening (critical congenital heart disease)",
+      "program": "CCS / Newborn Screening Program — CCHD",
+      "program_url": "https://www.dhcs.ca.gov/services/ccs/Documents/ccsnl040314.pdf",
+      "opt_out_form": null,
+      "state_form_note": "Pulse ox performed at 24–48h of life; out-of-hospital midwives perform or refer. Declination documented via written informed refusal (app master form); no standalone state form.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse-ox screening; submit results per NBS TRF packet; document informed refusal if declined."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "California Business & Professions Code §§550-558 (Ophthalmia Neonatorum)",
+      "program_url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120270.",
+      "opt_out_form": null,
+      "state_form_note": "BPC §551 makes prophylaxis a duty of any person attending the birth; no standalone state declination form — practice standard is a signed informed-refusal/waiver document (app master form). Note: CA law does not prohibit alternatives (AzaSite, gentamicin, tobramycin per CDPH AFL 09-36 during shortages).",
+      "afl_alternatives_url": "https://www.cdph.ca.gov/Programs/CHCQ/LCP/Pages/AFL-09-36.aspx",
+      "provider_signature_required": false,
+      "midwife_role": "If opted-in: obtain ointment via physician order and administer within 2h of birth. If declined: signed informed refusal (in-app master form) retained in records."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice — no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": ["oral", "shot", "none"],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in-app; shot administered by midwife or referred."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "California Immunization Registry (CAIR2)",
+      "program_url": "https://cair.cdph.ca.gov/",
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; administered dose reported to CAIR2."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice — no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice — no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "program_contact": {
+    "nbs_phone": "(866) 718-7915",
+    "nbs_email": "NBS_Admin@cdph.ca.gov",
+    "nbs_supplies_email": "NBSOrders@cdph.ca.gov",
+    "nbs_supplies_phone": "(510) 412-1542",
+    "billing_phone": "1-800-597-0832",
+    "ost_email": "NBSOST@cdph.ca.gov"
+  },
+  "key_pages": {
+    "midwives_page": "https://www.cdph.ca.gov/Programs/CFH/DGDS/Pages/nbs/midwives.aspx",
+    "consent_forms": "https://www.cdph.ca.gov/Programs/CFH/DGDS/Pages/nbs/nbsconsentforms.aspx",
+    "midwife_factsheet": "https://www.cdph.ca.gov/Programs/CFH/DGDS/CDPH%20Document%20Library/NBS%20Documents/Midwives_Communicating_With_Confidence.pdf",
+    "parents_iip": "https://www.cdph.ca.gov/Programs/CFH/DGDS/Pages/nbs/IIP.aspx"
+  }
+}

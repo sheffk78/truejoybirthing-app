@@ -6,3 +6,10 @@
 - Generator: backend/routes/pdf_branding.py — schema-driven labels/options from backend/assets/birth_plan_form_schema.json (MUST be committed — generator degrades gracefully to raw keys without it)
 - Design law: all-sans (Quicksand/SourceSans), no illustrations, full-width light-lavender wash bands w/ dark text, hairline top rule + letterspaced brand line, cover meta pulls from actual answers
 
+
+## 2026-09-24 — State Resources API (CA-1, Chante feedback plan)
+- Data: `backend/data/state_resources/ca.json` (8 procedures, all 16 URLs verified HTTP-200, incl. CDPH 4410 declination, SIS 2.0, billing portal; NBS-TRF/CDPH 4409 is order-only, refusal signed on TRF per 17 CCR §6501.2)
+- API: `backend/routes/state_resources.py` — GET /api/state-resources (list), /{state}, /{state}/procedure/{key}; auth via check_role all roles; 404 friendly `not_configured` for missing states
+- Wired: server.py import + include_router (first in chain)
+- Tests: live uvicorn E2E pass — register→CA 200 (8 procedures, verified date), vitamin_k 3-way, hearing law field, ZZ 404 friendly, unauthed 401
+- Status: API shipped in repo; not deployed (awaiting Railway gate next session)
