@@ -13,3 +13,8 @@
 - Wired: server.py import + include_router (first in chain)
 - Tests: live uvicorn E2E pass — register→CA 200 (8 procedures, verified date), vitamin_k 3-way, hearing law field, ZZ 404 friendly, unauthed 401
 - Status: API shipped in repo; not deployed (awaiting Railway gate next session)
+
+## 2026-09-24 — State data 47/47 (Phase 2 complete)
+- 5 parallel agents + parent verification: 47 state/district JSON files (all 50 states except none missing — CA+46; awaiting none; AK/HI/AR/MS/DC etc. all in), 247 URLs live-verified 200
+- Parent re-verification: validator 47/47 schema+links; cross-check: all files have 8 procedures; fixed double-encoded UTF-8 in 45 files (71fc4f90)
+- Remaining: Phase 3+ per plans/2026-09-24-state-newborn-procedures-EXECUTION.md (master form, cards, web hub, retention, cron, payment plans)
