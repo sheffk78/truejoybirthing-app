@@ -24,3 +24,12 @@
 - Final verification: 51/51 files schema+live-links pass (exit 0); full-51 mojibake sweep CLEAN; coverage check: no missing states incl. DC
 - Pushed to origin (9849adf7) after rebase over dark-mode seam fixes
 - Next: Phase 3 — master informed-choice form + birth-plan decision cards (per EXECUTION.md)
+
+## 2026-09-24 — Phases 3+4 backend SHIPPED (informed-choice master + birth-plan section)
+- informed_choice_template.py: 8-item master doc, ONE signature block, vitamin K 3-way, state-note from state data; hard language gate (banned 'against medical advice').
+- routes/informed_choice.py: preview (GET /{state}), create, mom+midwife dual sign, retention_until = final sign +10y (2036 verified live), re-sign guard 400, per-client list, PDF 200 raw bytes.
+- E2E live-server: lang gate 422, create 200, retention 2036-09-21, re-sign 400, list 4 docs, PDF %PDF 15KB; MOM create 403; unauth 401.
+- newborn_procedures section added to ALL FOUR BIRTH_PLAN_SECTIONS lists (mom.py, admin.py, server.py, care_plans.py — the last one serves GET /birth-plan; E2E-verified section present + decisions persist via PUT).
+- State data: final mojibake sweep — 51/51 validator green (schema + live links).
+- Commits: 0d987daa (+ 454ea505, 9849adf7). Pushed.
+- Remaining: Phase 4 app UI cards, Phase 5 web hub, Phase 6 midwife doc view/export, Phase 7 cron, Phase 8 payment plans, deploy at end.
