@@ -66,6 +66,7 @@ export default function BirthPlanScreen() {
   const { sessionToken: token } = useAuthStore();
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [shareRequests, setShareRequests] = useState<any[]>([]);
+  const [hasMidwife, setHasMidwife] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSection, setSelectedSection] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -197,12 +198,21 @@ export default function BirthPlanScreen() {
   
   const fetchBirthPlan = async () => {
     try {
-      const [planData, requestsData] = await Promise.all([
+      const [planData, requestsData, teamData] = await Promise.all([
         apiRequest(API_ENDPOINTS.BIRTH_PLAN),
         apiRequest(API_ENDPOINTS.BIRTH_PLAN_SHARE_REQUESTS).catch(() => ({ requests: [] })),
+        // Midwife-visibility gate: Newborn Procedures shows only when mom has a
+        // MIDWIFE on her care team (hospital-only moms don't see it). Fail open
+        // to false — a team fetch error should not reveal the section.
+        apiRequest(API_ENDPOINTS.MOM_TEAM).catch(() => []),
       ]);
       setBirthPlan(planData);
       setShareRequests(requestsData?.requests || []);
+      const teamList = Array.isArray(teamData) ? teamData : [];
+      setHasMidwife(teamList.some((m: any) =>
+        m?.provider?.role === 'MIDWIFE' &&
+        (m?.connection_status ?? 'Active') === 'Active'
+      ));
     } catch (error) {
       console.error('Error fetching birth plan:', error);
     }
@@ -263,7 +273,9 @@ export default function BirthPlanScreen() {
   
   const getCompletedCount = () => {
     if (!birthPlan?.sections) return 0;
-    return birthPlan.sections.filter((s: any) => s.status === 'Complete').length;
+    return birthPlan.sections.filter((s: any) =>
+      s.status === 'Complete' && (s.section_id !== 'newborn_procedures' || hasMidwife)
+    ).length;
   };
   
   const renderSectionContent = () => {
@@ -339,7 +351,7 @@ export default function BirthPlanScreen() {
             <View>
               <Text style={styles.progressTitle}>Your Progress</Text>
               <Text style={styles.progressSubtext}>
-                {getCompletedCount()} of {birthPlan?.sections?.length || 9} sections complete
+                {getCompletedCount()} of {hasMidwife ? (birthPlan?.sections?.length || 9) : (birthPlan?.sections?.length || 9) - 1} sections complete
               </Text>
             </View>
             <View style={styles.progressCircle}>
@@ -364,7 +376,9 @@ export default function BirthPlanScreen() {
           Tap each section to add your preferences
         </Text>
         
-        {birthPlan?.sections?.map((section: any, index: number) => (
+        {birthPlan?.sections?.filter((section: any) =>
+          section.section_id !== 'newborn_procedures' || hasMidwife
+        ).map((section: any, index: number) => (
           <TouchableOpacity
             key={section.section_id}
             onPress={() => openSection(section)}
