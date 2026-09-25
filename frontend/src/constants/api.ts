@@ -44,6 +44,10 @@ export const API_ENDPOINTS = {
   BIRTH_PLAN_EXPORT: '/birth-plan/export',
   BIRTH_PLAN_SHARE: '/birth-plan/share',
   BIRTH_PLAN_SHARE_REQUESTS: '/birth-plan/share-requests',
+
+  // State newborn procedures / informed choice
+  STATE_RESOURCES: '/state-resources',
+  INFORMED_CHOICE: '/informed-choice',
   
   // Provider Search
   PROVIDERS_SEARCH: '/providers/search',

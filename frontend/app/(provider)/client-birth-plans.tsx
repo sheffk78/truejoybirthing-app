@@ -57,6 +57,7 @@ const SECTION_TITLES: Record<string, string> = {
   'pushing_safe_word': 'Pushing, Delivery & Safe Word',
   'post_delivery': 'Post-Delivery Preferences',
   'newborn_care': 'Newborn Care Preferences',
+  'newborn_procedures': 'Newborn Procedures',
   'other_considerations': 'Other Important Considerations',
 };
 

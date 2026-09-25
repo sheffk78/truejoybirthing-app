@@ -19,6 +19,7 @@ import TIcon from '../../src/components/TIcon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { SECTION_FORMS, renderField } from '../../src/components/BirthPlanForms';
+import NewbornProceduresForm from '../../src/components/NewbornProceduresForm';
 import SectionVideoGuide from '../../src/components/SectionVideoGuide';
 import { apiRequest, getApiBaseUrl } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
@@ -53,6 +54,7 @@ const SECTION_ICONS: Record<string, string> = {
   'post_delivery': 'post_delivery',
   'after_birth': 'after_birth',
   'newborn_care': 'newborn_care',
+  'newborn_procedures': 'newborn_care',
   'other_considerations': 'other_considerations',
 };
 
@@ -266,9 +268,20 @@ export default function BirthPlanScreen() {
   
   const renderSectionContent = () => {
     if (!selectedSection) return null;
-    
+
     const formConfig = SECTION_FORMS[selectedSection.section_id];
-    
+
+    // Newborn Procedures uses dedicated informed-choice decision cards (Phase 4),
+    // not the generic field renderer — the section has no SECTION_FORMS entry.
+    if (selectedSection.section_id === 'newborn_procedures') {
+      return (
+        <NewbornProceduresForm
+          data={sectionData}
+          onChange={updateSectionData}
+        />
+      );
+    }
+
     if (!formConfig) {
       // Fallback for sections without specific form config
       return (
@@ -296,6 +309,9 @@ export default function BirthPlanScreen() {
   
   const getSectionDescription = () => {
     if (!selectedSection) return '';
+    if (selectedSection.section_id === 'newborn_procedures') {
+      return 'Routine newborn procedures and prenatal screenings — read each, then mark your choice. Declines open your state\u2019s official form or prepare your informed-choice document.';
+    }
     const formConfig = SECTION_FORMS[selectedSection.section_id];
     return formConfig?.description || 'Share your preferences for this section.';
   };
