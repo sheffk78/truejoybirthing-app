@@ -38,9 +38,19 @@ def iter_urls(obj):
 
 def check_links(url):
     try:
+        import ssl
+        try:
+            import certifi
+            # uv's cpython lacks a system CA bundle — without certifi, CDPH and
+            # other state sites fail SSL verification and look "down" (48/51 bug).
+            ctx = ssl.create_default_context(cafile=certifi.where())
+        except ImportError:
+            ctx = ssl.create_default_context()
+        https_handler = urllib.request.HTTPSHandler(context=ctx)
+        opener = urllib.request.build_opener(https_handler)
         req = urllib.request.Request(url, method="HEAD")
         try:
-            with urllib.request.urlopen(req, timeout=25) as r:
+            with opener.open(req, timeout=25) as r:
                 return r.status == 200
         except Exception:
             pass
@@ -51,8 +61,20 @@ def check_links(url):
         req = urllib.request.Request(url, method="GET",
                                      headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
                                               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
-        with urllib.request.urlopen(req, timeout=25) as r:
+        with opener.open(req, timeout=25) as r:
             return r.status == 200
+    except urllib.error.URLError as e:
+        # macOS-only roots (e.g. Comodo "AAA Certificate Services", used by
+        # cdph.ca.gov) exist in the system trust store but not in certifi —
+        # fall back to curl, which uses the system store.
+        import subprocess
+        try:
+            r = subprocess.run(['curl', '-s', '-o', '/dev/null', '-w', '%{http_code}',
+                                '-A', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+                                '--max-time', '25', url], capture_output=True, text=True, timeout=30)
+            return r.stdout.strip() == '200'
+        except Exception:
+            return False
     except Exception:
         return False
 

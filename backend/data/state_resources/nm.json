@@ -1,7 +1,7 @@
 {
   "state": "NM",
   "state_name": "New Mexico",
-  "last_verified": "2026-09-24",
+  "last_verified": "2026-09-25",
   "verified_by": "kit-agent (14-state batch, schema + links verified)",
   "procedures": {
     "metabolic_screening": {
@@ -90,5 +90,6 @@
       "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in.",
       "declination_law": "No state mandate for GBS screening form; informed choice per clinical standards."
     }
-  }
+  },
+  "program_url": "https://www.nmhealth.org/about/phd/fhb/cms/nbgs"
 }
