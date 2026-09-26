@@ -241,7 +241,22 @@ export default function BirthPlanScreen() {
   
   const saveSection = async () => {
     if (!selectedSection) return;
-    
+
+    // Guard: Newborn Procedures is an informed-choice section — require at least
+    // one decision before saving, so a mom never sees "Saved!" with an empty
+    // record and assumes her choices are on file.
+    if (selectedSection.section_id === 'newborn_procedures') {
+      const decisions = (sectionData as any)?.decisions || {};
+      const hasChoice = Object.values(decisions).some((d: any) => d?.choice);
+      if (!hasChoice) {
+        Alert.alert(
+          'No decisions yet',
+          'Choose or decline at least one procedure before saving this section.'
+        );
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       await apiRequest(`${API_ENDPOINTS.BIRTH_PLAN_SECTION}/${selectedSection.section_id}`, {
