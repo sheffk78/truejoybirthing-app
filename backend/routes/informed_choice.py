@@ -136,8 +136,12 @@ async def sign_informed_choice(doc_id: str, payload: SignatureIn, user: User = D
         raise HTTPException(status_code=404, detail="not found")
     if record.get("retention_until"):
         raise HTTPException(status_code=400, detail="already fully signed")
-    now = get_now()
     field = "mom_signed" if payload.signer == "mom" else "midwife_signed"
+    if record.get(field):
+        # Same party signing twice would invalidate the dual-signature audit
+        # trail — block it instead of silently overwriting (harness t6).
+        raise HTTPException(status_code=400, detail=f"{payload.signer} already signed")
+    now = get_now()
     await db.informed_choice_docs.update_one(
         {"doc_id": doc_id},
         {"$set": {field: {"name": payload.signature_name, "signed_at": now.isoformat()}}},
