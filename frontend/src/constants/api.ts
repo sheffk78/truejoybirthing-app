@@ -119,6 +119,7 @@ export const API_ENDPOINTS = {
   
   // Payment Instructions (shared by Doula & Midwife)
   PAYMENT_INSTRUCTIONS: '/payment-instructions',
+  PAYMENT_PLAN: '/payment-plan',
   PAYMENT_METHODS: '/payment-methods',
   
   // Mom Invoices

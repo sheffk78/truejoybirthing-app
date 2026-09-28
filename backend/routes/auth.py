@@ -86,6 +86,10 @@ def generate_user_id() -> str:
 
 async def check_rate_limit(request: Request, endpoint_name: str, max_requests: int, window_seconds: int):
     """MongoDB-based rate limiter with atomic insert-then-count to prevent race conditions."""
+    # E2E test-mode bypass: GW_E2E=1 raises the ceiling instead of removing it, so the
+    # limiter stays exercised in tests but the suite can't 429 its own fixtures.
+    if os.environ.get("GW_E2E") == "1":
+        max_requests = max_requests * 100
     # Get real client IP from proxy headers (Railway uses Hikari reverse proxy)
     ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or \
         request.headers.get("X-Real-IP", "").strip() or \

@@ -509,6 +509,38 @@ class PaymentAcknowledgment(BaseModel):
     note: Optional[str] = None
 
 
+@router.get("/invoices/{invoice_id}/payment-plan")
+async def get_mom_payment_plan(invoice_id: str, user: User = Depends(check_role(["MOM"]))):
+    """Get the payment plan for an invoice the mom has access to.
+
+    Scopes exactly like GET /mom/invoices/{invoice_id}: only invoices
+    tied to clients with active provider relationships are visible.
+    """
+    from .relationship_utils import get_active_provider_ids_for_mom
+    active_provider_ids = await get_active_provider_ids_for_mom(user.user_id)
+
+    clients = await db.clients.find(
+        {"linked_mom_id": user.user_id, "provider_id": {"$in": list(active_provider_ids)}},
+        {"_id": 0, "client_id": 1}
+    ).to_list(100)
+
+    client_ids = [c["client_id"] for c in clients]
+
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "client_id": {"$in": client_ids}},
+        {"_id": 0, "payment_plan": 1}
+    )
+
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    payment_plan = invoice.get("payment_plan")
+    if not payment_plan:
+        return {"payment_plan": None, "message": "This invoice is pay-once (no installment plan)"}
+
+    return {"payment_plan": payment_plan}
+
+
 @router.post("/invoices/{invoice_id}/acknowledge-payment")
 async def acknowledge_mom_invoice_payment(
     invoice_id: str,

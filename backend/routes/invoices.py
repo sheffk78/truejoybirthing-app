@@ -8,7 +8,7 @@ Handles invoice management for both Doula and Midwife providers, including:
 - Invoice status management (Draft, Sent, Paid, Cancelled)
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timedelta, timezone
@@ -47,6 +47,160 @@ async def notify_user(user_id: str, notif_type: str, title: str, message: str, d
 
 
 # ============== PYDANTIC MODELS ==============
+
+class PaymentPlanInstallment(BaseModel):
+    """Single installment of a provider's payment plan.
+    
+    status options: 'due', 'overdue', 'partial', 'paid'
+    """
+    installment_no: int
+    amount: float
+    due_date: str
+    status: str = "due"
+
+
+class PaymentPlanCreate(BaseModel):
+    """Create/update a payment plan within an invoice.
+    
+    - 'pay_once' = single payment (original behavior is preserved).
+    - 'installments' = array of installments for a multi-part payment plan.
+    """
+    installment_count: Optional[int] = None
+    amount_per_installment: Optional[float] = None
+    plan_description: Optional[str] = "Standard payment plan"
+    due_frequency: Optional[str] = "weekly"
+    first_due_date: Optional[str] = None
+    installments: Optional[list] = None
+    # If no schedule details are specified, creates a 'pay once' plan
+
+
+def build_payment_plan(invoice_data: dict, now: datetime, invoice_amount: float | None = None) -> dict:
+    """Build a payment_plan subdoc from invoice creation/update data.
+    
+    Returns a payment_plan dict suitable for embedding in an invoice doc,
+    or None if no plan is specified (pay-once invoice).
+    """
+    installments_raw = invoice_data.get('installments')
+    installment_count = invoice_data.get('installment_count')
+    amount_per_installment = invoice_data.get('amount_per_installment')
+    first_due_date = invoice_data.get('first_due_date')
+    due_frequency = invoice_data.get('due_frequency', 'weekly')
+    plan_description = invoice_data.get('plan_description', 'Standard payment plan')
+
+    # No plan data at all = pay once (None signals no subdoc)
+    if not installments_raw and not installment_count and not amount_per_installment:
+        return None
+
+    # If installments are provided explicitly, validate and use them directly
+    if installments_raw:
+        installments = []
+        for inst in installments_raw:
+            installment_no = inst.get('installment_no')
+            amount = inst.get('amount')
+            due_date = inst.get('due_date')
+            status = inst.get('status', 'due')
+            if installment_no is None or amount is None or due_date is None:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Each installment needs installment_no, amount, and due_date"
+                )
+            installments.append({
+                "installment_no": installment_no,
+                "amount": float(amount),
+                "due_date": due_date,
+                "status": status,
+            })
+        total = sum(i['amount'] for i in installments)
+        return {
+            "installment_count": len(installments),
+            "amount_per_installment": None,
+            "plan_description": plan_description,
+            "due_frequency": due_frequency,
+            "first_due_date": first_due_date,
+            "installments": installments,
+            "total_amount": total,
+            "status": _rollup_status(installments),
+        }
+
+    # Otherwise derive installments from count + per-installment amount
+    if installment_count and amount_per_installment:
+        if installment_count < 1:
+            raise HTTPException(status_code=422, detail="installment_count must be >= 1")
+        if amount_per_installment <= 0:
+            raise HTTPException(status_code=422, detail="amount_per_installment must be > 0")
+        if not first_due_date:
+            raise HTTPException(status_code=422, detail="first_due_date required when using count+amount mode")
+
+        freq_delta = {
+            "weekly": timedelta(weeks=1),
+            "biweekly": timedelta(weeks=2),
+            "monthly": timedelta(days=30),
+            "monthly": timedelta(days=30),
+        }.get((due_frequency or "weekly").lower(), timedelta(weeks=1))
+
+        first_dt = datetime.strptime(first_due_date, "%Y-%m-%d")
+        installments = []
+        total = 0.0
+        for i in range(1, installment_count + 1):
+            # First installment lands ON first_due_date; later ones step by frequency
+            due_dt = first_dt + freq_delta * (i - 1)
+            installments.append({
+                "installment_no": i,
+                "amount": float(amount_per_installment),
+                "due_date": due_dt.strftime("%Y-%m-%d"),
+                "status": "due",
+            })
+            total += float(amount_per_installment)
+        # Adjust last installment to absorb rounding difference. The invoice total is the
+        # source of truth: installments must sum to it, to the cent. (Passed in by the
+        # create-plan routes from the invoice doc — the plan payload itself has no amount.)
+        if invoice_amount:
+            target = round(float(invoice_amount), 2)
+            if abs(total - target) > 0.001:
+                diff = round(target - total + float(amount_per_installment), 2)
+                installments[-1]["amount"] = diff
+                total = sum(i['amount'] for i in installments)
+            if abs(total - target) > 0.001:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Installments total {round(total, 2)} but invoice amount is {target}; adjust amount_per_installment or provide installments directly"
+                )
+
+        return {
+            "installment_count": len(installments),
+            "amount_per_installment": float(amount_per_installment),
+            "plan_description": plan_description,
+            "due_frequency": due_frequency,
+            "first_due_date": first_due_date,
+            "installments": installments,
+            "total_amount": round(total, 2),
+            "status": _rollup_status(installments),
+        }
+
+    # Only count or only amount provided without the other = error
+    raise HTTPException(
+        status_code=422,
+        detail="Provide both installment_count and amount_per_installment, or provide installments array directly"
+    )
+
+
+def _rollup_status(installments: list) -> str:
+    """Compute the payment_plan status roll-up from installment statuses."""
+    if not installments:
+        return "due"
+    statuses = {i['status'] for i in installments}
+    if statuses == {'paid'}:
+        return "paid"
+    if statuses == {'due'}:
+        return "due"
+    if 'paid' in statuses and 'due' in statuses:
+        return "partial"
+    if 'paid' in statuses and 'overdue' in statuses:
+        return "partial"
+    if 'overdue' in statuses and statuses == {'overdue'}:
+        return "overdue"
+    return "due"
+
 
 class PaymentInstructionsTemplateCreate(BaseModel):
     label: str
@@ -866,3 +1020,216 @@ async def send_midwife_invoice_reminder(invoice_id: str, user: User = Depends(ch
                 logging.error(f"Failed to send invoice reminder email: {e}")
     
     return {"message": "Reminder sent"}
+
+
+# ============== PAYMENT PLAN ENDPOINTS ==============
+
+@router.get("/doula/invoices/{invoice_id}/payment-plan")
+async def get_doula_payment_plan(invoice_id: str, user: User = Depends(check_role(["DOULA"]))):
+    """Get the payment plan for a doula invoice (provider-side)."""
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"_id": 0, "payment_plan": 1}
+    )
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    return {"payment_plan": invoice.get("payment_plan")}
+
+
+@router.get("/midwife/invoices/{invoice_id}/payment-plan")
+async def get_midwife_payment_plan(invoice_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Get the payment plan for a midwife invoice (provider-side)."""
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"_id": 0, "payment_plan": 1}
+    )
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    return {"payment_plan": invoice.get("payment_plan")}
+
+
+@router.post("/doula/invoices/{invoice_id}/payment-plan")
+async def create_doula_payment_plan(invoice_id: str, plan_data: PaymentPlanCreate, request: Request, user: User = Depends(check_role(["DOULA"]))):
+    """Create or update a payment plan on a doula invoice."""
+    now = get_now()
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"_id": 0}
+    )
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    plan = build_payment_plan(plan_data.dict(), now, invoice_amount=invoice.get("amount"))
+    if plan is None:
+        # No plan data = remove existing plan (pay once)
+        await db.invoices.update_one(
+            {"invoice_id": invoice_id},
+            {"$unset": {"payment_plan": ""}, "$set": {"updated_at": now}}
+        )
+        return {"message": "Payment plan removed (pay once)"}
+
+    # Guard: never silently overwrite an existing plan — payment history could be wiped
+    # by a second POST. Explicit ?replace=true is required to replace.
+    if invoice.get("payment_plan"):
+        if request.query_params.get("replace") != "true":
+            raise HTTPException(
+                status_code=409,
+                detail="Invoice already has a payment plan. Pass ?replace=true to replace it."
+            )
+    # Guard: no new plans on invoices that are already fully paid.
+    if (invoice.get("status") or "").lower() == "paid":
+        raise HTTPException(status_code=409, detail="Invoice is already fully paid; cannot attach a payment plan")
+    if any(i.get("status") == "paid" for i in (invoice.get("payment_plan") or {}).get("installments", [])):
+        raise HTTPException(status_code=409, detail="A payment has already been made on this plan; it cannot be replaced")
+
+    await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {"payment_plan": plan, "updated_at": now}}
+    )
+    return {"message": "Payment plan created", "payment_plan": plan}
+
+
+@router.post("/midwife/invoices/{invoice_id}/payment-plan")
+async def create_midwife_payment_plan(invoice_id: str, plan_data: PaymentPlanCreate, request: Request, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Create or update a payment plan on a midwife invoice."""
+    now = get_now()
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"_id": 0}
+    )
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    plan = build_payment_plan(plan_data.dict(), now, invoice_amount=invoice.get("amount"))
+    if plan is None:
+        await db.invoices.update_one(
+            {"invoice_id": invoice_id},
+            {"$unset": {"payment_plan": ""}, "$set": {"updated_at": now}}
+        )
+        return {"message": "Payment plan removed (pay once)"}
+
+    # Guard: never silently overwrite an existing plan — payment history could be wiped
+    # by a second POST. Explicit ?replace=true is required to replace.
+    if invoice.get("payment_plan"):
+        if request.query_params.get("replace") != "true":
+            raise HTTPException(
+                status_code=409,
+                detail="Invoice already has a payment plan. Pass ?replace=true to replace it."
+            )
+    # Guard: no new plans on invoices that are already fully paid.
+    if (invoice.get("status") or "").lower() == "paid":
+        raise HTTPException(status_code=409, detail="Invoice is already fully paid; cannot attach a payment plan")
+    if any(i.get("status") == "paid" for i in (invoice.get("payment_plan") or {}).get("installments", [])):
+        raise HTTPException(status_code=409, detail="A payment has already been made on this plan; it cannot be replaced")
+
+    await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {"payment_plan": plan, "updated_at": now}}
+    )
+    return {"message": "Payment plan created", "payment_plan": plan}
+
+
+@router.post("/doula/invoices/{invoice_id}/payment-plan/installment/{installment_no}/mark-paid")
+async def mark_doula_installment_paid(invoice_id: str, installment_no: int, user: User = Depends(check_role(["DOULA"]))):
+    """Mark a specific installment as paid (provider-side)."""
+    now = get_now()
+    # Atomic guarded flip via arrayFilters: targets ONLY the installment whose number
+    # matches AND is unpaid. ($ne at doc level on an array path means "no element is
+    # paid" — it wrongly matches nothing once ANY installment is paid, hence filters.)
+    result = await db.invoices.update_one(
+        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"$set": {"payment_plan.installments.$[elem].status": "paid"}},
+        array_filters=[{"elem.installment_no": installment_no,
+                        "elem.status": {"$ne": "paid"}}],
+    )
+    # NOTE: updated_at is bumped AFTER the guarded flip — including it here would make
+    # modified_count==1 on every call (doc-level field changes) and break already-paid
+    # detection.
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    if result.modified_count == 0:
+        # Doc exists — element already paid, or installment_no doesn't exist.
+        invoice = await db.invoices.find_one(
+            {"invoice_id": invoice_id, "provider_id": user.user_id},
+            {"_id": 0, "payment_plan.installments": 1},
+        )
+        plan = (invoice or {}).get("payment_plan") or {}
+        numbers = [i.get("installment_no") for i in plan.get("installments", [])]
+        if installment_no not in numbers:
+            raise HTTPException(status_code=404, detail=f"Installment {installment_no} not found")
+        return {"message": f"Installment {installment_no} already paid"}
+
+    # Recompute roll-up from a FRESH read (never from a pre-write snapshot).
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"_id": 0, "payment_plan.installments": 1},
+    )
+    fresh_plan = (invoice or {}).get("payment_plan") or {}
+    installments = fresh_plan.get("installments", [])
+    new_status = _rollup_status(installments)
+    await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {"payment_plan.status": new_status, "updated_at": now}},
+    )
+
+    # If fully paid, also update the top-level invoice status
+    if new_status == "paid":
+        await db.invoices.update_one(
+            {"invoice_id": invoice_id},
+            {"$set": {"status": "Paid", "paid_at": now}}
+        )
+
+    return {"message": f"Installment {installment_no} marked paid", "payment_plan": {
+        "installments": installments, "status": new_status}}
+
+
+@router.post("/midwife/invoices/{invoice_id}/payment-plan/installment/{installment_no}/mark-paid")
+async def mark_midwife_installment_paid(invoice_id: str, installment_no: int, user: User = Depends(check_role(["MIDWIFE"]))):
+    """Mark a specific installment as paid (provider-side)."""
+    now = get_now()
+    # Atomic guarded flip — same arrayFilters pattern as the doula route above.
+    result = await db.invoices.update_one(
+        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"$set": {"payment_plan.installments.$[elem].status": "paid"}},
+        array_filters=[{"elem.installment_no": installment_no,
+                        "elem.status": {"$ne": "paid"}}],
+    )
+    # NOTE: updated_at is bumped AFTER the guarded flip — including it here would make
+    # modified_count==1 on every call (doc-level field changes) and break already-paid
+    # detection.
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    if result.modified_count == 0:
+        # Doc exists — element already paid, or installment_no doesn't exist.
+        invoice = await db.invoices.find_one(
+            {"invoice_id": invoice_id, "provider_id": user.user_id},
+            {"_id": 0, "payment_plan.installments": 1},
+        )
+        plan = (invoice or {}).get("payment_plan") or {}
+        numbers = [i.get("installment_no") for i in plan.get("installments", [])]
+        if installment_no not in numbers:
+            raise HTTPException(status_code=404, detail=f"Installment {installment_no} not found")
+        return {"message": f"Installment {installment_no} already paid"}
+
+    # Recompute roll-up from a FRESH read (never from a pre-write snapshot).
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "provider_id": user.user_id},
+        {"_id": 0, "payment_plan.installments": 1},
+    )
+    fresh_plan = (invoice or {}).get("payment_plan") or {}
+    installments = fresh_plan.get("installments", [])
+    new_status = _rollup_status(installments)
+    await db.invoices.update_one(
+        {"invoice_id": invoice_id},
+        {"$set": {"payment_plan.status": new_status, "updated_at": now}},
+    )
+
+    if new_status == "paid":
+        await db.invoices.update_one(
+            {"invoice_id": invoice_id},
+            {"$set": {"status": "Paid", "paid_at": now}}
+        )
+
+    return {"message": f"Installment {installment_no} marked paid", "payment_plan": {
+        "installments": installments, "status": new_status}}
+
