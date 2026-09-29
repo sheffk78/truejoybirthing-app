@@ -1,0 +1,23 @@
+# QA Part B — informed-choice click-through
+# B2g: the "Done" button of the date modal is below the fold — scroll the modal
+# up, tap Done, then Create my plan.
+appId: host.exp.Exponent
+name: 08-confirm-date-create-plan
+---
+- swipe:
+    direction: UP
+    duration: 500
+- runFlow:
+    when:
+      visible: "Done"
+    commands:
+      - tapOn: "Done"
+- runFlow:
+    when:
+      visible: "Create my plan"
+    commands:
+      - tapOn: "Create my plan"
+- extendedWaitUntil:
+    visible: ".*"
+    timeout: 25000
+- takeScreenshot: b8-plan-page

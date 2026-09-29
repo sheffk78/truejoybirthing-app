@@ -1,0 +1,30 @@
+# QA Part B — informed-choice click-through
+# B2c: complete the details screen (due date, home birth, Austin TX zip) to
+# finish onboarding and reach the home screen.
+appId: host.exp.Exponent
+name: 04-details-shape
+---
+- tapOn: "Select your due date"
+- runFlow:
+    when:
+      visible: "Done"
+    commands:
+      - tapOn: "Done"
+- tapOn: "Home Birth"
+- tapOn:
+    text: "Zip Code"
+- inputText: "78701"
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+- runFlow:
+    when:
+      visible: "Next"
+    commands:
+      - tapOn: "Next"
+- extendedWaitUntil:
+    visible: ".*"
+    timeout: 20000
+- takeScreenshot: b4-after-details

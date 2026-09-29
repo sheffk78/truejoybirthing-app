@@ -1,0 +1,18 @@
+# QA Part B — informed-choice click-through
+# B2f: dismiss the calendar by tapping outside it (top-left area above the modal),
+# then tap "Create my plan" once the underlying page is interactive.
+appId: host.exp.Exponent
+name: 07-dismiss-calendar
+---
+- tapOn:
+    point: "8%, 18%"
+- runFlow:
+    when:
+      visible: "Sep 25, 2026"
+    commands:
+      - tapOn: "Sep 25, 2026"
+- tapOn: "Create my plan"
+- extendedWaitUntil:
+    visible: ".*"
+    timeout: 25000
+- takeScreenshot: b7-plan-created

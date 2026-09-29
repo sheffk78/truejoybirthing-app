@@ -1,0 +1,12 @@
+# QA Part B — informed-choice click-through
+# B4: tap the Newborn Procedures row (4th visible card on the scrolled list) —
+# coordinate tap on the card body, then wait for the decision-card form.
+appId: host.exp.Exponent
+name: 12-newborn-form-opens
+---
+- tapOn:
+    point: "30%, 45%"
+- extendedWaitUntil:
+    visible: "Vitamin K"
+    timeout: 30000
+- takeScreenshot: b12-newborn-form-top

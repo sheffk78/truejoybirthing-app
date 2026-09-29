@@ -1,0 +1,26 @@
+# QA Part B — informed-choice click-through
+# B3b: Birth Plan screen is open. Scroll down to find the Newborn Procedures
+# section card (mom-CA has an active midwife → section MUST be present).
+appId: host.exp.Exponent
+name: 11-newborn-visible-scroll
+---
+- swipe:
+    direction: UP
+    duration: 400
+- runFlow:
+    when:
+      visible: "Newborn Procedures"
+    commands:
+      - takeScreenshot: b11-newborn-card
+- swipe:
+    direction: UP
+    duration: 400
+- runFlow:
+    when:
+      visible: "Newborn Procedures"
+    commands:
+      - takeScreenshot: b11-newborn-card
+- extendedWaitUntil:
+    visible: "Newborn Procedures"
+    timeout: 25000
+- takeScreenshot: b11-newborn-card

@@ -173,12 +173,19 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
   };
 
   const openCreateModal = async () => {
+    let initValues = { ...defaultValues };
     try {
       const savedDefaults = await apiRequest(config.endpoints.defaults);
-      setFormData({ ...defaultValues, ...savedDefaults });
+      initValues = { ...defaultValues, ...savedDefaults };
     } catch {
-      setFormData({ ...defaultValues });
+      initValues = { ...defaultValues };
     }
+    // E2E-only: the seeded test client gets deterministic fee values so the
+    // simulator suite can drive the full contract flow (never in prod builds).
+    if (__DEV__ && selectedClientId === 'client_e2e_mw2') {
+      initValues = { ...initValues, total_fee: '4500', retainer_amount: '1500' };
+    }
+    setFormData(initValues);
 
     setSelectedTemplateId('');
     setCurrentSection(0);
@@ -446,6 +453,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
         {field.type === 'textarea' ? (
           <TextInput
             style={[styles.input, styles.textArea]}
+            testID={`field-${field.id}`}
             value={value}
             onChangeText={(text) => updateFormField(field.id, text)}
             placeholder={field.placeholder}
@@ -464,6 +472,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
           ) : (
             <DatePickerField
               label={field.label}
+              testID={`field-${field.id}`}
               value={value ? new Date(value + 'T00:00:00') : null}
               onChange={(date) => {
                 const y = date.getFullYear();
@@ -477,6 +486,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
         ) : field.type === 'number' ? (
           <TextInput
             style={styles.input}
+            testID={`field-${field.id}`}
             value={value.toString()}
             onChangeText={(text) => updateFormField(field.id, text)}
             placeholder={field.placeholder}
@@ -486,6 +496,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
         ) : (
           <TextInput
             style={styles.input}
+            testID={`field-${field.id}`}
             value={value}
             onChangeText={(text) => updateFormField(field.id, text)}
             placeholder={field.placeholder}
@@ -611,6 +622,10 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
           style={[styles.addButton, { backgroundColor: primaryColor }]}
           onPress={openCreateModal}
           data-testid="add-contract-btn"
+          testID="add-contract-btn"
+          accessible
+          accessibilityRole="button"
+          accessibilityLabel="Add contract"
         >
           <Icon name="add" size={24} color="#fff" />
         </TouchableOpacity>
@@ -823,6 +838,9 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                   style={[styles.submitButton, { backgroundColor: primaryColor }, submitting && styles.submitButtonDisabled]}
                   onPress={handleCreateContract}
                   disabled={submitting}
+                  testID="create-contract-btn"
+                  accessible
+                  accessibilityRole="button"
                 >
                   {submitting ? (
                     <ActivityIndicator size="small" color="#fff" />
@@ -834,7 +852,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                   )}
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity style={styles.navButton} onPress={goToNextSection}>
+                <TouchableOpacity style={styles.navButton} onPress={goToNextSection} testID="next-section-btn">
                   <Text style={[styles.navButtonText, { color: primaryColor }]}>Next</Text>
                   <Icon name="arrow-forward" size={20} color={primaryColor} />
                 </TouchableOpacity>

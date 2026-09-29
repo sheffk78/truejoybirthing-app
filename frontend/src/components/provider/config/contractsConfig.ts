@@ -225,6 +225,7 @@ export const MIDWIFE_CONTRACT_SECTIONS: ContractSection[] = [
 
 export const MIDWIFE_CONTRACT_DEFAULTS: Record<string, any> = {
   partner_name: '',
+  planned_birth_location: 'Birth center suite, Provo, Utah',
   scope_description: "Care generally includes routine prenatal visits at intervals recommended by the Midwife, availability for consultation by phone or secure message for non-emergent concerns, on-call availability around the estimated time of birth, attendance at labor and birth in the planned setting when appropriate, and postpartum follow-up visits for both the Client and baby for approximately six to eight weeks after birth.",
   remaining_balance_due_description: "36 weeks' gestation",
   fee_coverage_description: 'This fee typically covers prenatal care within the practice, attendance at labor and birth in the planned setting, and routine postpartum and newborn care through about six to eight weeks postpartum, but does not include charges from hospitals, laboratories, imaging centers, pharmacies, or other specialists.',

@@ -1,0 +1,52 @@
+# QA Part B — informed-choice click-through
+# B1: login as mom-CA. Welcome->login navigation resets when the flow re-runs
+# (the welcome screen reappears). Loop-tolerant version: dismiss Save Password
+# alert whenever visible, and after Log In accept EITHER the birth-plan screen
+# or the tutorial (fresh user hasn't completed onboarding).
+appId: host.exp.Exponent
+name: 01-login-mom-ca
+---
+- runFlow:
+    when:
+      visible: "Not Now"
+    commands:
+      - tapOn: "Not Now"
+- runFlow:
+    when:
+      visible: "Get Started Free"
+    commands:
+      - tapOn: "I already have an account"
+      - extendedWaitUntil:
+          visible: "Email"
+          timeout: 15000
+- runFlow:
+    when:
+      visible: "Email"
+    commands:
+      - tapOn: "Email"
+      - inputText: "${MOM_CA_EMAIL}"
+- runFlow:
+    when:
+      visible: "Password"
+    commands:
+      - tapOn: "Password"
+      - inputText: "${MOM_PW}"
+- runFlow:
+    when:
+      visible: "Not Now"
+    commands:
+      - tapOn: "Not Now"
+- runFlow:
+    when:
+      visible: "Log In"
+    commands:
+      - tapOn: "Log In"
+- runFlow:
+    when:
+      visible: "Not Now"
+    commands:
+      - tapOn: "Not Now"
+- extendedWaitUntil:
+    visible: ".*Birth.*|.*Welcome home.*|.*Continue.*"
+    timeout: 45000
+- takeScreenshot: b1-after-login

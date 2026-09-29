@@ -1,0 +1,158 @@
+# TJB Contract Flow — Maestro UI script (Xcode Simulator)
+# Drives: login midwife → Clients → client → Contract → create → sign-out → login mom → home pending contract → sign.
+# Selectors verified against the built app 2026-09-28 (login.tsx placeholders, ProviderContracts/ProviderClientDetail testIDs, mom home pending-contract card).
+# iOS fires a "Save Password?" auto-fill sheet on password input — dismiss with 'Not Now' BEFORE tapping Log In.
+# E2E accounts (seeded on the 8899 backend): midwife@test.com (MIDWIFE, onboarded, has client 'E2E Mom Client' → testmom@test.com), testmom@test.com (MOM, onboarded).
+# Launch with: BUNDLE_ID=com.truejoybirthing.app maestro test -p ios maestro/contract_flow.yaml
+
+appId: com.truejoybirthing.app
+---
+- launchApp:
+    clearState: true
+
+# ---- Welcome → login (midwife). clearState may land on welcome OR (if a
+# session survived) straight on the dashboard — handle both. ----
+- runFlow:
+    when:
+      visible: "I already have an account"
+    commands:
+      - tapOn: "I already have an account"
+      - tapOn: "Email"
+      - inputText: "midwife@test.com"
+      - tapOn: "Password"
+      - inputText: "password123"
+      - runFlow:
+          when:
+            visible: "Not Now"
+          commands:
+            - tapOn: "Not Now"
+      - tapOn: "Log In"
+      - runFlow:
+          when:
+            visible: "Not Now"
+          commands:
+            - tapOn: "Not Now"
+- extendedWaitUntil:
+    visible: "Midwife Dashboard"
+    timeout: 25000
+
+# ---- Clients list (via dashboard quick action; tab label not maestro-tappable) ----
+- tapOn: "See Clients"
+- runFlow:
+    when:
+      visible:
+        id: "client-row-client_e2e_mw2"
+    commands:
+      - tapOn:
+          id: "client-row-client_e2e_mw2"
+- waitForAnimationToEnd:
+    timeout: 6000
+- extendedWaitUntil:
+    visible:
+      id: "action-contract"
+    timeout: 15000
+- tapOn:
+    id: "action-contract"
+- extendedWaitUntil:
+    visible: "Contracts"
+    timeout: 15000
+
+# ---- Create contract (modal: client auto-selected; 7 sections) ----
+- tapOn:
+    id: "add-contract-btn"
+- extendedWaitUntil:
+    visible: "Parties & Basic Details"
+    timeout: 15000
+# (LogBox silenced app-side in __DEV__; no debugger-bar handling needed)
+# S0 -> S1 (due date auto-filled from client edd)
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+# S1: planned birth location now prefilled from config defaults
+- waitForAnimationToEnd:
+    timeout: 8000
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+# S2: fees
+# fees prefilled client-side for E2E (dev guard): no typing needed
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+# S3 -> ... -> S6 (defaults carry): advance until the final Create button appears
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+- runFlow:
+    when:
+      notVisible: "Create Contract"
+    commands:
+      - tapOn:
+          id: "next-section-btn"
+      - waitForAnimationToEnd:
+          timeout: 3000
+- extendedWaitUntil:
+    visible: "Create Contract"
+    timeout: 10000
+- tapOn:
+    id: "create-contract-btn"
+- extendedWaitUntil:
+    visible: "Awaiting Mom's Signature"
+    timeout: 25000
+
+# ---- Sign-out, login as mom, sign ----
+- tapOn: "Profile"
+- tapOn: "Log Out"
+- extendedWaitUntil:
+    visible: "I already have an account"
+    timeout: 15000
+- tapOn: "I already have an account"
+- tapOn: "Email"
+- inputText: "testmom@test.com"
+- tapOn: "Password"
+- inputText: "password123"
+- runFlow:
+    when:
+      visible: "Not Now"
+    commands:
+      - tapOn: "Not Now"
+- tapOn: "Log In"
+- runFlow:
+    when:
+      visible: "Not Now"
+    commands:
+      - tapOn: "Not Now"
+- extendedWaitUntil:
+    visible: "Sign Contract"
+    timeout: 25000
+- tapOn: "Sign Contract"
+- extendedWaitUntil:
+    visible:
+      id: "signer-name-input"
+    timeout: 15000
+- tapOn:
+    id: "signer-name-input"
+- inputText: "Test Mom"
+- tapOn:
+    id: "agreement-checkbox"
+- tapOn:
+    id: "sign-contract-btn"
+- extendedWaitUntil:
+    visible: "Download Signed PDF"
+    timeout: 30000
+
+# Phase 4 (run_e2e.sh) verifies the completed submission + painted PDF on the backend.
