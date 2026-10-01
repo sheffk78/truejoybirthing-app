@@ -35,6 +35,18 @@ export default function MarketplaceScreen() {
   const styles = getStyles(colors);
   const [providers, setProviders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  // Current pregnancy week for the header illustration (personalized, Jeff 10/01)
+  const [weekNum, setWeekNum] = useState(20); // 20 = neutral midpoint until timeline loads
+  useEffect(() => {
+    let alive = true;
+    apiRequest(API_ENDPOINTS.TIMELINE)
+      .then((res: any) => {
+        const w = Number(res?.current_week);
+        if (alive && w >= 4 && w <= 40) setWeekNum(w);
+      })
+      .catch(() => {/* keep neutral midpoint */});
+    return () => { alive = false; };
+  }, []);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedType, setSelectedType] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -383,7 +395,7 @@ export default function MarketplaceScreen() {
           </View>
           <View style={styles.headerArtWrap} pointerEvents="none">
             <Image
-              source={getPregnancyIllustration(20)}
+              source={getPregnancyIllustration(Math.min(40, Math.max(4, weekNum)))}
               style={styles.headerArt}
               resizeMode="contain"
             />

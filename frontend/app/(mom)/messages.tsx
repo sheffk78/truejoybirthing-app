@@ -600,14 +600,18 @@ export default function MessagesScreen() {
           }
           showsVerticalScrollIndicator={false}
         >
-          {/* Approved S9 header — photo band + overline + Cormorant H1 (mockup m-head) */}
+          {/* Approved S9 header — flush band anatomy (appointments S7 reference,
+              audit 10/01): negative-offset wrap kills the 16px cream frame +
+              duplicated insets; title sits on the veil. */}
+          <View style={[styles.bandWrap, { marginTop: -insets.top }]}>
           <HBand source={BAND_MESSAGES} height={168 + insets.top} focus="50% 30%" />
-          <View style={s9.mhead}>
+          <View style={[s9.mhead, { paddingTop: 24 }]}>
             <Text style={s9.overline}>Conversations</Text>
             <Text style={s9.h1}>
               <Text style={s9.h1em}>Your</Text> Messages
             </Text>
             <Text style={s9.msub}>Quiet questions, quick answers — with your team</Text>
+          </View>
           </View>
 
           {/* Search pill (mockup .search) */}
@@ -1043,6 +1047,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     paddingBottom: SIZES.xxl,
   },
+  bandWrap: { marginTop: 0 },
   headerLogo: {
     width: 28,
     height: 28,

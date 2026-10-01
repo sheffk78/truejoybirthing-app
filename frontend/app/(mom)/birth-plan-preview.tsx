@@ -353,7 +353,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 100,
+    paddingBottom: 48,
   },
   printableContent: {
     backgroundColor: colors.surface,

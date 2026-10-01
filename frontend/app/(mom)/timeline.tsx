@@ -25,6 +25,7 @@ import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { C, F, kickerStyle, trimesterOf, BAND_HOME } from '../../src/constants/corpus';
+import { getPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 
 const DF = F;
 
@@ -176,7 +177,11 @@ export default function TimelineScreen() {
         {/* Where you are — week anchor card */}
         {timeline?.current_week && (
           <View style={styles.anchorCard}>
-            <Image source={BAND_HOME} style={styles.anchorArt} resizeMode="cover" />
+            <Image
+              source={getPregnancyIllustration(timeline.current_week) ?? BAND_HOME}
+              style={styles.anchorArt}
+              resizeMode="cover"
+            />
             <View style={styles.anchorBody}>
               <View style={styles.anchorRow}>
                 <Text style={styles.anchorTitle}>Where you are</Text>

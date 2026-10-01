@@ -14,16 +14,15 @@ import { Icon } from '../../src/components/Icon';
 import HBand from '../../src/components/mom/HBand';
 import { useAuthStore } from '../../src/store/authStore';
 import { SIZES } from '../../src/constants/theme';
-import { C, F, kickerStyle } from '../../src/constants/corpus';
+import { C, F, kickerStyle, bandStartHere } from '../../src/constants/corpus';
 import { useColors } from '../../src/hooks/useThemedStyles';
 
 const DF = F;
 
-// Birth photos - bundled locally
+// Getting-started band photo — website variety pool (vetted city-page scene),
+// NOT the welcome hero again (photo-variety pass, audit 2026-10-01)
 const PHOTOS = {
-  hero: require('../../assets/images/hero-newborn-sleeping.jpg'),
-  team: require('../../assets/images/hero-water-birth.jpg'),
-  family: require('../../assets/images/hero-family-moment.jpg'),
+  band: bandStartHere,
 };
 
 interface QuickStartItem {
@@ -141,7 +140,7 @@ export default function GettingStartedScreen() {
 
         {/* Hero — photo band inside rounded hairline card (batch-1 anchorCard vocabulary) */}
         <View style={styles.heroCard}>
-          <HBand source={PHOTOS.hero} height={150} focus="50% 30%" />
+          <HBand source={PHOTOS.band} height={150} focus="50% 30%" />
         </View>
 
         {/* Quick Start Section */}
@@ -310,7 +309,7 @@ const getStyles = (colors: ReturnType<typeof useColors>) =>
       marginTop: 5,
     },
     section: {
-      marginBottom: SIZES.xl,
+      marginBottom: SIZES.lg,
     },
     sectionTitle: {
       fontSize: 21,

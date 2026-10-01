@@ -212,14 +212,18 @@ export default function MyTeamScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
+        {/* Band flush anatomy (appointments S7 reference, audit 10/01):
+            negative-offset wrap = band sits flush under the status bar;
+            title on the veil with paddingTop 24. */}
+        <View style={[styles.bandWrap, { marginTop: -insets.top }]}>
         <HBand source={BAND_MY_TEAM} height={168 + insets.top} focus="50% 30%" />
-
-        <View style={styles.mhead}>
+        <View style={[styles.mhead, { paddingTop: 24 }]}>
           <Text style={styles.overline}>Your Circle</Text>
           <Text style={styles.h1}>
             <Text style={styles.h1em}>Your</Text> Care Team
           </Text>
           <Text style={styles.msub}>The people walking this chapter with you</Text>
+        </View>
         </View>
 
         {/* Your people */}
@@ -373,6 +377,8 @@ const getMyTeamStyles = (c: LiveCorpus) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.cream },
   scrollContent: { paddingBottom: 48 },
 
+  // —— band flush anatomy (appointments S7 reference, audit 10/01) ——
+  bandWrap: { marginTop: 0 },
   // —— m-head (common.css) ——
   mhead: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 6 },
   overline: {

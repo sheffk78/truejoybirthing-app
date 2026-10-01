@@ -489,7 +489,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: 80,
+    paddingVertical: 48,
   },
   emptyText: {
     marginTop: 12,

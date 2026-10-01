@@ -511,7 +511,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingBottom: SIZES.xxl,
   },
   header: {
-    // rows sit on the band's veil; padding-top set inline from safe-area insets
+    // padding-top set inline from safe-area insets (band removed 10/01)
     paddingHorizontal: 20, // Jeff-approved edge padding (matches S12 header)
     paddingBottom: 4,
     marginBottom: SIZES.md,
@@ -665,7 +665,7 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
     gap: 10,
     marginTop: 2,
-    marginBottom: SIZES.lg,
+    marginBottom: SIZES.sm, // 10/01: lg(24)+feed mt(24) stacked to 48px dead gap; sm reads right
   },
   actionCard: {
     flex: 1,

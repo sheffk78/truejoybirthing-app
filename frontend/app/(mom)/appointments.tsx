@@ -500,7 +500,7 @@ export default function AppointmentsScreen() {
               style={styles.modalContent}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
-              contentContainerStyle={{ paddingBottom: 120 }}
+              contentContainerStyle={{ paddingBottom: 56 }}
             >
             {/* Provider Selection */}
             <Text style={styles.fieldLabel}>Select Provider</Text>
