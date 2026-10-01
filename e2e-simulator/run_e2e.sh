@@ -125,6 +125,14 @@ for c in cs:
     if c.get("status") == "Draft":
         r = requests.delete(base + f"/api/midwife/contracts/{c['contract_id']}", headers=h, timeout=15)
         print(f"cleanup draft {c['contract_id']} -> {r.status_code}")
+# Stale SENT contracts from earlier runs accumulate on the mom home and push the
+# pending card below the iOS a11y prune window (found 2026-10-01: card at ~y960,
+# window cutoff ~y920 — runs began failing after testmom got a due date / baby-dev
+# card). Sweep them to Signed in the test DB so every run has exactly 0-1 pending.
+_db = __import__("pymongo").MongoClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))[os.environ.get("DB_NAME", "truejoybirthing_test")]
+_db.midwife_contracts.update_many({"status": "Sent"}, {"$set": {"status": "Signed"}})
+_db.contracts.update_many({"status": {"$in": ["Sent", "sent"]}}, {"$set": {"status": "Signed"}})
+print("swept stale Sent -> Signed (test db only)")
 PYEOF
 # Absolute: the script cwd-changes to $IOS_DIR in Phase 2, so relative paths break.
 [ -f "$ROOT/e2e-simulator/maestro/contract_flow.yaml" ] \
