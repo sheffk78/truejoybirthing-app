@@ -418,7 +418,15 @@ async def get_mom_contracts(user: User = Depends(check_role(["MOM"]))):
         {"client_id": {"$in": client_ids}},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
-    
+
+    # Midwife contracts live in their own collection — merge them in so the
+    # mom home "action required" card routes to /sign-midwife-contract.
+    midwife_contracts = await db.midwife_contracts.find(
+        {"client_id": {"$in": client_ids}},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    contracts.extend(midwife_contracts)
+
     # Enrich with provider info
     for contract in contracts:
         # Get provider from doula_id or midwife_id or provider_id

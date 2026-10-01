@@ -869,6 +869,7 @@ export default function MomProfileScreen() {
           style={styles.logoutButton}
           onPress={handleLogout}
           data-testid="logout-btn"
+          testID="logout-btn"
         >
           <Icon name="log-out-outline" size={20} color={C.rose} />
           <Text style={styles.logoutText}>Log Out</Text>

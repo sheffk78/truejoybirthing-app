@@ -376,6 +376,7 @@ export default function MomHomeScreen() {
                 }}
                 activeOpacity={0.8}
                 data-testid={`pending-contract-${contract.contract_id}`}
+                testID={`pending-contract-${contract.contract_id}`}
               >
                 <Card style={styles.actionRequiredCard}>
                   <View style={styles.actionRequiredHeader}>

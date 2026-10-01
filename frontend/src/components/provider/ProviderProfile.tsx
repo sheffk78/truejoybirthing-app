@@ -880,6 +880,7 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           ]}
           onPress={handleLogout}
           data-testid="logout-btn"
+          testID="logout-btn"
           accessibilityRole="button"
           accessibilityLabel="Log out of your account"
         >

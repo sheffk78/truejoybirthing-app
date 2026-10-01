@@ -3,9 +3,10 @@
 # Usage: bash run_e2e.sh [preflight|full]   (default: full)
 set -uo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BACKEND="$ROOT/backend"
-RESULTS_DIR="$(dirname "$0")/results"
+RESULTS_DIR="$SCRIPT_DIR/results"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 MODE="${1:-full}"
 FAIL=0
@@ -21,9 +22,12 @@ export REACT_APP_BACKEND_URL="http://127.0.0.1:8011"
 export APP_BASE_URL="http://127.0.0.1:8011"
 export EXPO_PUBLIC_BACKEND_URL="http://127.0.0.1:8011"
 export FRONTEND_BASE_URL="http://127.0.0.1:8011"
-SIM_NAME="${SIM_NAME:-iPhone 15}"
-APP_SCHEME="${APP_SCHEME:-truejoybirthing}"   # TODO: confirm from app.json once app exists
-BUNDLE_ID="${BUNDLE_ID:-}"                    # TODO: set once app exists
+SIM_NAME="${SIM_NAME:-iPhone 17 Pro}"
+APP_SCHEME="${APP_SCHEME:-TrueJoyBirthing}"
+BUNDLE_ID="${BUNDLE_ID:-com.truejoybirthing.app}"
+# iOS project actually lives at frontend/ios (Expo prebuild output) — the root
+# ios/ gate from the 9/28 pre-app plan blocked full runs after the app existed.
+IOS_DIR="$ROOT/frontend/ios"
 
 mkdir -p "$RESULTS_DIR"
 
@@ -50,14 +54,52 @@ fi
 
 # ================= PHASE 2: BUILD + INSTALL (blocked until app exists) =================
 log "Phase 2: build + install to simulator"
-if [ ! -d "$ROOT/ios" ]; then
-  log "BLOCKED: ios/ project not built yet — simulator phases 2-3 can't run."
+# Clean device first: simctl erase wipes app data AND the keychain, which
+# launchApp clearState alone can't touch (SecureStore tokens survive clearState
+# and auto-re-authenticate). Shutdown/erase/boot ≈ 2s, deterministic.
+xcrun simctl shutdown "$SIM_NAME" 2>/dev/null || true
+xcrun simctl erase "$SIM_NAME" || { log "FAIL: simctl erase"; exit 3; }
+xcrun simctl boot "$SIM_NAME" || { log "FAIL: simctl boot"; exit 3; }
+if [ ! -d "$IOS_DIR" ]; then
+  log "BLOCKED: $IOS_DIR not built yet — simulator phases 2-3 can't run."
   log "Everything up to here is verified; re-run after 'npx expo prebuild --platform ios'."
   echo "$STAMP BLOCKED_AT_PHASE2 (app not built; phases 0-1 PASS)" > "$RESULTS_DIR/$STAMP.md"
   exit 2
 fi
 xcrun simctl boot "$SIM_NAME" 2>/dev/null || true   # ok if already booted
-cd "$ROOT/ios" && xcodebuild -workspace *.xcworkspace -scheme "$(basename *.xcworkspace .xcworkspace)" \
+# Metro guard: the debug app inlines EXPO_PUBLIC_BACKEND_URL from the Metro bundler env,
+# NOT from simctl launch --env. If Metro is running without that env, the app silently
+# falls back to the production URL and every API call bypasses the local backend.
+METRO_PID=$(lsof -nP -iTCP:8081 -sTCP:LISTEN -t 2>/dev/null | head -1 || true)
+if [ -n "$METRO_PID" ]; then
+  if ! ps "ewww $METRO_PID" 2>/dev/null | tr ' ' '\n' | grep -q "EXPO_PUBLIC_BACKEND_URL=$EXPO_PUBLIC_BACKEND_URL"; then
+    log "Metro running without local backend env — restarting with EXPO_PUBLIC_BACKEND_URL=$EXPO_PUBLIC_BACKEND_URL"
+    kill "$METRO_PID" 2>/dev/null || true
+    sleep 2
+    (cd "$ROOT/frontend" && EXPO_PUBLIC_BACKEND_URL="$EXPO_PUBLIC_BACKEND_URL" EXPO_PUBLIC_E2E=1 nohup npx expo start --port 8081 --offline > /tmp/tjb-metro.log 2>&1 &)
+    for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+      curl -s --max-time 2 http://localhost:8081/status 2>/dev/null | grep -q packager-status:running && break
+      sleep 2
+    done
+  fi
+else
+  log "Metro not running — starting with EXPO_PUBLIC_BACKEND_URL=$EXPO_PUBLIC_BACKEND_URL"
+  (cd "$ROOT/frontend" && EXPO_PUBLIC_BACKEND_URL="$EXPO_PUBLIC_BACKEND_URL" EXPO_PUBLIC_E2E=1 nohup npx expo start --port 8081 --offline > /tmp/tjb-metro.log 2>&1 &)
+  for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+    curl -s --max-time 2 http://localhost:8081/status 2>/dev/null | grep -q packager-status:running && break
+    sleep 2
+  done
+fi
+curl -s --max-time 2 http://localhost:8081/status 2>/dev/null | grep -q packager-status:running \
+  || { log "FAIL: Metro not reachable on 8081 after restart"; exit 3; }
+# Bundle sanity (2026-09-29): frontend/.env once pinned EXPO_PUBLIC_BACKEND_URL to a dead
+# port (8899). Expo's dotenv beats the shell env at bundle time, so the app's login POSTs
+# silently went nowhere. Fail fast if the served bundle still inlines the dead URL.
+sleep 2
+if curl -s --max-time 120 "http://localhost:8081/node_modules/expo-router/entry.bundle?platform=ios&dev=true&hot=false&lazy=true&minify=false" 2>/dev/null | grep -q "127.0.0.1:8899"; then
+  log "FAIL: Metro bundle inlines dead backend URL 127.0.0.1:8899 — fix frontend/.env(.e2e)"; exit 3
+fi
+cd "$IOS_DIR" && xcodebuild -workspace TrueJoyBirthing.xcworkspace -scheme "$APP_SCHEME" \
   -destination "platform=iOS Simulator,name=$SIM_NAME" -derivedDataPath /tmp/tjb-sim-build build \
   || { log "FAIL: xcodebuild"; exit 3; }
 APP_PATH=$(find /tmp/tjb-sim-build/Build/Products/Debug-iphonesimulator -name "*.app" | head -1)
@@ -69,10 +111,29 @@ xcrun simctl launch booted "$BUNDLE_ID" \
 # ================= PHASE 3: UI FLOW (Maestro) =================
 log "Phase 3: Maestro UI flow"
 command -v maestro >/dev/null || { log "FAIL: maestro not installed (brew tap mobile-dev-inc/tap && brew install maestro)"; exit 3; }
-maestro test "$(dirname "$0")/maestro/contract_flow.yaml" || { log "FAIL: maestro flow"; exit 3; }
+# Clean slate: delete leftover Draft contracts so the run starts at zero and
+# every created contract in this run belongs to this run (idempotent reruns).
+"$BACKEND/.venv/bin/python" - <<'PYEOF'
+import os, requests
+base = "http://127.0.0.1:8011"
+tok = requests.post(base + "/api/auth/login",
+                    json={"email": "midwife@test.com", "password": "password123"},
+                    timeout=15).json()["session_token"]
+h = {"Authorization": f"Bearer {tok}"}
+cs = requests.get(base + "/api/midwife/contracts", headers=h, timeout=15).json()
+for c in cs:
+    if c.get("status") == "Draft":
+        r = requests.delete(base + f"/api/midwife/contracts/{c['contract_id']}", headers=h, timeout=15)
+        print(f"cleanup draft {c['contract_id']} -> {r.status_code}")
+PYEOF
+# Absolute: the script cwd-changes to $IOS_DIR in Phase 2, so relative paths break.
+[ -f "$ROOT/e2e-simulator/maestro/contract_flow.yaml" ] \
+  && maestro test "$ROOT/e2e-simulator/maestro/contract_flow.yaml" \
+  || { log "FAIL: maestro flow"; exit 3; }
 
 # ================= PHASE 4: POST-RUN VERIFICATION =================
 log "Phase 4: backend/PDF verification"
-"$BACKEND/.venv/bin/python" "$(dirname "$0")/verify_backend.py" --post \
+"$BACKEND/.venv/bin/python" "$SCRIPT_DIR/verify_backend.py" --post \
   || { log "FAIL: post-run verification"; exit 3; }
+"$BACKEND/.venv/bin/python" "$SCRIPT_DIR/write_stamp.py" "$STAMP" "$RESULTS_DIR"
 log "E2E PASS — full result in $RESULTS_DIR/$STAMP.md"

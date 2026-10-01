@@ -182,8 +182,13 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
     }
     // E2E-only: the seeded test client gets deterministic fee values so the
     // simulator suite can drive the full contract flow (never in prod builds).
-    if (__DEV__ && selectedClientId === 'client_e2e_mw2') {
-      initValues = { ...initValues, total_fee: '4500', retainer_amount: '1500' };
+    // Keyed on client NAME (stable across reseeds) — the 9/28 keying on the
+    // legacy slug id 'client_e2e_mw2' stopped matching once ids became Mongo ids.
+    if (__DEV__) {
+      const e2eClient = clients.find(c => c.client_id === selectedClientId);
+      if (e2eClient && e2eClient.name === 'E2E Mom Client') {
+        initValues = { ...initValues, total_fee: '4500', retainer_amount: '1500' };
+      }
     }
     setFormData(initValues);
 
@@ -548,6 +553,7 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
             <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: primaryColor }]}
               onPress={() => handleSendContract(contract)}
+              testID={`contract-send-btn-${contract.contract_id}`}
             >
               <Icon name="send" size={16} color="#fff" />
               <Text style={styles.actionButtonText}>Send</Text>
@@ -561,7 +567,10 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
           </>
         )}
         {contract.status === 'Sent' && (
-          <View style={[styles.actionButton, { backgroundColor: colors.warning + '20', paddingHorizontal: 12 }]}>
+          <View
+            style={[styles.actionButton, { backgroundColor: colors.warning + '20', paddingHorizontal: 12 }]}
+            testID={`contract-status-awaiting-${contract.contract_id}`}
+          >
             <Icon name="time-outline" size={16} color={colors.warning} />
             <Text style={[styles.actionButtonTextSmall, { color: colors.warning, marginLeft: 4 }]}>Awaiting Mom's Signature</Text>
           </View>

@@ -97,10 +97,38 @@ EXPECTED_TOKENS = ("2500", "625", "1875", "2026")
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--post", action="store_true")
-    ap.add_argument("--submission-id", type=int, required=True)
+    ap.add_argument("--submission-id", type=int, required=False)
     args = ap.parse_args()
     if not args.post:
         print("nothing to do (use --post)")
+        return 0
+
+    if args.submission_id is None:
+        # Native midwife-contract E2E: no DocuSeal submission. Verify the contract
+        # this run created reached Signed with a client signature on record.
+        import json as _json
+        import urllib.request as _u
+        req = _u.Request("http://127.0.0.1:8011/api/auth/login", method="POST",
+                         data=_json.dumps({"email": "midwife@test.com",
+                                           "password": "password123"}).encode(),
+                         headers={"Content-Type": "application/json"})
+        tok = _json.loads(_u.urlopen(req, timeout=20).read().decode())["session_token"]
+        req = _u.Request("http://127.0.0.1:8011/api/midwife/contracts",
+                         headers={"Authorization": "Bearer " + tok})
+        contracts = _json.loads(_u.urlopen(req, timeout=20).read().decode())
+        if isinstance(contracts, dict):
+            contracts = contracts.get("contracts", [])
+        signed = [c for c in contracts if c.get("status") == "Signed"]
+        if not signed:
+            print("FAIL: no Signed midwife contract found after run")
+            return 3
+        c0 = signed[0]
+        sig = (c0.get("client_signature") or {}).get("signer_name", "")
+        if not sig:
+            print("FAIL: contract signed without client signature record:", c0["contract_id"])
+            return 3
+        print(f"midwife contract {c0['contract_id']} status=Signed signer={sig}")
+        print("POST-RUN VERIFICATION PASS")
         return 0
 
     db = snapshot_sqlite()

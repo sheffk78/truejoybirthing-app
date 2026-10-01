@@ -62,6 +62,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (email, password) => {
     try {
       set({ isLoading: true });
+      if (process.env.EXPO_PUBLIC_E2E === '1') console.log('[E2E] login() base=', API_BASE, 'ep=', API_ENDPOINTS.AUTH_LOGIN);
       const normalizedEmail = email.trim().toLowerCase();
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);

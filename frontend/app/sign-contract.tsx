@@ -288,7 +288,7 @@ export default function SignContractScreen() {
             </Text>
             
             {/* Download PDF Button */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.downloadButton, { backgroundColor: colors.roleDoula }]}
               onPress={() => {
                 const pdfUrl = `${API_BASE_URL}/api/contracts/${contractId}/pdf`;
@@ -299,6 +299,7 @@ export default function SignContractScreen() {
                 }
               }}
               data-testid="download-pdf-btn"
+              testID="download-pdf-btn"
             >
               <Icon name="download-outline" size={20} color={colors.white} />
               <Text style={styles.downloadButtonText}>Download Signed PDF</Text>
@@ -322,10 +323,11 @@ export default function SignContractScreen() {
             />
             
             {/* Agreement Checkbox */}
-            <TouchableOpacity 
-              style={styles.agreementRow} 
+            <TouchableOpacity
+              style={styles.agreementRow}
               onPress={() => setAgreed(!agreed)}
               data-testid="agreement-checkbox"
+              testID="agreement-checkbox"
             >
               <View style={[styles.checkbox, agreed && { backgroundColor: colors.roleDoula, borderColor: colors.roleDoula }]}>
                 {agreed && <Icon name="checkmark" size={16} color={colors.white} />}

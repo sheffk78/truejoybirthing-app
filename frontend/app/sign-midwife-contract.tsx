@@ -31,8 +31,10 @@ interface MidwifeContractData {
     on_call_end_week: string;
     total_fee: number;
     deposit: number;
+    retainer_amount?: number | null;
     remaining_balance: number;
     balance_due_week: string;
+    remaining_balance_due_description?: string | null;
     practice_name: string | null;
     agreement_date: string;
     sections: Array<{
@@ -165,7 +167,7 @@ export default function SignMidwifeContractScreen() {
   const isAlreadySigned = contract.status === 'Signed';
   
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']} data-testid="sign-midwife-contract-screen">
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="sign-midwife-contract-screen">
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.accent }]}>
         <Text style={styles.headerTitle}>Midwifery Services Agreement</Text>
@@ -225,7 +227,7 @@ export default function SignMidwifeContractScreen() {
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Non-Refundable Deposit:</Text>
-            <Text style={styles.detailValue}>{formatCurrency(contract.deposit)}</Text>
+            <Text style={styles.detailValue}>{formatCurrency(contract.deposit ?? contract.retainer_amount ?? 0)}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Remaining Balance:</Text>
@@ -233,7 +235,7 @@ export default function SignMidwifeContractScreen() {
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Balance Due By:</Text>
-            <Text style={styles.detailValue}>{contract.balance_due_week} weeks</Text>
+            <Text style={styles.detailValue}>{contract.balance_due_week ?? contract.remaining_balance_due_description ?? 'Per payment plan'}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Agreement Date:</Text>
@@ -288,6 +290,7 @@ export default function SignMidwifeContractScreen() {
             {/* Download PDF Button */}
             <TouchableOpacity 
               style={[styles.downloadButton, { backgroundColor: colors.accent }]}
+              testID="download-pdf-btn"
               onPress={() => {
                 const pdfUrl = `${API_BASE_URL}/api/midwife-contracts/${contractId}/pdf`;
                 if (Platform.OS === 'web') {
@@ -296,7 +299,6 @@ export default function SignMidwifeContractScreen() {
                   Linking.openURL(pdfUrl);
                 }
               }}
-              data-testid="download-pdf-btn"
             >
               <Icon name="download-outline" size={20} color={colors.white} />
               <Text style={styles.downloadButtonText}>Download Signed PDF</Text>
@@ -332,7 +334,7 @@ export default function SignMidwifeContractScreen() {
             <TouchableOpacity 
               style={styles.agreementRow} 
               onPress={() => setAgreed(!agreed)}
-              data-testid="agreement-checkbox"
+              testID="agreement-checkbox"
             >
               <View style={[styles.checkbox, agreed && { backgroundColor: colors.accent, borderColor: colors.accent }]}>
                 {agreed && <Icon name="checkmark" size={16} color={colors.white} />}

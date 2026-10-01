@@ -12,6 +12,12 @@ appId: com.truejoybirthing.app
 
 # ---- Welcome → login (midwife). clearState may land on welcome OR (if a
 # session survived) straight on the dashboard — handle both. ----
+# 2026-09-29: iOS 26 strong-password autofill eats typed input in secure fields
+# unless the E2E build's password field uses textContentType 'none' (it does —
+# enabled by EXPO_PUBLIC_E2E=1 at Metro bundle time; prod behavior unchanged).
+# Type by id, then tap the submit button by id, then dismiss the system
+# 'Save Password?' sheet BEFORE asserting the dashboard (the sheet sits over
+# the screen Maestro-side and breaks text asserts if left up).
 - runFlow:
     when:
       visible: "I already have an account"
@@ -19,32 +25,28 @@ appId: com.truejoybirthing.app
       - tapOn: "I already have an account"
       - tapOn: "Email"
       - inputText: "midwife@test.com"
-      - tapOn: "Password"
+      - tapOn:
+          id: "login-password-input"
       - inputText: "password123"
-      - runFlow:
-          when:
-            visible: "Not Now"
-          commands:
-            - tapOn: "Not Now"
-      - tapOn: "Log In"
-      - runFlow:
-          when:
-            visible: "Not Now"
-          commands:
-            - tapOn: "Not Now"
+      - tapOn:
+          id: "login-submit-btn"
+      - extendedWaitUntil:
+          visible: "Not Now"
+          timeout: 8000
+      - tapOn: "Not Now"
 - extendedWaitUntil:
     visible: "Midwife Dashboard"
     timeout: 25000
 
 # ---- Clients list (via dashboard quick action; tab label not maestro-tappable) ----
+# Taps client-row-<real mongoid>: iOS 26 / RN exposes row resource-ids but NOT
+# text nodes to Maestro, so text matching ("E2E Mom Client") can't match.
+# The helper fetches the seeded client's live id from the e2e backend instead.
+- runScript:
+    file: fetch_e2e_client.js
 - tapOn: "See Clients"
-- runFlow:
-    when:
-      visible:
-        id: "client-row-client_e2e_mw2"
-    commands:
-      - tapOn:
-          id: "client-row-client_e2e_mw2"
+- tapOn:
+    id: ${output.rowId}
 - waitForAnimationToEnd:
     timeout: 6000
 - extendedWaitUntil:
@@ -110,49 +112,112 @@ appId: com.truejoybirthing.app
     timeout: 10000
 - tapOn:
     id: "create-contract-btn"
+# 2026-09-29 contract lifecycle: new contracts are DRAFT until sent. The app
+# shows a Success modal ("Midwife Service Agreement created!") + a Send button.
+# Dismiss the modal, send to the mom (moves status to Awaiting Mom's Signature),
+# then hand off to the mom-side sign steps below.
+# Awaiting badge: no testID (status View, not tappable) — assert via the Send
+# button's absence is unreliable; use the status-specific "awaiting-" testID
+# added to the badge below instead of text.
+- tapOn: "OK"
+# Resolve the just-created contract's id (only draft = ours, guaranteed by pre-run cleanup).
+- runScript:
+    file: resolve_draft_contract.js
 - extendedWaitUntil:
-    visible: "Awaiting Mom's Signature"
+    visible:
+      id: "contract-send-btn-${output.contractId}"
+    timeout: 10000
+- tapOn:
+    id: "contract-send-btn-${output.contractId}"
+# Send opens a native Alert.alert (title 'Send Contract', buttons Cancel/Send).
+# Text taps (plain and regex) silently miss native alerts on iOS 26 despite
+# reporting COMPLETED (observed 2026-09-29) — tap the button's coordinates
+# instead: Send occupies [205,473][345,521] on the 402x874 screen.
+- extendedWaitUntil:
+    visible: "Send Contract"
+    timeout: 10000
+- tapOn:
+    point: "68%, 57%"
+- extendedWaitUntil:
+    visible:
+      id: "contract-status-awaiting-${output.contractId}"
     timeout: 25000
 
 # ---- Sign-out, login as mom, sign ----
-- tapOn: "Profile"
-- tapOn: "Log Out"
+# ---- Switch to mom (cold relaunch instead of UI logout) ----
+# UI logout proved flaky on iOS 26 (below-the-fold button, stale scroll+tap
+# coordinates). clearState wipes app data but SecureStore (keychain) survives,
+# so the session auto-restores — also clear the keychain.
+- clearKeychain
+- launchApp:
+    clearState: true
 - extendedWaitUntil:
     visible: "I already have an account"
-    timeout: 15000
+    timeout: 20000
 - tapOn: "I already have an account"
 - tapOn: "Email"
 - inputText: "testmom@test.com"
-- tapOn: "Password"
+- tapOn:
+    id: "login-password-input"
 - inputText: "password123"
-- runFlow:
-    when:
-      visible: "Not Now"
-    commands:
-      - tapOn: "Not Now"
-- tapOn: "Log In"
-- runFlow:
-    when:
-      visible: "Not Now"
-    commands:
-      - tapOn: "Not Now"
+- tapOn:
+    id: "login-submit-btn"
 - extendedWaitUntil:
-    visible: "Sign Contract"
-    timeout: 25000
-- tapOn: "Sign Contract"
+    visible: "Not Now"
+    timeout: 8000
+- tapOn: "Not Now"
+# Mom home shows the pending contract card (verified by id — text matching on iOS 26 is
+# unreliable for composite a11y labels; the card exists below the fold).
 - extendedWaitUntil:
     visible:
+      id: "pending-contract-${output.contractId}"
+    timeout: 25000
+# iOS 26 + RN: tapping the below-the-fold card row (offscreen a11y bounds) never fires
+# onPress, and Maestro swipes don't scroll — so navigate via the app's public deep link.
+- openLink: "truejoybirthing://sign-midwife-contract?contractId=${output.contractId}&signingToken=${output.signingToken}"
+- runFlow:
+    when:
+      visible: "Open"
+    commands:
+      - tapOn: "Open"
+- extendedWaitUntil:
+    visible: "Midwifery Services Agreement"
+    timeout: 20000
+- scrollUntilVisible:
+    element:
       id: "signer-name-input"
-    timeout: 15000
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 40
 - tapOn:
     id: "signer-name-input"
+- eraseText: 50
 - inputText: "Test Mom"
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "agreement-checkbox"
+    direction: DOWN
+    timeout: 15000
+    visibilityPercentage: 40
 - tapOn:
     id: "agreement-checkbox"
+- scrollUntilVisible:
+    element:
+      id: "sign-contract-btn"
+    direction: DOWN
+    timeout: 15000
+    visibilityPercentage: 40
+- extendedWaitUntil:
+    visible:
+      id: "sign-contract-btn"
+    timeout: 8000
 - tapOn:
     id: "sign-contract-btn"
+# Success alert: dismiss; Phase 4 verifies the Signature + PDF render on the backend.
 - extendedWaitUntil:
-    visible: "Download Signed PDF"
-    timeout: 30000
+    visible: "Contract Signed!"
+    timeout: 20000
+- tapOn: "OK"
 
 # Phase 4 (run_e2e.sh) verifies the completed submission + painted PDF on the backend.
