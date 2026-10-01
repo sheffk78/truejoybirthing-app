@@ -473,7 +473,8 @@ export default function MomHomeScreen() {
             activeOpacity={0.8}
           >
             <View style={styles.iconChipSage}>
-              <TIcon name="status_todo" size={18} color={C.sage} />
+              {/* heart-form glyph from the approved set (10/01: plain status ring read as 'just a circle') */}
+              <TIcon name="labor_delivery" size={18} color={C.sage} />
             </View>
             <Text style={styles.actionTitle}>Wellness</Text>
             <Text style={styles.actionSubtitle}>How are you feeling today?</Text>

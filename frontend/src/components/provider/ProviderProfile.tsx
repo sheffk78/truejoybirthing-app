@@ -381,10 +381,13 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   };
 
   const handleShareApp = async () => {
+    const roleLabel = config.roleLabel.toLowerCase(); // doula / midwife / lactation consultant
     try {
       await Share.share({
-        message: 'Check out True Joy Birthing - your birth plan, your team, your support in one place!',
-        url: 'https://truejoybirthing.com',
+        // 10/01: provider share = client invitation, not marketing. The ask is
+        // "book me and keep our work in one place" — fits Jeff's growth loop.
+        title: 'True Joy Birthing',
+        message: `I'm your ${roleLabel} on True Joy Birthing — it keeps your birth plan, appointments, and messages with me all in one place. Download the app and we'll get you set up: https://truejoybirthing.com/app`,
       });
     } catch (error: any) {
       console.error('Share error:', error);
@@ -862,15 +865,6 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           </Card>
         </TouchableOpacity>
 
-        {/* App Version */}
-        <Card style={styles.profileCard}>
-          <View style={styles.menuRow}>
-            <Icon name="information-circle-outline" size={24} color={primaryColor} />
-            <Text style={styles.menuText}>App Version</Text>
-            <Text style={styles.versionText}>{appVersion}</Text>
-          </View>
-        </Card>
-
         {/* Logout Button - Using Pressable for better web compatibility */}
         <Pressable 
           style={({ pressed }) => [
@@ -906,38 +900,26 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
           </Text>
         </Pressable>
         
-        {/* Legal Links - App Store Compliance */}
+        {/* Legal footer — plain text menu + version (10/01: cards read wrong) */}
         <View style={styles.legalSection}>
           <View style={styles.legalLinks}>
-            <TouchableOpacity 
-              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/privacy', title: 'Privacy Policy' })}
-              style={styles.legalLink}
-            >
+            <TouchableOpacity onPress={() => setLegalView({ url: 'https://truejoybirthing.com/privacy', title: 'Privacy Policy' })}>
               <Text style={styles.legalLinkText}>Privacy Policy</Text>
             </TouchableOpacity>
-            <Text style={styles.legalSeparator}>•</Text>
-            <TouchableOpacity 
-              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Disclaimer' })}
-              style={styles.legalLink}
-            >
+            <Text style={styles.legalSeparator}>·</Text>
+            <TouchableOpacity onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Disclaimer' })}>
               <Text style={styles.legalLinkText}>Disclaimer</Text>
             </TouchableOpacity>
-          </View>
-          <View style={styles.legalLinks}>
-            <TouchableOpacity 
-              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Terms of Service' })}
-              style={styles.legalLink}
-            >
+            <Text style={styles.legalSeparator}>·</Text>
+            <TouchableOpacity onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Terms of Service' })}>
               <Text style={styles.legalLinkText}>Terms of Service</Text>
             </TouchableOpacity>
-            <Text style={styles.legalSeparator}>•</Text>
-            <TouchableOpacity 
-              onPress={() => setLegalView({ url: 'https://truejoybirthing.com/contact/', title: 'Contact' })}
-              style={styles.legalLink}
-            >
+            <Text style={styles.legalSeparator}>·</Text>
+            <TouchableOpacity onPress={() => setLegalView({ url: 'https://truejoybirthing.com/contact/', title: 'Contact' })}>
               <Text style={styles.legalLinkText}>Contact</Text>
             </TouchableOpacity>
           </View>
+          <Text style={styles.versionText}>True Joy Birthing · v{appVersion}</Text>
         </View>
         
         {/* In-app Legal WebView */}
@@ -1139,7 +1121,9 @@ backgroundColor: colors.surface
     color: colors.text,
   },
   versionText: {
-    fontSize: SIZES.fontSm,
+    marginTop: 10,
+    fontSize: SIZES.fontXs,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   
