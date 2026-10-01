@@ -48,7 +48,14 @@ DAY = time.strftime('%Y%m%d')
 PW = 'TestPass123!'
 
 def _db_name():
-    return 'tjb_test'
+    # Fail-fast: harness direct-Mongo seeds MUST run with the SAME DB_NAME the
+    # server uses (run_e2e.sh + serve-backend.sh export DB_NAME). A silent
+    # default desyncs seeds from API reads (t7/t11 404 mystery, 2026-10-01).
+    import os as _os
+    v = _os.environ.get('DB_NAME')
+    if not v:
+        raise SystemExit("Set DB_NAME to the server's database (run_e2e.sh exports it).")
+    return v
 
 
 def register(role, name):
@@ -126,7 +133,7 @@ def t1():
     # this client's invoices. Idempotent.
     import urllib.request as _ur
     _mongo = __import__('pymongo').MongoClient('mongodb://localhost:27017')
-    _db = _mongo['tjb_test']
+    _db = _mongo[_db_name()]
     _db.share_requests.update_one(
         {'provider_id': mw_id, 'mom_user_id': mom_id},
         {'$set': {'status': 'accepted', 'relationship_status': 'active',
@@ -313,7 +320,7 @@ def t11():
     doula_client_id = jbody(b).get('client_id')
     import urllib.request as _ur2
     _mongo = __import__('pymongo').MongoClient('mongodb://localhost:27017')
-    _db = _mongo['tjb_test']
+    _db = _mongo[_db_name()]
     _db.share_requests.update_one(
         {'provider_id': doula_id, 'mom_user_id': mom2_id},
         {'$set': {'status': 'accepted', 'relationship_status': 'active',
