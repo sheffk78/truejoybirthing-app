@@ -85,7 +85,6 @@ export default function MomHomeScreen() {
           c.status === 'Sent' || c.status === 'sent'
         );
         console.log('Fetched contracts:', contractsData.length, 'Pending:', pending.length);
-        console.log('[E2E-DBG] first pending payload:', JSON.stringify(pending[0] || {}).slice(0, 300));
         setPendingContracts(pending);
       } catch (err) {
         console.log('Error fetching contracts:', err);
