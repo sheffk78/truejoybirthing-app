@@ -173,6 +173,7 @@ export default function SignMidwifeContractScreen() {
         <TouchableOpacity
           onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }}
           style={styles.backButton}
+          testID="back-btn"
           data-testid="back-btn"
         >
           <Icon name="arrow-back" size={24} color={colors.textInverse} />

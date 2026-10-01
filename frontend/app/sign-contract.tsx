@@ -157,7 +157,7 @@ export default function SignContractScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']} data-testid="sign-contract-screen">
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} data-testid="back-btn">
+        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} testID="back-btn" data-testid="back-btn">
           <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Review & Sign</Text>
