@@ -8,9 +8,9 @@ c = MongoClient(os.environ.get('MONGO_URL', 'mongodb://localhost:27017'))
 db = c['truejoybirthing_test']
 
 fixes = [
-    ('demo.mom@truejoybirthing.com', 'DemoScreenshot2024!'),
-    ('demo.doula@truejoybirthing.com', 'DemoScreenshot2024!'),
-    ('demo.midwife@truejoybirthing.com', 'DemoScreenshot2024!'),
+    ('demo.mom@truejoybirthing.com', 'DemoMom2024!'),
+    ('demo.doula@truejoybirthing.com', 'DemoDoula2024!'),
+    ('demo.midwife@truejoybirthing.com', 'DemoMidwife2024!'),
     ('testmidwife@test.com', 'password123'),
     ('marketplace_doula@test.com', 'password123'),
     ('midwife@test.com', 'password123'),
