@@ -22,8 +22,7 @@ import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
-import HBand from '../../src/components/mom/HBand';
-import { BAND_HOME, C, F } from '../../src/constants/corpus';
+import { C, F } from '../../src/constants/corpus';
 
 interface PendingContract {
   contract_id: string;
@@ -202,31 +201,28 @@ export default function MomHomeScreen() {
           </Card>
         )}
         
-        {/* Header — approved S10: photo band under the status bar, greeting rows on the veil */}
-        <View style={[styles.bandWrap, { marginTop: -insets.top }]}>
-          <HBand source={BAND_HOME} height={190 + insets.top} focus="50% 0%" />
-          <View style={[styles.header, { paddingTop: insets.top + 30 }]}>
-            <View style={styles.headerTopRow}>
-              <Text style={styles.overline}>
-                Week {timeline?.current_week ?? '—'} · Day {timeline?.current_day ?? 0}
-              </Text>
-              <TouchableOpacity
-                style={styles.avatarContainer}
-                onPress={() => router.push('/(mom)/profile')}
-                data-testid="profile-avatar-btn"
-              >
-                {user?.picture ? (
-                  <Image source={{ uri: user.picture }} style={styles.avatarImage} />
-                ) : (
-                  <Text style={styles.avatarInitials}>{initials}</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.greeting}>
-              Hello, <Text style={styles.greetingAccent}>{firstName}</Text>
+        {/* Header — Jeff 2026-10-01: photo band removed; straight to week/day + greeting */}
+        <View style={styles.header}>
+          <View style={styles.headerTopRow}>
+            <Text style={styles.overline}>
+              Week {timeline?.current_week ?? '—'} · Day {timeline?.current_day ?? 0}
             </Text>
-            <Text style={styles.weekText}>{trimesterSub}</Text>
+            <TouchableOpacity
+              style={styles.avatarContainer}
+              onPress={() => router.push('/(mom)/profile')}
+              data-testid="profile-avatar-btn"
+            >
+              {user?.picture ? (
+                <Image source={{ uri: user.picture }} style={styles.avatarImage} />
+              ) : (
+                <Text style={styles.avatarInitials}>{initials}</Text>
+              )}
+            </TouchableOpacity>
           </View>
+          <Text style={styles.greeting}>
+            Hello, <Text style={styles.greetingAccent}>{firstName}</Text>
+          </Text>
+          <Text style={styles.weekText}>{trimesterSub}</Text>
         </View>
         
         {/* Birth Plan Card */}
@@ -477,7 +473,7 @@ export default function MomHomeScreen() {
             activeOpacity={0.8}
           >
             <View style={styles.iconChipSage}>
-              <TIcon name="status_wip" size={18} color={C.sage} />
+              <TIcon name="status_todo" size={18} color={C.sage} />
             </View>
             <Text style={styles.actionTitle}>Wellness</Text>
             <Text style={styles.actionSubtitle}>How are you feeling today?</Text>
@@ -513,9 +509,6 @@ const getStyles = createThemedStyles((colors) => ({
   scrollContent: {
     padding: SIZES.md,
     paddingBottom: SIZES.xxl,
-  },
-  bandWrap: {
-    marginHorizontal: -SIZES.md, // bleed to screen edges
   },
   header: {
     // rows sit on the band's veil; padding-top set inline from safe-area insets

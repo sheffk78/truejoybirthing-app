@@ -170,6 +170,13 @@ export default function SignMidwifeContractScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="sign-midwife-contract-screen">
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.accent }]}>
+        <TouchableOpacity
+          onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }}
+          style={styles.backButton}
+          data-testid="back-btn"
+        >
+          <Icon name="arrow-back" size={24} color={colors.textInverse} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Midwifery Services Agreement</Text>
       </View>
       
@@ -400,11 +407,20 @@ const getStyles = createThemedStyles((colors) => ({
     textAlign: 'center',
   },
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+  },
+  backButton: {
+    position: 'absolute',
+    left: SIZES.sm,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: SIZES.fontLg,
