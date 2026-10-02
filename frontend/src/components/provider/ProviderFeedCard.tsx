@@ -24,7 +24,8 @@ interface FeedArticle {
   excerpt: string;
   practice_takeaway?: string;
   tags?: string[];
-  tjb_blog_url: string;
+  // Backend sends null until the blog pass publishes the post (10/02 payload had null)
+  tjb_blog_url?: string | null;
   approved_date: string;
 }
 
