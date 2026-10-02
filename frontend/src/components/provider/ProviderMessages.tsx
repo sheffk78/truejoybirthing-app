@@ -494,6 +494,13 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
               <Icon name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>
+              {selectedConversation.other_user_picture ? (
+                <Image source={{ uri: selectedConversation.other_user_picture }} style={styles.chatHeaderPhoto} />
+              ) : (
+                <View style={[styles.chatHeaderFallback, { backgroundColor: getRoleColor(selectedConversation?.other_user_role || '') + '20' }]}>
+                  <Icon name="person" size={16} color={getRoleColor(selectedConversation?.other_user_role || '')} />
+                </View>
+              )}
               <Text style={[styles.chatHeaderName, { color: colors.text }]}>{selectedConversation.other_user_name}</Text>
               <View style={[styles.roleBadge, { backgroundColor: getRoleColor(selectedConversation?.other_user_role || '') + '20' }]}>
                 <Text style={[styles.roleText, { color: getRoleColor(selectedConversation?.other_user_role || '') }]}>
@@ -957,6 +964,15 @@ const getStyles = createThemedStyles((colors) => ({
   },
   chatHeader: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, borderBottomWidth: 1 },
   chatHeaderInfo: { flex: 1, alignItems: 'center' },
+  chatHeaderPhoto: { width: 32, height: 32, borderRadius: 16, marginBottom: 2 },
+  chatHeaderFallback: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 2,
+  },
   chatHeaderName: { fontSize: SIZES.fontLg, fontFamily: F.uiSemi },
   messagesContainer: { padding: SIZES.md, paddingBottom: SIZES.xl },
   messageBubble: { maxWidth: '80%', padding: SIZES.md, borderRadius: 18, marginBottom: SIZES.sm },
