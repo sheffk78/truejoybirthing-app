@@ -28,6 +28,8 @@ interface PendingContract {
   contract_id: string;
   provider_name: string;
   provider_role: string;
+  /* Jeff 10/02 avatar pass: /mom/contracts now enriches provider_picture */
+  provider_picture?: string | null;
   status: string;
   created_at: string;
 }
@@ -35,6 +37,8 @@ interface PendingContract {
 interface PendingInvoice {
   invoice_id: string;
   provider_name: string;
+  /* Jeff 10/02 avatar pass: /mom/invoices now enriches provider_picture */
+  provider_picture?: string | null;
   amount: number;
   status: string;
   due_date?: string;
@@ -43,6 +47,8 @@ interface PendingInvoice {
 interface RecentlyPaidInvoice {
   invoice_id: string;
   provider_name: string;
+  /* Jeff 10/02 avatar pass: /mom/invoices now enriches provider_picture */
+  provider_picture?: string | null;
   amount: number;
   paid_at: string;
 }
@@ -377,7 +383,12 @@ export default function MomHomeScreen() {
                 <Card style={styles.actionRequiredCard}>
                   <View style={styles.actionRequiredHeader}>
                     <View style={styles.actionRequiredIcon}>
-                      <TIcon name="ar_contract" size={18} color={C.rose} />
+                      {/* Jeff 10/02 avatar pass: provider photo when available */}
+                      {contract.provider_picture ? (
+                        <Image source={{ uri: contract.provider_picture }} style={styles.actionRequiredPhoto} />
+                      ) : (
+                        <TIcon name="ar_contract" size={18} color={C.rose} />
+                      )}
                     </View>
                     <View style={styles.actionRequiredContent}>
                       <Text style={styles.rowTitle}>Contract to sign</Text>
@@ -400,7 +411,12 @@ export default function MomHomeScreen() {
                 <Card style={styles.actionRequiredCard}>
                   <View style={styles.actionRequiredHeader}>
                     <View style={styles.actionRequiredIcon}>
-                      <TIcon name="ar_invoice" size={18} color={C.rose} />
+                      {/* Jeff 10/02 avatar pass: provider photo when available */}
+                      {invoice.provider_picture ? (
+                        <Image source={{ uri: invoice.provider_picture }} style={styles.actionRequiredPhoto} />
+                      ) : (
+                        <TIcon name="ar_invoice" size={18} color={C.rose} />
+                      )}
                     </View>
                     <View style={styles.actionRequiredContent}>
                       <Text style={styles.rowTitle}>Invoice — ${invoice.amount}</Text>
@@ -428,7 +444,12 @@ export default function MomHomeScreen() {
                 <Card key={invoice.invoice_id} style={styles.recentlyPaidCard}>
                   <View style={styles.actionRequiredHeader}>
                     <View style={[styles.actionRequiredIcon, styles.iconChipSage]}>
-                      <TIcon name="ar_invoice_paid" size={18} color={C.sage} />
+                      {/* Jeff 10/02 avatar pass: provider photo when available */}
+                      {invoice.provider_picture ? (
+                        <Image source={{ uri: invoice.provider_picture }} style={styles.actionRequiredPhoto} />
+                      ) : (
+                        <TIcon name="ar_invoice_paid" size={18} color={C.sage} />
+                      )}
                     </View>
                     <View style={styles.actionRequiredContent}>
                       <Text style={styles.rowTitle}>Invoice paid — ${invoice.amount}</Text>
@@ -759,6 +780,13 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: C.roseBg,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden' as const,
+  },
+  /* Jeff 10/02 avatar pass: real provider photo on home action cards */
+  actionRequiredPhoto: {
+    width: 34,
+    height: 34,
+    borderRadius: 12,
   },
   actionRequiredContent: {
     flex: 1,

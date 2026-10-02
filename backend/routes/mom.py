@@ -437,11 +437,13 @@ async def get_mom_contracts(user: User = Depends(check_role(["MOM"]))):
         if provider_id:
             provider = await db.users.find_one(
                 {"user_id": provider_id},
-                {"_id": 0, "full_name": 1, "role": 1}
+                {"_id": 0, "full_name": 1, "role": 1, "picture": 1}
             )
             if provider:
                 contract["provider_name"] = provider.get("full_name")
                 contract["provider_role"] = provider.get("role")
+                # Jeff 10/02 avatar pass: provider photo on the mom's contract card
+                contract["provider_picture"] = provider.get("picture")
     
     return contracts
 
@@ -468,12 +470,14 @@ async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
     for invoice in invoices:
         provider = await db.users.find_one(
             {"user_id": invoice.get("provider_id")},
-            {"_id": 0, "full_name": 1, "role": 1, "payment_methods": 1}
+            {"_id": 0, "full_name": 1, "role": 1, "payment_methods": 1, "picture": 1}
         )
         if provider:
             invoice["provider_name"] = provider.get("full_name")
             invoice["provider_role"] = provider.get("role")
             invoice["provider_payment_methods"] = provider.get("payment_methods") or {}
+            # Jeff 10/02 avatar pass: provider photo beside "From: <name>" rows
+            invoice["provider_picture"] = provider.get("picture")
 
     return invoices
 

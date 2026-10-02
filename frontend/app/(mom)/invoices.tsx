@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Alert,
   Clipboard,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
@@ -214,10 +215,22 @@ export default function MomInvoicesScreen() {
             >
               <View style={styles.invoiceHeader}>
                 <View style={styles.providerInfo}>
-                  <Text style={styles.providerName}>{invoice.provider_name}</Text>
-                  <Text style={styles.providerType}>
-                    {getProviderTypeLabel(invoice.provider_type)}
-                  </Text>
+                  {/* Jeff 10/02 avatar pass: provider photo when present (endpoint now enriches provider_picture) */}
+                  {invoice.provider_picture ? (
+                    <Image source={{ uri: invoice.provider_picture }} style={styles.invoiceProviderPhoto} />
+                  ) : (
+                    <View style={styles.invoiceProviderInitialsWrap}>
+                      <Text style={styles.invoiceProviderInitials}>
+                        {(invoice.provider_name || '?').split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+                  <View style={styles.providerNameCol}>
+                    <Text style={styles.providerName}>{invoice.provider_name}</Text>
+                    <Text style={styles.providerType}>
+                      {getProviderTypeLabel(invoice.provider_type)}
+                    </Text>
+                  </View>
                 </View>
                 <View style={[styles.statusBadge, { backgroundColor: getStatusColor(invoice.status) + '20' }]}>
                   <Text style={[styles.statusText, { color: getStatusColor(invoice.status) }]}>
@@ -501,7 +514,26 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'flex-start',
     marginBottom: SIZES.xs,
   },
-  providerInfo: { flex: 1 },
+  providerInfo: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  invoiceProviderPhoto: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  invoiceProviderInitialsWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: C.roseBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  invoiceProviderInitials: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: C.rose,
+  },
+  providerNameCol: { flexShrink: 1 },
   providerName: { fontSize: 16, fontWeight: '600', color: C.ink },
   providerType: { fontSize: 12, color: C.gray },
   statusBadge: {
