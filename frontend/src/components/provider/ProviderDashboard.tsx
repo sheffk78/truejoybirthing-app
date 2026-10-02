@@ -29,6 +29,7 @@ interface ShareRequest {
   request_id: string;
   mom_user_id: string;
   mom_name: string;
+  mom_picture?: string | null;
   status: string;
   created_at: string;
 }
@@ -243,7 +244,12 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
               <Card key={request.request_id} style={styles.requestCard}>
                 <View style={styles.requestHeader}>
                   <View style={[styles.requestAvatar, { backgroundColor: colors.primary + '20' }]}>
-                    <Icon name="person" size={24} color={colors.primary} />
+                    {/* Jeff 10/02 avatar pass: real mom photo (endpoint now enriches mom_picture) */}
+                    {request.mom_picture ? (
+                      <Image source={{ uri: request.mom_picture }} style={styles.requestAvatarImage} />
+                    ) : (
+                      <Text style={styles.requestAvatarInitials}>{(request.mom_name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</Text>
+                    )}
                   </View>
                   <View style={styles.requestInfo}>
                     <Text style={[styles.requestName, { color: colors.text }]}>{request.mom_name}</Text>
@@ -443,6 +449,17 @@ const getDashStyles = (c: LiveCorpus) => StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden' as const,
+  },
+  requestAvatarImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  requestAvatarInitials: {
+    color: c.lavender,
+    fontFamily: F.ui,
+    fontSize: 15,
   },
   requestInfo: {
     flex: 1,
