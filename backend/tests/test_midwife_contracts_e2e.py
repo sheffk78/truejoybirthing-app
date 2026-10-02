@@ -355,12 +355,18 @@ class TestMidwifeContractsE2E:
         )
         assert send_response.status_code == 200
         
-        # Client signs (public endpoint, no auth)
+        # Client signs (public endpoint). The sign POST is token-guarded: fetch
+        # the token from the send response's signing_url (deep-link shape) — this
+        # mirrors the real email/deep-link flow.
+        signing_url = send_response.json().get("signing_url", "")
+        assert "signingToken=" in signing_url, f"send response missing token: {signing_url}"
+        token = signing_url.split("signingToken=")[1].split("&")[0]
         sign_response = api_client.post(
             f"{BASE_URL}/api/midwife-contracts/{contract_id}/sign",
             json={
                 "signer_name": f"Test Client {unique_id}",
-                "signature_data": "test_signature_data"
+                "signature_data": "test_signature_data",
+                "signing_token": token
             }
         )
         

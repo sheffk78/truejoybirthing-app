@@ -107,11 +107,15 @@ class TestContractDefaults:
     def test_put_and_get_contract_defaults_persistence(self):
         """Test that saved defaults are correctly retrieved"""
         # Save test defaults
+        # NOTE: PUT /doula/contract-defaults accepts only the ContractDefaultsUpdate
+        # schema fields (deposit_percentage, payment_terms, services_included,
+        # cancellation_policy) — fee fields were never part of that model, so the
+        # old payload's total_fee/retainer_amount were silently dropped by Pydantic.
         test_defaults = {
-            "total_fee": 4000,
-            "retainer_amount": 1000,
-            "prenatal_visit_description": "PERSISTENCE_TEST: Six prenatal visits",
-            "on_call_window_description": "35 to 42 weeks",
+            "deposit_percentage": 30.0,
+            "payment_terms": "PERSISTENCE_TEST: Balance due 36 weeks",
+            "services_included": ["PERSISTENCE_TEST visit A", "PERSISTENCE_TEST visit B"],
+            "cancellation_policy": "PERSISTENCE_TEST: Deposit non-refundable after 36 weeks.",
         }
         
         put_response = self.session.put(
@@ -128,30 +132,33 @@ class TestContractDefaults:
         data = get_response.json()
         print(f"Retrieved defaults: {data}")
         
-        # Verify persistence
-        assert data.get("total_fee") == test_defaults["total_fee"], \
-            f"total_fee mismatch: expected {test_defaults['total_fee']}, got {data.get('total_fee')}"
-        assert data.get("retainer_amount") == test_defaults["retainer_amount"], \
-            f"retainer_amount mismatch: expected {test_defaults['retainer_amount']}, got {data.get('retainer_amount')}"
-        assert data.get("prenatal_visit_description") == test_defaults["prenatal_visit_description"], \
-            f"prenatal_visit_description mismatch"
-        assert data.get("on_call_window_description") == test_defaults["on_call_window_description"], \
-            f"on_call_window_description mismatch"
+        # Verify persistence (schema-backed fields only)
+        assert data.get("deposit_percentage") == test_defaults["deposit_percentage"], \
+            f"deposit_percentage mismatch: expected {test_defaults['deposit_percentage']}, got {data.get('deposit_percentage')}"
+        assert data.get("payment_terms") == test_defaults["payment_terms"], \
+            f"payment_terms mismatch"
+        assert data.get("services_included") == test_defaults["services_included"], \
+            f"services_included mismatch"
+        assert data.get("cancellation_policy") == test_defaults["cancellation_policy"], \
+            f"cancellation_policy mismatch"
         
         print("PASSED: All saved defaults retrieved correctly!")
     
     def test_restore_original_defaults(self):
         """Restore the original defaults mentioned in the test request"""
         # Restore to values mentioned in the context
+        # Schema-backed restore (old payload's fee fields were silently dropped —
+        # see PERSISTENCE test note).
         original_defaults = {
-            "total_fee": 3000,
-            "retainer_amount": 750,
-            "prenatal_visit_description": "Custom: Four prenatal visits of 90 minutes each",
-            "on_call_window_description": "37 to 42 weeks",
-            "postpartum_visit_description": "One or two in-home visits within the first two weeks after birth",
-            "retainer_non_refundable_after_weeks": 37,
-            "cancellation_weeks_threshold": 37,
-            "final_payment_due_description": "Day after birth",
+            "deposit_percentage": 25.0,
+            "payment_terms": "Balance due before birth",
+            "services_included": [
+                "Up to 2 prenatal visits",
+                "On-call support from 38 weeks",
+                "Continuous labor support",
+                "1 postpartum visit"
+            ],
+            "cancellation_policy": "Deposit non-refundable after signing. Full refund if canceled by doula."
         }
         
         put_response = self.session.put(
@@ -167,8 +174,8 @@ class TestContractDefaults:
         data = get_response.json()
         print(f"Restored defaults: {data}")
         
-        assert data.get("total_fee") == 3000, "total_fee should be 3000"
-        assert data.get("retainer_amount") == 750, "retainer_amount should be 750"
+        assert data.get("deposit_percentage") == 25.0, "deposit_percentage should restore to 25.0"
+        assert data.get("payment_terms") == "Balance due before birth", "payment_terms should restore"
         print("PASSED: Original defaults restored successfully!")
 
 
