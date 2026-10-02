@@ -87,6 +87,17 @@ async def get_client_detail(client_id: str, user: User = Depends(check_role(["DO
     # Add is_active
     client["is_active"] = is_client_active(client)
     
+    # Jeff 10/02 avatar consistency: detail endpoint must carry the same fresh,
+    # synced picture as the list endpoint — pull from linked mom's user record.
+    linked_mom_id = client.get("linked_mom_id")
+    if linked_mom_id and db is not None:
+        mom = await db.users.find_one(
+            {"user_id": linked_mom_id},
+            {"_id": 0, "picture": 1}
+        )
+        if mom and mom.get("picture"):
+            client["picture"] = mom["picture"]
+    
     # Get counts of related entities
     appointments_count = await db.appointments.count_documents({
         "$or": [
