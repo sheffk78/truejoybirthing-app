@@ -755,13 +755,13 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
           <Icon name="clipboard-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Newborn Exams</Text>
         </View>
+        {/* Consistency (Jeff 10/02): bare "+" like Prenatal Visits / Labor Records */}
         <TouchableOpacity
           style={[styles.addButton, { backgroundColor: C.sage }]}
           onPress={openCreateModal}
           data-testid="add-newborn-exam-btn"
         >
-          <Icon name="add" size={18} color={C.white} />
-          <Text style={styles.addButtonText}>New Exam</Text>
+          <Icon name="add" size={22} color={C.white} />
         </TouchableOpacity>
       </View>
 
@@ -772,13 +772,8 @@ export default function NewbornExamSection({ clientId, primaryColor, onRefresh }
           <Icon name="clipboard-outline" size={48} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No Newborn Exams</Text>
           <Text style={styles.emptyText}>
-            Add a comprehensive newborn physical exam for this client's baby.
+            {'Tap the + button above to add a comprehensive newborn physical exam for this client\'s baby.'}
           </Text>
-          <Button
-            title="Start Newborn Exam"
-            onPress={openCreateModal}
-            style={{ marginTop: SIZES.md }}
-          />
         </Card>
       ) : (
         <View style={styles.examsList}>{exams.map(renderExamCard)}</View>

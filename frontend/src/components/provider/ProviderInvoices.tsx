@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
+import ClientSearchPicker from '../ClientSearchPicker';
 import DatePickerField from '../DatePickerField';
 import { RedDot } from '../RedDot';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -842,36 +843,14 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               </View>
             ) : (
               <View style={styles.clientDropdownContainer}>
-                <TouchableOpacity
-                  style={[styles.clientDropdown, selectedClientId && { borderColor: primaryColor }]}
-                  onPress={() => {
-                    // Simple dropdown logic - show options
-                  }}
-                >
-                  <Icon name="person-outline" size={18} color={selectedClientId ? primaryColor : colors.textLight} />
-                  <Text style={[styles.clientDropdownText, selectedClientId ? { color: colors.text } : { color: colors.textLight }]}>
-                    {selectedClientId 
-                      ? activeClients.find(c => c.client_id === selectedClientId)?.name || 'Select Client'
-                      : 'Select a client'}
-                  </Text>
-                  <Icon name="chevron-down" size={18} color={colors.textLight} />
-                </TouchableOpacity>
-                <View style={styles.clientOptions}>
-                  {activeClients.map((client) => (
-                    <TouchableOpacity
-                      key={client.client_id}
-                      style={[styles.clientOption, selectedClientId === client.client_id && { borderColor: primaryColor, backgroundColor: primaryColor + '10' }]}
-                      onPress={() => handleClientSelect(client.client_id)}
-                    >
-                      <Text style={[styles.clientOptionText, selectedClientId === client.client_id && { color: primaryColor, fontWeight: '600' }]}>
-                        {client.name}
-                      </Text>
-                      {selectedClientId === client.client_id && (
-                        <Icon name="checkmark" size={18} color={primaryColor} />
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                {/* Search-first client picker (Jeff 10/02) */}
+                <ClientSearchPicker
+                  clients={activeClients}
+                  selectedClientId={selectedClientId}
+                  onSelect={(client: any) => handleClientSelect(client.client_id || '')}
+                  primaryColor={primaryColor}
+                  testIDPrefix="invoice-client-search"
+                />
               </View>
             )}
             {activeClients.length === 0 && (

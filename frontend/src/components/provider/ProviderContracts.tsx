@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
+import ClientSearchPicker from '../ClientSearchPicker';
 import DatePickerField from '../DatePickerField';
 import { RedDot } from '../RedDot';
 import { apiRequest, getApiBaseUrl } from '../../utils/api';
@@ -760,43 +761,29 @@ export default function ProviderContracts({ config }: ProviderContractsProps) {
                 </View>
               )}
 
-              {/* Client Selection */}
+              {/* Client Selection — search-first picker (Jeff 10/02) */}
               {currentSection === 0 && (
                 <View style={styles.fieldContainer}>
                   <Text style={styles.fieldLabel}>Select Client *</Text>
-                  <View style={styles.clientGrid}>
-                    {clients.filter(c => c.linked_mom_id).map((client) => (
-                      <TouchableOpacity
-                        key={client.client_id}
-                        style={[
-                          styles.clientOption,
-                          selectedClientId === client.client_id && { borderColor: primaryColor, backgroundColor: primaryColor + '10' }
-                        ]}
-                        onPress={() => {
-                          setSelectedClientId(client.client_id);
-                          updateFormField('client_name', client.name);
-                          if (client.edd) {
-                            updateFormField('estimated_due_date', client.edd);
-                          }
-                          // Fetch and pre-fill birth setting from client's birth plan
-                          fetchClientBirthPlanData(client);
-                        }}
-                      >
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={[
-                          styles.clientOptionText,
-                          selectedClientId === client.client_id && { color: primaryColor, fontWeight: '600' }
-                        ]}>{client.name}</Text>
-                        {selectedClientId === client.client_id && (
-                          <Icon name="checkmark-circle" size={18} color={primaryColor} />
-                        )}
-                      </View>
-                        {client.edd && (
-                          <Text style={styles.clientDueDate}>Due: {client.edd}</Text>
-                        )}
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+                  <ClientSearchPicker
+                    clients={clients.filter(c => c.linked_mom_id)}
+                    selectedClientId={selectedClientId}
+                    onSelect={(client: any) => {
+                      if (!client.client_id) {
+                        setSelectedClientId('');
+                        return;
+                      }
+                      setSelectedClientId(client.client_id);
+                      updateFormField('client_name', client.name);
+                      if (client.edd) {
+                        updateFormField('estimated_due_date', client.edd);
+                      }
+                      // Fetch and pre-fill birth setting from client's birth plan
+                      fetchClientBirthPlanData(client);
+                    }}
+                    primaryColor={primaryColor}
+                    testIDPrefix="contract-client-search"
+                  />
                   {clients.filter(c => c.linked_mom_id).length === 0 && (
                     <Text style={styles.noClientsText}>
                       No active clients. Clients will appear here when Moms connect with you.

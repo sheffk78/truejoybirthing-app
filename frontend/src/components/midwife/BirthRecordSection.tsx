@@ -461,26 +461,15 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
           <Icon name="heart-outline" size={22} color={C.sage} />
           <Text style={styles.sectionTitle}>Birth Record</Text>
         </View>
-        {birthRecord && (
-          <View style={styles.headerButtons}>
-            <TouchableOpacity
-              style={[styles.downloadButton, { backgroundColor: C.sage }]}
-              onPress={openReportPreview}
-              data-testid="download-birth-report-btn"
-            >
-              <Icon name="document-text-outline" size={18} color={C.white} />
-              <Text style={styles.downloadButtonText}>Report</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.editButton, { borderColor: C.sage }]}
-              onPress={openEditModal}
-              data-testid="edit-birth-record-btn"
-            >
-              <Icon name="create-outline" size={18} color={C.sage} />
-              <Text style={[styles.editButtonText, { color: C.sage }]}>Edit</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {/* Consistency (Jeff 10/02): every records section uses the same bare "+" icon;
+            edit/download live on the record card itself, not the header */}
+        <TouchableOpacity
+          style={[styles.addButton, { backgroundColor: C.sage }]}
+          onPress={birthRecord ? openEditModal : openCreateModal}
+          data-testid="add-birth-record-btn"
+        >
+          <Icon name="add" size={22} color={C.white} />
+        </TouchableOpacity>
       </View>
 
       {loading ? (
@@ -491,14 +480,8 @@ export default function BirthRecordSection({ clientId, primaryColor, onRefresh }
           <Icon name="heart-outline" size={48} color={C.grayLight} />
           <Text style={styles.emptyTitle}>No Birth Record Yet</Text>
           <Text style={styles.emptyText}>
-            Create a birth record to document the birth outcomes for this client.
+            {'Tap the + button above to create a birth record for this client.'}
           </Text>
-          <Button
-            title="Create Birth Record"
-            onPress={openCreateModal}
-            style={{ marginTop: SIZES.md }}
-            data-testid="create-birth-record-btn"
-          />
         </Card>
       ) : (
         // Display birth record summary
@@ -1131,6 +1114,13 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SIZES.sm,
+  },
+  addButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   downloadButton: {
     flexDirection: 'row',
