@@ -317,6 +317,8 @@ export default function AppointmentsScreen() {
     const title = isMyRequest && appointment.appointment_type === 'consultation'
       ? 'Your Request'
       : APPOINTMENT_TYPE_LABELS[appointment.appointment_type] || appointment.appointment_type;
+    // Jeff 10/02: prefer the provider's real photo on the row; fall back to the S7 row icon
+    const rowPicture = appointment.provider_picture;
 
     return (
       <TouchableOpacity
@@ -326,9 +328,13 @@ export default function AppointmentsScreen() {
         onPress={() => confirmResponse(appointment.appointment_id, 'declined')}
         data-testid={`appointment-${appointment.appointment_id}`}
       >
-        <View style={[styles.sico, { backgroundColor: ico.bg }]}>
-          <TIcon name={ico.name} size={20} color={ico.color} />
-        </View>
+        {rowPicture ? (
+          <Image source={{ uri: rowPicture }} style={styles.sicoPhoto} />
+        ) : (
+          <View style={[styles.sico, { backgroundColor: ico.bg }]}>
+            <TIcon name={ico.name} size={20} color={ico.color} />
+          </View>
+        )}
         <View style={styles.smid}>
           <Text style={styles.sh3}>{title}</Text>
           <View style={styles.smeta}>
@@ -847,6 +853,7 @@ const getStyles = createThemedStyles(() => ({
     gap: 12,
   },
   sico: { width: 34, height: 34, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  sicoPhoto: { width: 34, height: 34, borderRadius: 12 },
   smid: { flex: 1, minWidth: 0 },
   sh3: { fontFamily: F.serifSemi, fontSize: 17, color: C.ink },
   smeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' },
