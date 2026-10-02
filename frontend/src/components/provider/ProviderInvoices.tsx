@@ -16,6 +16,7 @@ import {
   ActivityIndicator,
   Platform,
   KeyboardAvoidingView,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
@@ -835,7 +836,15 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             <Text style={styles.fieldLabel}>Client *</Text>
             {isClientScoped && params.clientId ? (
               <View style={[styles.clientDropdown, { borderColor: primaryColor, backgroundColor: primaryColor + '10' }]}>
-                <Icon name="person" size={18} color={primaryColor} />
+                {/* Jeff 10/02 avatar pass: photo-first client chips (photo arrives via unified clients payload) */}
+                {(() => {
+                  const scoped = activeClients.find(c => c.client_id === params.clientId);
+                  return scoped?.picture ? (
+                    <Image source={{ uri: scoped.picture }} style={styles.clientDropdownPhoto} />
+                  ) : (
+                    <Icon name="person" size={18} color={primaryColor} />
+                  );
+                })()}
                 <Text style={[styles.clientDropdownText, { color: primaryColor, fontWeight: '600' }]}>
                   {clientName || activeClients.find(c => c.client_id === params.clientId)?.name || 'Selected Client'}
                 </Text>
@@ -1291,15 +1300,20 @@ const getStyles = createThemedStyles((colors) => ({
   input: { backgroundColor: colors.surface,borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd, color: colors.text },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
   clientDropdownContainer: { marginBottom: SIZES.sm },
-  clientDropdown: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
+  clientDropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.surface,
-    borderWidth: 1, 
-    borderColor: colors.border, 
-    borderRadius: SIZES.radiusSm, 
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     gap: SIZES.sm,
+  },
+  clientDropdownPhoto: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
   },
   clientDropdownText: { flex: 1, fontSize: SIZES.fontMd },
   clientOptions: { marginTop: SIZES.sm, gap: SIZES.xs },
