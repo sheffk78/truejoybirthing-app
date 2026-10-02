@@ -485,85 +485,16 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']} data-testid={`${config.role.toLowerCase()}-messages-screen`}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={primaryColor} />
-        }
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <View>
-            <Text style={[styles.title, { color: colors.text }]}>Messages</Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Connect with your clients</Text>
-          </View>
-          <Pressable
-            style={({ pressed }) => [
-              styles.newMessageButton,
-              { backgroundColor: primaryColor },
-              pressed && { opacity: 0.7 }
-            ]}
-            onPress={openNewMessageModal}
-            testID="new-message-btn"
-            accessibilityLabel="Start new conversation"
-            accessibilityRole="button"
-          >
-            <Icon name="add" size={24} color={colors.white} />
-          </Pressable>
-        </View>
-
-        {/* Conversation list — split into sections */}
-        {conversations.length === 0 ? (
-          <Card style={styles.emptyCard}>
-            <Icon name="chatbubbles-outline" size={48} color={colors.textLight} />
-            <Text style={[styles.emptyText, { color: colors.text }]}>No Conversations Yet</Text>
-            <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
-              Start messaging your clients to provide support and updates.
-            </Text>
-          </Card>
-        ) : (
-          <>
-            {/* New Inquiries Section */}
-            {newInquiries.length > 0 && (
-              <>
-                <View style={styles.sectionHeaderRow}>
-                  <Icon name="information-circle" size={18} color={colors.info} />
-                  <Text style={[styles.sectionHeader, { color: colors.text }]}>
-                    New Inquiries ({newInquiries.length})
-                  </Text>
-                </View>
-                {newInquiries.map(renderConversationItem)}
-              </>
-            )}
-
-            {/* My Clients Section */}
-            {myClients.length > 0 && (
-              <>
-                <Text style={[styles.sectionHeader, { color: colors.text }]}>
-                  My Clients ({myClients.length})
-                </Text>
-                {myClients.map(renderConversationItem)}
-              </>
-            )}
-          </>
-        )}
-      </ScrollView>
-
-      {/* Chat Modal */}
-      <Modal
-        visible={!!selectedConversation}
-        animationType="slide"
-        presentationStyle="fullScreen"
-        onRequestClose={closeConversation}
-      >
-        <SafeAreaView style={[styles.modalContainer, { backgroundColor: colors.background }]} edges={['top', 'bottom']}>
+      {selectedConversation ? (
+        /* Inline chat view — tab bar stays visible below (Jeff 10/02: full-screen modal covered the tabs) */
+        <View style={[styles.chatInlineContainer, { backgroundColor: colors.background }]}>
           {/* Chat Header */}
           <View style={[styles.chatHeader, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
-            <TouchableOpacity onPress={closeConversation} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={{ padding: SIZES.xs }}>
+            <TouchableOpacity onPress={closeConversation} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} style={{ padding: SIZES.xs }} testID="close-chat-btn">
               <Icon name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>
-              <Text style={[styles.chatHeaderName, { color: colors.text }]}>{selectedConversation?.other_user_name}</Text>
+              <Text style={[styles.chatHeaderName, { color: colors.text }]}>{selectedConversation.other_user_name}</Text>
               <View style={[styles.roleBadge, { backgroundColor: getRoleColor(selectedConversation?.other_user_role || '') + '20' }]}>
                 <Text style={[styles.roleText, { color: getRoleColor(selectedConversation?.other_user_role || '') }]}>
                   {selectedConversation?.other_user_role}
@@ -670,8 +601,72 @@ export default function ProviderMessages({ config }: ProviderMessagesProps) {
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
-        </SafeAreaView>
-      </Modal>
+        </View>
+      ) : (
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={primaryColor} />
+        }
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={[styles.title, { color: colors.text }]}>Messages</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Connect with your clients</Text>
+          </View>
+          <Pressable
+            style={({ pressed }) => [
+              styles.newMessageButton,
+              { backgroundColor: primaryColor },
+              pressed && { opacity: 0.7 }
+            ]}
+            onPress={openNewMessageModal}
+            testID="new-message-btn"
+            accessibilityLabel="Start new conversation"
+            accessibilityRole="button"
+          >
+            <Icon name="add" size={24} color={colors.white} />
+          </Pressable>
+        </View>
+
+        {/* Conversation list — split into sections */}
+        {conversations.length === 0 ? (
+          <Card style={styles.emptyCard}>
+            <Icon name="chatbubbles-outline" size={48} color={colors.textLight} />
+            <Text style={[styles.emptyText, { color: colors.text }]}>No Conversations Yet</Text>
+            <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
+              Start messaging your clients to provide support and updates.
+            </Text>
+          </Card>
+        ) : (
+          <>
+            {/* New Inquiries Section */}
+            {newInquiries.length > 0 && (
+              <>
+                <View style={styles.sectionHeaderRow}>
+                  <Icon name="information-circle" size={18} color={colors.info} />
+                  <Text style={[styles.sectionHeader, { color: colors.text }]}>
+                    New Inquiries ({newInquiries.length})
+                  </Text>
+                </View>
+                {newInquiries.map(renderConversationItem)}
+              </>
+            )}
+
+            {/* My Clients Section */}
+            {myClients.length > 0 && (
+              <>
+                <Text style={[styles.sectionHeader, { color: colors.text }]}>
+                  My Clients ({myClients.length})
+                </Text>
+                {myClients.map(renderConversationItem)}
+              </>
+            )}
+          </>
+        )}
+      </ScrollView>
+      )}
 
       {/* Accept Client Confirmation Modal */}
       <Modal
@@ -956,6 +951,10 @@ const getStyles = createThemedStyles((colors) => ({
 
   // --- Modal chrome ---
   modalContainer: { flex: 1 },
+  chatInlineContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   chatHeader: { flexDirection: 'row', alignItems: 'center', padding: SIZES.md, borderBottomWidth: 1 },
   chatHeaderInfo: { flex: 1, alignItems: 'center' },
   chatHeaderName: { fontSize: SIZES.fontLg, fontFamily: F.uiSemi },

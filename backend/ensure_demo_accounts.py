@@ -100,6 +100,10 @@ DEMO_ACCOUNTS = [
     {
         "email": "demo.mom@truejoybirthing.com",
         "password": "DemoMom2024!",
+        # Jeff 10/02: Emma's profile picture was blank in the app — demo mom now
+        # carries a sanctioned demo avatar (DiceBear lorelei, CC0, same source the
+        # seed pipeline uses) instead of a missing picture.
+        "picture": "https://api.dicebear.com/7.x/lorelei/png?seed=Emma Johnson&size=200",
         "full_name": "Emma Johnson",
         "role": "MOM",
         "profile_collection": "mom_profiles",
