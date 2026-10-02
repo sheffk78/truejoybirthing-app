@@ -225,12 +225,14 @@ def generate_doula_contract_pdf_bytes(contract: dict) -> bytes:
     
     sig_data = []
     if contract.get("doula_signature"):
-        sig_data.append(["Doula Signature:", contract["doula_signature"].get("signer_name", "")])
-        sig_data.append(["Date Signed:", contract["doula_signature"].get("signed_at", "")[:10] if contract["doula_signature"].get("signed_at") else ""])
-    
+        ds = contract["doula_signature"]
+        sig_data.append(["Doula Signature:", _sig_pdf_line(ds)])
+        sig_data.append(["Date Signed:", ds.get("signed_at", "")[:10] if ds.get("signed_at") else ""])
+
     if contract.get("client_signature"):
-        sig_data.append(["Client Signature:", contract["client_signature"].get("signer_name", "")])
-        sig_data.append(["Date Signed:", contract["client_signature"].get("signed_at", "")[:10] if contract["client_signature"].get("signed_at") else ""])
+        cs = contract["client_signature"]
+        sig_data.append(["Client Signature:", _sig_pdf_line(cs)])
+        sig_data.append(["Date Signed:", cs.get("signed_at", "")[:10] if cs.get("signed_at") else ""])
     
     if sig_data:
         sig_table = Table(sig_data, colWidths=[150, 300])
@@ -241,6 +243,30 @@ def generate_doula_contract_pdf_bytes(contract: dict) -> bytes:
             ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
         ]))
         elements.append(sig_table)
+
+    # E-signature evidence block (ESIGN/UETA defensibility — Jeff 10/02)
+    evidence_sigs = [
+        contract.get("doula_signature"),
+        contract.get("client_signature"),
+    ]
+    evidence_sigs = [s for s in evidence_sigs if s and (s.get("ip_address") or s.get("user_agent"))]
+    if evidence_sigs:
+        elements.append(Spacer(1, 12))
+        elements.append(Paragraph("<b>Electronic Signature Evidence</b>", subtitle_style))
+        ev_data = []
+        for s in evidence_sigs:
+            ev_data.append([
+                s.get("signer_name", ""),
+                f"Typed-name e-signature · IP {s.get('ip_address') or 'n/a'} · {s.get('signed_at', '')[:19].replace('T', ' ')} UTC",
+            ])
+        ev_table = Table(ev_data, colWidths=[120, 330])
+        ev_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Oblique'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#777777')),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ]))
+        elements.append(ev_table)
     
     doc.build(elements)
     return buffer.getvalue()
@@ -301,17 +327,20 @@ def generate_midwife_contract_pdf_bytes(contract: dict) -> bytes:
     
     sig_data = []
     if contract.get("midwife_signature"):
-        sig_data.append(["Midwife Signature:", contract["midwife_signature"].get("signer_name", "")])
-        sig_data.append(["Date Signed:", contract["midwife_signature"].get("signed_at", "")[:10] if contract["midwife_signature"].get("signed_at") else ""])
-    
+        ms = contract["midwife_signature"]
+        sig_data.append(["Midwife Signature:", _sig_pdf_line(ms)])
+        sig_data.append(["Date Signed:", ms.get("signed_at", "")[:10] if ms.get("signed_at") else ""])
+
     if contract.get("client_signature"):
-        sig_data.append(["Client Signature:", contract["client_signature"].get("signer_name", "")])
-        sig_data.append(["Date Signed:", contract["client_signature"].get("signed_at", "")[:10] if contract["client_signature"].get("signed_at") else ""])
+        cs = contract["client_signature"]
+        sig_data.append(["Client Signature:", _sig_pdf_line(cs)])
+        sig_data.append(["Date Signed:", cs.get("signed_at", "")[:10] if cs.get("signed_at") else ""])
     
     if contract.get("partner_name") and contract.get("partner_name") != "N/A":
         if contract.get("partner_signature"):
-            sig_data.append(["Partner Signature:", contract["partner_signature"].get("signer_name", "")])
-            sig_data.append(["Date Signed:", contract["partner_signature"].get("signed_at", "")[:10] if contract["partner_signature"].get("signed_at") else ""])
+            ps = contract["partner_signature"]
+            sig_data.append(["Partner Signature:", _sig_pdf_line(ps)])
+            sig_data.append(["Date Signed:", ps.get("signed_at", "")[:10] if ps.get("signed_at") else ""])
     
     if sig_data:
         sig_table = Table(sig_data, colWidths=[150, 300])
@@ -322,9 +351,62 @@ def generate_midwife_contract_pdf_bytes(contract: dict) -> bytes:
             ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
         ]))
         elements.append(sig_table)
+
+    # E-signature evidence block (ESIGN/UETA defensibility — Jeff 10/02)
+    evidence_sigs = [
+        contract.get("doula_signature"),
+        contract.get("midwife_signature"),
+        contract.get("client_signature"),
+        contract.get("partner_signature") if contract.get("partner_name") not in (None, "N/A") else None,
+    ]
+    evidence_sigs = [s for s in evidence_sigs if s and (s.get("ip_address") or s.get("user_agent"))]
+    if evidence_sigs:
+        elements.append(Spacer(1, 12))
+        elements.append(Paragraph("<b>Electronic Signature Evidence</b>", subtitle_style))
+        ev_data = []
+        for s in evidence_sigs:
+            ev_data.append([
+                s.get("signer_name", ""),
+                f"Typed-name e-signature · IP {s.get('ip_address') or 'n/a'} · {s.get('signed_at', '')[:19].replace('T', ' ')} UTC",
+            ])
+        ev_table = Table(ev_data, colWidths=[120, 330])
+        ev_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Oblique'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#777777')),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ]))
+        elements.append(ev_table)
     
     doc.build(elements)
     return buffer.getvalue()
+
+
+# ============== SIGNATURE EVIDENCE ==============
+# Jeff 10/02: keep tap-to-sign (typed name is a valid e-signature under ESIGN §7001
+# and state UETA), but make it DEFENSIBLE — record how/where the signature happened.
+def _signature_evidence(request: Request) -> dict:
+    """Capture lightweight e-signature evidence: IP, user agent, timestamps (UTC + epoch).
+    Appended to every signature block and rendered on the contract PDF."""
+    client_ip = request.client.host if request.client else None
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        client_ip = forwarded.split(",")[0].strip()
+    now = get_now()
+    return {
+        "ip_address": client_ip,
+        "user_agent": request.headers.get("user-agent", ""),
+        "signed_at_utc_epoch": int(now.timestamp()),
+        "method": "typed_name_click_accept",
+    }
+
+
+def _sig_pdf_line(sig: dict) -> str:
+    """Signature line for the PDF evidence block: typed name + how it was signed."""
+    name = sig.get("signer_name", "")
+    if sig.get("user_agent") or sig.get("ip_address"):
+        return f"{name} (electronically signed — typed name)"
+    return f"{name} (electronically signed)"
 
 
 # ============== EMAIL HELPERS ==============
@@ -587,7 +669,7 @@ async def update_doula_contract(contract_id: str, request: Request, user: User =
 
 
 @router.post("/doula/contracts/{contract_id}/send")
-async def send_doula_contract(contract_id: str, user: User = Depends(check_role(["DOULA"]))):
+async def send_doula_contract(contract_id: str, request: Request, user: User = Depends(check_role(["DOULA"]))):
     """Send doula contract for signature"""
     now = get_now()
     
@@ -598,7 +680,8 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
     doula_signature = {
         "signer_type": "doula",
         "signer_name": user.full_name,
-        "signed_at": now.isoformat()
+        "signed_at": now.isoformat(),
+        **_signature_evidence(request),
     }
     
     await db.contracts.update_one(
@@ -735,7 +818,8 @@ async def sign_doula_contract(contract_id: str, request: Request):
         "signer_type": "client",
         "signer_name": signer_name.strip(),
         "signature_data": signature_data,
-        "signed_at": now.isoformat()
+        "signed_at": now.isoformat(),
+        **_signature_evidence(request),
     }
 
     await db.contracts.update_one(
@@ -1158,7 +1242,7 @@ async def duplicate_midwife_contract(contract_id: str, user: User = Depends(chec
 
 
 @router.post("/midwife/contracts/{contract_id}/send")
-async def send_midwife_contract(contract_id: str, user: User = Depends(check_role(["MIDWIFE"]))):
+async def send_midwife_contract(contract_id: str, request: Request, user: User = Depends(check_role(["MIDWIFE"]))):
     """Send midwife contract for signature"""
     now = get_now()
     
@@ -1169,7 +1253,8 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
     midwife_signature = {
         "signer_type": "midwife",
         "signer_name": user.full_name,
-        "signed_at": now.isoformat()
+        "signed_at": now.isoformat(),
+        **_signature_evidence(request),
     }
     
     await db.midwife_contracts.update_one(
@@ -1301,7 +1386,8 @@ async def sign_midwife_contract(contract_id: str, request: Request):
         "signer_type": "client",
         "signer_name": signer_name.strip(),
         "signature_data": signature_data,
-        "signed_at": now.isoformat()
+        "signed_at": now.isoformat(),
+        **_signature_evidence(request),
     }
 
     await db.midwife_contracts.update_one(
