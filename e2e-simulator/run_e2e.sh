@@ -136,12 +136,23 @@ print("swept stale Sent -> Signed (test db only)")
 PYEOF
 # Absolute: the script cwd-changes to $IOS_DIR in Phase 2, so relative paths break.
 [ -f "$ROOT/e2e-simulator/maestro/contract_flow.yaml" ] \
-  && maestro test "$ROOT/e2e-simulator/maestro/contract_flow.yaml" \
+  && maestro test "$ROOT/e2e-simulator/maestro/contract_flow.yaml" 2>&1 | tee /tmp/tjb-maestro.log \
   || { log "FAIL: maestro flow"; exit 3; }
 
 # ================= PHASE 4: POST-RUN VERIFICATION =================
 log "Phase 4: backend/PDF verification"
-"$BACKEND/.venv/bin/python" "$SCRIPT_DIR/verify_backend.py" --post \
-  || { log "FAIL: post-run verification"; exit 3; }
-"$BACKEND/.venv/bin/python" "$SCRIPT_DIR/write_stamp.py" "$STAMP" "$RESULTS_DIR"
+# assert_signed_contract.js (Phase 3 tail) emitted the pinned contract id from
+# the Maestro log; without it, fall back to the legacy any-Signed heuristic.
+CID=$(grep -o "E2E_SIGN_ASSERT contract_id=[A-Za-z0-9_]*" /tmp/tjb-maestro.log 2>/dev/null | tail -1 | cut -d= -f2 || true)
+if [ -n "$CID" ]; then
+  log "Phase 4 pinned to this run's contract: $CID"
+  "$BACKEND/.venv/bin/python" "$SCRIPT_DIR/verify_backend.py" --post --contract-id "$CID" \
+    || { log "FAIL: post-run verification"; exit 3; }
+else
+  log "WARN: no sign-assertion marker found — Phase 4 falls back to any-Signed heuristic (vacuous-pass-prone)"
+  "$BACKEND/.venv/bin/python" "$SCRIPT_DIR/verify_backend.py" --post \
+    || { log "FAIL: post-run verification"; exit 3; }
+fi
+"$BACKEND/.venv/bin/python" "$SCRIPT_DIR/write_stamp.py" "$STAMP" "$RESULTS_DIR" "$CID" \
+  || { log "FAIL: stamp verification failed"; exit 3; }
 log "E2E PASS — full result in $RESULTS_DIR/$STAMP.md"

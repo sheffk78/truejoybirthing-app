@@ -315,9 +315,16 @@ function handleNotificationResponse(data: Record<string, any>, userRole?: string
       router.push(`/${rolePrefix}/appointments` as any);
       break;
     case 'contract':
+    case 'contract_sent':
     case 'contract_signed':
       if (rolePrefix === '(mom)') {
-        router.push('/sign-contract' as any);
+        // action_url carries the contract route (with signingToken when present);
+        // without it the sign screen fetches the token via the MOM-only endpoint.
+        if (data.action_url && String(data.action_url).startsWith('/sign')) {
+          router.push(data.action_url as any);
+        } else {
+          router.push('/sign-contract' as any);
+        }
       } else {
         router.push(`/${rolePrefix}/contracts` as any);
       }

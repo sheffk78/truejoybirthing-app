@@ -414,16 +414,19 @@ async def get_mom_contracts(user: User = Depends(check_role(["MOM"]))):
     active_provider_ids = set(await get_active_provider_ids_for_mom(user.user_id))
     client_ids = [c["client_id"] for c in clients if c.get("provider_id") in active_provider_ids]
 
+    # signing_token is intentionally excluded: the in-app sign screens fetch it via
+    # GET /contracts/{id}/signing-token (MOM-only, ownership-checked). It must not
+    # ride along in list responses.
     contracts = await db.contracts.find(
         {"client_id": {"$in": client_ids}},
-        {"_id": 0}
+        {"_id": 0, "signing_token": 0}
     ).sort("created_at", -1).to_list(100)
 
     # Midwife contracts live in their own collection — merge them in so the
     # mom home "action required" card routes to /sign-midwife-contract.
     midwife_contracts = await db.midwife_contracts.find(
         {"client_id": {"$in": client_ids}},
-        {"_id": 0}
+        {"_id": 0, "signing_token": 0}
     ).sort("created_at", -1).to_list(100)
     contracts.extend(midwife_contracts)
 

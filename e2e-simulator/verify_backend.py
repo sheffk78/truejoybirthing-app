@@ -98,6 +98,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--post", action="store_true")
     ap.add_argument("--submission-id", type=int, required=False)
+    ap.add_argument("--contract-id", type=str, required=False,
+                    help="Pin the sign check to THIS run's contract id (emitted by "
+                         "maestro/contract_flow.yaml's assert_signed_contract.js as "
+                         "'E2E_SIGN_ASSERT contract_id=<id>'). Without it the legacy "
+                         "'any Signed contract found' heuristic applies, which the "
+                         "pre-run Sent->Signed sweep can satisfy vacuously.")
     args = ap.parse_args()
     if not args.post:
         print("nothing to do (use --post)")
@@ -118,11 +124,24 @@ def main():
         contracts = _json.loads(_u.urlopen(req, timeout=20).read().decode())
         if isinstance(contracts, dict):
             contracts = contracts.get("contracts", [])
-        signed = [c for c in contracts if c.get("status") == "Signed"]
-        if not signed:
-            print("FAIL: no Signed midwife contract found after run")
-            return 3
-        c0 = signed[0]
+        if args.contract_id:
+            # Pinned: Phase 3's sign-assertion runScript proved the API sign for
+            # this exact contract; here we re-verify from the backend data side.
+            target = [c for c in contracts if c.get("contract_id") == args.contract_id]
+            if not target:
+                print(f"FAIL: this run's contract {args.contract_id} not found in /api/midwife/contracts")
+                return 3
+            c0 = target[0]
+            if c0.get("status") != "Signed":
+                print(f"FAIL: contract {args.contract_id} status={c0.get('status')} — API sign did not succeed")
+                return 3
+        else:
+            # Legacy heuristic (preflight-style runs): any Signed contract pass.
+            signed = [c for c in contracts if c.get("status") == "Signed"]
+            if not signed:
+                print("FAIL: no Signed midwife contract found after run")
+                return 3
+            c0 = signed[0]
         sig = (c0.get("client_signature") or {}).get("signer_name", "")
         if not sig:
             print("FAIL: contract signed without client signature record:", c0["contract_id"])

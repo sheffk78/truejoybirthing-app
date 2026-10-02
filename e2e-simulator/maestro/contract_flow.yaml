@@ -219,10 +219,14 @@ appId: com.truejoybirthing.app
     timeout: 8000
 - tapOn:
     id: "sign-contract-btn"
-# Success alert: dismiss; Phase 4 verifies the Signature + PDF render on the backend.
+# Success alert: dismiss; the runScript below then asserts on the BACKEND that
+# the API sign actually succeeded for THIS run's contract (Phase 4 used to pass
+# vacuously off the pre-run Sent->Signed sweep).
 - extendedWaitUntil:
     visible: "Contract Signed!"
     timeout: 20000
 - tapOn: "OK"
+- runScript:
+    file: assert_signed_contract.js
 
 # Phase 4 (run_e2e.sh) verifies the completed submission + painted PDF on the backend.

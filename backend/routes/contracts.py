@@ -54,6 +54,33 @@ from reportlab.lib import colors
 
 router = APIRouter(tags=["Contracts"])
 
+# Token format shared with contract creation (st_<hex16>)
+def _mint_signing_token() -> str:
+    return f"st_{uuid.uuid4().hex[:16]}"
+
+
+async def _mom_owns_contract(contract: dict, user) -> bool:
+    """Ownership check mirroring GET /mom/contracts: the contract's client record
+    must be linked to this mom (linked_mom_id), have the mom's user_id stored
+    directly, or carry the mom's email as client_email."""
+    if not contract:
+        return False
+    client = await db.clients.find_one(
+        {"client_id": contract.get("client_id")}, {"_id": 0}
+    )
+    if client:
+        if client.get("linked_mom_id") and client["linked_mom_id"] == user.user_id:
+            return True
+        if client.get("client_user_id") and client["client_user_id"] == user.user_id:
+            return True
+        if (client.get("email") or "").lower() == (user.email or "").lower():
+            return True
+    if (contract.get("client_user_id") or "") == user.user_id:
+        return True
+    if (contract.get("client_email") or "").lower() == (user.email or "").lower():
+        return True
+    return False
+
 # Email sending via email_service
 # (init_contracts_deps sets up the postmark_api_key and sender_email)
 
@@ -360,9 +387,11 @@ async def send_signed_contract_email(contract_type: str, contract: dict, recipie
 @router.get("/doula/contracts")
 async def get_doula_contracts(user: User = Depends(check_role(["DOULA"]))):
     """Get all doula contracts"""
+    # signing_token excluded: providers receive it in the create/send response
+    # (signing_url for the email deep link) and it must not sit in every list row.
     contracts = await db.contracts.find(
         {"doula_id": user.user_id},
-        {"_id": 0}
+        {"_id": 0, "signing_token": 0}
     ).sort("created_at", -1).to_list(100)
     return contracts
 
@@ -467,7 +496,10 @@ async def create_doula_contract(contract_data: ContractCreate, user: User = Depe
 @router.get("/contracts/{contract_id}")
 async def get_contract_by_id(contract_id: str):
     """Get a doula contract by ID (public endpoint for viewing/signing)"""
-    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    # signing_token excluded: it is the sign-guard (email deep links carry it in
+    # the URL, in-app screens use the MOM-only signing-token endpoint), so it
+    # must not be readable from this anonymous route.
+    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0, "signing_token": 0})
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
     
@@ -489,10 +521,9 @@ async def get_contract_by_id(contract_id: str):
 @router.get("/contracts/{contract_id}/html")
 async def get_contract_html_view(contract_id: str):
     """Get HTML version of doula contract for viewing/printing"""
-    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0, "signing_token": 0})
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
-    
     html_content = get_contract_html(contract)
     return HTMLResponse(content=html_content)
 
@@ -594,7 +625,7 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
             try:
                 if not FRONTEND_BASE_URL:
                     raise HTTPException(status_code=500, detail="Cannot send contract email: FRONTEND_BASE_URL is not set.")
-                signing_url = f"{FRONTEND_BASE_URL}/contract/{contract_id}"
+                signing_url = f"{FRONTEND_BASE_URL}/contract/{contract_id}?signingToken={contract.get('signing_token', '')}"
                 email_sent = await postmark_send_email(
                     to=mom["email"],
                     subject=f"Doula Service Agreement from {user.full_name}",
@@ -624,7 +655,7 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
                     "provider_id": user.user_id,
                     "provider_name": user.full_name,
                     "provider_role": "DOULA",
-                    "action_url": f"/contract/{contract_id}"
+                    "action_url": f"/contract/{contract_id}?signingToken={contract.get('signing_token', '')}"
                 }
             )
         except Exception as e:
@@ -635,6 +666,36 @@ async def send_doula_contract(contract_id: str, user: User = Depends(check_role(
         "email_sent": email_sent,
         "signing_url": f"/contract/{contract_id}?signingToken={contract.get('signing_token', '')}"
     }
+
+
+@router.get("/contracts/{contract_id}/signing-token")
+async def get_contract_signing_token(contract_id: str, user: User = Depends(check_role(["MOM"]))):
+    """Get the stored signing token for a doula contract — MOM-only, ownership-checked.
+
+    Powers the in-app sign flow: when the sign screen is opened from inside the app
+    (no signingToken deep-link param), it fetches the token here and submits it with
+    the sign POST. The token is intentionally NOT exposed through the public
+    contract view, list routes, or PDF endpoints; only this authenticated,
+    ownership-checked endpoint returns it to the contract's own client (mirrors
+    GET /mom/contracts ownership). If a legacy contract predates signing tokens,
+    mint one and persist it so the sign-endpoint mismatch guard stays meaningful.
+    """
+    contract = await db.contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+
+    if not await _mom_owns_contract(contract, user):
+        raise HTTPException(status_code=403, detail="Not authorized for this contract")
+
+    stored_token = contract.get("signing_token")
+    if not stored_token:
+        stored_token = _mint_signing_token()
+        await db.contracts.update_one(
+            {"contract_id": contract_id},
+            {"$set": {"signing_token": stored_token, "updated_at": get_now()}}
+        )
+
+    return {"contract_id": contract_id, "signing_token": stored_token}
 
 
 @router.post("/contracts/{contract_id}/sign")
@@ -665,15 +726,18 @@ async def sign_doula_contract(contract_id: str, request: Request):
     # so only enforce if the contract actually has one stored
     stored_token = contract.get("signing_token")
     if stored_token and stored_token != signing_token:
-        raise HTTPException(status_code=403, detail="Invalid signing token")
-    
+        raise HTTPException(
+            status_code=403,
+            detail="Signing link expired or invalid — reopen the contract from the app."
+        )
+
     client_signature = {
         "signer_type": "client",
         "signer_name": signer_name.strip(),
         "signature_data": signature_data,
         "signed_at": now.isoformat()
     }
-    
+
     await db.contracts.update_one(
         {"contract_id": contract_id},
         {"$set": {
@@ -812,9 +876,10 @@ async def duplicate_doula_contract(contract_id: str, user: User = Depends(check_
 @router.get("/midwife/contracts")
 async def get_midwife_contracts(user: User = Depends(check_role(["MIDWIFE"]))):
     """Get all midwife contracts"""
+    # signing_token excluded — see get_doula_contracts.
     contracts = await db.midwife_contracts.find(
         {"midwife_id": user.user_id},
-        {"_id": 0}
+        {"_id": 0, "signing_token": 0}
     ).sort("created_at", -1).to_list(100)
     return contracts
 
@@ -930,7 +995,8 @@ async def get_midwife_contract_detail(contract_id: str, user: User = Depends(che
 @router.get("/midwife-contracts/{contract_id}")
 async def get_midwife_contract_by_id(contract_id: str):
     """Get a midwife contract by ID (public endpoint for viewing/signing)"""
-    contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    # signing_token excluded — see get_contract_by_id.
+    contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0, "signing_token": 0})
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
     
@@ -952,7 +1018,7 @@ async def get_midwife_contract_by_id(contract_id: str):
 @router.get("/midwife-contracts/{contract_id}/html")
 async def get_midwife_contract_html_view(contract_id: str):
     """Get HTML version of midwife contract for viewing/printing"""
-    contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0, "signing_token": 0})
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
     
@@ -1130,7 +1196,7 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
             try:
                 if not FRONTEND_BASE_URL:
                     raise HTTPException(status_code=500, detail="Cannot send contract email: FRONTEND_BASE_URL is not set.")
-                signing_url = f"{FRONTEND_BASE_URL}/sign-midwife-contract?contractId={contract_id}"
+                signing_url = f"{FRONTEND_BASE_URL}/sign-midwife-contract?contractId={contract_id}&signingToken={contract.get('signing_token', '')}"
                 email_sent = await postmark_send_email(
                     to=mom["email"],
                     subject=f"Midwifery Services Agreement from {user.full_name}",
@@ -1160,7 +1226,7 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
                     "provider_id": user.user_id,
                     "provider_name": user.full_name,
                     "provider_role": "MIDWIFE",
-                    "action_url": f"/sign-midwife-contract?contractId={contract_id}"
+                    "action_url": f"/sign-midwife-contract?contractId={contract_id}&signingToken={contract.get('signing_token', '')}"
                 }
             )
         except Exception as e:
@@ -1171,6 +1237,31 @@ async def send_midwife_contract(contract_id: str, user: User = Depends(check_rol
         "email_sent": email_sent,
         "signing_url": f"/sign-midwife-contract?contractId={contract_id}&signingToken={contract.get('signing_token', '')}"
     }
+
+
+@router.get("/midwife-contracts/{contract_id}/signing-token")
+async def get_midwife_contract_signing_token(contract_id: str, user: User = Depends(check_role(["MOM"]))):
+    """Get the stored signing token for a midwife contract — MOM-only, ownership-checked.
+
+    In-app counterpart of the email deep link (see the doula variant above for the
+    full rationale). Same ownership mirroring and legacy mint-and-persist behavior.
+    """
+    contract = await db.midwife_contracts.find_one({"contract_id": contract_id}, {"_id": 0})
+    if not contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+
+    if not await _mom_owns_contract(contract, user):
+        raise HTTPException(status_code=403, detail="Not authorized for this contract")
+
+    stored_token = contract.get("signing_token")
+    if not stored_token:
+        stored_token = _mint_signing_token()
+        await db.midwife_contracts.update_one(
+            {"contract_id": contract_id},
+            {"$set": {"signing_token": stored_token, "updated_at": get_now()}}
+        )
+
+    return {"contract_id": contract_id, "signing_token": stored_token}
 
 
 @router.post("/midwife-contracts/{contract_id}/sign")
@@ -1201,15 +1292,18 @@ async def sign_midwife_contract(contract_id: str, request: Request):
     # so only enforce if the contract actually has one stored
     stored_token = contract.get("signing_token")
     if stored_token and stored_token != signing_token:
-        raise HTTPException(status_code=403, detail="Invalid signing token")
-    
+        raise HTTPException(
+            status_code=403,
+            detail="Signing link expired or invalid — reopen the contract from the app."
+        )
+
     client_signature = {
         "signer_type": "client",
         "signer_name": signer_name.strip(),
         "signature_data": signature_data,
         "signed_at": now.isoformat()
     }
-    
+
     await db.midwife_contracts.update_one(
         {"contract_id": contract_id},
         {"$set": {
