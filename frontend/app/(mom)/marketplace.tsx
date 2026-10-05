@@ -29,6 +29,16 @@ import { API_ENDPOINTS } from '../../src/constants/api';
 
 const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE', 'LACTATION'];
 
+// Credential codes a provider carries (array or comma string) — card chips + filter
+const credCodesOf = (provider: any): string[] => {
+  const creds = provider?.profile?.credentials;
+  if (!creds) return [];
+  if (Array.isArray(creds)) return creds.filter(Boolean).map(String);
+  return String(creds).split(",").map(c => c.trim()).filter(Boolean);
+};
+
+const CREDENTIAL_FILTERS = ['CD', 'CLC', 'CPM', 'CNM', 'IBCLC'];
+
 export default function MarketplaceScreen() {
   const router = useRouter();
   const colors = useColors();
@@ -49,6 +59,7 @@ export default function MarketplaceScreen() {
   }, []);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedType, setSelectedType] = useState('All');
+  const [selectedCredential, setSelectedCredential] = useState<string | null>(null); // Jeff 10/01: filter pros by credential
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
   const [contactingProvider, setContactingProvider] = useState(false);
@@ -64,13 +75,16 @@ export default function MarketplaceScreen() {
   // Use refs for latest values to avoid stale closures in effects
   const searchQueryRef = useRef(searchQuery);
   const selectedTypeRef = useRef(selectedType);
+  const selectedCredentialRef = useRef<string | null>(null);
   searchQueryRef.current = searchQuery;
   selectedTypeRef.current = selectedType;
+  selectedCredentialRef.current = selectedCredential;
   
-  const fetchProviders = useCallback(async (search?: string, type?: string) => {
+  const fetchProviders = useCallback(async (search?: string, type?: string, credential?: string | null) => {
     try {
       const currentSearch = search !== undefined ? search : searchQueryRef.current;
       const currentType = type !== undefined ? type : selectedTypeRef.current;
+      const currentCredential = credential !== undefined ? credential : selectedCredentialRef.current;
       
       let endpoint = '/marketplace/providers?';
       const params = [];
@@ -80,6 +94,9 @@ export default function MarketplaceScreen() {
       }
       if (currentSearch.trim()) {
         params.push(`search=${encodeURIComponent(currentSearch.trim())}`);
+      }
+      if (currentCredential) {
+        params.push(`credential=${encodeURIComponent(currentCredential)}`);
       }
       
       const data = await apiRequest(endpoint + params.join('&'));
@@ -444,7 +461,32 @@ export default function MarketplaceScreen() {
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>
+
+          {/* Credential Filter — Jeff 10/01 */
+          }
+          <View style={styles.typeFilter} testID="credential-filter-row">
+            <TouchableOpacity
+              style={[styles.typeChip, !selectedCredential && styles.typeChipActive]}
+              onPress={() => { selectedCredentialRef.current = null; setSelectedCredential(null); }}
+              data-testid="credential-all"
+            >
+              <Text style={[styles.typeChipText, !selectedCredential && styles.typeChipTextActive]}>
+                All Credentials
+              </Text>
+            </TouchableOpacity>
+            {CREDENTIAL_FILTERS.map((code) => (
+              <TouchableOpacity
+                key={code}
+                style={[styles.typeChip, selectedCredential === code && styles.typeChipActive]}
+                onPress={() => { selectedCredentialRef.current = code; setSelectedCredential(code); }}
+                data-testid={`credential-${code.toLowerCase()}`}
+              >
+                <Text style={[styles.typeChipText, selectedCredential === code && styles.typeChipTextActive]}>
+                  {code}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>          </View>
         </Card>
         
         {/* Results */}
@@ -505,28 +547,19 @@ export default function MarketplaceScreen() {
                   <Text style={styles.practiceName}>{provider.profile.practice_name}</Text>
                 )}
                 
-                {/* Services/Credentials */}
+                {/* Services/Credentials — role-agnostic; credential chips lead
+                    (Jeff 10/01: credentials must be visible on every card) */}
                 <View style={styles.tagsRow}>
-                  {provider.role === 'DOULA' && provider.profile?.services_offered?.slice(0, 3).map((service: string) => (
+                  {credCodesOf(provider).map((code) => (
+                    <View key={code} style={[styles.tag, { backgroundColor: C.roseBg }]}>
+                      <Text style={[styles.tagText, { color: C.roseBorder, fontFamily: F.uiBold }]}>{code}</Text>
+                    </View>
+                  ))}
+                  {(provider.profile?.services_offered ?? []).slice(0, 3).map((service: string) => (
                     <View key={service} style={styles.tag}>
                       <Text style={styles.tagText}>{service}</Text>
                     </View>
                   ))}
-                  {provider.role === 'LACTATION' && provider.profile?.services_offered?.slice(0, 3).map((service: string) => (
-                    <View key={service} style={styles.tag}>
-                      <Text style={styles.tagText}>{service}</Text>
-                    </View>
-                  ))}
-                  {provider.role === 'MIDWIFE' && provider.profile?.credentials && (
-                    <View style={styles.tag}>
-                      <Text style={styles.tagText}>{provider.profile.credentials}</Text>
-                    </View>
-                  )}
-                  {provider.role === 'LACTATION' && provider.profile?.credentials && (
-                    <View style={styles.tag}>
-                      <Text style={styles.tagText}>{provider.profile.credentials}</Text>
-                    </View>
-                  )}
                   {provider.role === 'MIDWIFE' && provider.profile?.birth_settings_served?.slice(0, 2).map((setting: string) => (
                     <View key={setting} style={styles.tag}>
                       <Text style={styles.tagText}>{setting}</Text>

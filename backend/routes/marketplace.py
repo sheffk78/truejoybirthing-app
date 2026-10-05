@@ -35,13 +35,29 @@ USER_PUBLIC_FIELDS = {
 
 # ============== ROUTES ==============
 
+def _credential_match(profile: dict, credential: Optional[str]) -> bool:
+    """True if the provider's credentials include the requested code.
+
+    Credentials may be stored as a list (["CD", "CLC"]) or a plain string
+    ("CD, CLC"). Case-insensitive substring match so "CPM" matches "CPM, CNM".
+    """
+    if not credential:
+        return True
+    creds = profile.get("credentials") or []
+    if isinstance(creds, str):
+        creds = [creds]
+    hay = " ".join(str(c) for c in creds).upper()
+    return credential.upper() in hay
+
+
 @router.get("/providers")
 async def search_providers(
     provider_type: Optional[str] = Query(None, description="Filter by DOULA, MIDWIFE, or LACTATION"),
     location_city: Optional[str] = Query(None, description="Filter by city"),
     location_state: Optional[str] = Query(None, description="Filter by state"),
     birth_setting: Optional[str] = Query(None, description="Filter by birth setting (midwives only)"),
-    search: Optional[str] = Query(None, description="Search name, city, state, or zip")
+    search: Optional[str] = Query(None, description="Search name, city, state, or zip"),
+    credential: Optional[str] = Query(None, description="Filter by credential code (CD, CLC, CPM, CNM, IBCLC)")
 ):
     """
     Search for providers in marketplace - supports multi-field search.
@@ -88,6 +104,8 @@ async def search_providers(
                 if location_state and (profile.get("location_state") or "").lower().find(location_state.lower()) < 0:
                     continue
                 
+                if not _credential_match(profile, credential):
+                    continue
                 doulas.append({
                     "provider_type": "DOULA",
                     "user": user,
@@ -133,6 +151,8 @@ async def search_providers(
                 if birth_setting and birth_setting not in profile.get("birth_settings_served", []):
                     continue
                 
+                if not _credential_match(profile, credential):
+                    continue
                 midwives.append({
                     "provider_type": "MIDWIFE",
                     "user": user,
@@ -173,6 +193,8 @@ async def search_providers(
                 if location_state and (profile.get("location_state") or "").lower().find(location_state.lower()) < 0:
                     continue
                 
+                if not _credential_match(profile, credential):
+                    continue
                 lactation.append({
                     "provider_type": "LACTATION",
                     "user": user,

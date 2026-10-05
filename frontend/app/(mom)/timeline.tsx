@@ -209,6 +209,44 @@ export default function TimelineScreen() {
           </View>
         )}
 
+        {/* Baby this week — Jeff 10/01: timeline was thin; weekly baby content
+            (size comparison + what's happening) from the shared editorial set */}
+        {timeline?.baby_development && (
+          <View style={styles.babyCard} data-testid="baby-week-card">
+            <Text style={styles.babyKicker}>BABY THIS WEEK</Text>
+            <Text style={styles.babyTitle}>{timeline.baby_development.title}</Text>
+            {!!timeline.baby_development.size_note && (
+              <Text style={styles.babySize}>
+                {timeline.baby_development.food ? `About the size of a ${timeline.baby_development.food} · ` : ''}
+                {timeline.baby_development.size_note}
+              </Text>
+            )}
+            <Text style={styles.babyDesc}>{timeline.baby_development.description}</Text>
+          </View>
+        )}
+
+        {/* Trimester progress — position in the 40-week journey at a glance */}
+        {timeline?.current_week && (
+          <View style={styles.triCard} data-testid="trimester-progress">
+            <View style={styles.triHead}>
+              <Text style={styles.babyKicker}>PROGRESS</Text>
+              <Text style={styles.triWeeks}>
+                {40 - timeline.current_week > 0 ? `${40 - timeline.current_week} weeks to go` : 'Full term'}
+              </Text>
+            </View>
+            <View style={styles.triBar}>
+              <View style={[styles.triSeg, timeline.current_week >= 1 && styles.triSegOn]} />
+              <View style={[styles.triSeg, timeline.current_week >= 14 && styles.triSegOn]} />
+              <View style={[styles.triSeg, timeline.current_week >= 28 && styles.triSegOn]} />
+            </View>
+            <View style={styles.triLabels}>
+              <Text style={styles.triLabel}>{trimesterOf(6).split(' ')[0]} · wk 1-13</Text>
+              <Text style={styles.triLabel}>2nd · wk 14-27</Text>
+              <Text style={styles.triLabel}>3rd · wk 28-40</Text>
+            </View>
+          </View>
+        )}
+
         {/* Schedule with Provider — ghost pill */}
         <TouchableOpacity
           style={styles.addGhostButton}
@@ -405,6 +443,83 @@ const getStyles = createThemedStyles((colors) => ({
   title: { fontFamily: DF.serif, fontWeight: '700', fontSize: 26, lineHeight: 30, color: C.ink },
   titleAccent: { color: C.roseSoft },
   subtitle: { fontSize: 12.5, fontFamily: DF.ui, color: C.gray, marginTop: 4 },
+
+    babyCard: {
+    marginTop: SIZES.md,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 20,
+    padding: SIZES.md,
+  },
+  babyKicker: {
+    fontSize: 10,
+    fontFamily: DF.uiBold,
+    letterSpacing: 1.2,
+    color: C.lavender,
+  },
+  babyTitle: {
+    fontFamily: DF.serif,
+    fontWeight: '700',
+    fontSize: 19,
+    color: C.ink,
+    marginTop: 4,
+  },
+  babySize: {
+    fontSize: 12,
+    fontFamily: DF.uiBold,
+    color: C.rose,
+    marginTop: 3,
+  },
+  babyDesc: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: DF.ui,
+    color: C.body,
+    marginTop: 6,
+  },
+  triCard: {
+    marginTop: SIZES.md,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+    borderRadius: 20,
+    padding: SIZES.md,
+  },
+  triHead: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  triWeeks: {
+    fontSize: 12,
+    fontFamily: DF.uiBold,
+    color: C.lavender,
+  },
+  triBar: {
+    flexDirection: 'row',
+    gap: 6,
+    marginTop: 12,
+  },
+  triSeg: {
+    flex: 1,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.border,
+  },
+  triSegOn: {
+    backgroundColor: C.lavender,
+  },
+  triLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 6,
+  },
+  triLabel: {
+    fontSize: 10,
+    fontFamily: DF.ui,
+    color: C.grayLight,
+  },
   anchorCard: {
     marginTop: 14,
     backgroundColor: colors.surface,
