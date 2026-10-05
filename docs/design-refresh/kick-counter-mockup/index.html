@@ -45,19 +45,16 @@ body { background:#F1ECE6; font-family:'Quicksand',sans-serif; color:#2D2D2D; pa
 .seg .on { background:#fff; color:#8E8CB5; box-shadow:0 1px 3px rgba(45,45,45,.08); font-weight:700; }
 
 /* ---- tap pad: dominant element, halos + rose progress arc ---- */
-.heroz { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2px 20px 0; min-height:0; }
+.heroz { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2px 20px 0; min-height:0; overflow:hidden; }
 .padwrap { position:relative; width:252px; height:252px; display:flex; align-items:center; justify-content:center; }
-.padwrap .halo { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
-.pad-rim { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+.padwrap .halo { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:0; }
+.pad-rim { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1; }
 .pad { position:relative; z-index:2; width:214px; height:214px; border-radius:50%; background:#fff; border:1px solid #EFE0EB; box-shadow:0 14px 34px rgba(110,108,153,.14); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
-.pad .num { font-family:'Cormorant',serif; font-weight:700; font-size:76px; line-height:1; color:#2A2A2A; margin-top:-6px; }
-.pad .of { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; color:#A25C86; margin-top:4px; }
+.pad .num { font-family:'Cormorant',serif; font-weight:700; font-size:74px; line-height:1.05; color:#2A2A2A; margin-top:0; }
+.pad .of { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; color:#A25C86; margin-top:12px; }
 .pad .rule { width:64px; height:1px; background:#F0E6E2; margin:10px 0 8px; }
 .pad .clock { font-family:'Cormorant',serif; font-weight:700; font-size:23px; color:#6E6C99; line-height:1; letter-spacing:1px; }
 .pad .slab { font-size:9px; letter-spacing:2px; text-transform:uppercase; font-weight:700; color:#8A8B8D; margin-top:5px; }
-.pad .tapsays { position:absolute; right:30px; bottom:40px; width:30px; height:30px; }
-.pad .tapsays .tr1 { position:absolute; inset:0; border:1.6px solid #E3C6DB; border-radius:50%; opacity:.85; }
-.pad .tapsays .tr0 { position:absolute; left:11px; top:11px; width:8px; height:8px; background:#C48CA8; border-radius:50%; opacity:.55; }
 .helper { font-size:11.5px; color:#6A6B6C; font-weight:500; margin-top:9px; }
 
 /* ---- 10-kick dots (hand-drawn wobble, 3 filled = interaction state) ---- */
@@ -139,10 +136,9 @@ body { background:#F1ECE6; font-family:'Quicksand',sans-serif; color:#2D2D2D; pa
 
     <div class="heroz">
       <div class="padwrap">
-        <svg class="halo" width="430" height="430" viewBox="0 0 430 430" fill="none">
-          <circle cx="215" cy="215" r="132" stroke="#EDEAF6" stroke-width="1.3"/>
-          <circle cx="215" cy="215" r="166" stroke="#EDEAF6" stroke-width="1.2"/>
-          <circle cx="215" cy="215" r="202" stroke="#EDEAF6" stroke-width="1"/>
+        <svg class="halo" width="252" height="252" viewBox="0 0 252 252" fill="none">
+          <circle cx="126" cy="126" r="134" stroke="#EDEAF6" stroke-width="1.2"/>
+          <circle cx="126" cy="126" r="142" stroke="#EDEAF6" stroke-width="1"/>
         </svg>
         <svg class="pad-rim" width="252" height="252" viewBox="0 0 252 252" fill="none">
           <circle cx="126" cy="126" r="122" stroke="#F0E6E2" stroke-width="5"/>
@@ -155,7 +151,6 @@ body { background:#F1ECE6; font-family:'Quicksand',sans-serif; color:#2D2D2D; pa
           <div class="rule"></div>
           <div class="clock">07:24</div>
           <div class="slab">Session · 9:34 AM</div>
-          <div class="tapsays"><div class="tr1"></div><div class="tr0"></div></div>
         </div>
       </div>
       <div class="helper">Tap the circle each time you feel a movement</div>
@@ -217,12 +212,12 @@ body { background:#F1ECE6; font-family:'Quicksand',sans-serif; color:#2D2D2D; pa
 <div class="legend">
   <div class="h">Kick Counter — what's in this mockup</div>
   <ul>
-    <li><b>Dominant tap pad:</b> 214px thumb-reachable circle with the S11 contraction-timer halo rings + a rose rim arc filling toward 10; serif "3" and Cormorant session clock inside</li>
+    <li><b>Dominant tap pad:</b> 214px thumb-reachable circle with the S11 contraction-timer halo rings + a rose rim arc filling toward 10; serif "3" and Cormorant session clock inside; halo rings scoped behind the pad (background, never over content)</li>
     <li><b>Session model:</b> Count-to-10 mode active (segmented toggle), 10 hand-drawn dots with 3 filled, Start 9:34 AM · 07:24 elapsed</li>
     <li><b>Today's summary strip:</b> sessions · kicks today · last session time — serif numerals on the S11 stat-strip construction</li>
     <li><b>Recent sessions list:</b> last three sessions with kicks + duration ("See all" affordance)</li>
     <li><b>Header:</b> back affordance + rose kicker "Week 28 · Third Trimester" + Cormorant title — week-spine type law</li>
-    <li><b>Calm context line:</b> sage-tinted chip in Quicksand — reassuring, never alarming</li>
+    <li><b>No stray overlay marks:</b> decorative ripple removed after visual review; halo strictly background ·</li><li><b>Calm context line:</b> sage-tinted chip in Quicksand — reassuring, never alarming</li>
   </ul>
 </div>
 

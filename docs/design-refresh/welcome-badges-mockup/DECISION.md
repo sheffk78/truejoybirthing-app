@@ -1,0 +1,1 @@
+Welcome trust badges — SHELVED 2026-10-05 (Jeff, msg 1556786679539441807): welcome screen is "already designed just fine, doesn't need to be changed." Keep these files as reference; do NOT implement. Kick counter approved with fixes (halo rings strictly background, num/label spacing, decorative ripple removed) — see kick-counter-mockup/v2.
