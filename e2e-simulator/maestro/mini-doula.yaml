@@ -1,0 +1,14 @@
+appId: com.truejoybirthing.app
+---
+- launchApp
+- extendedWaitUntil:
+    timeout: 20000
+    visible: 'Hello, Sarah'
+- scrollUntilVisible:
+    element:
+      text: 'Lead Insights'
+    direction: DOWN
+    timeout: 15000
+    visibilityPercentage: 30
+- assertVisible: {id: 'lead-insights-card'}
+- takeScreenshot: mini-doula-lead-insights

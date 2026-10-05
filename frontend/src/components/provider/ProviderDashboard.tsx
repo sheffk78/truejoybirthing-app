@@ -191,22 +191,25 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
           })}
         </View>
 
-        {/* Research Feed Section — right after stats for visibility */}
-        <ProviderFeedSection primaryColor={primaryColor} />
-
-        {/* Lead Insights Card */}
-        {stats?.lead_insights && (stats.lead_insights.total_leads > 0 || stats.lead_insights.active_leads > 0) && (
-          <TouchableOpacity 
+        {/* Lead Insights Card — all roles (Jeff 10/05 parity: midwife was
+            hidden when lead counts were 0; now always shows, with an
+            empty-state row so the leads funnel is discoverable day one) */}
+        {stats?.lead_insights && (
+          <TouchableOpacity
             style={[styles.leadInsightsCard, { backgroundColor: colors.surface }]}
             onPress={() => router.push(config.routes.leads as any)}
             activeOpacity={0.8}
+            testID="lead-insights-card"
             data-testid="lead-insights-card"
           >
             <View style={styles.leadInsightsHeader}>
               <View style={[styles.leadInsightsIcon, { backgroundColor: primaryColor + '20' }]}>
                 <Icon name="disc-outline" size={20} color={primaryColor} />
               </View>
-              <Text style={[styles.leadInsightsTitle, { color: colors.text }]}>Lead Insights</Text>
+              <Text
+                style={[styles.leadInsightsTitle, { color: colors.text }]}
+                testID="lead-insights-title"
+              >Lead Insights</Text>
               <Icon name="chevron-forward" size={20} color={colors.textSecondary} />
             </View>
             <View style={[styles.leadInsightsStats, { borderTopColor: colors.border }]}>
@@ -231,8 +234,20 @@ export default function ProviderDashboard({ config }: ProviderDashboardProps) {
                 <Text style={[styles.leadInsightsLabel, { color: colors.textSecondary }]}>Rate</Text>
               </View>
             </View>
+            {stats.lead_insights.total_leads === 0 && (
+              <Text
+                style={[styles.leadInsightsEmpty, { color: colors.textSecondary }]}
+                testID="lead-insights-empty"
+                data-testid="lead-insights-empty"
+              >
+                No leads yet — requests from moms will appear here.
+              </Text>
+            )}
           </TouchableOpacity>
         )}
+
+        {/* Research Feed Section — after Lead Insights (10/05: leads first, then research feed) */}
+        <ProviderFeedSection primaryColor={primaryColor} />
 
         {/* Pending Share Requests */}
         {shareRequests.length > 0 && (
@@ -562,5 +577,12 @@ const getDashStyles = (c: LiveCorpus) => StyleSheet.create({
     width: 1,
     height: 30,
     backgroundColor: C.border,
+  },
+  leadInsightsEmpty: {
+    fontSize: SIZES.fontXs,
+    fontFamily: F.ui,
+    fontStyle: 'italic',
+    marginTop: SIZES.sm,
+    textAlign: 'center',
   },
 });

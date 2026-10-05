@@ -1,0 +1,69 @@
+# Provider picker consistency + Lead Insights parity (Jeff 10/05)
+# Doula: notes modal has search-first picker; dashboard has Lead Insights card.
+appId: com.truejoybirthing.app
+---
+- clearKeychain
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: 'I already have an account'
+    timeout: 20000
+- tapOn: 'I already have an account'
+- waitForAnimationToEnd: {timeout: 3000}
+- tapOn: {text: 'Email'}
+- inputText: 'demo.doula@truejoybirthing.com'
+- tapOn: {id: 'login-password-input'}
+- inputText: 'DemoDoula2024!'
+- tapOn: {id: 'login-submit-btn'}
+- runFlow:
+    when:
+      visible: 'Not Now'
+    commands:
+      - tapOn: 'Not Now'
+- extendedWaitUntil:
+    timeout: 15000
+    visible:
+      id: 'lead-insights-title'
+- assertVisible: {id: 'lead-insights-card'}
+- takeScreenshot: tjb-doula-lead-insights
+# Notes → New Note → search-first picker present (type-ahead visible)
+- openLink: 'truejoybirthing:///(doula)/notes'
+- waitForAnimationToEnd: {timeout: 5000}
+- tapOn: {id: 'add-note-btn'}
+- waitForAnimationToEnd: {timeout: 3000}
+- extendedWaitUntil:
+    timeout: 8000
+    visible: {id: 'note-client-search-input'}
+- tapOn: {id: 'note-client-search-input'}
+- inputText: 'Ava'
+- waitForAnimationToEnd: {timeout: 2000}
+- takeScreenshot: tjb-doula-note-client-search
+# Emily (midwife): Lead Insights now visible with 0 leads (empty-state row)
+- clearKeychain
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: 'I already have an account'
+    timeout: 20000
+- tapOn: 'I already have an account'
+- waitForAnimationToEnd: {timeout: 3000}
+- tapOn: {text: 'Email'}
+- inputText: 'demo.midwife@truejoybirthing.com'
+- tapOn: {id: 'login-password-input'}
+- inputText: 'DemoMidwife2024!'
+- tapOn: {id: 'login-submit-btn'}
+- runFlow:
+    when:
+      visible: 'Not Now'
+    commands:
+      - tapOn: 'Not Now'
+- extendedWaitUntil:
+    timeout: 15000
+    visible: 'Hello, Emily'
+- extendedWaitUntil:
+    timeout: 15000
+    visible:
+      id: 'lead-insights-title'
+- assertVisible: {id: 'lead-insights-card'}
+- assertVisible: {id: 'lead-insights-empty'}
+- takeScreenshot: tjb-midwife-lead-insights-empty

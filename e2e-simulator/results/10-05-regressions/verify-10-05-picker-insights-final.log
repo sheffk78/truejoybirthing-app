@@ -1,0 +1,45 @@
+Running on iPhone 17 Pro - iOS 26.5 - C35AC525-2D91-4295-BD48-3D7B20AC2966
+ > Flow verify-10-05-picker-insights
+Clear keychain... COMPLETED
+Launch app "com.truejoybirthing.app"... COMPLETED
+Assert that "I already have an account" is visible... COMPLETED
+Tap on "I already have an account"... COMPLETED
+Wait for animation to end within 3000 ms... COMPLETED
+Tap on "Email"... COMPLETED
+Input text demo.doula@truejoybirthing.com... COMPLETED
+Tap on id: login-password-input... COMPLETED
+Input text DemoDoula2024!... COMPLETED
+Tap on id: login-submit-btn... COMPLETED
+Run flow when "Not Now" is visible...
+  Tap on "Not Now"... COMPLETED
+Run flow when "Not Now" is visible... COMPLETED
+Assert that id: lead-insights-title is visible... COMPLETED
+Assert that id: lead-insights-card is visible... COMPLETED
+Take screenshot tjb-doula-lead-insights... COMPLETED
+Open truejoybirthing:///(doula)/notes... COMPLETED
+Wait for animation to end within 5000 ms... COMPLETED
+Tap on id: add-note-btn... COMPLETED
+Wait for animation to end within 3000 ms... COMPLETED
+Assert that id: note-client-search-input is visible... COMPLETED
+Tap on id: note-client-search-input... COMPLETED
+Input text Ava... COMPLETED
+Wait for animation to end within 2000 ms... COMPLETED
+Take screenshot tjb-doula-note-client-search... COMPLETED
+Clear keychain... COMPLETED
+Launch app "com.truejoybirthing.app" with clear state... COMPLETED
+Assert that "I already have an account" is visible... COMPLETED
+Tap on "I already have an account"... COMPLETED
+Wait for animation to end within 3000 ms... COMPLETED
+Tap on "Email"... COMPLETED
+Input text demo.midwife@truejoybirthing.com... COMPLETED
+Tap on id: login-password-input... COMPLETED
+Input text DemoMidwife2024!... COMPLETED
+Tap on id: login-submit-btn... COMPLETED
+Run flow when "Not Now" is visible...
+  Tap on "Not Now"... COMPLETED
+Run flow when "Not Now" is visible... COMPLETED
+Assert that "Hello, Emily" is visible... COMPLETED
+Assert that id: lead-insights-title is visible... COMPLETED
+Assert that id: lead-insights-card is visible... COMPLETED
+Assert that id: lead-insights-empty is visible... COMPLETED
+Take screenshot tjb-midwife-lead-insights-empty... COMPLETED
