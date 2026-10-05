@@ -100,10 +100,11 @@ export default function MarketplaceScreen() {
       }
       
       const data = await apiRequest(endpoint + params.join('&'));
-      // API returns {doulas: [...], midwives: [...]} - combine into single array
+      // API returns {doulas: [...], midwives: [...], lactation: [...]} — combine all
       const allProviders = [
         ...(data.doulas || []),
-        ...(data.midwives || [])
+        ...(data.midwives || []),
+        ...(data.lactation || [])
       ].map(p => ({
         user_id: p.user?.user_id,
         full_name: p.user?.full_name,
@@ -179,10 +180,11 @@ export default function MarketplaceScreen() {
     }
   };
   
-  // Fetch on mount and when selectedType changes
+  // Fetch on mount and when selectedType / selectedCredential changes
+  // (10/05 fix: credential chips highlighted but never refetched — dep missing)
   useEffect(() => {
     fetchProviders();
-  }, [selectedType, fetchProviders]);
+  }, [selectedType, selectedCredential, fetchProviders]);
   
   // Debounced search: re-fetch when search query changes (with 400ms debounce)
   useEffect(() => {
@@ -461,9 +463,9 @@ export default function MarketplaceScreen() {
                 </Text>
               </TouchableOpacity>
             ))}
+          </View>
 
-          {/* Credential Filter — Jeff 10/01 */
-          }
+          {/* Credential Filter — Jeff 10/01 */}
           <View style={styles.typeFilter} testID="credential-filter-row">
             <TouchableOpacity
               style={[styles.typeChip, !selectedCredential && styles.typeChipActive]}
@@ -486,7 +488,7 @@ export default function MarketplaceScreen() {
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>          </View>
+          </View>
         </Card>
         
         {/* Results */}

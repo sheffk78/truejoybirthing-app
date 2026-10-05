@@ -1,0 +1,31 @@
+appId: com.truejoybirthing.app
+---
+# TJB 10/05 targeted regression: baby-week card + credential chips (no erase,
+# no logout — runs against Jeff's live simulator session; deep-links both screens)
+- launchApp:
+    clearState: false
+- waitForAnimationToEnd: {timeout: 8000}
+# --- 1. Baby-week card on timeline (deep link, same as prior verified flows)
+- openLink: 'truejoybirthing:///(mom)/timeline'
+- waitForAnimationToEnd: {timeout: 5000}
+- assertVisible: 'BABY THIS WEEK'
+- takeScreenshot: tjb-e2e-babycard
+# --- 2. Marketplace credential chips (deep link)
+- openLink: 'truejoybirthing:///(mom)/marketplace'
+- waitForAnimationToEnd: {timeout: 5000}
+- assertVisible: 'All Credentials'
+- assertVisible: 'CD'
+- tapOn: {id: 'credential-cd'}
+- waitForAnimationToEnd: {timeout: 4000}
+- assertVisible: '.*Provider.*Found'
+- takeScreenshot: tjb-e2e-credential-cd
+# --- 3. Back to All Credentials (chips stay live, count should grow back)
+- tapOn: {id: 'credential-all'}
+- waitForAnimationToEnd: {timeout: 4000}
+- assertVisible: 'All Credentials'
+# --- 4. Appearance panel regression (existing verify flow, non-mutating)
+- openLink: 'truejoybirthing:///(mom)/profile'
+- waitForAnimationToEnd: {timeout: 5000}
+- tapOn: {id: 'appearance-row'}
+- waitForAnimationToEnd: {timeout: 2500}
+- takeScreenshot: tjb-e2e-appearance-panel

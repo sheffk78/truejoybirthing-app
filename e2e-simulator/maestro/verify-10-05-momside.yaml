@@ -1,0 +1,79 @@
+appId: com.truejoybirthing.app
+---
+# TJB 10/05 mom-side regression v2: handles the iOS "Save Password?" autofill
+# modal after each login, asserts home elements per-screen (appearance-row is
+# profile-only), then baby card + credential chips + appearance panel + restore
+# midwife. Local backend 8011. No simctl erase; clearKeychain+clearState only.
+- clearKeychain
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: 'I already have an account'
+    timeout: 20000
+- tapOn: 'I already have an account'
+- waitForAnimationToEnd: {timeout: 3000}
+- tapOn: {text: 'Email'}
+- inputText: 'demo.mom@truejoybirthing.com'
+- tapOn: {id: 'login-password-input'}
+- inputText: 'DemoMom2024!'
+- tapOn: {id: 'login-submit-btn'}
+# iOS autofill "Save Password?" modal — dismiss if it shows
+- runFlow:
+    when:
+      visible: 'Not Now'
+    commands:
+      - tapOn: 'Not Now'
+- extendedWaitUntil:
+    timeout: 15000
+    visible: 'Hello, Emma'
+- takeScreenshot: mom-logged-in
+# --- baby-week card on timeline
+- openLink: 'truejoybirthing:///(mom)/timeline'
+- waitForAnimationToEnd: {timeout: 6000}
+- assertVisible: 'BABY THIS WEEK'
+- takeScreenshot: tjb-baby-card
+# --- marketplace credential chips
+- openLink: 'truejoybirthing:///(mom)/marketplace'
+- waitForAnimationToEnd: {timeout: 6000}
+- assertVisible: 'All Credentials'
+- assertVisible: 'CD'
+- tapOn: 'CD'
+- waitForAnimationToEnd: {timeout: 5000}
+- extendedWaitUntil:
+    timeout: 15000
+    visible: 'Sarah Mitchell'
+- takeScreenshot: tjb-credential-filtered
+- tapOn: 'All Credentials'
+- waitForAnimationToEnd: {timeout: 4000}
+- extendedWaitUntil:
+    timeout: 10000
+    visible: 'All Credentials'
+# --- appearance panel regression (profile)
+- openLink: 'truejoybirthing:///(mom)/profile'
+- waitForAnimationToEnd: {timeout: 5000}
+- tapOn: {id: 'appearance-row'}
+- waitForAnimationToEnd: {timeout: 2500}
+- takeScreenshot: tjb-appearance-panel
+# --- restore midwife session
+- clearKeychain
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: 'I already have an account'
+    timeout: 20000
+- tapOn: 'I already have an account'
+- waitForAnimationToEnd: {timeout: 3000}
+- tapOn: {text: 'Email'}
+- inputText: 'demo.midwife@truejoybirthing.com'
+- tapOn: {id: 'login-password-input'}
+- inputText: 'DemoMidwife2024!'
+- tapOn: {id: 'login-submit-btn'}
+- runFlow:
+    when:
+      visible: 'Not Now'
+    commands:
+      - tapOn: 'Not Now'
+- extendedWaitUntil:
+    timeout: 15000
+    visible: 'Hello, Emily'
+- takeScreenshot: midwife-restored
