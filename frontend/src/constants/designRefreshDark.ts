@@ -45,6 +45,19 @@ export const C = {
   chev: '#756273', // row chevron — 3.2:1 (light 3.4:1 as icon)
   track: '#3C3541', // progress track
   white: '#FFFFFF', // on-accent TEXT only in dark (see surface for card bg)
+  // ---- Week-spine mockup v4 additions — dark reversals (same roles, same
+  // layouts; every value reused verbatim from this approved dark corpus per
+  // the JOB-LEDGER 2026-09-23b reversal rules) ----
+  wkChipBorder: '#3C3540', // hairline-dark reversal of light #E5DCD5
+  wkActiveBg: '#372031', // active chip = dark rose chip (roseBg reversal of #D8A0C4)
+  wkActiveBorder: '#BD7FA5', // roseBorder-dark reversal of #C48CA8
+  wkActiveInk: '#C09BB6', // roseSoft-dark text on the dark active chip
+  ringTrack: '#372031', // roseBg-dark ring track on the dark card surface
+  ringArc: '#BD7FA5', // roseBorder-dark arc (midtone kept readable, lavender-pill law)
+  ringArcDashed: '#C09BB6', // roseSoft-dark dashed halo arc
+  dueChipInk: '#9796B9', // lavenderText (due chip is lavender-family)
+  factDivider: '#3C3540', // hairline-dark reversal of light #E8DCD8
+  factLabel: '#7F7388', // grayLight-dark (same stat-label role as light .facts)
 } as const;
 
 // ---- New role tokens (light values identical to approved corpus) ----

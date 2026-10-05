@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>True Joy Birthing · Welcome Trust Badges · v1</title>
+<style>
+@font-face { font-family:'Cormorant'; src:url('../week-spine-mockup/fonts/CormorantGaramond_700Bold.ttf'); font-weight:700; }
+@font-face { font-family:'Cormorant'; src:url('../week-spine-mockup/fonts/CormorantGaramond_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Cormorant'; src:url('../week-spine-mockup/fonts/CormorantGaramond_500Medium_Italic.ttf'); font-weight:500; font-style:italic; }
+@font-face { font-family:'Quicksand'; src:url('../week-spine-mockup/fonts/Quicksand_400Regular.ttf'); font-weight:400; }
+@font-face { font-family:'Quicksand'; src:url('../week-spine-mockup/fonts/Quicksand_500Medium.ttf'); font-weight:500; }
+@font-face { font-family:'Quicksand'; src:url('../week-spine-mockup/fonts/Quicksand_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Quicksand'; src:url('../week-spine-mockup/fonts/Quicksand_700Bold.ttf'); font-weight:700; }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#3A3A3A; font-family:'Quicksand',sans-serif; padding:40px 24px 60px; }
+
+.canvas-head { text-align:center; margin-bottom:14px; }
+.canvas-head .eyebrow { font-size:11px; letter-spacing:3.5px; font-weight:700; color:#D8A0C4; text-transform:uppercase; margin-bottom:10px; }
+.canvas-head h1 { font-family:'Cormorant',serif; font-weight:700; font-size:32px; color:#FAF8F5; }
+.canvas-head h1 em { font-style:normal; color:#D8A0C4; }
+.canvas-head .sub { font-size:13px; color:#B9B4AE; margin-top:8px; }
+
+.pair { display:flex; gap:64px; justify-content:center; align-items:flex-start; flex-wrap:wrap; }
+.col { display:flex; flex-direction:column; align-items:center; gap:16px; }
+.tag { font-size:11px; letter-spacing:3px; text-transform:uppercase; font-weight:700; }
+.tag.a { color:#D8A0C4; }
+.tag.b { color:#A8B5A0; }
+
+.phone { width:390px; background:#FAF8F5; border-radius:52px; padding:10px;
+  box-shadow:0 18px 50px rgba(0,0,0,.42); }
+.screen { width:100%; height:844px; border-radius:42px; overflow:hidden; background:#FAF8F5; position:relative;
+  display:flex; flex-direction:column; }
+.screen::after { content:''; position:absolute; inset:0; pointer-events:none; z-index:40; opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.27 0 0 0 0 0.18 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px 160px; mix-blend-mode:multiply; }
+
+/* ---------- status bar ---------- */
+.statusbar { height:44px; display:flex; justify-content:space-between; align-items:center; padding:0 28px;
+  font-weight:600; font-size:14.5px; color:#FAF8F5; position:relative; z-index:2; flex-shrink:0; }
+.statusbar .right { display:flex; gap:6px; align-items:center; }
+.sb-batt { width:22px; height:11px; border:1.4px solid #FAF8F5; border-radius:3px; position:relative; }
+.sb-batt::after { content:''; position:absolute; left:1.5px; top:1.5px; bottom:1.5px; width:68%; background:#FAF8F5; border-radius:1px; }
+
+/* ---------- photo ---------- */
+.welcome-photo { position:absolute; top:0; left:0; right:0; height:378px;
+  background:url('assets/hero-newborn-sleeping.jpg') center 30%/cover no-repeat; }
+.welcome-tint { position:absolute; top:0; left:0; right:0; height:378px;
+  background:linear-gradient(180deg, rgba(42,42,42,.30) 0%, rgba(42,42,42,.05) 30%,
+    rgba(142,140,181,.16) 62%, rgba(184,122,160,.24) 100%,
+    rgba(184,122,160,.42) 94%, rgba(250,248,245,0) 99%); }
+.welcome-tint b { position:absolute; left:0; right:0; bottom:0; height:56px;
+  background:linear-gradient(180deg, rgba(250,248,245,0) 0%, #FAF8F5 100%); }
+
+/* ---------- floating logo (existing icon, no new mark) ---------- */
+.wc-logo { position:relative; z-index:2; display:flex; justify-content:center; padding-top:2px; }
+.wc-logo img { width:64px; height:64px; border-radius:32px;
+  border:1px solid rgba(255,255,255,.42); box-shadow:0 8px 24px rgba(42,42,42,.28); }
+
+.wc-spacer { flex:1; min-height:0; position:relative; z-index:2; }
+
+/* ---------- value copy ---------- */
+.wc-copy { position:relative; z-index:2; text-align:center; padding:0 26px; }
+.wc-overline { font-size:11px; letter-spacing:2.4px; text-transform:uppercase; font-weight:700; color:#2A2A2A; margin-bottom:7px; }
+.wc-h1 { font-family:'Cormorant',serif; font-weight:700; font-size:26px; line-height:1.26; color:#2A2A2A; }
+.wc-h1 em { font-style:italic; font-weight:500; color:#B87AA0; }
+
+/* ---------- trust badge cards ---------- */
+.badges { position:relative; z-index:2; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;
+  padding:0 18px; margin-top:14px; }
+.badge { background:#FAF8F5; border:1px solid rgba(42,42,42,.05);
+  border-radius:20px 26px 22px 27px; padding:14px 10px 13px; text-align:center;
+  box-shadow:0 10px 26px rgba(42,42,42,.16), 0 1.5px 5px rgba(42,42,42,.10);
+  position:relative; overflow:hidden; }
+.badge::before { content:''; position:absolute; top:0; left:16%; right:12%; height:3px; border-radius:3px;
+  background:var(--accent); opacity:.30; }
+.badge::after { content:''; position:absolute; z-index:0; right:-13px; bottom:-13px; width:38px; height:38px;
+  border-radius:64% 56% 62% 54%/58% 62% 50% 60%; background:var(--soft); opacity:.55; }
+.badge .ic { position:relative; z-index:1; width:40px; height:40px; margin:0 auto 9px; display:block; }
+.badge .lb { position:relative; z-index:1; font-size:12.2px; font-weight:700; line-height:1.22;
+  color:#2A2A2A; letter-spacing:.1px; }
+.badge .sp { position:relative; z-index:1; font-size:10px; font-weight:500; line-height:1.4;
+  color:#8A837C; margin-top:4px; }
+.badge-sage { --accent:#7C8F6F; --soft:#E8EDE5; --stroke:#7C8F6F; }
+.badge-rose { --accent:#B87AA0; --soft:#F5E4ED; --stroke:#B87AA0; }
+.badge-lav  { --accent:#8E8CB5; --soft:#EDEAF6; --stroke:#8E8CB5; }
+
+/* ---------- CTA row ---------- */
+.cta { position:relative; z-index:2; padding:14px 20px 0; }
+.btn-primary { background:#8E8CB5; color:#fff; font-size:15.5px; font-weight:700; text-align:center;
+  padding:15px 20px; border-radius:28px; box-shadow:0 8px 22px rgba(110,108,153,.36);
+  display:flex; align-items:center; justify-content:center; gap:9px; }
+.btn-primary svg { width:16px; height:16px; stroke:#fff; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+.btn-ghost { text-align:center; font-size:14.5px; font-weight:700; color:#6E6C99; padding:13px 20px 4px; }
+.wc-footer { text-align:center; font-size:11px; font-weight:500; color:#A8A29B; padding:4px 32px 6px; line-height:1.5; }
+.wc-footer b { color:#8A837C; font-weight:600; text-decoration:underline; text-decoration-color:#D5D3E8; }
+
+/* home indicator */
+.homebar { position:relative; z-index:2; margin-top:auto; padding:8px 0 9px; display:flex; justify-content:center; }
+.homebar i { width:128px; height:5px; border-radius:3px; background:#2A2A2A; opacity:.22; }
+
+/* ---------- variant B (plain cream, no photo) ---------- */
+.vb-head { position:relative; z-index:2; text-align:center; padding:8px 30px 0; }
+.vb-over { font-size:11px; letter-spacing:2.4px; text-transform:uppercase; font-weight:700; color:#B87AA0; margin-bottom:7px; }
+.vb-h1 { font-family:'Cormorant',serif; font-weight:700; font-size:27px; line-height:1.26; color:#2A2A2A; }
+.vb-h1 em { font-style:italic; font-weight:500; color:#B87AA0; }
+.vb-sub { font-size:12.5px; font-weight:500; line-height:1.5; color:#74716A; margin:8px auto 0; max-width:300px; }
+.vb-logoring { width:74px; height:74px; border-radius:50%; border:1.4px solid rgba(142,140,181,.35);
+  box-shadow:0 6px 18px rgba(110,108,153,.14); padding:9px; margin:0 auto; background:#FDFCFA; }
+.vb-logoring img { width:100%; height:100%; border-radius:28px; display:block; }
+
+/* ---------- legend ---------- */
+.legend { max-width:920px; margin:40px auto 0; background:#FAF8F5; border:1px solid #EADFE8; border-radius:16px; padding:22px 30px; }
+.legend .h { font-family:'Cormorant',serif; font-weight:700; font-size:19px; margin-bottom:10px; color:#2A2A2A; }
+.legend ul { list-style:none; columns:2; column-gap:44px; }
+.legend li { font-size:12.5px; color:#55595F; line-height:1.45; margin-bottom:7px; padding-left:15px; position:relative; break-inside:avoid; }
+.legend li::before { content:''; position:absolute; left:0; top:3px; width:9px; height:9px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 .8 L6.1 3.9 L9.2 5 L6.1 6.1 L5 9.2 L3.9 6.1 L.8 5 L3.9 3.9 Z' fill='%23B87AA0'/%3E%3C/svg%3E") center/contain no-repeat; }
+.legend li b { color:#2A2A2A; }
+</style>
+</head>
+<body>
+
+<div class="canvas-head">
+  <div class="eyebrow">True Joy Birthing · Welcome · Trust Badges · v1</div>
+  <h1>The Five-Second <em>Trust</em> Test</h1>
+  <div class="sub">Same welcome law (auth-refresh SCREEN B): value copy → three trust badge cards → CTA row.
+    <b>Left</b> — badges float on cream cards under the dark-photo hero · <b>Right</b> — plain-cream fallback if the photo treatment fights the badges.</div>
+</div>
+
+<div class="pair">
+
+  <!-- ══════════════ VARIANT A · PHOTO WELCOME + FLOATING BADGE CARDS ══════════════ -->
+  <div class="col">
+    <div class="tag a">VARIANT A · DARK-PHOTO HERO · BADGES ON CREAM FLOATING CARDS</div>
+    <div class="phone"><div class="screen">
+
+      <div class="welcome-photo"></div>
+      <div class="welcome-tint"></div>
+
+      <div class="statusbar">
+        <span>9:41</span>
+        <div class="right">
+          <svg width="17" height="11"><g fill="#FAF8F5"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="2.5" height="11" rx="1" opacity=".35"/></g></svg>
+          <div class="sb-batt"></div>
+        </div>
+      </div>
+
+      <div class="wc-logo"><img src="assets/logo-icon.png" alt=""></div>
+      <div class="wc-spacer"></div>
+
+      <div class="wc-copy">
+        <div class="wc-overline">Welcome to</div>
+        <div class="wc-h1">Your Birth Journey,<br><em>Supported Every Step</em></div>
+      </div>
+
+      <div class="badges">
+
+        <div class="badge badge-sage">
+          <svg class="ic" viewBox="0 0 40 40">
+            <g fill="none" stroke="#7C8F6F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M31.5 7.5 c-1.2 9.3 -5.6 15.4 -12.9 18.6 c-2 2.4 -4.4 3.8 -7.5 4.4 q-1.4 .25 -2.6 .4"/>
+              <path d="M31.5 7.5 c-8.9 1.2 -14.7 5.3 -17.9 12.2 c-.9 2 -1.5 4.2 -1.9 6.6 q-.15 1.15 -.2 2.3"/>
+              <path d="M8 33.2 c1.8-1.6 3.6-2.5 4.5-4.6"/>
+              <path d="M10.6 20.2 c3.8-4.4 9.2-8.1 16.6-9.6"/>
+              <path d="M21 25.4 c3.6-6 7-11 9.4-16.8"/>
+            </g>
+            <circle cx="12.3" cy="27.5" r="1.7" fill="#E8EDE5" stroke="#7C8F6F" stroke-width="1.1"/>
+          </svg>
+          <div class="lb">Built with doulas</div>
+          <div class="sp">Made by working birth doulas</div>
+        </div>
+
+        <div class="badge badge-rose">
+          <svg class="ic" viewBox="0 0 40 40">
+            <g fill="none" stroke="#B87AA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M27 11.5 c2.3-4.8 6.4-7 9.5-7.2 c-.4 5-2.1 8.9 -4.8 11.4 c1 2.1 1.2 4.3 .4 6.4 c-2.9 -3.3 -5.6-7.5 -5.1 -10.6 Z" transform="translate(-1.5,0) scale(.94)"/>
+              <path d="M21 34.5 c-9.4 -4.4 -14 -11 -12.3 -17 c1.6-5.6 8-8.6 12.3 -3.9 c4.3 -4.7 10.7 -1.7 12.3 3.9 c1.7 6 -2.9 12.6 -12.3 17 Z"/>
+              <path d="M8.2 18.9 c1.9-2.9 5.2-4.1 7.8-3"/>
+            </g>
+            <circle cx="21.5" cy="18.3" r="2.1" fill="#B87AA0" opacity=".5"/>
+          </svg>
+          <div class="lb">Evidence-based, judgment-free</div>
+          <div class="sp">Real research, zero mom-shaming</div>
+        </div>
+
+        <div class="badge badge-lav">
+          <svg class="ic" viewBox="0 0 40 40">
+            <g fill="none" stroke="#8E8CB5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.4 12.3 c3.4 -3.7 8.3 -3.9 11.2 -.9 c3 3.1 2.6 8.2 -.9 11.7 c-2.6 2.6 -6.3 5.2 -10.3 7.4 c-4 -2.2 -7.7 -4.8 -10.3 -7.4 c-3.5 -3.5 -3.9 -8.6 -.9 -11.7 c2.9 -3 7.8 -2.8 11.2 .9 Z"/>
+              <path d="M18.4 22.5 l3.8 3.6 l7.3 -6.9"/>
+              <path d="M20.1 8.1 c-.5 -1.7 .2 -3.4 1.6 -4.4 M26 6.4 c.9 -1.5 2.7 -2.2 4.3 -1.7"/>
+            </g>
+          </svg>
+          <div class="lb">Free, forever</div>
+          <div class="sp">Every feature, no card, no trial</div>
+        </div>
+
+      </div>
+
+      <div class="cta">
+        <div class="btn-primary">Get Started Free
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div class="btn-ghost">I already have an account</div>
+      </div>
+
+      <div class="wc-footer">By continuing, you agree to our <b>Terms</b> and <b>Privacy Policy</b></div>
+      <div class="homebar"><i></i></div>
+
+    </div></div>
+  </div>
+
+  <!-- ══════════════ VARIANT B · PLAIN-CREAM FALLBACK ══════════════ -->
+  <div class="col">
+    <div class="tag b">VARIANT B · PLAIN-CREAM FALLBACK · IF PHOTO FIGHTS THE BADGES</div>
+    <div class="phone"><div class="screen" style="background:#FAF8F5;">
+
+      <div class="statusbar" style="color:#2A2A2A;">
+        <span>9:41</span>
+        <div class="right">
+          <svg width="17" height="11"><g fill="#2A2A2A"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="2.5" height="11" rx="1" opacity=".35"/></g></svg>
+          <div class="sb-batt" style="border-color:#2A2A2A;"></div>
+        </div>
+      </div>
+
+      <div style="height:22px; flex-shrink:0;"></div>
+      <div class="vb-logoring"><img src="assets/logo-icon.png" alt=""></div>
+
+      <div class="vb-head">
+        <div class="vb-over">Welcome to</div>
+        <div class="vb-h1">Your Birth Journey, <em>Supported Every Step</em></div>
+        <div class="vb-sub">Create your birth plan, connect with doulas and midwives, and experience the birth you envision.</div>
+      </div>
+
+      <div class="badges" style="margin-top:22px;">
+
+        <div class="badge badge-sage">
+          <svg class="ic" viewBox="0 0 40 40">
+            <g fill="none" stroke="#7C8F6F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M31.5 7.5 c-1.2 9.3 -5.6 15.4 -12.9 18.6 c-2 2.4 -4.4 3.8 -7.5 4.4 q-1.4 .25 -2.6 .4"/>
+              <path d="M31.5 7.5 c-8.9 1.2 -14.7 5.3 -17.9 12.2 c-.9 2 -1.5 4.2 -1.9 6.6 q-.15 1.15 -.2 2.3"/>
+              <path d="M8 33.2 c1.8-1.6 3.6-2.5 4.5-4.6"/>
+              <path d="M10.6 20.2 c3.8-4.4 9.2-8.1 16.6-9.6"/>
+              <path d="M21 25.4 c3.6-6 7-11 9.4-16.8"/>
+            </g>
+            <circle cx="12.3" cy="27.5" r="1.7" fill="#E8EDE5" stroke="#7C8F6F" stroke-width="1.1"/>
+          </svg>
+          <div class="lb">Built with doulas</div>
+          <div class="sp">Made by working birth doulas</div>
+        </div>
+
+        <div class="badge badge-rose">
+          <svg class="ic" viewBox="0 0 40 40">
+            <g fill="none" stroke="#B87AA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M27 11.5 c2.3-4.8 6.4-7 9.5-7.2 c-.4 5-2.1 8.9 -4.8 11.4 c1 2.1 1.2 4.3 .4 6.4 c-2.9 -3.3 -5.6-7.5 -5.1 -10.6 Z" transform="translate(-1.5,0) scale(.94)"/>
+              <path d="M21 34.5 c-9.4 -4.4 -14 -11 -12.3 -17 c1.6-5.6 8-8.6 12.3 -3.9 c4.3 -4.7 10.7 -1.7 12.3 3.9 c1.7 6 -2.9 12.6 -12.3 17 Z"/>
+              <path d="M8.2 18.9 c1.9-2.9 5.2-4.1 7.8-3"/>
+            </g>
+            <circle cx="21.5" cy="18.3" r="2.1" fill="#B87AA0" opacity=".5"/>
+          </svg>
+          <div class="lb">Evidence-based, judgment-free</div>
+          <div class="sp">Real research, zero mom-shaming</div>
+        </div>
+
+        <div class="badge badge-lav">
+          <svg class="ic" viewBox="0 0 40 40">
+            <g fill="none" stroke="#8E8CB5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.4 12.3 c3.4 -3.7 8.3 -3.9 11.2 -.9 c3 3.1 2.6 8.2 -.9 11.7 c-2.6 2.6 -6.3 5.2 -10.3 7.4 c-4 -2.2 -7.7 -4.8 -10.3 -7.4 c-3.5 -3.5 -3.9 -8.6 -.9 -11.7 c2.9 -3 7.8 -2.8 11.2 .9 Z"/>
+              <path d="M18.4 22.5 l3.8 3.6 l7.3 -6.9"/>
+              <path d="M20.1 8.1 c-.5 -1.7 .2 -3.4 1.6 -4.4 M26 6.4 c.9 -1.5 2.7 -2.2 4.3 -1.7"/>
+            </g>
+          </svg>
+          <div class="lb">Free, forever</div>
+          <div class="sp">Every feature, no card, no trial</div>
+        </div>
+
+      </div>
+
+      <div class="cta" style="margin-top:auto;">
+        <div class="btn-primary">Get Started Free
+          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+        <div class="btn-ghost">I already have an account</div>
+      </div>
+
+      <div class="wc-footer">By continuing, you agree to our <b>Terms</b> and <b>Privacy Policy</b></div>
+      <div class="homebar"><i></i></div>
+
+    </div></div>
+  </div>
+
+</div>
+
+<div class="legend">
+  <div class="h">The five-second trust test — what carries it</div>
+  <ul>
+    <li><b>One job per screen:</b> value copy states the promise, the three badges prove it, the CTA converts — nothing else on screen competes</li>
+    <li><b>Badge order = objection order:</b> who made this (sage) → can I trust the advice (rose) → what does it cost (lavender) — a first-run mom's three questions, answered in sequence</li>
+    <li><b>Icons, not logo marks:</b> hand-drawn stroke icons (organic sprig, leafy heart, hand-sketched heart with check) in the same imperfect stroke language as the week-spine sprigs — never geometric, never a brand mark</li>
+    <li><b>Cards float below the photo:</b> dark moody hero washes to cream → cream badge cards with hand-cut rounded corners and soft grounded shadows stay high-contrast even over busy photo edges</li>
+    <li><b>Variant B fallback:</b> plain cream with the icon resting in a lavender ring, same copy + badges — ship this one if the photo treatment fights the cards</li>
+    <li><b>Law compliance:</b> cream #FAF8F5 · lavender #8E8CB5/#6E6C99 · rose #B87AA0 · sage #7C8F6F · charcoal #2A2A2A · Cormorant Garamond + Quicksand · paper-grain feTurbulence overlay · no blue, no violet accent, no emoji</li>
+  </ul>
+</div>
+
+</body>
+</html>

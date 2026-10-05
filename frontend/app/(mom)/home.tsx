@@ -22,7 +22,12 @@ import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
-import { C, F } from '../../src/constants/corpus';
+import { C, F, useCorpus } from '../../src/constants/corpus';
+// Week-spine mockup v4 additions (Jeff-approved). The birth-plan ring renders
+// with react-native-svg circle strokes — svg is already a project dependency
+// (contraction-timer.tsx, GrowthSprig, HBand); strokeDasharray reproduces the
+// mockup's .ring .arc / .arc2 CSS verbatim.
+import Svg, { Circle, Path } from 'react-native-svg';
 
 interface PendingContract {
   contract_id: string;
@@ -161,6 +166,42 @@ export default function MomHomeScreen() {
     weekNum >= 28 ? "Third trimester begins — let's keep it steady"
     : weekNum >= 14 ? 'Second trimester — steady and strong'
     : 'First trimester — welcome, mama';
+
+  // ================= Week-spine additions (mockup v4, Jeff-approved) =================
+  // Anchor week for the stepper: the selected chip, defaulting to the live week.
+  // Local state only — tapping a chip re-points the Baby Development card data.
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const corpus = useCorpus();
+
+  // Due-date countdown: /timeline returns due_date (care_plans.py get_timeline —
+  // due_date_str echoed verbatim). If the API can't provide it (no onboarding),
+  // the card renders nothing instead of a placeholder.
+  const daysToGo = (() => {
+    const due = timeline?.due_date ? new Date(`${timeline.due_date}T00:00:00`) : null;
+    if (!due || Number.isNaN(due.getTime())) return null;
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return Math.round((due.getTime() - startOfToday.getTime()) / 86400000);
+  })();
+  const dueLabel = (() => {
+    if (daysToGo === null) return null;
+    if (daysToGo > 0) return `${daysToGo} days to go · due ${new Date(`${timeline.due_date}T00:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
+    if (daysToGo === 0) return 'Due today';
+    return null; // past the due date → postpartum, the chip reads as clutter
+  })();
+
+  // Stepper window: ±3 chips around the anchor week, clamped to 1..42,
+  // with the inner range narrowed when the anchor sits near an edge.
+  const anchorWeek = selectedWeek ?? (weekNum >= 1 && weekNum <= 42 ? weekNum : 0);
+  const weeksToShow: number[] = anchorWeek >= 1
+    ? Array.from({ length: 7 }, (_, i) => {
+        const rawStart = anchorWeek - 3;
+        const clampedStart = Math.max(1, Math.min(rawStart, 42 - 6));
+        return clampedStart + i;
+      })
+    : [];
+  const babyWeek = (selectedWeek ?? weekNum) || 0;
+  // ====================================================================================
   
   return (
     <ErrorBoundary
@@ -229,6 +270,58 @@ export default function MomHomeScreen() {
             Hello, <Text style={styles.greetingAccent}>{firstName}</Text>
           </Text>
           <Text style={styles.weekText}>{trimesterSub}</Text>
+          {/* Due-date chip — mockup .duechip (lavender pill, heart glyph).
+              Hidden entirely when no due date is available. */}
+          {dueLabel && (
+            <View style={styles.dueChip}>
+              <Svg width={14} height={13} viewBox="0 0 14 13">
+                <Path
+                  d="M7 11.5 C3.5 8.5 1.5 6.5 1.5 4.2 C1.5 2.5 2.9 1.3 4.4 1.3 C5.5 1.3 6.5 2 7 2.9 C7.5 2 8.5 1.3 9.6 1.3 C11.1 1.3 12.5 2.5 12.5 4.2 C12.5 6.5 10.5 8.5 7 11.5 Z"
+                  fill="none"
+                  stroke={corpus.dueChipInk}
+                  strokeWidth={1.3}
+                  strokeLinecap="round"
+                />
+              </Svg>
+              <Text style={styles.dueChipText}>{dueLabel}</Text>
+            </View>
+          )}
+          {/* Week stepper — mockup .stepper: 7 chips (±3 around the anchor week),
+              active chip = rose solid (.wk.active). Tapping a chip re-points the
+              Baby Development card (local state only). */}
+          {weeksToShow.length > 0 && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.weekStepper}
+            >
+              {weeksToShow.map((wk) => {
+                const isActive = wk === anchorWeek;
+                return (
+                  <TouchableOpacity
+                    key={wk}
+                    onPress={() => setSelectedWeek(wk)}
+                    activeOpacity={0.75}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Show pregnancy week ${wk}`}
+                    style={[
+                      styles.weekChip,
+                      isActive && styles.weekChipActive,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.weekChipText,
+                        isActive && styles.weekChipTextActive,
+                      ]}
+                    >
+                      {wk}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          )}
         </View>
         
         {/* Birth Plan Card */}
@@ -239,7 +332,57 @@ export default function MomHomeScreen() {
           accessibilityLabel="Open your Joyful Birth Plan"
         >
           <Card style={styles.mainCard}>
+            {/* Birth-plan row — mockup v4: ring centered-left with the chevron
+                kept flush-right; text group flexes between them. */}
             <View style={styles.birthPlanTopRow}>
+              <View style={styles.birthPlanRingWrap}>
+                <Svg width={56} height={56} viewBox="0 0 56 56">
+                  {/* Track — .ring .track #F0E6E2, w5, round caps */}
+                  <Circle
+                    cx={28}
+                    cy={28}
+                    r={25}
+                    stroke={C.ringTrack}
+                    strokeWidth={5}
+                    fill="none"
+                    strokeLinecap="round"
+                  />
+                  {/* Arc — .ring .arc #C48CA8, w5; dasharray length = pct of the
+                      full circumference (2πr ≈ 157; mockup full arc 150/157) */}
+                  <Circle
+                    cx={28}
+                    cy={28}
+                    r={25}
+                    stroke={C.ringArc}
+                    strokeWidth={5}
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(157 * (birthPlan?.completion_percentage || 0)) / 100} 157`}
+                    // .ring { svg { transform:rotate(-90deg) } }
+                    rotation="-90"
+                    originX={28}
+                    originY={28}
+                  />
+                  {/* Dashed halo — .ring .arc2 #D8A0C4, w2.2, 11-7 dash, 55% opacity */}
+                  <Circle
+                    cx={28}
+                    cy={28}
+                    r={25}
+                    stroke={C.ringArcDashed}
+                    strokeWidth={2.2}
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray="11 7"
+                    opacity={0.55}
+                  />
+                </Svg>
+                {/* .ring .pct — centered, Cormorant 700 16px, ink token */}
+                <View pointerEvents="none" style={styles.ringPctWrap}>
+                  <Text style={styles.ringPctText}>
+                    {Math.round(birthPlan?.completion_percentage || 0)}%
+                  </Text>
+                </View>
+              </View>
               <View style={styles.birthPlanTextGroup}>
                 <Text style={styles.kickerRose}>BIRTH PLAN</Text>
                 <Text style={styles.cardTitle}>Joyful Birth Plan</Text>
@@ -251,29 +394,24 @@ export default function MomHomeScreen() {
                 <Text style={{ fontSize: 20, color: C.chev, fontWeight: '300' }}>›</Text>
               </View>
             </View>
-            <View style={styles.progressBar}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${birthPlan?.completion_percentage || 0}%` },
-                ]}
-              />
-            </View>
           </Card>
         </TouchableOpacity>
         
         {/* Baby Development Card */}
         {(() => {
-          // Determine the current pregnancy week for baby development
+          // Determine the pregnancy week for baby development — the week-stepper
+          // selection takes precedence (local state), else the live API week.
           // Ensure currentWeek is a number (API may return numeric string)
-          const rawWeek = weeklyContent?.week;
+          const rawWeek = babyWeek || weeklyContent?.week;
           const currentWeek = typeof rawWeek === 'number' ? rawWeek : Number(rawWeek);
           const isPostpartum = weeklyContent?.is_postpartum;
           if (isPostpartum || !currentWeek || currentWeek < 4 || currentWeek > 40) return null;
           
           // Use local data first (offline-first), fall back to API data
           const localBabyDev = getBabyDevData(currentWeek);
-          const babyDev = weeklyContent?.baby_development || localBabyDev;
+          const apiBabyDev = weeklyContent?.baby_development;
+          const apiDev = apiBabyDev && Number(apiBabyDev.week) === currentWeek ? apiBabyDev : undefined;
+          const babyDev = apiDev || localBabyDev;
 
           if (!babyDev) return null;
           
@@ -305,11 +443,38 @@ export default function MomHomeScreen() {
                   </View>
                 )}
               </View>
-              {babyDev.phase === 'size_reference' && babyDev.sizeNote && (
-                <View style={styles.babyDevSizeBadge}>
-                  <Text style={styles.babyDevSizeBadgeText}>{babyDev.sizeNote}</Text>
-                </View>
-              )}
+              {/* Mockup .facts — Length · Weight · Size-of row in Cormorant
+                  numerals, under the illustration. The project corpus carries
+                  per-week sizeNote + food only (no length/weight data exists in
+                  the app, the backend, or the website dataset), so Length shows
+                  the approved sizeNote and Weight renders only if data ever
+                  provides one. Illustration kept. */}
+              {(() => {
+                const sizeNote = babyDev.sizeNote ?? apiBabyDev?.size_note ?? null;
+                const food = babyDev.food ?? apiBabyDev?.food ?? null;
+                if (!sizeNote && !food) return null;
+                return (
+                  <View style={styles.babyFactsRow}>
+                    {sizeNote ? (
+                      <View style={styles.babyFactCell}>
+                        <Text style={styles.babyFactValue}>{sizeNote}</Text>
+                        <Text style={styles.babyFactLabel}>Length</Text>
+                      </View>
+                    ) : null}
+                    {food ? (
+                      <View style={styles.babyFactsDivider} />
+                    ) : null}
+                    {food ? (
+                      <View style={styles.babyFactCell}>
+                        <Text style={styles.babyFactValue} numberOfLines={1}>
+                          {food}
+                        </Text>
+                        <Text style={styles.babyFactLabel}>Size of</Text>
+                      </View>
+                    ) : null}
+                  </View>
+                );
+              })()}
               <Text style={styles.cardH3}>{babyDev.title}</Text>
               <Text style={styles.babyDevDescription} numberOfLines={4}>
                 {babyDev.description}
@@ -658,18 +823,6 @@ const getStyles = createThemedStyles((colors) => ({
     fontFamily: F.serif,
     color: C.ink,
   },
-  progressBar: {
-    height: 7,
-    backgroundColor: C.track,
-    borderRadius: 999,
-    overflow: 'hidden',
-    marginTop: 9,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: C.lavenderSoft,
-    borderRadius: 999,
-  },
   nextStep: {
     fontSize: 11.5,
     fontFamily: F.ui,
@@ -863,26 +1016,116 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  babyDevSizeBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: C.sageBg,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 999,
-    marginBottom: 6,
-  },
-  babyDevSizeBadgeText: {
-    fontSize: 9.5,
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-    fontFamily: F.uiBold,
-    color: C.sage,
-  },
   babyDevDescription: {
     fontSize: 13,
     lineHeight: 20,
     fontFamily: F.ui,
     color: C.body,
     marginBottom: 8,
+  },
+  // ---- Week-spine mockup v4 (CSS .stepper / .wk / .duechip / .ring / .facts) ----
+  // Week stepper strip — .stepper { display:flex; gap:8px; margin-top:14px }
+  weekStepper: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 14,
+    alignItems: 'center',
+  },
+  // .wk — 2px #E5DCD5 border, r999, 8px×2px padding, transparent bg, #858585 text
+  weekChip: {
+    borderRadius: 999,
+    borderWidth: 2,
+    borderColor: C.wkChipBorder,
+    backgroundColor: 'transparent',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    minWidth: 34,
+    alignItems: 'center',
+  },
+  // .wk.active — solid #D8A0C4, border #C48CA8, text #4B2E42
+  weekChipActive: {
+    backgroundColor: C.wkActiveBg,
+    borderColor: C.wkActiveBorder,
+  },
+  weekChipText: {
+    fontSize: 12,
+    fontFamily: F.uiReg,
+    color: C.gray,
+  },
+  weekChipTextActive: {
+    fontFamily: F.uiBold,
+    color: C.wkActiveInk,
+  },
+  // .duechip — lavender pill with heart glyph; no hex in mockup CSS (web default
+  // lavender family) → light #5A5885 text / stroke #6E6C99, dark #9796B9
+  dueChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    marginTop: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: C.lavenderBorder,
+    backgroundColor: C.lavenderBg,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  dueChipText: {
+    fontSize: 11,
+    fontFamily: F.uiSemi,
+    color: C.dueChipInk,
+  },
+  // Birth-plan double-stroke ring row — .ring { width:56px; height:56px }
+  birthPlanRingWrap: {
+    width: 56,
+    height: 56,
+    flexShrink: 0,
+  },
+  // .ring .pct — centered, Cormorant 700 16px, #2D2D2D → ink token
+  ringPctWrap: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ringPctText: {
+    fontFamily: F.serif,
+    fontSize: 16,
+    color: C.ink,
+  },
+  // .facts — 12px caps #A3908B labels, 21px Cormorant #4B4B4B numerals,
+  // 1px #E8DCD8 separators, centered cells
+  babyFactsRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    justifyContent: 'center',
+    marginTop: 10,
+    marginBottom: 8,
+  },
+  babyFactCell: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+  },
+  babyFactsDivider: {
+    width: StyleSheet.hairlineWidth,
+    backgroundColor: C.factDivider,
+    marginVertical: 3,
+  },
+  babyFactValue: {
+    fontSize: 21,
+    lineHeight: 25,
+    fontFamily: F.serifSemi,
+    color: C.body,
+    textAlign: 'center',
+  },
+  babyFactLabel: {
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: F.uiSemi,
+    color: C.factLabel,
+    marginTop: 3,
+    textAlign: 'center',
   },
 }));
