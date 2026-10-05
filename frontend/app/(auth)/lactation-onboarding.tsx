@@ -151,7 +151,7 @@ export default function LactationOnboardingScreen() {
           location_city: locationCity,
           location_state: locationState,
           services_offered: servicesOffered,
-          credentials: credentials,
+          certifications: credentials,  // was `credentials:` — pydantic silently dropped the key (council 10/05 #1)
           years_in_practice: yearsInPractice ? Math.max(0, parseInt(yearsInPractice) || 0) : null,
           accepting_new_clients: acceptingNewClients,
         },

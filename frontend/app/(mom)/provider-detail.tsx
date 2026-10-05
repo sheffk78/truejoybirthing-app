@@ -31,13 +31,46 @@ interface ProviderProfile {
     location_state?: string;
     years_in_practice?: number;
     bio?: string;
-    credentials?: string;
+    credentials?: string | string[];
+    certifications?: string[];
     services_offered?: string[];
     birth_settings_served?: string[];
     phone?: string;
     website?: string;
   };
 }
+
+// Normalize any stored credential format to display chips (10/05):
+// recognized codes keep their code form; everything else shows as-is.
+const credentialChipsOf = (profile: any): { chip: string; name?: string }[] => {
+  if (!profile) return [];
+  const raw: string[] = [];
+  const push = (v: any) => {
+    if (!v) return;
+    if (Array.isArray(v)) v.forEach(t => t && raw.push(String(t).trim()));
+    else String(v).split(',').forEach(t => t.trim() && raw.push(t.trim()));
+  };
+  push(profile.credentials);
+  push(profile.certifications);
+  const KNOWN: Record<string, string> = {
+    CD: 'Certified Doula', PCD: 'Postpartum Doula', CPD: 'Certified Postpartum Doula',
+    CLC: 'Certified Lactation Counselor', IBCLC: 'International Board Certified Lactation Consultant',
+    CLE: 'Certified Lactation Educator', CBE: 'Certified Childbirth Educator',
+    ALE: 'Advanced Lactation Expert', CPM: 'Certified Professional Midwife',
+    CNM: 'Certified Nurse-Midwife', CM: 'Certified Midwife', LM: 'Licensed Midwife',
+    DEM: 'Direct-Entry Midwife',
+  };
+  const seen = new Set<string>();
+  const out: { chip: string; name?: string }[] = [];
+  for (const t of raw) {
+    const key = t.toUpperCase();
+    const chip = KNOWN[key] ? key : t;
+    if (seen.has(chip.toUpperCase())) continue;
+    seen.add(chip.toUpperCase());
+    out.push({ chip, name: KNOWN[key] });
+  }
+  return out;
+};
 
 export default function ProviderDetailScreen() {
   const colors = useColors();
@@ -218,12 +251,16 @@ export default function ProviderDetailScreen() {
             </View>
           )}
 
-          {profile.credentials && (
+          {credentialChipsOf(profile).length > 0 && (
             <View style={styles.detailRow}>
               <Icon name="ribbon-outline" size={20} color={colors.textSecondary} />
               <View style={styles.detailContent}>
                 <Text style={styles.detailLabel}>Credentials</Text>
-                <Text style={styles.detailValue}>{profile.credentials}</Text>
+                {credentialChipsOf(profile).map(({ chip, name }) => (
+                  <Text key={chip} style={styles.detailValue}>
+                    {name ? `${chip} — ${name}` : chip}
+                  </Text>
+                ))}
               </View>
             </View>
           )}

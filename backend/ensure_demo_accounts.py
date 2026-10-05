@@ -61,7 +61,8 @@ DEMO_ACCOUNTS = [
         "profile_collection": "doula_profiles",
         "profile_data": {
             "practice_name": "Heart & Hands Birth Support",
-            "credentials": ["CD", "CLC"],
+            "credentials": ["CD", "CLD", "ICBD"],
+            "certifications": ["CLC", "CBE", "DONA", "CAPPA"],
             "location_city": "Austin",
             "location_state": "TX",
             "services_offered": [

@@ -29,15 +29,60 @@ import { API_ENDPOINTS } from '../../src/constants/api';
 
 const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE', 'LACTATION'];
 
-// Credential codes a provider carries (array or comma string) — card chips + filter
+// Credential codes a provider carries — prefer the backend-normalized chips
+// (canonical codes + custom), fall back to raw profile.credentials (10/05)
 const credCodesOf = (provider: any): string[] => {
-  const creds = provider?.profile?.credentials;
-  if (!creds) return [];
-  if (Array.isArray(creds)) return creds.filter(Boolean).map(String);
-  return String(creds).split(",").map(c => c.trim()).filter(Boolean);
+  const chips = provider?.credential_chips;
+  if (chips && (chips.codes?.length || chips.custom?.length)) {
+    return [...(chips.codes || []), ...(chips.custom || [])];
+  }
+  // Council 10/05: also read certifications (older payloads without
+  // credential_chips) and dedupe case-insensitively
+  const flat = (v: any): string[] =>
+    Array.isArray(v) ? v.filter(Boolean).map(String) : (v ? String(v).split(",") : []);
+  return [...flat(provider?.profile?.credentials), ...flat(provider?.profile?.certifications)]
+    .map(c => c.trim()).filter(Boolean)
+    .filter((c, i, a) => a.findIndex(x => x.toUpperCase() === c.toUpperCase()) === i);
 };
 
-const CREDENTIAL_FILTERS = ['CD', 'CLC', 'CPM', 'CNM', 'IBCLC'];
+// Recognized credential vocabulary (10/05): fetched from
+// /marketplace/credentials (single source of truth — backend utils/credentials.py)
+// with a hardcoded fallback so the filter row still renders offline.
+// Mirrors MARKETPLACE_FILTER_CODES (DEM demoted 10/05 — category, not a cert)
+const DEFAULT_CREDENTIAL_FILTERS = ['CD', 'CLC', 'IBCLC', 'CBE', 'CPM', 'CNM', 'LM'];
+
+// Credential chips with full names for the detail modal (10/05): canonical
+// codes display "CODE — Full Name"; custom chips display verbatim.
+const KNOWN_CREDENTIAL_NAMES: Record<string, string> = {
+  CD: 'Certified Doula', PCD: 'Postpartum Doula', CPD: 'Certified Postpartum Doula',
+  CLC: 'Certified Lactation Counselor', IBCLC: 'International Board Certified Lactation Consultant',
+  CLE: 'Certified Lactation Educator', CBE: 'Certified Childbirth Educator',
+  ALE: 'Advanced Lactation Expert', CPM: 'Certified Professional Midwife',
+  CNM: 'Certified Nurse-Midwife', CM: 'Certified Midwife', LM: 'Licensed Midwife',
+  DEM: 'Direct-Entry Midwife',
+};
+const allChipsOf = (provider: any): { chip: string; name?: string }[] => {
+  // Council 10/05: prefer backend labels (one vocabulary, updated server-side
+  // without an app release); local KNOWN map is the offline fallback only.
+  const labels = provider?.credential_chips?.labels;
+  if (labels?.length) {
+    return labels.map((l: any) => ({
+      chip: String(l.code),
+      name: l.name && l.name !== String(l.code) ? String(l.name) : undefined,
+    }));
+  }
+  const out: { chip: string; name?: string }[] = [];
+  const seen = new Set<string>();
+  for (const code of credCodesOf(provider)) {
+    const key = code.toUpperCase();
+    const known = Boolean(KNOWN_CREDENTIAL_NAMES[key]);
+    const chip = known ? key : code;
+    if (seen.has(chip.toUpperCase())) continue;
+    seen.add(chip.toUpperCase());
+    out.push({ chip, name: known ? KNOWN_CREDENTIAL_NAMES[key] : undefined });
+  }
+  return out;
+};
 
 export default function MarketplaceScreen() {
   const router = useRouter();
@@ -57,9 +102,25 @@ export default function MarketplaceScreen() {
       .catch(() => {/* keep neutral midpoint */});
     return () => { alive = false; };
   }, []);
+  // Recognized-credential vocabulary (10/05): common codes become filter chips;
+  // unique credentials stay allowed (pros keep custom chips, searchable by code)
+  useEffect(() => {
+    let alive = true;
+    apiRequest('/marketplace/credentials')
+      .then((res: any) => {
+        const codes = Array.isArray(res?.filters)
+          ? res.filters.map((c: any) => c.code).filter(Boolean)
+          : null;
+        if (alive && codes && codes.length > 0) setCredentialFilters(codes);
+      })
+      .catch(() => {/* keep DEFAULT_CREDENTIAL_FILTERS offline fallback */});
+    return () => { alive = false; };
+  }, []);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedType, setSelectedType] = useState('All');
   const [selectedCredential, setSelectedCredential] = useState<string | null>(null); // Jeff 10/01: filter pros by credential
+  // Recognized credential vocabulary (10/05) — loaded from /marketplace/credentials
+  const [credentialFilters, setCredentialFilters] = useState<string[]>(DEFAULT_CREDENTIAL_FILTERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
   const [contactingProvider, setContactingProvider] = useState(false);
@@ -112,7 +173,9 @@ export default function MarketplaceScreen() {
         picture: p.profile?.picture || p.user?.picture,
         role: p.user?.role || p.provider_type,
         provider_type: p.provider_type,
-        profile: p.profile
+        profile: p.profile,
+        // normalized chips from the backend (canonical codes + custom chips)
+        credential_chips: p.credential_chips || null,
       }));
       setProviders(allProviders);
       
@@ -476,7 +539,7 @@ export default function MarketplaceScreen() {
                 All Credentials
               </Text>
             </TouchableOpacity>
-            {CREDENTIAL_FILTERS.map((code) => (
+            {credentialFilters.map((code: string) => (
               <TouchableOpacity
                 key={code}
                 style={[styles.typeChip, selectedCredential === code && styles.typeChipActive]}
@@ -630,6 +693,7 @@ export default function MarketplaceScreen() {
                 <TouchableOpacity
                   style={styles.viewProfile}
                   onPress={() => setSelectedProvider(provider)}
+                  testID="view-profile-btn"
                   data-testid={`view-profile-btn-${provider.user_id}`}
                 >
                   <Text style={styles.viewProfileText}>View Profile</Text>
@@ -700,11 +764,20 @@ export default function MarketplaceScreen() {
                 </View>
               )}
               
-              {/* Credentials (Midwife) */}
-              {selectedProvider.profile?.credentials && (
+              {/* Credentials — all roles: canonical codes with full names,
+                  custom chips verbatim (Sarah shows CD, CLC + DONA, CAPPA) */}
+              {allChipsOf(selectedProvider).length > 0 && (
                 <View style={styles.profileSection}>
                   <Text style={styles.sectionTitle}>Credentials</Text>
-                  <Text style={styles.sectionValue}>{selectedProvider.profile.credentials}</Text>
+                  <View style={styles.profileTags}>
+                    {allChipsOf(selectedProvider).map(({ chip, name }) => (
+                      <View key={chip} style={[styles.profileTag, { backgroundColor: getRoleColor(selectedProvider.role) === C.rose ? C.roseBg : C.lavenderBorder }]}>
+                        <Text style={[styles.profileTagText, { color: getRoleColor(selectedProvider.role) }]}>
+                          {name ? `${chip} — ${name}` : chip}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
               )}
               
@@ -958,6 +1031,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   typeFilter: {
     flexDirection: 'row',
+    flexWrap: 'wrap',   // 10/05: vocab row can exceed screen width — wrap, not clip
+    gap: 8,             // consistent spacing when wrapped (row used marginRight)
   },
   typeChip: {
     height: 32,
@@ -968,7 +1043,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderWidth: 1,
     borderColor: C.lavenderBorder,
     borderRadius: 16,
-    marginRight: 8,
+    // R2: gap-only spacing — per-chip marginBottom double-spaced wrapped rows
   },
   typeChipActive: {
     backgroundColor: C.lavenderSoft,
@@ -1085,6 +1160,7 @@ const getStyles = createThemedStyles((colors) => ({
   tagText: {
     fontSize: SIZES.fontXs,
     color: colors.textSecondary,
+    fontFamily: F.ui, // R2: system-font leak on every card chip
   },
   statsRow: {
     flexDirection: 'row',

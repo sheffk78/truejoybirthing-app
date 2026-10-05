@@ -1,5 +1,5 @@
 // Shared Profile Screen for Doula and Midwife
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -97,7 +97,58 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
   const [zipLookupError, setZipLookupError] = useState('');
   
   // Midwife-specific
-  const [credentials, setCredentials] = useState('');
+  // Credential entry (10/05): recognized codes as chips + free-text custom input.
+  // Known entries ("IBCLC", "certified nurse-midwife") normalize to canonical
+  // codes; anything else stays a custom chip. Stored as comma string (back-compat).
+  const [credentials, setCredentials] = useState('');        // stored value "CD, CLC"
+  const [credentialInput, setCredentialInput] = useState(''); // text being typed
+
+  const CREDENTIAL_OPTIONS = [
+    { code: 'CPM', name: 'Certified Professional Midwife' },
+    { code: 'CNM', name: 'Certified Nurse-Midwife' },
+    { code: 'CM', name: 'Certified Midwife' },
+    { code: 'LM', name: 'Licensed Midwife' },
+    { code: 'DEM', name: 'Direct-Entry Midwife' },
+    { code: 'CLC', name: 'Certified Lactation Counselor' },
+    { code: 'IBCLC', name: 'International Board Certified Lactation Consultant' },
+  ];
+
+  const credentialChips = useMemo(
+    () => credentials.split(',').map(c => c.trim()).filter(Boolean),
+    [credentials]
+  );
+
+  const addCredentialChip = (raw: string) => {
+    const tok = raw.trim().replace(/;$/, '');
+    if (!tok) return;
+    const KNOWN: Record<string, string> = {
+      'cpm': 'CPM', 'cnm': 'CNM', 'cm': 'CM', 'lm': 'LM',
+      'dem': 'DEM', 'clc': 'CLC', 'ibclc': 'IBCLC', 'cle': 'CLE',
+      'cbe': 'CBE', 'ale': 'ALE', 'cd': 'CD', 'pcd': 'PCD', 'cpd': 'CPD',
+      'certified professional midwife': 'CPM', 'certified nurse midwife': 'CNM',
+      'certified nurse-midwife': 'CNM', 'certified midwife': 'CM',
+      'licensed midwife': 'LM', 'direct entry midwife': 'DEM', 'direct entry': 'DEM',
+      'certified lactation counselor': 'CLC', 'certified lactation': 'CLC',
+      'lactation consultant': 'IBCLC', 'certified lactation educator': 'CLE',
+      'childbirth educator': 'CBE', 'certified doula': 'CD', 'birth doula': 'CD',
+    };
+    const code = KNOWN[tok.toLowerCase().replace(/\.$/, '')] || null;
+    const chip = code || tok;
+    setCredentials(prev => {
+      const parts = prev.split(',').map(c => c.trim()).filter(Boolean);
+      if (parts.some(p => p.toUpperCase() === chip.toUpperCase())) return prev;
+      return [...parts, chip].join(', ');
+    });
+    setCredentialInput('');
+  };
+
+  const removeCredentialChip = (chip: string) => {
+    setCredentials(prev =>
+      prev.split(',').map(c => c.trim()).filter(Boolean)
+          .filter(p => p.toUpperCase() !== chip.toUpperCase())
+          .join(', ')
+    );
+  };
 
   const primaryColor = config.primaryColor;
   const isMidwife = config.role === 'MIDWIFE';
@@ -145,7 +196,11 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
       setAcceptingClients(data.accepting_new_clients !== false);
       
       if (isMidwife) {
-        setCredentials(data.credentials || '');
+        // Emily's re-synced demo profile stores credentials as an ARRAY (seed
+        // change 10/05) while the editor state is a comma string — coerce any
+        // shape before .split() (E2E crash: "credentials.split is not a function")
+        const raw = data.credentials;
+        setCredentials(Array.isArray(raw) ? raw.join(',') : (raw || ''));
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -557,14 +612,67 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
                 onChangeText={setPracticeName}
               />
               
-              {/* Midwife: Credentials field */}
+              {/* Midwife: Credentials — recognized chips + custom entries (10/05) */}
               {isMidwife && (
-                <Input
-                  label="Credentials"
-                  placeholder="e.g., CPM, CNM, LM"
-                  value={credentials}
-                  onChangeText={setCredentials}
-                />
+                <View>
+                  <Text style={{ marginBottom: 6, marginTop: 4 }}>{'Credentials'}</Text>
+                  {/* Quick-add recognized codes with full names */}
+                  <Text style={{ marginBottom: 6, opacity: 0.7 }}>
+                    {'Tap to add common credentials:'}
+                  </Text>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10 }}>
+                    {CREDENTIAL_OPTIONS.filter(opt => !credentialChips.some(c => c.toUpperCase() === opt.code)).map(opt => (
+                      <TouchableOpacity
+                        key={opt.code}
+                        onPress={() => addCredentialChip(opt.code)}
+                        style={{
+                          marginRight: 8, marginBottom: 8, paddingHorizontal: 12,
+                          paddingVertical: 6, borderRadius: 14, borderWidth: 1,
+                        }}
+                        testID={`credential-suggest-${opt.code.toLowerCase()}`}
+                      >
+                        <Text>{`${opt.code} — ${opt.name}`}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  {/* Free-text entry: recognized text normalizes; unique text stays custom */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                    <View style={{ flex: 1 }}>
+                      <Input
+                        placeholder="Type a credential (e.g., NARM, CABC) and add"
+                        testID="credential-input"
+                        value={credentialInput}
+                        onChangeText={setCredentialInput}
+                        onSubmitEditing={() => addCredentialChip(credentialInput)}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => addCredentialChip(credentialInput)}
+                      style={{ marginLeft: 8, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 8 }}
+                      testID="credential-add-btn"
+                    >
+                      <Text>{'Add'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  {/* Current chips — removable; recognized codes carry their full name */}
+                  {credentialChips.length > 0 && (
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 }}>
+                      {credentialChips.map(chip => {
+                        const known = CREDENTIAL_OPTIONS.find(o => o.code === chip.toUpperCase());
+                        return (
+                          <TouchableOpacity
+                            key={chip}
+                            onPress={() => removeCredentialChip(chip)}
+                            style={{ marginRight: 8, marginBottom: 8, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 14, borderWidth: 1 }}
+                            testID={`credential-chip-${chip.toLowerCase()}`}
+                          >
+                            <Text>{`${chip}${known ? ` — ${known.name}` : ''}  ✕`}</Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  )}
+                </View>
               )}
               
               {/* Zip code lookup - for both Doula and Midwife */}
@@ -639,7 +747,11 @@ export default function ProviderProfile({ config }: ProviderProfileProps) {
                   <Icon name="ribbon-outline" size={20} color={colors.textSecondary} />
                   <View style={styles.infoText}>
                     <Text style={styles.infoLabel}>Credentials</Text>
-                    <Text style={styles.infoValue}>{profile?.credentials || 'Not set'}</Text>
+                    <Text style={styles.infoValue}>
+                      {Array.isArray(profile?.credentials)
+                        ? profile.credentials.join(', ')
+                        : (profile?.credentials || 'Not set')}
+                    </Text>
                   </View>
                 </View>
               )}

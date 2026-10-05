@@ -139,8 +139,8 @@ NOTE_TYPES = ["Prenatal", "Birth", "Postpartum"]
 VISIT_TYPES = ["Prenatal", "Postpartum"]
 BIRTH_MODES = ["Spontaneous Vaginal", "Assisted Vaginal", "Cesarean", "Other"]
 SERVICES_OFFERED = ["Birth Doula", "Postpartum Doula", "Virtual Doula"]
-MIDWIFE_CREDENTIALS = ["CPM", "LM", "CNM"]
-LACTATION_CREDENTIALS = ["IBCLC", "CLC", "CLE", "CBE", "ALE"]
+# Credential vocabulary lives in utils/credentials.py (single source of truth,
+# 10/05 council) — these duplicate lists had drifted (bogus ALE), removed.
 
 # Subscription constants
 SUBSCRIPTION_STATUS = ["none", "trial", "active", "expired", "cancelled"]
