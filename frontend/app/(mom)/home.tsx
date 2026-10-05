@@ -23,6 +23,12 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 import { C, F, useCorpus } from '../../src/constants/corpus';
+// Kick Counter entry (10/05 Key Actions 4th card) + local kick-session log.
+import {
+  loadSessions,
+  totalsFrom,
+  type KickSession,
+} from '../../src/utils/kickStorage';
 // Week-spine mockup v4 additions (Jeff-approved). The birth-plan ring renders
 // with react-native-svg circle strokes — svg is already a project dependency
 // (contraction-timer.tsx, GrowthSprig, HBand); strokeDasharray reproduces the
@@ -202,6 +208,20 @@ export default function MomHomeScreen() {
     : [];
   const babyWeek = (selectedWeek ?? weekNum) || 0;
   // ====================================================================================
+
+  // Kick Counter — key-action card subtitle from the device-local session log
+  // ('N today' with data, 'Start counting' when zero).
+  const [kickTotals, setKickTotals] = useState({ sessionCount: 0, kickCount: 0, lastSessionISO: null as string | null });
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const sessions: KickSession[] = await loadSessions();
+      if (!cancelled) setKickTotals(totalsFrom(sessions));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   
   return (
     <ErrorBoundary
@@ -636,11 +656,15 @@ export default function MomHomeScreen() {
           </>
         )}
 
-        {/* Key Actions — approved .acts grid */}
+        {/* Key Actions — approved .acts grid. 10/05: 4th card 'Count Kicks'.
+            4 cards at flex:1 on 390px leaves ~54px of text width per card —
+            'With your provider' truncates to 'With your…' at 11px, so the grid
+            reads 2×2 (flexWrap, ~48% basis; ~142px per card, mockup's own
+            preference for 4 items). Existing onTap handlers preserved. */}
         <Text style={styles.sectionTitle}>Key Actions</Text>
-        <View style={styles.actionsGrid}>
+        <View style={[styles.actionsGrid, styles.actionsGridWrap]}>
           <TouchableOpacity
-            style={styles.actionCard}
+            style={[styles.actionCard, styles.actionCardWrap]}
             onPress={() => router.push('/(mom)/timeline')}
             activeOpacity={0.8}
           >
@@ -648,13 +672,13 @@ export default function MomHomeScreen() {
               <TIcon name="k_timeline" size={18} color={C.lavender} />
             </View>
             <Text style={styles.actionTitle}>Timeline</Text>
-            <Text style={styles.actionSubtitle}>
+            <Text style={styles.actionSubtitle} numberOfLines={1}>
               {timeline?.current_week ? `${timeline.current_week} weeks ${timeline.current_day ?? 0} days` : 'Track progress'}
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
-            style={styles.actionCard}
+            style={[styles.actionCard, styles.actionCardWrap]}
             onPress={() => router.push('/(mom)/wellness')}
             activeOpacity={0.8}
           >
@@ -663,11 +687,13 @@ export default function MomHomeScreen() {
               <TIcon name="labor_delivery" size={18} color={C.sage} />
             </View>
             <Text style={styles.actionTitle}>Wellness</Text>
-            <Text style={styles.actionSubtitle}>How are you feeling today?</Text>
+            <Text style={styles.actionSubtitle} numberOfLines={1}>
+              How are you feeling today?
+            </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
-            style={styles.actionCard}
+            style={[styles.actionCard, styles.actionCardWrap]}
             onPress={() => router.push('/(mom)/appointments')}
             activeOpacity={0.8}
             data-testid="key-action-schedule-provider"
@@ -676,7 +702,27 @@ export default function MomHomeScreen() {
               <TIcon name="bell" size={18} color={C.rose} />
             </View>
             <Text style={styles.actionTitle}>Schedule</Text>
-            <Text style={styles.actionSubtitle}>With your provider</Text>
+            <Text style={styles.actionSubtitle} numberOfLines={1}>
+              With your provider
+            </Text>
+          </TouchableOpacity>
+
+          {/* 4th card — Count Kicks (sage iconChip variant, per approved mockup) */}
+          <TouchableOpacity
+            style={[styles.actionCard, styles.actionCardWrap]}
+            onPress={() => router.push('/(mom)/kick-counter')}
+            activeOpacity={0.8}
+            data-testid="key-action-count-kicks"
+          >
+            <View style={styles.iconChipSage}>
+              <TIcon name="k_kick" size={18} color={C.sage} />
+            </View>
+            <Text style={styles.actionTitle}>Count Kicks</Text>
+            <Text style={styles.actionSubtitle} numberOfLines={1}>
+              {kickTotals.kickCount > 0
+                ? `${kickTotals.kickCount} today`
+                : 'Start counting'}
+            </Text>
           </TouchableOpacity>
         </View>
         
@@ -842,6 +888,12 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: 2,
     marginBottom: SIZES.sm, // 10/01: lg(24)+feed mt(24) stacked to 48px dead gap; sm reads right
   },
+  // 10/05 — 4-card 2×2 variant: wrap + ~48% basis so each card gets ~142px of
+  // text width (3-in-row at flex:1 leaves ~54px — 'With your provider' truncates).
+  actionsGridWrap: {
+    flexWrap: 'wrap',
+    rowGap: 10,
+  },
   actionCard: {
     flex: 1,
     backgroundColor: C.surface,
@@ -851,6 +903,11 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: 12,
     paddingHorizontal: 12,
     paddingBottom: 11,
+  },
+  // Basis override for the wrapped 2×2 grid: 48% minus half the 10px gutter.
+  actionCardWrap: {
+    flex: 0,
+    flexBasis: '48%',
   },
   iconChipLav: {
     width: 34,
