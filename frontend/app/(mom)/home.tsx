@@ -35,6 +35,15 @@ import {
 // mockup's .ring .arc / .arc2 CSS verbatim.
 import Svg, { Circle, Path } from 'react-native-svg';
 
+/* Benchmark #2 — BABY/MOM/BIRTH segmented tabs (approved v4 mockup .seg L169) */
+type AudienceTab = 'baby' | 'mom' | 'birth';
+
+const AUDIENCE_TABS: { value: AudienceTab; label: string; a11yLabel: string }[] = [
+  { value: 'baby', label: 'For baby', a11yLabel: 'For baby' },
+  { value: 'mom', label: 'For mom', a11yLabel: 'For mom' },
+  { value: 'birth', label: 'For birth', a11yLabel: 'For birth' },
+];
+
 interface PendingContract {
   contract_id: string;
   provider_name: string;
@@ -80,6 +89,11 @@ export default function MomHomeScreen() {
   const [recentlyPaid, setRecentlyPaid] = useState<RecentlyPaidInvoice[]>([]);
   const [dismissedPaid, setDismissedPaid] = useState<Set<string>>(new Set());
   const [loadError, setLoadError] = useState<string | null>(null);
+  /* Benchmark #2 — BABY/MOM/BIRTH segmented tabs (approved v4 mockup .seg, L169).
+     Local-only filter: none of the fetches change. Default 'baby' (mockup shows
+     'mom' active, but first-open defaults to the baby-dev card so the screen
+     always opens with content above the fold). */
+  const [audienceTab, setAudienceTab] = useState<AudienceTab>('baby');
   
   const fetchData = async () => {
     try {
@@ -343,80 +357,31 @@ export default function MomHomeScreen() {
             </ScrollView>
           )}
         </View>
-        
-        {/* Birth Plan Card */}
-        <TouchableOpacity
-          onPress={() => router.push('/(mom)/birth-plan')}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel="Open your Joyful Birth Plan"
-        >
-          <Card style={styles.mainCard}>
-            {/* Birth-plan row — mockup v4: ring centered-left with the chevron
-                kept flush-right; text group flexes between them. */}
-            <View style={styles.birthPlanTopRow}>
-              <View style={styles.birthPlanRingWrap}>
-                <Svg width={56} height={56} viewBox="0 0 56 56">
-                  {/* Track — .ring .track #F0E6E2, w5, round caps */}
-                  <Circle
-                    cx={28}
-                    cy={28}
-                    r={25}
-                    stroke={C.ringTrack}
-                    strokeWidth={5}
-                    fill="none"
-                    strokeLinecap="round"
-                  />
-                  {/* Arc — .ring .arc #C48CA8, w5; dasharray length = pct of the
-                      full circumference (2πr ≈ 157; mockup full arc 150/157) */}
-                  <Circle
-                    cx={28}
-                    cy={28}
-                    r={25}
-                    stroke={C.ringArc}
-                    strokeWidth={5}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray={`${(157 * (birthPlan?.completion_percentage || 0)) / 100} 157`}
-                    // .ring { svg { transform:rotate(-90deg) } }
-                    rotation="-90"
-                    originX={28}
-                    originY={28}
-                  />
-                  {/* Dashed halo — .ring .arc2 #D8A0C4, w2.2, 11-7 dash, 55% opacity */}
-                  <Circle
-                    cx={28}
-                    cy={28}
-                    r={25}
-                    stroke={C.ringArcDashed}
-                    strokeWidth={2.2}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray="11 7"
-                    opacity={0.55}
-                  />
-                </Svg>
-                {/* .ring .pct — centered, Cormorant 700 16px, ink token */}
-                <View pointerEvents="none" style={styles.ringPctWrap}>
-                  <Text style={styles.ringPctText}>
-                    {Math.round(birthPlan?.completion_percentage || 0)}%
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.birthPlanTextGroup}>
-                <Text style={styles.kickerRose}>BIRTH PLAN</Text>
-                <Text style={styles.cardTitle}>Joyful Birth Plan</Text>
-                <Text style={styles.nextStep} numberOfLines={1}>
-                  Next: {getNextStep()}
-                </Text>
-              </View>
-              <View style={styles.birthPlanAction}>
-                <Text style={{ fontSize: 20, color: C.chev, fontWeight: '300' }}>›</Text>
-              </View>
-            </View>
-          </Card>
-        </TouchableOpacity>
-        
+
+        {/* Benchmark #2 — segmented tabs between the content cards and the header
+            (approved v4 mockup L169: .seg). Local filter only. */}
+        <View style={styles.seg} accessibilityRole="tablist">
+          {AUDIENCE_TABS.map((opt) => {
+            const on = opt.value === audienceTab;
+            return (
+              <TouchableOpacity
+                key={opt.value}
+                onPress={() => setAudienceTab(opt.value)}
+                style={[styles.segBtn, on && styles.segBtnOn]}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: on }}
+                accessibilityLabel={opt.a11yLabel}
+                testID={`home-tab-${opt.value}`}
+              >
+                <Text style={[styles.segText, on && styles.segTextOn]}>{opt.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* TAB baby — Baby Development Card */}
+        {audienceTab === 'baby' && (
+        <>
         {/* Baby Development Card */}
         {(() => {
           // Determine the pregnancy week for baby development — the week-stepper
@@ -509,7 +474,12 @@ export default function MomHomeScreen() {
             </Card>
           );
         })()}
-        
+        </>
+        )}
+
+        {/* TAB mom — Weekly Tip + Weekly Affirmation (v4 mockup mid-state) */}
+        {audienceTab === 'mom' && (
+        <>
         {/* Weekly Tip Card */}
         {weeklyContent?.tip && (
           <Card style={styles.weeklyCard}>
@@ -541,8 +511,104 @@ export default function MomHomeScreen() {
             </Text>
           </Card>
         )}
-        
-        
+        </>
+        )}
+
+        {/* TAB birth — Birth Plan ring card (moved below the tabs, unchanged card)
+            or the quiet empty state when no plan data exists yet */}
+        {audienceTab === 'birth' && (
+          birthPlan?.completion_percentage != null ? (
+            <TouchableOpacity
+              onPress={() => router.push('/(mom)/birth-plan')}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel="Open your Joyful Birth Plan"
+            >
+              <Card style={styles.mainCard}>
+                {/* Birth-plan row — mockup v4: ring centered-left with the chevron
+                    kept flush-right; text group flexes between them. */}
+                <View style={styles.birthPlanTopRow}>
+                  <View style={styles.birthPlanRingWrap}>
+                    <Svg width={56} height={56} viewBox="0 0 56 56">
+                      {/* Track — .ring .track #F0E6E2, w5, round caps */}
+                      <Circle
+                        cx={28}
+                        cy={28}
+                        r={25}
+                        stroke={C.ringTrack}
+                        strokeWidth={5}
+                        fill="none"
+                        strokeLinecap="round"
+                      />
+                      {/* Arc — .ring .arc #C48CA8, w5; dasharray length = pct of the
+                          full circumference (2πr ≈ 157; mockup full arc 150/157) */}
+                      <Circle
+                        cx={28}
+                        cy={28}
+                        r={25}
+                        stroke={C.ringArc}
+                        strokeWidth={5}
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeDasharray={`${(157 * (birthPlan?.completion_percentage || 0)) / 100} 157`}
+                        // .ring { svg { transform:rotate(-90deg) } }
+                        rotation="-90"
+                        originX={28}
+                        originY={28}
+                      />
+                      {/* Dashed halo — .ring .arc2 #D8A0C4, w2.2, 11-7 dash, 55% opacity */}
+                      <Circle
+                        cx={28}
+                        cy={28}
+                        r={25}
+                        stroke={C.ringArcDashed}
+                        strokeWidth={2.2}
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeDasharray="11 7"
+                        opacity={0.55}
+                      />
+                    </Svg>
+                    {/* .ring .pct — centered, Cormorant 700 16px, ink token */}
+                    <View pointerEvents="none" style={styles.ringPctWrap}>
+                      <Text style={styles.ringPctText}>
+                        {Math.round(birthPlan?.completion_percentage || 0)}%
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.birthPlanTextGroup}>
+                    <Text style={styles.kickerRose}>BIRTH PLAN</Text>
+                    <Text style={styles.cardTitle}>Joyful Birth Plan</Text>
+                    <Text style={styles.nextStep} numberOfLines={1}>
+                      Next: {getNextStep()}
+                    </Text>
+                  </View>
+                  <View style={styles.birthPlanAction}>
+                    <Text style={{ fontSize: 20, color: C.chev, fontWeight: '300' }}>›</Text>
+                  </View>
+                </View>
+              </Card>
+            </TouchableOpacity>
+          ) : (
+            <Card style={styles.mainCard}>
+              <Text style={styles.kickerRose}>BIRTH PLAN</Text>
+              <Text style={styles.cardTitle}>Joyful Birth Plan</Text>
+              <Text style={styles.segEmptyText}>
+                Your birth plan starts with you — complete onboarding or open Birth
+                Plan from the tab bar.
+              </Text>
+              <TouchableOpacity
+                style={styles.segEmptyPill}
+                onPress={() => router.push('/(mom)/birth-plan')}
+                accessibilityRole="button"
+                accessibilityLabel="Open Birth Plan"
+              >
+                <Text style={styles.segEmptyPillText}>Open Birth Plan</Text>
+              </TouchableOpacity>
+            </Card>
+          )
+        )}
+
         {/* Pending Actions Section - Contracts & Invoices */}
         {(pendingContracts.length > 0 || pendingInvoices.length > 0) && (
           <>
@@ -965,6 +1031,64 @@ const getStyles = createThemedStyles((colors) => ({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 2,
+  },
+  /* —— Benchmark #2 segmented tabs (.seg, approved v4 mockup L169) ——
+     Construction copied verbatim from kick-counter.tsx's approved .seg styles:
+     bg #F1E9F5 (lavenderBg role), rounded-full, padding 4; items flex-1,
+     12.5px w600 #74716A padding 7; ACTIVE = white bg + lavenderSoft text +
+     tiny shadow. All colors via corpus C → Proxy-flips dark-aware. */
+  seg: {
+    flexDirection: 'row',
+    backgroundColor: C.lavenderBg, // mockup .seg pill-bg role
+    borderRadius: 999,
+    padding: 4,
+    marginHorizontal: 20,
+    marginTop: 14, // mockup .seg margin-top:14px
+  },
+  segBtn: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 7,
+    borderRadius: 999,
+  },
+  segBtnOn: {
+    backgroundColor: C.surface,
+    // .seg .on box-shadow -> RN shadow surrogate
+    shadowColor: C.lavender,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  segText: {
+    fontSize: 12.5, // mockup .seg div 12.5px
+    fontFamily: F.uiSemi,
+    color: C.gray,
+  },
+  segTextOn: {
+    fontFamily: F.uiBold,
+    color: C.lavenderSoft, // .seg .on color #8E8CB5
+  },
+  // QUIET EMPTY STATE (tab 'birth', no plan data) — card + lavender pill
+  segEmptyText: {
+    fontFamily: F.ui,
+    fontSize: 13.5,
+    lineHeight: 21,
+    color: C.body,
+    marginTop: 6,
+    marginBottom: 12,
+  },
+  segEmptyPill: {
+    alignSelf: 'flex-start',
+    backgroundColor: C.lavender,
+    borderRadius: 999,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+  },
+  segEmptyPillText: {
+    fontFamily: F.uiBold,
+    fontSize: 13.5,
+    color: C.surface,
   },
   affirmationCard: {},
   affirmationContent: {
