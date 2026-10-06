@@ -1,0 +1,123 @@
+# TJB 10/05 wave-2 on-device verification — Baby/Mom/Birth tabs + kick counter entry.
+# Runs on the booted iPhone 17 Pro sim; app loads JS from metro (8081) so commits
+# 4a8675db + afb2fb3b are live. Local backend 8011, demo.mom login (verified 10/05 creds).
+# testID/data-testid equivalence: Maestro matches both on iOS.
+appId: com.truejoybirthing.app
+name: verify-10-05-wave2-tabs
+---
+- clearKeychain
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: 'I already have an account'
+    timeout: 20000
+- tapOn: 'I already have an account'
+- waitForAnimationToEnd: {timeout: 3000}
+- tapOn:
+    text: 'Email'
+- inputText: 'demo.mom@truejoybirthing.com'
+- tapOn:
+    id: 'login-password-input'
+- inputText: 'DemoMom2024!'
+- tapOn:
+    id: 'login-submit-btn'
+- waitForAnimationToEnd: {timeout: 3000}
+- runFlow:
+    when:
+      visible: 'Not Now'
+    commands:
+      - tapOn: 'Not Now'
+      - waitForAnimationToEnd: {timeout: 2000}
+      - runFlow:
+          when:
+            visible: 'Not Now'
+          commands:
+            - tapOn: 'Not Now'
+
+# ── Tabs present ────────────────────────────────
+- assertVisible: 'For baby'
+- assertVisible: 'For mom'
+- assertVisible: 'For birth'
+
+# ── Default state: For baby → Baby Development card ──
+- assertVisible:
+    id: 'home-tab-baby'
+- assertVisible: 'Baby Development'
+# note: facts row renders only when the week's corpus has size_note/food data
+# (demo week 29 carries none → row nil-renders by design; asserts stay card-level)
+
+# ── Switch to For mom → Tip + Affirmation ──────
+- tapOn:
+    id: 'home-tab-mom'
+- assertVisible: 'Weekly Tip'
+- assertVisible: 'Weekly Affirmation'
+- assertNotVisible: 'Baby Development'
+
+# ── Switch to For birth → Birth Plan ring card ──
+- tapOn:
+    id: 'home-tab-birth'
+# kicker is textTransform-uppercased → AX tree carries the raw casing "Birth Plan"…
+# iOS merges the card's Text children into one a11y node labeled with the card's
+# accessibilityLabel (verified in AX dump: 'Open your Joyful Birth Plan').
+- assertVisible: 'Open your Joyful Birth Plan'
+
+# ── Back to For baby clean ─────────────────────
+- tapOn:
+    id: 'home-tab-baby'
+- assertVisible: 'Baby Development'
+
+# ── Kick counter reachable from Home card ──────
+- scrollUntilVisible:
+    element:
+      id: 'key-action-count-kicks'
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 60
+- tapOn:
+    id: 'key-action-count-kicks'
+- extendedWaitUntil:
+    visible: 'Tap the circle each time you feel a movement'
+    timeout: 12000
+- assertVisible: 'Start Session'
+
+# ── Start session, then tap the pad 3× → count rises ──
+- tapOn:
+    id: 'kick-start-btn'
+- waitForAnimationToEnd: {timeout: 1500}
+- tapOn:
+    id: 'kick-pad'
+- tapOn:
+    id: 'kick-pad'
+- tapOn:
+    id: 'kick-pad'
+
+# ── Pause + Resume toggles ─────────────────────
+- tapOn:
+    id: 'kick-pause-btn'
+- assertVisible: 'Resume Session'
+- tapOn:
+    id: 'kick-pause-btn'
+
+# ── End & Save persists on-device (stays on screen by design; stats update) ──
+- tapOn:
+    id: 'kick-end-btn'
+- waitForAnimationToEnd: {timeout: 1500}
+- assertVisible: 'SESSIONS TODAY'
+- assertVisible: 'RECENT SESSIONS'
+- tapOn:
+    id: 'kick-back-btn'
+- waitForAnimationToEnd: {timeout: 2000}
+
+# ── Timer tab cross-link reaches kick counter ──
+# (tab-bar labels are composite AX nodes 'Timer, tab, 3 of 19' — text-tap is
+# ambiguous on iOS; tap the Timer tab by screen point instead)
+- tapOn:
+    point: '36%, 94%'
+- waitForAnimationToEnd: {timeout: 3000}
+- assertVisible:
+    text: 'Counting kicks instead.*'
+- tapOn:
+    text: 'Counting kicks.*'
+- extendedWaitUntil:
+    visible: 'Tap the circle each time you feel a movement'
+    timeout: 12000

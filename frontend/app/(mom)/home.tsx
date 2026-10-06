@@ -778,6 +778,7 @@ export default function MomHomeScreen() {
             style={[styles.actionCard, styles.actionCardWrap]}
             onPress={() => router.push('/(mom)/kick-counter')}
             activeOpacity={0.8}
+            testID="key-action-count-kicks"
             data-testid="key-action-count-kicks"
           >
             <View style={styles.iconChipSage}>
