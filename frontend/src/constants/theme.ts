@@ -3,9 +3,9 @@
 
 export const COLORS = {
   // Primary - Lavender from the website action system
-  primary: '#8E8CB5',         // Lavender 500
+  primary: '#6E6C99',         // 10/07 drift fix: law action lavender #6E6C99 (was 500 #8E8CB5 — mockups use the 600 as buttons/dots)
   primaryLight: '#D5D3E8',    // Lavender 300
-  primaryDark: '#6E6C99',     // Lavender 600
+  primaryDark: '#5B5982',     // Lavender 700-ish (pressed state; old 600 value moved up to primary)
   
   // Secondary - Rose from the website link/accent system
   secondary: '#B87AA0',       // Rose 500
@@ -33,7 +33,7 @@ export const COLORS = {
   // Status
   success: '#A8B5A0',
   warning: '#E6C685',
-  error: '#D48A8A',
+  error: '#D48A8A',           // 10/07 drift fix: #D48A8A is already the corpus moodLow rose — law-compliant warn tone (no material red anywhere)
   info: '#8E8CB5',
   
   // Mood colors
@@ -52,19 +52,21 @@ export const COLORS = {
 };
 
 export const FONTS = {
-  // Cormorant Garamond for headings
+  // 10/07 drift fix: legacy stack retired — every role now maps to the frozen
+  // corpus faces (designRefresh.ts F: Cormorant serif display + Quicksand UI).
+  // ONE body face app-wide per DESIGN-LAW (web DateTimePicker keeps web fallback).
   heading: 'CormorantGaramond_700Bold',
   subheading: 'CormorantGaramond_600SemiBold',
-  // Source Sans 3 for body text
-  body: 'SourceSans3_400Regular',
-  bodyMedium: 'SourceSans3_500Medium',
-  bodyItalic: 'SourceSans3_400Regular_Italic',
-  bodyBold: 'SourceSans3_700Bold',
-  // Fallbacks
-  regular: 'System',
-  medium: 'System',
-  semiBold: 'System',
-  bold: 'System',
+  headingItalic: 'CormorantGaramond_600SemiBold_Italic',
+  body: 'Quicksand_500Medium',
+  bodyMedium: 'Quicksand_500Medium',
+  bodyItalic: 'Quicksand_400Regular',
+  bodyBold: 'Quicksand_700Bold',
+  // Fallbacks (unused; brand faces load at root, app/_layout.tsx useFonts)
+  regular: 'Quicksand_400Regular',
+  medium: 'Quicksand_500Medium',
+  semiBold: 'Quicksand_600SemiBold',
+  bold: 'Quicksand_700Bold',
 };
 
 export const SIZES = {
@@ -85,15 +87,18 @@ export const SIZES = {
   radiusXl: 24,
   radiusFull: 9999,
   
-  // Font sizes
-  fontXs: 12,
-  fontSm: 14,
-  fontMd: 16,
-  fontLg: 18,
-  fontXl: 20,
-  fontXxl: 24,
-  fontTitle: 30,
-  fontHero: 36,
+  // Font sizes — 10/07 drift fix: legacy ladder collapsed onto the approved
+  // law scale (DESIGN-LAW type system: 10/11/13.5/17/21/26 + serif clocks
+  // 52/74). Map legacy names to their nearest lawful step so 62 consumer
+  // files inherit the tight scale with zero per-file edits.
+  fontXs: 11,
+  fontSm: 13.5,
+  fontMd: 13.5,
+  fontLg: 17,
+  fontXl: 21,
+  fontXxl: 26,
+  fontTitle: 26,
+  fontHero: 34,
   
   // Touch targets
   touchMin: 44,

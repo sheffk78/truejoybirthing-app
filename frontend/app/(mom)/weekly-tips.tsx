@@ -22,6 +22,7 @@ import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/co
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HBand from '../../src/components/mom/HBand';
 import { C, F, BAND_TIPS, trimesterOf } from '../../src/constants/corpus';
+import GrowthSprig from '../../src/components/GrowthSprig'; // 10/07 drift fix: growth motif wired in (was built, never imported)
 
 interface WeekContent {
   week: number;
@@ -29,6 +30,10 @@ interface WeekContent {
   affirmation: string;
   baby_development?: BabyDevEntry;
 }
+
+// 10/07 drift fix: trimester -> sprig growth stage (first=sprout, second=leafing, third=budding)
+const triStage = (week: number): 'sprout' | 'leafing' | 'budding' | 'blossom' =>
+  week <= 13 ? 'sprout' : week <= 27 ? 'leafing' : 'budding';
 
 export default function WeeklyTipsScreen() {
   const colors = useColors();
@@ -183,6 +188,12 @@ export default function WeeklyTipsScreen() {
             );
           })}
         </ScrollView>
+
+        {/* 10/07 drift fix: approved growth motif (DESIGN-LAW 4.2) — watercolor stem
+            divider marks the section change; sprig stage tracks the trimester */}
+        <View style={styles.stemDivider} pointerEvents="none">
+          <GrowthSprig stage={triStage(selectedWeek || 1)} size={22} stroke={'#D8A0C4'} fill={'#EBD3E4'} />
+        </View>
 
         {/* Selected Week Header — approved layout */}
         <View style={styles.selectedWeekHeader}>
@@ -401,6 +412,15 @@ const getStyles = createThemedStyles((colors) => ({
     opacity: 0.45,
   },
   // —— Approved selected week header ——
+  // 10/07 drift fix: stem divider (mockup .stemline margin 16px 20px 2px)
+  stemDivider: {
+    marginHorizontal: 20,
+    marginTop: 16,
+    marginBottom: 2,
+    height: 24,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+  },
   selectedWeekHeader: {
     flexDirection: 'row',
     alignItems: 'baseline',

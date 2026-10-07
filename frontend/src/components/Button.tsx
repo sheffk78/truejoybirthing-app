@@ -97,20 +97,22 @@ export default function Button({
   
   const getTextStyle = (): TextStyle => {
     const base: TextStyle = {
-      fontWeight: '600',
+      // 10/07 drift fix: law button type = Quicksand 700 13px (common.css .abtn)
+      fontWeight: '700',
       fontFamily: FONTS.bodyBold,
+      fontSize: 13,
     };
-    
+
     // Size styles
     switch (size) {
       case 'sm':
-        base.fontSize = SIZES.fontSm;
+        base.fontSize = 11;
         break;
       case 'lg':
-        base.fontSize = SIZES.fontLg;
+        base.fontSize = 17;
         break;
       default:
-        base.fontSize = SIZES.fontMd;
+        base.fontSize = 13;
     }
     
     // Variant styles

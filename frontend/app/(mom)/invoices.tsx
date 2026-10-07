@@ -33,7 +33,7 @@ const getStatusColor = (status: string): string => {
 const getPlanStatusColor = (status: string): string => {
   if (status === 'paid') return C.sage;
   if (status === 'partial') return C.lavender;
-  if (status === 'overdue') return '#f44336';
+  if (status === 'overdue') return C.rose; // 10/07 drift fix: law warn tone (was material red)
   return C.rose;
 };
 
@@ -44,7 +44,7 @@ const getPlanStatusLabel = (status: string): string => {
 
 const getInstallmentStatusColor = (status: string): string => {
   if (status === 'paid') return C.sage;
-  if (status === 'overdue') return '#f44336';
+  if (status === 'overdue') return C.rose; // 10/07 drift fix: law warn tone (was material red)
   return C.gray;
 };
 

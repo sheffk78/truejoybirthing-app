@@ -21,7 +21,7 @@ export const RedDot: React.FC<RedDotProps> = ({ size = 8, color }) => {
           width: size,
           height: size,
           borderRadius: size / 2,
-          backgroundColor: color || colors.error || '#EF4444',
+          backgroundColor: color || colors.error || '#B87AA0', // 10/07 drift fix: law rose (was #EF4444)
         },
       ]}
     />
@@ -40,7 +40,7 @@ export const TabBarRedDot: React.FC<{ show: boolean }> = ({ show }) => {
       <View
         style={[
           styles.tabDot,
-          { backgroundColor: colors.error || '#EF4444' },
+          { backgroundColor: colors.error || '#B87AA0' }, // 10/07 drift fix
         ]}
       />
     </View>

@@ -87,8 +87,9 @@ export default function WelcomeScreen() {
         style={styles.heroImage}
         resizeMode="cover"
       >
-        {/* Soft rose wash — approved secondary #B87AA0 at 15% */}
-        <View style={[styles.gradientOverlay, { backgroundColor: `${colors.secondary}26` }]} />
+        {/* Approved photo tint (auth-screens-1 .welcome-tint): lavender 18% top → rose 22% bottom, straight gradient */}
+        <View style={[styles.gradientOverlay, styles.tintHalf, { backgroundColor: '#8E8CB5', opacity: 0.18 }]} />
+        <View style={[styles.gradientOverlay, styles.tintHalf, { backgroundColor: '#B87AA0', opacity: 0.22, top: '50%' }]} />
       </ImageBackground>
 
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -111,12 +112,12 @@ export default function WelcomeScreen() {
         <View style={[styles.bottomCard, { backgroundColor: colors.background }]}>
           {/* Overline + Headline */}
           <Animated.View style={{ opacity: o1 as any }}>
-            <Text style={[styles.overline, { color: colors.primaryDark }]}>Welcome to</Text>
+            <Text style={[styles.overline, { color: colors.secondary }]}>Welcome to</Text>
           </Animated.View>
           <Animated.View style={{ opacity: o1 as any }}>
             <Text style={[styles.headline, { color: colors.text }]}>
               Your Birth Journey,{'\n'}
-              <Text style={[styles.headlineAccent, { color: colors._theme.accent.secondaryDark }]}>
+              <Text style={[styles.headlineAccent, { color: '#B085A5' }]}>
                 Supported Every Step
               </Text>
             </Text>
@@ -134,13 +135,13 @@ export default function WelcomeScreen() {
               <Icon name="document-text" size={14} color={sage} />
               <Text style={[styles.pillText, { color: sage }]}>Birth Plan</Text>
             </View>
-            <View style={[styles.pill, { backgroundColor: colors.primaryLight + '55' }]}>
-              <Icon name="people" size={14} color={colors.primaryDark} />
-              <Text style={[styles.pillText, { color: colors.primaryDark }]}>Your Team</Text>
+            <View style={[styles.pill, { backgroundColor: '#EDEAF6' }]}>
+              <Icon name="people" size={14} color="#6E6C99" />
+              <Text style={[styles.pillText, { color: '#6E6C99' }]}>Your Team</Text>
             </View>
-            <View style={[styles.pill, { backgroundColor: colors.secondaryLight + '45' }]}>
-              <Icon name="heart" size={14} color={colors._theme.accent.secondaryDark} />
-              <Text style={[styles.pillText, { color: colors._theme.accent.secondaryDark }]}>Support</Text>
+            <View style={[styles.pill, { backgroundColor: '#F6E9F0' }]}>
+              <Icon name="heart" size={14} color="#A25C86" />
+              <Text style={[styles.pillText, { color: '#A25C86' }]}>Support</Text>
             </View>
           </Animated.View>
 
@@ -156,7 +157,7 @@ export default function WelcomeScreen() {
               onClick={Platform.OS === 'web' ? () => router.push('/(auth)/signup') : undefined}
               data-testid="get-started-btn"
             >
-              <View style={[styles.buttonFill, { backgroundColor: colors.primary }]}>
+              <View style={[styles.buttonFill, { backgroundColor: '#8E8CB5' }]}>
                 <Text style={styles.primaryButtonText}>Get Started Free</Text>
                 <Icon name="arrow-forward" size={18} color={colors.white} />
               </View>
@@ -172,7 +173,7 @@ export default function WelcomeScreen() {
               onClick={Platform.OS === 'web' ? () => router.push('/(auth)/login') : undefined}
               data-testid="login-btn"
             >
-              <Text style={styles.secondaryButtonText}>I already have an account</Text>
+              <Text style={[styles.secondaryButtonText, { color: '#8E8CB5' }]}>I already have an account</Text>
             </Pressable>
           </Animated.View>
 
@@ -214,7 +215,13 @@ const getStyles = createThemedStyles((colors) => ({
     height: height * 0.55,
   },
   gradientOverlay: {
-    flex: 1,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+  },
+  tintHalf: {
+    top: 0,
+    height: '50%',
   },
   safeArea: {
     flex: 1,
@@ -242,33 +249,34 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
   },
   bottomCard: {
+    // 10/07 drift fix: approved card (auth-screens-1 .welcome-card) = flush cream,
+    // radius 28 top / 40 bottom, padding 26/24 — NO shadow (Jeff 09-16 rejection)
     backgroundColor: colors.background,
-    paddingHorizontal: SIZES.lg,
-    paddingTop: SIZES.xl,
-    paddingBottom: SIZES.md,
+    paddingHorizontal: 24,
+    paddingTop: 26,
+    paddingBottom: 26,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    shadowColor: '#4A3B4E',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
   },
   overline: {
-    fontSize: 11,
+    // 10/07 drift fix: mockup .wc-overline = 10px / ls 2.2 / rose #B87AA0
+    fontSize: 10,
     fontFamily: FONTS.bodyBold,
     fontWeight: '700',
-    letterSpacing: 1.4,
+    letterSpacing: 2.2,
     textTransform: 'uppercase',
     textAlign: 'center',
     marginBottom: SIZES.sm,
   },
   headline: {
-    fontSize: 28,
+    // 10/07 drift fix: mockup .wc-h1 = 26px / lh 1.15 (30)
+    fontSize: 26,
     fontFamily: FONTS.heading,
     fontWeight: '700',
     color: colors.text,
-    lineHeight: 36,
+    lineHeight: 30,
     textAlign: 'center',
     marginBottom: SIZES.sm,
   },
@@ -276,10 +284,11 @@ const getStyles = createThemedStyles((colors) => ({
     fontStyle: 'italic',
   },
   subtitle: {
-    fontSize: SIZES.fontMd,
+    // 10/07 drift fix: mockup .wc-sub = 13.5 / 1.55 lh (~21)
+    fontSize: 13.5,
     fontFamily: FONTS.body,
     color: colors.textSecondary,
-    lineHeight: 24,
+    lineHeight: 21,
     textAlign: 'center',
     marginBottom: SIZES.md,
   },
@@ -299,7 +308,8 @@ const getStyles = createThemedStyles((colors) => ({
     gap: 6,
   },
   pillText: {
-    fontSize: SIZES.fontSm,
+    // 10/07 drift fix: mockup .wc-pill = 11.5px
+    fontSize: 11.5,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
   },
@@ -317,10 +327,12 @@ const getStyles = createThemedStyles((colors) => ({
     gap: SIZES.sm,
   },
   primaryButtonText: {
-    fontSize: SIZES.fontLg,
+    // 10/07 drift fix: mockup .btn-primary label = 15.5px
+    fontSize: 15.5,
     fontFamily: FONTS.bodyBold,
     fontWeight: '700',
     color: colors.white,
+    letterSpacing: 0.2,
   },
   secondaryButton: {
     alignItems: 'center',
@@ -329,7 +341,8 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusFull,
   },
   secondaryButtonText: {
-    fontSize: SIZES.fontMd,
+    // 10/07 drift fix: mockup .btn-ghost = 15px/600
+    fontSize: 15,
     fontFamily: FONTS.bodyBold,
     fontWeight: '600',
     color: colors.primary,
@@ -342,7 +355,7 @@ const getStyles = createThemedStyles((colors) => ({
     transform: [{ scale: 0.97 }],
   },
   footerText: {
-    fontSize: SIZES.fontXs,
+    fontSize: 11,
     fontFamily: FONTS.body,
     color: colors.textLight,
     textAlign: 'center',

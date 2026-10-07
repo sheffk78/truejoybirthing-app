@@ -28,7 +28,7 @@ function TabIconWithBadge({
             width: 8,
             height: 8,
             borderRadius: 4,
-            backgroundColor: '#EF4444',
+            backgroundColor: '#B87AA0', // 10/07 drift fix: law rose badge (was material red)
             marginLeft: -4,
             marginTop: -6,
             borderWidth: 1.5,

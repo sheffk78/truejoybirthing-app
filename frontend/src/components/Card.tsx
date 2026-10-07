@@ -64,6 +64,13 @@ export default function Card({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: SIZES.radiusMd,
+    // 10/07 drift fix: corpus card law (common.css .card / designRefresh.srowBase)
+    // — white card on cream, 1px #EFE0EB, r18, content padding 12/14.
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EFE0EB',
+    borderRadius: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
   },
 });

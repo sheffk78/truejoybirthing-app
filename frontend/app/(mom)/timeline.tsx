@@ -26,6 +26,7 @@ import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { C, F, kickerStyle, trimesterOf, BAND_HOME } from '../../src/constants/corpus';
+import GrowthSprig from '../../src/components/GrowthSprig'; // 10/07 drift fix: growth motif wired in
 import { getPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 
 const DF = F;
@@ -293,7 +294,10 @@ export default function TimelineScreen() {
 
         {/* Milestones — horizontal strip */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Pregnancy milestones</Text>
+          <View style={styles.sectionTitleRow}>
+            <Text style={styles.sectionTitle}>Pregnancy milestones</Text>
+            <GrowthSprig stage={(timeline?.current_week ?? 0) <= 13 ? 'sprout' : (timeline?.current_week ?? 0) <= 27 ? 'leafing' : 'blossom'} size={18} stroke={'#D8A0C4'} fill={'#EBD3E4'} style={{ marginLeft: 8 }} />
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.milesRow}>
             {timeline?.milestones?.map((milestone: Milestone) => (
               <View
@@ -589,6 +593,10 @@ const getStyles = createThemedStyles((colors) => ({
   },
   addGhostText: { fontSize: 12.5, fontWeight: '600', fontFamily: DF.uiSemi, color: C.lavender },
   section: { marginTop: 16 },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   sectionTitle: { fontFamily: DF.serif, fontWeight: '700', fontSize: 21, color: C.ink, marginBottom: 8 },
   eventRowCard: {
     backgroundColor: colors.surface,

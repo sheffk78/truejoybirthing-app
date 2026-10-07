@@ -47,7 +47,7 @@ const PLAN_STATUS_COLORS: Record<string, string> = {
   'due': C.rose,
   'partial': C.lavender,
   'paid': C.sage,
-  'overdue': '#f44336',
+  'overdue': '#B87AA0', // 10/07 drift fix: law rose
 };
 
 interface ProviderInvoicesProps {
@@ -761,7 +761,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                       <Text style={[styles.actionText, { color: '#fff' }]}>Send</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.actionButton} onPress={() => handleDeleteInvoice(invoice.invoice_id)}>
-                      <Icon name="trash-outline" size={18} color="#f44336" />
+                      <Icon name="trash-outline" size={18} color="#B87AA0" />
                     </TouchableOpacity>
                   </>
                 )}
@@ -776,7 +776,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                       <Text style={[styles.actionText, { color: primaryColor }]}>Remind</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.actionButton} onPress={() => handleCancelInvoice(invoice.invoice_id)}>
-                      <Icon name="close-circle-outline" size={18} color="#f44336" />
+                      <Icon name="close-circle-outline" size={18} color="#B87AA0" />
                     </TouchableOpacity>
                   </>
                 )}
@@ -977,7 +977,7 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             </Text>
             {editingTemplate ? (
               <TouchableOpacity onPress={() => handleDeleteTemplate(editingTemplate.template_id)}>
-                <Icon name="trash-outline" size={24} color="#f44336" />
+                <Icon name="trash-outline" size={24} color="#B87AA0" />
               </TouchableOpacity>
             ) : (
               <View style={{ width: 24 }} />
