@@ -247,14 +247,23 @@ export default function TimelineScreen() {
           </View>
         )}
 
-        {/* Schedule with Provider — ghost pill */}
-        <TouchableOpacity
-          style={styles.addGhostButton}
-          onPress={() => router.push('/(mom)/appointments')}
-          data-testid="schedule-btn"
-        >
-          <Text style={styles.addGhostText}>+ Schedule with Provider</Text>
-        </TouchableOpacity>
+        {/* Entry row — Add My Own opens the custom-event modal (restored 10/07, was orphaned); Book Provider → appointments */}
+        <View style={styles.addRow}>
+          <TouchableOpacity
+            style={styles.addGhostButton}
+            onPress={() => setModalVisible(true)}
+            data-testid="add-event-btn"
+          >
+            <Text style={styles.addGhostText}>+ Add My Own</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addGhostButton}
+            onPress={() => router.push('/(mom)/appointments')}
+            data-testid="schedule-btn"
+          >
+            <Text style={styles.addGhostText}>+ Book Provider</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Custom Events */}
         {timeline?.custom_events?.length > 0 && (
@@ -546,8 +555,10 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'center',
   },
   nextText: { flex: 1, fontSize: 11.5, fontWeight: '600', fontFamily: DF.uiSemi, color: C.lavender },
+  addRow: { flexDirection: 'row', gap: 10, marginTop: 14 },
   addGhostButton: {
-    marginTop: 14,
+    flex: 1,
+    marginTop: 0,
     borderWidth: 1.4,
     borderColor: C.lavenderSoft,
     borderRadius: 999,
