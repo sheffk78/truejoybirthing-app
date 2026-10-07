@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Image,
@@ -69,16 +70,9 @@ export default function TimelineScreen() {
     });
   };
 
-  const handleDateChange = (event: any, date?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
-    if (date) {
-      setSelectedDate(date);
-      const formatted = formatDateLocal(date);
-      setNewEvent({ ...newEvent, event_date: formatted });
-    }
-  };
+  // 10/07: date handling now inline in the picker sheet (Confirm Date button);
+  // the old auto-commit handleDateChange caused the Android-style instant close
+  // and is retired. Android uses the same inline sheet (spinner display).
 
   const fetchTimeline = async () => {
     try {
@@ -338,13 +332,22 @@ export default function TimelineScreen() {
                 onChangeText={(text) => setNewEvent({ ...newEvent, title: text })}
                 placeholder="e.g., Prenatal Checkup"
                 placeholderTextColor={C.grayLight}
+                testID="event-title-input"
                 data-testid="event-title-input"
               />
 
               <Text style={styles.inputLabel}>Date *</Text>
               <TouchableOpacity
                 style={styles.datePickerButton}
-                onPress={() => setShowDatePicker(true)}
+                onPress={() => {
+                  // Drop the title keyboard first — otherwise it covers the inline
+                  // picker + Confirm button (10/07 QA finding) and taps land on keys.
+                  Keyboard.dismiss();
+                  // Initialize the wheel to the chosen date (or today) so it never snaps
+                  setSelectedDate(newEvent.event_date ? new Date(`${newEvent.event_date}T12:00:00`) : new Date());
+                  setShowDatePicker(true);
+                }}
+                testID="event-date-picker-btn"
                 data-testid="event-date-picker-btn"
               >
                 <Icon name="calendar" size={20} color={C.lavender} />
@@ -353,6 +356,37 @@ export default function TimelineScreen() {
                 </Text>
                 <Icon name="chevron-down" size={20} color={C.chev} />
               </TouchableOpacity>
+
+              {/* Inline spinner picker — appears in-flow under the date row when
+                  open (10/07: nested Modal never presented on iOS; in-flow never
+                  has that presentation problem). No double-modal involved. */}
+              {showDatePicker && (
+                <View style={styles.inlinePickerWrap}>
+                  <DateTimePicker
+                    value={selectedDate}
+                    mode="date"
+                    display="spinner"
+                    onChange={(event: any, date?: Date) => {
+                      if (date) setSelectedDate(date);
+                    }}
+                    style={{ width: '100%', height: 200 }}
+                  />
+                  <TouchableOpacity
+                    style={styles.confirmDateBtn}
+                    onPress={() => {
+                      setNewEvent((prev: any) => ({ ...prev, event_date: formatDateLocal(selectedDate) }));
+                      setShowDatePicker(false);
+                    }}
+                    testID="confirm-date-btn"
+                    data-testid="confirm-date-btn"
+                  >
+                    <Text style={styles.confirmDateText}>Confirm Date</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              {/* 10/07 QA: spacer holds the modal tall while the picker opens/closes so
+                  the layout above (date row) never shifts mid-tap; removed when closed */}
+              {showDatePicker && <View style={{ height: 8 }} />}
 
               <Text style={styles.inputLabel}>Description</Text>
               <TextInput
@@ -373,7 +407,7 @@ export default function TimelineScreen() {
               <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
                 <Text style={styles.cancelBtnText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.saveBtn} onPress={addEvent} disabled={saving} data-testid="save-event-btn">
+              <TouchableOpacity style={styles.saveBtn} onPress={addEvent} disabled={saving} testID="save-event-btn" data-testid="save-event-btn">
                 <Text style={styles.saveBtnText}>{saving ? 'Saving...' : 'Save'}</Text>
               </TouchableOpacity>
             </View>
@@ -381,65 +415,8 @@ export default function TimelineScreen() {
         </KeyboardAvoidingView>
       </Modal>
 
-      {/* Date Picker Modal */}
-      {showDatePicker && (
-        Platform.OS === 'web' ? (
-          <Modal
-            visible={showDatePicker}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setShowDatePicker(false)}
-          >
-            <View style={styles.dateModalOverlay}>
-              <View style={styles.dateModalContent}>
-                <View style={styles.dateModalHeader}>
-                  <Text style={styles.dateModalTitle}>Select Date</Text>
-                  <TouchableOpacity onPress={() => setShowDatePicker(false)}>
-                    <Icon name="close" size={24} color={C.ink} />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.webCalendarWrapper}>
-                  <input
-                    type="date"
-                    value={newEvent.event_date || ''}
-                    onChange={(e: any) => {
-                      setNewEvent({ ...newEvent, event_date: e.target.value });
-                      if (e.target.value) {
-                        setSelectedDate(new Date(e.target.value));
-                      }
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: 16,
-                      fontSize: 18,
-                      border: `1.4px solid ${C.lavenderSoft}`,
-                      borderRadius: 12,
-                      outline: 'none',
-                      cursor: 'pointer',
-                      fontFamily: F.ui,
-                      color: C.ink,
-                      backgroundColor: colors.surface,
-                    }}
-                  />
-                </View>
-                <Button
-                  title="Done"
-                  onPress={() => setShowDatePicker(false)}
-                  fullWidth
-                  style={{ marginTop: 16 }}
-                />
-              </View>
-            </View>
-          </Modal>
-        ) : (
-          <DateTimePicker
-            value={selectedDate}
-            mode="date"
-            display="default"
-            onChange={handleDateChange}
-          />
-        )
-      )}
+      {/* 10/07: standalone picker modal removed — picker now renders inline inside
+          the Add-Event modal (above); nested-Modal presentation never showed on iOS. */}
     </SafeAreaView>
   );
 }
@@ -555,6 +532,30 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'center',
   },
   nextText: { flex: 1, fontSize: 11.5, fontWeight: '600', fontFamily: DF.uiSemi, color: C.lavender },
+  // 10/07: inline picker styles (in-flow under the date row)
+  inlinePickerWrap: {
+    marginTop: 10,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: C.border,
+    backgroundColor: C.cardBg,
+    padding: 8,
+    alignItems: 'center',
+  },
+  confirmDateBtn: {
+    marginTop: 6,
+    alignSelf: 'stretch',
+    backgroundColor: C.lavender,
+    borderRadius: 999,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  confirmDateText: {
+    fontSize: 13,
+    fontWeight: '600',
+    fontFamily: DF.uiSemi,
+    color: '#FFFFFF',
+  },
   addRow: { flexDirection: 'row', gap: 10, marginTop: 14 },
   addGhostButton: {
     flex: 1,
