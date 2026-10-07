@@ -791,6 +791,28 @@ export default function MomHomeScreen() {
                 : 'Start counting'}
             </Text>
           </TouchableOpacity>
+
+          {/* Full-width Contraction Timer strip — gated to week 34+ (call-B rec:
+              prominent labor tool from ~week 34; invisible before to keep Home calm) */}
+          {weekNum >= 34 && (
+            <TouchableOpacity
+              style={[styles.actionCard, styles.actionCardFull]}
+              onPress={() => router.push('/(mom)/contraction-timer')}
+              activeOpacity={0.8}
+              testID="key-action-contraction-timer"
+              data-testid="key-action-contraction-timer"
+            >
+              <View style={styles.iconChipLav}>
+                <TIcon name="timer" size={18} color={C.lavender} />
+              </View>
+              <View style={styles.actionTextBlock}>
+                <Text style={styles.actionTitle}>Contraction Timer</Text>
+                <Text style={styles.actionSubtitle} numberOfLines={1}>
+                  Start timing contractions
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
         
         {/* Research Feed — Birth & Baby Reads */}
@@ -975,6 +997,17 @@ const getStyles = createThemedStyles((colors) => ({
   actionCardWrap: {
     flex: 0,
     flexBasis: '48%',
+  },
+  // Full-width variant (contraction-timer strip, week 34+): icon left, text block right.
+  actionCardFull: {
+    flexBasis: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  actionTextBlock: {
+    flex: 1,
   },
   iconChipLav: {
     width: 34,
