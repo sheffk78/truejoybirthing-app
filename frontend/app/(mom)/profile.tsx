@@ -59,6 +59,7 @@ export default function MomProfileScreen() {
   const [zipCode, setZipCode] = useState('');
 
   // Legal WebView state
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [legalView, setLegalView] = useState<{ url: string; title: string } | null>(null);
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
@@ -262,8 +263,9 @@ export default function MomProfileScreen() {
   const handleShareApp = async () => {
     try {
       await Share.share({
-        message: 'Check out True Joy Birthing - your birth plan, your team, your support in one place!',
-        url: 'https://truejoybirthing.com',
+        // 10/01: share should sell the invite — link lands them on the app page, not just the site
+        title: 'True Joy Birthing',
+        message: 'I\'m using True Joy Birthing to plan my birth and keep my whole team in one place — birth plan, appointments, wellness, messages. Come join me: https://truejoybirthing.com/app',
       });
     } catch (error: any) {
       console.error('Share error:', error);
@@ -793,16 +795,28 @@ export default function MomProfileScreen() {
           )}
         </Card>
         
-        {/* Appearance Settings */}
-        <Card style={styles.menuCard}>
-          <View style={srowBase}>
-            <Icon name="palette-outline" size={18} color={C.rose} />
-            <View style={styles.infoText}>
-              <Text style={styles.infoLabel}>Appearance</Text>
+        {/* Appearance Settings — expands inline (10/01: row was dead, button did nothing) */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => setAppearanceOpen((v) => !v)}
+          accessibilityRole="button"
+          accessibilityLabel="Appearance settings"
+          data-testid="appearance-row"
+          testID="appearance-row"
+        >
+          <Card style={styles.menuCard}>
+            <View style={srowBase}>
+              <Icon name="palette-outline" size={18} color={C.rose} />
+              <View style={styles.infoText}>
+                <Text style={styles.infoLabel}>Appearance</Text>
+              </View>
+              <Icon name={appearanceOpen ? 'chevron-up' : 'chevron-forward'} size={16} color={C.grayLight} />
             </View>
-            <Icon name="chevron-forward" size={16} color={C.grayLight} />
-          </View>
-        </Card>
+            {appearanceOpen && (
+              <AppearanceSettings showLabel={false} />
+            )}
+          </Card>
+        </TouchableOpacity>
 
         {/* App Tutorial */}
         <TouchableOpacity
@@ -853,22 +867,13 @@ export default function MomProfileScreen() {
           </Card>
         </TouchableOpacity>
 
-        {/* App Version */}
-        <Card style={styles.menuCard}>
-          <View style={srowBase}>
-            <Icon name="information-circle-outline" size={18} color={C.rose} />
-            <View style={styles.infoText}>
-              <Text style={styles.infoLabel}>App Version</Text>
-            </View>
-            <Text style={styles.versionText}>{appVersion}</Text>
-          </View>
-        </Card>
 
         {/* Logout */}
         <TouchableOpacity
           style={styles.logoutButton}
           onPress={handleLogout}
           data-testid="logout-btn"
+          testID="logout-btn"
         >
           <Icon name="log-out-outline" size={20} color={C.rose} />
           <Text style={styles.logoutText}>Log Out</Text>
@@ -887,21 +892,19 @@ export default function MomProfileScreen() {
           </Text>
         </TouchableOpacity>
 
-        {/* Legal Links - App Store Compliance */}
-        <Card style={styles.legalCard}>
-          <View style={srowBase}>
+        {/* Legal footer — plain text menu + version (10/01: card rectangles read wrong) */}
+        <View style={styles.legalFooter}>
+          <View style={styles.legalFooterRow}>
             <Text style={styles.legalLinkText} onPress={() => setLegalView({ url: 'https://truejoybirthing.com/privacy', title: 'Privacy Policy' })}>Privacy Policy</Text>
-          </View>
-          <View style={srowBase}>
+            <Text style={styles.legalFooterDot}>·</Text>
             <Text style={styles.legalLinkText} onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Disclaimer' })}>Disclaimer</Text>
-          </View>
-          <View style={srowBase}>
+            <Text style={styles.legalFooterDot}>·</Text>
             <Text style={styles.legalLinkText} onPress={() => setLegalView({ url: 'https://truejoybirthing.com/terms', title: 'Terms of Service' })}>Terms of Service</Text>
-          </View>
-          <View style={srowBase}>
+            <Text style={styles.legalFooterDot}>·</Text>
             <Text style={styles.legalLinkText} onPress={() => setLegalView({ url: 'https://truejoybirthing.com/contact/', title: 'Contact' })}>Contact</Text>
           </View>
-        </Card>
+          <Text style={styles.legalFooterVersion}>True Joy Birthing · v{appVersion}</Text>
+        </View>
 
         {/* In-app Legal WebView */}
         <LegalWebView
@@ -1152,13 +1155,30 @@ const getStyles = createThemedStyles((colors) => ({
     borderWidth: 1,
     borderColor: C.border,
   },
-  legalCard: {
-    marginBottom: SIZES.md,
-    backgroundColor: C.surface,
-    borderRadius: SIZES.radiusLg,
-    borderWidth: 1,
-    borderColor: C.border,
-    padding: SIZES.md,
+  legalFooter: {
+    marginTop: SIZES.lg,
+    paddingTop: SIZES.md,
+    borderTopWidth: 1,
+    borderTopColor: C.border,
+    alignItems: 'center',
+  },
+  legalFooterRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    rowGap: 6,
+  },
+  legalFooterDot: {
+    marginHorizontal: 8,
+    fontSize: SIZES.fontXs,
+    color: C.grayLight,
+  },
+  legalFooterVersion: {
+    marginTop: 10,
+    fontSize: SIZES.fontXs,
+    fontFamily: DF.ui,
+    color: C.grayLight,
   },
   infoText: {
     marginLeft: SIZES.md,
@@ -1174,10 +1194,6 @@ const getStyles = createThemedStyles((colors) => ({
     fontFamily: DF.ui,
     color: C.ink,
     fontWeight: '500',
-  },
-  versionText: {
-    fontSize: SIZES.fontSm,
-    color: C.gray,
   },
   logoutButton: {
     flexDirection: 'row',

@@ -490,6 +490,16 @@ export default function MessagesScreen() {
               <Icon name="arrow-back" size={24} color={colors.text} />
             </TouchableOpacity>
             <View style={styles.chatHeaderInfo}>
+              {/* Jeff 10/02 avatar pass: header shows the person, so show their photo */}
+              {selectedConversation.other_user_picture ? (
+                <Image source={{ uri: selectedConversation.other_user_picture }} style={styles.chatHeaderPhoto} />
+              ) : (
+                <View style={[styles.chatHeaderPhotoFallback, { backgroundColor: avatarTintS9(0).bg }]}>
+                  <Text style={[styles.chatHeaderPhotoInitials, { color: avatarTintS9(0).fg }]}>
+                    {initialsOf(selectedConversation.other_user_name) || '?'}
+                  </Text>
+                </View>
+              )}
               <Text style={styles.chatHeaderName}>{selectedConversation.other_user_name}</Text>
               <Text style={styles.chatHeaderRole}>{selectedConversation.other_user_role}</Text>
             </View>
@@ -600,14 +610,18 @@ export default function MessagesScreen() {
           }
           showsVerticalScrollIndicator={false}
         >
-          {/* Approved S9 header — photo band + overline + Cormorant H1 (mockup m-head) */}
+          {/* Approved S9 header — flush band anatomy (appointments S7 reference,
+              audit 10/01): negative-offset wrap kills the 16px cream frame +
+              duplicated insets; title sits on the veil. */}
+          <View style={[styles.bandWrap, { marginTop: -insets.top }]}>
           <HBand source={BAND_MESSAGES} height={168 + insets.top} focus="50% 30%" />
-          <View style={s9.mhead}>
+          <View style={[s9.mhead, { paddingTop: 24 }]}>
             <Text style={s9.overline}>Conversations</Text>
             <Text style={s9.h1}>
               <Text style={s9.h1em}>Your</Text> Messages
             </Text>
             <Text style={s9.msub}>Quiet questions, quick answers — with your team</Text>
+          </View>
           </View>
 
           {/* Search pill (mockup .search) */}
@@ -656,6 +670,19 @@ export default function MessagesScreen() {
                   data-testid={`invoice-${invoice.invoice_id}`}
                 >
                   <View style={styles.invoiceRow}>
+                    {/* Jeff 10/02 avatar pass: provider photo beside 'From:' (endpoint now enriches provider_picture) */}
+                    {invoice.provider_picture ? (
+                      <Image
+                        source={{ uri: invoice.provider_picture }}
+                        style={styles.invoiceProviderPhoto}
+                      />
+                    ) : (
+                      <View style={[styles.invoiceProviderPhotoFallback, { backgroundColor: avatarTintS9(2).bg }]}>
+                        <Text style={[styles.invoiceProviderInitials, { color: avatarTintS9(2).fg }]}>
+                          {initialsOf(invoice.provider_name) || '?'}
+                        </Text>
+                      </View>
+                    )}
                     <View style={styles.invoiceInfo}>
                       <Text style={styles.invoiceAmount}>
                         ${typeof invoice.amount === 'number' ? invoice.amount.toFixed(2) : '0.00'}
@@ -882,17 +909,16 @@ export default function MessagesScreen() {
                     data-testid={`team-member-${member.user_id}`}
                   >
                     {member.picture ? (
-                      <Image 
-                        source={{ uri: member.picture }} 
+                      <Image
+                        source={{ uri: member.picture }}
                         style={styles.memberAvatarImage}
                       />
                     ) : (
                       <View style={[styles.memberAvatar, { backgroundColor: getRoleColor(member.role) + '20' }]}>
-                        <Icon 
-                          name={member.role === 'DOULA' ? 'heart' : 'medkit'} 
-                          size={24} 
-                          color={getRoleColor(member.role)} 
-                        />
+                        {/* Jeff 10/02 avatar pass: normalize fallback to initials (matches conversation list) */}
+                        <Text style={[styles.memberAvatarInitials, { color: getRoleColor(member.role) }]}>
+                          {initialsOf(member.name) || '?'}
+                        </Text>
                       </View>
                     )}
                     <View style={styles.memberInfo}>
@@ -1043,6 +1069,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     paddingBottom: SIZES.xxl,
   },
+  bandWrap: { marginTop: 0 },
   headerLogo: {
     width: 28,
     height: 28,
@@ -1188,6 +1215,24 @@ const getStyles = createThemedStyles((colors) => ({
   chatHeaderInfo: {
     flex: 1,
     alignItems: 'center',
+  },
+  chatHeaderPhoto: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    marginBottom: 4,
+  },
+  chatHeaderPhotoFallback: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  chatHeaderPhotoInitials: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
   },
   chatHeaderName: {
     fontSize: SIZES.fontMd,
@@ -1335,6 +1380,10 @@ const getStyles = createThemedStyles((colors) => ({
     height: 48,
     borderRadius: 24,
   },
+  memberAvatarInitials: {
+    fontSize: SIZES.fontMd,
+    fontFamily: FONTS.bodyBold,
+  },
   memberInfo: {
     flex: 1,
     marginLeft: SIZES.md,
@@ -1392,6 +1441,24 @@ const getStyles = createThemedStyles((colors) => ({
   invoiceRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  invoiceProviderPhoto: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    marginRight: SIZES.sm,
+  },
+  invoiceProviderPhotoFallback: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SIZES.sm,
+  },
+  invoiceProviderInitials: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.bodyBold,
   },
   invoiceInfo: {
     flex: 1,

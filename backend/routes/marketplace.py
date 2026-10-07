@@ -35,13 +35,99 @@ USER_PUBLIC_FIELDS = {
 
 # ============== ROUTES ==============
 
+def _search_corpus(user: dict, profile: dict) -> str:
+    """Lowercased searchable text for one provider (10/05).
+
+    Name, city, state, zip — PLUS the credential corpus (recognized codes,
+    their full names and aliases, and any custom chips) so a mom can type
+    "IBCLC", "lactation", or a pro's custom chip ("DONA") and find them.
+    """
+    from utils.credentials import CREDENTIALS, parse_credential_text
+    parts = [
+        user.get("full_name") or "",
+        profile.get("location_city") or "",
+        profile.get("location_state") or "",
+        profile.get("zip_code") or "",
+    ]
+    known, custom = parse_credential_text(profile.get("credentials"))
+    known2, custom2 = parse_credential_text(profile.get("certifications"))
+    all_known = set(known) | set(known2)
+    all_custom = custom + custom2
+    # codes + display names + aliases of every RECOGNIZED credential the pro holds
+    cred_text = []
+    for c in CREDENTIALS:
+        if c["code"] in all_known:
+            cred_text.extend([c["code"], c["name"]] + c["aliases"])
+    cred_text.extend(all_custom)
+    parts.extend(cred_text)
+    return " ".join(p for p in parts if p).lower()
+
+
+def _search_match(user: dict, profile: dict, search_lower: str) -> bool:
+    return search_lower in _search_corpus(user, profile)
+
+
+def _credential_chips(profile: dict) -> dict:
+    """Normalized credential chips for a provider card (10/05).
+
+    Returns {"codes": [...], "custom": [...], "labels": [...]} — canonical
+    codes with full display names, custom verbatim chips, and a flat list of
+    everything for card rendering. Computed fresh (no DB migration needed).
+    """
+    from utils.credentials import parse_credential_text, credential_display
+    known, custom = parse_credential_text(profile.get("credentials"))
+    known2, custom2 = parse_credential_text(profile.get("certifications"))
+    all_known = list(dict.fromkeys(known + known2))
+    all_custom = list(dict.fromkeys(custom + custom2))
+    return {
+        "codes": all_known,
+        "custom": all_custom,
+        "labels": [
+            {"code": c, "name": credential_display(c) or c} for c in all_known
+        ] + [{"code": c, "name": c} for c in all_custom],
+    }
+
+
+@router.get("/credentials")
+async def get_credential_vocabulary():
+    """Recognized credential vocabulary for filter chips + onboarding (10/05).
+
+    Common credentials are canonical (mom's filter taps codes; pro's entry
+    normalizes). Unique credentials remain allowed — pros keep free-text
+    chips, searchable by exact code.
+    """
+    from utils.credentials import CREDENTIALS, MARKETPLACE_FILTER_CODES
+    return {
+        "filters": [
+            c for c in CREDENTIALS if c["code"] in MARKETPLACE_FILTER_CODES
+        ],
+        "all": CREDENTIALS,
+    }
+
+
+def _credential_match(profile: dict, credential: Optional[str]) -> bool:
+    """Alias-aware credential match (10/05).
+
+    Delegates to utils.credentials: the provider's stored credentials (any
+    format — string, list, free text) are normalized to canonical codes plus
+    custom chips, and the requested code must equal one of them. No substring
+    accidents ("CN" no longer matches "CNM" unless CN is what the provider
+    actually holds as a custom chip).
+    """
+    if not credential:
+        return True
+    from utils.credentials import provider_matches_credential
+    return provider_matches_credential(profile, credential)
+
+
 @router.get("/providers")
 async def search_providers(
     provider_type: Optional[str] = Query(None, description="Filter by DOULA, MIDWIFE, or LACTATION"),
     location_city: Optional[str] = Query(None, description="Filter by city"),
     location_state: Optional[str] = Query(None, description="Filter by state"),
     birth_setting: Optional[str] = Query(None, description="Filter by birth setting (midwives only)"),
-    search: Optional[str] = Query(None, description="Search name, city, state, or zip")
+    search: Optional[str] = Query(None, description="Search name, city, state, or zip"),
+    credential: Optional[str] = Query(None, description="Filter by credential code (CD, CLC, CPM, CNM, IBCLC)")
 ):
     """
     Search for providers in marketplace - supports multi-field search.
@@ -73,13 +159,7 @@ async def search_providers(
             if user:
                 # Apply search filter
                 if search:
-                    search_lower = search.lower()
-                    name_match = (user.get("full_name") or "").lower().find(search_lower) >= 0
-                    city_match = (profile.get("location_city") or "").lower().find(search_lower) >= 0
-                    state_match = (profile.get("location_state") or "").lower().find(search_lower) >= 0
-                    zip_match = (profile.get("zip_code") or "").lower().find(search_lower) >= 0
-                    
-                    if not (name_match or city_match or state_match or zip_match):
+                    if not _search_match(user, profile, search.lower()):
                         continue
                 
                 # Apply individual filters
@@ -88,10 +168,13 @@ async def search_providers(
                 if location_state and (profile.get("location_state") or "").lower().find(location_state.lower()) < 0:
                     continue
                 
+                if not _credential_match(profile, credential):
+                    continue
                 doulas.append({
                     "provider_type": "DOULA",
                     "user": user,
-                    "profile": profile
+                    "profile": profile,
+                    "credential_chips": _credential_chips(profile),
                 })
     
     # Search midwives
@@ -116,13 +199,7 @@ async def search_providers(
             if user:
                 # Apply search filter
                 if search:
-                    search_lower = search.lower()
-                    name_match = (user.get("full_name") or "").lower().find(search_lower) >= 0
-                    city_match = (profile.get("location_city") or "").lower().find(search_lower) >= 0
-                    state_match = (profile.get("location_state") or "").lower().find(search_lower) >= 0
-                    zip_match = (profile.get("zip_code") or "").lower().find(search_lower) >= 0
-                    
-                    if not (name_match or city_match or state_match or zip_match):
+                    if not _search_match(user, profile, search.lower()):
                         continue
                 
                 # Apply individual filters
@@ -133,10 +210,13 @@ async def search_providers(
                 if birth_setting and birth_setting not in profile.get("birth_settings_served", []):
                     continue
                 
+                if not _credential_match(profile, credential):
+                    continue
                 midwives.append({
                     "provider_type": "MIDWIFE",
                     "user": user,
-                    "profile": profile
+                    "profile": profile,
+                    "credential_chips": _credential_chips(profile),
                 })
     
     # Search lactation consultants
@@ -159,13 +239,7 @@ async def search_providers(
                 continue
             if user:
                 if search:
-                    search_lower = search.lower()
-                    name_match = (user.get("full_name") or "").lower().find(search_lower) >= 0
-                    city_match = (profile.get("location_city") or "").lower().find(search_lower) >= 0
-                    state_match = (profile.get("location_state") or "").lower().find(search_lower) >= 0
-                    zip_match = (profile.get("zip_code") or "").lower().find(search_lower) >= 0
-                    
-                    if not (name_match or city_match or state_match or zip_match):
+                    if not _search_match(user, profile, search.lower()):
                         continue
                 
                 if location_city and (profile.get("location_city") or "").lower().find(location_city.lower()) < 0:
@@ -173,10 +247,13 @@ async def search_providers(
                 if location_state and (profile.get("location_state") or "").lower().find(location_state.lower()) < 0:
                     continue
                 
+                if not _credential_match(profile, credential):
+                    continue
                 lactation.append({
                     "provider_type": "LACTATION",
                     "user": user,
-                    "profile": profile
+                    "profile": profile,
+                    "credential_chips": _credential_chips(profile),
                 })
     
     return {"doulas": doulas, "midwives": midwives, "lactation": lactation}

@@ -26,6 +26,34 @@ import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-chart-kit';
 import Svg, { Circle } from 'react-native-svg';
 import { C, F } from '../../src/constants/corpus';
+// 10/05: cross-link to the approved Kick Counter (small Quicksand link under
+// the 'Contraction Timer' header title).
+import { useRouter as useExpoRouter } from 'expo-router';
+
+// 'Counting kicks instead? →' — small lavender link under the timer title,
+// pushing /(mom)/kick-counter (approved 10/05 Kick Counter entry points).
+function KickCounterLink() {
+  const router = useExpoRouter();
+  return (
+    <Pressable
+      onPress={() => router.push('/(mom)/kick-counter')}
+      accessibilityRole="link"
+      testID="kick-crosslink"
+      style={({ pressed }) => [{ alignSelf: 'flex-start' }, pressed && { opacity: 0.8 }]}
+    >
+      <Text style={kickLinkStyles.text}>Counting kicks instead? →</Text>
+    </Pressable>
+  );
+}
+
+const kickLinkStyles = StyleSheet.create({
+  text: {
+    fontSize: 12,
+    fontFamily: F.uiSemi,
+    color: C.lavenderText,
+    marginTop: 2,
+  },
+});
 
 // Types
 interface Contraction {
@@ -632,6 +660,7 @@ export default function ContractionTimerScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Contraction Timer</Text>
+          <KickCounterLink />
         </View>
         
         <View style={styles.emptyContainer}>

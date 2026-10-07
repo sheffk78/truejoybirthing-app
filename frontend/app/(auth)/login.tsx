@@ -36,6 +36,12 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const STAGGER_MS = 90;
 
+// E2E stability: with textContentType 'password' iOS 26 strong-password autofill both
+// interferes with automated typing (simulator keyboard events get eaten) and pops the
+// system Save Password sheet mid-flow. Test builds (EXPO_PUBLIC_E2E=1, Metro-inlined at
+// bundle time) use 'none' so automated input lands reliably; production behavior unchanged.
+const IS_E2E = process.env.EXPO_PUBLIC_E2E === '1';
+
 export default function LoginScreen() {
   const router = useRouter();
   const colors = useColors();
@@ -73,6 +79,7 @@ export default function LoginScreen() {
   }, [oLogo, oHead, oForm, oFoot]);
 
   const handleLogin = async () => {
+    if (IS_E2E) console.log('[E2E] login attempt', JSON.stringify({ email, pwLen: password.length }));
     if (!email.trim() || !password || isLoading) return;
     setAuthError(null);
     try {
@@ -164,13 +171,16 @@ export default function LoginScreen() {
                 onFocus={() => setFocused('password')}
                 onBlur={() => setFocused(null)}
                 secureTextEntry={!showPassword}
-                textContentType="password"
+                textContentType={IS_E2E ? 'none' : 'password'}
+                testID="login-password-input"
+                data-testid="login-password-input"
               />
               <Pressable
                 onPress={() => setShowPassword(!showPassword)}
                 hitSlop={12}
                 accessibilityRole="button"
                 accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                testID="login-show-password-toggle"
               >
                 <Icon name={showPassword ? 'eye-off' : 'eye'} size={18} color={colors.textLight} />
               </Pressable>
@@ -196,6 +206,8 @@ export default function LoginScreen() {
               ]}
               accessibilityRole="button"
               accessibilityLabel="Log in"
+              testID="login-submit-btn"
+              data-testid="login-submit-btn"
             >
               <Text style={[styles.submitText, { color: colors.white }]}>
                 {isLoading ? 'Signing you in…' : 'Log In'}

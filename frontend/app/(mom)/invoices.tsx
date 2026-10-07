@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Alert,
   Clipboard,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
@@ -26,6 +27,25 @@ const getStatusColor = (status: string): string => {
   if (status === 'Sent') return C.rose;
   if (status === 'Payment Claimed') return C.lavender;
   return C.grayLight;
+};
+
+// Payment plan roll-up badge colors
+const getPlanStatusColor = (status: string): string => {
+  if (status === 'paid') return C.sage;
+  if (status === 'partial') return C.lavender;
+  if (status === 'overdue') return '#f44336';
+  return C.rose;
+};
+
+const getPlanStatusLabel = (status: string): string => {
+  const labels: Record<string, string> = { due: 'Payments Due', partial: 'Partially Paid', paid: 'Paid in Full', overdue: 'Overdue' };
+  return labels[status] || status;
+};
+
+const getInstallmentStatusColor = (status: string): string => {
+  if (status === 'paid') return C.sage;
+  if (status === 'overdue') return '#f44336';
+  return C.gray;
 };
 
 const getStatusLabel = (status: string): string => {
@@ -64,6 +84,8 @@ export default function MomInvoicesScreen() {
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [ackingInvoiceId, setAckingInvoiceId] = useState<string | null>(null);
+  const [paymentPlan, setPaymentPlan] = useState<any>(null);
+  const [planLoading, setPlanLoading] = useState(false);
 
   const fetchInvoices = async () => {
     try {
@@ -86,9 +108,22 @@ export default function MomInvoicesScreen() {
     setRefreshing(false);
   };
 
-  const openInvoiceDetail = (invoice: any) => {
+  const openInvoiceDetail = async (invoice: any) => {
     setSelectedInvoice(invoice);
+    setPaymentPlan(invoice.payment_plan || null);
     setShowDetailModal(true);
+    // List payload may omit payment_plan; fetch the authoritative schedule
+    if (!invoice.payment_plan) {
+      setPlanLoading(true);
+      try {
+        const data = await apiRequest(`${API_ENDPOINTS.MOM_INVOICES}/${invoice.invoice_id}/payment-plan`);
+        setPaymentPlan(data?.payment_plan || null);
+      } catch (error) {
+        console.error('Error fetching payment plan:', error);
+      } finally {
+        setPlanLoading(false);
+      }
+    }
   };
 
   const handleAcknowledgePayment = async (invoice: any) => {
@@ -180,10 +215,22 @@ export default function MomInvoicesScreen() {
             >
               <View style={styles.invoiceHeader}>
                 <View style={styles.providerInfo}>
-                  <Text style={styles.providerName}>{invoice.provider_name}</Text>
-                  <Text style={styles.providerType}>
-                    {getProviderTypeLabel(invoice.provider_type)}
-                  </Text>
+                  {/* Jeff 10/02 avatar pass: provider photo when present (endpoint now enriches provider_picture) */}
+                  {invoice.provider_picture ? (
+                    <Image source={{ uri: invoice.provider_picture }} style={styles.invoiceProviderPhoto} />
+                  ) : (
+                    <View style={styles.invoiceProviderInitialsWrap}>
+                      <Text style={styles.invoiceProviderInitials}>
+                        {(invoice.provider_name || '?').split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+                  <View style={styles.providerNameCol}>
+                    <Text style={styles.providerName}>{invoice.provider_name}</Text>
+                    <Text style={styles.providerType}>
+                      {getProviderTypeLabel(invoice.provider_type)}
+                    </Text>
+                  </View>
                 </View>
                 <View style={[styles.statusBadge, { backgroundColor: getStatusColor(invoice.status) + '20' }]}>
                   <Text style={[styles.statusText, { color: getStatusColor(invoice.status) }]}>
@@ -200,6 +247,14 @@ export default function MomInvoicesScreen() {
               </View>
 
               <Text style={styles.description} numberOfLines={2}>{invoice.description}</Text>
+
+              {!!invoice.payment_plan && (
+                <View style={styles.planChip}>
+                  <Text style={styles.planChipText}>
+                    {invoice.payment_plan.installments.filter((i: any) => i.status === 'paid').length}/{invoice.payment_plan.installment_count} paid
+                  </Text>
+                </View>
+              )}
 
               <View style={styles.invoiceFooter}>
                 <Text style={styles.amountText}>{formatCurrency(invoice.amount)}</Text>
@@ -275,6 +330,44 @@ export default function MomInvoicesScreen() {
                     <Text style={styles.amountLarge}>{formatCurrency(selectedInvoice.amount)}</Text>
                   </View>
                 </View>
+
+                {/* Payment Plan Schedule */}
+                {(paymentPlan || planLoading) && (
+                  <View style={styles.detailSection}>
+                    <Text style={styles.sectionTitle}>Payment Schedule</Text>
+                    {planLoading ? (
+                      <ActivityIndicator size="small" color={C.lavender} style={{ marginVertical: 12 }} />
+                    ) : paymentPlan ? (
+                      <>
+                        <View style={[styles.planStatusBadge, { backgroundColor: getPlanStatusColor(paymentPlan.status) + '20' }]}>
+                          <Text style={[styles.planStatusBadgeText, { color: getPlanStatusColor(paymentPlan.status) }]}>
+                            {getPlanStatusLabel(paymentPlan.status)}
+                          </Text>
+                        </View>
+                        {paymentPlan.plan_description && (
+                          <Text style={styles.planDescription}>{paymentPlan.plan_description}</Text>
+                        )}
+                        {paymentPlan.installments.map((inst: any) => (
+                          <View key={inst.installment_no} style={styles.installmentRow}>
+                            <View style={[styles.installmentDot, { backgroundColor: getInstallmentStatusColor(inst.status) }]} />
+                            <View style={styles.installmentInfo}>
+                              <Text style={styles.installmentTitle}>
+                                Installment {inst.installment_no} · {formatCurrency(inst.amount)}
+                              </Text>
+                              <Text style={styles.installmentDue}>Due {inst.due_date}</Text>
+                            </View>
+                            <Text style={[styles.installmentStatus, { color: getInstallmentStatusColor(inst.status) }]}>
+                              {inst.status === 'paid' ? 'Paid' : inst.status === 'overdue' ? 'Overdue' : 'Due'}
+                            </Text>
+                          </View>
+                        ))}
+                        <Text style={styles.planHint}>
+                          Pay each installment by its due date using your provider's payment instructions below.
+                        </Text>
+                      </>
+                    ) : null}
+                  </View>
+                )}
 
                 {/* Payment Instructions */}
                 {selectedInvoice.payment_instructions_text && (
@@ -421,7 +514,26 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'flex-start',
     marginBottom: SIZES.xs,
   },
-  providerInfo: { flex: 1 },
+  providerInfo: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  invoiceProviderPhoto: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  invoiceProviderInitialsWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: C.roseBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  invoiceProviderInitials: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: C.rose,
+  },
+  providerNameCol: { flexShrink: 1 },
   providerName: { fontSize: 16, fontWeight: '600', color: C.ink },
   providerType: { fontSize: 12, color: C.gray },
   statusBadge: {
@@ -596,4 +708,35 @@ const getStyles = createThemedStyles((colors) => ({
     color: C.gray,
     lineHeight: 16,
   },
+  planChip: {
+    alignSelf: 'flex-start',
+    backgroundColor: C.lavenderBg,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    marginTop: 6,
+  },
+  planChipText: { fontSize: 11, fontWeight: '600', color: C.lavender },
+  planStatusBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  planStatusBadgeText: { fontSize: 12, fontWeight: '700' },
+  planDescription: { fontSize: 13, color: C.gray, marginBottom: 10 },
+  installmentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#EFE9E2',
+  },
+  installmentDot: { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
+  installmentInfo: { flex: 1 },
+  installmentTitle: { fontSize: 14, fontWeight: '600', color: C.ink },
+  installmentDue: { fontSize: 12, color: C.gray, marginTop: 2 },
+  installmentStatus: { fontSize: 12, fontWeight: '700', textTransform: 'uppercase' },
+  planHint: { fontSize: 12, color: C.gray, marginTop: 8, fontStyle: 'italic' },
 }));

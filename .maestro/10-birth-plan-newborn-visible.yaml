@@ -1,0 +1,12 @@
+# QA Part B — informed-choice click-through
+# B3: the tab bar occupies ~86-97% of screen height; tap Birth Plan tab at
+# (22%, 92%) — inside the bar, above the home indicator.
+appId: host.exp.Exponent
+name: 10-birth-plan-newborn-visible
+---
+- tapOn:
+    point: "22%, 92%"
+- extendedWaitUntil:
+    visible: "Joyful Birth Plan"
+    timeout: 30000
+- takeScreenshot: b10-bp-open

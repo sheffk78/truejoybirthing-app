@@ -95,7 +95,7 @@ async def midwife_onboarding(profile_data: MidwifeProfileUpdate, user: User = De
         "phone": profile_data.phone,
         "bio": profile_data.bio,
         "experience_years": profile_data.experience_years,
-        "certifications": profile_data.certifications or [],
+        "certifications": profile_data.certifications,  # None stripped below — empty re-onboarding keeps existing certs (council 10/05)
         "credentials": profile_data.credentials,
         "license_number": profile_data.license_number,
         "license_state": profile_data.license_state,

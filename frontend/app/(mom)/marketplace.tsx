@@ -29,14 +29,98 @@ import { API_ENDPOINTS } from '../../src/constants/api';
 
 const PROVIDER_TYPES = ['All', 'DOULA', 'MIDWIFE', 'LACTATION'];
 
+// Credential codes a provider carries — prefer the backend-normalized chips
+// (canonical codes + custom), fall back to raw profile.credentials (10/05)
+const credCodesOf = (provider: any): string[] => {
+  const chips = provider?.credential_chips;
+  if (chips && (chips.codes?.length || chips.custom?.length)) {
+    return [...(chips.codes || []), ...(chips.custom || [])];
+  }
+  // Council 10/05: also read certifications (older payloads without
+  // credential_chips) and dedupe case-insensitively
+  const flat = (v: any): string[] =>
+    Array.isArray(v) ? v.filter(Boolean).map(String) : (v ? String(v).split(",") : []);
+  return [...flat(provider?.profile?.credentials), ...flat(provider?.profile?.certifications)]
+    .map(c => c.trim()).filter(Boolean)
+    .filter((c, i, a) => a.findIndex(x => x.toUpperCase() === c.toUpperCase()) === i);
+};
+
+// Recognized credential vocabulary (10/05): fetched from
+// /marketplace/credentials (single source of truth — backend utils/credentials.py)
+// with a hardcoded fallback so the filter row still renders offline.
+// Mirrors MARKETPLACE_FILTER_CODES (DEM demoted 10/05 — category, not a cert)
+const DEFAULT_CREDENTIAL_FILTERS = ['CD', 'CLC', 'IBCLC', 'CBE', 'CPM', 'CNM', 'LM'];
+
+// Credential chips with full names for the detail modal (10/05): canonical
+// codes display "CODE — Full Name"; custom chips display verbatim.
+const KNOWN_CREDENTIAL_NAMES: Record<string, string> = {
+  CD: 'Certified Doula', PCD: 'Postpartum Doula', CPD: 'Certified Postpartum Doula',
+  CLC: 'Certified Lactation Counselor', IBCLC: 'International Board Certified Lactation Consultant',
+  CLE: 'Certified Lactation Educator', CBE: 'Certified Childbirth Educator',
+  ALE: 'Advanced Lactation Expert', CPM: 'Certified Professional Midwife',
+  CNM: 'Certified Nurse-Midwife', CM: 'Certified Midwife', LM: 'Licensed Midwife',
+  DEM: 'Direct-Entry Midwife',
+};
+const allChipsOf = (provider: any): { chip: string; name?: string }[] => {
+  // Council 10/05: prefer backend labels (one vocabulary, updated server-side
+  // without an app release); local KNOWN map is the offline fallback only.
+  const labels = provider?.credential_chips?.labels;
+  if (labels?.length) {
+    return labels.map((l: any) => ({
+      chip: String(l.code),
+      name: l.name && l.name !== String(l.code) ? String(l.name) : undefined,
+    }));
+  }
+  const out: { chip: string; name?: string }[] = [];
+  const seen = new Set<string>();
+  for (const code of credCodesOf(provider)) {
+    const key = code.toUpperCase();
+    const known = Boolean(KNOWN_CREDENTIAL_NAMES[key]);
+    const chip = known ? key : code;
+    if (seen.has(chip.toUpperCase())) continue;
+    seen.add(chip.toUpperCase());
+    out.push({ chip, name: known ? KNOWN_CREDENTIAL_NAMES[key] : undefined });
+  }
+  return out;
+};
+
 export default function MarketplaceScreen() {
   const router = useRouter();
   const colors = useColors();
   const styles = getStyles(colors);
   const [providers, setProviders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  // Current pregnancy week for the header illustration (personalized, Jeff 10/01)
+  const [weekNum, setWeekNum] = useState(20); // 20 = neutral midpoint until timeline loads
+  useEffect(() => {
+    let alive = true;
+    apiRequest(API_ENDPOINTS.TIMELINE)
+      .then((res: any) => {
+        const w = Number(res?.current_week);
+        if (alive && w >= 4 && w <= 40) setWeekNum(w);
+      })
+      .catch(() => {/* keep neutral midpoint */});
+    return () => { alive = false; };
+  }, []);
+  // Recognized-credential vocabulary (10/05): common codes become filter chips;
+  // unique credentials stay allowed (pros keep custom chips, searchable by code)
+  useEffect(() => {
+    let alive = true;
+    apiRequest('/marketplace/credentials')
+      .then((res: any) => {
+        const codes = Array.isArray(res?.filters)
+          ? res.filters.map((c: any) => c.code).filter(Boolean)
+          : null;
+        if (alive && codes && codes.length > 0) setCredentialFilters(codes);
+      })
+      .catch(() => {/* keep DEFAULT_CREDENTIAL_FILTERS offline fallback */});
+    return () => { alive = false; };
+  }, []);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedType, setSelectedType] = useState('All');
+  const [selectedCredential, setSelectedCredential] = useState<string | null>(null); // Jeff 10/01: filter pros by credential
+  // Recognized credential vocabulary (10/05) — loaded from /marketplace/credentials
+  const [credentialFilters, setCredentialFilters] = useState<string[]>(DEFAULT_CREDENTIAL_FILTERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
   const [contactingProvider, setContactingProvider] = useState(false);
@@ -52,13 +136,16 @@ export default function MarketplaceScreen() {
   // Use refs for latest values to avoid stale closures in effects
   const searchQueryRef = useRef(searchQuery);
   const selectedTypeRef = useRef(selectedType);
+  const selectedCredentialRef = useRef<string | null>(null);
   searchQueryRef.current = searchQuery;
   selectedTypeRef.current = selectedType;
+  selectedCredentialRef.current = selectedCredential;
   
-  const fetchProviders = useCallback(async (search?: string, type?: string) => {
+  const fetchProviders = useCallback(async (search?: string, type?: string, credential?: string | null) => {
     try {
       const currentSearch = search !== undefined ? search : searchQueryRef.current;
       const currentType = type !== undefined ? type : selectedTypeRef.current;
+      const currentCredential = credential !== undefined ? credential : selectedCredentialRef.current;
       
       let endpoint = '/marketplace/providers?';
       const params = [];
@@ -69,12 +156,16 @@ export default function MarketplaceScreen() {
       if (currentSearch.trim()) {
         params.push(`search=${encodeURIComponent(currentSearch.trim())}`);
       }
+      if (currentCredential) {
+        params.push(`credential=${encodeURIComponent(currentCredential)}`);
+      }
       
       const data = await apiRequest(endpoint + params.join('&'));
-      // API returns {doulas: [...], midwives: [...]} - combine into single array
+      // API returns {doulas: [...], midwives: [...], lactation: [...]} — combine all
       const allProviders = [
         ...(data.doulas || []),
-        ...(data.midwives || [])
+        ...(data.midwives || []),
+        ...(data.lactation || [])
       ].map(p => ({
         user_id: p.user?.user_id,
         full_name: p.user?.full_name,
@@ -82,7 +173,9 @@ export default function MarketplaceScreen() {
         picture: p.profile?.picture || p.user?.picture,
         role: p.user?.role || p.provider_type,
         provider_type: p.provider_type,
-        profile: p.profile
+        profile: p.profile,
+        // normalized chips from the backend (canonical codes + custom chips)
+        credential_chips: p.credential_chips || null,
       }));
       setProviders(allProviders);
       
@@ -150,10 +243,11 @@ export default function MarketplaceScreen() {
     }
   };
   
-  // Fetch on mount and when selectedType changes
+  // Fetch on mount and when selectedType / selectedCredential changes
+  // (10/05 fix: credential chips highlighted but never refetched — dep missing)
   useEffect(() => {
     fetchProviders();
-  }, [selectedType, fetchProviders]);
+  }, [selectedType, selectedCredential, fetchProviders]);
   
   // Debounced search: re-fetch when search query changes (with 400ms debounce)
   useEffect(() => {
@@ -383,7 +477,7 @@ export default function MarketplaceScreen() {
           </View>
           <View style={styles.headerArtWrap} pointerEvents="none">
             <Image
-              source={getPregnancyIllustration(20)}
+              source={getPregnancyIllustration(Math.min(40, Math.max(4, weekNum)))}
               style={styles.headerArt}
               resizeMode="contain"
             />
@@ -429,6 +523,31 @@ export default function MarketplaceScreen() {
                   ]}
                 >
                   {type === 'All' ? 'All Providers' : type === 'DOULA' ? 'Doulas' : type === 'MIDWIFE' ? 'Midwives' : type === 'LACTATION' ? 'Lactation' : type}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Credential Filter — Jeff 10/01 */}
+          <View style={styles.typeFilter} testID="credential-filter-row">
+            <TouchableOpacity
+              style={[styles.typeChip, !selectedCredential && styles.typeChipActive]}
+              onPress={() => { selectedCredentialRef.current = null; setSelectedCredential(null); }}
+              data-testid="credential-all"
+            >
+              <Text style={[styles.typeChipText, !selectedCredential && styles.typeChipTextActive]}>
+                All Credentials
+              </Text>
+            </TouchableOpacity>
+            {credentialFilters.map((code: string) => (
+              <TouchableOpacity
+                key={code}
+                style={[styles.typeChip, selectedCredential === code && styles.typeChipActive]}
+                onPress={() => { selectedCredentialRef.current = code; setSelectedCredential(code); }}
+                data-testid={`credential-${code.toLowerCase()}`}
+              >
+                <Text style={[styles.typeChipText, selectedCredential === code && styles.typeChipTextActive]}>
+                  {code}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -493,28 +612,19 @@ export default function MarketplaceScreen() {
                   <Text style={styles.practiceName}>{provider.profile.practice_name}</Text>
                 )}
                 
-                {/* Services/Credentials */}
+                {/* Services/Credentials — role-agnostic; credential chips lead
+                    (Jeff 10/01: credentials must be visible on every card) */}
                 <View style={styles.tagsRow}>
-                  {provider.role === 'DOULA' && provider.profile?.services_offered?.slice(0, 3).map((service: string) => (
+                  {credCodesOf(provider).map((code) => (
+                    <View key={code} style={[styles.tag, { backgroundColor: C.roseBg }]}>
+                      <Text style={[styles.tagText, { color: C.roseBorder, fontFamily: F.uiBold }]}>{code}</Text>
+                    </View>
+                  ))}
+                  {(provider.profile?.services_offered ?? []).slice(0, 3).map((service: string) => (
                     <View key={service} style={styles.tag}>
                       <Text style={styles.tagText}>{service}</Text>
                     </View>
                   ))}
-                  {provider.role === 'LACTATION' && provider.profile?.services_offered?.slice(0, 3).map((service: string) => (
-                    <View key={service} style={styles.tag}>
-                      <Text style={styles.tagText}>{service}</Text>
-                    </View>
-                  ))}
-                  {provider.role === 'MIDWIFE' && provider.profile?.credentials && (
-                    <View style={styles.tag}>
-                      <Text style={styles.tagText}>{provider.profile.credentials}</Text>
-                    </View>
-                  )}
-                  {provider.role === 'LACTATION' && provider.profile?.credentials && (
-                    <View style={styles.tag}>
-                      <Text style={styles.tagText}>{provider.profile.credentials}</Text>
-                    </View>
-                  )}
                   {provider.role === 'MIDWIFE' && provider.profile?.birth_settings_served?.slice(0, 2).map((setting: string) => (
                     <View key={setting} style={styles.tag}>
                       <Text style={styles.tagText}>{setting}</Text>
@@ -583,6 +693,7 @@ export default function MarketplaceScreen() {
                 <TouchableOpacity
                   style={styles.viewProfile}
                   onPress={() => setSelectedProvider(provider)}
+                  testID="view-profile-btn"
                   data-testid={`view-profile-btn-${provider.user_id}`}
                 >
                   <Text style={styles.viewProfileText}>View Profile</Text>
@@ -653,11 +764,20 @@ export default function MarketplaceScreen() {
                 </View>
               )}
               
-              {/* Credentials (Midwife) */}
-              {selectedProvider.profile?.credentials && (
+              {/* Credentials — all roles: canonical codes with full names,
+                  custom chips verbatim (Sarah shows CD, CLC + DONA, CAPPA) */}
+              {allChipsOf(selectedProvider).length > 0 && (
                 <View style={styles.profileSection}>
                   <Text style={styles.sectionTitle}>Credentials</Text>
-                  <Text style={styles.sectionValue}>{selectedProvider.profile.credentials}</Text>
+                  <View style={styles.profileTags}>
+                    {allChipsOf(selectedProvider).map(({ chip, name }) => (
+                      <View key={chip} style={[styles.profileTag, { backgroundColor: getRoleColor(selectedProvider.role) === C.rose ? C.roseBg : C.lavenderBorder }]}>
+                        <Text style={[styles.profileTagText, { color: getRoleColor(selectedProvider.role) }]}>
+                          {name ? `${chip} — ${name}` : chip}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
               )}
               
@@ -911,6 +1031,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   typeFilter: {
     flexDirection: 'row',
+    flexWrap: 'wrap',   // 10/05: vocab row can exceed screen width — wrap, not clip
+    gap: 8,             // consistent spacing when wrapped (row used marginRight)
   },
   typeChip: {
     height: 32,
@@ -921,7 +1043,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderWidth: 1,
     borderColor: C.lavenderBorder,
     borderRadius: 16,
-    marginRight: 8,
+    // R2: gap-only spacing — per-chip marginBottom double-spaced wrapped rows
   },
   typeChipActive: {
     backgroundColor: C.lavenderSoft,
@@ -1038,6 +1160,7 @@ const getStyles = createThemedStyles((colors) => ({
   tagText: {
     fontSize: SIZES.fontXs,
     color: colors.textSecondary,
+    fontFamily: F.ui, // R2: system-font leak on every card chip
   },
   statsRow: {
     flexDirection: 'row',

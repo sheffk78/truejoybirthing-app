@@ -6,6 +6,7 @@ import { useColors } from '../hooks/useThemedStyles';
 interface CardProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  testID?: string;
   variant?: 'elevated' | 'outlined' | 'filled';
   padding?: 'none' | 'sm' | 'md' | 'lg';
 }
@@ -13,6 +14,7 @@ interface CardProps {
 export default function Card({
   children,
   style,
+  testID,
   variant = 'elevated',
   padding = 'md',
 }: CardProps) {
@@ -54,7 +56,7 @@ export default function Card({
   };
   
   return (
-    <View style={[styles.card, getVariantStyle(), getPaddingStyle(), style]}>
+    <View testID={testID} style={[styles.card, getVariantStyle(), getPaddingStyle(), style]}>
       {children}
     </View>
   );

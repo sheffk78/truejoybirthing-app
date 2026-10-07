@@ -157,6 +157,15 @@ export {
   initialsOf, firstNameOf, trimesterOf, kickerStyle,
 } from './designRefresh';
 
+// ---- Photo-variety pool (2026-10-01) ----
+// Vetted website city-page scenes for recurring surfaces (walkthrough,
+// getting-started band). See docs/SPACE-AND-PHOTO-AUDIT-2026-10-01.md.
+export {
+  bandStartHere, phMidwifeNewborn, phLactationFeeding, phDoulaConsult,
+  phMidwifeSupport, phDoulaLabor, phLactationConsult, phLactationClients,
+  VARIETY_PHOTOS,
+} from './photos';
+
 // ---- Hooks: render-time corpus access for dark-aware consumers ----
 // useCorpus() re-renders the consumer whenever the effective theme flips and
 // hands back the matching corpus. Consumers that snapshot values into

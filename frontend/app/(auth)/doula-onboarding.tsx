@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -35,6 +36,11 @@ export default function DoulaOnboardingScreen() {
   const [locationCity, setLocationCity] = useState('');
   const [locationState, setLocationState] = useState('');
   const [servicesOffered, setServicesOffered] = useState<string[]>([]);
+  // Credentials (10/05): recognized codes as chips + custom entries. Stored in
+  // certifications[] (backend accepts List[str]); recognized codes normalize
+  // through the same vocabulary the marketplace filters on.
+  const [credentials, setCredentials] = useState<string[]>([]);
+  const [credentialInput, setCredentialInput] = useState('');
   const [yearsInPractice, setYearsInPractice] = useState('');
   const [acceptingNewClients, setAcceptingNewClients] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,6 +109,35 @@ export default function DoulaOnboardingScreen() {
         : [...prev, service]
     );
   };
+
+  // Credential normalization — same vocabulary the marketplace matches on
+  // (mirror of backend/utils/credentials.py alias table, doula subset + extras)
+  // Council 10/05: bare org names (DONA) stay custom chips — org ≠ code;
+  // org-specific certs (CLD, ICBD, ICPD, CBD) are the canonical coverage.
+  const DOULA_CREDENTIAL_MAP: Record<string, string> = {
+    'cd': 'CD', 'pcd': 'PCD', 'cpd': 'CPD', 'clc': 'CLC', 'cbe': 'CBE',
+    'cld': 'CLD', 'icbd': 'ICBD', 'icpd': 'ICPD', 'cbd': 'CBD',
+    'icce': 'ICCE', 'lcce': 'LCCE',
+    'certified doula': 'CD', 'postpartum doula': 'PCD', 'certified postpartum doula': 'CPD',
+    'certified lactation counselor': 'CLC', 'childbirth educator': 'CBE',
+    'certified labor doula': 'CLD', 'certified childbirth educator': 'CBE',
+    'certified birth doula': 'CBD',
+  };
+  const addDoulaCredential = () => {
+    // Council 10/05: split pasted "CD, CLC" / multiline input into separate
+    // chips — one blob element is un-matchable by the credential filter
+    const tokens = credentialInput.split(/[,;\n]+/).map(t => t.trim().replace(/[.;]$/, '')).filter(Boolean);
+    if (tokens.length === 0) return;
+    setCredentials((prev) => {
+      const next = [...prev];
+      for (const tok of tokens) {
+        const normalized = DOULA_CREDENTIAL_MAP[tok.toLowerCase()] || tok;
+        if (!next.some(p => p.toUpperCase() === normalized.toUpperCase())) next.push(normalized);
+      }
+      return next;
+    });
+    setCredentialInput('');
+  };
   
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -132,6 +167,7 @@ export default function DoulaOnboardingScreen() {
           location_city: locationCity,
           location_state: locationState,
           services_offered: servicesOffered,
+        certifications: credentials.length > 0 ? credentials : undefined,
           years_in_practice: yearsInPractice ? Math.max(0, parseInt(yearsInPractice) || 0) : null,
           accepting_new_clients: acceptingNewClients,
         },
@@ -241,6 +277,68 @@ export default function DoulaOnboardingScreen() {
                   </TouchableOpacity>
                 );
               })}
+            </View>
+          </View>
+
+          {/* Credentials */}
+          <View style={styles.servicesSection}>
+            <Text style={styles.sectionLabel}>Credentials</Text>
+            <Text style={styles.helperText}>
+              Tap common ones, or add your own — unique credentials are welcome
+            </Text>
+
+            <View style={styles.chipRow}>
+              {['CD', 'PCD', 'CLD', 'ICBD', 'CBE'].filter(code => !credentials.includes(code)).map((code) => (
+                <TouchableOpacity
+                  key={code}
+                  onPress={() => setCredentials((prev) => [...prev, code])}
+                  activeOpacity={0.8}
+                  data-testid={`credential-suggest-${code.toLowerCase()}`}
+                >
+                  <View style={styles.chip}>
+                    <Text style={styles.chipText}>{code}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.chipRow}>
+              {credentials.map((c) => (
+                <TouchableOpacity
+                  key={c}
+                  onPress={() => setCredentials((prev) => prev.filter(x => x !== c))}
+                  activeOpacity={0.8}
+                  data-testid={`credential-chip-${c.toLowerCase().replace(/\s/g, '-')}`}
+                >
+                  <View style={[styles.chip, styles.chipOn]}>
+                    <Text style={[styles.chipText, styles.chipTextOn]}>{`${c}  ✕`}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TextInput
+                style={{
+                  flex: 1, borderWidth: 1, borderRadius: 10, paddingHorizontal: 12,
+                  paddingVertical: 10, marginRight: 8,
+                }}
+                placeholder="Add your own (e.g., DONA, NARM)"
+                placeholderTextColor={colors.textLight}
+                value={credentialInput}
+                onChangeText={setCredentialInput}
+                autoCapitalize="characters"
+                onSubmitEditing={addDoulaCredential}
+              />
+              <TouchableOpacity
+                onPress={addDoulaCredential}
+                activeOpacity={0.8}
+                data-testid="credential-add-btn"
+              >
+                <View style={[styles.chip, styles.chipOn]}>
+                  <Text style={[styles.chipText, styles.chipTextOn]}>Add</Text>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
           

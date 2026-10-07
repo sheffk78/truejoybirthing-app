@@ -24,6 +24,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
+import ClientSearchPicker from '../ClientSearchPicker';
 import { RedDot } from '../RedDot';
 import { apiRequest } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
@@ -112,7 +113,6 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
   const [privateNotes, setPrivateNotes] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const [showClientPicker, setShowClientPicker] = useState(false);
 
   const primaryColor = config.primaryColor;
   
@@ -598,40 +598,22 @@ export default function ProviderAppointments({ config }: ProviderAppointmentsPro
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
           >
             <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              {/* Client Selection */}
+              {/* Client Selection — search-first picker (Jeff 10/02) */}
               <Text style={styles.inputLabel}>Client</Text>
-              <TouchableOpacity
-                style={styles.selectButton}
-                onPress={() => setShowClientPicker(!showClientPicker)}
-              >
-                <Text style={selectedClient ? styles.selectText : styles.selectPlaceholder}>
-                  {selectedClient?.name || 'Select a client'}
-                </Text>
-                <Icon name="chevron-down" size={20} color={colors.textSecondary} />
-              </TouchableOpacity>
-
-              {showClientPicker && (
-                <View style={styles.pickerContainer}>
-                  {clients.map(client => (
-                    <TouchableOpacity
-                      key={client.client_id}
-                      style={[
-                        styles.pickerItem,
-                        selectedClient?.client_id === client.client_id && { backgroundColor: primaryColor + '10' },
-                      ]}
-                      onPress={() => {
-                        setSelectedClient(client);
-                        setShowClientPicker(false);
-                      }}
-                    >
-                      <Text style={styles.pickerItemText}>{client.name}</Text>
-                      {selectedClient?.client_id === client.client_id && (
-                        <Icon name="checkmark" size={20} color={primaryColor} />
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
+              <ClientSearchPicker
+                clients={clients}
+                selectedClientId={selectedClient?.client_id || ''}
+                onSelect={(client: any) => {
+                  if (!client.client_id) {
+                    // clear-selection chip tapped
+                    setSelectedClient(null);
+                    return;
+                  }
+                  setSelectedClient(client as Client);
+                }}
+                primaryColor={primaryColor}
+                testIDPrefix="appointment-client-search"
+              />
 
               {/* Appointment Type */}
               <Text style={styles.inputLabel}>Type</Text>

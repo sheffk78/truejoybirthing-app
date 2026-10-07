@@ -1,0 +1,31 @@
+# QA Part B — informed-choice click-through
+# B4: the last flow opened 'Other Important Considerations' (tap landed one card
+# low). Close it, re-swipe, and tap the Newborn Procedures row precisely.
+appId: host.exp.Exponent
+name: 12-newborn-form-opens
+---
+- tapOn: "Other Important Considerations"
+- runFlow:
+    when:
+      visible: "Save Section"
+    commands:
+      - tapOn:
+          point: "5%, 12%"
+- runFlow:
+    when:
+      visible: "Newborn Procedures"
+    commands:
+      - tapOn: "Newborn Procedures"
+- runFlow:
+    when:
+      notVisible: "Newborn Procedures"
+    commands:
+      - swipe:
+          start: "50%, 55%"
+          end: "50%, 12%"
+          duration: 600
+      - tapOn: "Newborn Procedures"
+- extendedWaitUntil:
+    visible: "Vitamin K"
+    timeout: 30000
+- takeScreenshot: b12-newborn-form-top

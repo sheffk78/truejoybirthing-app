@@ -1,0 +1,26 @@
+{
+  "kind": "ad-hoc verification (no canonical suite for static-HTML mockup)",
+  "script": "hermes-verify-welcome-badges.py (temp, self-deleted after run)",
+  "target": "/Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/docs/design-refresh/welcome-badges-mockup/index.html",
+  "run_utc": "2026-10-05T20:45:58+00:00",
+  "checks_total": 12,
+  "checks_passed": 12,
+  "passed": [
+    "tag-balance",
+    "required-content",
+    "palette-allowed-only",
+    "forbidden-hex-absent",
+    "style-clean-of-forbidden-words",
+    "no-emoji-chars",
+    "assets-resolve",
+    "both-variants",
+    "badges[badge-sage]x2",
+    "badges[badge-rose]x2",
+    "badges[badge-lav]x2",
+    "preview-render-exists"
+  ],
+  "failed": [],
+  "result": "PASS",
+  "render_evidence": "/Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/docs/design-refresh/welcome-badges-mockup/welcome-badges-v1-full.png",
+  "font_load_check": "document.fonts: Cormorant 700/500 + Quicksand 400/500/600/700 = loaded (prior turn)"
+}

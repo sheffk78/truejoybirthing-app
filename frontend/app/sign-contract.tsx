@@ -53,7 +53,7 @@ interface ContractData {
 }
 
 export default function SignContractScreen() {
-  const { contractId, signingToken } = useLocalSearchParams<{ contractId: string; signingToken: string }>();
+  const { contractId, signingToken: deepLinkToken } = useLocalSearchParams<{ contractId: string; signingToken: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [contractData, setContractData] = useState<ContractData | null>(null);
@@ -61,13 +61,38 @@ export default function SignContractScreen() {
   const [signing, setSigning] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Token resolution: deep link carries signingToken (email path). In-app path
+  // (mom home "Action Required" card) has no param — fetch the stored token on
+  // mount from the authenticated, ownership-checked endpoint. Never submit empty.
+  const [resolvedToken, setResolvedToken] = useState<string | null>(deepLinkToken || null);
+  const [tokenError, setTokenError] = useState(false);
   const colors = useColors();
   const styles = getStyles(colors);
-  
+
   useEffect(() => {
     fetchContract();
   }, [contractId]);
-  
+
+  // Fetch the signing token only when the deep link didn't supply one.
+  useEffect(() => {
+    if (deepLinkToken || !contractId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await apiRequest<{ contract_id: string; signing_token: string }>(
+          `${API_ENDPOINTS.CONTRACT_BY_ID}/${contractId}/signing-token`
+        );
+        if (!cancelled && data?.signing_token) {
+          setResolvedToken(data.signing_token);
+          setTokenError(false);
+        }
+      } catch (err: any) {
+        if (!cancelled) setTokenError(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [deepLinkToken, contractId, tokenError]);
+
   const fetchContract = async () => {
     if (!contractId) {
       setError('No contract ID provided');
@@ -107,7 +132,7 @@ export default function SignContractScreen() {
         body: {
           signer_name: signerName.trim(),
           signature_data: `Electronically signed by ${signerName.trim()} on ${new Date().toISOString()}`,
-          signing_token: signingToken || '',
+          signing_token: resolvedToken || '',
         },
       });
       
@@ -152,12 +177,13 @@ export default function SignContractScreen() {
   const { contract, client, doula } = contractData;
   const isAlreadySigned = contract.status === 'Signed';
   const contractTitle = contract.contract_title || 'Doula Service Agreement';
-  
+  // Sign button stays disabled until a token is resolved — never submit empty.
+  const missingToken = !resolvedToken;
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']} data-testid="sign-contract-screen">
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} data-testid="back-btn">
+        <TouchableOpacity onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }} testID="back-btn" data-testid="back-btn">
           <Icon name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Review & Sign</Text>
@@ -288,7 +314,7 @@ export default function SignContractScreen() {
             </Text>
             
             {/* Download PDF Button */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.downloadButton, { backgroundColor: colors.roleDoula }]}
               onPress={() => {
                 const pdfUrl = `${API_BASE_URL}/api/contracts/${contractId}/pdf`;
@@ -299,6 +325,7 @@ export default function SignContractScreen() {
                 }
               }}
               data-testid="download-pdf-btn"
+              testID="download-pdf-btn"
             >
               <Icon name="download-outline" size={20} color={colors.white} />
               <Text style={styles.downloadButtonText}>Download Signed PDF</Text>
@@ -322,10 +349,11 @@ export default function SignContractScreen() {
             />
             
             {/* Agreement Checkbox */}
-            <TouchableOpacity 
-              style={styles.agreementRow} 
+            <TouchableOpacity
+              style={styles.agreementRow}
               onPress={() => setAgreed(!agreed)}
               data-testid="agreement-checkbox"
+              testID="agreement-checkbox"
             >
               <View style={[styles.checkbox, agreed && { backgroundColor: colors.roleDoula, borderColor: colors.roleDoula }]}>
                 {agreed && <Icon name="checkmark" size={16} color={colors.white} />}
@@ -334,11 +362,28 @@ export default function SignContractScreen() {
                 I have read the entire agreement above, understand its terms, and agree to be bound by them.
               </Text>
             </TouchableOpacity>
-            
+
+            {/* Token-fetch failure: clear, retryable — never submit without the token */}
+            {missingToken && tokenError && (
+              <View style={styles.tokenErrorRow} data-testid="token-error" testID="token-error">
+                <Icon name="alert-circle-outline" size={16} color={colors.error} />
+                <Text style={[styles.tokenErrorText, { color: colors.error }]}>
+                  We couldn't verify your signing link. Tap retry, or reopen the contract from the app.
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setTokenError(false)}
+                  data-testid="token-retry-btn"
+                  testID="token-retry-btn"
+                >
+                  <Text style={[styles.tokenRetryText, { color: colors.roleDoula }]}>Retry</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
             <Button
               title={signing ? "Signing..." : "Sign Contract"}
               onPress={handleSign}
-              disabled={!signerName.trim() || !agreed || signing}
+              disabled={!signerName.trim() || !agreed || signing || missingToken}
               fullWidth
               style={styles.signButton}
               testID="sign-contract-btn"
@@ -379,6 +424,24 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     color: colors.error,
     textAlign: 'center',
+  },
+  tokenErrorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: SIZES.sm,
+    marginBottom: SIZES.sm,
+    padding: SIZES.sm,
+    borderRadius: 8,
+    backgroundColor: colors.error + '10',
+  },
+  tokenErrorText: {
+    flex: 1,
+    fontSize: SIZES.fontSm,
+  },
+  tokenRetryText: {
+    fontSize: SIZES.fontSm,
+    fontWeight: '600',
   },
   header: {
     flexDirection: 'row',

@@ -29,6 +29,13 @@ import { ThemeProvider, useTheme } from '../src/contexts/ThemeContext';
 import { COLORS } from '../src/constants/theme';
 import { usePushNotifications } from '../src/hooks/usePushNotifications';
 
+// Silence dev-only warning banners/logbox so they never cover interactive UI in dev builds
+// (the "Open debugger to view warnings." bar overlaps footer buttons in the simulator).
+if (__DEV__) {
+  // eslint-disable-next-line no-undef
+  require('react-native').LogBox.ignoreAllLogs(true);
+}
+
 // Inner layout component that uses theme
 function ThemedLayout() {
   const { theme, isDark } = useTheme();

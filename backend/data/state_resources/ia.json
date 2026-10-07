@@ -1,0 +1,95 @@
+{
+  "state_name": "Iowa",
+  "last_verified": "2026-09-24",
+  "verified_by": "kit-agent (IA build)",
+  "procedures": {
+    "metabolic_screening": {
+      "label": "Newborn Metabolic Screening (blood spot)",
+      "program": "Iowa Department of Health and Human Services — Newborn Screening Program",
+      "program_url": "https://hhs.iowa.gov/health-prevention/birth-maternal-care/congenital-inherited-disorders/iowa-newborn-screening-program",
+      "parent_education_url": null,
+      "opt_out_form": "https://hhs.iowa.gov/media/15031/download?inline",
+      "opt_out_form_label": "Refusal of Iowa Newborn Blood Spot Screening",
+      "state_form_system": "Iowa HHS form — Refusal of Iowa Newborn Blood Spot Screening. Parents must sign the refusal form; it must be documented in the infant's medical record. Iowa Administrative Code 4.3(2)(b) — waiver/refusal of screening must be documented.",
+      "provider_signature_required": true,
+      "submission_methods": [
+        "mail",
+        "fax",
+        "in-person"
+      ],
+      "midwife_role": "Collect blood spot per protocol; if parent refuses, ensure signed Refusal of Iowa Newborn Blood Spot Screening form is in the infant's medical record and submitted to IHHS.",
+      "declination_law": "Iowa Admin. Code 4.3(2)(b) — waiver/refusal of screening; refusal documented in infant's medical record; parent/guardian signs refusal of screening waiver."
+    },
+    "hearing_screening": {
+      "label": "Newborn Hearing Screening",
+      "program": "Iowa Department of Health and Human Services — EHDI Program",
+      "program_url": "https://hhs.iowa.gov/health-prevention/birth-maternal-care/congenital-inherited-disorders/iowa-newborn-screening-program",
+      "opt_out_form": "https://hhs.iowa.gov/media/15031/download?inline",
+      "opt_out_form_label": "Refusal of Iowa Newborn Blood Spot Screening (covers hearing component)",
+      "state_form_note": "Same refusal form covers hearing screening refusal. Iowa's newborn screening program includes blood spot, hearing, and CCHD screening.",
+      "provider_signature_required": false,
+      "midwife_role": "Educate parents; if objection, ensure signed refusal form is in medical record."
+    },
+    "cchd_screening": {
+      "label": "CCHD Pulse Oximetry Screening",
+      "program": "Iowa Department of Health and Human Services — Newborn Screening Program",
+      "program_url": "https://hhs.iowa.gov/health-prevention/birth-maternal-care/congenital-inherited-disorders/iowa-newborn-screening-program",
+      "opt_out_form": "https://hhs.iowa.gov/media/15031/download?inline",
+      "opt_out_form_label": "Refusal of Iowa Newborn Blood Spot Screening (covers CCHD component)",
+      "state_form_note": "Same refusal form covers CCHD screening refusal.",
+      "provider_signature_required": false,
+      "midwife_role": "Perform or refer for pulse ox; if objection, ensure signed refusal form is in medical record."
+    },
+    "erythromycin_eye_ointment": {
+      "label": "Erythromycin Eye Ointment (newborn eye prophylaxis)",
+      "program": "Iowa law — not part of the NBS program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_form_note": "No standalone state declination form for eye prophylaxis; documented via medical record refusal.",
+      "provider_signature_required": false,
+      "midwife_role": "If declining: document refusal in medical record. If administering: apply within 1h of birth."
+    },
+    "vitamin_k": {
+      "label": "Vitamin K (oral or injection)",
+      "program": "Informed choice — no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "options": [
+        "oral",
+        "shot",
+        "none"
+      ],
+      "provider_signature_required": false,
+      "midwife_role": "Three-way informed choice (oral / shot / none) documented in medical record; midwife administers injection if chosen."
+    },
+    "hepatitis_b_vaccine": {
+      "label": "Hepatitis B Vaccine (birth dose)",
+      "program": "Iowa Department of Health and Human Services — Immunization Program",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": true,
+      "provider_signature_required": false,
+      "midwife_role": "Birth-dose consent or declination documented in writing; report to Iowa Immunization Registry (IIR)."
+    },
+    "gestational_diabetes": {
+      "label": "Gestational Diabetes Screening (prenatal)",
+      "program": "Informed choice — no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice; midwife refers out for glucose testing when declined."
+    },
+    "group_b_strep": {
+      "label": "Group B Strep Screening & Prophylaxis (prenatal)",
+      "program": "Informed choice — no state form",
+      "program_url": null,
+      "opt_out_form": null,
+      "state_specific": false,
+      "provider_signature_required": false,
+      "midwife_role": "Prenatal informed choice per ACOG/CDC; swab testing via referral or in-office; intrapartum antibiotics referred if opted-in."
+    }
+  },
+  "state": "IA"
+}

@@ -1,0 +1,26 @@
+# QA Part B — informed-choice click-through
+# B2e: close the calendar (confirm Sep 25 2026) and tap "Create my plan".
+appId: host.exp.Exponent
+name: 06-create-my-plan
+---
+- tapOn: "25"
+- runFlow:
+    when:
+      visible: "OK"
+    commands:
+      - tapOn: "OK"
+- runFlow:
+    when:
+      visible: "Done"
+    commands:
+      - tapOn: "Done"
+- runFlow:
+    when:
+      visible: "Confirm"
+    commands:
+      - tapOn: "Confirm"
+- tapOn: "Create my plan"
+- extendedWaitUntil:
+    visible: ".*"
+    timeout: 25000
+- takeScreenshot: b6-after-create-plan

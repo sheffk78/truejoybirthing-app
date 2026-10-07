@@ -42,6 +42,10 @@ const GLYPHS: Record<string, string> = {
   ar_invoice: `<path d="M6.8 4.4 C9.8 4.1 13.4 4.2 16.6 4.4 C17.4 4.4 17.9 5 17.9 5.7 L17.9 18.9 C17.9 19.6 17.4 20.1 16.7 20.2 C13.5 20.5 9.9 20.5 6.7 20.2 C6 20.1 5.5 19.6 5.5 18.9 L5.5 5.7 C5.5 5 6 4.4 6.8 4.4 Z"/><path d="M8.6 8.4 C11 8.1 13.3 8.1 15.6 8.4"/><path d="M8.6 11.6 C10.2 11.4 11.6 11.4 13.2 11.6"/><path d="M8.6 15 C10 14.8 11.2 14.8 12.6 15"/>`,
   ar_invoice_paid: `<circle cx="12" cy="12" r="7.6"/><path d="M8.8 12.2 C9.4 12.9 10 13.6 10.4 14.3 C11.6 12.4 13.2 10.6 14.8 9.2"/>`,
   bell: `<path d="M12 4.6 C10 6.8 9 9 9 11.4 C9 14.4 10.3 16.4 12 16.4 C13.7 16.4 15 14.4 15 11.4 C15 9 14 6.8 12 4.6 Z"/><path d="M12 16.4 L12 19.4"/><path d="M9.6 18 C11.2 18.6 12.8 18.6 14.4 18"/>`,
+  // k_kick — tiny footprint, drawn in the same hand-drawn dialect (organic
+  // curves, no geometry): a slightly lopsided foot sole + four uneven toes,
+  // each leaning its own way. Kick Counter card glyph (sage @18).
+  k_kick: `<path d="M10.1 12.9 C9.5 11.5 9.4 10.1 9.7 8.7 C10 7.1 10.8 5.9 11.9 5.2 C13 4.6 13.9 4.8 14.5 5.9 C15 6.9 15.1 8.4 14.7 10.1 C14.4 11.5 13.9 12.8 13.1 13.7 C12.3 14.6 11.3 14.6 10.7 14 C10.4 13.7 10.2 13.3 10.1 12.9 Z"/><path d="M10.4 15 C10 16.2 9.3 17 8.6 17.3 C8 17.5 7.5 17.3 7.3 16.8 C7 16.1 7.2 15.1 7.8 14.2"/><path d="M7.9 5.3 C7.6 4.9 7.4 4.5 7.5 4.1"/><path d="M9.4 4.4 C9.3 4 9.4 3.6 9.6 3.3"/><path d="M6.7 6.6 C6.3 6.4 6 6.1 5.9 5.8"/><path d="M6 8.6 C5.6 8.5 5.2 8.3 5 8"/>`,
 };
 
 export type TIconName = keyof typeof GLYPHS;

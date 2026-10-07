@@ -23,9 +23,9 @@ if not BASE_URL:
 
 # Test credentials
 DOULA_EMAIL = "demo.doula@truejoybirthing.com"
-DOULA_PASSWORD = "DemoScreenshot2024!"
+DOULA_PASSWORD = "DemoDoula2024!"
 MIDWIFE_EMAIL = "demo.midwife@truejoybirthing.com"
-MIDWIFE_PASSWORD = "DemoScreenshot2024!"
+MIDWIFE_PASSWORD = "DemoMidwife2024!"
 
 
 class TestSetup:

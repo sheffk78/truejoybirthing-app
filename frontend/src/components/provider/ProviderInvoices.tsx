@@ -16,9 +16,11 @@ import {
   ActivityIndicator,
   Platform,
   KeyboardAvoidingView,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
+import ClientSearchPicker from '../ClientSearchPicker';
 import DatePickerField from '../DatePickerField';
 import { RedDot } from '../RedDot';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -39,6 +41,14 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const STATUS_FILTERS = ['All', 'Draft', 'Sent', 'Payment Claimed', 'Paid', 'Cancelled'];
+
+// Payment plan status badge colors
+const PLAN_STATUS_COLORS: Record<string, string> = {
+  'due': C.rose,
+  'partial': C.lavender,
+  'paid': C.sage,
+  'overdue': '#f44336',
+};
 
 interface ProviderInvoicesProps {
   config: ProviderConfig;
@@ -65,8 +75,16 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
   const [saving, setSaving] = useState(false);
-  
-  // Invoice Form state
+
+  // Payment Plan Modal
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [editingPlanInvoice, setEditingPlanInvoice] = useState<any>(null);
+  const [planInstallmentCount, setPlanInstallmentCount] = useState('');
+  const [planAmountPerInstallment, setPlanAmountPerInstallment] = useState('');
+  const [planFirstDueDate, setPlanFirstDueDate] = useState('');
+  const [planDescription, setPlanDescription] = useState('');
+  const [planDueFrequency, setPlanDueFrequency] = useState('weekly');
+  const [savingPlan, setSavingPlan] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState(params.clientId || '');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
@@ -355,6 +373,74 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
   const [pmCashApp, setPmCashApp] = useState('');
   const [pmPaypal, setPmPaypal] = useState('');
   const [pmZelle, setPmZelle] = useState('');
+
+  // ============== Payment Plan ==============
+  const openPlanModal = (invoice: any) => {
+    setEditingPlanInvoice(invoice);
+    const plan = invoice.payment_plan;
+    if (plan) {
+      setPlanInstallmentCount(String(plan.installment_count || ''));
+      setPlanAmountPerInstallment(plan.amount_per_installment != null ? String(plan.amount_per_installment) : '');
+      setPlanFirstDueDate(plan.first_due_date || plan.installments?.[0]?.due_date || '');
+      setPlanDescription(plan.plan_description || '');
+      setPlanDueFrequency(plan.due_frequency || 'weekly');
+    } else {
+      setPlanInstallmentCount('');
+      setPlanAmountPerInstallment('');
+      setPlanFirstDueDate('');
+      setPlanDescription('');
+      setPlanDueFrequency('weekly');
+    }
+    setShowPlanModal(true);
+  };
+
+  const resetPlanForm = () => {
+    setEditingPlanInvoice(null);
+    setPlanInstallmentCount('');
+    setPlanAmountPerInstallment('');
+    setPlanFirstDueDate('');
+    setPlanDescription('');
+    setPlanDueFrequency('weekly');
+  };
+
+  const handleSavePlan = async () => {
+    const count = parseInt(planInstallmentCount, 10);
+    const perAmt = parseFloat(planAmountPerInstallment);
+    if (!editingPlanInvoice || !count || count < 1 || !perAmt || perAmt <= 0 || !planFirstDueDate) {
+      showAlert('Error', 'Installments, amount per installment, and first due date are required');
+      return;
+    }
+    setSavingPlan(true);
+    try {
+      await apiRequest(`${invoicesEndpoint}/${editingPlanInvoice.invoice_id}/payment-plan`, {
+        method: 'POST',
+        body: {
+          installment_count: count,
+          amount_per_installment: perAmt,
+          first_due_date: planFirstDueDate,
+          due_frequency: planDueFrequency,
+          plan_description: planDescription || undefined,
+        },
+      });
+      showAlert('Success', 'Payment plan saved');
+      await fetchData();
+      setShowPlanModal(false);
+      resetPlanForm();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to save payment plan');
+    } finally {
+      setSavingPlan(false);
+    }
+  };
+
+  const handleMarkInstallmentPaid = async (invoiceId: string, installmentNo: number) => {
+    try {
+      await apiRequest(`${invoicesEndpoint}/${invoiceId}/payment-plan/installment/${installmentNo}/mark-paid`, { method: 'POST' });
+      await fetchData();
+    } catch (error: any) {
+      showAlert('Error', error.message || 'Failed to mark installment paid');
+    }
+  };
 
   const openCreateTemplate = () => {
     setEditingTemplate(null);
@@ -645,7 +731,25 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
                 </View>
               </View>
 
+              {!!invoice.payment_plan && (
+                <View style={styles.planRollupRow}>
+                  <View style={[styles.planRollupBadge, { backgroundColor: (PLAN_STATUS_COLORS[invoice.payment_plan.status] || '#9E9E9E') + '20' }]}>
+                    <Text style={[styles.planRollupText, { color: PLAN_STATUS_COLORS[invoice.payment_plan.status] || '#9E9E9E' }]}>
+                      Plan: {invoice.payment_plan.status} · {invoice.payment_plan.installments.filter((i: any) => i.status === 'paid').length}/{invoice.payment_plan.installment_count} paid
+                    </Text>
+                  </View>
+                </View>
+              )}
+
               <View style={styles.invoiceActions}>
+                {(invoice.status === 'Draft' || invoice.status === 'Sent') && (
+                  <TouchableOpacity style={styles.actionButton} onPress={() => openPlanModal(invoice)}>
+                    <Icon name="grid-outline" size={18} color={primaryColor} />
+                    <Text style={[styles.actionText, { color: primaryColor }]}>
+                      {invoice.payment_plan ? 'Plan' : 'Add Plan'}
+                    </Text>
+                  </TouchableOpacity>
+                )}
                 {invoice.status === 'Draft' && (
                   <>
                     <TouchableOpacity style={styles.actionButton} onPress={() => openEditInvoice(invoice)}>
@@ -732,7 +836,15 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
             <Text style={styles.fieldLabel}>Client *</Text>
             {isClientScoped && params.clientId ? (
               <View style={[styles.clientDropdown, { borderColor: primaryColor, backgroundColor: primaryColor + '10' }]}>
-                <Icon name="person" size={18} color={primaryColor} />
+                {/* Jeff 10/02 avatar pass: photo-first client chips (photo arrives via unified clients payload) */}
+                {(() => {
+                  const scoped = activeClients.find(c => c.client_id === params.clientId);
+                  return scoped?.picture ? (
+                    <Image source={{ uri: scoped.picture }} style={styles.clientDropdownPhoto} />
+                  ) : (
+                    <Icon name="person" size={18} color={primaryColor} />
+                  );
+                })()}
                 <Text style={[styles.clientDropdownText, { color: primaryColor, fontWeight: '600' }]}>
                   {clientName || activeClients.find(c => c.client_id === params.clientId)?.name || 'Selected Client'}
                 </Text>
@@ -740,36 +852,14 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
               </View>
             ) : (
               <View style={styles.clientDropdownContainer}>
-                <TouchableOpacity
-                  style={[styles.clientDropdown, selectedClientId && { borderColor: primaryColor }]}
-                  onPress={() => {
-                    // Simple dropdown logic - show options
-                  }}
-                >
-                  <Icon name="person-outline" size={18} color={selectedClientId ? primaryColor : colors.textLight} />
-                  <Text style={[styles.clientDropdownText, selectedClientId ? { color: colors.text } : { color: colors.textLight }]}>
-                    {selectedClientId 
-                      ? activeClients.find(c => c.client_id === selectedClientId)?.name || 'Select Client'
-                      : 'Select a client'}
-                  </Text>
-                  <Icon name="chevron-down" size={18} color={colors.textLight} />
-                </TouchableOpacity>
-                <View style={styles.clientOptions}>
-                  {activeClients.map((client) => (
-                    <TouchableOpacity
-                      key={client.client_id}
-                      style={[styles.clientOption, selectedClientId === client.client_id && { borderColor: primaryColor, backgroundColor: primaryColor + '10' }]}
-                      onPress={() => handleClientSelect(client.client_id)}
-                    >
-                      <Text style={[styles.clientOptionText, selectedClientId === client.client_id && { color: primaryColor, fontWeight: '600' }]}>
-                        {client.name}
-                      </Text>
-                      {selectedClientId === client.client_id && (
-                        <Icon name="checkmark" size={18} color={primaryColor} />
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                {/* Search-first client picker (Jeff 10/02) */}
+                <ClientSearchPicker
+                  clients={activeClients}
+                  selectedClientId={selectedClientId}
+                  onSelect={(client: any) => handleClientSelect(client.client_id || '')}
+                  primaryColor={primaryColor}
+                  testIDPrefix="invoice-client-search"
+                />
               </View>
             )}
             {activeClients.length === 0 && (
@@ -992,6 +1082,124 @@ export default function ProviderInvoices({ config }: ProviderInvoicesProps) {
           </View>
         </SafeAreaView>
       </Modal>
+
+      {/* Payment Plan Modal */}
+      <Modal
+        visible={showPlanModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowPlanModal(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={() => { setShowPlanModal(false); resetPlanForm(); }}>
+              <Icon name="close" size={24} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>
+              {editingPlanInvoice?.payment_plan ? 'Edit Payment Plan' : 'Add Payment Plan'}
+            </Text>
+            <View style={{ width: 24 }} />
+          </View>
+          <ScrollView style={styles.modalContent} keyboardShouldPersistTaps="handled">
+            {editingPlanInvoice && (
+              <View style={styles.planSummaryCard}>
+                <Text style={styles.fieldLabel}>{editingPlanInvoice.invoice_number} · {formatCurrency(editingPlanInvoice.amount)}</Text>
+                {editingPlanInvoice.payment_plan && (
+                  <>
+                    <Text style={styles.fieldHint}>
+                      {editingPlanInvoice.payment_plan.installment_count} installments ·{' '}
+                      {editingPlanInvoice.payment_plan.installments.filter((i: any) => i.status === 'paid').length} paid ·{' '}
+                      status: {editingPlanInvoice.payment_plan.status}
+                    </Text>
+                    {editingPlanInvoice.payment_plan.installments.map((inst: any) => (
+                      <View key={inst.installment_no} style={styles.planInstallmentRow}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.planInstallmentTitle}>
+                            #{inst.installment_no} · {formatCurrency(inst.amount)} · due {inst.due_date}
+                          </Text>
+                          <Text style={[styles.planInstallmentStatus, { color: PLAN_STATUS_COLORS[inst.status] || '#9E9E9E' }]}>
+                            {inst.status}
+                          </Text>
+                        </View>
+                        {inst.status !== 'paid' && (
+                          <TouchableOpacity
+                            style={[styles.planMarkPaidButton, { backgroundColor: primaryColor }]}
+                            onPress={() => handleMarkInstallmentPaid(editingPlanInvoice.invoice_id, inst.installment_no)}
+                          >
+                            <Text style={styles.planMarkPaidText}>Mark Paid</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    ))}
+                  </>
+                )}
+              </View>
+            )}
+
+            <Text style={styles.fieldLabel}>Number of Installments *</Text>
+            <TextInput
+              style={styles.input}
+              value={planInstallmentCount}
+              onChangeText={setPlanInstallmentCount}
+              placeholder="e.g. 3"
+              keyboardType="number-pad"
+            />
+            <Text style={styles.fieldLabel}>Amount per Installment ($) *</Text>
+            <TextInput
+              style={styles.input}
+              value={planAmountPerInstallment}
+              onChangeText={setPlanAmountPerInstallment}
+              placeholder="e.g. 550"
+              keyboardType="decimal-pad"
+            />
+            <Text style={styles.fieldHint}>
+              Installments must total the invoice amount ({editingPlanInvoice ? formatCurrency(editingPlanInvoice.amount) : '$0'}). The last installment absorbs any rounding difference.
+            </Text>
+            <Text style={styles.fieldLabel}>First Due Date *</Text>
+            <DatePickerField
+              label="First Due Date"
+              value={planFirstDueDate ? new Date(planFirstDueDate + 'T00:00:00') : null}
+              onChange={(d: Date) => setPlanFirstDueDate(d ? formatDateLocal(d) : '')}
+              placeholder="Select first due date"
+              minimumDate={new Date(new Date().setHours(0, 0, 0, 0))}
+            />
+            <Text style={styles.fieldLabel}>Due Frequency</Text>
+            <View style={styles.clientGrid}>
+              {['weekly', 'biweekly', 'monthly'].map((freq) => (
+                <Pressable
+                  key={freq}
+                  onPress={() => setPlanDueFrequency(freq)}
+                  style={[styles.clientOption, planDueFrequency === freq && { borderColor: primaryColor, backgroundColor: primaryColor + '10' }]}
+                >
+                  <Text style={styles.clientOptionText}>{freq}</Text>
+                  {planDueFrequency === freq && <Icon name="checkmark" size={16} color={primaryColor} />}
+                </Pressable>
+              ))}
+            </View>
+            <Text style={styles.fieldLabel}>Description (optional)</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={planDescription}
+              onChangeText={setPlanDescription}
+              placeholder="e.g. 3 monthly payments for doula package"
+              multiline
+            />
+          </ScrollView>
+          <View style={styles.modalFooter}>
+            <TouchableOpacity
+              style={[styles.saveButton, { backgroundColor: primaryColor }]}
+              onPress={handleSavePlan}
+              disabled={savingPlan}
+            >
+              {savingPlan ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.saveButtonText}>Save Plan</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1092,15 +1300,20 @@ const getStyles = createThemedStyles((colors) => ({
   input: { backgroundColor: colors.surface,borderWidth: 1, borderColor: colors.border, borderRadius: SIZES.radiusSm, padding: SIZES.md, fontSize: SIZES.fontMd, color: colors.text },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
   clientDropdownContainer: { marginBottom: SIZES.sm },
-  clientDropdown: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
+  clientDropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.surface,
-    borderWidth: 1, 
-    borderColor: colors.border, 
-    borderRadius: SIZES.radiusSm, 
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     gap: SIZES.sm,
+  },
+  clientDropdownPhoto: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
   },
   clientDropdownText: { flex: 1, fontSize: SIZES.fontMd },
   clientOptions: { marginTop: SIZES.sm, gap: SIZES.xs },
@@ -1128,4 +1341,13 @@ const getStyles = createThemedStyles((colors) => ({
   defaultToggleText: { fontSize: SIZES.fontMd, color: colors.text, marginLeft: SIZES.sm },
   saveButton: { paddingVertical: SIZES.md, borderRadius: SIZES.radiusMd, alignItems: 'center' },
   saveButtonText: { color: '#fff', fontSize: SIZES.fontMd, fontWeight: '600' },
+  planRollupRow: { marginBottom: SIZES.sm },
+  planRollupBadge: { alignSelf: 'flex-start', paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusSm },
+  planRollupText: { fontSize: SIZES.fontXs, fontWeight: '600' },
+  planSummaryCard: { backgroundColor: colors.surface, borderRadius: SIZES.radiusMd, padding: SIZES.md, marginBottom: SIZES.md },
+  planInstallmentRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: SIZES.sm, borderTopWidth: 1, borderTopColor: colors.border },
+  planInstallmentTitle: { fontSize: SIZES.fontSm, color: colors.text },
+  planInstallmentStatus: { fontSize: SIZES.fontXs, fontWeight: '600', textTransform: 'uppercase' },
+  planMarkPaidButton: { paddingHorizontal: SIZES.md, paddingVertical: SIZES.xs, borderRadius: SIZES.radiusSm },
+  planMarkPaidText: { color: '#fff', fontSize: SIZES.fontXs, fontWeight: '600' },
 }));

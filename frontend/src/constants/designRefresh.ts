@@ -30,6 +30,19 @@ export const C = {
   chev: '#B9AFB8', // row chevron (mockup .chev)
   track: '#F3F1EE', // progress track
   white: '#FFFFFF',
+  // ---- Week-spine mockup v4 (docs/design-refresh/week-spine-mockup/index.html,
+  // Jeff-approved): steppers, rose ring, due chip. Hexes verbatim from that
+  // mockup's CSS (.wk / .wk.active / .ring / .duechip). ----
+  wkChipBorder: '#E5DCD5', // .wk week-chip border
+  wkActiveBg: '#D8A0C4', // .wk.active rose-solid chip bg
+  wkActiveBorder: '#C48CA8', // .wk.active chip border
+  wkActiveInk: '#4B2E42', // .wk.active chip text
+  ringTrack: '#F0E6E2', // .ring .track stroke
+  ringArc: '#C48CA8', // .ring .arc stroke
+  ringArcDashed: '#D8A0C4', // .ring .arc2 dashed halo stroke
+  dueChipInk: '#5A5885', // .duechip text
+  factDivider: '#E8DCD8', // .facts cell separator
+  factLabel: '#A3908B', // .facts .lbl stat labels
 } as const;
 
 // ---- Approved fonts (expo-google-fonts, loaded in app/_layout.tsx) ----

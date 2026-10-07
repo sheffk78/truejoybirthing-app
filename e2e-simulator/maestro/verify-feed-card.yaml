@@ -1,0 +1,17 @@
+---
+appId: com.truejoybirthing.app
+name: verify-feed-card-reliability
+# TJB 10/02 pro-feed wiring fix — focused render check on the booted simulator.
+# The sim is already signed in as the demo midwife; deep-link to the dashboard
+# and assert the "Latest in Birth Work" section + the live-payload article card.
+# (Title is a 2-line numberOfLines Text — iOS a11y truncates it; the card's
+# single-line source line is the a11y-stable selector for card presence.)
+---
+- launchApp:
+    clearState: false
+- waitForAnimationToEnd: {timeout: 8000}
+- openLink: 'truejoybirthing:///(midwife)/dashboard'
+- waitForAnimationToEnd: {timeout: 8000}
+- assertVisible: 'Latest in Birth Work'
+- assertVisible: 'PubMed Birth/Midwifery Research'
+- assertVisible: 'Practice:'

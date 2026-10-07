@@ -139,8 +139,8 @@ NOTE_TYPES = ["Prenatal", "Birth", "Postpartum"]
 VISIT_TYPES = ["Prenatal", "Postpartum"]
 BIRTH_MODES = ["Spontaneous Vaginal", "Assisted Vaginal", "Cesarean", "Other"]
 SERVICES_OFFERED = ["Birth Doula", "Postpartum Doula", "Virtual Doula"]
-MIDWIFE_CREDENTIALS = ["CPM", "LM", "CNM"]
-LACTATION_CREDENTIALS = ["IBCLC", "CLC", "CLE", "CBE", "ALE"]
+# Credential vocabulary lives in utils/credentials.py (single source of truth,
+# 10/05 council) — these duplicate lists had drifted (bogus ALE), removed.
 
 # Subscription constants
 SUBSCRIPTION_STATUS = ["none", "trial", "active", "expired", "cancelled"]
@@ -559,6 +559,7 @@ BIRTH_PLAN_SECTIONS = [
     {"section_id": "pushing_safe_word", "title": "Pushing, Delivery & Safe Word"},
     {"section_id": "post_delivery", "title": "Post-Delivery Preferences"},
     {"section_id": "newborn_care", "title": "Newborn Care Preferences"},
+    {"section_id": "newborn_procedures", "title": "Newborn Procedures"},
     {"section_id": "other_considerations", "title": "Other Important Considerations"},
 ]
 
@@ -1514,8 +1515,12 @@ from routes import invites as invites_routes
 from routes import shelbi_leads as shelbi_leads_routes
 from routes import trial_emails as trial_emails_routes
 from routes import waiver as waiver_routes
+from routes import state_resources as state_resources_routes
+from routes import informed_choice as informed_choice_routes
 
 # Include modular routers in the api_router
+api_router.include_router(state_resources_routes.router)
+api_router.include_router(informed_choice_routes.router)
 api_router.include_router(admin_routes.router)
 api_router.include_router(marketplace_routes.router)
 api_router.include_router(notifications_routes.router)

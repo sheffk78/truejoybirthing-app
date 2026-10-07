@@ -10,6 +10,7 @@ import {
   Modal,
   TextInput,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -26,6 +27,7 @@ interface ShareRequest {
   request_id: string;
   mom_user_id: string;
   mom_name: string;
+  mom_picture?: string | null;
   status: string;
   created_at: string;
 }
@@ -33,6 +35,7 @@ interface ShareRequest {
 interface SharedBirthPlan {
   mom_user_id: string;
   mom_name: string;
+  mom_picture?: string | null;
   due_date: string | null;
   birth_setting: string | null;
   plan: any;
@@ -57,6 +60,7 @@ const SECTION_TITLES: Record<string, string> = {
   'pushing_safe_word': 'Pushing, Delivery & Safe Word',
   'post_delivery': 'Post-Delivery Preferences',
   'newborn_care': 'Newborn Care Preferences',
+  'newborn_procedures': 'Newborn Procedures',
   'other_considerations': 'Other Important Considerations',
 };
 
@@ -247,6 +251,29 @@ export default function ClientBirthPlansScreen() {
       .join(' ');
   };
 
+  // Newborn Procedures decisions render as readable "label — choice" rows
+  // instead of a raw [object Object] dump (provider view, QA scenario 12).
+  const NEWBORN_PROCEDURE_LABELS: Record<string, string> = {
+    metabolic_screening: 'Metabolic screening (blood spot)',
+    hearing_screening: 'Hearing screening',
+    cchd_screening: 'Heart screening (CCHD)',
+    erythromycin_eye_ointment: 'Eye ointment (erythromycin)',
+    vitamin_k: 'Vitamin K',
+    hepatitis_b_vaccine: 'Hepatitis B vaccine',
+    gestational_diabetes: 'Gestational diabetes screening',
+    group_b_strep: 'Group B strep',
+  };
+  const formatNewbornDecisions = (value: unknown): string => {
+    const rec = (value || {}) as Record<string, any>;
+    const rows = Object.entries(rec).map(([proc, d]) => {
+      const label = NEWBORN_PROCEDURE_LABELS[proc] || formatFieldLabel(proc);
+      if (!d || !d.choice || d.choice === 'undecided') return `${label}: undecided`;
+      const route = d.option ? ` (${d.option})` : '';
+      return `${label}: ${d.choice === 'opt_in' ? 'CHOSEN' : 'DECLINED'}${route}`;
+    });
+    return rows.length ? rows.join(' · ') : 'No decisions recorded yet';
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
@@ -324,7 +351,12 @@ export default function ClientBirthPlansScreen() {
               <Card key={request.request_id} style={styles.requestCard}>
                 <View style={styles.requestInfo}>
                   <View style={styles.requestAvatar}>
-                    <Icon name="person" size={20} color={colors.white} />
+                    {/* Jeff 10/02 avatar pass: real photo when present (endpoint now enriches mom_picture) */}
+                    {request.mom_picture ? (
+                      <Image source={{ uri: request.mom_picture }} style={styles.avatarPhoto} />
+                    ) : (
+                      <Text style={styles.avatarInitials}>{(request.mom_name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</Text>
+                    )}
                   </View>
                   <View style={styles.requestDetails}>
                     <Text style={styles.requestName}>{request.mom_name}</Text>
@@ -385,7 +417,12 @@ export default function ClientBirthPlansScreen() {
                 <Card style={styles.planCard}>
                   <View style={styles.planHeader}>
                     <View style={styles.planAvatar}>
-                      <Icon name="person" size={24} color={colors.white} />
+                      {/* Jeff 10/02 avatar pass: mom_picture IS in the payload (gap A) — use it */}
+                      {plan.mom_picture ? (
+                        <Image source={{ uri: plan.mom_picture }} style={styles.avatarPhotoLg} />
+                      ) : (
+                        <Text style={styles.avatarInitials}>{(plan.mom_name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</Text>
+                      )}
                     </View>
                     <View style={styles.planInfo}>
                       <Text style={styles.planName}>{plan.mom_name}</Text>
@@ -482,7 +519,9 @@ export default function ClientBirthPlansScreen() {
                           <View key={key} style={styles.dataRow}>
                             <Text style={styles.dataLabel}>{formatFieldLabel(key)}:</Text>
                             <Text style={styles.dataValue}>
-                              {Array.isArray(value) ? value.join(', ') : String(value)}
+                              {key === 'decisions'
+                                ? formatNewbornDecisions(value)
+                                : Array.isArray(value) ? value.join(', ') : String(value)}
                             </Text>
                           </View>
                         ))}
@@ -669,6 +708,22 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden' as const,
+  },
+  avatarPhoto: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
+  avatarPhotoLg: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  avatarInitials: {
+    color: colors.white,
+    fontFamily: F.uiSemi,
+    fontSize: 14,
   },
   requestDetails: {
     flex: 1,

@@ -23,6 +23,7 @@ from reportlab.platypus import Paragraph, Spacer
 from .dependencies import db, check_role, User, create_notification, send_notification_email, get_now
 from .pdf_branding import create_branded_pdf_buffer
 from .relationship_utils import verify_active_relationship, get_active_relationship, get_active_mom_ids_for_provider, terminate_relationship
+from .utils import WEEKLY_BABY_DEVELOPMENT
 
 router = APIRouter(tags=["Care Plans"])
 
@@ -188,6 +189,7 @@ BIRTH_PLAN_SECTIONS = [
     {"section_id": "pushing_safe_word", "title": "Pushing, Delivery & Safe Word"},
     {"section_id": "post_delivery", "title": "Post-Delivery Preferences"},
     {"section_id": "newborn_care", "title": "Newborn Care Preferences"},
+    {"section_id": "newborn_procedures", "title": "Newborn Procedures"},
     {"section_id": "other_considerations", "title": "Other Important Considerations"},
 ]
 
@@ -774,6 +776,15 @@ async def get_provider_share_requests(user: User = Depends(check_role(["DOULA", 
         if not mom_user_id:
             continue
             
+        # Jeff 10/02: pending-request avatars should show the mom's real photo
+        mom = await db.users.find_one(
+            {"user_id": mom_user_id},
+            {"_id": 0, "full_name": 1, "picture": 1}
+        )
+        if mom:
+            req["mom_name"] = req.get("mom_name") or mom.get("full_name")
+            req["mom_picture"] = mom.get("picture")
+            
         # Get mom's profile for EDD, birth setting, and number of children
         profile = await db.mom_profiles.find_one(
             {"user_id": mom_user_id},
@@ -1180,12 +1191,24 @@ async def get_timeline(user: User = Depends(check_role(["MOM"]))):
         {"_id": 0}
     ).sort("event_date", 1).to_list(100)
     
+    # This week's baby development (10/01 Jeff: timeline richer — size + what's
+    # happening this week, sourced from the shared WEEKLY_BABY_DEVELOPMENT set)
+    baby_dev = WEEKLY_BABY_DEVELOPMENT.get(current_week) if 1 <= current_week <= 42 else None
+
+    # Next upcoming milestone (countdown chip on the timeline anchor)
+    next_milestone = next(
+        (m for m in milestones if m["week"] >= current_week),
+        None,
+    )
+
     return {
         "current_week": current_week,
         "current_day": current_day,
         "due_date": due_date_str,
         "milestones": milestones,
-        "custom_events": custom_events
+        "custom_events": custom_events,
+        "baby_development": baby_dev,
+        "next_milestone": next_milestone,
     }
 
 

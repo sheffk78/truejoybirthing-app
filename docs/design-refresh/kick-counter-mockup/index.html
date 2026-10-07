@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+/* TJB Kick Counter — week-spine v4 aesthetic (cream/lavender/rose/sage, Cormorant + Quicksand, paper grain) */
+@font-face { font-family:'Cormorant'; src:url('../week-spine-mockup/fonts/CormorantGaramond_700Bold.ttf'); font-weight:700; }
+@font-face { font-family:'Cormorant'; src:url('../week-spine-mockup/fonts/CormorantGaramond_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Cormorant'; src:url('../week-spine-mockup/fonts/CormorantGaramond_500Medium_Italic.ttf'); font-weight:500; font-style:italic; }
+@font-face { font-family:'Quicksand'; src:url('../week-spine-mockup/fonts/Quicksand_400Regular.ttf'); font-weight:400; }
+@font-face { font-family:'Quicksand'; src:url('../week-spine-mockup/fonts/Quicksand_500Medium.ttf'); font-weight:500; }
+@font-face { font-family:'Quicksand'; src:url('../week-spine-mockup/fonts/Quicksand_600SemiBold.ttf'); font-weight:600; }
+@font-face { font-family:'Quicksand'; src:url('../week-spine-mockup/fonts/Quicksand_700Bold.ttf'); font-weight:700; }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#F1ECE6; font-family:'Quicksand',sans-serif; color:#2D2D2D; padding:46px 40px 40px; }
+
+.canvas-head { text-align:center; margin-bottom:34px; }
+.canvas-head .eyebrow { font-size:11px; letter-spacing:3.5px; font-weight:700; color:#B085A5; text-transform:uppercase; margin-bottom:10px; }
+.canvas-head h1 { font-family:'Cormorant',serif; font-weight:700; font-size:34px; color:#2D2D2D; }
+.canvas-head h1 em { font-style:normal; color:#B085A5; }
+.canvas-head .sub { font-size:13.5px; color:#7A746E; margin-top:8px; }
+
+.phone { width:390px; background:#2D2D2D; border-radius:54px; padding:9px; box-shadow:0 18px 50px rgba(45,45,45,.18); margin:0 auto; }
+.screen { width:100%; height:844px; border-radius:45px; overflow:hidden; background:#FAF8F5; position:relative; display:flex; flex-direction:column; }
+.screen::after { content:''; position:absolute; inset:0; pointer-events:none; z-index:40; opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.27 0 0 0 0 0.18 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px 160px; mix-blend-mode:multiply; }
+
+.statusbar { height:40px; display:flex; justify-content:space-between; align-items:center; padding:0 26px; font-family:'Quicksand'; font-weight:600; font-size:14px; color:#2D2D2D; flex-shrink:0; }
+.statusbar .right { display:flex; gap:5px; align-items:center; }
+.sb-batt { width:22px; height:11px; border:1.4px solid #2D2D2D; border-radius:3px; position:relative; }
+.sb-batt::after { content:''; position:absolute; left:1.5px; top:1.5px; bottom:1.5px; width:70%; background:#2D2D2D; border-radius:1px; }
+
+/* ---- header: back affordance + kicker + serif title (week-spine type law) ---- */
+.kc-head { display:flex; align-items:flex-start; gap:12px; padding:10px 20px 0; }
+.back { width:34px; height:34px; border-radius:12px; background:#fff; border:1px solid #EFE0EB; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:3px; }
+.kc-head .a-overline { font-size:10px; letter-spacing:2.4px; text-transform:uppercase; font-weight:700; color:#A25C86; margin-bottom:5px; }
+.kc-head .a-h1 { font-family:'Cormorant',serif; font-weight:700; font-size:26px; line-height:1.12; color:#2A2A2A; }
+.kc-head .a-h1 em { font-style:normal; color:#B085A5; }
+
+/* ---- session mode toggle (week-spine .seg) ---- */
+.seg { display:flex; background:#F1E9F5; border-radius:999px; padding:4px; margin:13px 20px 0; }
+.seg div { flex:1; text-align:center; font-size:12px; font-weight:600; color:#74716A; padding:7px 0; border-radius:999px; }
+.seg .on { background:#fff; color:#8E8CB5; box-shadow:0 1px 3px rgba(45,45,45,.08); font-weight:700; }
+
+/* ---- tap pad: dominant element, halos + rose progress arc ---- */
+.heroz { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2px 20px 0; min-height:0; overflow:hidden; }
+.padwrap { position:relative; width:252px; height:252px; display:flex; align-items:center; justify-content:center; }
+.padwrap .halo { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:0; }
+.pad-rim { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1; }
+.pad { position:relative; z-index:2; width:214px; height:214px; border-radius:50%; background:#fff; border:1px solid #EFE0EB; box-shadow:0 14px 34px rgba(110,108,153,.14); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.pad .num { font-family:'Cormorant',serif; font-weight:700; font-size:74px; line-height:1.05; color:#2A2A2A; margin-top:0; }
+.pad .of { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; color:#A25C86; margin-top:12px; }
+.pad .rule { width:64px; height:1px; background:#F0E6E2; margin:10px 0 8px; }
+.pad .clock { font-family:'Cormorant',serif; font-weight:700; font-size:23px; color:#6E6C99; line-height:1; letter-spacing:1px; }
+.pad .slab { font-size:9px; letter-spacing:2px; text-transform:uppercase; font-weight:700; color:#8A8B8D; margin-top:5px; }
+.helper { font-size:11.5px; color:#6A6B6C; font-weight:500; margin-top:9px; }
+
+/* ---- 10-kick dots (hand-drawn wobble, 3 filled = interaction state) ---- */
+.dotsrow { display:flex; justify-content:center; margin-top:10px; flex-shrink:0; }
+
+/* ---- today's summary strip (S11 strip construction) ---- */
+.strip { display:flex; background:#fff; border-top:1px solid #F0E9EE; border-bottom:1px solid #F0E9EE; padding:9px 8px; margin-top:10px; flex-shrink:0; }
+.strip .st { flex:1; text-align:center; }
+.strip .st b { display:block; font-family:'Cormorant',serif; font-weight:700; font-size:19px; color:#6E6C99; line-height:1.1; }
+.strip .st span { font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase; font-weight:700; color:#8A8B8D; }
+.strip .sdiv { width:1px; background:#F0E9EE; margin:2px 0; }
+
+/* ---- recent sessions card ---- */
+.hcard { background:#fff; border:1px solid #EFE0EB; border-radius:18px; padding:11px 14px 7px; margin:10px 20px 0; flex-shrink:0; }
+.hcard .k { font-size:10px; letter-spacing:2.2px; text-transform:uppercase; font-weight:700; color:#A25C86; display:flex; align-items:center; gap:7px; }
+.hcard .k .all { margin-left:auto; font-size:10.5px; letter-spacing:.2px; text-transform:none; color:#6E6C99; font-weight:700; }
+.hrow { display:flex; align-items:baseline; padding:8px 2px; border-top:1px solid #F4EDF3; }
+.hrow:first-of-type { border-top:none; margin-top:6px; }
+.hrow .when { font-size:11px; color:#8A8B8D; font-weight:600; flex:1; }
+.hrow .what { font-size:12.5px; color:#2A2A2A; font-weight:600; flex-shrink:0; }
+.hrow .what em { font-family:'Cormorant',serif; font-style:normal; font-weight:700; font-size:15px; }
+.hrow .dur { font-size:11px; color:#6A6B6C; font-weight:500; margin-left:auto; padding-left:10px; flex-shrink:0; }
+.hrow .dur em { font-family:'Cormorant',serif; font-style:normal; font-weight:700; font-size:13px; }
+
+/* ---- session controls ---- */
+.btnrow { display:flex; gap:9px; margin:11px 20px 0; flex-shrink:0; }
+.abtn { flex:1.6; background:#6E6C99; color:#fff; text-align:center; font-size:13px; font-weight:700; border-radius:999px; padding:12px 18px; }
+.gbtn { flex:1; text-align:center; font-size:12.5px; font-weight:700; border-radius:999px; padding:12px 10px; background:#FDFCFA; border:1.3px solid #D5D3E8; color:#6E6C99; }
+
+/* ---- calm medical context (sage = safe, Quicksand) ---- */
+.care { margin:10px 20px 0; text-align:center; font-size:10.5px; line-height:1.45; font-weight:600; color:#5F7154; border:1px solid #E8EDE5; background:#FAF8F5; border-radius:999px; padding:7px 13px; flex-shrink:0; }
+
+/* ---- tab bar (approved s10s11s12 construction) ---- */
+.tabbar { position:absolute; left:0; right:0; bottom:0; height:62px; background:#fff; border-top:1px solid #F0E9EE; display:flex; justify-content:space-around; align-items:center; padding:0 10px 8px; z-index:4; border-radius:0 0 45px 45px; flex-shrink:0; }
+.tb { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:9px; font-weight:700; letter-spacing:.4px; color:#9C9DA0; }
+.tb.on { color:#6E6C99; }
+.tbl { font-size:9px; }
+.screen .content { flex:1; min-height:0; padding-bottom:64px; }
+
+.legend { max-width:880px; margin:34px auto 0; background:#fff; border:1px solid #EADFE8; border-radius:16px; padding:20px 26px; }
+.legend .h { font-family:'Cormorant',serif; font-weight:700; font-size:19px; margin-bottom:10px; }
+.legend ul { list-style:none; columns:2; column-gap:40px; }
+.legend li { font-size:12.5px; color:#55595F; margin-bottom:7px; padding-left:16px; position:relative; break-inside:avoid; }
+.legend li::before { content:'✦'; position:absolute; left:0; color:#D8A0C4; font-size:10px; top:2px; }
+</style>
+</head>
+<body>
+
+<div class="canvas-head">
+  <div class="eyebrow">True Joy Birthing · Kick Counter · Third Trimester · v1</div>
+  <h1>Count <em>Every Movement</em>, Gently</h1>
+  <div class="sub">Approved week-spine v4 aesthetic · dominant tap pad with rose progress arc · count-to-10 or free session</div>
+</div>
+
+<div class="phone"><div class="screen">
+
+  <div class="statusbar">
+    <div>9:41</div>
+    <div class="right">
+      <svg width="16" height="11"><g fill="#2D2D2D"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="2.5" height="11" rx="1" opacity=".35"/></g></svg>
+      <div class="sb-batt"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="kc-head">
+      <div class="back"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12.4 3.8 L5.8 10 L12.4 16.2"/></svg></div>
+      <div>
+        <div class="a-overline">Week 28 · Third Trimester</div>
+        <div class="a-h1">Kick <em>Counter</em></div>
+      </div>
+    </div>
+
+    <div class="seg">
+      <div class="on">Count to 10 kicks</div>
+      <div>Free session</div>
+    </div>
+
+    <div class="heroz">
+      <div class="padwrap">
+        <svg class="halo" width="252" height="252" viewBox="0 0 252 252" fill="none">
+          <circle cx="126" cy="126" r="134" stroke="#EDEAF6" stroke-width="1.2"/>
+          <circle cx="126" cy="126" r="142" stroke="#EDEAF6" stroke-width="1"/>
+        </svg>
+        <svg class="pad-rim" width="252" height="252" viewBox="0 0 252 252" fill="none">
+          <circle cx="126" cy="126" r="122" stroke="#F0E6E2" stroke-width="5"/>
+          <circle cx="126" cy="126" r="122" stroke="#C48CA8" stroke-width="5" stroke-linecap="round" stroke-dasharray="216 767" transform="rotate(-103 126 126)"/>
+          <circle cx="126" cy="126" r="128" stroke="#D8A0C4" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="10 8" opacity=".45"/>
+        </svg>
+        <div class="pad">
+          <div class="num">3</div>
+          <div class="of">of 10 kicks</div>
+          <div class="rule"></div>
+          <div class="clock">07:24</div>
+          <div class="slab">Session · 9:34 AM</div>
+        </div>
+      </div>
+      <div class="helper">Tap the circle each time you feel a movement</div>
+    </div>
+
+    <div class="dotsrow">
+      <svg width="236" height="24" viewBox="0 0 236 24" fill="none">
+        <circle cx="13" cy="12" r="7.6" fill="#D8A0C4" stroke="#B87AA0" stroke-width="1.6"/>
+        <circle cx="36.8" cy="11.4" r="7.2" fill="#D8A0C4" stroke="#B87AA0" stroke-width="1.6"/>
+        <circle cx="60.4" cy="12.3" r="7.4" fill="#D8A0C4" stroke="#B87AA0" stroke-width="1.6"/>
+        <circle cx="84.6" cy="11.7" r="7.4" fill="#fff" stroke="#E5DCD5" stroke-width="1.5"/>
+        <circle cx="108.2" cy="12.2" r="7.2" fill="#fff" stroke="#E5DCD5" stroke-width="1.5"/>
+        <circle cx="132" cy="11.6" r="7.5" fill="#fff" stroke="#E5DCD5" stroke-width="1.5"/>
+        <circle cx="155.8" cy="12.1" r="7.3" fill="#fff" stroke="#E5DCD5" stroke-width="1.5"/>
+        <circle cx="179.6" cy="11.5" r="7.6" fill="#fff" stroke="#E5DCD5" stroke-width="1.5"/>
+        <circle cx="203.4" cy="12.2" r="7.3" fill="#fff" stroke="#E5DCD5" stroke-width="1.5"/>
+        <circle cx="226.8" cy="11.8" r="7.4" fill="#fff" stroke="#E5DCD5" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <div class="strip">
+      <div class="st"><b>2</b><span>Sessions Today</span></div>
+      <div class="sdiv"></div>
+      <div class="st"><b>17</b><span>Kicks Today</span></div>
+      <div class="sdiv"></div>
+      <div class="st"><b>8:05 AM</b><span>Last Session</span></div>
+    </div>
+
+    <div class="hcard">
+      <div class="k">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A25C86" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="4.5" x2="7" y2="19.5"/><line x1="17" y1="4.5" x2="17" y2="19.5"/><line x1="4.5" y1="8" x2="19.5" y2="8"/><line x1="4.5" y1="16" x2="19.5" y2="16"/></svg>
+        Recent Sessions
+        <span class="all">See all ›</span>
+      </div>
+      <div class="hrow"><div class="when">Today · 8:05 AM</div><div class="what"><em>10</em> kicks</div><div class="dur"><em>38</em> min</div></div>
+      <div class="hrow"><div class="when">Today · 7:15 AM</div><div class="what"><em>4</em> kicks</div><div class="dur"><em>12</em> min</div></div>
+      <div class="hrow"><div class="when">Yesterday · 8:32 PM</div><div class="what"><em>10</em> kicks</div><div class="dur"><em>41</em> min</div></div>
+    </div>
+
+    <div class="btnrow">
+      <div class="abtn">Pause Session</div>
+      <div class="gbtn">End &amp; Save</div>
+    </div>
+
+    <div class="care">Counts help you learn your baby's patterns — call your provider about changes.</div>
+
+  </div>
+
+  <div class="tabbar">
+    <div class="tb on"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#6E6C99" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 11.2 C7 8.4 9.5 6.4 12 6.4 C14.5 6.4 17 8.4 19.5 11.2"/><path d="M6.2 10.4 L6.2 18.2 C6.2 18.9 6.7 19.4 7.4 19.4 L16.6 19.4 C17.3 19.4 17.8 18.9 17.8 18.2 L17.8 10.4"/><path d="M10.2 19.4 L10.2 15.6 C10.2 14.9 10.7 14.4 11.4 14.4 L12.6 14.4 C13.3 14.4 13.8 14.9 13.8 15.6 L13.8 19.4"/><path d="M12 6.4 C12 5.2 12.6 4.4 13.6 3.9"/></svg><div class="tbl">Home</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 4.6 C9.8 4.2 13.6 4.3 17.4 4.6 C18 4.6 18.5 5.1 18.5 5.8 L18.5 19 C18.5 19.6 18 20.1 17.4 20.1 C13.8 20.4 9.9 20.4 6.5 20.1 C5.9 20.1 5.4 19.6 5.4 19 L5.4 5.8 C5.4 5.1 5.9 4.6 6.5 4.6 Z"/><path d="M8.8 9.2 C10.9 8.9 13.1 8.9 15.2 9.2"/><path d="M8.8 12.4 C10.4 12.2 12 12.2 13.5 12.4"/></svg><div class="tbl">Birth Plan</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.4" r="7.2"/><path d="M12 9.6 L12 13.4 L14.6 15.2"/><path d="M9.8 3.6 L14.2 3.6"/><path d="M12 3.6 L12 6.2"/></svg><div class="tbl">Timer</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.6" cy="8.6" r="3"/><circle cx="15.8" cy="9.8" r="2.3"/><path d="M4.2 18.6 C4.5 15.4 6.3 13.6 8.6 13.6 C10.9 13.6 12.7 15.4 13 18.6"/><path d="M14.2 13.9 C16.1 13.7 17.9 15 18.6 17.6"/></svg><div class="tbl">My Team</div></div>
+    <div class="tb"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.9 6.6 C3.9 5.7 4.6 5 5.5 5 L18.5 5 C19.4 5 20.1 5.7 20.1 6.6 L20.1 16.4 C20.1 17.3 19.4 18 18.5 18 L5.5 18 C4.6 18 3.9 17.3 3.9 16.4 Z"/><path d="M4.4 6.8 L12 12.2 L19.6 6.8"/></svg><div class="tbl">Messages</div></div>
+  </div>
+
+</div></div>
+
+<div class="legend">
+  <div class="h">Kick Counter — what's in this mockup</div>
+  <ul>
+    <li><b>Dominant tap pad:</b> 214px thumb-reachable circle with the S11 contraction-timer halo rings + a rose rim arc filling toward 10; serif "3" and Cormorant session clock inside; halo rings scoped behind the pad (background, never over content)</li>
+    <li><b>Session model:</b> Count-to-10 mode active (segmented toggle), 10 hand-drawn dots with 3 filled, Start 9:34 AM · 07:24 elapsed</li>
+    <li><b>Today's summary strip:</b> sessions · kicks today · last session time — serif numerals on the S11 stat-strip construction</li>
+    <li><b>Recent sessions list:</b> last three sessions with kicks + duration ("See all" affordance)</li>
+    <li><b>Header:</b> back affordance + rose kicker "Week 28 · Third Trimester" + Cormorant title — week-spine type law</li>
+    <li><b>No stray overlay marks:</b> decorative ripple removed after visual review; halo strictly background ·</li><li><b>Calm context line:</b> sage-tinted chip in Quicksand — reassuring, never alarming</li>
+  </ul>
+</div>
+
+</body>
+</html>

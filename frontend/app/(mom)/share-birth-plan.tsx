@@ -43,6 +43,7 @@ interface ShareRequest {
   status: string;
   created_at: string;
   responded_at?: string;
+  // Note: the backend returns provider_picture (NOT provider.picture) after enrichment
   picture?: string;
 }
 
@@ -60,7 +61,13 @@ export default function ShareBirthPlanScreen() {
   const fetchShareRequests = async () => {
     try {
       const data = await apiRequest(API_ENDPOINTS.BIRTH_PLAN_SHARE_REQUESTS);
-      setShareRequests(data.requests || []);
+      // Backend enriches requests with provider_picture (never `picture`) — map it
+      // so the avatars on pending + active share cards show the real photo.
+      const requests = (data.requests || []).map((r: any) => ({
+        ...r,
+        picture: r.picture || r.provider_picture,
+      }));
+      setShareRequests(requests);
     } catch (error) {
       console.error('Error fetching share requests:', error);
     }

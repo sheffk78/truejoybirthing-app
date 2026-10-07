@@ -31,8 +31,10 @@ interface MidwifeContractData {
     on_call_end_week: string;
     total_fee: number;
     deposit: number;
+    retainer_amount?: number | null;
     remaining_balance: number;
     balance_due_week: string;
+    remaining_balance_due_description?: string | null;
     practice_name: string | null;
     agreement_date: string;
     sections: Array<{
@@ -59,7 +61,7 @@ interface MidwifeContractData {
 }
 
 export default function SignMidwifeContractScreen() {
-  const { contractId, signingToken } = useLocalSearchParams<{ contractId: string; signingToken: string }>();
+  const { contractId, signingToken: deepLinkToken } = useLocalSearchParams<{ contractId: string; signingToken: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [contractData, setContractData] = useState<MidwifeContractData | null>(null);
@@ -67,13 +69,38 @@ export default function SignMidwifeContractScreen() {
   const [signing, setSigning] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Token resolution: deep link carries signingToken (email path). In-app path
+  // (mom home "Action Required" card) has no param — fetch the stored token on
+  // mount from the authenticated, ownership-checked endpoint. Never submit empty.
+  const [resolvedToken, setResolvedToken] = useState<string | null>(deepLinkToken || null);
+  const [tokenError, setTokenError] = useState(false);
   const colors = useColors();
   const styles = getStyles(colors);
-  
+
   useEffect(() => {
     fetchContract();
   }, [contractId]);
-  
+
+  // Fetch the signing token only when the deep link didn't supply one.
+  useEffect(() => {
+    if (deepLinkToken || !contractId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await apiRequest<{ contract_id: string; signing_token: string }>(
+          `${API_ENDPOINTS.MIDWIFE_CONTRACT_BY_ID}/${contractId}/signing-token`
+        );
+        if (!cancelled && data?.signing_token) {
+          setResolvedToken(data.signing_token);
+          setTokenError(false);
+        }
+      } catch (err: any) {
+        if (!cancelled) setTokenError(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [deepLinkToken, contractId, tokenError]);
+
   const fetchContract = async () => {
     if (!contractId) {
       setError('No contract ID provided');
@@ -113,7 +140,7 @@ export default function SignMidwifeContractScreen() {
         body: {
           signer_name: signerName.trim(),
           signature_data: signerName.trim(),
-          signing_token: signingToken || '',
+          signing_token: resolvedToken || '',
         },
       });
       
@@ -163,11 +190,20 @@ export default function SignMidwifeContractScreen() {
   
   const { contract, midwife } = contractData;
   const isAlreadySigned = contract.status === 'Signed';
-  
+  // Sign button stays disabled until a token is resolved — never submit empty.
+  const missingToken = !resolvedToken;
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']} data-testid="sign-midwife-contract-screen">
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']} testID="sign-midwife-contract-screen">
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.accent }]}>
+        <TouchableOpacity
+          onPress={() => { router.canGoBack() ? router.back() : router.replace('/'); }}
+          style={styles.backButton}
+          testID="back-btn"
+          data-testid="back-btn"
+        >
+          <Icon name="arrow-back" size={24} color={colors.textInverse} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Midwifery Services Agreement</Text>
       </View>
       
@@ -225,7 +261,7 @@ export default function SignMidwifeContractScreen() {
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Non-Refundable Deposit:</Text>
-            <Text style={styles.detailValue}>{formatCurrency(contract.deposit)}</Text>
+            <Text style={styles.detailValue}>{formatCurrency(contract.deposit ?? contract.retainer_amount ?? 0)}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Remaining Balance:</Text>
@@ -233,7 +269,7 @@ export default function SignMidwifeContractScreen() {
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Balance Due By:</Text>
-            <Text style={styles.detailValue}>{contract.balance_due_week} weeks</Text>
+            <Text style={styles.detailValue}>{contract.balance_due_week ?? contract.remaining_balance_due_description ?? 'Per payment plan'}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Agreement Date:</Text>
@@ -288,6 +324,7 @@ export default function SignMidwifeContractScreen() {
             {/* Download PDF Button */}
             <TouchableOpacity 
               style={[styles.downloadButton, { backgroundColor: colors.accent }]}
+              testID="download-pdf-btn"
               onPress={() => {
                 const pdfUrl = `${API_BASE_URL}/api/midwife-contracts/${contractId}/pdf`;
                 if (Platform.OS === 'web') {
@@ -296,7 +333,6 @@ export default function SignMidwifeContractScreen() {
                   Linking.openURL(pdfUrl);
                 }
               }}
-              data-testid="download-pdf-btn"
             >
               <Icon name="download-outline" size={20} color={colors.white} />
               <Text style={styles.downloadButtonText}>Download Signed PDF</Text>
@@ -332,21 +368,38 @@ export default function SignMidwifeContractScreen() {
             <TouchableOpacity 
               style={styles.agreementRow} 
               onPress={() => setAgreed(!agreed)}
-              data-testid="agreement-checkbox"
+              testID="agreement-checkbox"
             >
               <View style={[styles.checkbox, agreed && { backgroundColor: colors.accent, borderColor: colors.accent }]}>
                 {agreed && <Icon name="checkmark" size={16} color={colors.white} />}
               </View>
               <Text style={styles.agreementText}>
-                I have read and agree to the terms of this Midwifery Services Agreement. By typing my name 
+                I have read and agree to the terms of this Midwifery Services Agreement. By typing my name
                 and clicking "Sign Agreement", I understand this constitutes a legally binding electronic signature.
               </Text>
             </TouchableOpacity>
-            
+
+            {/* Token-fetch failure: clear, retryable — never submit without the token */}
+            {missingToken && tokenError && (
+              <View style={styles.tokenErrorRow} data-testid="token-error" testID="token-error">
+                <Icon name="alert-circle-outline" size={16} color={colors.error} />
+                <Text style={[styles.tokenErrorText, { color: colors.error }]}>
+                  We couldn't verify your signing link. Tap retry, or reopen the contract from the app.
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setTokenError(false)}
+                  data-testid="token-retry-btn"
+                  testID="token-retry-btn"
+                >
+                  <Text style={[styles.tokenRetryText, { color: colors.accent }]}>Retry</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
             <Button
               title={signing ? "Signing..." : "Sign Agreement"}
               onPress={handleSign}
-              disabled={!signerName.trim() || !agreed || signing}
+              disabled={!signerName.trim() || !agreed || signing || missingToken}
               fullWidth
               style={styles.signButton}
               testID="sign-contract-btn"
@@ -397,12 +450,41 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.error,
     textAlign: 'center',
   },
+  tokenErrorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: SIZES.sm,
+    marginBottom: SIZES.sm,
+    padding: SIZES.sm,
+    borderRadius: 8,
+    backgroundColor: colors.error + '10',
+  },
+  tokenErrorText: {
+    flex: 1,
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+  },
+  tokenRetryText: {
+    fontSize: SIZES.fontSm,
+    fontFamily: FONTS.body,
+    fontWeight: '600',
+  },
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: SIZES.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+  },
+  backButton: {
+    position: 'absolute',
+    left: SIZES.sm,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerTitle: {
     fontSize: SIZES.fontLg,

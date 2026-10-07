@@ -1,7 +1,15 @@
 // Provider Feed Section
 // Renders the "Latest in Birth Work" section at the bottom of the provider dashboard
+//
+// 10/02 reliability pass: the section hid itself (returned null) whenever the
+// feed came back empty or the fetch failed with no cache — a dead region Jeff
+// hit on the pro dashboard. Now: loading keeps a visible one-liner, a failed
+// fetch shows a tappable retry (no new colors — existing tokens only), an
+// empty result is auto-retried once and then confirmed-empty is the ONLY
+// state that hides the section, and screen focus refetches so a session that
+// loaded before the publishing batch self-heals without a full app relaunch.
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +17,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { Icon } from '../Icon';
 import ProviderFeedCard from './ProviderFeedCard';
 import ProviderFeedDisclaimer from './ProviderFeedDisclaimer';
@@ -20,6 +29,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CACHE_KEY = '@research_feed_cache';
 const CACHE_COUNT = 1; // Only cache the single current article
+const EMPTY_RETRY_DELAY_MS = 2000; // one silent retry when the first attempt finds nothing
 
 interface FeedArticle {
   article_id: string;
@@ -28,7 +38,8 @@ interface FeedArticle {
   excerpt: string;
   practice_takeaway?: string;
   tags?: string[];
-  tjb_blog_url: string;
+  // Backend sends null until the blog pass publishes the post (10/02 payload had null)
+  tjb_blog_url?: string | null;
   approved_date: string;
 }
 
@@ -43,22 +54,22 @@ export default function ProviderFeedSection({ primaryColor }: ProviderFeedSectio
   const [articles, setArticles] = useState<FeedArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  // Server CONFIRMED zero after a completed refetch — the only state that hides the section
+  const [emptyAfterRefetch, setEmptyAfterRefetch] = useState(false);
+  // Latest attempt failed (network/auth) — show a tappable retry, never a dead region
+  const [fetchFailed, setFetchFailed] = useState(false);
 
-  // Load cached articles first (instant display)
-  useEffect(() => {
-    loadCache();
-  }, []);
-
-  // Then fetch fresh data
-  useEffect(() => {
-    fetchArticles();
-  }, []);
+  const inFlightRef = useRef(false);
+  const skipFirstFocusRef = useRef(true);
 
   const loadCache = async () => {
     try {
       const cached = await AsyncStorage.getItem(CACHE_KEY);
       if (cached) {
-        setArticles(JSON.parse(cached));
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setArticles(parsed);
+        }
       }
     } catch {
       // Silent fail — cache is optional
@@ -76,23 +87,88 @@ export default function ProviderFeedSection({ primaryColor }: ProviderFeedSectio
     }
   };
 
-  const fetchArticles = async () => {
+  const clearCache = async () => {
+    try {
+      await AsyncStorage.removeItem(CACHE_KEY);
+    } catch {
+      // Silent fail
+    }
+  };
+
+  const fetchArticles = async (): Promise<FeedArticle[]> => {
+    if (inFlightRef.current) return [];
+    inFlightRef.current = true;
     try {
       setLoading(true);
       const data = await apiRequest(`${API_ENDPOINTS.FEED_ARTICLES}?page=1&limit=1&audience=provider`);
-      if (data?.articles) {
-        setArticles(data.articles);
-        cacheArticles(data.articles);
+      const list = Array.isArray(data?.articles) ? data.articles : [];
+      if (list.length > 0) {
+        setArticles(list);
+        cacheArticles(list);
+      } else {
+        // Server has nothing — self-heal a stale/empty cache
+        setArticles([]);
+        clearCache();
       }
+      setEmptyAfterRefetch(true);
+      setFetchFailed(false);
+      return list;
     } catch {
-      // If fetch fails, cached articles remain visible
+      // Fetch failed: cached articles (if any) remain visible; with nothing
+      // cached the header stays with a retry affordance instead of going dead
+      setFetchFailed(true);
+      setEmptyAfterRefetch(false);
+      return [];
     } finally {
+      inFlightRef.current = false;
       setLoading(false);
     }
   };
 
-  if (!loading && articles.length === 0) {
-    return null; // Don't show the section if there are no articles
+  // Load cached articles first (instant display)
+  useEffect(() => {
+    loadCache();
+  }, []);
+
+  // Then fetch fresh data; if the first attempt finds nothing (empty or
+  // failed), auto-retry once — self-heals a cached-empty state and the
+  // publishing-batch race (feed loaded seconds before the cron article landed)
+  useEffect(() => {
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    (async () => {
+      const first = await fetchArticles();
+      if (cancelled || first.length > 0) return;
+      retryTimer = setTimeout(async () => {
+        if (!cancelled) await fetchArticles();
+      }, EMPTY_RETRY_DELAY_MS);
+    })();
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Self-heal on screen focus: a session that missed the publishing batch
+  // (feed empty at load, app left in background) refetches when the tab is
+  // reopened — without this an empty first load hid the card until a full
+  // app relaunch
+  useFocusEffect(
+    useCallback(() => {
+      if (skipFirstFocusRef.current) {
+        skipFirstFocusRef.current = false;
+        return;
+      }
+      fetchArticles();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  );
+
+  // Hidden ONLY when a completed fetch CONFIRMED zero articles — anything
+  // else (loading, failed, uncached unknown) keeps a visible region
+  if (!loading && articles.length === 0 && emptyAfterRefetch && !fetchFailed) {
+    return null;
   }
 
   return (
@@ -112,14 +188,27 @@ export default function ProviderFeedSection({ primaryColor }: ProviderFeedSectio
         <Icon name="information-circle-outline" size={16} color={colors.textLight} />
       </TouchableOpacity>
 
-      {/* Loading State */}
+      {/* Loading State — always a visible region while we don't know yet */}
       {loading && articles.length === 0 && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={primaryColor} />
           <Text style={[styles.loadingText, { color: colors.textLight }]}>
-            Loading latest research...
+            Checking latest research...
           </Text>
         </View>
+      )}
+
+      {/* Fetch failed with nothing cached — tappable retry, never a dead region */}
+      {!loading && articles.length === 0 && fetchFailed && (
+        <TouchableOpacity
+          style={styles.loadingContainer}
+          onPress={() => fetchArticles()}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.loadingText, { color: colors.textLight }]}>
+            Couldn't load the latest research — tap to retry
+          </Text>
+        </TouchableOpacity>
       )}
 
       {/* Article Card — single current excerpt */}

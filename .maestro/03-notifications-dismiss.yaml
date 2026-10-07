@@ -1,0 +1,14 @@
+# QA Part B — informed-choice click-through
+# B2b: dismiss the notifications prompt, reach the mom home screen.
+appId: host.exp.Exponent
+name: 03-notifications-dismiss
+---
+- runFlow:
+    when:
+      visible: "Maybe Later"
+    commands:
+      - tapOn: "Maybe Later"
+- extendedWaitUntil:
+    visible: ".*"
+    timeout: 20000
+- takeScreenshot: b3-home

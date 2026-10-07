@@ -25,15 +25,15 @@ class TestZipCodeLookupMigration:
         assert data["country"] == "United States"
         print("✓ Zipcode 90210 returns Beverly Hills, CA")
 
-    def test_invalid_zipcode_returns_404(self):
-        """Test invalid zip code returns 404 error"""
+    def test_invalid_zipcode_returns_400(self):
+        """Test malformed zip code returns 400 (invalid zip 'invalid' fails the 5-digit check)"""
         response = requests.get(f"{BASE_URL}/api/lookup/zipcode/invalid")
-        assert response.status_code == 404, f"Expected 404, got {response.status_code}"
+        assert response.status_code == 400, f"Expected 400, got {response.status_code}"
         
         data = response.json()
         assert "detail" in data
-        assert "Invalid zip code" in data["detail"]
-        print("✓ Invalid zipcode returns 404 with proper error message")
+        assert "5 digits" in data["detail"]
+        print("✓ Invalid zipcode returns 400 with proper error message")
 
 
 class TestWeeklyContentMigration:
@@ -97,7 +97,11 @@ class TestWeeklyContentMigration:
         
         # Verify content
         assert isinstance(data["week"], int)
-        assert "Week" in data["display_week"]
+        assert data["display_week"], "display_week must be non-empty"
+        assert (
+            "Week" in data["display_week"]
+            or "weeks" in data["display_week"]
+        ), f"unexpected display_week format: {data['display_week']}"
         assert len(data["tip"]) > 0
         assert len(data["affirmation"]) > 0
         

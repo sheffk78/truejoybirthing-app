@@ -91,7 +91,7 @@ async def lactation_onboarding(profile_data: LactationProfileUpdate, user: User 
         "phone": profile_data.phone,
         "bio": profile_data.bio,
         "experience_years": profile_data.experience_years,
-        "certifications": profile_data.certifications or [],
+        "certifications": profile_data.certifications,  # None stripped below — empty re-onboarding keeps existing certs (council 10/05)
         "services_offered": profile_data.services_offered or [],
         "birth_philosophy": profile_data.birth_philosophy,
         "location_city": profile_data.location_city,

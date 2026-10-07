@@ -23,6 +23,7 @@ BIRTH_PLAN_SECTIONS = [
     {"section_id": "birth_preferences", "title": "Birth Preferences"},
     {"section_id": "after_birth", "title": "After Birth"},
     {"section_id": "newborn_care", "title": "Newborn Care"},
+    {"section_id": "newborn_procedures", "title": "Newborn Procedures"},
 ]
 
 
@@ -413,11 +414,22 @@ async def get_mom_contracts(user: User = Depends(check_role(["MOM"]))):
     active_provider_ids = set(await get_active_provider_ids_for_mom(user.user_id))
     client_ids = [c["client_id"] for c in clients if c.get("provider_id") in active_provider_ids]
 
+    # signing_token is intentionally excluded: the in-app sign screens fetch it via
+    # GET /contracts/{id}/signing-token (MOM-only, ownership-checked). It must not
+    # ride along in list responses.
     contracts = await db.contracts.find(
         {"client_id": {"$in": client_ids}},
-        {"_id": 0}
+        {"_id": 0, "signing_token": 0}
     ).sort("created_at", -1).to_list(100)
-    
+
+    # Midwife contracts live in their own collection — merge them in so the
+    # mom home "action required" card routes to /sign-midwife-contract.
+    midwife_contracts = await db.midwife_contracts.find(
+        {"client_id": {"$in": client_ids}},
+        {"_id": 0, "signing_token": 0}
+    ).sort("created_at", -1).to_list(100)
+    contracts.extend(midwife_contracts)
+
     # Enrich with provider info
     for contract in contracts:
         # Get provider from doula_id or midwife_id or provider_id
@@ -425,11 +437,13 @@ async def get_mom_contracts(user: User = Depends(check_role(["MOM"]))):
         if provider_id:
             provider = await db.users.find_one(
                 {"user_id": provider_id},
-                {"_id": 0, "full_name": 1, "role": 1}
+                {"_id": 0, "full_name": 1, "role": 1, "picture": 1}
             )
             if provider:
                 contract["provider_name"] = provider.get("full_name")
                 contract["provider_role"] = provider.get("role")
+                # Jeff 10/02 avatar pass: provider photo on the mom's contract card
+                contract["provider_picture"] = provider.get("picture")
     
     return contracts
 
@@ -456,12 +470,14 @@ async def get_mom_invoices(user: User = Depends(check_role(["MOM"]))):
     for invoice in invoices:
         provider = await db.users.find_one(
             {"user_id": invoice.get("provider_id")},
-            {"_id": 0, "full_name": 1, "role": 1, "payment_methods": 1}
+            {"_id": 0, "full_name": 1, "role": 1, "payment_methods": 1, "picture": 1}
         )
         if provider:
             invoice["provider_name"] = provider.get("full_name")
             invoice["provider_role"] = provider.get("role")
             invoice["provider_payment_methods"] = provider.get("payment_methods") or {}
+            # Jeff 10/02 avatar pass: provider photo beside "From: <name>" rows
+            invoice["provider_picture"] = provider.get("picture")
 
     return invoices
 
@@ -506,6 +522,38 @@ async def get_mom_invoice(invoice_id: str, user: User = Depends(check_role(["MOM
 class PaymentAcknowledgment(BaseModel):
     method: Optional[str] = None
     note: Optional[str] = None
+
+
+@router.get("/invoices/{invoice_id}/payment-plan")
+async def get_mom_payment_plan(invoice_id: str, user: User = Depends(check_role(["MOM"]))):
+    """Get the payment plan for an invoice the mom has access to.
+
+    Scopes exactly like GET /mom/invoices/{invoice_id}: only invoices
+    tied to clients with active provider relationships are visible.
+    """
+    from .relationship_utils import get_active_provider_ids_for_mom
+    active_provider_ids = await get_active_provider_ids_for_mom(user.user_id)
+
+    clients = await db.clients.find(
+        {"linked_mom_id": user.user_id, "provider_id": {"$in": list(active_provider_ids)}},
+        {"_id": 0, "client_id": 1}
+    ).to_list(100)
+
+    client_ids = [c["client_id"] for c in clients]
+
+    invoice = await db.invoices.find_one(
+        {"invoice_id": invoice_id, "client_id": {"$in": client_ids}},
+        {"_id": 0, "payment_plan": 1}
+    )
+
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    payment_plan = invoice.get("payment_plan")
+    if not payment_plan:
+        return {"payment_plan": None, "message": "This invoice is pay-once (no installment plan)"}
+
+    return {"payment_plan": payment_plan}
 
 
 @router.post("/invoices/{invoice_id}/acknowledge-payment")

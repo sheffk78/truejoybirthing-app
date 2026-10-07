@@ -32,6 +32,7 @@ DEMO_ACCOUNTS = [
     {
         "email": "demo.midwife@truejoybirthing.com",
         "password": "DemoMidwife2024!",
+        "picture": "https://truejoybirthing.com/images/shelbi-hero-portrait.webp",
         "full_name": "Emily Thompson",
         "role": "MIDWIFE",
         "profile_collection": "midwife_profiles",
@@ -54,12 +55,14 @@ DEMO_ACCOUNTS = [
     {
         "email": "demo.doula@truejoybirthing.com",
         "password": "DemoDoula2024!",
+        "picture": "https://truejoybirthing.com/images/provider-conroe-tx-shelbie-cunningham.webp",
         "full_name": "Sarah Mitchell",
         "role": "DOULA",
         "profile_collection": "doula_profiles",
         "profile_data": {
             "practice_name": "Heart & Hands Birth Support",
-            "credentials": ["CD", "CLC"],
+            "credentials": ["CD", "CLD", "ICBD"],
+            "certifications": ["CLC", "CBE", "DONA", "CAPPA"],
             "location_city": "Austin",
             "location_state": "TX",
             "services_offered": [
@@ -76,6 +79,7 @@ DEMO_ACCOUNTS = [
     {
         "email": "demo.lactation@truejoybirthing.com",
         "password": "DemoLactation2024!",
+        "picture": "https://truejoybirthing.com/images/provider-st-paul-mn-about.webp",
         "full_name": "Jessica Reyes",
         "role": "LACTATION",
         "profile_collection": "lactation_profiles",
@@ -97,6 +101,10 @@ DEMO_ACCOUNTS = [
     {
         "email": "demo.mom@truejoybirthing.com",
         "password": "DemoMom2024!",
+        # Jeff 10/02: Emma's profile picture was blank in the app — demo mom now
+        # carries a sanctioned demo avatar (DiceBear lorelei, CC0, same source the
+        # seed pipeline uses) instead of a missing picture.
+        "picture": "https://api.dicebear.com/7.x/lorelei/png?seed=Emma%20Johnson&size=400",
         "full_name": "Emma Johnson",
         "role": "MOM",
         "profile_collection": "mom_profiles",
@@ -155,16 +163,21 @@ async def ensure_demo_accounts(db):
         if existing:
             user_id = existing["user_id"]
             # Update: reset password hash, ensure flags are correct
+            update_fields = {
+                "password_hash": password_hash,
+                "onboarding_completed": True,
+                "is_demo_account": True,
+                "email_verified": True,  # demo pros must appear in marketplace (unverified pros are filtered out)
+                "role": account["role"],
+                "full_name": account["full_name"],
+                "updated_at": now,
+            }
+            # 10/01 Jeff: demo accounts carry real profile photos so screens render populated
+            if account.get("picture"):
+                update_fields["picture"] = account["picture"]
             await db.users.update_one(
                 {"email": email},
-                {"$set": {
-                    "password_hash": password_hash,
-                    "onboarding_completed": True,
-                    "is_demo_account": True,
-                    "role": account["role"],
-                    "full_name": account["full_name"],
-                    "updated_at": now,
-                }}
+                {"$set": update_fields}
             )
             logger.info(f"  Updated existing demo account: {email} (user_id={user_id})")
         else:
@@ -175,9 +188,10 @@ async def ensure_demo_accounts(db):
                 "full_name": account["full_name"],
                 "role": account["role"],
                 "password_hash": password_hash,
-                "picture": None,
+                "picture": account.get("picture"),
                 "onboarding_completed": True,
                 "is_demo_account": True,
+                "email_verified": True,
                 "created_at": now,
                 "updated_at": now,
             }
@@ -207,6 +221,15 @@ async def ensure_demo_accounts(db):
             profile_data["user_id"] = user_id
             await db[profile_collection].insert_one(profile_data)
             logger.info(f"  Created {profile_collection} profile for {email}")
+        else:
+            # 10/01 Jeff: demo profiles sync to canonical seed data on every startup —
+            # keeps photos, credentials, practice info current for Apple review &
+            # dev demo (stale sparse profiles otherwise persist forever).
+            profile_data["user_id"] = user_id
+            await db[profile_collection].update_one(
+                {"user_id": user_id}, {"$set": profile_data}
+            )
+            logger.info(f"  Synced {profile_collection} profile for {email}")
 
         # DO NOT auto-create subscriptions for demo/provider accounts.
         # Apple reviewers must see the paywall and test the full IAP flow
@@ -406,6 +429,15 @@ async def _seed_demo_data(db, demo_user_ids: dict, now: datetime):
             await db.doula_invoices.insert_one(inv)
             logger.info(f"  Seeded doula invoice: {inv['description'][:50]}")
 
+    # ── Unpaid payment-plan invoice for the demo mom (Jeff 10/02 payment demo) ──
+    # Lets Jeff walk the full mom payment flow in the app: owed vs paid vs next
+    # due, plus mark-installment-paid advancing the plan. Lives in the unified
+    # `invoices` collection — GET /mom/invoices only reads db.invoices scoped by
+    # db.clients.linked_mom_id + accepted share_requests (so both link rows are
+    # ensured below). Shape mirrors build_payment_plan() (routes/invoices.py)
+    # exactly: installment_no/amount/'YYYY-MM-DD' due_date/status + rollup.
+    await _seed_payment_plan_invoice(db, demo_user_ids, now)
+
     # ── Demo Contracts for Midwife ──
     midwife_contracts = [
         {
@@ -603,3 +635,198 @@ async def _seed_demo_data(db, demo_user_ids: dict, now: datetime):
             logger.info(f"  Connected demo mom to {conn['provider_name']}")
 
     logger.info("  Demo data seeding complete.")
+
+
+async def _seed_payment_plan_invoice(db, demo_user_ids: dict, now: datetime) -> None:
+    """One unpaid installment-plan invoice from the demo midwife to the demo mom.
+
+    Jeff's 10/02 payment demo: the mom Invoices screen renders plan progress
+    ("1 of 3 paid" chip + Payment Schedule rows) and the provider (or dev
+    harness) advances it via /midwife/invoices/{id}/payment-plan/installment/{n}/
+    mark-paid. 4500 total, 3×1500; installment 1 PAID 22 days ago, 2 due in 8
+    days, 3 due in 38 days. Shape EXACTLY matches build_payment_plan() output
+    (routes/invoices.py) so the UI renders plan progress unmodified.
+
+    Upserts (idempotent like the rest of this file): the invoice row, a unified
+    db.clients client row (GET /mom/invoices scopes by clients.linked_mom_id),
+    and an accepted share_request (scope also requires an ACTIVE relationship —
+    get_active_provider_ids_for_mom). The existing Paid doula invoice stays as
+    history.
+    """
+    midwife_id = demo_user_ids.get("MIDWIFE")
+    mom_id = demo_user_ids.get("MOM")
+    if not midwife_id or not mom_id:
+        logger.warning("  Skipping payment-plan invoice seed — missing midwife/mom IDs")
+        return
+
+    client_id = "demo_client_mw_plan01"
+
+    # 1) Unified client linking mom ↔ midwife (mom endpoint filters on this)
+    client_doc = await db.clients.find_one({"client_id": client_id}) or {
+        "client_id": client_id,
+        "created_at": now,
+    }
+    client_doc.update({
+        "provider_id": midwife_id,
+        "provider_type": "MIDWIFE",
+        "linked_mom_id": mom_id,
+        "name": "Emma Johnson",
+        "email": "demo.mom@truejoybirthing.com",
+        "edd": (now + timedelta(days=75)).strftime("%Y-%m-%d"),
+        "planned_birth_setting": "Birth Center",
+        "status": "Active",
+        "is_active": True,
+        "updated_at": now,
+    })
+    await db.clients.update_one(
+        {"client_id": client_id},
+        {"$set": client_doc},
+        upsert=True,
+    )
+
+    # 2) Accepted relationship row (get_active_provider_ids_for_mom gate)
+    share_request_id = "share_demo_mw_plan01"
+    existing_share = await db.share_requests.find_one({
+        "mom_user_id": mom_id, "provider_id": midwife_id,
+    })
+    if existing_share:
+        # Keep whatever request_id key this DB's rows use; just ensure active.
+        await db.share_requests.update_one(
+            {"request_id": existing_share.get("request_id", existing_share.get("share_request_id"))},
+            {"$set": {"status": "accepted", "relationship_status": "active", "responded_at": now}},
+        )
+    else:
+        await db.share_requests.insert_one({
+            "request_id": share_request_id,
+            "mom_user_id": mom_id,
+            "mom_name": "Emma Johnson",
+            "provider_id": midwife_id,
+            "provider_name": "Emily Thompson",
+            "provider_role": "MIDWIFE",
+            "status": "accepted",
+            "relationship_status": "active",
+            "created_at": now,
+            "responded_at": now,
+            "source": "demo_seed",
+        })
+
+    # 3) The installment invoice — build_payment_plan-equivalent subdoc
+    plan_invoice = {
+        "invoice_id": "demo_inv_plan_01",
+        "provider_id": midwife_id,
+        "provider_type": "MIDWIFE",
+        "client_id": client_id,
+        "client_name": "Emma Johnson",
+        "invoice_number": "INV-PLAN-001",
+        "description": "Comprehensive Midwifery Care — Payment Plan (3 installments)",
+        "amount": 4500.00,
+        "issue_date": (now - timedelta(days=30)).strftime("%Y-%m-%d"),
+        "due_date": (now + timedelta(days=8)).strftime("%Y-%m-%d"),
+        "payment_instructions_text": "Zelle: billing@hillcountrymidwifery.com or Venmo: @hillcountry-midwifery",
+        "notes_for_client": "3-installment plan. Pay each installment by its due date — the schedule below tracks your progress.",
+        "status": "Sent",
+        "sent_at": now - timedelta(days=30),
+        "paid_at": None,
+        "payment_plan": _payment_plan_subdoc(
+            now,
+            paid_nos=[1],  # installment 1 PAID 22 days ago (seeds at 1-of-3 by design)
+        ),
+        "created_at": now - timedelta(days=30),
+        "updated_at": now - timedelta(days=22),
+    }
+
+    existing_invoice = await db.invoices.find_one({"invoice_id": plan_invoice["invoice_id"]})
+    if existing_invoice:
+        # Preserve real progress: never roll a paid installment back to due on re-run.
+        paid_nos = sorted(
+            i["installment_no"] for i
+            in (existing_invoice.get("payment_plan") or {}).get("installments", [])
+            if i.get("status") == "paid"
+        )
+        fresh = _mark_plan_installments_paid(plan_invoice, paid_nos)
+        await db.invoices.replace_one(
+            {"invoice_id": plan_invoice["invoice_id"]},
+            fresh,
+            upsert=True,
+        )
+        logger.info(
+            f"  Payment-plan invoice already seeded — {len(paid_nos)} of 3 installments paid, preserved"
+        )
+    else:
+        await db.invoices.insert_one(plan_invoice)
+        logger.info(
+            "  Seeded payment-plan invoice: $4500 / 3 installments (1 paid, 2 due)"
+        )
+
+
+def _payment_plan_subdoc(now: datetime, paid_nos: list) -> dict:
+    """build_payment_plan()-equivalent subdoc: 4500 total, 3×1500, monthly.
+
+    Installments: 1 due 22 days ago, 2 due in 8 days, 3 due in 38 days — the
+    natural 30-day cadence puts them on those offsets because it1 must sit 22
+    days in the past while it2/it3 keep the 8/38-day future spacing Jeff asked
+    for. paid_nos marks already-paid installments; roll-up mirrors _rollup_status
+    (routes/invoices.py): all paid → 'paid', some paid → 'partial', none → 'due'.
+    """
+    it1_due = now - timedelta(days=22)
+    it2_due = now + timedelta(days=8)   # next due
+    it3_due = now + timedelta(days=38)  # 30-day gap after it2
+    plan = {
+        "installment_count": 3,
+        "amount_per_installment": 1500.00,
+        "plan_description": "3 monthly installments of $1,500",
+        "due_frequency": "monthly",
+        "first_due_date": it1_due.strftime("%Y-%m-%d"),
+        "installments": [
+            {
+                "installment_no": 1,
+                "amount": 1500.00,
+                "due_date": it1_due.strftime("%Y-%m-%d"),
+                "status": "paid" if 1 in paid_nos else "due",
+            },
+            {
+                "installment_no": 2,
+                "amount": 1500.00,
+                "due_date": it2_due.strftime("%Y-%m-%d"),
+                "status": "paid" if 2 in paid_nos else "due",
+            },
+            {
+                "installment_no": 3,
+                "amount": 1500.00,
+                "due_date": it3_due.strftime("%Y-%m-%d"),
+                "status": "paid" if 3 in paid_nos else "due",
+            },
+        ],
+        "total_amount": 4500.00,
+        # Roll-up mirrors _rollup_status (routes/invoices.py)
+        "status": "partial" if paid_nos and len(set(paid_nos)) < 3 else ("paid" if len(set(paid_nos)) >= 3 else "due"),
+    }
+    return plan
+
+
+def _mark_plan_installments_paid(invoice: dict, paid_nos: list) -> dict:
+    """Set installments with installment_no in `paid_nos` to status='paid'.
+
+    Mirrors the mark-installment-paid routes' roll-up: partial until every
+    installment is paid, then 'paid' (top-level status flips too).
+    """
+    plan = invoice.get("payment_plan") or {}
+    for inst in plan.get("installments", []):
+        if inst.get("installment_no") in paid_nos and inst.get("status") != "paid":
+            inst["status"] = "paid"
+    statuses = {i.get("status") for i in plan.get("installments", [])}
+    if statuses == {"paid"} and plan.get("installments"):
+        plan["status"] = "paid"
+        invoice["status"] = "Paid"
+        if not invoice.get("paid_at"):
+            invoice["paid_at"] = datetime.now(timezone.utc)
+    elif "paid" in statuses:
+        plan["status"] = "partial"
+        invoice["status"] = "Sent"
+        invoice["paid_at"] = None
+    else:
+        plan["status"] = "due"
+        invoice["status"] = "Sent"
+        invoice["paid_at"] = None
+    invoice["payment_plan"] = plan
+    return invoice

@@ -87,6 +87,24 @@ export default function BrandedLoader({
     return () => animation.stop();
   }, [breath]);
 
+  // ── Entrance: fade + rise (one-time, 480ms) ────────────────────
+  const enter = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const anim = Animated.timing(enter, {
+      toValue: 1,
+      duration: 480,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    });
+    anim.start();
+    return () => anim.stop();
+  }, [enter]);
+  const contentOpacity = enter;
+  const contentRise = enter.interpolate({
+    inputRange: [0, 1],
+    outputRange: [14, 0],
+  });
+
   // Scale 1.00 → 1.04 (a 4% breath — perceptible, never bouncy)
   const markScale = breath.interpolate({
     inputRange: [0, 1],
@@ -98,52 +116,43 @@ export default function BrandedLoader({
     outputRange: [0.6, 1],
   });
 
-  // ── Three-dot staggered loading animation ─────────────────────
-  const dot1 = useRef(new Animated.Value(0.35)).current;
-  const dot2 = useRef(new Animated.Value(0.35)).current;
-  const dot3 = useRef(new Animated.Value(0.35)).current;
-
+  // ── Three-dot wave: phase-shifted continuum (no reset jump) ───
+  const dotWave = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    const createDotAnim = (dot: Animated.Value, delay: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.delay(delay),
-          Animated.timing(dot, {
-            toValue: 1,
-            duration: 600,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(dot, {
-            toValue: 0.35,
-            duration: 600,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ]),
-      );
+    const w = Animated.loop(
+      Animated.timing(dotWave, {
+        toValue: 1,
+        duration: 1500,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+    w.start();
+    return () => w.stop();
+  }, [dotWave]);
+  const dot = (phase: number) =>
+    dotWave.interpolate({
+      inputRange: [0, 0.25, 0.5, 0.75, 1],
+      outputRange: [
+        0.35 + 0.65 * Math.max(0, Math.cos(0 * 2 * Math.PI)),
+        0.35 + 0.65 * Math.max(0, Math.cos((phase + 0.25) * 2 * Math.PI)),
+        0.35 + 0.65 * Math.max(0, Math.cos((phase + 0.5) * 2 * Math.PI)),
+        0.35 + 0.65 * Math.max(0, Math.cos((phase + 0.75) * 2 * Math.PI)),
+        0.35 + 0.65 * Math.max(0, Math.cos((phase + 1) * 2 * Math.PI)),
+      ],
+    });
 
-    const a1 = createDotAnim(dot1, 0);
-    const a2 = createDotAnim(dot2, 260);
-    const a3 = createDotAnim(dot3, 520);
-
-    a1.start();
-    a2.start();
-    a3.start();
-
-    return () => {
-      a1.stop();
-      a2.stop();
-      a3.stop();
-    };
-  }, [dot1, dot2, dot3]);
-
-  // Icon at ~32% of screen width — natural square, NO crop, NO distortion
+    // Icon at ~32% of screen width — natural square, NO crop, NO distortion
   const iconSize = Math.round(Math.min(Dimensions.get('window').width, 430) * 0.32);
 
   return (
     <View style={[styles.container, { backgroundColor: c.background }]}>
-      <View style={styles.content}>
+      <Animated.View
+        style={[
+          styles.content,
+          { opacity: contentOpacity, transform: [{ translateY: contentRise }] },
+        ]}
+      >
         {/* Breathing halo (outer + inner soft discs, animated in sync) */}
         <View style={styles.haloStack}>
           <Animated.View
@@ -184,9 +193,9 @@ export default function BrandedLoader({
 
         {/* Three-dot loading indicator (lavender active on lavender-300 base) */}
         <View style={styles.dotsContainer}>
-          <Animated.View style={[styles.dot, { backgroundColor: DOT_INACTIVE }, { opacity: dot1 }]} />
-          <Animated.View style={[styles.dot, { backgroundColor: DOT_INACTIVE }, { opacity: dot2 }]} />
-          <Animated.View style={[styles.dot, { backgroundColor: DOT_INACTIVE }, { opacity: dot3 }]} />
+          <Animated.View style={[styles.dot, { backgroundColor: DOT_ACTIVE }, { opacity: dot(0) }]} />
+          <Animated.View style={[styles.dot, { backgroundColor: DOT_ACTIVE }, { opacity: dot(1 / 3) }]} />
+          <Animated.View style={[styles.dot, { backgroundColor: DOT_ACTIVE }, { opacity: dot(2 / 3) }]} />
         </View>
 
         {/* Optional loading message (in-app usage) */}
@@ -200,7 +209,7 @@ export default function BrandedLoader({
             {message}
           </Text>
         ) : null}
-      </View>
+      </Animated.View>
     </View>
   );
 }

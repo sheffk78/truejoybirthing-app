@@ -1,0 +1,10 @@
+
+appId: com.truejoybirthing.app
+---
+- launchApp:
+    clearState: false
+- waitForAnimationToEnd: {timeout: 6000}
+- openLink: 'truejoybirthing:///(mom)/profile'
+- waitForAnimationToEnd: {timeout: 5000}
+- tapOn: {id: 'appearance-row'}
+- waitForAnimationToEnd: {timeout: 2500}

@@ -23,6 +23,7 @@ BIRTH_PLAN_SECTIONS = [
     {"section_id": "birth_preferences", "title": "Birth Preferences"},
     {"section_id": "after_birth", "title": "After Birth"},
     {"section_id": "newborn_care", "title": "Newborn Care"},
+    {"section_id": "newborn_procedures", "title": "Newborn Procedures"},
 ]
 
 

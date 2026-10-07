@@ -24,7 +24,10 @@ interface FeedArticle {
   excerpt: string;
   practice_takeaway?: string;
   tags?: string[];
-  tjb_blog_url: string;
+  // Backend sends null until the blog pass publishes the post
+  tjb_blog_url?: string | null;
+  // Original research link — card always opens something real (Jeff 10/02)
+  source_url?: string | null;
   approved_date: string;
 }
 
@@ -38,8 +41,11 @@ export default function ProviderFeedCard({ article, primaryColor }: ProviderFeed
   const styles = getStyles(colors);
 
   const handleTap = async () => {
-    if (article.tjb_blog_url) {
-      await WebBrowser.openBrowserAsync(article.tjb_blog_url);
+    // Jeff 10/02: the research blurb must open the real article. Prefer the
+    // TJB blog companion post; fall back to the original research source.
+    const url = article.tjb_blog_url || (article as any).source_url;
+    if (url) {
+      await WebBrowser.openBrowserAsync(url);
     }
   };
 
@@ -118,6 +124,10 @@ export default function ProviderFeedCard({ article, primaryColor }: ProviderFeed
               </View>
             ))}
             <Text style={[styles.aiTag, { color: colors.textLight }]}>AI</Text>
+            {/* Jeff 10/02: make it obvious the card opens the article */}
+            <Text style={[styles.readHint, { color: primaryColor }]}>
+              {article.tjb_blog_url ? 'Read the article' : 'Read the research'} →
+            </Text>
           </View>
           <TouchableOpacity onPress={handleReport} style={styles.reportBtn}>
             <Icon name="flag-outline" size={14} color={colors.textLight} />
@@ -200,9 +210,15 @@ const getStyles = (colors: any) =>
       fontFamily: FONTS.body,
     },
     aiTag: {
-      fontSize: 9,
+      fontSize: SIZES.fontXs,
       fontFamily: FONTS.bodyMedium,
-      marginLeft: 2,
+      color: '#999',
+    },
+    readHint: {
+      fontSize: SIZES.fontXs,
+      fontFamily: FONTS.bodyMedium,
+      marginLeft: 'auto',
+      marginRight: 6,
     },
     reportBtn: {
       padding: 4,

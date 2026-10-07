@@ -19,6 +19,7 @@ import TIcon from '../../src/components/TIcon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { SECTION_FORMS, renderField } from '../../src/components/BirthPlanForms';
+import NewbornProceduresForm from '../../src/components/NewbornProceduresForm';
 import SectionVideoGuide from '../../src/components/SectionVideoGuide';
 import { apiRequest, getApiBaseUrl } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
@@ -53,6 +54,7 @@ const SECTION_ICONS: Record<string, string> = {
   'post_delivery': 'post_delivery',
   'after_birth': 'after_birth',
   'newborn_care': 'newborn_care',
+  'newborn_procedures': 'newborn_care',
   'other_considerations': 'other_considerations',
 };
 
@@ -64,6 +66,7 @@ export default function BirthPlanScreen() {
   const { sessionToken: token } = useAuthStore();
   const [birthPlan, setBirthPlan] = useState<any>(null);
   const [shareRequests, setShareRequests] = useState<any[]>([]);
+  const [hasMidwife, setHasMidwife] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSection, setSelectedSection] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -195,12 +198,21 @@ export default function BirthPlanScreen() {
   
   const fetchBirthPlan = async () => {
     try {
-      const [planData, requestsData] = await Promise.all([
+      const [planData, requestsData, teamData] = await Promise.all([
         apiRequest(API_ENDPOINTS.BIRTH_PLAN),
         apiRequest(API_ENDPOINTS.BIRTH_PLAN_SHARE_REQUESTS).catch(() => ({ requests: [] })),
+        // Midwife-visibility gate: Newborn Procedures shows only when mom has a
+        // MIDWIFE on her care team (hospital-only moms don't see it). Fail open
+        // to false — a team fetch error should not reveal the section.
+        apiRequest(API_ENDPOINTS.MOM_TEAM).catch(() => []),
       ]);
       setBirthPlan(planData);
       setShareRequests(requestsData?.requests || []);
+      const teamList = Array.isArray(teamData) ? teamData : [];
+      setHasMidwife(teamList.some((m: any) =>
+        m?.provider?.role === 'MIDWIFE' &&
+        (m?.connection_status ?? 'Active') === 'Active'
+      ));
     } catch (error) {
       console.error('Error fetching birth plan:', error);
     }
@@ -229,7 +241,22 @@ export default function BirthPlanScreen() {
   
   const saveSection = async () => {
     if (!selectedSection) return;
-    
+
+    // Guard: Newborn Procedures is an informed-choice section — require at least
+    // one decision before saving, so a mom never sees "Saved!" with an empty
+    // record and assumes her choices are on file.
+    if (selectedSection.section_id === 'newborn_procedures') {
+      const decisions = (sectionData as any)?.decisions || {};
+      const hasChoice = Object.values(decisions).some((d: any) => d?.choice);
+      if (!hasChoice) {
+        Alert.alert(
+          'No decisions yet',
+          'Choose or decline at least one procedure before saving this section.'
+        );
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       await apiRequest(`${API_ENDPOINTS.BIRTH_PLAN_SECTION}/${selectedSection.section_id}`, {
@@ -261,14 +288,27 @@ export default function BirthPlanScreen() {
   
   const getCompletedCount = () => {
     if (!birthPlan?.sections) return 0;
-    return birthPlan.sections.filter((s: any) => s.status === 'Complete').length;
+    return birthPlan.sections.filter((s: any) =>
+      s.status === 'Complete' && (s.section_id !== 'newborn_procedures' || hasMidwife)
+    ).length;
   };
   
   const renderSectionContent = () => {
     if (!selectedSection) return null;
-    
+
     const formConfig = SECTION_FORMS[selectedSection.section_id];
-    
+
+    // Newborn Procedures uses dedicated informed-choice decision cards (Phase 4),
+    // not the generic field renderer — the section has no SECTION_FORMS entry.
+    if (selectedSection.section_id === 'newborn_procedures') {
+      return (
+        <NewbornProceduresForm
+          data={sectionData}
+          onChange={updateSectionData}
+        />
+      );
+    }
+
     if (!formConfig) {
       // Fallback for sections without specific form config
       return (
@@ -296,6 +336,9 @@ export default function BirthPlanScreen() {
   
   const getSectionDescription = () => {
     if (!selectedSection) return '';
+    if (selectedSection.section_id === 'newborn_procedures') {
+      return 'Routine newborn procedures and prenatal screenings — read each, then mark your choice. Declines open your state\u2019s official form or prepare your informed-choice document.';
+    }
     const formConfig = SECTION_FORMS[selectedSection.section_id];
     return formConfig?.description || 'Share your preferences for this section.';
   };
@@ -323,7 +366,7 @@ export default function BirthPlanScreen() {
             <View>
               <Text style={styles.progressTitle}>Your Progress</Text>
               <Text style={styles.progressSubtext}>
-                {getCompletedCount()} of {birthPlan?.sections?.length || 9} sections complete
+                {getCompletedCount()} of {hasMidwife ? (birthPlan?.sections?.length || 9) : (birthPlan?.sections?.length || 9) - 1} sections complete
               </Text>
             </View>
             <View style={styles.progressCircle}>
@@ -348,7 +391,9 @@ export default function BirthPlanScreen() {
           Tap each section to add your preferences
         </Text>
         
-        {birthPlan?.sections?.map((section: any, index: number) => (
+        {birthPlan?.sections?.filter((section: any) =>
+          section.section_id !== 'newborn_procedures' || hasMidwife
+        ).map((section: any, index: number) => (
           <TouchableOpacity
             key={section.section_id}
             onPress={() => openSection(section)}

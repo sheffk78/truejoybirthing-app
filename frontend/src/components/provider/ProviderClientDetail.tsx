@@ -239,6 +239,10 @@ export default function ProviderClientDetail({ config }: ClientDetailProps) {
             style={styles.actionButton}
             onPress={() => router.push({ pathname: config.routes.contracts as any, params: { clientId, clientName: client?.name || clientName } })}
             data-testid="action-contract"
+            testID="action-contract"
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Contract"
           >
             <View style={[styles.actionIcon, { backgroundColor: primaryColor + '15' }]}>
               <Icon name="document-text-outline" size={20} color={primaryColor} />

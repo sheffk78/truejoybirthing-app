@@ -1,0 +1,34 @@
+# QA Part B — informed-choice click-through
+# B1b: complete onboarding (3 tutorial steps + role) for mom-CA, land on Home.
+appId: host.exp.Exponent
+name: 02-onboarding-complete
+---
+- runFlow:
+    when:
+      visible: "Skip ahead"
+    commands:
+      - tapOn: "Skip ahead"
+- runFlow:
+    when:
+      visible: "Get Started"
+    commands:
+      - tapOn: "Get Started"
+- runFlow:
+    when:
+      visible: "MOM"
+    commands:
+      - tapOn: "MOM"
+- runFlow:
+    when:
+      visible: "Get Started Free"
+    commands:
+      - tapOn: "Get Started Free"
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+- extendedWaitUntil:
+    visible: ".*"
+    timeout: 20000
+- takeScreenshot: b2-after-onboarding

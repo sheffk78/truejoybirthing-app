@@ -52,13 +52,26 @@ interface OnboardingWalkthroughProps {
   onComplete: () => void;
 }
 
-// Birth photos - bundled locally
+import {
+  phDoulaConsult, phDoulaLabor, phMidwifeSupport, phMidwifeNewborn,
+  phLactationFeeding, phLactationConsult, phLactationClients,
+} from '../constants/photos';
+
+// Birth photos - bundled locally (MOM flow keeps the original three singles;
+// role walkthroughs draw the vetted website variety pool — audit 2026-10-01)
 const BIRTH_PHOTOS = {
   skinToSkin: require('../../assets/images/hero-skin-to-skin.jpg'),
   waterBirth1: require('../../assets/images/hero-water-birth-2.jpg'),
   waterBirth2: require('../../assets/images/hero-water-birth.jpg'),
   familyMoment: require('../../assets/images/hero-family-moment.jpg'),
   newbornSleeping: require('../../assets/images/hero-newborn-sleeping.jpg'),
+  doulaConsult: phDoulaConsult,
+  doulaLabor: phDoulaLabor,
+  midwifeSupport: phMidwifeSupport,
+  midwifeNewborn: phMidwifeNewborn,
+  lactationFeeding: phLactationFeeding,
+  lactationConsult: phLactationConsult,
+  lactationClients: phLactationClients,
 };
 
 const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
@@ -108,7 +121,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Keep track of your clients, appointments, contracts, and invoices all in one place.',
       icon: 'briefcase',
       colorKey: 'secondary',
-      image: BIRTH_PHOTOS.familyMoment,
+      image: BIRTH_PHOTOS.doulaConsult,
     },
     {
       id: '3',
@@ -117,7 +130,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: "Review and contribute to your clients' birth plans, adding your professional insights.",
       icon: 'document-text',
       colorKey: 'accent',
-      image: BIRTH_PHOTOS.skinToSkin,
+      image: BIRTH_PHOTOS.doulaLabor,
     },
   ],
   MIDWIFE: [
@@ -137,7 +150,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Log prenatal visits, monitor health metrics, and maintain comprehensive care records.',
       icon: 'clipboard',
       colorKey: 'primary',
-      image: BIRTH_PHOTOS.familyMoment,
+      image: BIRTH_PHOTOS.midwifeSupport,
     },
     {
       id: '3',
@@ -146,7 +159,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Review birth preferences and help clients make informed decisions about their care.',
       icon: 'heart-half',
       colorKey: 'secondary',
-      image: BIRTH_PHOTOS.newbornSleeping,
+      image: BIRTH_PHOTOS.midwifeNewborn,
     },
   ],
   LACTATION: [
@@ -157,7 +170,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Showcase your credentials, services, and availability to help families find the right lactation support.',
       icon: 'water',
       colorKey: 'primary',
-      image: BIRTH_PHOTOS.newbornSleeping,
+      image: BIRTH_PHOTOS.lactationFeeding,
     },
     {
       id: '2',
@@ -166,7 +179,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Track consultations, follow-up visits, contracts, and invoices all in one place.',
       icon: 'briefcase',
       colorKey: 'secondary',
-      image: BIRTH_PHOTOS.familyMoment,
+      image: BIRTH_PHOTOS.lactationClients,
     },
     {
       id: '3',
@@ -175,7 +188,7 @@ const STEPS_BY_ROLE: Record<string, OnboardingStep[]> = {
       description: 'Review birth plans and contribute your lactation expertise to help families reach their feeding goals.',
       icon: 'heart-circle',
       colorKey: 'accent',
-      image: BIRTH_PHOTOS.skinToSkin,
+      image: BIRTH_PHOTOS.lactationConsult,
     },
   ],
 };

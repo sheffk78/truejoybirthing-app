@@ -92,6 +92,7 @@ export default function AdminContentScreen() {
       'post_delivery': 'Post-Delivery Preferences',
       'after_birth': 'After Birth',
       'newborn_care': 'Newborn Care Preferences',
+      'newborn_procedures': 'Newborn Procedures',
       'other_considerations': 'Other Considerations',
     };
     return titles[sectionId] || sectionId;

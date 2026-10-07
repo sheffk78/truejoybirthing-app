@@ -1,0 +1,45 @@
+# QA Part B — informed-choice click-through
+# B2d: pick due date via native picker, then save details.
+appId: host.exp.Exponent
+name: 05-details-due-date
+---
+- tapOn: "Select your due date"
+- runFlow:
+    when:
+      visible: ".*2026.*"
+    commands:
+      - tapOn: ".*2026.*"
+- runFlow:
+    when:
+      visible: "Done"
+    commands:
+      - tapOn: "Done"
+- runFlow:
+    when:
+      visible: "OK"
+    commands:
+      - tapOn: "OK"
+- runFlow:
+    when:
+      visible: "Save"
+    commands:
+      - tapOn: "Save"
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+- runFlow:
+    when:
+      visible: "Next"
+    commands:
+      - tapOn: "Next"
+- runFlow:
+    when:
+      visible: "Get Started"
+    commands:
+      - tapOn: "Get Started"
+- extendedWaitUntil:
+    visible: ".*"
+    timeout: 20000
+- takeScreenshot: b5-after-due-date

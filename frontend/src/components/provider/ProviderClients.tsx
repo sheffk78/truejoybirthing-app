@@ -372,10 +372,11 @@ export default function ProviderClients({ config }: ProviderClientsProps) {
             const hasUpcomingAppt = clientAppointments[client.client_id];
             
             return (
-              <Card key={client.client_id} style={styles.clientCard} data-testid={`client-card-${client.client_id}`}>
+              <Card key={client.client_id} style={styles.clientCard} testID={`client-card-${client.client_id}`} data-testid={`client-card-${client.client_id}`}>
                 <TouchableOpacity
                   onPress={() => handleClientPress(client)}
                   activeOpacity={0.7}
+                  testID={`client-row-${client.client_id}`}
                 >
                   <View style={styles.clientRow}>
                     <View style={[styles.clientAvatar, { backgroundColor: primaryColor + '20' }]}>

@@ -20,6 +20,7 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { apiRequest } from '../../src/utils/api';
+import ClientSearchPicker from '../../src/components/ClientSearchPicker';
 import { SIZES } from '../../src/constants/theme';
 import { C, F } from '../../src/constants/corpus';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
@@ -252,28 +253,13 @@ export default function MidwifeVisitsScreen() {
           
           <ScrollView style={styles.modalContent}>
             <Text style={styles.fieldLabel}>Select Client *</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.clientSelector}>
-              {clients.map((client) => (
-                <TouchableOpacity
-                  key={client.client_id}
-                  style={[
-                    styles.clientOption,
-                    selectedClientId === client.client_id && styles.clientOptionSelected,
-                  ]}
-                  onPress={() => setSelectedClientId(client.client_id)}
-                >
-                  <Text
-                    style={[
-                      styles.clientOptionText,
-                      selectedClientId === client.client_id && styles.clientOptionTextSelected,
-                    ]}
-                  >
-                    {client.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            
+            <ClientSearchPicker
+              clients={clients}
+              selectedClientId={selectedClientId}
+              onSelect={(client: any) => setSelectedClientId(client.client_id || '')}
+              primaryColor={C.sage}
+              testIDPrefix="visits-client-search"
+            />
             <Text style={styles.fieldLabel}>Visit Type *</Text>
             <View style={styles.typeSelector}>
               {['Prenatal', 'Postpartum'].map((type) => (

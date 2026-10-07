@@ -22,6 +22,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
+import ClientSearchPicker from '../ClientSearchPicker';
 import { apiRequest } from '../../utils/api';
 import { SIZES, FONTS } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
@@ -62,7 +63,6 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
   
   // Form state
   const [selectedClientId, setSelectedClientId] = useState(params.clientId || '');
-  const [showClientPicker, setShowClientPicker] = useState(false);
   const [noteType, setNoteType] = useState('General');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -240,6 +240,7 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
           <TouchableOpacity
             style={[styles.addButton, { backgroundColor: primaryColor }]}
             onPress={handleAddNote}
+            testID="add-note-btn"
             data-testid="add-note-btn"
           >
             <Icon name="add" size={24} color={colors.white} />
@@ -344,37 +345,17 @@ export default function ProviderNotes({ config }: ProviderNotesProps) {
           </View>
           
           <ScrollView style={styles.modalContent}>
-            {/* Client Selection */}
+            {/* Client Selection — search-first picker (Jeff 10/05: same
+                ClientSearchPicker as invoices/contracts/appointments — was the
+                last legacy dropdown-only picker) */}
             <Text style={[styles.fieldLabel, { color: colors.text }]}>Client</Text>
-            <TouchableOpacity 
-              style={[styles.selectButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-              onPress={() => setShowClientPicker(!showClientPicker)}
-            >
-              <Text style={selectedClientId ? [styles.selectText, { color: colors.text }] : [styles.selectPlaceholder, { color: colors.textLight }]}>
-                {selectedClientId ? getClientName(selectedClientId) : 'Select a client'}
-              </Text>
-              <Icon name={showClientPicker ? "chevron-up" : "chevron-down"} size={20} color={colors.textSecondary} />
-            </TouchableOpacity>
-            
-            {showClientPicker && (
-              <ScrollView style={[styles.pickerContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                {clients.map(client => (
-                  <TouchableOpacity
-                    key={client.client_id}
-                    style={[styles.pickerItem, { borderBottomColor: colors.border }]}
-                    onPress={() => {
-                      setSelectedClientId(client.client_id);
-                      setShowClientPicker(false);
-                    }}
-                  >
-                    <Text style={[styles.pickerItemText, { color: colors.text }]}>{client.name}</Text>
-                    {selectedClientId === client.client_id && (
-                      <Icon name="checkmark" size={20} color={primaryColor} />
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            )}
+            <ClientSearchPicker
+              clients={clients}
+              selectedClientId={selectedClientId}
+              onSelect={(client: any) => setSelectedClientId(client.client_id || '')}
+              primaryColor={primaryColor}
+              testIDPrefix="note-client-search"
+            />
             
             {/* Note Type */}
             <Text style={[styles.fieldLabel, { color: colors.text }]}>Type</Text>
@@ -519,28 +500,10 @@ const getStyles = createThemedStyles((colors) => ({
   textInput: { borderRadius: 18, padding: SIZES.md, fontSize: SIZES.fontMd, fontFamily: F.ui, borderWidth: 1 },
   textArea: { minHeight: 120, textAlignVertical: 'top' },
   
-  selectButton: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between',
-    borderRadius: 18, 
-    padding: SIZES.md, 
-    borderWidth: 1, 
-  },
+
   selectText: { fontSize: SIZES.fontMd, fontFamily: F.ui },
   selectPlaceholder: { fontSize: SIZES.fontMd, fontFamily: F.ui },
-  pickerContainer: { 
-    borderRadius: 18, 
-    borderWidth: 1, 
-    marginTop: SIZES.xs,
-    maxHeight: 200,
-  },
-  pickerItem: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between',
-    padding: SIZES.md, 
-    borderBottomWidth: 1, 
-  },
-  pickerItemText: { fontSize: SIZES.fontMd, fontFamily: F.ui },
+
+
+
 }));
