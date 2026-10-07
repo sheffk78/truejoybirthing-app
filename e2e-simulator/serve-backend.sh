@@ -1,7 +1,7 @@
 #!/bin/bash
 # TJB e2e backend launcher — matches the verified 9/28 stack (e2e-simulator/PLAN.md):
 # GW_E2E=1 (auth ceiling raise), mongo 27017, db truejoybirthing_test, uvicorn on 127.0.0.1:8011.
-cd /Users/socializerender/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile/backend
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/backend"
 export GW_E2E=1
 export MONGO_URL="mongodb://localhost:27017"
 export DB_NAME=truejoybirthing_test

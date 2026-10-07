@@ -1,0 +1,61 @@
+# Probe 2: full date+save path with forced dump at end
+appId: com.truejoybirthing.app
+name: probe-add-event-full
+---
+- clearKeychain
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: 'I already have an account'
+    timeout: 20000
+- tapOn: 'I already have an account'
+- waitForAnimationToEnd: {timeout: 3000}
+- tapOn:
+    text: 'Email'
+- inputText: 'demo.mom@truejoybirthing.com'
+- tapOn:
+    id: 'login-password-input'
+- inputText: 'DemoMom2024!'
+- tapOn:
+    id: 'login-submit-btn'
+- waitForAnimationToEnd: {timeout: 3000}
+- runFlow:
+    when:
+      visible: 'Not Now'
+    commands:
+      - tapOn: 'Not Now'
+      - waitForAnimationToEnd: {timeout: 2000}
+- scrollUntilVisible:
+    element:
+      id: 'key-action-contraction-timer'
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 60
+- swipe:
+    direction: UP
+- waitForAnimationToEnd: {timeout: 1500}
+- tapOn:
+    text: 'Timeline, 36 weeks 0 days'
+- extendedWaitUntil:
+    visible: 'PROGRESS'
+    timeout: 15000
+- tapOn:
+    text: '+ Add My Own'
+- extendedWaitUntil:
+    visible: 'Add Appointment'
+    timeout: 8000
+- tapOn:
+    id: 'event-title-input'
+- inputText: 'QA Tour 10-07'
+- waitForAnimationToEnd: {timeout: 2000}
+- tapOn:
+    text: 'Select appointment date'
+- extendedWaitUntil:
+    visible: 'Confirm Date'
+    timeout: 8000
+- waitForAnimationToEnd: {timeout: 2000}
+- tapOn:
+    text: 'Confirm Date'
+- waitForAnimationToEnd: {timeout: 2000}
+# capture state right after confirm: bogus assert forces hierarchy dump
+- assertVisible: 'ZZZ-NEVER-HERE'

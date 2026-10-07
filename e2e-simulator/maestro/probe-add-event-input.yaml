@@ -1,0 +1,53 @@
+# Isolated probe: does text entry into the Add-Event modal's title input work?
+appId: com.truejoybirthing.app
+name: probe-add-event-input
+---
+- clearKeychain
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: 'I already have an account'
+    timeout: 20000
+- tapOn: 'I already have an account'
+- waitForAnimationToEnd: {timeout: 3000}
+- tapOn:
+    text: 'Email'
+- inputText: 'demo.mom@truejoybirthing.com'
+- tapOn:
+    id: 'login-password-input'
+- inputText: 'DemoMom2024!'
+- tapOn:
+    id: 'login-submit-btn'
+- waitForAnimationToEnd: {timeout: 3000}
+- runFlow:
+    when:
+      visible: 'Not Now'
+    commands:
+      - tapOn: 'Not Now'
+      - waitForAnimationToEnd: {timeout: 2000}
+- scrollUntilVisible:
+    element:
+      id: 'key-action-contraction-timer'
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 60
+# Timeline card sits above the (gated) timer strip — scroll up a bit
+- swipe:
+    direction: UP
+- waitForAnimationToEnd: {timeout: 1500}
+- tapOn:
+    text: 'Timeline, 36 weeks 0 days'
+- extendedWaitUntil:
+    visible: 'PROGRESS'
+    timeout: 15000
+- tapOn:
+    text: '+ Add My Own'
+- extendedWaitUntil:
+    visible: 'Add Appointment'
+    timeout: 8000
+- tapOn:
+    id: 'event-title-input'
+- inputText: 'QA Tour 10-07'
+- waitForAnimationToEnd: {timeout: 2000}
+# probe assertion — dump captures the TextField value either way
+- assertVisible: 'QA Tour 10-07'
