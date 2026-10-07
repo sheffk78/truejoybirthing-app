@@ -350,10 +350,14 @@ export default function WellnessScreen() {
 const getStyles = createThemedStyles((colors) => ({
   container: { flex: 1, backgroundColor: C.cream },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
-  header: { alignItems: 'center', marginBottom: SIZES.lg },
+  // 10/07 r2 (#8): s14 wellness mockup .mhead — LEFT header, .tt 21/1.05 serif
+  // (was 26px centered); em word = italic rose via .tt em
+  header: { alignItems: 'flex-start', marginBottom: 14, paddingHorizontal: 4 },
   headerKicker: { ...kickerStyle(C.rose), marginBottom: 6 },
-  headerTitle: { fontFamily: DF.serif, fontSize: 26, color: C.ink, marginBottom: 14, textAlign: 'center' },
-  headerName: { color: C.rose },
+  headerTitle: { fontFamily: DF.serif, fontWeight: '700', fontSize: 21, color: C.ink, lineHeight: 22, marginBottom: 10 }, // .tt 21px lh1.05
+  // .tt em = italic + var(--rose #A25C86) — audit row 5.2 said roseSoft #B085A5,
+  // but the s14 wellness mockup itself paints the em at --rose; mockup wins (law = mockup)
+  headerName: { fontStyle: 'italic', color: C.rose },
   checkinButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: C.rose, padding: SIZES.md, borderRadius: SIZES.radiusMd, marginBottom: SIZES.lg, gap: SIZES.xs },
   checkinButtonText: { color: C.white, fontWeight: '600', fontSize: SIZES.fontMd },
   statsCard: { marginBottom: SIZES.lg },

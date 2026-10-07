@@ -586,7 +586,7 @@ export default function MomProfileScreen() {
               </View>
             )}
             <View style={[styles.editAvatarBadge, { pointerEvents: 'none' }]}>
-              <Icon name="camera" size={14} color={C.white} />
+              <Icon name="camera" size={12} color={C.white} /> {/* badge scaled 32→24 with the 56px avatar */}
             </View>
           </TouchableOpacity>
         </View>
@@ -975,40 +975,40 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.sm,
     position: 'relative',
   },
+  // 10/07 r2 (#10): S13 law avatar = 56px circle, roseSoft bg, NO thick rose ring
+  // (was 100px + 3px rose border)
   avatarImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 3,
-    borderColor: C.rose,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
   },
   avatarPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: C.roseSoft,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 3,
-    borderColor: C.rose,
   },
   editAvatarBadge: {
     position: 'absolute',
     bottom: 0,
     right: 0,
     backgroundColor: C.rose,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: C.white,
   },
   avatarInitials: {
+    // .avatar: Cormorant 700 20px color var(--rose)
     fontFamily: DF.serif,
-    fontSize: 34,
-    color: C.white,
+    fontWeight: '700',
+    fontSize: 20,
+    color: C.rose,
   },
   dateInputContainer: {
     marginBottom: SIZES.md,

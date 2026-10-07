@@ -464,7 +464,9 @@ const getStyles = createThemedStyles((colors) => ({
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scrollContent: { padding: SIZES.md, paddingBottom: SIZES.xxl },
   header: { marginBottom: SIZES.md },
-  headerKicker: { ...kickerStyle(C.lavender), marginBottom: 4 },
+  // 10/07 r2 (#8): law overline color = rose #A25C86 (s6 .a-overline / s13 .ov) —
+  // was lavender, the only off-law overline in (mom)
+  headerKicker: { ...kickerStyle(C.rose), marginBottom: 4 },
   headerTitle: { fontFamily: DF.serif, fontSize: 26, color: C.ink, marginBottom: 14 },
   disclaimerCard: {
     flexDirection: 'row',

@@ -398,8 +398,11 @@ const getStyles = createThemedStyles((colors) => ({
     padding: 16,
     marginBottom: 20,
   },
+  // 10/07 r2 (#8): law overlines = rose #A25C86 — the s5 birth-plan mock paints this
+  // notice block lavender (bg/border/icon only); the cap-head itself reads as an
+  // overline, so it takes the law overline color (s6 .a-overline)
   providerMessageTitle: {
-    ...kickerStyle(C.lavender),
+    ...kickerStyle(C.rose),
     marginBottom: 10,
     textAlign: 'center',
   },

@@ -829,7 +829,9 @@ const getStyles = createThemedStyles(() => ({
     fontFamily: F.uiBold,
   },
   headerTitle: { fontSize: 26, fontFamily: F.serif, color: C.ink, lineHeight: 30 },
-  headerTitleAccent: { color: C.roseSoft },
+  // 10/07 r2 (#8): mockup .a-h1 em = NON-italic roseSoft — s14 wellness .tt em is the
+  // italic-rose variant; page H1s stay non-italic (matches appointments/welcome pattern)
+  headerTitleAccent: { color: C.roseSoft, fontStyle: 'normal' },
   headerSub: { fontSize: 12.5, color: C.gray, marginTop: 4, fontFamily: F.ui, fontWeight: '500' },
 
   scrollContent: { paddingBottom: 24 },
