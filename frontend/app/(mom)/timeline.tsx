@@ -340,11 +340,24 @@ export default function TimelineScreen() {
               <TouchableOpacity
                 style={styles.datePickerButton}
                 onPress={() => {
+                  if (showDatePicker) {
+                    // 10/07 QA: the row doubles as the close affordance — the
+                    // Confirm tap can land in the wheel zone while the settling
+                    // layout shifts the button, leaving the picker stuck open;
+                    // toggling from the row always works.
+                    setShowDatePicker(false);
+                    return;
+                  }
                   // Drop the title keyboard first — otherwise it covers the inline
                   // picker + Confirm button (10/07 QA finding) and taps land on keys.
                   Keyboard.dismiss();
                   // Initialize the wheel to the chosen date (or today) so it never snaps
-                  setSelectedDate(newEvent.event_date ? new Date(`${newEvent.event_date}T12:00:00`) : new Date());
+                  const initDate = newEvent.event_date ? new Date(`${newEvent.event_date}T12:00:00`) : new Date();
+                  setSelectedDate(initDate);
+                  // Commit the draft immediately: a wheel picker always holds a
+                  // value, so the row never sits in placeholder state while the
+                  // picker is open (10/07: empty date made Save a dead no-POST).
+                  setNewEvent((prev: any) => ({ ...prev, event_date: formatDateLocal(initDate) }));
                   setShowDatePicker(true);
                 }}
                 testID="event-date-picker-btn"
@@ -367,7 +380,13 @@ export default function TimelineScreen() {
                     mode="date"
                     display="spinner"
                     onChange={(event: any, date?: Date) => {
-                      if (date) setSelectedDate(date);
+                      if (date) {
+                        setSelectedDate(date);
+                        // Commit live so every wheel settle is captured — never
+                        // rely on the Confirm tap alone (10/07: it can be
+                        // swallowed while the layout settles).
+                        setNewEvent((prev: any) => ({ ...prev, event_date: formatDateLocal(date) }));
+                      }
                     }}
                     style={{ width: '100%', height: 200 }}
                   />

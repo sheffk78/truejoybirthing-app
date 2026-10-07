@@ -1,0 +1,109 @@
+# TJB 10/07 benchmark-completion QA — timeline Add-Event modal + week-34 timer strip.
+# Requires demo.mom due_date staged to ~+28d (week 36) in truejoybirthing_test.
+appId: com.truejoybirthing.app
+name: verify-10-07-benchmark-features
+---
+- clearKeychain
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: 'I already have an account'
+    timeout: 20000
+- tapOn: 'I already have an account'
+- waitForAnimationToEnd: {timeout: 3000}
+- tapOn:
+    text: 'Email'
+- inputText: 'demo.mom@truejoybirthing.com'
+- tapOn:
+    id: 'login-password-input'
+- inputText: 'DemoMom2024!'
+- tapOn:
+    id: 'login-submit-btn'
+- waitForAnimationToEnd: {timeout: 3000}
+- runFlow:
+    when:
+      visible: 'Not Now'
+    commands:
+      - tapOn: 'Not Now'
+      - waitForAnimationToEnd: {timeout: 2000}
+
+# ── Part 1: week-34+ timer strip on Home ──────────
+- scrollUntilVisible:
+    element:
+      id: 'key-action-contraction-timer'
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 60
+- assertVisible: 'Contraction Timer, Start timing contractions'
+- tapOn:
+    id: 'key-action-contraction-timer'
+- waitForAnimationToEnd: {timeout: 3000}
+- assertVisible:
+    text: 'Counting kicks instead.*'
+
+# ── Part 2: Timeline — Add Event modal round-trip ─
+# back to Home via tab bar (1st of 5 tabs; labels are composite AX nodes → point tap)
+- tapOn:
+    point: '10%, 94%'
+- waitForAnimationToEnd: {timeout: 3000}
+- scrollUntilVisible:
+    element:
+      text: 'Timeline, 36 weeks 0 days'
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 60
+- tapOn:
+    text: 'Timeline, 36 weeks 0 days'
+- extendedWaitUntil:
+    visible: 'PROGRESS'
+    timeout: 15000
+- tapOn:
+    text: '+ Add My Own'
+- extendedWaitUntil:
+    visible: 'Add Appointment'
+    timeout: 8000
+# tap first, then type into the focused field (one-shot inputText races focus on iOS)
+- tapOn:
+    id: 'event-title-input'
+- inputText: 'PROD-VERIFY-10-07'
+- waitForAnimationToEnd: {timeout: 2000}
+# inline picker expands in-flow under the date row (spinner + Confirm Date btn)
+- tapOn:
+    text: 'Select appointment date'
+- extendedWaitUntil:
+    visible: 'Confirm Date'
+    timeout: 8000
+- tapOn:
+    text: 'Confirm Date'
+- waitForAnimationToEnd: {timeout: 1500}
+# 10/07 RCA: the Confirm tap once landed inside the button bounds but
+# event_date stayed empty, so Save hit the 'Please fill in title and date'
+# guard and never POSTed. Verify the date actually committed; retry once.
+- runFlow:
+    when:
+      visible: 'Select appointment date'
+    commands:
+      - tapOn:
+          text: 'Select appointment date'
+      - extendedWaitUntil:
+          visible: 'Confirm Date'
+          timeout: 8000
+      - tapOn:
+          text: 'Confirm Date'
+      - waitForAnimationToEnd: {timeout: 1500}
+- assertNotVisible: 'Select appointment date'
+- tapOn:
+    id: 'save-event-btn'
+- waitForAnimationToEnd: {timeout: 3000}
+# 10/07 RCA: the modal only closes on the success path (apiRequest resolved).
+# If it is still open the save was guarded or failed - fail here instead of
+# letting the final assert match the modal's title input (the false positive).
+- assertNotVisible: 'Add Appointment'
+# the saved row lands low in the list — scroll to it instead of a bare assert
+# (10/07: bare assertVisible missed an in-DB, below-the-fold row)
+- scrollUntilVisible:
+    element:
+      text: 'PROD-VERIFY-10-07'
+    timeout: 8000
+    speed: 40
+    visibilityPercentage: 60
