@@ -76,8 +76,13 @@ async def get_articles(
     (audience field is "mom" or "all"). "provider" returns articles
     tagged for providers (audience field is "provider" or "all").
     If audience is omitted, returns all published articles (backward compat).
+
+    10/08 mom-content pass: status=published is ALWAYS enforced — the
+    collection also holds archived rows (20-article retention pruning in the
+    weekly pipeline) and those were leaking into every feed query. Feeds are
+    user-facing; only published articles may serve.
     """
-    query = {}
+    query: dict = {"status": "published"}
     if tag:
         query["tags"] = tag
     if audience:
