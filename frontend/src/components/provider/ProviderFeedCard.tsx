@@ -35,12 +35,15 @@ export default function ProviderFeedCard({ article, primaryColor }: ProviderFeed
   const colors = useColors();
   const styles = getStyles(colors);
 
-  const handleTap = async () => {
-    // Jeff 10/02: the research blurb must open the real article. Prefer the
-    // TJB blog companion post; fall back to the original research source.
-    const url = article.tjb_blog_url || (article as any).source_url;
+  const handleTap = () => {
+    // Jeff 10/08: card taps stay on TJB's own site — the blog read is the
+    // destination. Prefer the companion post (tjb_blog_url, pipeline step 6b);
+    // while a post hasn't been generated yet, land on the blog index so the
+    // reader never one-taps off-site. Source (PubMed) links live on the blog
+    // article page as citations, not in the app card.
+    const url = article.tjb_blog_url || 'https://truejoybirthing.com/blog/';
     if (url) {
-      await WebBrowser.openBrowserAsync(url);
+      WebBrowser.openBrowserAsync(url).catch(() => {});
     }
   };
 
@@ -110,20 +113,18 @@ export default function ProviderFeedCard({ article, primaryColor }: ProviderFeed
           </View>
         )}
 
-        {/* Tags + Actions */}
-        <View style={styles.footer}>
-          <View style={styles.tagsRow}>
-            {article.tags?.slice(0, 3).map((tag) => (
-              <View key={tag} style={[styles.tag, { backgroundColor: colors.border }]}>
-                <Text style={[styles.tagText, { color: colors.textSecondary }]}>{tag}</Text>
-              </View>
-            ))}
-            <Text style={[styles.aiTag, { color: colors.textLight }]}>AI</Text>
-            {/* Jeff 10/02: make it obvious the card opens the article */}
-            <Text style={[styles.readHint, { color: primaryColor }]}>
-              {article.tjb_blog_url ? 'Read the article' : 'Read the research'} →
-            </Text>
-          </View>
+        {/* Tags row (AI tag inline with tags) */}
+        <View style={styles.tagsRow}>
+          {article.tags?.slice(0, 3).map((tag) => (
+            <View key={tag} style={[styles.tag, { backgroundColor: colors.border }]}>
+              <Text style={[styles.tagText, { color: colors.textSecondary }]}>{tag}</Text>
+            </View>
+          ))}
+          <Text style={[styles.aiTag, { color: colors.textLight }]}>AI</Text>
+        </View>
+        {/* Read CTA — its own line so it never wraps against the tags (10/08) */}
+        <View style={styles.ctaRow}>
+          <Text style={[styles.readHint, { color: primaryColor }]}>Read at True Joy Birthing →</Text>
           <TouchableOpacity onPress={handleReport} style={styles.reportBtn}>
             <Icon name="flag-outline" size={14} color={colors.textLight} />
           </TouchableOpacity>
@@ -158,8 +159,13 @@ const getStyles = (colors: any) =>
       fontSize: SIZES.fontXs,
       fontFamily: F.ui,
     },
+    // 10/08 Jeff: the 13.5px serif headline read smaller than the 13.5px body
+    // (Cormorant's low x-height vs Quicksand's tall one). fontMd == fontSm ==
+    // 13.5 in the scale today, so the right fix is the corpus card-headline
+    // scale — cardH3 is 17px serif on this very screen — not a one-off bump.
     title: {
-      fontSize: SIZES.fontMd,
+      fontSize: SIZES.fontLg,
+      lineHeight: 22,
       fontFamily: F.serifSemi,
       marginBottom: SIZES.xs,
     },
@@ -194,6 +200,12 @@ const getStyles = (colors: any) =>
       flexDirection: 'row',
       gap: 4,
       alignItems: 'center',
+      marginBottom: SIZES.sm,
+    },
+    ctaRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     tag: {
       paddingHorizontal: 6,
@@ -212,8 +224,6 @@ const getStyles = (colors: any) =>
     readHint: {
       fontSize: SIZES.fontXs,
       fontFamily: F.ui,
-      marginLeft: 'auto',
-      marginRight: 6,
     },
     reportBtn: {
       padding: 4,
