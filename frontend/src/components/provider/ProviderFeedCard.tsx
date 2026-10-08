@@ -17,6 +17,11 @@ interface FeedArticle {
   title: string;
   source_name: string;
   excerpt: string;
+  // Mom-voice overrides (mom content pass, JOB-2026-10-08f): present on
+  // mom-audience articles; the mom section renders these when set.
+  mom_excerpt?: string | null;
+  mom_takeaway?: string | null;
+  mom_tags?: string[] | null;
   practice_takeaway?: string;
   tags?: string[];
   // Backend sends null until the blog pass publishes the post
@@ -96,24 +101,30 @@ export default function ProviderFeedCard({ article, primaryColor }: ProviderFeed
           {article.title}
         </Text>
 
-        {/* Excerpt */}
+        {/* Excerpt — mom-voice version wins when present (mom content pass) */}
         <Text style={[styles.excerpt, { color: colors.textSecondary }]} numberOfLines={3}>
-          {article.excerpt}
+          {article.mom_excerpt || article.excerpt}
         </Text>
 
-        {/* Practice Takeaway */}
-        {article.practice_takeaway && (
-          <View style={[styles.takeaway, { backgroundColor: primaryColor + '12' }]}>
-            <Text style={[styles.takeawayLabel, { color: primaryColor }]}>Practice:</Text>
-            <Text style={[styles.takeawayText, { color: colors.text }]}>
-              {article.practice_takeaway}
-            </Text>
-          </View>
-        )}
+        {/* Takeaway — mom-voice "what this means for you" when present */}
+        {(() => {
+          const takeaway = article.mom_takeaway || article.practice_takeaway;
+          if (!takeaway) return null;
+          return (
+            <View style={[styles.takeaway, { backgroundColor: primaryColor + '12' }]}>
+              <Text style={[styles.takeawayLabel, { color: primaryColor }]}>
+                {article.mom_takeaway ? 'For you:' : 'Practice:'}
+              </Text>
+              <Text style={[styles.takeawayText, { color: colors.text }]}>
+                {takeaway}
+              </Text>
+            </View>
+          );
+        })()}
 
         {/* Tags row (AI tag inline with tags) */}
         <View style={styles.tagsRow}>
-          {article.tags?.slice(0, 3).map((tag) => (
+          {(article.mom_tags || article.tags)?.slice(0, 3).map((tag) => (
             <View key={tag} style={[styles.tag, { backgroundColor: colors.border }]}>
               <Text style={[styles.tagText, { color: colors.textSecondary }]}>{tag}</Text>
             </View>
