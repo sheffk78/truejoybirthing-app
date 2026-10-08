@@ -214,6 +214,12 @@ export default function MomLayout() {
           href: null,  // Hide from tab bar, accessible from my-team
         }}
       />
+      <Tabs.Screen
+        name="kick-counter"
+        options={{
+          href: null,  // Hide from tab bar — entered from Home Key Actions + Timer cross-link (10/08 QA: undeclared route auto-registered as visible 7th tab)
+        }}
+      />
     </Tabs>
   );
 }

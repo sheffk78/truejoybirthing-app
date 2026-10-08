@@ -67,9 +67,13 @@ name: verify-10-05-wave2-tabs
 - assertVisible: 'Baby Development'
 
 # ── Kick counter reachable from Home card ──────
+# Scroll to the contraction-timer strip (below the card) first: it drives the
+# ScrollView for real. The kicker card alone reports 100% AX-visibility while
+# still rendered behind the opaque tab bar (10/08 QA), so scrollUntilVisible on
+# it stops instantly and the tap lands on the bar instead.
 - scrollUntilVisible:
     element:
-      id: 'key-action-count-kicks'
+      id: 'key-action-contraction-timer'
     direction: DOWN
     timeout: 20000
     visibilityPercentage: 60

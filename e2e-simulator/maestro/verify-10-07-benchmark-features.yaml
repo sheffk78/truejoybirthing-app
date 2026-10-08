@@ -48,12 +48,12 @@ name: verify-10-07-benchmark-features
 - waitForAnimationToEnd: {timeout: 3000}
 - scrollUntilVisible:
     element:
-      text: 'Timeline, 36 weeks 0 days'
+      text: 'Timeline, 36 weeks.*'
     direction: DOWN
     timeout: 20000
     visibilityPercentage: 60
 - tapOn:
-    text: 'Timeline, 36 weeks 0 days'
+    text: 'Timeline, 36 weeks.*'
 - extendedWaitUntil:
     visible: 'PROGRESS'
     timeout: 15000

@@ -1,0 +1,14 @@
+# Ad-hoc 10/08 probe v18: explicit drag gesture scroll, then attempt card tap
+appId: com.truejoybirthing.app
+name: probe-kick-entry-1008
+---
+- launchApp:
+    clearState: false
+- extendedWaitUntil:
+    visible: 'Key Actions'
+    timeout: 20000
+- swipe:
+    from: '195, 560'
+    to: '195, 260'
+- waitForAnimationToEnd: {timeout: 2000}
+- assertVisible: 'XYZNONEXISTENT'
