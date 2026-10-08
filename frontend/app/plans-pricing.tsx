@@ -1,14 +1,6 @@
+import { F } from 'src/constants/corpus';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  Linking,
-  Platform,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Linking, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../src/components/Icon';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -23,7 +15,7 @@ import {
   getProviderDisplayName 
 } from './config/subscriptionConfig';
 import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
-import { SIZES, FONTS } from '../src/constants/theme';
+import { SIZES } from '../src/constants/theme';
 
 // Platform detection helpers
 const getCurrentPlatform = () => {
@@ -614,7 +606,7 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   backButton: { padding: 8 },
-  headerTitle: { fontSize: 18, fontWeight: '600', color: colors.text },
+  headerTitle: { fontSize: 17, fontWeight: '600', color: colors.text },
   content: { flex: 1, padding: 16 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { marginTop: 12, color: colors.textSecondary },
@@ -633,7 +625,7 @@ const getStyles = createThemedStyles((colors) => ({
   
   section: { marginBottom: 24 },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
-  sectionTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
+  sectionTitle: { fontSize: 21, fontWeight: '700', color: colors.text },
   
   freeCard: {
     backgroundColor: colors.surface,
@@ -691,7 +683,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   savingsText: { color: colors.white, fontSize: 10, fontWeight: '700' },
   planName: { fontSize: 14, fontWeight: '500', color: colors.textSecondary, marginBottom: 4 },
-  planPrice: { fontSize: 28, fontWeight: '700', color: colors.text },
+  planPrice: { fontSize: 26, fontWeight: '700', color: colors.text },
   planPeriod: { fontSize: 14, color: colors.textSecondary },
   selectedIndicator: {
     position: 'absolute',
@@ -806,7 +798,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   skipButtonText: {
     fontSize: 15,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   
   momNote: {
@@ -877,7 +869,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   badgeReviewText: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     lineHeight: 20,
     fontStyle: 'italic',
@@ -886,7 +878,7 @@ const getStyles = createThemedStyles((colors) => ({
   badgeReviewerText: {
     fontSize: 12,
     color: colors.textSecondary,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   // External price comparison — real market rates
   priceComparison: {
@@ -895,7 +887,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   priceComparisonText: {
     fontSize: 13,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 18,
     textAlign: 'center',

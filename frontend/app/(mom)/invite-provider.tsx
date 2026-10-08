@@ -565,16 +565,17 @@ const getStyles = createThemedStyles((colors) =>
       width: 56,
       height: 56,
       borderRadius: 28,
-      backgroundColor: C.lavenderBg,
+      backgroundColor: C.roseBg, // 10/07 r3 (#9): s13 56px avatar variant = rose bg + rose letter
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: 14,
     },
+    // 10/07 r3 (#9): S13 avatar law = Cormorant 700 20 rose
     successAvatarText: {
-      fontSize: 22,
+      fontSize: 20,
       fontFamily: DF.serif,
       fontWeight: '700',
-      color: C.lavender,
+      color: C.rose,
     },
     successTitle: {
       fontSize: 21,

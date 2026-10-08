@@ -1,23 +1,11 @@
+import { F } from '../../src/constants/corpus';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TextInput,
-  Linking,
-  Platform,
-  Pressable,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Animated,
-  Easing,
-} from 'react-native';
+import { View, Text, Image, TextInput, Linking, Platform, Pressable, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Animated, Easing } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon } from '../../src/components/Icon';
-import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { SIZES, BRAND } from '../../src/constants/theme';
 import { useAuthStore } from '../../src/store/authStore';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
@@ -268,7 +256,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   headline: {
     fontSize: 28,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     fontWeight: '700',
     lineHeight: 36,
     textAlign: 'center',
@@ -278,7 +266,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   subhead: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: SIZES.sm,
@@ -298,7 +286,7 @@ const getStyles = createThemedStyles((colors) => ({
   errorText: {
     flex: 1,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   field: {
     flexDirection: 'row',
@@ -313,7 +301,7 @@ const getStyles = createThemedStyles((colors) => ({
   input: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   forgotWrap: {
     alignSelf: 'flex-end',
@@ -322,7 +310,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   forgotText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
   },
   submitButton: {
@@ -334,7 +322,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   submitText: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '700',
   },
   buttonPressed: {
@@ -347,10 +335,10 @@ const getStyles = createThemedStyles((colors) => ({
   },
   swapText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   swapLinkText: {
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '700',
   },
   footBlock: {
@@ -368,7 +356,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   previewText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
   },
 }));

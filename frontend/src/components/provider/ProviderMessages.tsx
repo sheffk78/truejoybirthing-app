@@ -945,7 +945,7 @@ const getStyles = createThemedStyles((colors) => ({
   conversationInfo: { flex: 1 },
   nameRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 2 },
   nameRoleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 2 },
-  userName: { fontSize: SIZES.fontMd, fontFamily: F.uiSemi, marginRight: SIZES.sm },
+  userName: { fontSize: 14, fontFamily: F.serifSemi, marginRight: SIZES.sm }, // 10/07 r3 (#9): d9 .msg-name serif 600 14
   roleBadge: { paddingHorizontal: SIZES.xs, paddingVertical: 2, borderRadius: SIZES.radiusSm },
   roleText: { fontSize: SIZES.fontXs, fontWeight: '600' },
   statusBadge: { paddingHorizontal: SIZES.xs, paddingVertical: 2, borderRadius: SIZES.radiusSm },

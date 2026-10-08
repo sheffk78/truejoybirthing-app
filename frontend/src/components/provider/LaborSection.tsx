@@ -1,25 +1,15 @@
+import { F } from '../../constants/corpus';
 // Labor Records Section Component for Midwife Client Detail
 // Tracks labor progress with timestamped entries
 
 import React, { useState, useCallback, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
-  TextInput,
-  Alert,
-  ActivityIndicator,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Alert, ActivityIndicator, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors, createThemedStyles } from '../../hooks/useThemedStyles';
 
 // ============== TYPES ==============
@@ -886,13 +876,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginLeft: SIZES.sm,
   },
   recordCount: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginLeft: SIZES.xs,
   },
@@ -909,13 +899,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginTop: SIZES.md,
   },
   emptyText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     marginTop: SIZES.xs,
@@ -939,7 +929,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   timeText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginLeft: 4,
   },
   stageBadge: {
@@ -949,13 +939,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   stageBadgeText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.white,
     textTransform: 'capitalize',
   },
   recordSummary: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   quickStats: {
@@ -979,13 +969,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   statLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginRight: 4,
   },
   statValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
   },
   // Modal styles
@@ -1004,7 +994,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
   },
   modalContent: {
@@ -1023,7 +1013,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   formSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginBottom: SIZES.sm,
   },
@@ -1032,7 +1022,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: SIZES.xs,
     marginTop: SIZES.sm,
@@ -1043,7 +1033,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusSm,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     backgroundColor: colors.surface,
   },
@@ -1077,13 +1067,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   optionButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textTransform: 'capitalize',
   },
   optionButtonTextSelected: {
     color: colors.white,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   // Detail modal styles
   detailHeader: {
@@ -1096,14 +1086,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailTime: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
   },
   detailCard: {
     marginBottom: SIZES.md,
   },
   detailCardTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginBottom: SIZES.sm,
     paddingBottom: SIZES.sm,
@@ -1120,12 +1110,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   detailValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
   },
   detailNoteRow: {
@@ -1136,7 +1126,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailNote: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     marginTop: SIZES.xs,
   },
@@ -1149,7 +1139,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   deleteButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: SIZES.xs,
   },

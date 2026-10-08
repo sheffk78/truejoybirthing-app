@@ -1,14 +1,6 @@
+import { F } from '../../src/constants/corpus';
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,7 +8,7 @@ import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { useAuthStore } from '../../src/store/authStore';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 type RoleOption = 'MOM' | 'DOULA' | 'MIDWIFE' | 'LACTATION';
@@ -372,15 +364,15 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.xl,
   },
   roleTitle: {
-    fontSize: 32,
-    fontFamily: FONTS.heading,
+    fontSize: 26,
+    fontFamily: F.serif,
     fontWeight: '700',
     color: colors.text,
     marginBottom: SIZES.xs,
   },
   roleSubtitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   roleCardsContainer: {
@@ -415,15 +407,15 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.md,
   },
   roleCardLabel: {
-    fontSize: 22,
-    fontFamily: FONTS.heading,
+    fontSize: 21,
+    fontFamily: F.serif,
     fontWeight: '700',
     color: colors.white,
     marginBottom: 4,
   },
   roleCardSubtitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: 'rgba(255,255,255,0.9)',
     marginBottom: SIZES.sm,
   },
@@ -436,7 +428,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   pricingText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
     color: colors.white,
   },
@@ -464,12 +456,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   selectedRoleText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
   },
   changeRoleText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     textDecorationLine: 'underline',
     marginLeft: SIZES.xs,
   },
@@ -478,14 +470,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   title: {
     fontSize: SIZES.fontTitle,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     fontWeight: '700',
     color: colors.text,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   formSection: {
@@ -502,7 +494,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   submitButtonText: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '700',
     color: colors.white,
   },
@@ -517,12 +509,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   loginText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   loginLink: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
   },
 }));

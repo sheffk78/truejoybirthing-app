@@ -1,16 +1,6 @@
+import { F } from '../../src/constants/corpus';
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-  Modal,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ActivityIndicator, Modal } from 'react-native';
 import { formatDateLocal, todayLocal } from '../../src/utils/date';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,7 +13,7 @@ import Card from '../../src/components/Card';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const BIRTH_SETTINGS = [
@@ -426,7 +416,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   overline: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     letterSpacing: 2,
     color: colors.textLight,
     textTransform: 'uppercase',
@@ -441,14 +431,14 @@ const getStyles = createThemedStyles((colors) => ({
   sageHintText: {
     flex: 1,
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 17,
   },
   footNote: {
     textAlign: 'center',
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.success,
     backgroundColor: colors.success + '18',
     borderRadius: SIZES.radiusMd,
@@ -458,13 +448,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   title: {
     fontSize: SIZES.fontTitle,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 24,
   },
@@ -473,19 +463,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginBottom: SIZES.sm,
   },
   helperText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginBottom: SIZES.sm,
   },
   errorText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginBottom: SIZES.sm,
   },
@@ -501,7 +491,7 @@ const getStyles = createThemedStyles((colors) => ({
   dateText: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     marginLeft: SIZES.sm,
   },
@@ -531,7 +521,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   dateModalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   webCalendarWrapper: {
@@ -560,13 +550,13 @@ const getStyles = createThemedStyles((colors) => ({
   settingLabel: {
     marginTop: SIZES.sm,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
   },
   settingLabelSelected: {
     color: colors.primary,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   checkmark: {
     position: 'absolute',
@@ -600,7 +590,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   locationResultText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.success,
     marginLeft: SIZES.xs,
   },
@@ -633,14 +623,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   successTitle: {
     fontSize: SIZES.fontTitle,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginTop: SIZES.md,
     marginBottom: SIZES.xs,
   },
   successSubtitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,

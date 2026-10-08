@@ -1,26 +1,10 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  Alert,
-  Platform,
-  Pressable,
-  Share,
-  Animated,
-  Easing,
-  Dimensions,
-  AppState,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, TextInput, Alert, Platform, Pressable, Share, Animated, Easing, Dimensions, AppState } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TIcon from '../../src/components/TIcon';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
-import { SIZES, FONTS, COLORS } from '../../src/constants/theme';
+import { SIZES, COLORS } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-chart-kit';
@@ -1405,15 +1389,15 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 24,
   },
   emptyTitle: {
-    fontSize: 22,
-    fontFamily: FONTS.heading,
+    fontSize: 21,
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: 12,
     textAlign: 'center',
   },
   emptyText: {
     fontSize: 16,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
     lineHeight: 24,
@@ -1622,7 +1606,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   patternAlertInline: {
     fontSize: 12,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     marginLeft: 4,
     flexShrink: 1,
   },
@@ -1647,14 +1631,14 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 20,
   },
   modalTitle: {
-    fontSize: 20,
-    fontFamily: FONTS.heading,
+    fontSize: 21,
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: 8,
   },
   modalSubtitle: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginBottom: 20,
     lineHeight: 20,
@@ -1682,13 +1666,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sharingOptionText: {
     fontSize: 16,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     marginLeft: 12,
   },
   sharingNote: {
     fontSize: 12,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
     marginBottom: 20,
@@ -1717,7 +1701,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   intensityLabel: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   skipIntensity: {
@@ -1726,7 +1710,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   skipIntensityText: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
   },
   
@@ -1736,7 +1720,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyHistoryText: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
     paddingVertical: 40,
@@ -1756,13 +1740,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   historyItemNumber: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     width: 40,
   },
   historyItemTime: {
     fontSize: 16,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   historyItemDetails: {
@@ -1773,7 +1757,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   historyDetailText: {
     fontSize: 12,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginRight: 12,
   },
@@ -1784,7 +1768,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   intensityBadgeText: {
     fontSize: 10,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.white,
     fontWeight: '600',
   },
@@ -1798,7 +1782,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   formLabel: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     marginBottom: 8,
   },
@@ -1809,7 +1793,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     backgroundColor: colors.surface,
   },
   intensityRow: {
@@ -1826,7 +1810,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   intensityChipText: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   
@@ -1838,8 +1822,8 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 20,
   },
   summaryTitle: {
-    fontSize: 20,
-    fontFamily: FONTS.heading,
+    fontSize: 21,
+    fontFamily: F.serif,
     color: colors.text,
     textAlign: 'center',
     marginBottom: 24,
@@ -1853,13 +1837,13 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
   },
   summaryStatValue: {
-    fontSize: 28,
-    fontFamily: FONTS.heading,
+    fontSize: 26,
+    fontFamily: F.serif,
     color: colors.primary,
   },
   summaryStatLabel: {
     fontSize: 12,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginTop: 4,
   },
@@ -1873,7 +1857,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   patternReachedText: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginLeft: 8,
   },
@@ -1894,7 +1878,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   waterBrokeText: {
     fontSize: 13,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.info || colors.primary,
     marginLeft: 8,
     flex: 1,
@@ -1907,13 +1891,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   settingsLabel: {
     fontSize: 16,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: 4,
   },
   settingsHint: {
     fontSize: 13,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginBottom: 12,
   },
@@ -1936,7 +1920,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   settingsOptionText: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   settingsOptionTextActive: {
@@ -1963,12 +1947,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   alertOptionTitle: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   alertOptionDesc: {
     fontSize: 12,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginTop: 2,
   },
@@ -1976,7 +1960,7 @@ const getStyles = createThemedStyles((colors) => ({
   // Water Broke Modal
   waterBrokeHint: {
     fontSize: 14,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     lineHeight: 20,
     marginBottom: 16,
@@ -1991,14 +1975,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   chartTitle: {
     fontSize: 14,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: 4,
     textAlign: 'center',
   },
   chartHint: {
     fontSize: 11,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginBottom: 8,
     textAlign: 'center',

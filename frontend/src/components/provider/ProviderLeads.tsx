@@ -25,7 +25,7 @@ import Card from '../Card';
 import Button from '../Button';
 import { RedDot } from '../RedDot';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { useSubscriptionGate } from '../../utils/subscriptionGate';

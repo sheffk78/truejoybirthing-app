@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { C, F, kickerStyle, srowBase } from '../../src/constants/corpus';
 const DF = F;
@@ -491,8 +491,9 @@ const getStyles = createThemedStyles((colors) => ({
     borderColor: C.border,
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 21,
+    fontWeight: '700',
+    fontFamily: F.serif,
     color: C.ink,
     marginTop: SIZES.md,
   },
@@ -560,7 +561,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderTopWidth: 1,
     borderTopColor: C.border,
   },
-  amountText: { fontSize: 20, fontWeight: '700', color: C.sage },
+  amountText: { fontSize: 15, fontFamily: F.serifSemi, color: C.rose }, // s15 row amount: serif 15 rose
   viewButton: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   viewButtonText: { fontSize: 14, color: C.lavender, fontWeight: '500' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
@@ -573,7 +574,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderBottomWidth: 1,
     borderBottomColor: C.border,
   },
-  modalTitle: { fontSize: 18, fontWeight: '600', color: C.ink },
+  modalTitle: { fontSize: 21, fontWeight: '700', fontFamily: F.serif, color: C.ink },
   modalBody: { padding: SIZES.md },
   detailSection: {
     marginBottom: SIZES.lg,
@@ -611,7 +612,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
   },
   amountLabel: { fontSize: 12, color: C.gray, marginBottom: 4 },
-  amountLarge: { fontSize: 28, fontWeight: '700', color: C.sage },
+  amountLarge: { fontSize: 16, fontFamily: F.serifSemi, color: C.rose }, // s15 'Amount Due': serif 16 rose
   paymentInstructionsBox: {
     flexDirection: 'row',
     backgroundColor: C.lavenderBg,

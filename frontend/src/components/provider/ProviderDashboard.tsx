@@ -18,7 +18,7 @@ import Card from '../Card';
 import { useAuthStore } from '../../store/authStore';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import ProviderFeedSection from './ProviderFeedSection';
@@ -361,9 +361,12 @@ const getDashStyles = (c: LiveCorpus) => StyleSheet.create({
     borderColor: C.border,
     borderRadius: 18,
   },
+  // 10/07 r3 (#9): d1 .doula-stat-card .n = Cormorant 700 22 lavender (the mock IS
+  // the doula law; mom s13 uses 18 rose for its own 2×2 grid — role split ratified)
   statNumber: {
-    fontSize: SIZES.fontHero,
+    fontSize: 22,
     fontFamily: F.serif,
+    fontWeight: '700',
     color: C.lavender,
   },
   statLabel: {

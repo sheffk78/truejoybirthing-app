@@ -1,18 +1,13 @@
+import { F } from '../../constants/corpus';
 // Provider Feed Card Component
 // Displays a single research feed article card in the provider dashboard
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { Icon } from '../Icon';
 import Card from '../Card';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
@@ -157,20 +152,20 @@ const getStyles = (colors: any) =>
     },
     sourceName: {
       fontSize: SIZES.fontXs,
-      fontFamily: FONTS.bodyMedium,
+      fontFamily: F.ui,
     },
     date: {
       fontSize: SIZES.fontXs,
-      fontFamily: FONTS.body,
+      fontFamily: F.ui,
     },
     title: {
       fontSize: SIZES.fontMd,
-      fontFamily: FONTS.subheading,
+      fontFamily: F.serifSemi,
       marginBottom: SIZES.xs,
     },
     excerpt: {
       fontSize: SIZES.fontSm,
-      fontFamily: FONTS.body,
+      fontFamily: F.ui,
       lineHeight: 20,
       marginBottom: SIZES.sm,
     },
@@ -183,11 +178,11 @@ const getStyles = (colors: any) =>
     },
     takeawayLabel: {
       fontSize: SIZES.fontXs,
-      fontFamily: FONTS.bodyBold,
+      fontFamily: F.uiBold,
     },
     takeawayText: {
       fontSize: SIZES.fontXs,
-      fontFamily: FONTS.body,
+      fontFamily: F.ui,
       flex: 1,
     },
     footer: {
@@ -207,16 +202,16 @@ const getStyles = (colors: any) =>
     },
     tagText: {
       fontSize: 10,
-      fontFamily: FONTS.body,
+      fontFamily: F.ui,
     },
     aiTag: {
       fontSize: SIZES.fontXs,
-      fontFamily: FONTS.bodyMedium,
+      fontFamily: F.ui,
       color: '#999',
     },
     readHint: {
       fontSize: SIZES.fontXs,
-      fontFamily: FONTS.bodyMedium,
+      fontFamily: F.ui,
       marginLeft: 'auto',
       marginRight: 6,
     },

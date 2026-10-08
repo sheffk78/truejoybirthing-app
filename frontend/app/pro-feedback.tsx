@@ -14,6 +14,7 @@ import { Icon } from '../src/components/Icon';
 import { router } from 'expo-router';
 import { useAuthStore } from '../src/store/authStore';
 import { useSubscriptionStore } from '../src/store/subscriptionStore';
+import { F } from '../src/constants/corpus';
 import { apiRequest } from '../src/utils/api';
 import { API_ENDPOINTS } from '../src/constants/api';
 import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
@@ -240,7 +241,7 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: colors.surface,
   },
   backButton: { padding: 8 },
-  headerTitle: { fontSize: 18, fontWeight: '600', color: colors.text },
+  headerTitle: { fontSize: 17, fontWeight: '600', color: colors.text },
   content: { flex: 1, padding: 16 },
 
   introCard: {
@@ -347,7 +348,8 @@ const getStyles = createThemedStyles((colors) => ({
     padding: 24,
   },
   accessDeniedTitle: {
-    fontSize: 20,
+    fontSize: 21,
+    fontFamily: F.serif,
     fontWeight: '700',
     color: colors.text,
     marginTop: 16,
@@ -380,7 +382,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 20,
   },
   successTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
     color: colors.text,
     marginBottom: 12,

@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  RefreshControl,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import TIcon from '../../src/components/TIcon';
@@ -18,17 +10,13 @@ import MomFeedSection from '../../src/components/provider/MomFeedSection';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { SIZES, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 import { C, F, useCorpus } from '../../src/constants/corpus';
 // Kick Counter entry (10/05 Key Actions 4th card) + local kick-session log.
-import {
-  loadSessions,
-  totalsFrom,
-  type KickSession,
-} from '../../src/utils/kickStorage';
+import { loadSessions, totalsFrom, type KickSession } from '../../src/utils/kickStorage';
 // Week-spine mockup v4 additions (Jeff-approved). The birth-plan ring renders
 // with react-native-svg circle strokes — svg is already a project dependency
 // (contraction-timer.tsx, GrowthSprig, HBand); strokeDasharray reproduces the
@@ -1186,13 +1174,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   errorTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginTop: SIZES.md,
   },
   errorMessage: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
@@ -1205,7 +1193,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   errorText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',

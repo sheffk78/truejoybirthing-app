@@ -1,20 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  RefreshControl,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  Modal,
-  ActivityIndicator,
-  Image,
-  Keyboard,
-  BackHandler,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, TextInput, KeyboardAvoidingView, Platform, Modal, ActivityIndicator, Image, Keyboard, BackHandler } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -24,7 +9,7 @@ import Button from '../../src/components/Button';
 import ErrorBoundary from '../../src/components/ErrorBoundary';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { SIZES, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 import wsClient from '../../src/utils/websocket';
@@ -1053,13 +1038,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   fallbackTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginTop: SIZES.md,
   },
   fallbackSubtext: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
@@ -1087,12 +1072,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   title: {
     fontSize: SIZES.fontXxl,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 4,
   },
@@ -1110,13 +1095,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyText: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginTop: SIZES.md,
   },
   emptySubtext: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
@@ -1157,7 +1142,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   userName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginRight: SIZES.sm,
   },
@@ -1168,11 +1153,11 @@ const getStyles = createThemedStyles((colors) => ({
   },
   roleText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   lastMessage: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   metaColumn: {
@@ -1193,7 +1178,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   unreadText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
   chatInlineContainer: {
@@ -1232,16 +1217,16 @@ const getStyles = createThemedStyles((colors) => ({
   },
   chatHeaderPhotoInitials: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   chatHeaderName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
   },
   chatHeaderRole: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   chatContent: {
@@ -1276,7 +1261,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   messageText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     lineHeight: 20,
   },
@@ -1307,7 +1292,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: SIZES.md,
     paddingVertical: SIZES.sm,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     maxHeight: 100,
     marginRight: SIZES.sm,
@@ -1330,7 +1315,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   teamSelectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: SIZES.md,
   },
@@ -1347,13 +1332,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   noTeamText: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginTop: SIZES.md,
   },
   noTeamSubtext: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
@@ -1382,7 +1367,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   memberAvatarInitials: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   memberInfo: {
     flex: 1,
@@ -1390,7 +1375,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   memberName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
   },
   memberRoleBadge: {
@@ -1402,7 +1387,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   memberRoleText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   // Invoice section styles
   invoicesSection: {
@@ -1415,7 +1400,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   invoicesSectionTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginLeft: SIZES.sm,
     flex: 1,
@@ -1430,7 +1415,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   invoicesBadgeText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
   invoiceCard: {
@@ -1458,25 +1443,25 @@ const getStyles = createThemedStyles((colors) => ({
   },
   invoiceProviderInitials: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   invoiceInfo: {
     flex: 1,
   },
   invoiceAmount: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   invoiceDescription: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 2,
   },
   invoiceFrom: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginTop: 4,
   },
@@ -1490,11 +1475,11 @@ const getStyles = createThemedStyles((colors) => ({
   },
   invoiceStatusText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   invoiceDueDate: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginTop: 4,
   },
@@ -1506,19 +1491,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   paymentInstructionsLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.textSecondary,
     marginBottom: 4,
   },
   paymentInstructionsText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     lineHeight: 18,
   },
   invoiceDisclaimer: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
     marginTop: SIZES.sm,
@@ -1533,7 +1518,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sendErrorText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     textAlign: 'center',
   },
@@ -1552,7 +1537,7 @@ const getStyles = createThemedStyles((colors) => ({
   preAcceptanceBannerText: {
     flex: 1,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.warning,
     lineHeight: 20,
   },
@@ -1564,7 +1549,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   declinedInputText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     fontStyle: 'italic',
@@ -1578,7 +1563,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   threadStatusText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   // Team selection modal search
   teamSearchInputWrapper: {
@@ -1596,7 +1581,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: SIZES.sm,
     paddingHorizontal: SIZES.sm,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
 }));

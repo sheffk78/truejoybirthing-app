@@ -1,19 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Pressable,
-  RefreshControl,
-  Modal,
-  TextInput,
-  Alert,
-  ActivityIndicator,
-  Platform,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Pressable, RefreshControl, Modal, TextInput, Alert, ActivityIndicator, Platform, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
@@ -21,7 +7,7 @@ import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { VideoPlayerModal, getYouTubeVideoId, getYouTubeThumbnail } from '../../src/components/YouTubePlayer';
 import { apiRequest } from '../../src/utils/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { C, F } from '../../src/constants/corpus';
 import { getPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
@@ -981,8 +967,8 @@ const getStyles = createThemedStyles((colors) => ({
     opacity: 0.55,
   },
   title: {
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: 26,
+    lineHeight: 30,
     fontFamily: F.serif,
     color: C.ink,
   },
@@ -1072,13 +1058,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyText: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginTop: SIZES.md,
   },
   emptySubtext: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: SIZES.xs,
     textAlign: 'center',
@@ -1113,7 +1099,7 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
   },
   providerName: {
-    fontSize: 14.5,
+    fontSize: 13.5,
     fontFamily: F.uiBold,
     color: C.ink,
     marginBottom: 2,
@@ -1275,7 +1261,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   profileRoleText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
   profileSection: {
@@ -1291,7 +1277,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   profileTags: {
@@ -1307,7 +1293,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   profileTagText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   bioText: {
     fontSize: SIZES.fontMd,
@@ -1351,7 +1337,7 @@ const getStyles = createThemedStyles((colors) => ({
   videoLabelText: {
     color: colors.white,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginLeft: 4,
   },
   statusRow: {
@@ -1360,7 +1346,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   statusText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginLeft: SIZES.sm,
   },
   modalFooter: {
@@ -1423,7 +1409,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   messageModalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
   },
   messageTextArea: {
@@ -1433,7 +1419,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusMd,
     minHeight: 120,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     textAlignVertical: 'top',
   },

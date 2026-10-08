@@ -3,6 +3,7 @@
 //        or <ErrorBoundary fallback={<CustomFallback />}>...</ErrorBoundary>
 
 import React, { Component, ReactNode } from 'react';
+import { F } from '../constants/corpus';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 interface ErrorBoundaryProps {
@@ -68,7 +69,8 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   title: {
-    fontSize: 18,
+    fontSize: 17,
+    fontFamily: F.serif,
     fontWeight: '700',
     marginBottom: 8,
   },

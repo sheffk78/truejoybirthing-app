@@ -26,7 +26,7 @@ import { RedDot } from '../RedDot';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { C, F } from '../../constants/corpus';
@@ -1279,12 +1279,14 @@ const getStyles = createThemedStyles((colors) => ({
   invoiceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.sm },
   invoiceInfo: { flex: 1 },
   invoiceNumber: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.text },
-  clientName: { fontSize: SIZES.fontMd, fontWeight: '500', color: colors.textSecondary, marginTop: 2 },
+  // d7 .inv-name = serif 600 14 ink
+  clientName: { fontSize: 14, fontFamily: F.serifSemi, color: C.ink, marginTop: 2 },
   statusBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusSm },
   statusText: { fontSize: SIZES.fontXs, fontWeight: '600' },
   description: { fontSize: SIZES.fontSm, color: colors.textSecondary, marginBottom: SIZES.sm },
   invoiceDetails: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SIZES.sm },
-  amountText: { fontSize: SIZES.fontLg, fontWeight: '700', color: colors.text },
+  // 10/07 r3 (#9): d7 .inv-amount = serif 700 15 lavender
+  amountText: { fontSize: 15, fontFamily: F.serif, fontWeight: '700', color: C.lavender },
   dateInfo: { alignItems: 'flex-end' },
   dateLabel: { fontSize: SIZES.fontXs, color: colors.textLight },
   invoiceActions: { flexDirection: 'row', gap: SIZES.sm, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: SIZES.sm },

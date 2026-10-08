@@ -15,7 +15,7 @@ import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { C, F } from '../../src/constants/corpus';
 
@@ -385,8 +385,8 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 50,
   },
   providerName: {
-    fontSize: 30,
-    lineHeight: 34,
+    fontSize: 26,
+    lineHeight: 30,
     fontFamily: F.serif,
     color: C.ink,
     marginBottom: SIZES.xs,

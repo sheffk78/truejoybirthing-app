@@ -1,9 +1,10 @@
+import { F } from '../constants/corpus';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, Modal } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from './Icon';
 import { formatDateLocal } from '../utils/date';
-import { SIZES, FONTS } from '../constants/theme';
+import { SIZES } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
 import Button from './Button';
 
@@ -295,7 +296,7 @@ const BirthLocationSelectField = ({
             <Text style={[
               styles.birthLocationLabel,
               { color: colors.textSecondary },
-              value === option && { color: colors.primary, fontFamily: FONTS.bodyBold },
+              value === option && { color: colors.primary, fontFamily: F.uiBold },
             ]}>
               {option}
             </Text>
@@ -1468,7 +1469,7 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     marginBottom: SIZES.sm,
   },
   textInput: {
@@ -1476,7 +1477,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   textArea: {
     minHeight: 100,
@@ -1523,7 +1524,7 @@ const styles = StyleSheet.create({
   },
   dateModalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
   },
   webCalendarWrapper: {
     marginVertical: SIZES.md,
@@ -1550,7 +1551,7 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     flex: 1,
   },
   radioRow: {
@@ -1575,7 +1576,7 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     flex: 1,
   },
   // Birth location grid styles
@@ -1600,7 +1601,7 @@ const styles = StyleSheet.create({
   birthLocationLabel: {
     marginTop: SIZES.sm,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     textAlign: 'center',
   },
   birthLocationCheck: {

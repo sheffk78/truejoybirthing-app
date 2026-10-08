@@ -27,7 +27,7 @@ import Button from '../Button';
 import ClientSearchPicker from '../ClientSearchPicker';
 import { RedDot } from '../RedDot';
 import { apiRequest } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { C, F } from '../../constants/corpus';
@@ -1037,13 +1037,14 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: SIZES.fontMd,
     fontFamily: F.uiBold,
   },
+  // 10/07 r3 (#9): d9 doula-row law = .doula-srow .a-h3 Cormorant 600 15 (+meta 10.5)
   clientName: {
-    fontSize: SIZES.fontMd,
-    fontFamily: F.uiBold,
+    fontSize: 15,
+    fontFamily: F.serifSemi,
     color: colors.text,
   },
   appointmentType: {
-    fontSize: SIZES.fontSm,
+    fontSize: 10.5,
     fontFamily: F.ui,
     color: colors.textSecondary,
   },

@@ -1,29 +1,11 @@
+import { F } from '../constants/corpus';
 import React, { useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  ScrollView,
-  Animated,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from './Button';
-import { SIZES, FONTS } from '../constants/theme';
+import { SIZES } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
-import {
-  SprigOne,
-  SprigTiny,
-  SprigBud,
-  DocList,
-  TwoFigures,
-  SAGE,
-  ROSE,
-  LAV,
-  ORGANIC_ICONS,
-  type IconProps,
-} from './OrganicIcons';
+import { SprigOne, SprigTiny, SprigBud, DocList, TwoFigures, SAGE, ROSE, LAV, ORGANIC_ICONS, type IconProps } from './OrganicIcons';
 import type { TutorialStep } from '../constants/tutorialData';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -188,7 +170,7 @@ const styles = StyleSheet.create({
   overlineRow: { paddingHorizontal: SIZES.lg, paddingTop: SIZES.lg },
   overline: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     letterSpacing: 2,
     textTransform: 'uppercase',
   },
@@ -196,16 +178,16 @@ const styles = StyleSheet.create({
   stepContainer: { flex: 1, paddingHorizontal: SIZES.xl, justifyContent: 'center' },
   headline: {
     fontSize: SIZES.fontXxl,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     lineHeight: 40,
     marginBottom: SIZES.md,
   },
   headlineAccent: {
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
   },
   description: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     lineHeight: 24,
     marginBottom: SIZES.xl,
   },
@@ -213,7 +195,7 @@ const styles = StyleSheet.create({
   cardsWrap: {},
   cardsHeader: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     letterSpacing: 1.5,
     marginBottom: SIZES.sm,
   },
@@ -226,18 +208,18 @@ const styles = StyleSheet.create({
   },
   cardIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginRight: SIZES.md },
   cardTextWrap: { flex: 1 },
-  cardTitle: { fontSize: SIZES.fontMd, fontFamily: FONTS.bodyBold, marginBottom: 2 },
-  cardDesc: { fontSize: SIZES.fontSm, fontFamily: FONTS.body, lineHeight: 19 },
+  cardTitle: { fontSize: SIZES.fontMd, fontFamily: F.uiBold, marginBottom: 2 },
+  cardDesc: { fontSize: SIZES.fontSm, fontFamily: F.ui, lineHeight: 19 },
   footer: { paddingHorizontal: SIZES.lg, paddingBottom: SIZES.lg },
   dotsRow: { flexDirection: 'row', gap: 6, justifyContent: 'center', marginBottom: SIZES.lg },
   dot: { width: 7, height: 7, borderRadius: 3.5 },
   nextBtn: {},
   skipTourBtn: { alignSelf: 'center', padding: SIZES.sm, marginTop: SIZES.xs },
-  skipTourText: { fontSize: SIZES.fontSm, fontFamily: FONTS.body },
+  skipTourText: { fontSize: SIZES.fontSm, fontFamily: F.ui },
   replayNote: {
     textAlign: 'center',
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     marginTop: SIZES.sm,
   },
   srOnly: { height: 0, opacity: 0 },

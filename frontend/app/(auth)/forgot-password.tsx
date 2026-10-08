@@ -1,22 +1,12 @@
+import { F } from '../../src/constants/corpus';
 import React, { useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ActivityIndicator,
-  TextInput as RNTextInput,
-  useWindowDimensions,
-} from 'react-native';
+import { View, Text, ScrollView, Alert, KeyboardAvoidingView, Platform, Pressable, ActivityIndicator, TextInput as RNTextInput, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { API_BASE, API_ENDPOINTS } from '../../src/constants/api';
 
@@ -250,7 +240,7 @@ export default function ForgotPasswordScreen() {
       <Text style={styles.title}>Enter Reset Code</Text>
       <Text style={styles.subtitle}>
         We've sent a 6-digit code to{' '}
-        <Text style={{ fontFamily: FONTS.bodyBold, color: colors.text }}>{email}</Text>.
+        <Text style={{ fontFamily: F.uiBold, color: colors.text }}>{email}</Text>.
         Check your inbox and enter the code below.
       </Text>
       <View style={styles.inputsSection}>
@@ -502,7 +492,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   backButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginLeft: SIZES.xs,
   },
@@ -534,8 +524,8 @@ const getStyles = createThemedStyles((colors) => ({
 
   // Typography
   title: {
-    fontSize: 24,
-    fontFamily: FONTS.heading,
+    fontSize: 26,
+    fontFamily: F.serif,
     fontWeight: '700',
     color: colors.text,
     textAlign: 'center',
@@ -543,7 +533,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   subtitle: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
@@ -569,12 +559,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   resendText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   resendAction: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.primary,
     fontWeight: '600',
   },

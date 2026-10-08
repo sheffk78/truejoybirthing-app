@@ -1,16 +1,6 @@
+import { F } from '../../src/constants/corpus';
 import React, { useState, useCallback, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-  TextInput,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ActivityIndicator, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
@@ -20,7 +10,7 @@ import Input from '../../src/components/Input';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 const SERVICES = ['Birth Doula', 'Postpartum Doula', 'Virtual Doula'];
@@ -432,7 +422,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   overline: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     letterSpacing: 2,
     color: colors.roleDoula,
     textTransform: 'uppercase',
@@ -475,17 +465,17 @@ const getStyles = createThemedStyles((colors) => ({
   statusLabel: {
     flex: 1,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   statusLabelOn: {
     color: colors.primary,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   footNote: {
     textAlign: 'center',
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.success,
     backgroundColor: colors.success + '12',
     borderRadius: SIZES.radiusMd,
@@ -495,31 +485,31 @@ const getStyles = createThemedStyles((colors) => ({
   },
   title: {
     fontSize: SIZES.fontTitle,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginBottom: SIZES.xs,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 24,
   },
   sectionLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginBottom: SIZES.sm,
   },
   helperText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     marginBottom: SIZES.sm,
   },
   errorText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     marginBottom: SIZES.sm,
   },
@@ -544,7 +534,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   locationResultText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.success,
     marginLeft: SIZES.xs,
   },
@@ -568,19 +558,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   chipText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   chipTextOn: {
     color: colors.primary,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
   servicesSection: {
     marginBottom: SIZES.md,
   },
   toggleLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   toggleActive: {

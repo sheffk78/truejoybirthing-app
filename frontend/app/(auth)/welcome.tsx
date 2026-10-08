@@ -1,21 +1,11 @@
+import { F } from '../../src/constants/corpus';
 import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  ImageBackground,
-  Linking,
-  Platform,
-  Pressable,
-  Dimensions,
-  Animated,
-  Easing,
-} from 'react-native';
+import { View, Text, Image, ImageBackground, Linking, Platform, Pressable, Dimensions, Animated, Easing } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icon } from '../../src/components/Icon';
-import { SIZES, FONTS, BRAND } from '../../src/constants/theme';
+import { SIZES, BRAND } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 /**
@@ -263,7 +253,7 @@ const getStyles = createThemedStyles((colors) => ({
   overline: {
     // 10/07 drift fix: mockup .wc-overline = 10px / ls 2.2 / rose #B87AA0
     fontSize: 10,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '700',
     letterSpacing: 2.2,
     textTransform: 'uppercase',
@@ -273,7 +263,7 @@ const getStyles = createThemedStyles((colors) => ({
   headline: {
     // 10/07 drift fix: mockup .wc-h1 = 26px / lh 1.15 (30)
     fontSize: 26,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     fontWeight: '700',
     color: colors.text,
     lineHeight: 30,
@@ -286,7 +276,7 @@ const getStyles = createThemedStyles((colors) => ({
   subtitle: {
     // 10/07 drift fix: mockup .wc-sub = 13.5 / 1.55 lh (~21)
     fontSize: 13.5,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 21,
     textAlign: 'center',
@@ -310,7 +300,7 @@ const getStyles = createThemedStyles((colors) => ({
   pillText: {
     // 10/07 drift fix: mockup .wc-pill = 11.5px
     fontSize: 11.5,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
   },
   primaryButton: {
@@ -329,7 +319,7 @@ const getStyles = createThemedStyles((colors) => ({
   primaryButtonText: {
     // 10/07 drift fix: mockup .btn-primary label = 15.5px
     fontSize: 15.5,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '700',
     color: colors.white,
     letterSpacing: 0.2,
@@ -343,7 +333,7 @@ const getStyles = createThemedStyles((colors) => ({
   secondaryButtonText: {
     // 10/07 drift fix: mockup .btn-ghost = 15px/600
     fontSize: 15,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
     color: colors.primary,
   },
@@ -356,7 +346,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   footerText: {
     fontSize: 11,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
     marginTop: SIZES.md,

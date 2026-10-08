@@ -1,15 +1,10 @@
+import { F } from '../../constants/corpus';
 // Provider Feed Disclaimer Modal
 // Shows required health content disclaimers on first interaction
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-} from 'react-native';
-import { SIZES, FONTS } from '../../constants/theme';
+import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { SIZES } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 
 interface ProviderFeedDisclaimerProps {
@@ -90,12 +85,12 @@ const getStyles = (colors: any) =>
     },
     title: {
       fontSize: SIZES.fontLg,
-      fontFamily: FONTS.heading,
+      fontFamily: F.serif,
       marginBottom: SIZES.md,
     },
     body: {
       fontSize: SIZES.fontSm,
-      fontFamily: FONTS.body,
+      fontFamily: F.ui,
       lineHeight: 20,
       marginBottom: SIZES.sm,
     },
@@ -108,6 +103,6 @@ const getStyles = (colors: any) =>
     },
     buttonText: {
       fontSize: SIZES.fontMd,
-      fontFamily: FONTS.bodyBold,
+      fontFamily: F.uiBold,
     },
   });

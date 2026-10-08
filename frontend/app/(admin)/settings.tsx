@@ -1,3 +1,4 @@
+import { F } from '../../src/constants/corpus';
 import React from 'react';
 import {
   View,
@@ -158,6 +159,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   userName: {
     fontSize: SIZES.fontXl,
+    fontFamily: F.serif,
     fontWeight: '700',
     color: colors.text,
   },

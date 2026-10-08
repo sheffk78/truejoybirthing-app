@@ -1,3 +1,4 @@
+import { F } from '../../src/constants/corpus';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -217,8 +218,9 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.md,
   },
   title: {
-    fontSize: SIZES.fontXxl,
+    fontFamily: F.serif,
     fontWeight: '700',
+    fontSize: SIZES.fontXxl,
     color: colors.text,
   },
   subtitle: {

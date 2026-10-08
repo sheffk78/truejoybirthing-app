@@ -1,19 +1,9 @@
+import { F } from '../constants/corpus';
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Pressable,
-  FlatList,
-  Animated,
-  Easing,
-  Platform,
-  ImageBackground,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Pressable, FlatList, Animated, Easing, Platform, ImageBackground } from 'react-native';
 
 import { Icon } from './Icon';
-import { SIZES, FONTS } from '../constants/theme';
+import { SIZES } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
 import { SprigOne, SprigTwo, DocList, TwoFigures, SAGE, ROSE, LAV } from './OrganicIcons';
 import CreamFade from './CreamFade';
@@ -52,10 +42,7 @@ interface OnboardingWalkthroughProps {
   onComplete: () => void;
 }
 
-import {
-  phDoulaConsult, phDoulaLabor, phMidwifeSupport, phMidwifeNewborn,
-  phLactationFeeding, phLactationConsult, phLactationClients,
-} from '../constants/photos';
+import { phDoulaConsult, phDoulaLabor, phMidwifeSupport, phMidwifeNewborn, phLactationFeeding, phLactationConsult, phLactationClients } from '../constants/photos';
 
 // Birth photos - bundled locally (MOM flow keeps the original three singles;
 // role walkthroughs draw the vetted website variety pool — audit 2026-10-01)
@@ -422,7 +409,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
   },
   stepContainer: {
@@ -472,7 +459,7 @@ const styles = StyleSheet.create({
   },
   stepChipText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '700',
     letterSpacing: 1.4,
   },
@@ -488,8 +475,8 @@ const styles = StyleSheet.create({
     borderRadius: 1,
   },
   stepTitle: {
-    fontSize: 30,
-    fontFamily: FONTS.heading,
+    fontSize: 26,
+    fontFamily: F.serif,
     fontWeight: '700',
     textAlign: 'center',
     color: '#2A2A2A',
@@ -500,7 +487,7 @@ const styles = StyleSheet.create({
   },
   stepDescription: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     textAlign: 'center',
     lineHeight: 26,
     paddingHorizontal: SIZES.sm,
@@ -530,7 +517,7 @@ const styles = StyleSheet.create({
   },
   continueText: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '700',
     color: '#FFFFFF',
   },

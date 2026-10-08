@@ -1,15 +1,7 @@
+import { F } from '../constants/corpus';
 import React from 'react';
-import {
-  Pressable,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  StyleProp,
-  ViewStyle,
-  TextStyle,
-  Platform,
-} from 'react-native';
-import { SIZES, FONTS } from '../constants/theme';
+import { Pressable, Text, StyleSheet, ActivityIndicator, StyleProp, ViewStyle, TextStyle, Platform } from 'react-native';
+import { SIZES } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
 
 interface ButtonProps {
@@ -99,7 +91,7 @@ export default function Button({
     const base: TextStyle = {
       // 10/07 drift fix: law button type = Quicksand 700 13px (common.css .abtn)
       fontWeight: '700',
-      fontFamily: FONTS.bodyBold,
+      fontFamily: F.uiBold,
       fontSize: 13,
     };
 

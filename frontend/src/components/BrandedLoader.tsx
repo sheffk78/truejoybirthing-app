@@ -1,6 +1,7 @@
+import { F } from '../constants/corpus';
 import React, { useEffect, useRef } from 'react';
 import { View, Image, StyleSheet, Animated, Easing, Text, Dimensions } from 'react-native';
-import { BRAND, COLORS, FONTS } from '../constants/theme';
+import { BRAND, COLORS } from '../constants/theme';
 
 // ─────────────────────────────────────────────────────────────────────
 // BrandedLoader — SplashMark v2 (approved 2026-09-16, Jeff verdict
@@ -184,7 +185,7 @@ export default function BrandedLoader({
           <Text
             style={[
               styles.tagline,
-              { color: c.textSecondary, fontFamily: fontsLoaded ? FONTS.subheading : 'System' },
+              { color: c.textSecondary, fontFamily: fontsLoaded ? F.serifSemi : 'System' },
             ]}
           >
             {tagline}
@@ -203,7 +204,7 @@ export default function BrandedLoader({
           <Text
             style={[
               styles.message,
-              { color: c.textSecondary, fontFamily: fontsLoaded ? FONTS.body : 'System' },
+              { color: c.textSecondary, fontFamily: fontsLoaded ? F.ui : 'System' },
             ]}
           >
             {message}

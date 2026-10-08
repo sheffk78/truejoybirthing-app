@@ -1,25 +1,15 @@
+import { F } from '../../constants/corpus';
 // Shared Contract Templates Screen for Doula and Midwife
 // Uses config-based customization for role-specific behavior
 
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-  Alert,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../Icon';
 import { useAuthStore } from '../../store/authStore';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 
@@ -491,7 +481,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   headerTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   addButton: {
@@ -511,14 +501,14 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     marginTop: SIZES.lg,
     marginBottom: SIZES.sm,
   },
   emptyText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: SIZES.xl,
@@ -534,7 +524,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   createBtnText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
   templateCard: {
@@ -556,12 +546,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   templateName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
   },
   templateDescription: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 2,
   },
@@ -575,18 +565,18 @@ const getStyles = createThemedStyles((colors) => ({
   },
   defaultBadgeText: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
   templateFee: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
     marginBottom: SIZES.sm,
   },
   templateRetainer: {
     color: colors.textSecondary,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   templateActions: {
     flexDirection: 'row',
@@ -607,7 +597,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   actionBtnText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
   },
   modalOverlay: {
     flex: 1,
@@ -631,7 +621,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   modalBody: {
@@ -640,7 +630,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   inputLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginBottom: SIZES.xs,
     marginTop: SIZES.md,
@@ -652,7 +642,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderColor: colors.border,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   textArea: {
@@ -683,7 +673,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   checkboxLabel: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   modalFooter: {
@@ -701,7 +691,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   cancelBtnText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   saveBtn: {
@@ -714,7 +704,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   saveBtnText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.white,
   },
 }));

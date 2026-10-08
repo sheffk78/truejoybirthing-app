@@ -1,18 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  RefreshControl,
-  Alert,
-  Modal,
-  TextInput,
-  Platform,
-  KeyboardAvoidingView,
-  Keyboard,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Alert, Modal, TextInput, Platform, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import TIcon from '../../src/components/TIcon';
@@ -23,8 +10,8 @@ import NewbornProceduresForm from '../../src/components/NewbornProceduresForm';
 import SectionVideoGuide from '../../src/components/SectionVideoGuide';
 import { apiRequest, getApiBaseUrl } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
-import { C } from '../../src/constants/corpus';
+import { SIZES } from '../../src/constants/theme';
+import { F, C } from '../../src/constants/corpus';
 import { useColors, createThemedStyles, ThemeColors } from '../../src/hooks/useThemedStyles';
 import { useAuthStore } from '../../src/store/authStore';
 
@@ -580,13 +567,13 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.lg,
   },
   title: {
-    fontSize: SIZES.fontXxl,
-    fontFamily: FONTS.heading,
+    fontSize: 26,
+    fontFamily: F.serif,
     color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 4,
   },
@@ -602,12 +589,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   progressTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
   },
   progressSubtext: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 2,
   },
@@ -621,7 +608,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   progressPercent: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.white,
   },
   progressBar: {
@@ -636,13 +623,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.subheading,
+    fontFamily: F.serifSemi,
     color: colors.text,
     marginBottom: SIZES.xs,
   },
   sectionSubtitle: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: SIZES.md,
   },
@@ -670,7 +657,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.text,
     marginBottom: 4,
   },
@@ -698,7 +685,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   exportHint: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
   },
@@ -716,19 +703,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   autoShareText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 20,
   },
   sharedWithText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.success,
     marginTop: 4,
   },
   notSharedText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     fontStyle: 'italic',
     marginTop: 4,
@@ -755,7 +742,7 @@ const getStyles = createThemedStyles((colors) => ({
   modalTitle: {
     flex: 1,
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
     textAlign: 'center',
   },
@@ -773,7 +760,7 @@ const getStyles = createThemedStyles((colors) => ({
   modalDescription: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 22,
     marginLeft: SIZES.sm,
@@ -786,13 +773,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   notesLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginBottom: SIZES.sm,
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginBottom: SIZES.sm,
     marginTop: SIZES.md,
@@ -804,7 +791,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: SIZES.radiusMd,
     padding: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
   },
   textArea: {

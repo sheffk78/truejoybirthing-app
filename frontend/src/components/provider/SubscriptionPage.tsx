@@ -20,7 +20,7 @@ import Button from '../Button';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { SUBSCRIPTION_PRODUCTS } from '../../services/billing/subscriptionConfig';
 import { useIAP } from '../../services/billing/useIAP';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { F } from '../../constants/corpus';
 

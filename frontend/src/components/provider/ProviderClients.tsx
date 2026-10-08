@@ -19,7 +19,7 @@ import Card from '../Card';
 import Button from '../Button';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { useSubscriptionGate } from '../../utils/subscriptionGate';
@@ -581,8 +581,10 @@ const styles = StyleSheet.create({
   clientAvatar: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   clientAvatarImage: { width: 56, height: 56, borderRadius: 28 },
   clientInfo: { flex: 1, marginLeft: SIZES.md },
-  clientName: { fontSize: SIZES.fontMd, fontFamily: F.uiBold },
-  clientDueDate: { fontSize: SIZES.fontSm, fontFamily: F.ui, marginTop: 2 },
+  // 10/07 r3 (#9): d2 client-row law = .doula-text-sm 11.5 w600 Quicksand (no serif —
+  // doula tier is data-first; mom rows use .a-h3 serif 17)
+  clientName: { fontSize: 11.5, fontWeight: '600', fontFamily: F.uiSemi },
+  clientDueDate: { fontSize: 11, fontFamily: F.ui, marginTop: 2 }, // d2 .meta 11
   clientSetting: { fontSize: SIZES.fontXs, fontFamily: F.ui, marginTop: 2 },
   clientMeta: { alignItems: 'flex-end' },
   statusBadge: { paddingHorizontal: SIZES.sm, paddingVertical: 4, borderRadius: SIZES.radiusSm },

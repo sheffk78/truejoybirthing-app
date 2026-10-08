@@ -26,7 +26,7 @@ import { RedDot } from '../RedDot';
 import { apiRequest, getApiBaseUrl } from '../../utils/api';
 import useAuthStore from '../../store/authStore';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ContractsConfig, ContractSection } from './config/contractsConfig';
 import { F } from '../../constants/corpus';

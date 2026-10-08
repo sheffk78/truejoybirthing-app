@@ -1,20 +1,6 @@
 // Shared Profile Screen for Doula and Midwife
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Pressable,
-  Alert,
-  ActivityIndicator,
-  Platform,
-  Image,
-  TextInput,
-  Linking,
-  Share,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Pressable, Alert, ActivityIndicator, Platform, Image, TextInput, Linking, Share } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -31,7 +17,7 @@ import LegalWebView from '../LegalWebView';
 import { useAuthStore } from '../../store/authStore';
 import { useSubscriptionStore } from '../../store/subscriptionStore';
 import { apiRequest, uploadImage } from '../../utils/api';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors, createThemedStyles, ThemeColors } from '../../hooks/useThemedStyles';
 import { ProviderConfig } from './config/providerConfig';
 import { F } from '../../constants/corpus';
@@ -1064,13 +1050,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   unverifiedTitle: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginBottom: 2,
   },
   unverifiedBody: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 17,
   },

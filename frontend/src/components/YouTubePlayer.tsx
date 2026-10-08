@@ -1,3 +1,4 @@
+import { F } from '../constants/corpus';
 /**
  * YouTubePlayer - Embedded YouTube Video Player Component
  * 
@@ -8,7 +9,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity, Text, Modal, Dimensions, Linking } from 'react-native';
 import { Icon } from './Icon';
-import { SIZES, FONTS } from '../constants/theme';
+import { SIZES } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
 
 interface YouTubePlayerProps {
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
   },
   fallbackText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     marginTop: SIZES.sm,
   },
   // Modal styles
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     flex: 1,
   },
   modalCloseBtn: {
@@ -218,7 +219,7 @@ const styles = StyleSheet.create({
   },
   closeModalButtonText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
   },
 });
 

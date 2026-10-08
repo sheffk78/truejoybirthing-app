@@ -1,20 +1,13 @@
+import { F } from 'src/constants/corpus';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  ActivityIndicator,
-  TouchableOpacity,
-  Alert,
-  Platform,
-} from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Icon } from '../src/components/Icon';
 import Card from '../src/components/Card';
 import Button from '../src/components/Button';
 import { apiRequest, getApiBaseUrl } from '../src/utils/api';
-import { SIZES, FONTS } from '../src/constants/theme';
+import { SIZES } from '../src/constants/theme';
 import { useAuthStore } from '../src/store/authStore';
 import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
@@ -302,12 +295,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   title: {
     fontSize: SIZES.fontXl,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   subtitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 4,
   },
@@ -343,7 +336,7 @@ const getStyles = createThemedStyles((colors) => ({
   downloadButtonText: {
     color: colors.white,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     marginLeft: SIZES.sm,
   },
   sectionCard: {
@@ -371,7 +364,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
   },
   statusBadge: {
@@ -388,7 +381,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   noDataText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textLight,
     fontStyle: 'italic',
   },
@@ -397,13 +390,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   fieldLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.textSecondary,
     marginBottom: 2,
   },
   fieldValue: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     lineHeight: 22,
   },
@@ -417,12 +410,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   notesLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     marginBottom: 4,
   },
   notesText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     lineHeight: 20,
   },

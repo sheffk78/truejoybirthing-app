@@ -1,16 +1,10 @@
+import { F } from '../constants/corpus';
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  Platform,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Modal, Platform, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Icon } from './Icon';
 import Button from './Button';
-import { SIZES, FONTS } from '../constants/theme';
+import { SIZES } from '../constants/theme';
 import { useColors, createThemedStyles } from '../hooks/useThemedStyles';
 import { formatDateLocal, formatDatetimeLocal } from '../utils/date';
 
@@ -217,7 +211,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   label: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyMedium,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: SIZES.xs,
   },
@@ -238,7 +232,7 @@ const getStyles = createThemedStyles((colors) => ({
   dateText: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     marginLeft: SIZES.sm,
   },
@@ -275,7 +269,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   modalTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.text,
   },
   iosModalHeader: {

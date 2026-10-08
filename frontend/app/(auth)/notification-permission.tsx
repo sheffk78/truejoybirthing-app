@@ -1,10 +1,6 @@
+import { F } from '../../src/constants/corpus';
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
@@ -14,7 +10,7 @@ import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function NotificationPermissionScreen() {
@@ -188,15 +184,15 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 28,
-    fontFamily: FONTS.heading,
+    fontSize: 26,
+    fontFamily: F.serif,
     color: colors.text,
     textAlign: 'center',
     marginBottom: SIZES.md,
   },
   description: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
@@ -216,7 +212,7 @@ const getStyles = createThemedStyles((colors) => ({
   featureText: {
     flex: 1,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     marginLeft: SIZES.md,
   },
@@ -232,7 +228,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   skipText: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
   },

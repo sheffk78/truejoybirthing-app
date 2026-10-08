@@ -1,18 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  Image,
-  ActivityIndicator,
-  Platform,
-  Modal,
-  Share,
-  Linking,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, ActivityIndicator, Platform, Modal, Share, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -31,7 +18,7 @@ import LegalWebView from '../../src/components/LegalWebView';
 import { useAuthStore } from '../../src/store/authStore';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { C, F as DF, initialsOf, kickerStyle, srowBase } from '../../src/constants/corpus';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useTheme } from '../../src/contexts/ThemeContext';
@@ -942,13 +929,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   unverifiedTitle: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: DF.uiBold,
     color: colors.text,
     marginBottom: 2,
   },
   unverifiedBody: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: DF.ui,
     color: colors.textSecondary,
     lineHeight: 17,
   },

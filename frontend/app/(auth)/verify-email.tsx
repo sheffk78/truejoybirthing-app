@@ -1,14 +1,6 @@
+import { F } from '../../src/constants/corpus';
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  useWindowDimensions,
-} from 'react-native';
+import { View, Text, ScrollView, Alert, KeyboardAvoidingView, Platform, Pressable, useWindowDimensions } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,7 +8,7 @@ import { Icon } from '../../src/components/Icon';
 import Button from '../../src/components/Button';
 import Input from '../../src/components/Input';
 import { useAuthStore } from '../../src/store/authStore';
-import { SIZES, FONTS } from '../../src/constants/theme';
+import { SIZES } from '../../src/constants/theme';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 
 export default function VerifyEmailScreen() {
@@ -136,7 +128,7 @@ export default function VerifyEmailScreen() {
       <Text style={styles.title}>{isLastStep ? 'One Last Step' : 'Verify Your Email'}</Text>
       <Text style={styles.subtitle}>
         We've sent a 6-digit verification code to{' '}
-        <Text style={{ fontFamily: FONTS.bodyBold, color: colors.text }}>
+        <Text style={{ fontFamily: F.uiBold, color: colors.text }}>
           {email || 'your email'}
         </Text>
         .{isLastStep
@@ -183,7 +175,7 @@ export default function VerifyEmailScreen() {
             style={styles.skipLink}
           >
             <Text style={styles.skipText}>
-              Not ready? <Text style={{ fontFamily: FONTS.bodyBold, color: colors.text }}>Skip for now</Text> — you won't appear in the marketplace until you verify.
+              Not ready? <Text style={{ fontFamily: F.uiBold, color: colors.text }}>Skip for now</Text> — you won't appear in the marketplace until you verify.
             </Text>
           </Pressable>
         )}
@@ -316,7 +308,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   backButtonText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     marginLeft: SIZES.xs,
   },
@@ -335,8 +327,8 @@ const getStyles = createThemedStyles((colors) => ({
 
   // Typography
   title: {
-    fontSize: 24,
-    fontFamily: FONTS.heading,
+    fontSize: 26,
+    fontFamily: F.serif,
     fontWeight: '700',
     color: colors.text,
     textAlign: 'center',
@@ -344,7 +336,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   subtitle: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
@@ -371,7 +363,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   skipText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 19,
@@ -386,18 +378,18 @@ const getStyles = createThemedStyles((colors) => ({
   },
   resendText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   resendAction: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.primary,
     fontWeight: '600',
   },
   resendMessage: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.success,
     textAlign: 'center',
     marginTop: SIZES.sm,

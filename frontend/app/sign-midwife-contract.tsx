@@ -1,14 +1,6 @@
+import { F } from 'src/constants/corpus';
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  Linking,
-  Platform,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Linking, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Icon } from '../src/components/Icon';
@@ -17,7 +9,7 @@ import Button from '../src/components/Button';
 import Input from '../src/components/Input';
 import { apiRequest } from '../src/utils/api';
 import { API_ENDPOINTS, API_BASE_URL } from '../src/constants/api';
-import { SIZES, FONTS } from '../src/constants/theme';
+import { SIZES } from '../src/constants/theme';
 import { useColors, createThemedStyles } from '../src/hooks/useThemedStyles';
 
 interface MidwifeContractData {
@@ -432,7 +424,7 @@ const getStyles = createThemedStyles((colors) => ({
   loadingText: {
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   errorContainer: {
@@ -446,7 +438,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: SIZES.md,
     marginBottom: SIZES.lg,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.error,
     textAlign: 'center',
   },
@@ -463,11 +455,11 @@ const getStyles = createThemedStyles((colors) => ({
   tokenErrorText: {
     flex: 1,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   tokenRetryText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     fontWeight: '600',
   },
   header: {
@@ -488,7 +480,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   headerTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     color: colors.white,
   },
   content: {
@@ -503,13 +495,13 @@ const getStyles = createThemedStyles((colors) => ({
   },
   contractTitle: {
     fontSize: SIZES.fontXl,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     marginBottom: SIZES.xs,
     textAlign: 'center',
   },
   practiceName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: SIZES.lg,
@@ -527,18 +519,18 @@ const getStyles = createThemedStyles((colors) => ({
   },
   partyLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: 4,
   },
   partyName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
   },
   partyDetail: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 2,
   },
@@ -550,7 +542,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   sectionTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     marginBottom: SIZES.md,
     paddingBottom: SIZES.sm,
     borderBottomWidth: 1,
@@ -562,27 +554,27 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailLabel: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     flex: 1,
   },
   detailValue: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
     flex: 1,
     textAlign: 'right',
   },
   feeAmount: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
   },
   sectionCard: {
     marginBottom: SIZES.md,
   },
   sectionContent: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     lineHeight: 22,
   },
@@ -596,12 +588,12 @@ const getStyles = createThemedStyles((colors) => ({
   },
   signedTitle: {
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.heading,
+    fontFamily: F.serif,
     marginLeft: SIZES.sm,
   },
   signedInfo: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.text,
     marginBottom: SIZES.md,
   },
@@ -616,17 +608,17 @@ const getStyles = createThemedStyles((colors) => ({
   },
   signatureLabel: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   signatureName: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     color: colors.text,
   },
   signatureDate: {
     fontSize: SIZES.fontXs,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
   },
   downloadButton: {
@@ -651,7 +643,7 @@ const getStyles = createThemedStyles((colors) => ({
   pendingText: {
     marginTop: SIZES.md,
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     textAlign: 'center',
   },
@@ -660,7 +652,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   signatureInstructions: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     marginBottom: SIZES.lg,
     lineHeight: 20,
@@ -674,7 +666,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   midwifeSignedText: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     marginLeft: SIZES.xs,
   },
   agreementRow: {
@@ -696,7 +688,7 @@ const getStyles = createThemedStyles((colors) => ({
   agreementText: {
     flex: 1,
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 20,
   },

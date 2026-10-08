@@ -1,3 +1,4 @@
+import { F } from '../../constants/corpus';
 // Mom Feed Section
 // Renders the "Birth & Baby Reads" section at the bottom of the mom home screen
 //
@@ -8,18 +9,12 @@
 // before the publishing batch self-heals.
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { Icon } from '../Icon';
 import ProviderFeedCard from './ProviderFeedCard';
 import ProviderFeedDisclaimer from './ProviderFeedDisclaimer';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
@@ -229,7 +224,7 @@ const getStyles = (colors: any) =>
     },
     sectionTitle: {
       fontSize: SIZES.fontLg,
-      fontFamily: FONTS.subheading,
+      fontFamily: F.serifSemi,
     },
     loadingContainer: {
       flexDirection: 'row',
@@ -240,6 +235,6 @@ const getStyles = (colors: any) =>
     },
     loadingText: {
       fontSize: SIZES.fontSm,
-      fontFamily: FONTS.body,
+      fontFamily: F.ui,
     },
   });

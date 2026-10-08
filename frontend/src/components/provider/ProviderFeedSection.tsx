@@ -1,3 +1,4 @@
+import { F } from '../../constants/corpus';
 // Provider Feed Section
 // Renders the "Latest in Birth Work" section at the bottom of the provider dashboard
 //
@@ -10,18 +11,12 @@
 // loaded before the publishing batch self-heals without a full app relaunch.
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { Icon } from '../Icon';
 import ProviderFeedCard from './ProviderFeedCard';
 import ProviderFeedDisclaimer from './ProviderFeedDisclaimer';
-import { SIZES, FONTS } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { useColors } from '../../hooks/useThemedStyles';
 import { apiRequest } from '../../utils/api';
 import { API_ENDPOINTS } from '../../constants/api';
@@ -248,7 +243,7 @@ const getStyles = (colors: any) =>
     },
     sectionTitle: {
       fontSize: SIZES.fontLg,
-      fontFamily: FONTS.subheading,
+      fontFamily: F.serifSemi,
     },
     loadingContainer: {
       flexDirection: 'row',
@@ -259,6 +254,6 @@ const getStyles = (colors: any) =>
     },
     loadingText: {
       fontSize: SIZES.fontSm,
-      fontFamily: FONTS.body,
+      fontFamily: F.ui,
     },
   });

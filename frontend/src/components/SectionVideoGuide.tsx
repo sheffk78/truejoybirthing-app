@@ -1,20 +1,9 @@
+import { F } from '../constants/corpus';
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Modal,
-  Platform,
-  Dimensions,
-  Image,
-  StatusBar,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, Modal, Platform, Dimensions, Image, StatusBar, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import { Icon } from './Icon';
-import { SIZES, FONTS } from '../constants/theme';
+import { SIZES } from '../constants/theme';
 import { useColors } from '../hooks/useThemedStyles';
 
 // Only import WebView on native platforms (not needed on web, uses iframe instead)
@@ -368,13 +357,13 @@ const styles = StyleSheet.create({
   },
   videoTitle: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
     marginBottom: 2,
   },
   videoDuration: {
     fontSize: SIZES.fontSm,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
   },
   expandedContainer: {
     marginBottom: SIZES.md,
@@ -395,7 +384,7 @@ const styles = StyleSheet.create({
   },
   videoTitleExpanded: {
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
   },
   videoWrapper: {
@@ -421,7 +410,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     flex: 1,
     fontSize: SIZES.fontLg,
-    fontFamily: FONTS.bodyBold,
+    fontFamily: F.uiBold,
     fontWeight: '600',
     color: '#FFFFFF',
     marginRight: SIZES.md,
@@ -447,7 +436,7 @@ const styles = StyleSheet.create({
   loadingText: {
     color: '#FFFFFF',
     fontSize: SIZES.fontMd,
-    fontFamily: FONTS.body,
+    fontFamily: F.ui,
     marginTop: SIZES.sm,
   },
 });
