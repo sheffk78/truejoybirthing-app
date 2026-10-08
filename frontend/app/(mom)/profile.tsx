@@ -778,6 +778,34 @@ export default function MomProfileScreen() {
                   </Text>
                 </View>
               </View>
+              {/* Edit affordance — the edit form below was always built (due date, zip,
+                  children stepper) but no control ever set isEditing=true, so moms
+                  could view rows only. 10/08 Jeff QA caught it. */}
+              <TouchableOpacity
+                style={styles.editDetailsPill}
+                onPress={() => {
+                  setDueDate(profile?.due_date
+                    ? (() => {
+                        const d = profile.due_date.includes('T') ? profile.due_date.split('T')[0] : profile.due_date;
+                        const [y, m, day] = d.split('-').map(Number);
+                        return `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                      })()
+                    : '');
+                  setZipCode(profile?.zip_code || '');
+                  setLocationCity(profile?.location_city || '');
+                  setLocationState(profile?.location_state || '');
+                  setNumberOfChildren(profile?.number_of_children || 0);
+                  setIsEditing(true);
+                }}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel="Edit your details"
+                data-testid="edit-details-btn"
+                testID="edit-details-btn"
+              >
+                <Icon name="create-outline" size={15} color={C.lavender} />
+                <Text style={styles.editDetailsText}>Edit Details</Text>
+              </TouchableOpacity>
             </View>
           )}
         </Card>
@@ -1134,6 +1162,24 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     borderWidth: 1,
     borderColor: C.border,
+  },
+  editDetailsPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: SIZES.md,
+    paddingVertical: 9,
+    paddingHorizontal: SIZES.md,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: C.lavender,
+    alignSelf: 'center',
+  },
+  editDetailsText: {
+    fontSize: 13,
+    fontFamily: DF.uiSemi,
+    color: C.lavender,
   },
   menuCard: {
     marginBottom: SIZES.sm,
