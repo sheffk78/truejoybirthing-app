@@ -21,8 +21,6 @@ interface FeedArticle {
   tags?: string[];
   // Backend sends null until the blog pass publishes the post
   tjb_blog_url?: string | null;
-  // Original research link — card always opens something real (Jeff 10/02)
-  source_url?: string | null;
   approved_date: string;
 }
 
