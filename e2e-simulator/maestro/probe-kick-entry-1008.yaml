@@ -1,4 +1,7 @@
-# Ad-hoc 10/08 probe v18: explicit drag gesture scroll, then attempt card tap
+# Ad-hoc 10/08 probe (final): 6-item tab bar + Count Kicks card entry.
+# Encodes the QA-round finding: scrolling to the kicker card alone stops early
+# (AX-visible behind tab bar); scroll to the timer strip below it first, then
+# tap the card. Mirrors the patched verify-10-05-wave2-tabs entry sequence.
 appId: com.truejoybirthing.app
 name: probe-kick-entry-1008
 ---
@@ -7,8 +10,14 @@ name: probe-kick-entry-1008
 - extendedWaitUntil:
     visible: 'Key Actions'
     timeout: 20000
-- swipe:
-    from: '195, 560'
-    to: '195, 260'
-- waitForAnimationToEnd: {timeout: 2000}
-- assertVisible: 'XYZNONEXISTENT'
+- waitForAnimationToEnd: {timeout: 3000}
+- scrollUntilVisible:
+    element:
+      id: 'key-action-contraction-timer'
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 60
+- tapOn:
+    id: 'key-action-count-kicks'
+- waitForAnimationToEnd: {timeout: 3000}
+- assertVisible: 'Tap the circle each time you feel a movement'
