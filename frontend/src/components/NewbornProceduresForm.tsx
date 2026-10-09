@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   stateBannerText: {
-    fontSize: 13,
+    fontSize: 13.5,
     lineHeight: 19,
   },
   card: {
@@ -376,12 +376,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardLabel: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     marginBottom: 4,
   },
   cardHint: {
-    fontSize: 13,
+    fontSize: 13.5,
     lineHeight: 18,
     marginBottom: 10,
   },
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   docInfo: {
-    fontSize: 13,
+    fontSize: 13.5,
     lineHeight: 19,
     marginTop: 4,
     marginBottom: 10,
@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   vkChipText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '600',
   },
 });

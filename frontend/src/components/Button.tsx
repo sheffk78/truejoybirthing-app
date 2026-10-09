@@ -92,7 +92,7 @@ export default function Button({
       // 10/07 drift fix: law button type = Quicksand 700 13px (common.css .abtn)
       fontWeight: '700',
       fontFamily: F.uiBold,
-      fontSize: 13,
+      fontSize: 13.5,
     };
 
     // Size styles

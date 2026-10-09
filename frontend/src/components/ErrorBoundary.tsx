@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   retryText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
 });

@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     backgroundColor: HALO,
   },
   tagline: {
-    fontSize: 16,
+    fontSize: 17,
     textAlign: 'center',
     marginTop: 4,
     marginBottom: 32,

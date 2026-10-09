@@ -1275,7 +1275,7 @@ const getStyles = createThemedStyles((colors) => ({
   emptyText: { fontSize: SIZES.fontMd, color: colors.textSecondary, textAlign: 'center', marginTop: SIZES.md },
   invoiceCard: { backgroundColor: colors.surface,borderRadius: SIZES.radiusMd, padding: SIZES.md, marginBottom: SIZES.sm, borderWidth: 1, borderColor: colors.border },
   highlightedInvoiceCard: { borderWidth: 2, borderColor: '#3F51B5', backgroundColor: '#3F51B5' + '0A' },
-  paymentMethodsHint: { fontSize: 12, color: colors.textSecondary, marginTop: 4, marginBottom: SIZES.sm, lineHeight: 17 },
+  paymentMethodsHint: { fontSize: 11, color: colors.textSecondary, marginTop: 4, marginBottom: SIZES.sm, lineHeight: 17 },
   invoiceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SIZES.sm },
   invoiceInfo: { flex: 1 },
   invoiceNumber: { fontSize: SIZES.fontSm, fontWeight: '600', color: colors.text },

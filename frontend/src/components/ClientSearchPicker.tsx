@@ -222,7 +222,7 @@ const getStyles = (colors: any) =>
     },
     resultInfo: { flex: 1, marginLeft: 10 },
     resultName: { fontSize: 15, fontFamily: F.ui },
-    resultEdd: { fontSize: 12, marginTop: 2 },
+    resultEdd: { fontSize: 11, marginTop: 2 },
     avatarFallback: {
       width: 34,
       height: 34,
@@ -232,7 +232,7 @@ const getStyles = (colors: any) =>
     },
     avatarImage: { width: 34, height: 34, borderRadius: 17 },
     avatarInitial: { fontSize: 14, fontFamily: F.uiBold },
-    emptyText: { marginTop: 10, fontSize: 13, textAlign: 'center', paddingVertical: 8 },
+    emptyText: { marginTop: 10, fontSize: 13.5, textAlign: 'center', paddingVertical: 8 },
   });
 
 export { Platform };
