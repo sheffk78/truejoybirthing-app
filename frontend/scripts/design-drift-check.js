@@ -141,12 +141,33 @@ function scan() {
       if (hexes.size) violations.R1[r] = [...hexes].sort();
     }
 
-    // R2 off-ladder fontSize (everywhere, incl. token files)
+    // R2 off-ladder fontSize (everywhere, incl. token files) — with STRUCTURAL
+    // exemptions (type-law r4 council 2026-10-09): DOM-input web style blocks
+    // (<input>/<textarea> style objects — react-native-web render, invalid RN)
+    // and single-glyph Text nodes (×/›/✕/↻ iconography, not typography).
+    // Exemption keys on node shape, never on value — no other instance of an
+    // off-law size is shielded.
+    const LAW_GLYPH_RE = />[^>{\n]*[×✕›‹↻][^<\n]*</;
+    // StyleSheet def-sites for glyph styles (glyph lives on the JSX side,
+    // possibly far away) — explicit name list, never value-based
+    const LAW_GLYPH_STYLE_RE = /^(chev|closeX|modalCloseX|deleteX|removeX)$/;
+    const LAW_DOM_RE = /<input|<textarea|border:\s*[`"']?\s*\d+px|outline:\s*['"]none['"]|cursor:\s*['"]pointer['"]|e\.target\./;
     const sizes = new Set();
-    for (const m of src.matchAll(FONT_RE)) {
-      const v = parseFloat(m[1]);
-      if (!LAWFUL_FONT_SIZES.has(v)) sizes.add(String(v));
-    }
+    const srcLines = src.split('\n');
+    srcLines.forEach((lineText, li) => {
+      for (const m of lineText.matchAll(FONT_RE)) {
+        const block = srcLines.slice(Math.max(0, li - 10), li + 5).join('\n');
+        if (LAW_GLYPH_RE.test(lineText)) continue; // glyph text node (iconography)
+        if (LAW_DOM_RE.test(block)) continue; // DOM-input web style block
+        // glyph StyleSheet def (name-based, e.g. chev in a row component)
+        for (let k2 = li; k2 >= Math.max(0, li - 6); k2--) {
+          const nm = srcLines[k2].match(/^\s{2,4}(\w+):\s*\{/);
+          if (nm && LAW_GLYPH_STYLE_RE.test(nm[1])) return;
+        }
+        const v = parseFloat(m[1]);
+        if (!LAWFUL_FONT_SIZES.has(v)) sizes.add(String(v));
+      }
+    });
     if (sizes.size) violations.R2[r] = [...sizes].sort();
 
     // R3 odd spacing
