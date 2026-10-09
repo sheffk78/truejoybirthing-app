@@ -7,7 +7,11 @@ import { useColors } from '../hooks/useThemedStyles';
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'neutral';
+  /** Accent fill tier (P4 button fold, JOB-2026-10-09i):
+   *  'soft' (default) = .btn-primary law fill (colors.primary);
+   *  'deep'  = .abtn law fill (colors.primaryDark) — mom-tier CTAs. */
+  tone?: 'soft' | 'deep';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   disabled?: boolean;
@@ -23,6 +27,7 @@ export default function Button({
   title,
   onPress,
   variant = 'primary',
+  tone = 'soft',
   size = 'md',
   loading = false,
   disabled = false,
@@ -64,6 +69,10 @@ export default function Button({
       case 'secondary':
         base.backgroundColor = colors.secondary;
         break;
+      case 'neutral':
+        // P4: track-filled utility pill (screen-law C.track) — themable
+        base.backgroundColor = colors.backgroundSecondary;
+        break;
       case 'outline':
         base.backgroundColor = colors._theme.background.subtle;
         base.borderWidth = 1.5;
@@ -73,7 +82,9 @@ export default function Button({
         base.backgroundColor = 'transparent';
         break;
       default:
-        base.backgroundColor = colors.primary;
+        // P4 tone tiers: soft = .btn-primary law (colors.primary),
+        // deep = .abtn law (colors.primaryDark)
+        base.backgroundColor = tone === 'deep' ? colors.primaryDark : colors.primary;
     }
     
     if (disabled || loading) {
@@ -112,6 +123,10 @@ export default function Button({
       case 'outline':
       case 'ghost':
         base.color = colors.primary;
+        break;
+      case 'neutral':
+        // track fill is light — default to ink text; screens can override
+        base.color = colors.text;
         break;
       case 'secondary':
         base.color = colors.white;
