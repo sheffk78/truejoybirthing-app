@@ -1,7 +1,6 @@
-import { F } from '../constants/corpus';
+import { F, BRAND, SEM_LIGHT } from '../constants/corpus';
 import React, { useEffect, useRef } from 'react';
 import { View, Image, StyleSheet, Animated, Easing, Text, Dimensions } from 'react-native';
-import { BRAND, COLORS } from '../constants/theme';
 
 // ─────────────────────────────────────────────────────────────────────
 // BrandedLoader — SplashMark v2 (approved 2026-09-16, Jeff verdict
@@ -42,11 +41,11 @@ export interface BrandedLoaderProps {
   fontsLoaded?: boolean;
 }
 
-// Brand tokens (mirrors theme.ts approved palette)
+// Brand tokens (corpus law — SEM_LIGHT above; halos keep rgba() law form)
 const HALO = 'rgba(142, 140, 181, 0.16)';   // Lavender 500 @16% — approved halo
 const HALO_OUTER = 'rgba(142, 140, 181, 0.07)';
-const DOT_ACTIVE = '#8E8CB5';               // Lavender 500
-const DOT_INACTIVE = '#D5D3E8';             // Lavender 300
+const DOT_ACTIVE = SEM_LIGHT.accent.primary;      // law lavenderSoft
+const DOT_INACTIVE = SEM_LIGHT.accent.primaryLight; // law lavenderBorder
 
 // Breath rhythm (ms) — one full inhale/exhale cycle
 const BREATH_MS = 2400;
@@ -57,12 +56,14 @@ export default function BrandedLoader({
   colors,
   fontsLoaded = true,
 }: BrandedLoaderProps) {
-  // Default to light-mode static colors if not provided
+  // Default to the light law tokens (static SEM_LIGHT, not the live corpus —
+  // the approved splash is theme-invariant: cream canvas in both modes, per
+  // SplashMark v2. Theme-aware callers pass the `colors` prop explicitly).
   const c: BrandedLoaderColors = colors || {
-    background: COLORS.background,
-    text: COLORS.textPrimary,
-    textSecondary: COLORS.textSecondary,
-    primary: COLORS.primary,
+    background: SEM_LIGHT.background.primary,
+    text: SEM_LIGHT.text.primary,
+    textSecondary: SEM_LIGHT.text.secondary,
+    primary: SEM_LIGHT.accent.primaryDark,
   };
 
   // ── Approved breath animation on the mark ─────────────────────

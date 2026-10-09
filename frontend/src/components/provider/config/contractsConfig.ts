@@ -1,7 +1,7 @@
 // Contract configuration for Doula and Midwife roles
 // Contains form sections, default values, and role-specific fields
-
-import { COLORS } from '../../../constants/theme';
+// P1 token collapse: role colors from the corpus semantic map (values identical).
+import { SEM_LIGHT } from '../../../constants/corpus';
 
 export interface ContractField {
   id: string;
@@ -130,7 +130,7 @@ export const DOULA_CONTRACT_DEFAULTS: Record<string, any> = {
 export const DOULA_CONTRACTS_CONFIG: ContractsConfig = {
   role: 'DOULA',
   roleLabel: 'Doula',
-  primaryColor: COLORS.roleDoula,
+  primaryColor: SEM_LIGHT.role.doula,
   sections: DOULA_CONTRACT_SECTIONS,
   defaultValues: DOULA_CONTRACT_DEFAULTS,
   endpoints: {
@@ -245,7 +245,7 @@ export const MIDWIFE_CONTRACT_DEFAULTS: Record<string, any> = {
 export const MIDWIFE_CONTRACTS_CONFIG: ContractsConfig = {
   role: 'MIDWIFE',
   roleLabel: 'Midwife',
-  primaryColor: COLORS.roleMidwife,
+  primaryColor: SEM_LIGHT.role.midwife,
   sections: MIDWIFE_CONTRACT_SECTIONS,
   defaultValues: MIDWIFE_CONTRACT_DEFAULTS,
   endpoints: {
@@ -348,7 +348,7 @@ export const LACTATION_CONTRACT_DEFAULTS: Record<string, any> = {
 export const LACTATION_CONTRACTS_CONFIG: ContractsConfig = {
   role: 'LACTATION',
   roleLabel: 'Lactation Consultant',
-  primaryColor: COLORS.roleLactation,
+  primaryColor: SEM_LIGHT.role.lactation,
   sections: LACTATION_CONTRACT_SECTIONS,
   defaultValues: LACTATION_CONTRACT_DEFAULTS,
   endpoints: {

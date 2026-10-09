@@ -24,9 +24,8 @@ import {
 } from '@expo-google-fonts/source-sans-3';
 import { useAuthStore } from '../src/store/authStore';
 import LoadingScreen from '../src/components/LoadingScreen';
-import BrandedLoader, { BrandedLoaderColors } from '../src/components/BrandedLoader';
+import BrandedLoader from '../src/components/BrandedLoader';
 import { ThemeProvider, useTheme } from '../src/contexts/ThemeContext';
-import { COLORS } from '../src/constants/theme';
 import { usePushNotifications } from '../src/hooks/usePushNotifications';
 
 // Silence dev-only warning banners/logbox so they never cover interactive UI in dev builds
@@ -223,17 +222,11 @@ export default function RootLayout() {
   });
   
   // Show branded loading screen while fonts are loading (before ThemeProvider is available)
+  // (no colors prop — BrandedLoader's corpus-law defaults apply; identical values)
   if (!fontsLoaded) {
-    const fontLoaderColors: BrandedLoaderColors = {
-      background: COLORS.background,
-      text: COLORS.textPrimary,
-      textSecondary: COLORS.textSecondary,
-      primary: COLORS.primary,
-    };
     return (
       <SafeAreaProvider>
         <BrandedLoader
-          colors={fontLoaderColors}
           fontsLoaded={false}
           message="Preparing your experience..."
         />

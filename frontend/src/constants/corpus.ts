@@ -179,3 +179,14 @@ export const useCorpusFonts = (): CorpusFonts => {
   const { themeName } = useTheme();
   return useMemo(() => fontsFor(themeName), [themeName]);
 };
+
+// ═══════════════════════════════════════════════════════════════════════
+// P1 TOKEN COLLAPSE (2026-10-09, JOB-2026-10-09h): token VALUES moved to the
+// dependency-free leaf ./tokens.ts — corpus stays the BEHAVIOR home (live
+// light/dark switching via the Proxy C + useCorpus hooks). tokens.ts must
+// never import React/hook modules (cycle corpus -> ThemeContext ->
+// themeTokens -> corpus reproduced live in jest 2026-10-09). FONTS, SIZES,
+// SEM_SPACING, BRAND and the SEM semantic maps are re-exported here so
+// corpus remains the one import site for tokens.
+// ═══════════════════════════════════════════════════════════════════════
+export { FONTS, SIZES, SEM_SPACING, BRAND, SEM_LIGHT, SEM_DARK } from './tokens';

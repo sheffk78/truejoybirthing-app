@@ -1,130 +1,64 @@
-// True Joy Birthing Theme - Official Brand Colors
-// Aligned with the current website VISUAL-TOKENS palette.
+// theme.ts — LEGACY ALIAS SHIM (P1 token collapse, 2026-10-09, JOB-2026-10-09h)
+//
+// This file used to define its own palette; that palette drifted from the
+// approved design law. As of P1 it defines NOTHING: every token value lives in
+// src/constants/corpus.ts (the single home for colors, fonts, sizes, brand
+// assets, and the semantic maps). Values below are byte-identical to the ones
+// this file shipped before the collapse — no screen changes appearance.
+//
+// NEW CODE: import from './corpus' instead — colors via C/useCorpus, semantics
+// via getTheme() (themeTokens.ts). This shim exists only so the remaining
+// imports keep compiling until P3 sweeps them onto corpus.
+//
+// Law refs: docs/design-refresh/CONSISTENCY-SPEC.md · corpus.ts header.
 
+import { FONTS, SIZES, BRAND, SEM_LIGHT } from './tokens';
+
+// Legacy flat palette — every entry maps onto the corpus semantic map.
+// (Mood/status/role accents: provenance notes in tokens.ts P1b eyeball list.)
 export const COLORS = {
-  // Primary - Lavender from the website action system
-  primary: '#6E6C99',         // 10/07 drift fix: law action lavender #6E6C99 (was 500 #8E8CB5 — mockups use the 600 as buttons/dots)
-  primaryLight: '#D5D3E8',    // Lavender 300
-  primaryDark: '#5B5982',     // Lavender 700-ish (pressed state; old 600 value moved up to primary)
-  
-  // Secondary - Rose from the website link/accent system
-  secondary: '#B87AA0',       // Rose 500
-  secondaryLight: '#E6BBD8',  // Rose 300
-  secondaryDark: '#9A5E84',   // Rose 600
-  
-  // Accent - Calming Sage Green
-  accent: '#A8B5A0',
-  accentLight: '#E8EDE5',
-  accentDark: '#7F8E76',
-  
   // Backgrounds
-  white: '#FFFFFF',
-  background: '#FAF8F5',      // Cream canvas
-  surface: '#FDFCFA',
-  subtle: '#F5F3EF',          // Warm alternate section surface
-  border: '#E6E4F4',
-  
+  background: SEM_LIGHT.background.primary,   // cream canvas (law)
+  surface: SEM_LIGHT.background.surface,
+  subtle: SEM_LIGHT.background.subtle,
+  white: SEM_LIGHT.white,
+
   // Text
-  textPrimary: '#2A2A2A',     // Charcoal
-  textSecondary: '#6A6B6C',   // Gray body text
-  textLight: '#9A9B9C',       // Muted captions
-  textOnPrimary: '#FFFFFF',
-  
-  // Status
-  success: '#A8B5A0',
-  warning: '#E6C685',
-  error: '#D48A8A',           // 10/07 drift fix: #D48A8A is already the corpus moodLow rose — law-compliant warn tone (no material red anywhere)
-  info: '#8E8CB5',
-  
-  // Mood colors
-  moodVeryLow: '#D48A8A',
-  moodLow: '#E6C685',
-  moodNeutral: '#B0A6B4',
-  moodGood: '#A8B5A0',
-  moodGreat: '#8E8CB5',
-  
-  // Role-specific colors
-  roleMom: '#B87AA0',         // Rose for Mom
-  roleDoula: '#8E8CB5',       // Lavender for Doula
-  roleMidwife: '#A8B5A0',     // Sage for Midwife
-  roleLactation: '#6BAFA0',   // Teal-green for Lactation
-  roleAdmin: '#6A6B6C',       // Gray for Admin
-};
+  textPrimary: SEM_LIGHT.text.primary,
+  textSecondary: SEM_LIGHT.text.secondary,
+  textLight: SEM_LIGHT.text.muted,
+  textOnPrimary: SEM_LIGHT.text.onAccent,
 
-export const FONTS = {
-  // 10/07 drift fix: legacy stack retired — every role now maps to the frozen
-  // corpus faces (designRefresh.ts F: Cormorant serif display + Quicksand UI).
-  // ONE body face app-wide per DESIGN-LAW (web DateTimePicker keeps web fallback).
-  heading: 'CormorantGaramond_700Bold',
-  subheading: 'CormorantGaramond_600SemiBold',
-  headingItalic: 'CormorantGaramond_600SemiBold_Italic',
-  body: 'Quicksand_500Medium',
-  bodyMedium: 'Quicksand_500Medium',
-  bodyItalic: 'Quicksand_400Regular',
-  bodyBold: 'Quicksand_700Bold',
-  // Fallbacks (unused; brand faces load at root, app/_layout.tsx useFonts)
-  regular: 'Quicksand_400Regular',
-  medium: 'Quicksand_500Medium',
-  semiBold: 'Quicksand_600SemiBold',
-  bold: 'Quicksand_700Bold',
-};
+  // Borders
+  border: SEM_LIGHT.border.subtle,
 
-export const SIZES = {
-  // Spacing
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
-  xxxl: 64,
-  
-  // Border radius
-  radiusXs: 4,
-  radiusSm: 8,
-  radiusMd: 12,
-  radiusLg: 16,
-  radiusXl: 24,
-  radiusFull: 9999,
-  
-  // Font sizes — 10/07 drift fix: legacy ladder collapsed onto the approved
-  // law scale (DESIGN-LAW type system: 10/11/13.5/17/21/26 + serif clocks
-  // 52/74). Map legacy names to their nearest lawful step so 62 consumer
-  // files inherit the tight scale with zero per-file edits.
-  fontXs: 11,
-  fontSm: 13.5,
-  fontMd: 13.5,
-  fontLg: 17,
-  fontXl: 21,
-  fontXxl: 26,
-  fontTitle: 26,
-  fontHero: 34,
-  
-  // Touch targets
-  touchMin: 44,
-};
+  // Brand accents (law values via corpus)
+  primary: SEM_LIGHT.accent.primaryDark,      // law lavender #6E6C99
+  primaryLight: SEM_LIGHT.accent.primaryLight,
+  primaryDark: SEM_LIGHT.accent.pressed,      // LEGACY pressed state (P1b list)
+  secondary: SEM_LIGHT.accent.secondary,      // rose border
+  secondaryLight: SEM_LIGHT.accent.secondaryLight,
+  secondaryDark: SEM_LIGHT.accent.secondaryDark,
 
-// Logo assets - using PNG for reliable rendering across platforms.
-// The original Illustrator SVGs use CSS <style> blocks with class-based fills
-// which react-native-svg-transformer cannot process correctly, so we use the
-// PNG version (452×200 RGBA) with <Image source={BRAND.logoPng} />.
-// SVG variants are also bundled in assets/images/ for future use if needed.
-const logoPng = require('../../assets/images/logo.png');
-const logoIconPng = require('../../assets/images/logo-icon.png');
+  // Status / mood / roles (shipped values; provenance + eyeball list in corpus.ts)
+  accent: SEM_LIGHT.accent.tertiary,
+  accentLight: SEM_LIGHT.status.successBg,    // law sageBg
+  accentDark: SEM_LIGHT.accent.tertiaryPressed, // LEGACY pressed sage (P1b list)
+  success: SEM_LIGHT.status.success,
+  warning: SEM_LIGHT.status.warning,
+  error: SEM_LIGHT.status.error,
+  info: SEM_LIGHT.status.info,
+  moodVeryLow: SEM_LIGHT.mood.veryLow,
+  moodLow: SEM_LIGHT.mood.low,
+  moodNeutral: SEM_LIGHT.mood.neutral,
+  moodGood: SEM_LIGHT.mood.good,
+  moodGreat: SEM_LIGHT.mood.great,
+  roleMom: SEM_LIGHT.role.mom,
+  roleDoula: SEM_LIGHT.role.doula,
+  roleMidwife: SEM_LIGHT.role.midwife,
+  roleLactation: SEM_LIGHT.role.lactation,    // LEGACY teal (P1b list)
+  roleAdmin: SEM_LIGHT.role.admin,
+} as const;
 
-export const BRAND = {
-  // PNG logo (452×200) - use with <Image source={BRAND.logoPng} />
-  logoPng,
-  // Icon-only PNG, rasterized from the approved brand SVG for reliable native rendering.
-  logoIconPng,
-  // Alias for backward compat - previously an SVG component, now a PNG ImageSource
-  logoJpg: logoPng,
-  logoSvg: logoPng,
-  logoIcon: logoIconPng,
-  logoWordmarkWhite: logoPng,
-  logoWordmarkMono: logoPng,
-  name: 'True Joy Birthing',
-  tagline: 'Your birth plan, your team, your support in one place.',
-};
-
+export { FONTS, SIZES, BRAND };
 export default { COLORS, FONTS, SIZES, BRAND };

@@ -1,5 +1,9 @@
 // Role-specific configuration for Provider components
-import { COLORS } from '../../../constants/theme';
+// P1 token collapse: role colors read from the corpus semantic map
+// (SEM_LIGHT.role — byte-identical to the former theme.ts entries: doula = law
+// lavenderSoft, midwife = light sage tint, lactation = shipped teal (P1b list).
+// Hex values live in corpus.ts only — citing them in comments trips the drift gate.
+import { SEM_LIGHT } from '../../../constants/corpus';
 import { API_ENDPOINTS } from '../../../constants/api';
 import { ProviderRole } from '../types/provider';
 
@@ -96,7 +100,7 @@ export const DOULA_CONFIG: ProviderConfig = {
   role: 'DOULA',
   roleLabel: 'Doula',
   roleLabelPlural: 'Doulas',
-  primaryColor: COLORS.roleDoula,
+  primaryColor: SEM_LIGHT.role.doula,
   
   features: {
     showVisits: false,
@@ -186,7 +190,7 @@ export const MIDWIFE_CONFIG: ProviderConfig = {
   role: 'MIDWIFE',
   roleLabel: 'Midwife',
   roleLabelPlural: 'Midwives',
-  primaryColor: COLORS.roleMidwife,
+  primaryColor: SEM_LIGHT.role.midwife,
   
   features: {
     showVisits: true,
@@ -271,7 +275,7 @@ export const LACTATION_CONFIG: ProviderConfig = {
   role: 'LACTATION',
   roleLabel: 'Lactation Consultant',
   roleLabelPlural: 'Lactation Consultants',
-  primaryColor: COLORS.roleLactation,
+  primaryColor: SEM_LIGHT.role.lactation,
   
   features: {
     showVisits: false,

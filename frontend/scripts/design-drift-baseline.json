@@ -1,7 +1,7 @@
 {
  "generated": "2026-10-09",
- "commit": "5fd4fc3c",
- "files": 189,
+ "commit": "d80ae294",
+ "files": 190,
  "violations": {
   "R1": {
    "app/(auth)/forgot-password.tsx::#4A3B4E": 1,
@@ -58,8 +58,6 @@
    "app/(mom)/weekly-tips.tsx::#EBD3E4": 1,
    "app/(mom)/wellness.tsx::#A25C86": 1,
    "app/(mom)/wellness.tsx::#B085A5": 1,
-   "src/components/BrandedLoader.tsx::#8E8CB5": 1,
-   "src/components/BrandedLoader.tsx::#D5D3E8": 1,
    "src/components/Card.tsx::#EFE0EB": 1,
    "src/components/Card.tsx::#FFFFFF": 1,
    "src/components/CreamFade.tsx::#1A1520": 1,
@@ -326,32 +324,22 @@
    "app/(mom)/weekly-tips.tsx::2": 1
   },
   "R6": {
-   "src/constants/theme.ts::#5B5982": 1,
-   "src/constants/theme.ts::#6BAFA0": 1,
-   "src/constants/theme.ts::#7F8E76": 1,
-   "src/constants/theme.ts::#9A5E84": 1,
-   "src/constants/theme.ts::#9A9B9C": 1,
-   "src/constants/theme.ts::#A8B5A0": 1,
-   "src/constants/theme.ts::#B0A6B4": 1,
-   "src/constants/theme.ts::#D48A8A": 1,
-   "src/constants/theme.ts::#E6BBD8": 1,
-   "src/constants/theme.ts::#E6C685": 1,
-   "src/constants/theme.ts::#E6E4F4": 1,
-   "src/constants/theme.ts::#F5F3EF": 1,
-   "src/constants/themeTokens.ts::#000000": 1,
-   "src/constants/themeTokens.ts::#6BAFA0": 1,
-   "src/constants/themeTokens.ts::#7BC9B8": 1,
-   "src/constants/themeTokens.ts::#9A5E84": 1,
-   "src/constants/themeTokens.ts::#9A9B9C": 1,
-   "src/constants/themeTokens.ts::#A8B5A0": 1,
-   "src/constants/themeTokens.ts::#B0A6B4": 1,
-   "src/constants/themeTokens.ts::#D48A8A": 1,
-   "src/constants/themeTokens.ts::#E6BBD8": 1,
-   "src/constants/themeTokens.ts::#E6C685": 1,
-   "src/constants/themeTokens.ts::#E6E4F4": 1,
-   "src/constants/themeTokens.ts::#F5F3EF": 1,
-   "src/constants/themeTokens.ts::#FCEAEA": 1,
-   "src/constants/themeTokens.ts::#FFF8E6": 1
+   "src/constants/tokens.ts::#000000": 1,
+   "src/constants/tokens.ts::#5B5982": 1,
+   "src/constants/tokens.ts::#6BAFA0": 1,
+   "src/constants/tokens.ts::#7BC9B8": 1,
+   "src/constants/tokens.ts::#7F8E76": 1,
+   "src/constants/tokens.ts::#9A5E84": 1,
+   "src/constants/tokens.ts::#9A9B9C": 1,
+   "src/constants/tokens.ts::#A8B5A0": 1,
+   "src/constants/tokens.ts::#B0A6B4": 1,
+   "src/constants/tokens.ts::#D48A8A": 1,
+   "src/constants/tokens.ts::#E6BBD8": 1,
+   "src/constants/tokens.ts::#E6C685": 1,
+   "src/constants/tokens.ts::#E6E4F4": 1,
+   "src/constants/tokens.ts::#F5F3EF": 1,
+   "src/constants/tokens.ts::#FCEAEA": 1,
+   "src/constants/tokens.ts::#FFF8E6": 1
   }
  }
 }

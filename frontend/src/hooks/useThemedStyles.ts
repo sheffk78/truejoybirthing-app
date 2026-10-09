@@ -4,7 +4,7 @@
 import { useMemo } from 'react';
 import { StyleSheet, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
-import { SIZES, FONTS } from '../constants/theme';
+import { SIZES, FONTS } from '../constants/corpus';
 
 // Type for colors returned by useColors
 export type ThemeColors = ReturnType<typeof useColors>;

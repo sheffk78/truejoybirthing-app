@@ -49,6 +49,7 @@ const LAWFUL_SPACING = new Set([
 // Token-definition files: raw hexes are their job. Everything else may not.
 const TOKEN_DEF_FILES = new Set([
   'src/constants/corpus.ts',
+  'src/constants/tokens.ts',
   'src/constants/designRefresh.ts',
   'src/constants/designRefreshDark.ts',
   'src/constants/theme.ts',
@@ -79,8 +80,13 @@ function listSourceFiles() {
       out.push(path.join(FE, entry.name));
     }
   }
+  // Recursed roots: app/ + src/ — ALWAYS anchored to FE, never process.cwd
+  // (jest runs this from repo root; a cwd-relative walk scanned the wrong
+  // tree and made R1-R3 blind — found 2026-10-09). Plus root-level .ts/.tsx.
   const roots = ['app', 'src'];
   for (const root of roots) {
+    const absRoot = path.join(FE, root);
+    if (!fs.existsSync(absRoot)) continue;
     const walk = (dir) => {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         if (entry.isDirectory()) {
@@ -92,7 +98,7 @@ function listSourceFiles() {
         out.push(path.join(dir, entry.name));
       }
     };
-    if (fs.existsSync(root)) walk(root);
+    walk(absRoot);
   }
   return out;
 }
@@ -163,7 +169,7 @@ function scan() {
   for (const m of drLight.matchAll(/'(#(?:[0-9a-fA-F]{6}))'/g)) lawful.add(m[1].toUpperCase());
   const drDark = fs.readFileSync(path.join(FE, 'src/constants/designRefreshDark.ts'), 'utf8');
   for (const m of drDark.matchAll(/'(#(?:[0-9a-fA-F]{6}))'/g)) lawful.add(m[1].toUpperCase());
-  for (const tf of ['src/constants/theme.ts', 'src/constants/themeTokens.ts']) {
+  for (const tf of ['src/constants/theme.ts', 'src/constants/themeTokens.ts', 'src/constants/tokens.ts']) {
     const src = fs.readFileSync(path.join(FE, tf), 'utf8');
     const hexes = new Set();
     for (const m of src.matchAll(/'(#(?:[0-9a-fA-F]{6}))'/g)) {
