@@ -292,7 +292,7 @@ const getStyles = (colors: ReturnType<typeof useColors>) =>
     header: {
       marginBottom: 6,
     },
-    overline: { ...kickerStyle(C.rose), marginBottom: 5 },
+    overline: { ...kickerStyle(C.rose), marginBottom: 6 },
     title: {
       fontSize: 26,
       lineHeight: 30,
@@ -306,7 +306,7 @@ const getStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: F.ui,
       color: C.gray,
       lineHeight: 18,
-      marginTop: 5,
+      marginTop: 6,
     },
     section: {
       marginBottom: SIZES.lg,
@@ -377,7 +377,7 @@ const getStyles = (colors: ReturnType<typeof useColors>) =>
       fontFamily: F.ui,
       color: C.body,
       lineHeight: 17,
-      marginTop: 3,
+      marginTop: 4,
     },
     actionPill: {
       marginTop: 8,
@@ -389,7 +389,7 @@ const getStyles = (colors: ReturnType<typeof useColors>) =>
       borderColor: C.lavenderBorder,
       backgroundColor: C.cardBg,
       borderRadius: 999,
-      paddingVertical: 7,
+      paddingVertical: 8,
       paddingHorizontal: 14,
     },
     actionText: {
@@ -410,7 +410,7 @@ const getStyles = (colors: ReturnType<typeof useColors>) =>
       flexDirection: 'row',
       alignItems: 'flex-start',
       gap: 12,
-      paddingVertical: 11,
+      paddingVertical: 12,
       borderBottomWidth: 1,
       borderBottomColor: C.hairline,
     },

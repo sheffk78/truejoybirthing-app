@@ -375,7 +375,7 @@ const getStyles = createThemedStyles((colors) => ({
   entryCard: { backgroundColor: C.surface, borderRadius: SIZES.radiusLg, borderWidth: 1, borderColor: C.border, padding: SIZES.md, marginBottom: SIZES.sm },
   entryHeader: { flexDirection: 'row', alignItems: 'center' },
   entryTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  moodChip: { backgroundColor: C.roseBg, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
+  moodChip: { backgroundColor: C.roseBg, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10 },
   moodChipText: { fontSize: SIZES.fontXs, color: C.rose, fontWeight: '600' },
   entryEmoji: { fontSize: 34, marginRight: SIZES.md },
   entryMeta: { flex: 1 },

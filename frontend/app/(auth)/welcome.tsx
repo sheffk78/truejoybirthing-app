@@ -243,8 +243,8 @@ const getStyles = createThemedStyles((colors) => ({
     // radius 28 top / 40 bottom, padding 26/24 — NO shadow (Jeff 09-16 rejection)
     backgroundColor: colors.background,
     paddingHorizontal: 24,
-    paddingTop: 26,
-    paddingBottom: 26,
+    paddingTop: 28,
+    paddingBottom: 28,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     borderBottomLeftRadius: 40,

@@ -1169,7 +1169,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'center',
     gap: 6,
     marginTop: SIZES.md,
-    paddingVertical: 9,
+    paddingVertical: 10,
     paddingHorizontal: SIZES.md,
     borderRadius: 18,
     borderWidth: 1,

@@ -297,7 +297,7 @@ const getStyles = createThemedStyles((colors) => ({
     textTransform: 'uppercase',
     fontWeight: '700',
     color: C.rose,
-    marginBottom: 5,
+    marginBottom: 6,
     fontFamily: F.uiBold,
   },
   headerTitle: {
@@ -338,7 +338,7 @@ const getStyles = createThemedStyles((colors) => ({
   tab: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 9,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 999,
     borderWidth: 1.3,
@@ -361,14 +361,14 @@ const getStyles = createThemedStyles((colors) => ({
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 12,
-    paddingBottom: 60,
+    paddingBottom: 64,
   },
   sectionLabel: {
     fontSize: 11.5,
     fontFamily: F.ui,
     fontWeight: '500',
     color: C.gray,
-    marginBottom: 7,
+    marginBottom: 8,
   },
   // —— Approved week strip (.wstrip .wk) ——
   weekScrollContainer: {
@@ -459,8 +459,8 @@ const getStyles = createThemedStyles((colors) => ({
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,
-    paddingVertical: 13,
-    paddingHorizontal: 15,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     marginBottom: 8,
   },
   tipCardAffirm: {

@@ -169,7 +169,7 @@ const getStyles = createThemedStyles((colors) => ({
   content: {
     flex: 1,
     paddingHorizontal: SIZES.xl,
-    paddingTop: 60,
+    paddingTop: 64,
     alignItems: 'center',
   },
   iconContainer: {

@@ -692,7 +692,7 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: C.lavender,
     borderRadius: 8,
     paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingVertical: 8,
   },
   paymentMethodCopyText: {
     color: C.white,
@@ -715,7 +715,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignSelf: 'flex-start',
     backgroundColor: C.lavenderBg,
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 8,
     marginTop: 6,
   },

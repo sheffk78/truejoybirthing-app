@@ -1190,7 +1190,7 @@ backgroundColor: colors.surface
     fontSize: SIZES.fontSm, 
     fontFamily: F.ui, 
     marginBottom: SIZES.sm,
-    marginLeft: 30,
+    marginLeft: 32,
     color: colors.textSecondary,
   },
   feedbackButton: { 

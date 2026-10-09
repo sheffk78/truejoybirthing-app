@@ -825,7 +825,7 @@ const getStyles = createThemedStyles(() => ({
     textTransform: 'uppercase',
     fontWeight: '700',
     color: C.rose,
-    marginBottom: 5,
+    marginBottom: 6,
     fontFamily: F.uiBold,
   },
   headerTitle: { fontSize: 26, fontFamily: F.serif, color: C.ink, lineHeight: 30 },
@@ -874,9 +874,9 @@ const getStyles = createThemedStyles(() => ({
 
   // —— Approved footer CTA (.dl .abtn + .hint) ——
   dl: { marginHorizontal: 20, marginTop: 16 },
-  abtn: { backgroundColor: C.lavender, borderRadius: 999, paddingVertical: 13, paddingHorizontal: 18, alignItems: 'center' },
+  abtn: { backgroundColor: C.lavender, borderRadius: 999, paddingVertical: 14, paddingHorizontal: 18, alignItems: 'center' },
   abtnText: { color: C.white, fontSize: 13.5, fontWeight: '600', fontFamily: F.uiSemi },
-  dlHint: { textAlign: 'center', fontSize: 11, color: C.gray, marginTop: 7, fontFamily: F.ui, fontWeight: '500' },
+  dlHint: { textAlign: 'center', fontSize: 11, color: C.gray, marginTop: 8, fontFamily: F.ui, fontWeight: '500' },
 
   // —— Empty state ——
   emptyState: { alignItems: 'center', paddingVertical: 48, paddingHorizontal: 20 },

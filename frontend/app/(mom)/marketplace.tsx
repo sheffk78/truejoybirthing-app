@@ -1116,7 +1116,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   roleBadge: {
     paddingHorizontal: SIZES.sm,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 10,
   },
   roleText: {
