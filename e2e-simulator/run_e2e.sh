@@ -41,6 +41,15 @@ docker ps --format '{{.Names}}' | grep -q '^docuseal-tjb-test$' \
 [ "$FAIL" = 0 ] || { echo "$STAMP preflight FAIL" > "$RESULTS_DIR/$STAMP.md"; exit 1; }
 log "Phase 0 OK: backend + mongo + docuseal all up"
 
+# ---- Phase 0.5: design-law drift gate (P0, JOB-2026-10-09f) ----
+# Script-only, fail-closed. Exit 42 = new design drift -> block the e2e run.
+if ! (cd "$ROOT/frontend" && node scripts/design-drift-check.js); then
+  log "FAIL: design-drift gate blocked the run (new drift vs baseline — see frontend/scripts/design-drift-baseline.json)"
+  echo "$STAMP drift-gate FAIL (new design drift)" > "$RESULTS_DIR/$STAMP.md"
+  exit 42
+fi
+log "Phase 0.5 OK: design-drift gate green"
+
 # ================= PHASE 1: SEED =================
 log "Phase 1: seeding test users"
 (cd "$BACKEND" && "$BACKEND/.venv/bin/python" tests/fix_test_passwords.py 2>&1 | grep -v bcrypt | tail -3) \
