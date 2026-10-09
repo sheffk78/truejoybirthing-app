@@ -34,10 +34,19 @@ const BASELINE_PATH = path.join(__dirname, 'design-drift-baseline.json');
 const UPDATE = process.argv.includes('--update-baseline');
 
 // ---- Lawful sets (derived from the ratified corpus documents) ----
-// Type law: mom ladder 10/10.5/11/13.5/17/21/26 + display 34/52/74 + welcome CTA 15.5
-//           doula tier law (r3 ratification): 11.5/14/15/22
+// Type law r4 (council 2026-10-09) — mom ladder 10/10.5/11/13.5/17/21/26
+// + display 34/52/74 + doula tier r3 (11.5/14/15/22) + 15.5 CTA band (now
+// weekly-tips.tsx:527 — welcome has none). RATIFIED r4, bounded: 9.5 = chips
+// /stat-labels/micro-foots (mockup .schip/.doula-chip, .stat .l); 12.5 = m-sub
+// band: header subs/secondary meta/secondary button labels (.m-sub s7 L28,
+// common.css L51-52, 68 mockup rule blocks); 16.5 = Cormorant italic quotes
+// /.tipcard p.q s10:93; 19 = Cormorant serif stat numerals in tool/stat strips
+// (kick:66, s3 .medrow .n, s4 .ccard .cn); 20 = avatar monograms ONLY (s13
+// avatar law .avatar 20 rose r3#9) — never a mom section step; 23 = kick-counter
+// padClock only (kick v2 .pad .clock ls 1).
 const LAWFUL_FONT_SIZES = new Set([
-  10, 10.5, 11, 11.5, 13.5, 14, 15, 15.5, 17, 21, 22, 26, 34, 52, 74,
+  9.5, 10, 10.5, 11, 11.5, 12.5, 13.5, 14, 15, 15.5, 16.5, 17, 19, 20, 21, 22,
+  23, 26, 34, 52, 74,
 ]);
 // Spacing chords: 4pt grid + ratified half-steps (srowBase 12/14, micro 2/6/10)
 // + approved one-offs present in lock-in documents (28 kicker chord, 100/120/140

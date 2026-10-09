@@ -239,7 +239,7 @@ export default function MomHomeScreen() {
               title="Try Again"
               onPress={fetchData}
               style={{ marginTop: SIZES.md }}
-              icon={<Text style={{ color: colors.white, fontSize: 16, fontWeight: '700' }}>↻</Text>}
+              icon={<Text style={{ color: colors.white, fontSize: 17, fontWeight: '700' }}>↻</Text>}
             />
           </View>
         </SafeAreaView>
@@ -922,7 +922,7 @@ const getStyles = createThemedStyles((colors) => ({
     color: C.ink,
   },
   linkRose: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: F.uiBold,
     color: C.rose,
   },
@@ -1043,7 +1043,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: 15,
   },
   weeklyContent: {
-    fontSize: 13,
+    fontSize: 13.5,
     lineHeight: 20,
     fontFamily: F.ui,
     color: C.body,
@@ -1148,7 +1148,7 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
   },
   rowTitle: {
-    fontSize: 12,
+    fontSize: 11,
     lineHeight: 16,
     fontFamily: F.uiSemi,
     color: C.ink,
@@ -1220,7 +1220,7 @@ const getStyles = createThemedStyles((colors) => ({
     justifyContent: 'center',
   },
   babyDevDescription: {
-    fontSize: 13,
+    fontSize: 13.5,
     lineHeight: 20,
     fontFamily: F.ui,
     color: C.body,
@@ -1251,7 +1251,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderColor: C.wkActiveBorder,
   },
   weekChipText: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: F.uiReg,
     color: C.gray,
   },
@@ -1293,7 +1293,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   ringPctText: {
     fontFamily: F.serif,
-    fontSize: 16,
+    fontSize: 17,
     color: C.ink,
   },
   // .facts — 12px caps #A3908B labels, 21px Cormorant #4B4B4B numerals,
@@ -1324,7 +1324,7 @@ const getStyles = createThemedStyles((colors) => ({
     textAlign: 'center',
   },
   babyFactLabel: {
-    fontSize: 12,
+    fontSize: 11,
     lineHeight: 15,
     fontFamily: F.uiSemi,
     color: C.factLabel,

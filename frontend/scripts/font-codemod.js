@@ -26,9 +26,19 @@ const FE = path.resolve(__dirname, '..');
 const MAPPING = JSON.parse(fs.readFileSync(path.join(__dirname, 'font-mapping.json'), 'utf8'));
 
 const WAVES = {
-  1: ['app/(mom)/'],
+  0: [ // canary — every risky mapping on 8 simmable files (council wave-order)
+    'app/(mom)/contraction-timer.tsx',
+    'app/(mom)/kick-counter.tsx',
+    'app/(mom)/home.tsx',
+    'app/(mom)/share-birth-plan.tsx',
+    'app/(mom)/invite-provider.tsx',
+    'app/(mom)/my-team.tsx',
+    'app/(mom)/timeline.tsx',
+    'app/(auth)/login.tsx',
+  ],
+  1: ['app/(mom)/', 'app/plans-pricing.tsx', 'app/pro-feedback.tsx'],
   2: ['app/(provider)/', 'app/(lactation)/', 'app/(midwife)/', 'app/(admin)/', 'src/components/provider/'],
-  3: ['app/(auth)/', 'app/_layout.tsx', 'src/'], // minus wave-2 src paths (checked below)
+  3: ['app/(auth)/', 'app/_layout.tsx', 'src/'], // minus all earlier-wave files
 };
 
 // Glyph/emoji detection: line context contains one of these markers
@@ -58,12 +68,27 @@ function listWaveFiles(wave) {
       else walk(abs);
     }
   }
-  // wave 3 must exclude wave-1/2 files
-  if (wave === 3) {
-    const w12 = [...WAVES[1], ...WAVES[2]];
-    return out.filter((f) => !w12.some((w) => f.startsWith(path.join(FE, w))));
+  // every wave excludes files covered by EARLIER waves (canary first, then bulk)
+  const earlier = [];
+  for (const w of Object.keys(WAVES).map(Number).sort((a, b) => a - b)) {
+    if (w < wave) earlier.push(...WAVES[w]);
+  }
+  if (earlier.length) {
+    return out.filter((f) => !earlier.some((w) => f.startsWith(path.join(FE, w))));
   }
   return out;
+}
+
+// Avatar-monogram law (s13 20 rose, r3#9): these styles are NEVER snapped.
+const SKIP_STYLES = new Set(MAPPING['_skip_styles'] || []);
+
+/** Nearest enclosing StyleSheet property name above line li (≤40 lines up). */
+function styleNameFor(lines, li) {
+  for (let k = li - 1; k >= Math.max(0, li - 40); k--) {
+    const m = lines[k].match(/^\s*(\w+):\s*\{/);
+    if (m) return m[1];
+  }
+  return null;
 }
 
 function processFile(file, wave, apply, includeGlyphs) {
@@ -82,6 +107,8 @@ function processFile(file, wave, apply, includeGlyphs) {
     FS_RE.lastIndex = 0;
     while ((m = FS_RE.exec(line))) matches.push(m);
     if (!matches.length) continue;
+    const styleName = styleNameFor(lines, li);
+    if (styleName && SKIP_STYLES.has(styleName)) continue; // avatar law never snaps
     // apply in REVERSE column order so earlier splice points stay valid
     for (const mm of [...matches].reverse()) {
       const val = parseFloat(mm[1]);
@@ -107,8 +134,8 @@ function main() {
   const wave = waveFlag > -1 ? parseInt(process.argv[waveFlag + 1], 10) : null;
   const includeGlyphs = process.argv.includes('--include-glyphs');
 
-  if (!['report', 'apply'].includes(mode) || !wave || !WAVES[wave]) {
-    console.error('usage: node font-codemod.js report|apply --wave 1|2|3 [--include-glyphs]');
+  if (!['report', 'apply'].includes(mode) || wave === null || !WAVES[wave]) {
+    console.error('usage: node font-codemod.js report|apply --wave 0|1|2|3 [--include-glyphs]');
     process.exit(1);
   }
   const apply = mode === 'apply';

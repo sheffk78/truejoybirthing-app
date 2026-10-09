@@ -413,7 +413,7 @@ const getMyTeamStyles = (c: LiveCorpus) => StyleSheet.create({
   },
   srowEmpty: { backgroundColor: C.cardBg },
   srowPending: { backgroundColor: C.cardBg, borderStyle: 'dashed' },
-  srowEmptyText: { fontSize: 12, color: C.gray, fontWeight: '500', lineHeight: 17 },
+  srowEmptyText: { fontSize: 11, color: C.gray, fontWeight: '500', lineHeight: 17 },
 
   // —— avat ——
   avat: {
@@ -480,6 +480,6 @@ const getMyTeamStyles = (c: LiveCorpus) => StyleSheet.create({
     paddingHorizontal: 18,
     alignItems: 'center',
   },
-  abtnTxt: { color: C.white, fontSize: 13, fontWeight: '600' },
+  abtnTxt: { color: C.white, fontSize: 13.5, fontWeight: '600' },
   hint: { textAlign: 'center', fontSize: 11, color: C.gray, marginTop: 7, fontWeight: '500' },
 });

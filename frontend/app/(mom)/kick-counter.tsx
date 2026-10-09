@@ -594,7 +594,7 @@ const getStyles = createThemedStyles((colors) => ({
     elevation: 1,
   },
   segText: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: F.uiSemi,
     color: C.gray,
   },
@@ -671,7 +671,7 @@ const getStyles = createThemedStyles((colors) => ({
     letterSpacing: 1,
   },
   padSlab: {
-    fontSize: 9,
+    fontSize: 9.5,
     letterSpacing: 2,
     textTransform: 'uppercase',
     fontFamily: F.uiBold,
@@ -789,7 +789,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingLeft: 10,
   },
   recentDurEm: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: F.serif,
   },
   btnRow: {
@@ -812,7 +812,7 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
   },
   primaryBtnText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: F.uiBold,
     color: C.white,
   },

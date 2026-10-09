@@ -475,13 +475,13 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: 4,
   },
   babySize: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: DF.uiBold,
     color: C.rose,
     marginTop: 3,
   },
   babyDesc: {
-    fontSize: 12,
+    fontSize: 11,
     lineHeight: 18,
     fontFamily: DF.ui,
     color: C.body,
@@ -501,7 +501,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
   },
   triWeeks: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: DF.uiBold,
     color: C.lavender,
   },
@@ -541,8 +541,8 @@ const getStyles = createThemedStyles((colors) => ({
   anchorBody: { paddingVertical: 13, paddingHorizontal: 16, paddingBottom: 15 },
   anchorRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   anchorTitle: { fontFamily: DF.serif, fontWeight: '700', fontSize: 21, color: C.ink },
-  anchorWeek: { fontSize: 12, fontWeight: '700', fontFamily: DF.uiBold, color: C.lavender },
-  anchorDesc: { fontSize: 12, lineHeight: 18, fontFamily: DF.ui, color: C.body, marginTop: 5 },
+  anchorWeek: { fontSize: 11, fontWeight: '700', fontFamily: DF.uiBold, color: C.lavender },
+  anchorDesc: { fontSize: 11, lineHeight: 18, fontFamily: DF.ui, color: C.body, marginTop: 5 },
   nextRow: { flexDirection: 'row', alignItems: 'center', marginTop: 9, gap: 10 },
   nextThumb: {
     width: 40,
@@ -574,7 +574,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
   },
   confirmDateText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '600',
     fontFamily: DF.uiSemi,
     color: '#FFFFFF',

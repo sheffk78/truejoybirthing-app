@@ -255,7 +255,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingHorizontal: SIZES.lg,
   },
   headline: {
-    fontSize: 28,
+    fontSize: 26,
     fontFamily: F.serif,
     fontWeight: '700',
     lineHeight: 36,

@@ -456,7 +456,7 @@ const getStyles = createThemedStyles((colors) => ({
     textAlign: 'center',
     color: C.grayLight,
     fontFamily: DF.ui,
-    fontSize: 13,
+    fontSize: 13.5,
     marginTop: SIZES.md,
     fontStyle: 'italic',
   },

@@ -32,7 +32,7 @@ function KickCounterLink() {
 
 const kickLinkStyles = StyleSheet.create({
   text: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: F.uiSemi,
     color: C.lavenderText,
     marginTop: 2,
@@ -1396,7 +1396,7 @@ const getStyles = createThemedStyles((colors) => ({
     textAlign: 'center',
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
@@ -1551,7 +1551,7 @@ const getStyles = createThemedStyles((colors) => ({
     gap: 3,
   },
   actionBtnText: {
-    fontSize: 9,
+    fontSize: 9.5,
     letterSpacing: 0.4,
     fontFamily: F.uiBold,
     color: C.lavender,
@@ -1605,7 +1605,7 @@ const getStyles = createThemedStyles((colors) => ({
     flexShrink: 1,
   },
   patternAlertInline: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: F.ui,
     marginLeft: 4,
     flexShrink: 1,
@@ -1665,13 +1665,13 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: `${colors.primary}15`,
   },
   sharingOptionText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: F.ui,
     color: colors.text,
     marginLeft: 12,
   },
   sharingNote: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: F.ui,
     color: colors.textLight,
     textAlign: 'center',
@@ -1745,7 +1745,7 @@ const getStyles = createThemedStyles((colors) => ({
     width: 40,
   },
   historyItemTime: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: F.serif,
     color: colors.text,
   },
@@ -1756,7 +1756,7 @@ const getStyles = createThemedStyles((colors) => ({
     flexWrap: 'wrap',
   },
   historyDetailText: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: F.ui,
     color: colors.textLight,
     marginRight: 12,
@@ -1792,7 +1792,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: F.ui,
     backgroundColor: colors.surface,
   },
@@ -1842,7 +1842,7 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.primary,
   },
   summaryStatLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: F.ui,
     color: colors.textLight,
     marginTop: 4,
@@ -1877,7 +1877,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 8,
   },
   waterBrokeText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: F.ui,
     color: colors.info || colors.primary,
     marginLeft: 8,
@@ -1890,13 +1890,13 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 24,
   },
   settingsLabel: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: F.serif,
     color: colors.text,
     marginBottom: 4,
   },
   settingsHint: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: F.ui,
     color: colors.textLight,
     marginBottom: 12,
@@ -1951,7 +1951,7 @@ const getStyles = createThemedStyles((colors) => ({
     color: colors.text,
   },
   alertOptionDesc: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: F.ui,
     color: colors.textLight,
     marginTop: 2,

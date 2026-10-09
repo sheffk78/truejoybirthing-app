@@ -483,7 +483,7 @@ const getStyles = createThemedStyles((colors) =>
       borderRadius: 12,
       paddingHorizontal: 13,
       paddingVertical: 11,
-      fontSize: 13,
+      fontSize: 13.5,
       fontFamily: DF.ui,
       color: C.ink,
       borderWidth: 1,
@@ -536,7 +536,7 @@ const getStyles = createThemedStyles((colors) =>
       minHeight: 46,
     },
     abtnDisabled: { opacity: 0.6 },
-    abtnText: { color: C.white, fontSize: 13, fontWeight: '600', fontFamily: DF.uiSemi },
+    abtnText: { color: C.white, fontSize: 13.5, fontWeight: '600', fontFamily: DF.uiSemi },
     ghostBtn: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -549,7 +549,7 @@ const getStyles = createThemedStyles((colors) =>
       paddingHorizontal: 18,
       minHeight: 46,
     },
-    ghostBtnText: { color: C.lavender, fontSize: 13, fontWeight: '600', fontFamily: DF.uiSemi },
+    ghostBtnText: { color: C.lavender, fontSize: 13.5, fontWeight: '600', fontFamily: DF.uiSemi },
 
     // Success — avatar initials + serif title (m17 header family)
     successCard: {
