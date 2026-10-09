@@ -409,7 +409,7 @@ const getStyles = createThemedStyles((colors) =>
 
     // Header
     header: { marginBottom: 18 },
-    overline: { ...kickerStyle(C.rose), marginBottom: 5 },
+    overline: { ...kickerStyle(C.rose), marginBottom: 6 },
     title: {
       fontSize: 26,
       lineHeight: 30,
@@ -423,7 +423,7 @@ const getStyles = createThemedStyles((colors) =>
       fontFamily: DF.ui,
       color: C.gray,
       lineHeight: 18,
-      marginTop: 5,
+      marginTop: 6,
     },
 
     // Smart suggestion banner — warn (roseBg) chip family
@@ -435,7 +435,7 @@ const getStyles = createThemedStyles((colors) =>
       borderWidth: 1,
       borderColor: C.roseSoft,
       borderRadius: 18,
-      padding: 13,
+      padding: 14,
       marginBottom: 12,
     },
     suggestionText: {
@@ -469,20 +469,20 @@ const getStyles = createThemedStyles((colors) =>
       fontFamily: DF.uiBold,
       textTransform: 'uppercase',
       color: C.grayLight,
-      marginBottom: 7,
+      marginBottom: 8,
     },
     labelHint: {
       fontSize: 11,
       fontFamily: DF.ui,
       color: C.gray,
-      marginBottom: 7,
+      marginBottom: 8,
       marginTop: -4,
     },
     input: {
       backgroundColor: C.cardBg,
       borderRadius: 12,
-      paddingHorizontal: 13,
-      paddingVertical: 11,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
       fontSize: 13.5,
       fontFamily: DF.ui,
       color: C.ink,
@@ -517,7 +517,7 @@ const getStyles = createThemedStyles((colors) =>
       gap: 7,
       backgroundColor: C.roseBg,
       borderRadius: 12,
-      paddingHorizontal: 13,
+      paddingHorizontal: 14,
       paddingVertical: 10,
       marginBottom: 14,
     },
@@ -531,7 +531,7 @@ const getStyles = createThemedStyles((colors) =>
       gap: 7,
       backgroundColor: C.lavender,
       borderRadius: 999,
-      paddingVertical: 13,
+      paddingVertical: 14,
       paddingHorizontal: 18,
       minHeight: 46,
     },
@@ -545,7 +545,7 @@ const getStyles = createThemedStyles((colors) =>
       borderWidth: 1.3,
       borderColor: C.lavenderBorder,
       borderRadius: 999,
-      paddingVertical: 13,
+      paddingVertical: 14,
       paddingHorizontal: 18,
       minHeight: 46,
     },
@@ -603,7 +603,7 @@ const getStyles = createThemedStyles((colors) =>
       borderRadius: 18,
       padding: 14,
     },
-    infoHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 7 },
+    infoHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
     infoTitle: { fontSize: 15, fontFamily: DF.serifSemi, fontWeight: '600', color: C.ink },
     infoText: { fontSize: 11.5, fontFamily: DF.ui, color: C.gray, lineHeight: 16 },
     sico: {

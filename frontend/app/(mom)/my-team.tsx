@@ -387,7 +387,7 @@ const getMyTeamStyles = (c: LiveCorpus) => StyleSheet.create({
     textTransform: 'uppercase',
     fontWeight: '700',
     color: C.rose,
-    marginBottom: 5,
+    marginBottom: 6,
   },
   h1: { fontFamily: F.serif, fontWeight: '700', fontSize: 26, lineHeight: 30, color: C.ink },
   h1em: { fontFamily: F.serif, fontWeight: '700', color: C.roseSoft },
@@ -429,7 +429,7 @@ const getMyTeamStyles = (c: LiveCorpus) => StyleSheet.create({
 
   smid: { flex: 1, minWidth: 0 },
   h3: { fontFamily: F.serif, fontWeight: '600', fontSize: 17, color: C.ink },
-  smetaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 3, flexWrap: 'wrap' },
+  smetaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' },
   mmeta: { fontSize: 11, color: C.gray, fontWeight: '500', flexShrink: 1 },
 
   // —— schip ——
@@ -476,10 +476,10 @@ const getMyTeamStyles = (c: LiveCorpus) => StyleSheet.create({
   abtn: {
     backgroundColor: C.lavender,
     borderRadius: 999,
-    paddingVertical: 13,
+    paddingVertical: 14,
     paddingHorizontal: 18,
     alignItems: 'center',
   },
   abtnTxt: { color: C.white, fontSize: 13.5, fontWeight: '600' },
-  hint: { textAlign: 'center', fontSize: 11, color: C.gray, marginTop: 7, fontWeight: '500' },
+  hint: { textAlign: 'center', fontSize: 11, color: C.gray, marginTop: 8, fontWeight: '500' },
 });

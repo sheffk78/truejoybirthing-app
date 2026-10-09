@@ -979,7 +979,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderColor: C.border,
     paddingVertical: 12,
     paddingHorizontal: 12,
-    paddingBottom: 11,
+    paddingBottom: 12,
   },
   // Basis override for the wrapped 2×2 grid: 48% minus half the 10px gutter.
   actionCardWrap: {
@@ -1039,8 +1039,8 @@ const getStyles = createThemedStyles((colors) => ({
   // Weekly Tip & Affirmation — approved tipcard vocabulary
   weeklyCard: {
     marginBottom: 8,
-    paddingVertical: 13,
-    paddingHorizontal: 15,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
   },
   weeklyContent: {
     fontSize: 13.5,
@@ -1070,7 +1070,7 @@ const getStyles = createThemedStyles((colors) => ({
   segBtn: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 7,
+    paddingVertical: 8,
     borderRadius: 999,
   },
   segBtnOn: {
@@ -1158,7 +1158,7 @@ const getStyles = createThemedStyles((colors) => ({
     lineHeight: 14,
     fontFamily: F.ui,
     color: C.gray,
-    marginTop: 3,
+    marginTop: 4,
   },
   recentlyPaidCard: {
     marginBottom: 8,
@@ -1201,8 +1201,8 @@ const getStyles = createThemedStyles((colors) => ({
   // Baby Development — approved devart watercolor card
   babyDevCard: {
     marginBottom: 8,
-    paddingVertical: 13,
-    paddingHorizontal: 15,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
   },
   babyDevImage: {
     width: '100%',
@@ -1272,7 +1272,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderColor: C.lavenderBorder,
     backgroundColor: C.lavenderBg,
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 6,
   },
   dueChipText: {
     fontSize: 11,
@@ -1314,7 +1314,7 @@ const getStyles = createThemedStyles((colors) => ({
   babyFactsDivider: {
     width: StyleSheet.hairlineWidth,
     backgroundColor: C.factDivider,
-    marginVertical: 3,
+    marginVertical: 4,
   },
   babyFactValue: {
     fontSize: 21,
@@ -1328,7 +1328,7 @@ const getStyles = createThemedStyles((colors) => ({
     lineHeight: 15,
     fontFamily: F.uiSemi,
     color: C.factLabel,
-    marginTop: 3,
+    marginTop: 4,
     textAlign: 'center',
   },
 }));

@@ -1,0 +1,14 @@
+{
+  "_law": "spacing r4 P3 (2026-10-09): 4pt grid + ratified half-steps only. Odd micro-values are legacy design-era (pre-grid) values; ties snap UP to keep touch targets growing, never shrinking. No new spacing values ratified.",
+  "1": 2,
+  "3": 4,
+  "5": 6,
+  "7": 8,
+  "9": 10,
+  "11": 12,
+  "13": 14,
+  "15": 16,
+  "26": 28,
+  "30": 32,
+  "60": 64
+}

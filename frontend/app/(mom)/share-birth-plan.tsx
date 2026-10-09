@@ -372,7 +372,7 @@ const getStyles = createThemedStyles((colors) => ({
   backButton: { padding: SIZES.xs, marginRight: 8 },
   headerText: { flex: 1 },
   headerSpacer: { width: 40 },
-  overline: { ...kickerStyle(C.rose), marginBottom: 3 },
+  overline: { ...kickerStyle(C.rose), marginBottom: 4 },
   title: { fontFamily: DF.serif, fontWeight: '700', fontSize: 26, lineHeight: 30, color: C.ink },
   titleAccent: { color: C.roseSoft },
   subtitle: { fontSize: 12.5, fontFamily: DF.ui, color: C.gray, lineHeight: 19, marginTop: 2, marginBottom: SIZES.lg },
@@ -434,7 +434,7 @@ const getStyles = createThemedStyles((colors) => ({
     textTransform: 'uppercase',
     marginTop: 2,
   },
-  providerEmail: { fontSize: 11.5, fontFamily: DF.ui, color: C.grayLight, marginTop: 1 },
+  providerEmail: { fontSize: 11.5, fontFamily: DF.ui, color: C.grayLight, marginTop: 2 },
   shareButton: {
     flexDirection: 'row',
     alignItems: 'center',
