@@ -478,7 +478,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   disclaimerText: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 13.5,
     color: C.lavender,
     lineHeight: 18,
   },
@@ -537,21 +537,21 @@ const getStyles = createThemedStyles((colors) => ({
     color: C.rose,
   },
   providerNameCol: { flexShrink: 1 },
-  providerName: { fontSize: 16, fontWeight: '600', color: C.ink },
-  providerType: { fontSize: 12, color: C.gray },
+  providerName: { fontSize: 17, fontWeight: '600', color: C.ink },
+  providerType: { fontSize: 11, color: C.gray },
   statusBadge: {
     paddingHorizontal: SIZES.sm,
     paddingVertical: 4,
     borderRadius: 6,
   },
-  statusText: { fontSize: 12, fontWeight: '600' },
+  statusText: { fontSize: 11, fontWeight: '600' },
   invoiceMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: SIZES.xs,
   },
-  invoiceNumber: { fontSize: 12, color: C.lavender, fontWeight: '500' },
-  dueDate: { fontSize: 12, color: C.gray },
+  invoiceNumber: { fontSize: 11, color: C.lavender, fontWeight: '500' },
+  dueDate: { fontSize: 11, color: C.gray },
   description: { fontSize: 14, color: C.gray, marginBottom: SIZES.sm },
   invoiceFooter: {
     flexDirection: 'row',
@@ -598,7 +598,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   detailLabel: { fontSize: 14, color: C.gray },
   detailValue: { fontSize: 14, fontWeight: '500', color: C.ink },
-  detailSubtext: { fontSize: 13, color: C.gray },
+  detailSubtext: { fontSize: 13.5, color: C.gray },
   descriptionFull: {
     fontSize: 15,
     color: C.ink,
@@ -611,8 +611,8 @@ const getStyles = createThemedStyles((colors) => ({
     padding: SIZES.md,
     alignItems: 'center',
   },
-  amountLabel: { fontSize: 12, color: C.gray, marginBottom: 4 },
-  amountLarge: { fontSize: 16, fontFamily: F.serifSemi, color: C.rose }, // s15 'Amount Due': serif 16 rose
+  amountLabel: { fontSize: 11, color: C.gray, marginBottom: 4 },
+  amountLarge: { fontSize: 17, fontFamily: F.serifSemi, color: C.rose }, // s15 'Amount Due': serif 16 rose
   paymentInstructionsBox: {
     flexDirection: 'row',
     backgroundColor: C.lavenderBg,
@@ -663,7 +663,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   ackPaymentPendingText: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 13.5,
     color: C.lavender,
   },
   paymentMethodRow: {
@@ -686,7 +686,7 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: C.lavenderBg,
   },
   paymentMethodInfo: { flex: 1 },
-  paymentMethodLabel: { fontSize: 12, color: C.gray },
+  paymentMethodLabel: { fontSize: 11, color: C.gray },
   paymentMethodValue: { fontSize: 14, fontFamily: DF.ui, color: C.ink },
   paymentMethodCopyButton: {
     backgroundColor: C.lavender,
@@ -696,7 +696,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   paymentMethodCopyText: {
     color: C.white,
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '600',
   },
   paymentMethodHint: {
@@ -727,8 +727,8 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 8,
     marginBottom: 10,
   },
-  planStatusBadgeText: { fontSize: 12, fontWeight: '700' },
-  planDescription: { fontSize: 13, color: C.gray, marginBottom: 10 },
+  planStatusBadgeText: { fontSize: 11, fontWeight: '700' },
+  planDescription: { fontSize: 13.5, color: C.gray, marginBottom: 10 },
   installmentRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -739,7 +739,7 @@ const getStyles = createThemedStyles((colors) => ({
   installmentDot: { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
   installmentInfo: { flex: 1 },
   installmentTitle: { fontSize: 14, fontWeight: '600', color: C.ink },
-  installmentDue: { fontSize: 12, color: C.gray, marginTop: 2 },
-  installmentStatus: { fontSize: 12, fontWeight: '700', textTransform: 'uppercase' },
-  planHint: { fontSize: 12, color: C.gray, marginTop: 8, fontStyle: 'italic' },
+  installmentDue: { fontSize: 11, color: C.gray, marginTop: 2 },
+  installmentStatus: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase' },
+  planHint: { fontSize: 11, color: C.gray, marginTop: 8, fontStyle: 'italic' },
 }));

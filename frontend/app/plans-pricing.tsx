@@ -642,7 +642,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignSelf: 'flex-start',
     marginBottom: 12,
   },
-  freeBadgeText: { color: colors.secondary, fontWeight: '700', fontSize: 12 },
+  freeBadgeText: { color: colors.secondary, fontWeight: '700', fontSize: 11 },
   freeDescription: { color: colors.textSecondary, lineHeight: 22, marginBottom: 16 },
   
   featureList: { gap: 10 },
@@ -702,7 +702,7 @@ const getStyles = createThemedStyles((colors) => ({
     padding: 16,
     marginBottom: 20,
   },
-  proFeaturesTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 12 },
+  proFeaturesTitle: { fontSize: 17, fontWeight: '600', color: colors.text, marginBottom: 12 },
   
   ctaContainer: { gap: 12 },
   trialButton: {
@@ -713,7 +713,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 12,
     gap: 8,
   },
-  trialButtonText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+  trialButtonText: { color: colors.white, fontWeight: '700', fontSize: 17 },
   restoreButton: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -732,7 +732,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 12,
     gap: 8,
   },
-  subscribeButtonText: { color: colors.white, fontWeight: '700', fontSize: 16 },
+  subscribeButtonText: { color: colors.white, fontWeight: '700', fontSize: 17 },
   unavailableContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -752,7 +752,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   unavailableHint: {
     color: colors.textSecondary,
-    fontSize: 12,
+    fontSize: 11,
     textAlign: 'center',
   },
   retryButton: {
@@ -772,7 +772,7 @@ const getStyles = createThemedStyles((colors) => ({
   disclaimer: {
     textAlign: 'center',
     color: colors.textSecondary,
-    fontSize: 12,
+    fontSize: 11,
     marginTop: 4,
   },
   legalLinksRow: {
@@ -783,12 +783,12 @@ const getStyles = createThemedStyles((colors) => ({
     gap: 6,
   },
   legalLink: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '700',
     textDecorationLine: 'underline',
   },
   legalLinkSeparator: {
-    fontSize: 13,
+    fontSize: 13.5,
     color: colors.textLight,
   },
   skipButton: {
@@ -809,7 +809,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 8,
     gap: 8,
   },
-  momNoteText: { flex: 1, color: colors.textSecondary, fontSize: 13, lineHeight: 18 },
+  momNoteText: { flex: 1, color: colors.textSecondary, fontSize: 13.5, lineHeight: 18 },
   
   // Subscription Management Card
   manageSubscriptionCard: {
@@ -830,7 +830,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 4,
   },
   manageDescription: {
-    fontSize: 12,
+    fontSize: 11,
     color: colors.textSecondary,
     lineHeight: 18,
   },
@@ -841,7 +841,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: 8,
   },
   manageLinkText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '500',
   },
   // App Store social proof badge
@@ -863,7 +863,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginRight: 8,
   },
   badgeRatingText: {
-    fontSize: 13,
+    fontSize: 13.5,
     color: colors.textSecondary,
     fontWeight: '500',
   },
@@ -876,7 +876,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 6,
   },
   badgeReviewerText: {
-    fontSize: 12,
+    fontSize: 11,
     color: colors.textSecondary,
     fontFamily: F.ui,
   },
@@ -886,7 +886,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 20,
   },
   priceComparisonText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: F.ui,
     color: colors.textSecondary,
     lineHeight: 18,

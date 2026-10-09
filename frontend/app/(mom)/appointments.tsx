@@ -814,7 +814,7 @@ export default function AppointmentsScreen() {
 const getStyles = createThemedStyles(() => ({
   container: { flex: 1, backgroundColor: C.cream },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: C.cream },
-  loadingText: { marginTop: 12, fontSize: 13, fontFamily: F.ui, color: C.gray },
+  loadingText: { marginTop: 12, fontSize: 13.5, fontFamily: F.ui, color: C.gray },
 
   // —— Approved S7 header (.hband + .m-head) ——
   bandWrap: { position: 'relative', zIndex: 1 },
@@ -875,7 +875,7 @@ const getStyles = createThemedStyles(() => ({
   // —— Approved footer CTA (.dl .abtn + .hint) ——
   dl: { marginHorizontal: 20, marginTop: 16 },
   abtn: { backgroundColor: C.lavender, borderRadius: 999, paddingVertical: 13, paddingHorizontal: 18, alignItems: 'center' },
-  abtnText: { color: C.white, fontSize: 13, fontWeight: '600', fontFamily: F.uiSemi },
+  abtnText: { color: C.white, fontSize: 13.5, fontWeight: '600', fontFamily: F.uiSemi },
   dlHint: { textAlign: 'center', fontSize: 11, color: C.gray, marginTop: 7, fontFamily: F.ui, fontWeight: '500' },
 
   // —— Empty state ——
@@ -888,11 +888,11 @@ const getStyles = createThemedStyles(() => ({
   modalContainer: { flex: 1, backgroundColor: C.cream },
   modalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20, borderBottomWidth: 1, borderBottomColor: C.hairline },
   modalTitle: { fontSize: 21, fontFamily: F.serif, fontWeight: '700', color: C.ink },
-  modalCloseX: { fontSize: 18, color: C.gray, fontWeight: '600', paddingHorizontal: 6 },
+  modalCloseX: { fontSize: 17, color: C.gray, fontWeight: '600', paddingHorizontal: 6 },
   modalContent: { flex: 1, padding: 20 },
   modalFooter: { padding: 20, borderTopWidth: 1, borderTopColor: C.hairline },
 
-  fieldLabel: { fontSize: 12, fontFamily: F.uiBold, fontWeight: '700', color: C.gray, marginBottom: 8, marginTop: 16, letterSpacing: 0.3 },
+  fieldLabel: { fontSize: 11, fontFamily: F.uiBold, fontWeight: '700', color: C.gray, marginBottom: 8, marginTop: 16, letterSpacing: 0.3 },
 
   providersList: { gap: 8 },
   providerOption: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.surface, borderRadius: 18, borderWidth: 2, borderColor: 'transparent' },
@@ -902,7 +902,7 @@ const getStyles = createThemedStyles(() => ({
   providerOptionName: { fontSize: 14, fontFamily: F.uiSemi, fontWeight: '600', color: C.ink },
   providerOptionRole: { fontSize: 11.5, fontFamily: F.ui, color: C.gray },
   noProvidersCard: { alignItems: 'center', padding: 24 },
-  noProvidersText: { fontSize: 13, fontFamily: F.ui, color: C.gray, marginVertical: 16 },
+  noProvidersText: { fontSize: 13.5, fontFamily: F.ui, color: C.gray, marginVertical: 16 },
 
   dateTimeRow: { flexDirection: 'row', gap: 10 },
   dateTimeButton: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.surface, borderRadius: 18, borderWidth: 1, borderColor: C.border, gap: 10 },
@@ -918,7 +918,7 @@ const getStyles = createThemedStyles(() => ({
   typeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   typeOption: { paddingHorizontal: 14, paddingVertical: 8, backgroundColor: C.surface, borderRadius: 999, borderWidth: 1.3, borderColor: C.lavenderBorder },
   typeOptionSelected: { backgroundColor: C.lavender, borderColor: C.lavender },
-  typeOptionText: { fontSize: 12, fontFamily: F.ui, fontWeight: '600', color: C.gray },
+  typeOptionText: { fontSize: 11, fontFamily: F.ui, fontWeight: '600', color: C.gray },
   typeOptionTextSelected: { color: C.white, fontFamily: F.uiBold, fontWeight: '700' },
 
   virtualToggle: { flexDirection: 'row', alignItems: 'center', padding: 14, backgroundColor: C.surface, borderRadius: 18, borderWidth: 1, borderColor: C.border, marginTop: 16 },

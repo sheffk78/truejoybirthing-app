@@ -324,7 +324,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   loadingText: {
     marginTop: 12,
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: F.ui,
     color: C.gray,
   },
@@ -350,7 +350,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderColor: C.lavender,
   },
   tabText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     fontFamily: F.uiBold,
     color: C.lavender,
@@ -397,7 +397,7 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: C.gbandMid,
   },
   weekButtonText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     fontFamily: F.uiBold,
     color: C.gray,
@@ -495,7 +495,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 4,
   },
   tipBody: {
-    fontSize: 13,
+    fontSize: 13.5,
     lineHeight: 20,
     fontFamily: F.ui,
     fontWeight: '500',
@@ -513,7 +513,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   emptyText: {
     marginTop: 12,
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: F.ui,
     color: C.gray,
   },

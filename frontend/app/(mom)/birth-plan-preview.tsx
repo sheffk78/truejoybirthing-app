@@ -506,7 +506,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderRadius: 12,
   },
   emptyText: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: DF.ui,
     color: C.grayLight,
     fontStyle: 'italic',
@@ -526,7 +526,7 @@ const getStyles = createThemedStyles((colors) => ({
     lineHeight: 19,
   },
   signatureLine: {
-    fontSize: 12,
+    fontSize: 11,
     fontFamily: DF.ui,
     color: C.ink,
     marginTop: 12,

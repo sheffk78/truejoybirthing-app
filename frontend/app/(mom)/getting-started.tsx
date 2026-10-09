@@ -373,7 +373,7 @@ const getStyles = (colors: ReturnType<typeof useColors>) =>
       color: C.grayLight,
     },
     srowDesc: {
-      fontSize: 12,
+      fontSize: 11,
       fontFamily: F.ui,
       color: C.body,
       lineHeight: 17,

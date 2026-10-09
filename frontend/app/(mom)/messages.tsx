@@ -965,7 +965,7 @@ const getS9 = (c: LiveCorpus) => StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  searchTxt: { fontSize: 12, color: c.grayLight, fontWeight: '500' },
+  searchTxt: { fontSize: 11, color: c.grayLight, fontWeight: '500' },
 
   sect: { paddingHorizontal: 20, marginTop: 14 },
   h2: { fontFamily: F.serif, fontWeight: '700', fontSize: 21, color: c.ink, marginBottom: 2 },

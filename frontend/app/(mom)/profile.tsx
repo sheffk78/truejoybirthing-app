@@ -1177,7 +1177,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignSelf: 'center',
   },
   editDetailsText: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: DF.uiSemi,
     color: C.lavender,
   },

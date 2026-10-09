@@ -298,7 +298,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   characterCount: {
     textAlign: 'right',
-    fontSize: 12,
+    fontSize: 11,
     color: colors.textSecondary,
     marginTop: 8,
   },
@@ -312,12 +312,12 @@ const getStyles = createThemedStyles((colors) => ({
     borderColor: colors.border,
   },
   userInfoLabel: {
-    fontSize: 12,
+    fontSize: 11,
     color: colors.textSecondary,
     marginBottom: 4,
   },
   userInfoName: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     color: colors.text,
   },
@@ -337,7 +337,7 @@ const getStyles = createThemedStyles((colors) => ({
   submitButtonText: {
     color: colors.white,
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: 17,
   },
 
   // Access Denied
@@ -388,7 +388,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: 12,
   },
   successText: {
-    fontSize: 16,
+    fontSize: 17,
     color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 32,
@@ -401,6 +401,6 @@ const getStyles = createThemedStyles((colors) => ({
   doneButtonText: {
     color: colors.white,
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: 17,
   },
 }));

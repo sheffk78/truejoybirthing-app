@@ -973,7 +973,7 @@ const getStyles = createThemedStyles((colors) => ({
     color: C.ink,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: F.ui,
     color: C.gray,
     marginTop: 4,
