@@ -25,7 +25,7 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TIcon from '../../src/components/TIcon';
 import HBand from '../../src/components/mom/HBand';
-import { C, F, BAND_APPOINTMENTS } from '../../src/constants/corpus';
+import { C, F, SIZES, BAND_APPOINTMENTS } from '../../src/constants/corpus';
 
 interface Appointment {
   appointment_id: string;
@@ -471,13 +471,14 @@ export default function AppointmentsScreen() {
 
       {/* Approved S7 footer CTA (mockup .dl .abtn + hint) */}
       <View style={styles.dl}>
-        <TouchableOpacity
-          style={styles.abtn}
+        <Button
+          title="Schedule a Visit"
           onPress={() => setShowCreateModal(true)}
+          tone="deep"
+          style={styles.abtn}
+          textStyle={styles.abtnText}
           data-testid="create-appointment-btn"
-        >
-          <Text style={styles.abtnText}>Schedule a Visit</Text>
-        </TouchableOpacity>
+        />
         <Text style={styles.dlHint}>Your provider's openings, ready when you are</Text>
       </View>
 
@@ -860,21 +861,21 @@ const getStyles = createThemedStyles(() => ({
   sh3: { fontFamily: F.serifSemi, fontSize: 17, color: C.ink },
   smeta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' },
   mmeta: { fontSize: 11, color: C.gray, fontFamily: F.ui, fontWeight: '500' },
-  schip: { borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, marginLeft: 2 },
+  schip: { borderRadius: SIZES.radiusFull, paddingHorizontal: 8, paddingVertical: 2, marginLeft: 2 },
   schipText: { fontSize: 9.5, letterSpacing: 0.6, fontWeight: '700', textTransform: 'uppercase', fontFamily: F.uiBold },
   chev: { color: C.chev, fontSize: 16, flexShrink: 0, fontWeight: '300' },
 
   // —— Approved inline respond buttons (.btnrow .rbtn) ——
   pendingBlock: { marginBottom: 8 },
   btnrow: { flexDirection: 'row', gap: 8, marginTop: 0 },
-  rbtnYes: { flex: 1, backgroundColor: C.lavenderSoft, borderRadius: 999, paddingVertical: 8, paddingHorizontal: 10, alignItems: 'center' },
+  rbtnYes: { flex: 1, backgroundColor: C.lavenderSoft, borderRadius: SIZES.radiusFull, paddingVertical: 8, paddingHorizontal: 10, alignItems: 'center' },
   rbtnYesText: { color: C.white, fontSize: 11.5, fontWeight: '700', fontFamily: F.uiBold },
-  rbtnNo: { flex: 1, borderWidth: 1.3, borderColor: C.lavenderBorder, backgroundColor: C.cardBg, borderRadius: 999, paddingVertical: 8, paddingHorizontal: 10, alignItems: 'center' },
+  rbtnNo: { flex: 1, borderWidth: 1.3, borderColor: C.lavenderBorder, backgroundColor: C.cardBg, borderRadius: SIZES.radiusFull, paddingVertical: 8, paddingHorizontal: 10, alignItems: 'center' },
   rbtnNoText: { color: C.lavender, fontSize: 11.5, fontWeight: '700', fontFamily: F.uiBold },
 
   // —— Approved footer CTA (.dl .abtn + .hint) ——
   dl: { marginHorizontal: 20, marginTop: 16 },
-  abtn: { backgroundColor: C.lavender, borderRadius: 999, paddingVertical: 14, paddingHorizontal: 18, alignItems: 'center' },
+  abtn: { paddingVertical: 14, paddingHorizontal: 18 },
   abtnText: { color: C.white, fontSize: 13.5, fontWeight: '600', fontFamily: F.uiSemi },
   dlHint: { textAlign: 'center', fontSize: 11, color: C.gray, marginTop: 8, fontFamily: F.ui, fontWeight: '500' },
 
@@ -916,7 +917,7 @@ const getStyles = createThemedStyles(() => ({
   nativeTimePickerWrapper: { alignItems: 'center', justifyContent: 'center', marginVertical: 12 },
 
   typeOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  typeOption: { paddingHorizontal: 14, paddingVertical: 8, backgroundColor: C.surface, borderRadius: 999, borderWidth: 1.3, borderColor: C.lavenderBorder },
+  typeOption: { paddingHorizontal: 14, paddingVertical: 8, backgroundColor: C.surface, borderRadius: SIZES.radiusFull, borderWidth: 1.3, borderColor: C.lavenderBorder },
   typeOptionSelected: { backgroundColor: C.lavender, borderColor: C.lavender },
   typeOptionText: { fontSize: 11, fontFamily: F.ui, fontWeight: '600', color: C.gray },
   typeOptionTextSelected: { color: C.white, fontFamily: F.uiBold, fontWeight: '700' },

@@ -861,18 +861,14 @@ export default function ContractionTimerScreen() {
         </View>
         
         {/* Main Button */}
-        <Pressable
-          style={[
-            styles.mainButton,
-            isContracting && styles.mainButtonActive
-          ]}
+        <Button
+          title={isContracting ? `Stop ${birthWordCapitalized.slice(0, -1)}` : `Start ${birthWordCapitalized.slice(0, -1)}`}
           onPress={handleMainButton}
+          tone="deep"
+          style={styles.mainButton}
+          textStyle={styles.mainButtonText}
           data-testid="main-timer-btn"
-        >
-          <Text style={styles.mainButtonText}>
-            {isContracting ? `Stop ${birthWordCapitalized.slice(0, -1)}` : `Start ${birthWordCapitalized.slice(0, -1)}`}
-          </Text>
-        </Pressable>
+        />
       </View>
       
       {/* Bottom Actions — approved .trow: icon above label */}
@@ -1522,14 +1518,7 @@ const getStyles = createThemedStyles((colors) => ({
     maxWidth: 290,
     paddingVertical: 14,
     paddingHorizontal: 18,
-    borderRadius: 999,
-    backgroundColor: C.lavender,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 16,
-  },
-  mainButtonActive: {
-    backgroundColor: C.lavender,
   },
   mainButtonText: {
     fontSize: 14,
@@ -1573,7 +1562,7 @@ const getStyles = createThemedStyles((colors) => ({
     paddingVertical: 8,
     paddingHorizontal: 14,
     backgroundColor: C.cardBg,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     borderWidth: 1.3,
     borderColor: C.lavenderBorder,
   },
@@ -1593,7 +1582,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginHorizontal: 20,
     marginTop: 6,
     marginBottom: 4,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: C.sageBg,
     backgroundColor: C.cream,
