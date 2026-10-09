@@ -1,6 +1,6 @@
 {
  "generated": "2026-10-09",
- "commit": "aa049bb3",
+ "commit": "6a633a85",
  "files": 191,
  "violations": {
   "R1": {
@@ -147,24 +147,7 @@
    "app/sign-midwife-contract.tsx::import": 1,
    "app/view-birth-plan.tsx::import": 1
   },
-  "R5": {
-   "app/(auth)/doula-onboarding.tsx::1": 1,
-   "app/(auth)/login.tsx::1": 1,
-   "app/(auth)/welcome.tsx::1": 1,
-   "app/(mom)/appointments.tsx::5": 1,
-   "app/(mom)/birth-plan-preview.tsx::2": 1,
-   "app/(mom)/contraction-timer.tsx::3": 1,
-   "app/(mom)/getting-started.tsx::2": 1,
-   "app/(mom)/home.tsx::6": 1,
-   "app/(mom)/invite-provider.tsx::3": 1,
-   "app/(mom)/kick-counter.tsx::5": 1,
-   "app/(mom)/messages.tsx::2": 1,
-   "app/(mom)/my-team.tsx::2": 1,
-   "app/(mom)/postpartum.tsx::3": 1,
-   "app/(mom)/share-birth-plan.tsx::4": 1,
-   "app/(mom)/timeline.tsx::5": 1,
-   "app/(mom)/weekly-tips.tsx::2": 1
-  },
+  "R5": {},
   "R6": {
    "src/constants/tokens.ts::#000000": 1,
    "src/constants/tokens.ts::#5B5982": 1,
