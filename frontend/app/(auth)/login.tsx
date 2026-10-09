@@ -240,7 +240,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   logoRing: {
     padding: 6,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     borderWidth: 1,
   },
   logoIcon: {

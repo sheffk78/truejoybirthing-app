@@ -15,7 +15,8 @@ import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import HBand from '../../src/components/mom/HBand';
 import TIcon from '../../src/components/TIcon';
-import { C, F, BAND_MY_TEAM , type Corpus, type LiveCorpus } from '../../src/constants/corpus';
+import Button from '../../src/components/Button';
+import { C, F, SIZES, BAND_MY_TEAM , type Corpus, type LiveCorpus } from '../../src/constants/corpus';
 
 // S8 My Team — approved hband mockup (s7s8s9-mom-core-hbands.html).
 // Overline "Your Circle" / Cormorant H1 "Your Care Team" / sub. Sections:
@@ -354,14 +355,14 @@ export default function MyTeamScreen() {
 
         {/* Footer CTA (.dl .abtn .hint) */}
         <View style={styles.dl}>
-          <TouchableOpacity
-            style={styles.abtn}
+          <Button
+            title="Find Providers"
             onPress={() => router.push('/marketplace')}
-            activeOpacity={0.85}
+            tone="deep"
             data-testid="browse-marketplace-btn"
-          >
-            <Text style={styles.abtnTxt}>Find Providers</Text>
-          </TouchableOpacity>
+            style={styles.abtn}
+            textStyle={styles.abtnTxt}
+          />
           <Text style={styles.hint}>
             Doulas, midwives, and other birthing professionals near you
           </Text>
@@ -438,7 +439,7 @@ const getMyTeamStyles = (c: LiveCorpus) => StyleSheet.create({
     letterSpacing: 0.6,
     fontWeight: '700',
     textTransform: 'uppercase',
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     paddingVertical: 2,
     paddingHorizontal: 8,
     alignSelf: 'flex-start',
@@ -474,11 +475,8 @@ const getMyTeamStyles = (c: LiveCorpus) => StyleSheet.create({
   // —— footer CTA (.dl .abtn .hint) ——
   dl: { paddingHorizontal: 20, marginTop: 16, marginBottom: 6 },
   abtn: {
-    backgroundColor: C.lavender,
-    borderRadius: 999,
     paddingVertical: 14,
     paddingHorizontal: 18,
-    alignItems: 'center',
   },
   abtnTxt: { color: C.white, fontSize: 13.5, fontWeight: '600' },
   hint: { textAlign: 'center', fontSize: 11, color: C.gray, marginTop: 8, fontWeight: '500' },

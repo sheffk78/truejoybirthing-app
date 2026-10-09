@@ -910,7 +910,7 @@ const getStyles = createThemedStyles((colors) => ({
     fontFamily: F.uiBold,
     color: C.sage,
     backgroundColor: C.sageBg,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     paddingHorizontal: 8,
     paddingVertical: 2,
     overflow: 'hidden',
@@ -1062,7 +1062,7 @@ const getStyles = createThemedStyles((colors) => ({
   seg: {
     flexDirection: 'row',
     backgroundColor: C.lavenderBg, // mockup .seg pill-bg role
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     padding: 4,
     marginHorizontal: 20,
     marginTop: 14, // mockup .seg margin-top:14px
@@ -1071,7 +1071,7 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
     alignItems: 'center',
     paddingVertical: 8,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
   },
   segBtnOn: {
     backgroundColor: C.surface,
@@ -1103,7 +1103,7 @@ const getStyles = createThemedStyles((colors) => ({
   segEmptyPill: {
     alignSelf: 'flex-start',
     backgroundColor: C.lavender,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     paddingVertical: 10,
     paddingHorizontal: 18,
   },
@@ -1236,7 +1236,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   // .wk — 2px #E5DCD5 border, r999, 8px×2px padding, transparent bg, #858585 text
   weekChip: {
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     borderWidth: 2,
     borderColor: C.wkChipBorder,
     backgroundColor: 'transparent',
@@ -1267,7 +1267,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignSelf: 'flex-start',
     gap: 6,
     marginTop: 8,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     borderWidth: 1,
     borderColor: C.lavenderBorder,
     backgroundColor: C.lavenderBg,

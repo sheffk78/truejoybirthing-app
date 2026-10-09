@@ -34,7 +34,8 @@ import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import TIcon from '../../src/components/TIcon';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
-import { C, F } from '../../src/constants/corpus';
+import { C, F, SIZES } from '../../src/constants/corpus';
+import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import {
@@ -477,38 +478,32 @@ export default function KickCounterScreen() {
         <View style={styles.btnRow}>
           {active ? (
             <>
-              <Pressable
+              <Button
+                title={paused ? 'Resume Session' : 'Pause Session'}
                 onPress={pauseResume}
-                accessibilityRole="button"
+                tone="deep"
                 testID="kick-pause-btn"
-                style={({ pressed }) => [styles.primaryBtn, pressed && { opacity: 0.85 }]}
-              >
-                <Text style={styles.primaryBtnText}>
-                  {paused ? 'Resume Session' : 'Pause Session'}
-                </Text>
-              </Pressable>
-              <Pressable
+                style={styles.primaryBtn}
+                textStyle={styles.primaryBtnText}
+              />
+              <Button
+                title="End & Save"
                 onPress={endAndSave}
-                accessibilityRole="button"
+                variant="outline"
                 testID="kick-end-btn"
-                style={({ pressed }) => [styles.outlineBtn, pressed && { opacity: 0.85 }]}
-              >
-                <Text style={styles.outlineBtnText}>End & Save</Text>
-              </Pressable>
+                style={styles.outlineBtn}
+                textStyle={styles.outlineBtnText}
+              />
             </>
           ) : (
-            <Pressable
+            <Button
+              title="Start Session"
               onPress={startSession}
-              accessibilityRole="button"
+              tone="deep"
               testID="kick-start-btn"
-              style={({ pressed }) => [
-                styles.primaryBtn,
-                styles.primaryBtnWide,
-                pressed && { opacity: 0.85 },
-              ]}
-            >
-              <Text style={styles.primaryBtnText}>Start Session</Text>
-            </Pressable>
+              style={styles.primaryBtn}
+              textStyle={styles.primaryBtnText}
+            />
           )}
         </View>
 
@@ -573,7 +568,7 @@ const getStyles = createThemedStyles((colors) => ({
   seg: {
     flexDirection: 'row',
     backgroundColor: C.lavenderBg, // mockup .seg pill-bg role
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     padding: 4,
     marginHorizontal: 20,
     marginTop: 14,
@@ -582,7 +577,7 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
     alignItems: 'center',
     paddingVertical: 8,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
   },
   segBtnOn: {
     backgroundColor: C.surface,
@@ -800,16 +795,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   primaryBtn: {
     flex: 1.6,
-    backgroundColor: C.lavender,
-    borderRadius: 999,
     paddingVertical: 12,
     paddingHorizontal: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 44,
-  },
-  primaryBtnWide: {
-    flex: 1,
   },
   primaryBtnText: {
     fontSize: 13.5,
@@ -818,15 +805,8 @@ const getStyles = createThemedStyles((colors) => ({
   },
   outlineBtn: {
     flex: 1,
-    backgroundColor: C.cardBg,
-    borderWidth: 1.3,
-    borderColor: C.lavenderBorder,
-    borderRadius: 999,
     paddingVertical: 12,
     paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 44,
   },
   outlineBtnText: {
     fontSize: 12.5,
@@ -840,7 +820,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderWidth: 1,
     borderColor: C.sageBg,
     backgroundColor: C.cream,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     paddingHorizontal: 14,
     paddingVertical: 8,
   },

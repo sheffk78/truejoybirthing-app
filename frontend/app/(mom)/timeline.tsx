@@ -244,20 +244,22 @@ export default function TimelineScreen() {
 
         {/* Entry row — Add My Own opens the custom-event modal (restored 10/07, was orphaned); Book Provider → appointments */}
         <View style={styles.addRow}>
-          <TouchableOpacity
-            style={styles.addGhostButton}
+          <Button
+            title="+ Add My Own"
             onPress={() => setModalVisible(true)}
-            data-testid="add-event-btn"
-          >
-            <Text style={styles.addGhostText}>+ Add My Own</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+            variant="outline"
+            testID="add-event-btn"
             style={styles.addGhostButton}
+            textStyle={styles.addGhostText}
+          />
+          <Button
+            title="+ Book Provider"
             onPress={() => router.push('/(mom)/appointments')}
-            data-testid="schedule-btn"
-          >
-            <Text style={styles.addGhostText}>+ Book Provider</Text>
-          </TouchableOpacity>
+            variant="outline"
+            testID="schedule-btn"
+            style={styles.addGhostButton}
+            textStyle={styles.addGhostText}
+          />
         </View>
 
         {/* Custom Events */}
@@ -394,17 +396,17 @@ export default function TimelineScreen() {
                     }}
                     style={{ width: '100%', height: 200 }}
                   />
-                  <TouchableOpacity
-                    style={styles.confirmDateBtn}
+                  <Button
+                    title="Confirm Date"
                     onPress={() => {
                       setNewEvent((prev: any) => ({ ...prev, event_date: formatDateLocal(selectedDate) }));
                       setShowDatePicker(false);
                     }}
+                    tone="deep"
                     testID="confirm-date-btn"
-                    data-testid="confirm-date-btn"
-                  >
-                    <Text style={styles.confirmDateText}>Confirm Date</Text>
-                  </TouchableOpacity>
+                    style={styles.confirmDateBtn}
+                    textStyle={styles.confirmDateText}
+                  />
                 </View>
               )}
               {/* 10/07 QA: spacer holds the modal tall while the picker opens/closes so
@@ -427,12 +429,8 @@ export default function TimelineScreen() {
             </ScrollView>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
-                <Text style={styles.cancelBtnText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.saveBtn} onPress={addEvent} disabled={saving} testID="save-event-btn" data-testid="save-event-btn">
-                <Text style={styles.saveBtnText}>{saving ? 'Saving...' : 'Save'}</Text>
-              </TouchableOpacity>
+              <Button title="Cancel" onPress={() => setModalVisible(false)} variant="neutral" style={styles.cancelBtn} textStyle={styles.cancelBtnText} />
+              <Button title={saving ? 'Saving...' : 'Save'} onPress={addEvent} disabled={saving} tone="deep" testID="save-event-btn" style={styles.saveBtn} textStyle={styles.saveBtnText} />
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -568,10 +566,7 @@ const getStyles = createThemedStyles((colors) => ({
   confirmDateBtn: {
     marginTop: 6,
     alignSelf: 'stretch',
-    backgroundColor: C.lavender,
-    borderRadius: 999,
     paddingVertical: 10,
-    alignItems: 'center',
   },
   confirmDateText: {
     fontSize: 13.5,
@@ -585,10 +580,8 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: 0,
     borderWidth: 1.4,
     borderColor: C.lavenderSoft,
-    borderRadius: 999,
     paddingVertical: 10,
     paddingHorizontal: 18,
-    alignItems: 'center',
     backgroundColor: C.cardBg,
   },
   addGhostText: { fontSize: 12.5, fontWeight: '600', fontFamily: DF.uiSemi, color: C.lavender },
@@ -616,7 +609,7 @@ const getStyles = createThemedStyles((colors) => ({
   eventInfo: { flex: 1, minWidth: 0 },
   eventTitle: { fontFamily: DF.serifSemi, fontWeight: '600', fontSize: 17, color: C.ink },
   eventWho: { fontSize: 11.5, fontFamily: DF.ui, color: C.gray, marginTop: 2 },
-  etypeChip: { borderRadius: 999, paddingVertical: 2, paddingHorizontal: 8 },
+  etypeChip: { borderRadius: SIZES.radiusFull, paddingVertical: 2, paddingHorizontal: 8 },
   etypeAppt: { backgroundColor: C.lavenderBg },
   etypeClass: { backgroundColor: C.gbandMid },
   etypeText: { fontSize: 9.5, letterSpacing: 0.6, fontWeight: '700', fontFamily: DF.uiBold, textTransform: 'uppercase' },
@@ -666,9 +659,9 @@ const getStyles = createThemedStyles((colors) => ({
     color: C.grayLight,
   },
   modalActions: { flexDirection: 'row', gap: SIZES.md },
-  cancelBtn: { flex: 1, padding: SIZES.md, borderRadius: 999, backgroundColor: C.track, alignItems: 'center' },
+  cancelBtn: { flex: 1, padding: SIZES.md },
   cancelBtnText: { color: C.gray, fontWeight: '600', fontFamily: DF.uiSemi },
-  saveBtn: { flex: 1, padding: SIZES.md, borderRadius: 999, backgroundColor: C.lavender, alignItems: 'center' },
+  saveBtn: { flex: 1, padding: SIZES.md },
   saveBtnText: { color: C.white, fontWeight: '600', fontFamily: DF.uiSemi },
   dateModalOverlay: {
     flex: 1,

@@ -359,7 +359,7 @@ const getStyles = (colors: ReturnType<typeof useColors>) =>
       flexShrink: 1,
     },
     schip: {
-      borderRadius: 999,
+      borderRadius: SIZES.radiusFull,
       paddingVertical: 2,
       paddingHorizontal: 8,
       backgroundColor: C.track,
@@ -388,7 +388,7 @@ const getStyles = (colors: ReturnType<typeof useColors>) =>
       borderWidth: 1.3,
       borderColor: C.lavenderBorder,
       backgroundColor: C.cardBg,
-      borderRadius: 999,
+      borderRadius: SIZES.radiusFull,
       paddingVertical: 8,
       paddingHorizontal: 14,
     },

@@ -545,7 +545,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginBottom: SIZES.xs,
   },
   chip: {
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     borderWidth: 1.5,
     borderColor: colors.border,
     backgroundColor: colors.surface,

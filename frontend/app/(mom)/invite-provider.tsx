@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import ErrorBoundary from '../../src/components/ErrorBoundary';
+import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
@@ -138,23 +139,23 @@ export default function InviteProviderScreen() {
               </Text>
 
               <View style={styles.successActions}>
-                <TouchableOpacity
-                  style={styles.abtn}
+                <Button
+                  title="Send Another"
                   onPress={handleSendAnother}
+                  tone="deep"
                   testID="send-another-btn"
-                  accessibilityRole="button"
-                >
-                  <Icon name="mail" size={16} color={C.white} />
-                  <Text style={styles.abtnText}>Send Another</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.ghostBtn}
+                  style={styles.abtn}
+                  textStyle={styles.abtnText}
+                  icon={<Icon name="mail" size={16} color={C.white} />}
+                />
+                <Button
+                  title="Back to My Team"
                   onPress={handleBackHome}
+                  variant="outline"
                   testID="back-home-btn"
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.ghostBtnText}>Back to My Team</Text>
-                </TouchableOpacity>
+                  style={styles.ghostBtn}
+                  textStyle={styles.ghostBtnText}
+                />
               </View>
             </View>
             <View style={styles.infoCard}>
@@ -500,7 +501,7 @@ const getStyles = createThemedStyles((colors) =>
       alignItems: 'center',
       justifyContent: 'center',
       paddingVertical: 10,
-      borderRadius: 999,
+      borderRadius: SIZES.radiusFull,
       gap: 6,
       minHeight: 42,
     },
@@ -523,14 +524,8 @@ const getStyles = createThemedStyles((colors) =>
     },
     errorText: { flex: 1, fontSize: 11.5, fontFamily: DF.uiSemi, fontWeight: '600', color: C.rose, lineHeight: 16 },
 
-    // abtn — lavender primary pill
+    // abtn — lavender primary pill (folded onto Button law, P4)
     abtn: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 7,
-      backgroundColor: C.lavender,
-      borderRadius: 999,
       paddingVertical: 14,
       paddingHorizontal: 18,
       minHeight: 46,
@@ -538,13 +533,6 @@ const getStyles = createThemedStyles((colors) =>
     abtnDisabled: { opacity: 0.6 },
     abtnText: { color: C.white, fontSize: 13.5, fontWeight: '600', fontFamily: DF.uiSemi },
     ghostBtn: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: C.cardBg,
-      borderWidth: 1.3,
-      borderColor: C.lavenderBorder,
-      borderRadius: 999,
       paddingVertical: 14,
       paddingHorizontal: 18,
       minHeight: 46,

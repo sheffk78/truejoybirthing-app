@@ -11,6 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
+import Button from '../../src/components/Button';
+import { SIZES } from '../../src/constants/corpus';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS, API_BASE } from '../../src/constants/api';
 import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
@@ -279,10 +281,14 @@ export default function BirthPlanPreviewScreen() {
 
       {/* Action Bar - Hidden on print */}
       <View style={styles.actionBar}>
-        <TouchableOpacity style={styles.printButton} onPress={handlePrint}>
-          <Icon name="print" size={20} color={C.white} />
-          <Text style={styles.printButtonText}>Print Birth Plan</Text>
-        </TouchableOpacity>
+        <Button
+          title="Print Birth Plan"
+          onPress={handlePrint}
+          tone="deep"
+          style={styles.printButton}
+          textStyle={styles.printButtonText}
+          icon={<Icon name="print" size={20} color={C.white} />}
+        />
       </View>
 
       {/* Print Styles for Web */}
@@ -436,7 +442,7 @@ const getStyles = createThemedStyles((colors) => ({
   statusBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     backgroundColor: C.lavenderBg,
   },
   statusComplete: {
@@ -542,12 +548,7 @@ const getStyles = createThemedStyles((colors) => ({
     borderTopColor: C.border,
   },
   printButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: C.lavender,
     paddingVertical: 14,
-    borderRadius: 999,
     gap: 8,
   },
   printButtonText: {

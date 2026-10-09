@@ -340,7 +340,7 @@ const getStyles = createThemedStyles((colors) => ({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     borderWidth: 1.3,
     borderColor: C.lavenderBorder,
     backgroundColor: C.cardBg,
@@ -443,7 +443,7 @@ const getStyles = createThemedStyles((colors) => ({
     backgroundColor: C.lavenderBg,
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
   },
   currentBadgeText: {
     fontSize: 9.5,

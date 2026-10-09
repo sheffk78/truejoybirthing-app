@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../../src/components/Icon';
+import Button from '../../src/components/Button';
 import { apiRequest } from '../../src/utils/api';
 import { API_ENDPOINTS } from '../../src/constants/api';
 import { SIZES } from '../../src/constants/theme';
@@ -146,16 +147,15 @@ export default function PostpartumScreen() {
             Postpartum <Text style={styles.titleAccent}>Plan</Text>
           </Text>
           <Text style={styles.subtitle}>Prepare for your fourth trimester</Text>
-          <TouchableOpacity
-            style={styles.editButton}
+          <Button
+            title={editMode ? 'Done' : 'Edit'}
             onPress={() => setEditMode(!editMode)}
+            variant="outline"
             testID="edit-postpartum-btn"
-            accessibilityRole="button"
-            accessibilityLabel={editMode ? 'Done editing' : 'Edit postpartum plan'}
-          >
-            <Icon name={editMode ? 'close' : 'create'} size={14} color={C.lavender} />
-            <Text style={styles.editButtonText}>{editMode ? 'Done' : 'Edit'}</Text>
-          </TouchableOpacity>
+            style={styles.editButton}
+            textStyle={styles.editButtonText}
+            icon={<Icon name={editMode ? 'close' : 'create'} size={14} color={C.lavender} />}
+          />
         </View>
 
         {/* Support People */}
@@ -415,16 +415,15 @@ export default function PostpartumScreen() {
 
         {/* Save Button — abtn: lavender pill */}
         {editMode && (
-          <TouchableOpacity
-            style={styles.saveButton}
+          <Button
+            title={saving ? 'Saving...' : 'Save Postpartum Plan'}
             onPress={savePlan}
             disabled={saving}
+            tone="deep"
             testID="save-postpartum-btn"
-            accessibilityRole="button"
-            accessibilityLabel="Save postpartum plan"
-          >
-            <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Postpartum Plan'}</Text>
-          </TouchableOpacity>
+            style={styles.saveButton}
+            textStyle={styles.saveButtonText}
+          />
         )}
       </ScrollView>
     </SafeAreaView>
@@ -450,12 +449,9 @@ const getStyles = createThemedStyles((colors) =>
     subtitle: { fontSize: 12.5, fontFamily: DF.ui, color: C.gray, marginTop: 4 },
     editButton: {
       flexDirection: 'row',
-      alignItems: 'center',
       gap: 5,
       borderWidth: 1.4,
       borderColor: C.lavenderBorder,
-      backgroundColor: C.cardBg,
-      borderRadius: 999,
       paddingVertical: 10,
       paddingHorizontal: 16,
       marginTop: 10,
@@ -514,7 +510,7 @@ const getStyles = createThemedStyles((colors) =>
     chip: {
       paddingHorizontal: 12,
       paddingVertical: 8,
-      borderRadius: 999,
+      borderRadius: SIZES.radiusFull,
     },
     chipOff: { backgroundColor: C.cardBg },
     chipOn: {
@@ -543,11 +539,8 @@ const getStyles = createThemedStyles((colors) =>
     contactInput: { flex: 1 },
     saveButton: {
       marginTop: 14,
-      backgroundColor: C.lavender,
-      borderRadius: 999,
       paddingVertical: 14,
       paddingHorizontal: 18,
-      alignItems: 'center',
     },
     saveButtonText: {
       color: C.white,

@@ -958,7 +958,7 @@ const getS9 = (c: LiveCorpus) => StyleSheet.create({
     backgroundColor: c.surface,
     borderColor: c.roseBg,
     borderWidth: 1,
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     paddingVertical: 10,
     paddingHorizontal: 14,
     flexDirection: 'row',
@@ -1000,7 +1000,7 @@ const getS9 = (c: LiveCorpus) => StyleSheet.create({
   lastMsg: { fontSize: 11.5, color: c.gray, marginTop: 2, fontWeight: '500' },
 
   schip: {
-    borderRadius: 999,
+    borderRadius: SIZES.radiusFull,
     paddingVertical: 2,
     paddingHorizontal: 8,
     alignSelf: 'flex-start',
