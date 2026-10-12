@@ -44,6 +44,12 @@ appId: com.truejoybirthing.app
 # The helper fetches the seeded client's live id from the e2e backend instead.
 - runScript:
     file: fetch_e2e_client.js
+# Lead Insights always visible (10/05c) pushed quickActions below the fold —
+# scroll to it (10/05g lesson: ScrollView needs scrollUntilVisible, not tapOn/tap-by-point)
+- scrollUntilVisible:
+    element:
+      text: "See Clients"
+    timeout: 10000
 - tapOn: "See Clients"
 - tapOn:
     id: ${output.rowId}
@@ -179,6 +185,8 @@ appId: com.truejoybirthing.app
 # below are the proof the data reached the mom's app.
 # iOS 26 + RN: tapping the below-the-fold card row (offscreen a11y bounds) never fires
 # onPress, and Maestro swipes don't scroll — so navigate via the app's public deep link.
+# 10/02 contract: empty signingToken param is valid — the sign screen fetches
+# the token itself (ownership-checked endpoint) when the param is empty.
 - openLink: "truejoybirthing://sign-midwife-contract?contractId=${output.contractId}&signingToken=${output.signingToken}"
 - runFlow:
     when:

@@ -501,6 +501,7 @@ export default function MarketplaceScreen() {
                 ]}
                 onPress={() => setSelectedType(type)}
                 data-testid={`filter-${type.toLowerCase()}`}
+                testID={`filter-${type.toLowerCase()}`}
               >
                 <Text
                   style={[
@@ -520,6 +521,7 @@ export default function MarketplaceScreen() {
               style={[styles.typeChip, !selectedCredential && styles.typeChipActive]}
               onPress={() => { selectedCredentialRef.current = null; setSelectedCredential(null); }}
               data-testid="credential-all"
+              testID="credential-all"
             >
               <Text style={[styles.typeChipText, !selectedCredential && styles.typeChipTextActive]}>
                 All Credentials
@@ -531,6 +533,7 @@ export default function MarketplaceScreen() {
                 style={[styles.typeChip, selectedCredential === code && styles.typeChipActive]}
                 onPress={() => { selectedCredentialRef.current = code; setSelectedCredential(code); }}
                 data-testid={`credential-${code.toLowerCase()}`}
+                testID={`credential-${code.toLowerCase()}`}
               >
                 <Text style={[styles.typeChipText, selectedCredential === code && styles.typeChipTextActive]}>
                   {code}

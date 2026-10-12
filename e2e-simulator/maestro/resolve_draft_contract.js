@@ -20,7 +20,10 @@ if (drafts.length === 0) throw new Error("no Draft contract found after create")
 if (drafts.length > 1) throw new Error("expected 1 draft, found " + drafts.length +
   " — run cleanup before Phase 3");
 output.contractId = drafts[0].contract_id;
-// The sign endpoint enforces contract.signing_token; the mom-side deep link
-// must carry it or the POST /sign returns 403 Invalid signing token.
+// 10/02 (5c518ac7): signing_token was REMOVED from provider list responses
+// (sign-guard hardening). The sign screens now fetch the token in-app via
+// ownership-checked GET /contracts|/midwife-contracts/{id}/signing-token when
+// the deep-link param is absent/empty. Empty param is expected here — do NOT
+// fail; the deep link below carries contractId only and the screen resolves
+// the token itself.
 output.signingToken = drafts[0].signing_token || "";
-if (!output.signingToken) throw new Error("created Draft has no signing_token — deep-link sign would 403");
