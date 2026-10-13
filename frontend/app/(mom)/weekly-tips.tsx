@@ -10,7 +10,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import TIcon from '../../src/components/TIcon';
 import Card from '../../src/components/Card';
 import { apiRequest } from '../../src/utils/api';
@@ -51,6 +51,10 @@ export default function WeeklyTipsScreen() {
   // auto-scroll the week strip so the current-week chip lands visible+selected.
   const weekStripRef = useRef<ScrollView>(null);
   const weekBtnX = useRef<Record<number, number>>({});
+  // Jeff 10/13: home's "Learn more"/"Read more" deep-link the week they displayed
+  // (?week=32 → 32 preselected). Falls back to her current week when absent.
+  const routeParams = useLocalSearchParams<{ week?: string }>();
+  const deepLinkWeek = routeParams.week ? parseInt(String(routeParams.week), 10) : null;
 
   const fetchData = useCallback(async () => {
     try {
@@ -61,8 +65,11 @@ export default function WeeklyTipsScreen() {
       setCurrentContent(current);
       setAllContent(all);
 
-      // Set initial selected week based on user's current week
-      if (current?.week) {
+      // Set initial selected week: deep-linked week (?week=N from home cards)
+      // wins so the screen matches what the mom just read; else her current week.
+      if (deepLinkWeek && deepLinkWeek >= 1 && deepLinkWeek <= 42) {
+        setSelectedWeek(deepLinkWeek);
+      } else if (current?.week) {
         setSelectedWeek(current.week > 42 ? (current.postpartum_week || 1) : current.week);
         setShowPostpartum(current.is_postpartum);
       } else {
@@ -77,7 +84,7 @@ export default function WeeklyTipsScreen() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [deepLinkWeek]);
 
   useEffect(() => {
     fetchData();

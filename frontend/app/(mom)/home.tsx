@@ -455,7 +455,7 @@ export default function MomHomeScreen() {
               </Text>
               <TouchableOpacity 
                 style={styles.weeklyReadMore}
-                onPress={() => router.push('/(mom)/weekly-tips')}
+                onPress={() => router.push({ pathname: '/(mom)/weekly-tips', params: { week: String(babyDev.week) } })}
               >
                 <Text style={styles.linkRose}>Learn more</Text>
                 <Text style={{ fontSize: 16, color: C.rose, fontWeight: '300' }}>›</Text>
@@ -463,7 +463,7 @@ export default function MomHomeScreen() {
             </Card>
           );
         })()}
-        </>
+         </>
         )}
 
         {/* TAB mom — Weekly Tip + Weekly Affirmation (v4 mockup mid-state) */}
@@ -481,9 +481,9 @@ export default function MomHomeScreen() {
             <Text style={styles.weeklyContent} numberOfLines={4}>
               {weeklyContent.tip}
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.weeklyReadMore}
-              onPress={() => router.push('/(mom)/weekly-tips')}
+              onPress={() => router.push({ pathname: '/(mom)/weekly-tips', params: weeklyContent.week ? { week: String(weeklyContent.week) } : {} })}
             >
               <Text style={styles.linkRose}>Read more</Text>
               <Text style={{ fontSize: 16, color: C.rose, fontWeight: '300' }}>›</Text>
