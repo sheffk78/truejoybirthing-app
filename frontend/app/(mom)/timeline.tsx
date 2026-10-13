@@ -136,13 +136,15 @@ export default function TimelineScreen() {
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
+    // T00:00:00 pins to local midnight — bare YYYY-MM-DD parses UTC and can
+    // render a day behind in western timezones (utils/date.ts warning).
+    const date = new Date(`${dateStr}T00:00:00`);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   const formatDateParts = (dateStr: string) => {
     if (!dateStr) return { month: '', day: '' };
-    const date = new Date(dateStr);
+    const date = new Date(`${dateStr}T00:00:00`);
     return {
       month: date.toLocaleDateString('en-US', { month: 'short' }),
       day: date.toLocaleDateString('en-US', { day: 'numeric' }),
