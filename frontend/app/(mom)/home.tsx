@@ -393,7 +393,12 @@ export default function MomHomeScreen() {
               <View style={styles.cardKickerRow}>
                 <Text style={styles.kickerSage}>Baby Development</Text>
                 <Text style={styles.cardKickerMeta}>
-                  {weeklyContent.display_week || `Week ${currentWeek}`}
+                  {/* Meta must follow the stepper anchor: keep the API's
+                      "N weeks N days" only when it IS the anchor week, else say
+                      "Week N" for the selected week. */}
+                  {currentWeek === Number(weeklyContent?.week)
+                    ? (weeklyContent?.display_week || `Week ${currentWeek}`)
+                    : `Week ${currentWeek}`}
                 </Text>
               </View>
               {/* Baby development illustration — Jeff 10/13: large + uncropped.
