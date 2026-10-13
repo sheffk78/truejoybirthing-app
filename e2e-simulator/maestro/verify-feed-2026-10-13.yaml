@@ -1,0 +1,29 @@
+appId: com.truejoybirthing.app
+---
+# Feed regression (persistable e2e): What's New for You → article card → tap through
+- launchApp:
+    appId: com.truejoybirthing.app
+    clearState: false
+- extendedWaitUntil:
+    visible: "BABY DEVELOPMENT"
+    timeout: 45000
+- swipe:
+    start: 50%, 75%
+    end: 50%, 20%
+    duration: 800
+- waitForAnimationToEnd:
+    timeout: 2500
+- swipe:
+    start: 50%, 75%
+    end: 50%, 20%
+    duration: 800
+- waitForAnimationToEnd:
+    timeout: 2500
+- swipe:
+    start: 50%, 75%
+    end: 50%, 20%
+    duration: 800
+- waitForAnimationToEnd:
+    timeout: 2500
+- assertVisible: "What's New for You"
+- takeScreenshot: feed-card
