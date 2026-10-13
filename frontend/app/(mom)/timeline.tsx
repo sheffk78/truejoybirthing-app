@@ -165,7 +165,7 @@ export default function TimelineScreen() {
             Pregnancy <Text style={styles.titleAccent}>Timeline</Text>
           </Text>
           {timeline?.due_date && (
-            <Text style={styles.subtitle}>Due {timeline.due_date} · everything in one line</Text>
+            <Text style={styles.subtitle}>Due {formatDate(timeline.due_date)} · everything in one line</Text>
           )}
         </View>
 
@@ -188,7 +188,7 @@ export default function TimelineScreen() {
               <Text style={styles.anchorDesc}>
                 {trimesterOf(timeline.current_week)}
                 {timeline.current_day != null ? ` · day ${timeline.current_day} of week ${timeline.current_week}` : ''}
-                {timeline.due_date ? ` — due ${timeline.due_date}` : ''}
+                {timeline.due_date ? ` — due ${formatDate(timeline.due_date)}` : ''}
               </Text>
               {timeline?.custom_events?.length > 0 && (
                 <View style={styles.nextRow}>
