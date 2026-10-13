@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -20,8 +20,9 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData, type BabyDevEntry } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import HBand from '../../src/components/mom/HBand';
-import { C, F, BAND_TIPS, trimesterOf } from '../../src/constants/corpus';
+// Jeff 10/13: photo band removed from this screen (dead space) — HBand/BAND_TIPS
+// imports dropped; the weekly baby-development illustration is the hero now.
+import { C, F, trimesterOf } from '../../src/constants/corpus';
 import GrowthSprig from '../../src/components/GrowthSprig'; // 10/07 drift fix: growth motif wired in (was built, never imported)
 
 interface WeekContent {
@@ -46,6 +47,10 @@ export default function WeeklyTipsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
+  // Jeff 10/13: "select the week is not selected and it should be selected" —
+  // auto-scroll the week strip so the current-week chip lands visible+selected.
+  const weekStripRef = useRef<ScrollView>(null);
+  const weekBtnX = useRef<Record<number, number>>({});
 
   const fetchData = useCallback(async () => {
     try {
@@ -55,14 +60,19 @@ export default function WeeklyTipsScreen() {
       ]);
       setCurrentContent(current);
       setAllContent(all);
-      
+
       // Set initial selected week based on user's current week
       if (current?.week) {
         setSelectedWeek(current.week > 42 ? (current.postpartum_week || 1) : current.week);
         setShowPostpartum(current.is_postpartum);
+      } else {
+        // No current-week payload (e.g. onboarding missing): still land on a
+        // selected chip instead of a dead strip — Jeff 10/13 "should be selected".
+        setSelectedWeek((w) => w ?? 1);
       }
     } catch (error) {
       console.error('Error fetching weekly content:', error);
+      setSelectedWeek((w) => w ?? 1);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -72,6 +82,19 @@ export default function WeeklyTipsScreen() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // scroll the selected chip into view once we have both a selection and the
+  // strip laid out (onLayout captures each chip's x)
+  useEffect(() => {
+    if (selectedWeek == null || showPostpartum) return;
+    const t = setTimeout(() => {
+      const x = weekBtnX.current[selectedWeek];
+      if (x != null && weekStripRef.current) {
+        weekStripRef.current.scrollTo({ x: Math.max(0, x - 140), animated: false });
+      }
+    }, 350);
+    return () => clearTimeout(t);
+  }, [selectedWeek, showPostpartum, isLoading]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -103,16 +126,25 @@ export default function WeeklyTipsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header — approved S12: photo band under status bar, title on veil */}
-      <View style={[styles.bandWrap, { marginTop: -insets.top }]}>
-        <HBand source={BAND_TIPS} height={168 + insets.top} />
-        <View style={[styles.header, { paddingTop: insets.top + 24 }]}>
-          <Text style={styles.overline}>YOUR WEEK</Text>
-          <Text style={styles.headerTitle}>
+      {/* Header — Jeff 10/13: photo band ate ~200px of dead space above the title;
+          compacted to a slim bar with back arrow. The weekly baby-development
+          illustration is now the hero image of this screen (moved lower, full
+          size) — matches Jeff's "make THIS image big" direction. */}
+      <View style={styles.headerBar}>
+        <TouchableOpacity
+          onPress={() => { router.canGoBack() ? router.back() : router.replace('/(mom)/home'); }}
+          style={styles.backButton}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <Text style={{ fontSize: 26, color: C.ink, lineHeight: 30 }}>‹</Text>
+        </TouchableOpacity>
+        <View style={styles.headerBarText}>
+          <Text style={styles.headerTitle} numberOfLines={1}>
             Weekly Tips & <Text style={styles.headerTitleAccent}>Affirmations</Text>
           </Text>
-          <Text style={styles.headerSub}>One steady rhythm of learning, all 42 weeks</Text>
         </View>
+        <View style={styles.backButton} />
       </View>
 
       {/* Tab Selector — approved pills */}
@@ -148,10 +180,13 @@ export default function WeeklyTipsScreen() {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Week Selector — approved week strip */}
+        {/* Week Selector — approved week strip; chips report their x for
+            auto-scroll-to-selection (Jeff 10/13: current week must land
+            selected AND visible) */}
         <Text style={styles.sectionLabel}>Select week</Text>
         <ScrollView
           horizontal
+          ref={weekStripRef}
           showsHorizontalScrollIndicator={false}
           style={styles.weekScrollContainer}
           contentContainerStyle={styles.weekScrollContent}
@@ -175,6 +210,7 @@ export default function WeeklyTipsScreen() {
                   isCurrent && styles.weekButtonCurrent,
                 ]}
                 onPress={() => setSelectedWeek(week)}
+                onLayout={(e) => { weekBtnX.current[week] = e.nativeEvent.layout.x; }}
               >
                 <Text style={[
                   styles.weekButtonText,
@@ -230,7 +266,11 @@ export default function WeeklyTipsScreen() {
           </View>
         )}
 
-        {/* Baby Development — approved srow with thumbnail */}
+        {/* Baby Development — Jeff 10/13: hero image. Was an 88px thumb
+            (Jeff 10/13 "should be very big"); now the
+            week illustration renders large and uncropped ("contain" — the
+            watercolors are portrait; "cover" was slicing faces off).
+            "Open this week's full guide" link goes to the same-week guide. */}
         {!showPostpartum && (() => {
           const week = selectedWeek;
           if (!week || week < 4 || week > 40) return null;
@@ -243,12 +283,12 @@ export default function WeeklyTipsScreen() {
               {hasPregnancyIllustration(week) ? (
                 <Image
                   source={getPregnancyIllustration(week)}
-                  style={styles.babyDevThumb}
-                  resizeMode="cover"
+                  style={styles.babyDevHero}
+                  resizeMode="contain"
                   accessibilityLabel={`Baby development illustration at week ${week}`}
                 />
               ) : (
-                <View style={[styles.babyDevThumb, styles.babyDevThumbPlaceholder]}>
+                <View style={[styles.babyDevHero, styles.babyDevThumbPlaceholder]}>
                   <TIcon name="status_todo" size={28} color={C.grayLight} />
                 </View>
               )}
@@ -282,10 +322,23 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
     backgroundColor: C.cream,
   },
-  // —— Approved S12 header (band + title on veil) ——
-  bandWrap: {
-    position: 'relative',
-    zIndex: 1,
+  // —— Jeff 10/13 compact header bar (was S12 photo band, ~200px of dead space) ——
+  headerBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingTop: 6,
+    paddingBottom: 2,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerBarText: {
+    flex: 1,
+    alignItems: 'center',
   },
   header: {
     paddingHorizontal: 20,
@@ -301,20 +354,13 @@ const getStyles = createThemedStyles((colors) => ({
     fontFamily: F.uiBold,
   },
   headerTitle: {
-    fontSize: 26,
+    fontSize: 21,
     fontFamily: F.serif,
     color: C.ink,
-    lineHeight: 29,
+    lineHeight: 26,
   },
   headerTitleAccent: {
     color: C.roseSoft,
-  },
-  headerSub: {
-    fontSize: 12.5,
-    color: C.gray,
-    marginTop: 4,
-    fontFamily: F.ui,
-    fontWeight: '500',
   },
   loadingContainer: {
     flex: 1,
@@ -519,21 +565,19 @@ const getStyles = createThemedStyles((colors) => ({
   },
   // —— Approved baby dev row (.srow with thumbnail) ——
   babyDevRow: {
-    flexDirection: 'row',
     backgroundColor: C.surface,
     borderWidth: 1,
     borderColor: C.border,
     borderRadius: 18,
     padding: 12,
-    gap: 12,
-    alignItems: 'center',
     marginTop: 4,
+    alignItems: 'center',
   },
-  babyDevThumb: {
-    width: 88,
-    height: 88,
-    borderRadius: 12,
-    flexShrink: 0,
+  // Jeff 10/13: hero image — big and uncropped (contain, no fixed crop box)
+  babyDevHero: {
+    width: '100%',
+    height: 300,
+    marginBottom: 8,
   },
   babyDevThumbPlaceholder: {
     backgroundColor: C.lavenderBg,

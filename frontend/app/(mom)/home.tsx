@@ -396,13 +396,14 @@ export default function MomHomeScreen() {
                   {weeklyContent.display_week || `Week ${currentWeek}`}
                 </Text>
               </View>
-              {/* Baby development illustration — full-width watercolor, 150px */}
+              {/* Baby development illustration — Jeff 10/13: large + uncropped.
+                  Was 150px cover (portrait watercolors sliced); now contain. */}
               <View style={styles.babyDevImageContainer}>
                 {hasPregnancyIllustration(currentWeek) ? (
                   <Image
                     source={getPregnancyIllustration(currentWeek)}
                     style={styles.babyDevImage}
-                    resizeMode="cover"
+                    resizeMode="contain"
                     accessibilityLabel={
                       babyDev.phase === 'size_reference'
                         ? `Illustration showing the size of a ${babyDev.food} at week ${currentWeek} of pregnancy`
@@ -1206,7 +1207,7 @@ const getStyles = createThemedStyles((colors) => ({
   },
   babyDevImage: {
     width: '100%',
-    height: 150,
+    height: 210,
     borderRadius: 14,
   },
   babyDevImageContainer: {
