@@ -786,11 +786,13 @@ export default function MomHomeScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Full-width Contraction Timer strip — gated to week 34+ (call-B rec:
-              prominent labor tool from ~week 34; invisible before to keep Home calm) */}
+          {/* Contraction Timer — 5th grid cell, same 2-col law as siblings.
+              10/14 Jeff feedback: full-width strip read odd next to the grid and
+              icon spacing was off; now a normal wrap card (icon above text like
+              the rest). Still gated to week 34+ (call-B rec). */}
           {weekNum >= 34 && (
             <TouchableOpacity
-              style={[styles.actionCard, styles.actionCardFull]}
+              style={[styles.actionCard, styles.actionCardWrap]}
               onPress={() => router.push('/(mom)/contraction-timer')}
               activeOpacity={0.8}
               testID="key-action-contraction-timer"
@@ -799,12 +801,10 @@ export default function MomHomeScreen() {
               <View style={styles.iconChipLav}>
                 <TIcon name="timer" size={18} color={C.lavender} />
               </View>
-              <View style={styles.actionTextBlock}>
-                <Text style={styles.actionTitle}>Contraction Timer</Text>
-                <Text style={styles.actionSubtitle} numberOfLines={1}>
-                  Start timing contractions
-                </Text>
-              </View>
+              <Text style={styles.actionTitle}>Contraction Timer</Text>
+              <Text style={styles.actionSubtitle} numberOfLines={1}>
+                Start timing contractions
+              </Text>
             </TouchableOpacity>
           )}
         </View>
@@ -991,17 +991,6 @@ const getStyles = createThemedStyles((colors) => ({
   actionCardWrap: {
     flex: 0,
     flexBasis: '48%',
-  },
-  // Full-width variant (contraction-timer strip, week 34+): icon left, text block right.
-  actionCardFull: {
-    flexBasis: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-  },
-  actionTextBlock: {
-    flex: 1,
   },
   iconChipLav: {
     width: 34,
