@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, Image, ImageBackground, Linking, Platform, Pressable, Dimensions, Animated, Easing } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Defs, LinearGradient as SvgGradient, Rect, Stop } from 'react-native-svg';
 
 import { Icon } from '../../src/components/Icon';
 import { SIZES, BRAND } from '../../src/constants/theme';
@@ -30,6 +31,24 @@ const { height } = Dimensions.get('window');
 
 // Beautiful birth photo - newborn sleeping on mother
 const HERO_IMAGE = require('../../assets/images/hero-newborn-sleeping.jpg');
+
+// WelcomeHeroTint — approved .welcome-tint (auth-screens-1.html): ONE continuous
+// 2-stop gradient over the hero band, lavender 18% (top) melting into rose 22%
+// (bottom). SVG gradient per HBand/CreamFade pattern (no new dependency).
+// Never render this as two flat half-height blocks — that draws a hard seam.
+function WelcomeHeroTint() {
+  return (
+    <Svg style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} width="100%" height="100%" pointerEvents="none">
+      <Defs>
+        <SvgGradient id="welcomeTint" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor="#8E8CB5" stopOpacity="0.18" />
+          <Stop offset="1" stopColor="#B87AA0" stopOpacity="0.22" />
+        </SvgGradient>
+      </Defs>
+      <Rect x="0" y="0" width="100%" height="100%" fill="url(#welcomeTint)" />
+    </Svg>
+  );
+}
 
 // Stagger rhythm — one calm beat (~90ms) between elements
 const STAGGER_MS = 90;
@@ -77,9 +96,11 @@ export default function WelcomeScreen() {
         style={styles.heroImage}
         resizeMode="cover"
       >
-        {/* Approved photo tint (auth-screens-1 .welcome-tint): lavender 18% top → rose 22% bottom, straight gradient */}
-        <View style={[styles.gradientOverlay, styles.tintHalf, { backgroundColor: '#8E8CB5', opacity: 0.18 }]} />
-        <View style={[styles.gradientOverlay, styles.tintHalf, { backgroundColor: '#B87AA0', opacity: 0.22, top: '50%' }]} />
+        {/* Approved photo tint (auth-screens-1 .welcome-tint): ONE continuous
+            2-stop gradient — lavender 18% melting into rose 22% down the band.
+            (Two flat half-height tint blocks previously shipped here created a
+            hard color seam mid-photo — fixed 2026-10-14, JOB-2026-10-14.) */}
+        <WelcomeHeroTint />
       </ImageBackground>
 
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -203,15 +224,6 @@ const getStyles = createThemedStyles((colors) => ({
     left: 0,
     right: 0,
     height: height * 0.55,
-  },
-  gradientOverlay: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-  },
-  tintHalf: {
-    top: 0,
-    height: '50%',
   },
   safeArea: {
     flex: 1,
