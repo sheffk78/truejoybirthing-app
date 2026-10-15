@@ -1,4 +1,6 @@
 # Keep EAS uploads lean — anchor patterns to repo root so frontend/src/store etc. stay INCLUDED
+# NOTE: when .easignore exists it REPLACES .gitignore for the archive — re-exclude
+# gitignored build artifacts here too (2026-10-15: 883MB tarball → upload 400s).
 /admin-frontend
 /qa-screenshots
 /docs
@@ -7,7 +9,15 @@
 /tests
 /scripts
 /*.md
+/backend
 /backend_test.py
 /simple_test.py
 /build-ios.sh
 /frontend/maestro
+/e2e-simulator
+/frontend/node_modules
+/frontend/.expo
+/frontend/.metro-cache
+/frontend/.metro-health-check*
+/frontend/expo-env.d.ts
+/frontend/ios/Pods
