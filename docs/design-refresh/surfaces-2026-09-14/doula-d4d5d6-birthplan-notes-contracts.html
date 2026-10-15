@@ -7,6 +7,9 @@
 <link rel="stylesheet" href="icons.css">
 <link rel="stylesheet" href="../type-system.css">
 <style>
+/* 10/07 Jeff fix: lateral content inset — design law is 20px (s7s8s9 .sect) so text never touches the screen edge */
+.cwrap { padding: 0 20px; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
 /* Doula surfaces D4-D6: Birth Plan · Notes · Contracts */
 .doula-tabbar .tb.on { color: #8E8CB5; }
 .doula-tabbar .tb svg { stroke: #9C9DA0; }
@@ -162,7 +165,13 @@
 /* Note specific */
 .note-cat { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
 .note-cat .chip { font-size: 9px; padding: 2px 7px; border-radius: 999px; font-weight: 700; letter-spacing: .3px; }
-.note-entry { border-left: 3px solid #EDEAF6; padding-left: 10px; margin-bottom: 8px; }
+.note-entry { background: #fff; border: 1px solid #EFE0EB; border-left: 3px solid #EDEAF6; border-radius: 14px; padding: 10px 12px; margin-bottom: 12px; }
+/* 10/07 Jeff: swipe-left mock — revealed actions per iOS Mail convention */
+.note-swipe { position: relative; margin-bottom: 12px; }
+.note-swipe .swipe-actions { position: absolute; top: 0; right: 0; bottom: 0; width: 62px; display: flex; flex-direction: column; gap: 4px; padding: 4px 0 4px; }
+.swipe-actions div { flex: 1; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: #fff; font-size: 9.5px; font-weight: 700; font-family: 'Quicksand', sans-serif; }
+.sw-act-edit { background: #6E6C99; }
+.sw-act-del { background: #A25C86; }
 .note-entry .ne-date { font-size: 9.5px; color: #8A8B8D; font-weight: 600; }
 .note-entry .ne-text { font-size: 12px; color: #4B4B4B; font-weight: 500; margin-top: 2px; line-height: 1.45; }
 .note-entry .ne-author { font-size: 10px; color: #6E6C99; font-weight: 600; margin-top: 3px; }
@@ -208,7 +217,7 @@
 
 <!-- ============ D4 CLIENT BIRTH PLAN REVIEW ============ -->
 <div class="phone"><div class="screen tall" style="background:#FAF8F5;">
-  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div><div class="cwrap">
 
   <div class="mhead">
     <div class="a-overline">Client Hub</div>
@@ -261,7 +270,7 @@
   <div class="doula-note"><b>Note:</b> Birth plan is 80% complete. Amara has 2 sections remaining: postpartum recovery preferences and emergency contingency plan. Reminder to follow up at next visit.</div>
 
   <div style="margin-top:auto;"></div>
-  <div class="doula-tabbar doula-tabbar">
+  </div><div class="doula-tabbar doula-tabbar">
     <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><div class="tbl">Home</div></div>
     <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><div class="tbl">Clients</div></div>
     <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div class="tbl">Messages</div></div>
@@ -271,12 +280,12 @@
 
 <!-- ============ D5 NOTES ============ -->
 <div class="phone"><div class="screen tall" style="background:#FAF8F5;">
-  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div><div class="cwrap">
 
   <div class="mhead">
-    <div class="a-overline">Client Notes</div>
+    <div class="a-overline">Amara Mitchell</div>
     <div class="a-h1"><em>Notes</em></div>
-    <div class="m-sub">Client-scoped: Amara Mitchell</div>
+    <div class="m-sub">Birth and postpartum care log</div>
   </div>
 
   <!-- Note type filter -->
@@ -295,15 +304,18 @@
       <div class="ne-text">Prenatal visit #4 completed. Amara reports feeling good, energy levels stable. Birth plan review: updated preferences for pain management — wants to add aromatherapy option.</div>
       <div class="ne-author">Renée (Doula) · Updated</div>
     </div>
-    <div class="note-entry">
+    <div style="margin-top:6px; font-size:9.5px; color:#8A8B8D; font-weight:600;">Swipe left on a note to edit or delete it.</div><div class="note-entry">
       <div class="ne-date">Sep 20, 2026 · 9:15 AM</div>
       <div class="ne-text">Amara shared updated birth plan via app. Added preference for delayed cord clamping and partner presence during all decisions. Reviewed and confirmed.</div>
       <div class="ne-author">Renée (Doula) · Created</div>
     </div>
-    <div class="note-entry">
+    <div class="note-swipe">
+      <div class="swipe-actions"><div class="sw-act-edit">Edit</div><div class="sw-act-del">Delete</div></div>
+    <div class="note-entry" style="margin-bottom:0; transform: translateX(-58px); border-radius: 14px 0 0 14px;">
       <div class="ne-date">Sep 15, 2026 · 11:00 AM</div>
       <div class="ne-text">Prenatal visit #3. Amira's blood pressure normal, fundal height on track. Discussed signs of labor and when to call. Birth plan at 60%.</div>
       <div class="ne-author">Renée (Doula) · Created</div>
+    </div>
     </div>
     <div class="note-entry">
       <div class="ne-date">Sep 10, 2026 · 4:45 PM</div>
@@ -322,7 +334,7 @@
     </div>
   </div>
 
-  <div class="doula-tabbar doula-tabbar">
+  </div><div class="doula-tabbar doula-tabbar">
     <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><div class="tbl">Home</div></div>
     <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><div class="tbl">Clients</div></div>
     <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div class="tbl">Messages</div></div>
@@ -332,7 +344,7 @@
 
 <!-- ============ D6 CONTRACTS ============ -->
 <div class="phone"><div class="screen tall" style="background:#FAF8F5;">
-  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div>
+  <div class="statusbar"><span>9:41</span><div class="right"><span>●●●</span><span>▮</span><div class="sb-batt"></div></div></div><div class="cwrap">
 
   <div class="mhead">
     <div class="a-overline">Client Contracts</div>
@@ -394,7 +406,7 @@
 
   <div class="doula-dl"><div class="abtn">View All Contracts</div><div class="hint">Full contract history and templates</div></div>
 
-  <div class="doula-tabbar doula-tabbar">
+  </div><div class="doula-tabbar doula-tabbar">
     <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><div class="tbl">Home</div></div>
     <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><div class="tbl">Clients</div></div>
     <div class="tb"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9C9DA0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div class="tbl">Messages</div></div>

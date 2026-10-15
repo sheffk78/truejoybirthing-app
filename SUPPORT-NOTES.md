@@ -39,3 +39,11 @@ a function" right after tapping Sign In.
 - Capture driver: /tmp/tjb-capture3.py (login via UI, click nav labels, screenshot).
   Login persists via localStorage — re-running lands directly on /home (that is
   success, not failure).
+## Duplicate checkout gotcha (hit 2026-10-14)
+- TWO working trees of this repo exist: live checkout
+  `~/.openclaw/workspace/Kit/life/brands/TrueJoyBirthing/projects/TrueJoyBirthing-Mobile`
+  (this one — Metro :8081 serves from here, runs at origin/main) and a STALE
+  `~/Projects/TrueJoyBirthing-Mobile` (behind main, not served by anything).
+  Before editing app code, confirm which tree Metro runs from:
+  `ps aux | grep "expo start"` — match the path. Editing the stale tree
+  silently doesn't change what the sim/app shows.

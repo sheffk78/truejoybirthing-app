@@ -86,3 +86,14 @@ All 10 doula screens (D1-D10) APPROVED with one global note: side breathing room
 ## IMPLEMENTATION GO — 2026-09-21
 
 Jeff approved implementation of D1-D10 into the real doula screens (visual-skin-only, same rules as mom S13/S14/S15 pass: no structure/logic changes, no deploy).
+
+---
+
+## 2026-10-07 — r2 revision (Jeff review fixes, pre-implementation)
+
+1. **Lateral inset fixed (design law 20px per s7s8s9 .sect):** every screen's content wrapped in `.cwrap { padding: 0 20px }` — nothing touches screen edges.
+2. **D5 Notes header de-duped:** was "Client Notes / Notes / Client-scoped: Amara Mitchell" → now "Amara Mitchell / Notes / Birth and postpartum care log".
+3. **D5 notes carded:** white cards + 12px gaps (was border-left rows flowing together); caption added.
+4. **Swipe interaction:** swipe-LEFT to Edit/Delete (iOS Mail convention, delete farthest right) shown mid-swipe on D5 — Jeff approved convention 10/07.
+5. Overflow gate: all 4 pages CLEAN (render-doula.py, note: must run with absolute path arg).
+Canonical PDF: `doula-mockup-combined-2026-10-07-r2.pdf`. E-sign OUT of app entirely (Jeff: pro handles outside; no replacement decision needed).
