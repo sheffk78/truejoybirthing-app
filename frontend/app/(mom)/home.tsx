@@ -215,6 +215,12 @@ export default function MomHomeScreen() {
   // Kick Counter — key-action card subtitle from the device-local session log
   // ('N today' with data, 'Start counting' when zero).
   const [kickTotals, setKickTotals] = useState({ sessionCount: 0, kickCount: 0, lastSessionISO: null as string | null });
+  const kickLastClock = (() => {
+    if (!kickTotals.lastSessionISO) return null;
+    const d = new Date(kickTotals.lastSessionISO);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  })();
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -834,8 +840,10 @@ export default function MomHomeScreen() {
             </View>
             <Text style={styles.actionTitle}>Count Kicks</Text>
             <Text style={styles.actionSubtitle} numberOfLines={1}>
+              {/* 10/05 deck: '3 today · last 8:05 AM' — clock tail rides on the
+                  most recent session (any day), 'N today' alone when none. */}
               {kickTotals.kickCount > 0
-                ? `${kickTotals.kickCount} today`
+                ? `${kickTotals.kickCount} today${kickLastClock ? ` · last ${kickLastClock}` : ''}`
                 : 'Start counting'}
             </Text>
           </TouchableOpacity>
