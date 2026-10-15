@@ -15,6 +15,7 @@ import { useColors, createThemedStyles } from '../../src/hooks/useThemedStyles';
 import { getBabyDevData } from '../../src/constants/babyDevelopmentData';
 import { getPregnancyIllustration, hasPregnancyIllustration } from '../../src/constants/pregnancyIllustrations';
 import { C, F, useCorpus } from '../../src/constants/corpus';
+import GrowthSprig from '../../src/components/GrowthSprig'; // 10/05 deck: approved growth motif beside the tip/affirmation kickers
 // Kick Counter entry (10/05 Key Actions 4th card) + local kick-session log.
 import { loadSessions, totalsFrom, type KickSession } from '../../src/utils/kickStorage';
 // Week-spine mockup v4 additions (Jeff-approved). The birth-plan ring renders
@@ -512,6 +513,15 @@ export default function MomHomeScreen() {
           <Card style={styles.weeklyCard}>
             <View style={styles.cardKickerRow}>
               <Text style={styles.kickerRose}>Weekly Tip</Text>
+              {/* 10/05 deck .k .sprig — approved GrowthSprig beside the kicker
+                  (same mounts as weekly-tips + timeline; stage tracks trimester) */}
+              <GrowthSprig
+                stage={trimesterStage(weekNum)}
+                size={16}
+                stroke={C.ringArcDashed}
+                fill={C.roseBg}
+                style={styles.kickerSprig}
+              />
               <Text style={styles.tipWeekChip}>
                 {weeklyContent.display_week || `Week ${weeklyContent.week || '...'}`}
               </Text>
@@ -532,7 +542,18 @@ export default function MomHomeScreen() {
         {/* Weekly Affirmation Card */}
         {weeklyContent?.affirmation && (
           <Card style={[styles.weeklyCard, styles.affirmationCard]}>
-            <Text style={styles.kickerRose}>Weekly Affirmation</Text>
+            <View style={styles.cardKickerRow}>
+              <Text style={styles.kickerRose}>Weekly Affirmation</Text>
+              {/* 10/05 deck .k .sprig on the affirmation kicker too (deck tints
+                  it rose #C9A8E8-family; corpus token = ringArcDashed/#D8A0C4) */}
+              <GrowthSprig
+                stage={trimesterStage(weekNum)}
+                size={16}
+                stroke={C.ringArcDashed}
+                fill={C.roseBg}
+                style={styles.kickerSprigRight}
+              />
+            </View>
             <Text style={styles.affirmationContent}>
               "{weeklyContent.affirmation}"
             </Text>
@@ -850,6 +871,10 @@ export default function MomHomeScreen() {
   );
 }
 
+// Deck .k .sprig stage — trimester ladder used by weekly-tips (sprout/leafing/blossom)
+const trimesterStage = (week: number): 'sprout' | 'leafing' | 'blossom' =>
+  week <= 13 ? 'sprout' : week <= 27 ? 'leafing' : 'blossom';
+
 const getStyles = createThemedStyles((colors) => ({
   container: {
     flex: 1,
@@ -950,6 +975,14 @@ const getStyles = createThemedStyles((colors) => ({
     fontSize: 11,
     fontFamily: F.ui,
     color: C.gray,
+  },
+  // Deck .sprig mounts beside the kickers — 16px keeps the 10px kicker's cap
+  // height reference (deck sprig ≈1.5× kicker cap height); rose-family tokens
+  kickerSprig: {
+    marginLeft: 4,
+  },
+  kickerSprigRight: {
+    marginLeft: 'auto',
   },
   tipWeekChip: {
     fontSize: 9.5,
