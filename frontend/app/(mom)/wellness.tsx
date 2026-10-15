@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import Card from '../../src/components/Card';
 import Button from '../../src/components/Button';
@@ -49,6 +50,7 @@ interface WellnessEntry {
 export default function WellnessScreen() {
   const colors = useColors();
   const styles = getStyles(colors);
+  const router = useRouter();
   const [entries, setEntries] = useState<WellnessEntry[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -166,6 +168,19 @@ export default function WellnessScreen() {
           <Text style={styles.headerTitle}>How are you feeling{' '}
             <Text style={styles.headerName}>today?</Text>
           </Text>
+          {/* Jeff 10/15: Fourth Trimester plan discoverability — quiet serif
+              IA link (same anatomy as the Birth Plan screen's), opens the
+              postpartum plan module for everyone pre-birth. No banner/icon. */}
+          <TouchableOpacity
+            style={styles.fourthTriLinkRow}
+            onPress={() => router.push('/(mom)/postpartum' as never)}
+            accessibilityRole="link"
+            accessibilityLabel="Open your Fourth Trimester postpartum plan"
+            testID="fourth-trimester-link"
+          >
+            <Text style={styles.fourthTriLink}>Fourth Trimester plan</Text>
+            <Text style={styles.fourthTriLinkChev}>›</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Daily Check-in Button */}
@@ -358,6 +373,10 @@ const getStyles = createThemedStyles((colors) => ({
   // .tt em = italic + var(--rose #A25C86) — audit row 5.2 said roseSoft #B085A5,
   // but the s14 wellness mockup itself paints the em at --rose; mockup wins (law = mockup)
   headerName: { fontStyle: 'italic', color: C.rose },
+  // Fourth Trimester IA link — identical anatomy to the Birth Plan screen's
+  fourthTriLinkRow: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 8 },
+  fourthTriLink: { fontSize: 13, fontFamily: DF.serifSemi, color: C.roseSoft },
+  fourthTriLinkChev: { fontSize: 15, lineHeight: 18, fontFamily: DF.ui, color: C.roseSoft, fontWeight: '300' },
   checkinButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: C.rose, padding: SIZES.md, borderRadius: SIZES.radiusMd, marginBottom: SIZES.lg, gap: SIZES.xs },
   checkinButtonText: { color: C.white, fontWeight: '600', fontSize: SIZES.fontMd },
   statsCard: { marginBottom: SIZES.lg },
