@@ -273,9 +273,25 @@ export default function MomHomeScreen() {
         {/* Header — Jeff 2026-10-01: photo band removed; straight to week/day + greeting */}
         <View style={styles.header}>
           <View style={styles.headerTopRow}>
-            <Text style={styles.overline}>
-              Week {timeline?.current_week ?? '—'} · Day {timeline?.current_day ?? 0}
-            </Text>
+            <View style={styles.weekRowGroup}>
+              <Text style={styles.overline}>
+                Week {timeline?.current_week ?? '—'} · Day {timeline?.current_day ?? 0}
+              </Text>
+              {/* Mockup .weekunderline — the approved hand-drawn squiggle rides
+                  under the week row (week-spine mockup path verbatim: Q-curve
+                  crest/dip, #D8A0C4 = wkActiveBg token, 2.6 stroke, 75% opacity,
+                  round caps). width 120 as in the mockup, height 7. */}
+              <Svg width={120} height={7} viewBox="0 0 120 7" style={styles.weekUnderline}>
+                <Path
+                  d="M2 4.5 Q30 2 60 4 Q90 6 118 3.5"
+                  fill="none"
+                  stroke={C.wkActiveBg}
+                  strokeWidth={2.6}
+                  strokeLinecap="round"
+                  opacity={0.75}
+                />
+              </Svg>
+            </View>
             <TouchableOpacity
               style={styles.avatarContainer}
               onPress={() => router.push('/(mom)/profile')}
@@ -843,6 +859,15 @@ const getStyles = createThemedStyles((colors) => ({
     textTransform: 'uppercase',
     fontFamily: F.uiBold,
     color: C.ink,
+  },
+  // Mockup .hdr .weekrow — week text group that carries the squiggle
+  // (.weekunderline display:block, margin-top:2px)
+  weekRowGroup: {
+    flex: 1,
+  },
+  weekUnderline: {
+    display: 'block' as never,
+    marginTop: 2,
   },
   greeting: {
     fontSize: 26,
