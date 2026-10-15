@@ -47,3 +47,11 @@ a function" right after tapping Sign In.
   Before editing app code, confirm which tree Metro runs from:
   `ps aux | grep "expo start"` — match the path. Editing the stale tree
   silently doesn't change what the sim/app shows.
+
+## EAS / build ops (verified 10/15)
+- EAS "remote" version source governs BOTH build numbers: ios.buildNumber/appVersion come from EAS server counters (local Info.plist is just the prebuild snapshot). 1.5.1 shipped = build 160 (last shipped 1.0.13/159; EAS assigned 160).
+- .easignore REPLACES .gitignore for the EAS tarball. When it exists, re-exclude node_modules/.expo/.metro-cache/Pods AND big root dirs (backend/, docs/…) or you ship an 883MB tarball that 400s at metadata upload ("Failed to upload metadata… 400"). Fixed 10/15: 358MB.
+- eas build output must redirect to a FILE (`> f 2>&1`), never pipe to tail/tee — EPIPE kills the upload mid-tar.
+- eas-cli must stay current: `npm i -g eas-cli@latest` (20.x on 10/15 was 4 majors stale).
+- Simulator store-capture recipe (proven 10/15): iPhone 17 Pro Max sim (1320x2868 exact 6.9" spec) + `simctl status_bar override --time 9:41 --batteryLevel 100`; companion MUST be spawned from terminal shell for that sim UDID (script: /tmp/tjb-companion-setup-pm.sh pattern); keychain SURVIVES `simctl uninstall` (token restore → use `simctl keychain <udid> reset` for true wipe, 10/14 lesson extended); deep links (`simctl openurl`) hit an iOS confirm dialog that HID taps CANNOT dismiss (AX sees it, input dead) — navigate with tab-taps + header-label asserts instead (walk stage in /tmp/tjb-capture.py pattern); SecureTextField AX = bullet glyphs one-per-char (verify len, not equality).
+- Android Play submit needs google-service-account.json (absent 10/15; key = 'TJB Admin' in 1P OpenClaw vault is Play LOGIN, not the JSON). Manual .aab upload per tjb-app-store-submit skill pitfall #4.
