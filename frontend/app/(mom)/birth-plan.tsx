@@ -345,6 +345,19 @@ export default function BirthPlanScreen() {
           <Text style={styles.subtitle}>
             Create your personalized birth preferences
           </Text>
+          {/* Jeff 10/15: Fourth Trimester plan was buried behind the due date —
+              a quiet serif IA link surfaces it for everyone, pre-birth. No
+              banner, no icon; same link anatomy as home's Read more. */}
+          <TouchableOpacity
+            style={styles.fourthTriLinkRow}
+            onPress={() => router.push('/(mom)/postpartum' as never)}
+            accessibilityRole="link"
+            accessibilityLabel="Open your Fourth Trimester postpartum plan"
+            testID="fourth-trimester-link"
+          >
+            <Text style={styles.fourthTriLink}>Fourth Trimester plan</Text>
+            <Text style={styles.fourthTriLinkChev}>›</Text>
+          </TouchableOpacity>
         </View>
         
         {/* Progress Card */}
@@ -576,6 +589,26 @@ const getStyles = createThemedStyles((colors) => ({
     fontFamily: F.ui,
     color: colors.textSecondary,
     marginTop: 4,
+  },
+  // Fourth Trimester IA link — small serif link, law row anatomy
+  fourthTriLinkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 2,
+    marginTop: 8,
+  },
+  fourthTriLink: {
+    fontSize: 13,
+    fontFamily: F.serifSemi,
+    color: C.roseSoft,
+  },
+  fourthTriLinkChev: {
+    fontSize: 15,
+    lineHeight: 18,
+    fontFamily: F.ui,
+    color: C.roseSoft,
+    fontWeight: '300',
   },
   progressCard: {
     marginBottom: SIZES.lg,
