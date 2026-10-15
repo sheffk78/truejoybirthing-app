@@ -1,0 +1,197 @@
+# TJB Doula Contract Flow — Maestro UI script (iOS Simulator)
+# Mirror of the verified contract_flow.yaml (midwife, PASS 10/12) for the DOULA leg.
+# Drives: login doula → Clients → client → Contract → create (7 sections) → send
+#         → relaunch → login mom → deep-link /sign-contract → sign → backend assert.
+# Prereq: bash run_doula.sh Phase 1 (seed_doula_client.py) — client + resolver files exist.
+# Launch: BUNDLE_ID=com.truejoybirthing.app ~/.local/bin/maestro test -p ios maestro/doula_contract_flow.yaml
+
+appId: com.truejoybirthing.app
+---
+- launchApp:
+    clearState: true
+
+- runFlow:
+    when:
+      visible: "I already have an account"
+    commands:
+      - tapOn: "I already have an account"
+      - tapOn: "Email"
+      - inputText: "testdoula123@test.com"
+      - tapOn:
+          id: "login-password-input"
+      - inputText: "password123"
+      - tapOn:
+          id: "login-submit-btn"
+      - extendedWaitUntil:
+          visible: "Not Now"
+          timeout: 8000
+      - tapOn: "Not Now"
+- extendedWaitUntil:
+    visible: "Doula Dashboard"
+    timeout: 25000
+
+# ---- Clients list (quick action, same pattern as midwife flow) ----
+- runScript:
+    file: fetch_doula_client.js
+- scrollUntilVisible:
+    element:
+      text: "See Clients"
+    timeout: 10000
+- tapOn: "See Clients"
+- tapOn:
+    id: ${output.rowId}
+- waitForAnimationToEnd:
+    timeout: 6000
+- extendedWaitUntil:
+    visible:
+      id: "action-contract"
+    timeout: 15000
+- tapOn:
+    id: "action-contract"
+- extendedWaitUntil:
+    visible: "Contracts"
+    timeout: 15000
+
+# ---- Create contract (modal: client auto-selected; 7 sections) ----
+- tapOn:
+    id: "add-contract-btn"
+- extendedWaitUntil:
+    visible: "Parties & Basic Details"
+    timeout: 15000
+# S0 -> S1 (due date auto-filled from client edd)
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+# S1: birth location prefilled from doula contract defaults (E2E)
+- waitForAnimationToEnd:
+    timeout: 8000
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+# S2: fees — prefilled client-side for E2E (dev guard): no typing needed
+- waitForAnimationToEnd:
+    timeout: 1500
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+# S3 -> ... -> S6: advance until the final Create button appears
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    id: "next-section-btn"
+- waitForAnimationToEnd:
+    timeout: 3000
+- runFlow:
+    when:
+      notVisible: "Create Contract"
+    commands:
+      - tapOn:
+          id: "next-section-btn"
+      - waitForAnimationToEnd:
+          timeout: 3000
+- extendedWaitUntil:
+    visible: "Create Contract"
+    timeout: 10000
+- tapOn:
+    id: "create-contract-btn"
+# Success modal → OK
+- extendedWaitUntil:
+    visible: "OK"
+    timeout: 10000
+- tapOn: "OK"
+# Resolve THIS run's draft (legacy drafts excluded by the generated resolver)
+- runScript:
+    file: resolve_doula_draft.js
+- extendedWaitUntil:
+    visible:
+      id: "contract-send-btn-${output.contractId}"
+    timeout: 10000
+- tapOn:
+    id: "contract-send-btn-${output.contractId}"
+# Native Alert.alert — tap by coordinates (10/12 9:28 lesson: text taps miss alerts)
+- extendedWaitUntil:
+    visible: "Send Contract"
+    timeout: 10000
+- tapOn:
+    point: "68%, 57%"
+- extendedWaitUntil:
+    visible:
+      id: "contract-status-awaiting-${output.contractId}"
+    timeout: 25000
+
+# ---- Switch to mom (cold relaunch + keychain clear) ----
+- clearKeychain
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "I already have an account"
+    timeout: 20000
+- tapOn: "I already have an account"
+- tapOn: "Email"
+- inputText: "testmom@test.com"
+- tapOn:
+    id: "login-password-input"
+- inputText: "password123"
+- tapOn:
+    id: "login-submit-btn"
+- extendedWaitUntil:
+    visible: "Not Now"
+    timeout: 8000
+- tapOn: "Not Now"
+# Mom home shows the pending contract card below the fold (a11y pruned) — the
+# /mom/contracts data check is the doula flow's runScript below; sign via deep link.
+- openLink: "truejoybirthing://sign-contract?contractId=${output.contractId}&signingToken="
+- runFlow:
+    when:
+      visible: "Open"
+    commands:
+      - tapOn: "Open"
+- extendedWaitUntil:
+    visible: "Doula Service Agreement"
+    timeout: 20000
+- scrollUntilVisible:
+    element:
+      id: "signer-name-input"
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 40
+- tapOn:
+    id: "signer-name-input"
+- eraseText: 50
+- inputText: "Test Mom"
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      id: "agreement-checkbox"
+    direction: DOWN
+    timeout: 15000
+    visibilityPercentage: 40
+- tapOn:
+    id: "agreement-checkbox"
+- scrollUntilVisible:
+    element:
+      id: "sign-contract-btn"
+    direction: DOWN
+    timeout: 15000
+    visibilityPercentage: 40
+- extendedWaitUntil:
+    visible:
+      id: "sign-contract-btn"
+    timeout: 8000
+- tapOn:
+    id: "sign-contract-btn"
+- extendedWaitUntil:
+    visible: "Contract Signed!"
+    timeout: 20000
+- tapOn: "OK"
+- runScript:
+    file: assert_doula_signed.js
