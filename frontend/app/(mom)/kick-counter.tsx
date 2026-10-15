@@ -442,10 +442,10 @@ export default function KickCounterScreen() {
         </View>
 
         {/* Recent sessions — .hcard: last 3 stored sessions, newest first.
-            10/05 deck 'See all ›' affordance next to the card kicker (deck:
-            rose, sentence case, chevron in the header's right end). No
-            kick-history route exists, so 'See all' expands the rows in place
-            (deck shows no history screen in this wave) — tap again to collapse. */}
+            mockup .hcard .k .all 'See all ›' — lavender 10.5px Quicksand-700
+            sentence-case link in the header's right end (mockup CSS law).
+            No kick-history route exists, so 'See all' expands the rows in
+            place (mockup renders no history screen) — tap again to collapse. */}
         <View style={styles.recentCard}>
           <View style={styles.recentHead}>
             <TIcon name="k_timeline" size={15} color={C.rose} />
@@ -766,23 +766,25 @@ const getStyles = createThemedStyles((colors) => ({
     color: C.rose,
     flex: 1,
   },
-  // 10/05 deck 'See all ›' — rose, sentence case, chevron, right end of the
-  // header row (matches the deck's 'Learn more/Read more' link styling).
+  // .hcard .k .all — mockup verbatim: 10.5px, Quicksand 700, sentence case,
+  // NO letterspacing, color #6E6C99 = lavender token; chevron rides in the
+  // same span (margin-left:auto handled by recentKicker flex:1).
   recentSeeAll: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 2,
   },
   recentSeeAllText: {
-    fontSize: 11,
+    fontSize: 10.5,
+    letterSpacing: 0.2,
     fontFamily: F.uiBold,
-    color: C.rose,
+    color: C.lavenderText,
   },
   recentSeeAllChev: {
-    fontSize: 16,
-    lineHeight: 18,
-    color: C.rose,
-    fontWeight: '300',
+    fontSize: 13,
+    lineHeight: 14,
+    fontFamily: F.uiBold,
+    color: C.lavenderText,
   },
   recentEmpty: {
     fontSize: 11.5,
