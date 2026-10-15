@@ -325,37 +325,54 @@ export default function MomHomeScreen() {
             </View>
           )}
           {/* Week stepper — mockup .stepper: 7 chips (±3 around the anchor week),
-              active chip = rose solid (.wk.active). Tapping a chip re-points the
-              Baby Development card (local state only). */}
+              active chip = rose solid (.wk.active). Edge chips carry the mockup's
+              .wk.edge treatment (opacity .45) toward the run-out end, and the
+              deck adds a '...' ellipsis run-out after the last chip. Tapping a
+              chip re-points the Baby Development card (local state only). */}
           {weeksToShow.length > 0 && (
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.weekStepper}
             >
-              {weeksToShow.map((wk) => {
+              {weeksToShow.map((wk, idx) => {
                 const isActive = wk === anchorWeek;
+                const isEdge = !isActive && idx < 3;
                 return (
-                  <TouchableOpacity
-                    key={wk}
-                    onPress={() => setSelectedWeek(wk)}
-                    activeOpacity={0.75}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Show pregnancy week ${wk}`}
-                    style={[
-                      styles.weekChip,
-                      isActive && styles.weekChipActive,
-                    ]}
-                  >
-                    <Text
+                  <React.Fragment key={wk}>
+                    <TouchableOpacity
+                      onPress={() => setSelectedWeek(wk)}
+                      activeOpacity={0.75}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Show pregnancy week ${wk}`}
                       style={[
-                        styles.weekChipText,
-                        isActive && styles.weekChipTextActive,
+                        styles.weekChip,
+                        isActive && styles.weekChipActive,
+                        isEdge && styles.weekChipEdge,
                       ]}
                     >
-                      {wk}
-                    </Text>
-                  </TouchableOpacity>
+                      <Text
+                        style={[
+                          styles.weekChipText,
+                          isActive && styles.weekChipTextActive,
+                          isEdge && styles.weekChipTextEdge,
+                        ]}
+                      >
+                        {wk}
+                      </Text>
+                    </TouchableOpacity>
+                    {/* Mockup v4 ellipsis run-out after the last visible chip
+                        (10/05 deck: '...' after week 22) — decorative. */}
+                    {idx === weeksToShow.length - 1 && (
+                      <Text
+                        style={styles.weekStepperEllipsis}
+                        accessible={false}
+                        allowFontScaling={false}
+                      >
+                        …
+                      </Text>
+                    )}
+                  </React.Fragment>
                 );
               })}
             </ScrollView>
@@ -1269,6 +1286,21 @@ const getStyles = createThemedStyles((colors) => ({
   weekChipActive: {
     backgroundColor: C.wkActiveBg,
     borderColor: C.wkActiveBorder,
+  },
+  // .wk.edge — opacity .45 (week-spine mockup edge fade) applied to the
+  // chip container so border + text fade together
+  weekChipEdge: {
+    opacity: 0.45,
+  },
+  weekChipTextEdge: {},
+  // Mockup v4 run-out: '...' after the last chip (10/05 deck) — small
+  // gray-light dots on the text baseline, not a chip
+  weekStepperEllipsis: {
+    fontSize: 13,
+    lineHeight: 16,
+    fontFamily: F.uiBold,
+    color: C.grayLight,
+    marginLeft: 2,
   },
   weekChipText: {
     fontSize: 11,
