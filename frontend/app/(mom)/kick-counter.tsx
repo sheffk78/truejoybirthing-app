@@ -27,6 +27,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Path } from 'react-native-svg';
@@ -129,6 +130,11 @@ export default function KickCounterScreen() {
   // 10-kick auto-save confirmation flash ('Saved · H:MM AM' in the slab)
   const [savedFlash, setSavedFlash] = useState(false);
   const [recent, setRecent] = useState<KickSession[]>([]);
+  const [kickSessions, setKickSessions] = useState<KickSession[]>([]);
+  // 10/05 deck 'See all ›' on the Recent Sessions header — no kick-history
+  // route exists in this wave, so 'See all' expands the list in place
+  // (newest first) and 'Show less' returns to the deck's 3-row card.
+  const [seeAllSessions, setSeeAllSessions] = useState(false);
   const [todayTotals, setTodayTotals] = useState<TodaysTotals>({
     sessionCount: 0,
     kickCount: 0,
@@ -144,6 +150,7 @@ export default function KickCounterScreen() {
       (a, b) => new Date(a.dateISO).getTime() - new Date(b.dateISO).getTime(),
     );
     setRecent(chrono.slice(-3).reverse());
+    setKickSessions([...chrono].reverse());
     setTodayTotals(totalsFrom(chrono));
   }, []);
 
@@ -434,16 +441,32 @@ export default function KickCounterScreen() {
           </View>
         </View>
 
-        {/* Recent sessions — .hcard: last 3 stored sessions, newest first */}
+        {/* Recent sessions — .hcard: last 3 stored sessions, newest first.
+            10/05 deck 'See all ›' affordance next to the card kicker (deck:
+            rose, sentence case, chevron in the header's right end). No
+            kick-history route exists, so 'See all' expands the rows in place
+            (deck shows no history screen in this wave) — tap again to collapse. */}
         <View style={styles.recentCard}>
           <View style={styles.recentHead}>
             <TIcon name="k_timeline" size={15} color={C.rose} />
             <Text style={styles.recentKicker}>Recent Sessions</Text>
+            {kickSessions.length > 0 && (
+              <TouchableOpacity
+                style={styles.recentSeeAll}
+                onPress={() => setSeeAllSessions((v) => !v)}
+                accessibilityRole="button"
+                accessibilityLabel={seeAllSessions ? 'Show only recent kick sessions' : 'See all kick sessions'}
+                testID="recent-sessions-see-all"
+              >
+                <Text style={styles.recentSeeAllText}>{seeAllSessions ? 'Show less' : 'See all'}</Text>
+                <Text style={styles.recentSeeAllChev}>{seeAllSessions ? '⌃' : '›'}</Text>
+              </TouchableOpacity>
+            )}
           </View>
           {recent.length === 0 ? (
             <Text style={styles.recentEmpty}>No sessions yet — your counts will list here.</Text>
           ) : (
-            recent.map((s, idx) => {
+            (seeAllSessions ? kickSessions : recent).map((s, idx) => {
               const dur = durParts(s.durationSec);
               return (
                 <View
@@ -741,6 +764,25 @@ const getStyles = createThemedStyles((colors) => ({
     textTransform: 'uppercase',
     fontFamily: F.uiBold,
     color: C.rose,
+    flex: 1,
+  },
+  // 10/05 deck 'See all ›' — rose, sentence case, chevron, right end of the
+  // header row (matches the deck's 'Learn more/Read more' link styling).
+  recentSeeAll: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  recentSeeAllText: {
+    fontSize: 11,
+    fontFamily: F.uiBold,
+    color: C.rose,
+  },
+  recentSeeAllChev: {
+    fontSize: 16,
+    lineHeight: 18,
+    color: C.rose,
+    fontWeight: '300',
   },
   recentEmpty: {
     fontSize: 11.5,
