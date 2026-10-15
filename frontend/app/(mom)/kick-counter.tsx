@@ -767,8 +767,9 @@ const getStyles = createThemedStyles((colors) => ({
     flex: 1,
   },
   // .hcard .k .all — mockup verbatim: 10.5px, Quicksand 700, sentence case,
-  // NO letterspacing, color #6E6C99 = lavender token; chevron rides in the
-  // same span (margin-left:auto handled by recentKicker flex:1).
+  // NO letterspacing, lavender-token ink (mockup .all color maps to C.lavender
+  // via the corpus token drop). Chevron rides in the same span; margin-left:auto
+  // comes from recentKicker flex:1.
   recentSeeAll: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -781,7 +782,7 @@ const getStyles = createThemedStyles((colors) => ({
     color: C.lavenderText,
   },
   recentSeeAllChev: {
-    fontSize: 13,
+    fontSize: 12.5,
     lineHeight: 14,
     fontFamily: F.uiBold,
     color: C.lavenderText,

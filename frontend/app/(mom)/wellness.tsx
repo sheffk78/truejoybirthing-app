@@ -375,7 +375,7 @@ const getStyles = createThemedStyles((colors) => ({
   headerName: { fontStyle: 'italic', color: C.rose },
   // Fourth Trimester IA link — identical anatomy to the Birth Plan screen's
   fourthTriLinkRow: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 8 },
-  fourthTriLink: { fontSize: 13, fontFamily: DF.serifSemi, color: C.roseSoft },
+  fourthTriLink: { fontSize: 13.5, fontFamily: DF.serifSemi, color: C.roseSoft },
   fourthTriLinkChev: { fontSize: 15, lineHeight: 18, fontFamily: DF.ui, color: C.roseSoft, fontWeight: '300' },
   checkinButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: C.rose, padding: SIZES.md, borderRadius: SIZES.radiusMd, marginBottom: SIZES.lg, gap: SIZES.xs },
   checkinButtonText: { color: C.white, fontWeight: '600', fontSize: SIZES.fontMd },

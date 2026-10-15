@@ -550,8 +550,8 @@ export default function MomHomeScreen() {
           <Card style={[styles.weeklyCard, styles.affirmationCard]}>
             <View style={styles.cardKickerRow}>
               <Text style={styles.kickerRose}>Weekly Affirmation</Text>
-              {/* 10/05 deck .k .sprig on the affirmation kicker too (deck tints
-                  it rose #C9A8E8-family; corpus token = ringArcDashed/#D8A0C4) */}
+              {/* 10/05 deck .k .sprig on the affirmation kicker too — deck tints
+                  it rose-family; law tint = corpus token C.ringArcDashed */}
               <GrowthSprig
                 stage={trimesterStage(weekNum)}
                 size={16}
@@ -1337,7 +1337,7 @@ const getStyles = createThemedStyles((colors) => ({
   // Mockup v4 run-out: '...' after the last chip (10/05 deck) — small
   // gray-light dots on the text baseline, not a chip
   weekStepperEllipsis: {
-    fontSize: 13,
+    fontSize: 12.5,
     lineHeight: 16,
     fontFamily: F.uiBold,
     color: C.grayLight,

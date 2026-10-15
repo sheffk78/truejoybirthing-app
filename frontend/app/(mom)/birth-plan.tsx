@@ -599,7 +599,7 @@ const getStyles = createThemedStyles((colors) => ({
     marginTop: 8,
   },
   fourthTriLink: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontFamily: F.serifSemi,
     color: C.roseSoft,
   },
