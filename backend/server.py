@@ -65,7 +65,7 @@ if not SECRET_KEY:
     raise RuntimeError("JWT_SECRET_KEY environment variable must be set")
 assert SECRET_KEY  # for type checkers
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_DAYS = 7
+ACCESS_TOKEN_EXPIRE_DAYS = 30
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -1431,7 +1431,23 @@ async def get_current_user(request: Request) -> User:
         expires_at = expires_at.replace(tzinfo=timezone.utc)
     if expires_at < datetime.now(timezone.utc):
         raise HTTPException(status_code=401, detail="Session expired")
-    
+
+    # Sliding expiry: an active session gets its window extended so weekly
+    # users are never logged out while the app is in use. Throttled to at most
+    # one update per day per session to keep the write volume negligible.
+    # Abandoned sessions still expire after ACCESS_TOKEN_EXPIRE_DAYS of
+    # total inactivity, so a stale token never outlives a fixed window.
+    try:
+        new_expiry = datetime.now(timezone.utc) + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+        if expires_at < new_expiry - timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS - 1):
+            await db.user_sessions.update_one(
+                {"session_token": session_token},
+                {"$set": {"expires_at": new_expiry}},
+            )
+    except Exception:
+        # Expiry refresh is best-effort; a failed write must never fail the request.
+        pass
+
     # Get user
     user_doc = await db.users.find_one(
         {"user_id": session_doc["user_id"]},
